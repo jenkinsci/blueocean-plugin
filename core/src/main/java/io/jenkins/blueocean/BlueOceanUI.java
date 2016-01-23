@@ -1,7 +1,7 @@
 package io.jenkins.blueocean;
 
 import hudson.Extension;
-import io.jenkins.blueocean.embryo.App;
+import io.jenkins.embryo.App;
 
 /**
  * @author Kohsuke Kawaguchi

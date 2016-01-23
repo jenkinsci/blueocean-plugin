@@ -1,4 +1,4 @@
 /**
  * Emulates Embryo for now.
  */
-package io.jenkins.blueocean.embryo;
+package io.jenkins.embryo;

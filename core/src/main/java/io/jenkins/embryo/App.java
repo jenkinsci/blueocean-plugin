@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.embryo;
+package io.jenkins.embryo;
 
 import hudson.ExtensionPoint;
 

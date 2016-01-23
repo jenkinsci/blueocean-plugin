@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.embryo;
+package io.jenkins.embryo;
 
 import hudson.Extension;
 import hudson.ExtensionComponent;
@@ -7,7 +7,6 @@ import hudson.tools.ToolInstallation;
 import hudson.widgets.Widget;
 import jenkins.ExtensionFilter;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.variant.OptionalExtension;
 
 /**
  * Removes unwanted functionalities from Jenkins

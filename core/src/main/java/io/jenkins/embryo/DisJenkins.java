@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.embryo;
+package io.jenkins.embryo;
 
 import com.google.inject.Inject;
 import hudson.Extension;
@@ -11,8 +11,6 @@ import hudson.model.View;
 import hudson.model.ViewGroup;
 import hudson.model.listeners.ItemListener;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.variant.OptionalExtension;
-import org.jenkinsci.plugins.variant.VariantSet;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
