@@ -23,6 +23,7 @@
   </properties>
 
   <modules>
+    <module>core</module>
     <module>alpha</module>
     <module>bravo</module>
     <module>war</module>
