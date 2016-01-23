@@ -1,5 +1,8 @@
-<html>
-  <body>
-    <h1>Hello</h1>
-  </body>
-</html>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
+  <st:contentType value="text/html;charset=UTF-8"/>
+  <html>
+    <body>
+      <h1>Hello</h1>
+    </body>
+  </html>
+</j:jelly>

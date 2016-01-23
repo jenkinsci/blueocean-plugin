@@ -27,6 +27,7 @@
     <module>alpha</module>
     <module>bravo</module>
     <module>war</module>
+    <module>all</module>
   </modules>
 
   <dependencyManagement>
