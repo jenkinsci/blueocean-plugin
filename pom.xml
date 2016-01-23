@@ -16,7 +16,10 @@
   <name>Blue Ocean UI Parent</name>
 
   <properties>
+    <!--<jenkins.version>1.609.3</jenkins.version>-->
+    <!--<java.level>6</java.level>-->
     <jenkins.version>1.625</jenkins.version>
+    <java.level>8</java.level>
   </properties>
 
   <modules>
@@ -25,36 +28,26 @@
     <module>war</module>
   </modules>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency> <!-- TODO pending https://github.com/jenkinsci/jenkins-test-harness/pull/2 -->
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>org.eclipse.sisu.plexus</artifactId>
+        <version>0.1.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-      <!-- TODO: java8 signature doesn't exist yet
-      <plugin>
+        <!-- TODO: java8 signature doesn't exist yet -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <id>check</id>
-          </execution>
-        </executions>
         <configuration>
-          <signature>
-            <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java18</artifactId>
-            <version>1.0</version>
-          </signature>
+          <skip>true</skip>
         </configuration>
       </plugin>
-      -->
     </plugins>
   </build>
 </project>
