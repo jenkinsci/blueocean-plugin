@@ -25,4 +25,42 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.gmaven</groupId>
+        <artifactId>groovy-maven-plugin</artifactId>
+        <version>2.0</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <!-- link to all the plugins via hpl for live reloading -->
+          <source>
+            def plugins = new File(basedir, 'work/plugins');
+            for (dep in project.dependencies) {
+              if (dep.groupId != project.groupId) {
+                continue;
+              }
+              def a = dep.artifactId;
+              def theHpl = new File(new File(basedir.parentFile, a.replaceFirst('^blueocean-', '')), 'target/test-classes/the.hpl');
+              if (theHpl.file) {
+                plugins.mkdirs();
+                ant.copy(file: theHpl, tofile: new File(plugins, a + '.hpl'), overwrite: true, verbose: true);
+              } else {
+                println('Warning: no such file ' + theHpl);
+              }
+            }
+          </source>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
 </project>
