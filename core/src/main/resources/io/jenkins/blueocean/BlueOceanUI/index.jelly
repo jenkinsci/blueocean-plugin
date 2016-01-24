@@ -2,9 +2,17 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
   <st:contentType value="text/html;charset=UTF-8"/>
   <html>
+    <!-- HACK that need to be cleaned up -->
+    <j:new var="h" className="hudson.Functions" /><!-- instead of JSP functions -->
+    ${h.initPageVariables(context)}
+    <head resURL="${resURL}">
+    </head>
+
+
+    <!-- App -->
     <body>
       <h1>Hello</h1>
-      <st:adjunct includes="io.jenkins.blueocean"/>
+      <st:adjunct includes="io.jenkins.blueocean.blueocean"/>
     </body>
   </html>
 </j:jelly>
