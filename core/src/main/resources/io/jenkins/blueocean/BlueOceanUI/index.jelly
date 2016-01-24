@@ -3,6 +3,7 @@
   <html>
     <body>
       <h1>Hello</h1>
+      <st:adjunct includes="io.jenkins.blueocean"/>
     </body>
   </html>
 </j:jelly>
