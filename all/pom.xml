@@ -16,6 +16,11 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>blueocean-alpha</artifactId>
       <version>${project.version}</version>
     </dependency>
