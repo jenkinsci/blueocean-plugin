@@ -16,10 +16,10 @@
   <name>Blue Ocean UI Parent</name>
 
   <properties>
-    <!--<jenkins.version>1.609.3</jenkins.version>-->
-    <!--<java.level>6</java.level>-->
+    <java.level>6</java.level>
     <jenkins.version>1.625</jenkins.version>
-    <java.level>8</java.level>
+    <!--<jenkins.version>1.609.3</jenkins.version>-->
+    <!--<java.level>8</java.level>-->
   </properties>
 
   <modules>
