@@ -34,6 +34,10 @@ These are just example of extensions. In due course we will be adding such exten
 
 This is where you run the app to include all plugins along with core. During development it can be used to include all extensions.
 
+## war
+
+Create war file from all modulle to be run on CLI as *java -jar blueocean.war*
+
 # Build and Run
 
 ## Build and run core module
@@ -55,8 +59,17 @@ $ gulp rebundle
 (or run gulp, after each change) in the core directory. This will pick up source changes to commonjs modules (and other things) and put them in target for you (running gulp will run js unit tests too). 
 
 
-## Build and run all module (includes all extensions found in this repository)
+## Build and run all module 
+Builds all modules (except war), basically includes all extensions to let you test everything together during development. Also produces blueocean-all.hpi that can possibly be installed as plugin on Jenkins.
+
 ```
 $ cd all
 $ mvn hpi:run
+```
+
+## Build everything (from root directory)
+Builds all maven modules.
+
+```
+$ mvn clean install
 ```
