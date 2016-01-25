@@ -1,0 +1,11 @@
+#Ignore all dot files
+.idea/
+*.iml
+*.ipr
+*.iws
+target/*
+**/target/*
+*~
+core/node
+core/node_modules
+core/work
