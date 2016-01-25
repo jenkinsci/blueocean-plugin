@@ -1,5 +1,10 @@
 This is BlueOcean repo. It is a multi-module maven project. Derived from Castle code base. Each sub-directory at the root of the repo is jenkins extension. 
 
+Blue Ocean is the new UI project for Jenkins. 
+
+![Pirate logo, because it's ocean and stuff](logo-yarrr.png)
+
+
 # Module Breakdown
 
 ## core
@@ -45,4 +50,3 @@ $ mvn hpi:run
 $ cd all
 $ mvn hpi:run
 ```
-
