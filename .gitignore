@@ -9,3 +9,4 @@ target/*
 core/node
 core/node_modules
 core/work
+work
