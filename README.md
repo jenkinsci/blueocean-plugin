@@ -45,6 +45,16 @@ $ mvn hpi:run
 - Open http://localhost:8080/jenkins in your browser. Also open JS console on the browser to see message printed from blueocean.js.
 - Open http://localhost:8080/jenkins/hello in your browser. "Hello World" is printed by BlueOceanUI.doHello() method.
 
+## To do javascript development
+
+If you wish to make changes to blueocean.js, then you will need to run:
+
+```
+$ gulp rebundle
+```
+(or run gulp, after each change) in the core directory. This will pick up source changes to commonjs modules (and other things) and put them in target for you (running gulp will run js unit tests too). 
+
+
 ## Build and run all module (includes all extensions found in this repository)
 ```
 $ cd all
