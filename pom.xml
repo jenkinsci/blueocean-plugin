@@ -24,6 +24,7 @@
 
   <modules>
     <module>core</module>
+    <module>rest-api</module>
     <module>alpha</module>
     <module>bravo</module>
     <module>war</module>
