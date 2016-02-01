@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eu
 echo "*"
 echo "* This will use gulp to watch for changes"
 echo "* and run mvn hpi:run on the core module."
