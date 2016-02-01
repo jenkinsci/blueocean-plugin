@@ -9,9 +9,9 @@ echo "* Ensure you have gulp installed: http://gulpjs.com/"
 trap ctrl_c INT
 
 function ctrl_c() {
-    echo "** CLEANUP: killing gulp rebundle process."
+    echo "** CLEANUP"
     kill $MVN_PID
-    echo "Cleanup finished."
+    echo "CLEANUP finished."
 }
 
 cd core
