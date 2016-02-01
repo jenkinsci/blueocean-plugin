@@ -53,7 +53,13 @@ $ mvn hpi:run
 
 ## To do javascript development
 
-If you wish to make changes to blueocean.js, then you will need to run:
+If you wish to make changes to blueocean.js, then you will need to install gulp (http://gulpjs.com/), and then either run: 
+
+```
+$ ./dev_core.sh
+```
+
+or the following: 
 
 ```
 $ gulp rebundle
