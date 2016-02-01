@@ -2,6 +2,8 @@ This is BlueOcean repo. It is a multi-module maven project. Derived from Castle 
 
 Blue Ocean is the new UI project for Jenkins. 
 
+*Please do not commit anything in here that you do not intend to make open source*
+
 ![Pirate logo, because it's ocean and stuff](logo-yarrr.png)
 
 
