@@ -8,4 +8,4 @@ All contributers will need to follow the style guide below for their changes to 
 * Please include updates to the autoformatter as a seperate pull request.
 
 ## Java
-* We follow the [Naming|https://google.github.io/styleguide/javaguide.html#s5-naming], [Programming Practices](https://google.github.io/styleguide/javaguide.html#s6-programming-practices) and [Javadoc](https://google.github.io/styleguide/javaguide.html#s7-javadoc) styles from the [Google Java Style](https://google.github.io/styleguide/javaguide.html) guide.
+* We follow the [Naming](https://google.github.io/styleguide/javaguide.html#s5-naming), [Programming Practices](https://google.github.io/styleguide/javaguide.html#s6-programming-practices) and [Javadoc](https://google.github.io/styleguide/javaguide.html#s7-javadoc) styles from the [Google Java Style](https://google.github.io/styleguide/javaguide.html) guide.
