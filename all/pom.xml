@@ -21,9 +21,14 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>blueocean-rest-api</artifactId>
+      <artifactId>pipeline-service-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>profile-service-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>    
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>blueocean-alpha</artifactId>
