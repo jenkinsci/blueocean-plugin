@@ -1,11 +1,10 @@
-package io.jenkins.blueocean.rest.guice;
+package io.jenkins.blueocean.commons;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import io.jenkins.blueocean.rest.WebException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +19,7 @@ public class JsonConverter{
         try {
             return om.readValue(data, type);
         } catch (IOException e) {
-            throw new WebException(400, String.format("Invalid json. Failed to convert json %s to type %s", data, type));
+            throw new RuntimeException(String.format("Invalid json. Failed to convert json %s to type %s", data, type));
         }
     }
 
@@ -28,15 +27,15 @@ public class JsonConverter{
         try {
             return om.readValue(data, type);
         } catch (IOException e) {
-            throw new WebException(400, String.format("Invalid json. Failed conversion to type %s", data, type));
+            throw new RuntimeException(String.format("Invalid json. Failed conversion to type %s", data, type));
         }
     }
 
-    public static String fromJava(Object value) {
+    public static String toJson(Object value) {
         try {
             return om.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-            throw new WebException(400, String.format("Failed to convert %s to json", value.toString()));
+            throw new RuntimeException(String.format("Failed to convert %s to json", value.toString()));
         }
     }
 
