@@ -2,11 +2,12 @@ package io.jenkins.blueocean.api.pipeline;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.api.pipeline.model.Pipeline;
+import io.jenkins.blueocean.commons.Identity;
 
 import javax.annotation.Nullable;
 
 /**
- * findPipeline() response
+ * Response for {@link PipelineService#getPipeline(Identity, GetPipelineRequest)}
  *
  * @author Vivek Pandey
  */

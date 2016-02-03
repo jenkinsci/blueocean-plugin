@@ -15,12 +15,15 @@ import java.util.List;
  */
 public final class Pipeline {
     /** Name of the organization owning this Pipeline */
+    @JsonProperty("organization")
     public final String organization;
 
     /** Name of the pipeline */
+    @JsonProperty("name")
     public final String name;
 
     /** Set of branches available with this pipeline */
+    @JsonProperty("branches")
     public final List<String> branches;
 
     public Pipeline(@Nonnull @JsonProperty("organization") String organization,

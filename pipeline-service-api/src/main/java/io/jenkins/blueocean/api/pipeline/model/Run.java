@@ -15,40 +15,49 @@ public final class Run {
     /**
      * Name of the organization
      */
+    @JsonProperty("organization")
     public final String organization;
 
     /**
      * Run id - unique within a pipeline
      */
+    @JsonProperty("id")
     public final String id;
 
     /**
      * Pipeline name - unique within an organization
      */
+    @JsonProperty("pipeline")
     public final String pipeline;
 
     /**
      * Run status
      */
+    @JsonProperty("status")
     public final Status status;
 
     /**
      * Run start time
      */
+    @JsonProperty("startTime")
     public final Date startTime;
 
     /**
      * Run end time
      */
+    @JsonProperty("endTime")
     public final Date endTime;
 
     /**
      * run duration in milli seconds
      */
+    @JsonProperty("durationInMillis")
     public final Long durationInMillis;
 
+    @JsonProperty("branch")
     public final String branch;
 
+    @JsonProperty("commitId")
     public final String commitId;
 
     public enum Status {

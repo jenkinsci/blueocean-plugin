@@ -1,15 +1,16 @@
 package io.jenkins.blueocean.api.pipeline;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.jenkins.blueocean.commons.Identity;
 
 import javax.annotation.Nonnull;
 
 /**
- * findPipeline() request
+ * Request for {@link PipelineService#getPipeline(Identity, GetPipelineRequest)}
  *
  * @author Vivek Pandey
  */
-final class GetPipelineRequest {
+public final class GetPipelineRequest {
 
     @JsonProperty("organization")
     public final String organization;

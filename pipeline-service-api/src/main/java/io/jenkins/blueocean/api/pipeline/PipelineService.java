@@ -1,10 +1,11 @@
 package io.jenkins.blueocean.api.pipeline;
 
+import hudson.ExtensionPoint;
 import io.jenkins.blueocean.api.pipeline.model.Pipeline;
 import io.jenkins.blueocean.api.pipeline.model.Run;
+import io.jenkins.blueocean.commons.Identity;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Service to manage pipeline.
@@ -13,49 +14,51 @@ import javax.annotation.Nullable;
  * @see Pipeline
  * @see Run
  */
-public interface PipelineService {
+public interface PipelineService extends ExtensionPoint{
 
     /**
-     * Find a pipeline for given pipelineName and organizationName
+     * Get a pipeline for given pipelineName and organizationName
      *
+     * @param identity user identity in this context
      * @param pipelineRequest pipeline request
-     * @return Pipeline Pipeline if found otherwise null
+     * @return {@link GetPipelineResponse} instance
+     * @throws io.jenkins.blueocean.commons.ServiceException
      */
-    public
-    @Nullable
-    GetPipelineResponse getPipeline(@Nonnull GetPipelineRequest pipelineRequest);
+    @Nonnull
+    GetPipelineResponse getPipeline(@Nonnull Identity identity, @Nonnull GetPipelineRequest pipelineRequest);
 
     /**
      * Find pipelines for a given organization
      *
-     * @return List of pipelines
+     * @param identity user identity in this context
+     * @param findPipelinesRequest {@link FindPipelinesRequest} instance
+     * @return {@link FindPipelinesResponse} instance
+     * @throws io.jenkins.blueocean.commons.ServiceException
      */
-    public
     @Nonnull
-    FindPipelinesResponse findPipelines(@Nonnull FindPipelinesRequest findPipelinesRequest);
+    FindPipelinesResponse findPipelines(@Nonnull Identity identity, @Nonnull FindPipelinesRequest findPipelinesRequest);
 
 
     /**
-     * Find pipeline run.
+     * Get pipeline run.
      *
-     * @param request pipeline request object
-     * @return {@link FindPipelineRunsResponse} instance, always non-null
+     * @param identity user identity in this context
+     * @param request {@link GetPipelineRunRequest} instance
+     * @return {@link FindPipelineRunsResponse} instance
+     * @throws io.jenkins.blueocean.commons.ServiceException
      */
-    public
     @Nonnull
-    GetPipelineRunResponse getPipelineRun(@Nonnull GetPipelineRunRequest request);
+    GetPipelineRunResponse getPipelineRun(@Nonnull Identity identity, @Nonnull GetPipelineRunRequest request);
 
     /**
      * Find pipeline runs.
      *
-     * @param request pipeline request object
-     * @return {@link FindPipelineRunsResponse} instance, always non-null
+     * @param identity user identity in this context
+     * @param request {@link FindPipelineRunsRequest} instance
+     * @return {@link FindPipelineRunsResponse} instance
+     * @throws io.jenkins.blueocean.commons.ServiceException
      */
-    public
     @Nonnull
-    FindPipelineRunsResponse findPipelineRuns(@Nonnull FindPipelineRunsRequest request);
-
-
-
+    FindPipelineRunsResponse findPipelineRuns(@Nonnull Identity identity, @Nonnull FindPipelineRunsRequest request);
 
 }

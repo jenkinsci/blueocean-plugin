@@ -2,12 +2,15 @@ package io.jenkins.blueocean.api.profile;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.api.profile.model.User;
+import io.jenkins.blueocean.commons.Identity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 /**
+ * Response for {@link ProfileService#findUsers(Identity, FindUsersRequest)}
+ *
  * @author Vivek Pandey
  */
 public class FindUsersResponse {

@@ -3,13 +3,14 @@ package io.jenkins.blueocean.api.pipeline;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import io.jenkins.blueocean.api.pipeline.model.Run;
+import io.jenkins.blueocean.commons.Identity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Response for findPipelineRuns() method
+ * Response for {@link PipelineService#findPipelineRuns(Identity, FindPipelineRunsRequest)}
  *
  * @author Vivek Pandey
  */

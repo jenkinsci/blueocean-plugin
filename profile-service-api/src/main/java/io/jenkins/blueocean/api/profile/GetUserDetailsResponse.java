@@ -2,11 +2,12 @@ package io.jenkins.blueocean.api.profile;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.api.profile.model.UserDetails;
+import io.jenkins.blueocean.commons.Identity;
 
 import javax.annotation.Nullable;
 
 /**
- * {@link ProfileService#getUserDetails(GetUserDetailsRequest)} response.
+ * Response for {@link ProfileService#getUserDetails(Identity, GetUserDetailsRequest)}
  *
  * @author Vivek Pandey
  */

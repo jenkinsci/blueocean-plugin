@@ -2,15 +2,16 @@ package io.jenkins.blueocean.api.pipeline;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.api.pipeline.model.Run;
+import io.jenkins.blueocean.commons.Identity;
 
 import javax.annotation.Nullable;
 
 /**
- * Response for findPipelineRun() method
+ * Response for {@link PipelineService#getPipelineRun(Identity, GetPipelineRunRequest)}
  *
  * @author Vivek Pandey
  */
-final class GetPipelineRunResponse {
+public final class GetPipelineRunResponse {
     @JsonProperty("run")
     public final Run run;
 

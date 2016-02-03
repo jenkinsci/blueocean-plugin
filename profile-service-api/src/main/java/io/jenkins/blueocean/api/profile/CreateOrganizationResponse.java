@@ -7,16 +7,16 @@ import io.jenkins.blueocean.commons.Identity;
 import javax.annotation.Nullable;
 
 /**
- * Response for for {@link ProfileService#getOrganization(Identity, GetOrganizationRequest)}
+ * Response for {@link ProfileService#createOrganization(Identity, CreateOrganizationRequest)}
  *
  * @author Vivek Pandey
  */
-public final class GetOrganizationResponse{
+public class CreateOrganizationResponse {
+
     @JsonProperty("organization")
     public final Organization organization;
 
-    public GetOrganizationResponse(@Nullable @JsonProperty("organization")Organization organization) {
+    public CreateOrganizationResponse(@Nullable @JsonProperty("organization")Organization organization) {
         this.organization = organization;
     }
 }
-

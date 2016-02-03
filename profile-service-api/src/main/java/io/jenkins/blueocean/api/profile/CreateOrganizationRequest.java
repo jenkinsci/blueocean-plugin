@@ -6,16 +6,17 @@ import io.jenkins.blueocean.commons.Identity;
 import javax.annotation.Nonnull;
 
 /**
- * Request for {@link ProfileService#getOrganization(Identity, GetOrganizationRequest)}
+ * Request for {@link ProfileService#createOrganization(Identity, CreateOrganizationRequest)}
  *
  * @author Vivek Pandey
  */
-public final class GetOrganizationRequest{
+public class CreateOrganizationRequest {
+   /** organization name */
     @JsonProperty("name")
     public final String name;
 
-    public GetOrganizationRequest(@Nonnull @JsonProperty("name") String name) {
+    public CreateOrganizationRequest(@Nonnull @JsonProperty("name") String name) {
         this.name = name;
     }
-}
 
+}

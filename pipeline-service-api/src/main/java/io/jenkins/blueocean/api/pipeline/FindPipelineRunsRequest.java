@@ -2,21 +2,18 @@ package io.jenkins.blueocean.api.pipeline;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
+import io.jenkins.blueocean.commons.Identity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Request for findPipelineRuns() method
+ * Request for {@link PipelineService#findPipelineRuns(Identity, FindPipelineRunsRequest)}
  *
  * @author Vivek Pandey
  */
-final class FindPipelineRunsRequest {
-    public static final long START_DEFAULT = 1;
-
-    //TODO: we should change it to some reasonalbe value
-    public static final long LIMIT_DEFAULT = -1;
+public final class FindPipelineRunsRequest {
 
     @JsonProperty("organization")
     public final String organization;
