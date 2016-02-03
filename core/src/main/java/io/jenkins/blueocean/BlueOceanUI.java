@@ -9,9 +9,11 @@ import org.kohsuke.stapler.HttpResponses;
  * Root of Blue Ocean UI
  *
  * @author Kohsuke Kawaguchi
- */
+ * @author Vivek Pandey
+ **/
 @Extension
-public class BlueOceanUI extends App {
+public class BlueOceanUI extends App{
+
     public HttpResponse doHello() {
         return HttpResponses.plainText("Hello wolrd!");
     }
