@@ -81,3 +81,15 @@ Builds all maven modules.
 ```
 $ mvn clean install
 ```
+
+## Hotswap reloading of .class files with IntelliJ
+Automatically deploys changes to an instance of blueocean that is run with hpi:run.
+
+* Enable class reloading: Preferences > Build, Execution, Deployment > Debugger > HowSwap
+  * Reload classes in background
+  * Reload classes after compilation: always
+2. Create a Maven Run/Debug configuration
+ * Working Directory: <project root>/all
+ * Command `hpi:run`
+ * Runner > Properties: Enable Skip tests
+* Debug new configuration, and after compilation the class file will be reloaded
