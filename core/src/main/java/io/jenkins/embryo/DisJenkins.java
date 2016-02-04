@@ -10,7 +10,12 @@ import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewGroup;
 import hudson.model.listeners.ItemListener;
+import hudson.util.PluginServletFilter;
+import io.jenkins.blueocean.security.AuthenticationFilter;
+import io.jenkins.blueocean.security.IdentityUtils;
 import jenkins.model.Jenkins;
+
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -42,6 +47,7 @@ public class DisJenkins extends View implements StaplerProxy {
         if (jenkins == null) {
             throw new IllegalStateException("Jenkins instance is not ready");
         }
+
         return jenkins.getExtensionList(App.class).get(0);
     }
 
@@ -89,8 +95,14 @@ public class DisJenkins extends View implements StaplerProxy {
                     j.deleteView(oldView);
                 }
             }
+
         }
-        j.save();
+            try {
+                PluginServletFilter.addFilter(new AuthenticationFilter());
+            } catch (ServletException e) {
+                e.printStackTrace();
+            }
+            j.save();
     }
 
     /**

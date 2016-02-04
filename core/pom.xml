@@ -24,5 +24,20 @@
       <artifactId>variant</artifactId>
       <version>1.0</version>
     </dependency>
+      <dependency>
+          <groupId>io.jenkins.blueocean</groupId>
+          <artifactId>blueocean-security-api</artifactId>
+          <version>1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+          <groupId>io.jenkins.blueocean</groupId>
+          <artifactId>profile-service-api</artifactId>
+          <version>1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jasypt</groupId>
+          <artifactId>jasypt</artifactId>
+          <version>1.9.2</version>
+      </dependency>
   </dependencies>
 </project>
