@@ -1173,6 +1173,11 @@
       "from": "decamelize@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/decamelize/-/decamelize-1.1.2.tgz"
     },
+    "deep-equal": {
+      "version": "1.0.1",
+      "from": "deep-equal@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/deep-equal/-/deep-equal-1.0.1.tgz"
+    },
     "deep-is": {
       "version": "0.1.3",
       "from": "deep-is@>=0.1.2 <0.2.0",
@@ -2144,6 +2149,11 @@
       "from": "has-flag@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/has-flag/-/has-flag-1.0.0.tgz"
     },
+    "history": {
+      "version": "1.17.0",
+      "from": "history@*",
+      "resolved": "https://registry.npmjs.org/history/-/history-1.17.0.tgz"
+    },
     "home-or-tmp": {
       "version": "1.0.0",
       "from": "home-or-tmp@>=1.0.0 <2.0.0",
@@ -2718,6 +2728,11 @@
       "from": "qs@4.0.0",
       "resolved": "https://registry.npmjs.org/qs/-/qs-4.0.0.tgz"
     },
+    "query-string": {
+      "version": "3.0.0",
+      "from": "query-string@>=3.0.0 <4.0.0",
+      "resolved": "https://registry.npmjs.org/query-string/-/query-string-3.0.0.tgz"
+    },
     "querystring": {
       "version": "0.2.0",
       "from": "querystring@0.2.0",
@@ -2769,6 +2784,11 @@
       "version": "1.1.2",
       "from": "react-proxy@>=1.1.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/react-proxy/-/react-proxy-1.1.2.tgz"
+    },
+    "react-router": {
+      "version": "1.0.3",
+      "from": "react-router@*",
+      "resolved": "https://registry.npmjs.org/react-router/-/react-router-1.0.3.tgz"
     },
     "readable-stream": {
       "version": "2.0.5",
@@ -2965,6 +2985,11 @@
       "from": "stream-cache@>=0.0.1 <0.1.0",
       "resolved": "https://registry.npmjs.org/stream-cache/-/stream-cache-0.0.2.tgz"
     },
+    "strict-uri-encode": {
+      "version": "1.1.0",
+      "from": "strict-uri-encode@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/strict-uri-encode/-/strict-uri-encode-1.1.0.tgz"
+    },
     "string_decoder": {
       "version": "0.10.31",
       "from": "string_decoder@>=0.10.0 <0.11.0",
@@ -3120,6 +3145,11 @@
       "version": "0.0.4",
       "from": "vm-browserify@0.0.4",
       "resolved": "https://registry.npmjs.org/vm-browserify/-/vm-browserify-0.0.4.tgz"
+    },
+    "warning": {
+      "version": "2.1.0",
+      "from": "warning@>=2.0.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/warning/-/warning-2.1.0.tgz"
     },
     "watchpack": {
       "version": "0.2.9",

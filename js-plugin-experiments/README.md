@@ -4,6 +4,9 @@ This isn't part of the maven build for now, just a place to flesh out ideas befo
 
 Initially spawned from https://github.com/vasanthk/react-es6-webpack-boilerplate
 
+All of the infrastructure, build code an static resources (css / images etc) should be considered
+ throwaway, but the JS code will probably be evolved into the real thing over time.
+
 ### Usage
 
 ```
