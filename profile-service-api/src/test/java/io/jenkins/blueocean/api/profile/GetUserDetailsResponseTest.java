@@ -1,13 +1,12 @@
 package io.jenkins.blueocean.api.profile;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import io.jenkins.blueocean.api.profile.model.UserDetails;
+import io.jenkins.blueocean.security.GithubLoginDetails;
 import io.jenkins.blueocean.commons.JsonConverter;
-import io.jenkins.blueocean.commons.LoginDetails;
+import io.jenkins.blueocean.security.LoginDetails;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -17,11 +16,8 @@ public class GetUserDetailsResponseTest {
     public void serializeDeserialize(){
 
         String accessToken = "1212121212";
-        String refreshToken = "ababababa";
-        Map<String,Object> gconfig = ImmutableMap.<String,Object>of("accessToken", accessToken, "refreshToken", refreshToken);
         GetUserDetailsResponse response = new GetUserDetailsResponse(new UserDetails("123", "John", "john@example.com",
-                ImmutableMap.of("github",new LoginDetails(ImmutableMap.<String, Object>of("accessToken", accessToken)),
-                        "google",new LoginDetails(gconfig))));
+                ImmutableSet.<LoginDetails>of(new GithubLoginDetails("alice", accessToken))));
         String json = JsonConverter.toJson(response);
 
         System.out.println("Converted from Java:\n"+json);
@@ -32,14 +28,10 @@ public class GetUserDetailsResponseTest {
         Assert.assertEquals(response.userDetails.id, responseFromJson.userDetails.id);
         Assert.assertEquals(response.userDetails.name, responseFromJson.userDetails.name);
         Assert.assertEquals(response.userDetails.email, responseFromJson.userDetails.email);
-        LoginDetails ld = response.userDetails.getLoginDetails("github");
+        GithubLoginDetails ld = (GithubLoginDetails) response.userDetails.getLoginDetails(GithubLoginDetails.class);
         Assert.assertNotNull(ld);
-        Assert.assertEquals(ld.get("accessToken", String.class), accessToken);
-
-        LoginDetails gld = response.userDetails.getLoginDetails("google");
-        Assert.assertNotNull(gld);
-        Assert.assertEquals(gld.get("accessToken", String.class), accessToken);
-        Assert.assertEquals(gld.get("refreshToken", String.class), refreshToken);
+        Assert.assertEquals(ld.accessToken, accessToken);
+        Assert.assertEquals(ld.login, "alice");
 
         System.out.println("Converted back from Json:\n"+JsonConverter.toJson(responseFromJson));
     }

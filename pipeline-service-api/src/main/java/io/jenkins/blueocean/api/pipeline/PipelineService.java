@@ -1,9 +1,8 @@
 package io.jenkins.blueocean.api.pipeline;
 
-import hudson.ExtensionPoint;
 import io.jenkins.blueocean.api.pipeline.model.Pipeline;
 import io.jenkins.blueocean.api.pipeline.model.Run;
-import io.jenkins.blueocean.commons.Identity;
+import io.jenkins.blueocean.security.Identity;
 
 import javax.annotation.Nonnull;
 
@@ -14,7 +13,7 @@ import javax.annotation.Nonnull;
  * @see Pipeline
  * @see Run
  */
-public interface PipelineService extends ExtensionPoint{
+public interface PipelineService{
 
     /**
      * Get a pipeline for given pipelineName and organizationName
