@@ -2,12 +2,15 @@ package io.jenkins.blueocean.api.profile.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.ImmutableMap;
-import io.jenkins.blueocean.commons.LoginDetails;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import io.jenkins.blueocean.security.LoginDetails;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
 /**
  * UserDetails provides all user information. It contains confidential information and
@@ -28,51 +31,42 @@ public class UserDetails {
     @JsonProperty("email")
     public final String email;
 
-    /**
-     * Map of auth provider id to login details
-     *
-     * <pre>
-     * <code>
-     * "loginDetails": {
-     *     "github":{"accessToken":"aaaa11111"},
-     *     "google":{"accessToken":"aaaa22222", "refreshToken":"ababababab"}
-     * }
-     * </code>
-     * </pre>
-     *
-     * @see LoginDetails
-     */
     @JsonProperty("loginDetails")
-    Map<String, LoginDetails> loginDetailsMap;
+    List<LoginDetails> loginDetails;
 
 
-    public UserDetails(@Nonnull @JsonProperty("id")String id,
-                       @Nonnull@JsonProperty("name")String name,
-                       @Nonnull@JsonProperty("email")String email,
-                       @Nonnull@JsonProperty("loginDetails")Map<String,LoginDetails> loginDetailsMap
+    public UserDetails(@Nonnull @JsonProperty("id") String id,
+                       @Nonnull @JsonProperty("name") String name,
+                       @Nullable @JsonProperty("email") String email,
+                       @Nonnull @JsonProperty("loginDetails") Set<LoginDetails> loginDetails
                        ) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.loginDetailsMap = ImmutableMap.copyOf(loginDetailsMap);
+        this.loginDetails = ImmutableList.copyOf(loginDetails);
     }
 
     /** Gives User object */
     @JsonIgnore
     public @Nonnull User toUser(){
-        return new User(id, name, email);
+        return new User(id, name);
     }
 
     /**
-     * Gives {@link LoginDetails} for the given auth provider id
-     *
-     * @param authProviderId id of the auth provider. loginDetailsMap is keyed with this id.
-     * @return  LoginDetails instance corresponding to the given id. Null if no such id found.
+     * @param loginDetailsClass of the login details implementation to look up
+     * @return  LoginDetails instance corresponding to the given LoginDetails class. Null if no such id found.
      */
     @JsonIgnore
     @SuppressWarnings("unchecked")
-    @Nullable public LoginDetails getLoginDetails(@Nonnull String authProviderId){
-        return  loginDetailsMap.get(authProviderId);
+    @Nullable public <T extends LoginDetails> LoginDetails getLoginDetails(Class<T> loginDetailsClass) {
+        return Maps.uniqueIndex(this.loginDetails, new Function<LoginDetails, Class<LoginDetails>>() {
+            @Override
+            public Class<LoginDetails> apply(@Nullable LoginDetails loginDetails) {
+                if(loginDetails != null) {
+                    return (Class<LoginDetails>) loginDetails.getClass();
+                }
+                return null;
+            }
+        }).getOrDefault(loginDetailsClass, null);
     }
-
 }

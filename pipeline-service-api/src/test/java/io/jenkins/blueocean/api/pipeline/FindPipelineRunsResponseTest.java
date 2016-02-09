@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.api.pipeline;
 
 import com.google.common.collect.ImmutableList;
+import io.jenkins.blueocean.api.pipeline.model.JobResult;
 import io.jenkins.blueocean.api.pipeline.model.Run;
 import io.jenkins.blueocean.commons.JsonConverter;
 import org.junit.Assert;
@@ -19,17 +20,25 @@ public class FindPipelineRunsResponseTest {
                 .branch("master")
                 .commitId("ccaaa22")
                 .status(Run.Status.SUCCESSFUL)
+                .enQueueTime(new Date())
                 .startTime(new Date())
                 .endTime(new Date(new Date().getTime() - 10000))
                 .durationInMillis(10000L)
+                .runSummary("build sucessful")
+                .runTrend(Run.RunTrend.FIXED)
+                .result(new JobResult())
                 .build(),
                 new Run.Builder("24","test1","cloudbees")
                         .branch("master")
                         .commitId("ccaaa22")
                         .status(Run.Status.SUCCESSFUL)
                         .startTime(new Date())
+                        .enQueueTime(new Date())
                         .endTime(new Date(new Date().getTime() - 10000))
                         .durationInMillis(10000L)
+                        .runSummary("build sucessful")
+                        .runTrend(Run.RunTrend.FIXED)
+                        .result(new JobResult())
                         .build()), null, null);
 
         String json = JsonConverter.toJson(response);
@@ -52,6 +61,10 @@ public class FindPipelineRunsResponseTest {
             Assert.assertEquals(expected.startTime.getTime(), actual.startTime.getTime());
             Assert.assertEquals(expected.endTime.getTime(), actual.endTime.getTime());
             Assert.assertEquals(expected.durationInMillis, actual.durationInMillis);
+            Assert.assertEquals(expected.enQueueTime, actual.enQueueTime);
+            Assert.assertEquals(expected.runSummary, actual.runSummary);
+            Assert.assertEquals(expected.runTrend, actual.runTrend);
+            Assert.assertTrue(actual.result instanceof JobResult);
         }
 
         System.out.println("Converted back from Json:\n"+JsonConverter.toJson(responseFromJson));

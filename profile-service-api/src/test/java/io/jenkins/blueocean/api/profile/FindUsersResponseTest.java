@@ -13,8 +13,8 @@ public class FindUsersResponseTest {
     @Test
     public void serializeDeserialize(){
         FindUsersResponse response = new FindUsersResponse(
-                ImmutableList.of(new User("123", "john", "john@example.com"),
-                        new User("124", "alice", "alice@example.com")), null, null);
+                ImmutableList.of(new User("123", "john"),
+                        new User("124", "alice")), null, null);
 
         String json = JsonConverter.toJson(response);
 

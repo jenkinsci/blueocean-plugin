@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.commons;
+package io.jenkins.blueocean.security;
 
 import javax.annotation.Nonnull;
 import java.security.Principal;

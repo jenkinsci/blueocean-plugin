@@ -38,7 +38,9 @@ This is where you run the app to include all plugins along with core. During dev
 
 ## war
 
-Create war file from all modulle to be run on CLI as *java -jar blueocean.war*
+Generates BlueOcean standalone war file, to be run as *java -jar blueocean.war*. 
+
+This does not include embedded-driver as it's a plugin to be installed on standalone jenkins war.
 
 # Build and Run
 

@@ -43,14 +43,28 @@
     <!-- bundled plugins, sort by groupId then artifactId -->
     <dependency>
       <groupId>io.jenkins.blueocean</groupId>
-      <artifactId>blueocean-alpha</artifactId>
+      <artifactId>blueocean-commons</artifactId>
       <version>${project.version}</version>
       <type>hpi</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.jenkins.blueocean</groupId>
-      <artifactId>blueocean-bravo</artifactId>
+      <artifactId>blueocean-security-api</artifactId>
+      <version>${project.version}</version>
+      <type>hpi</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.blueocean</groupId>
+      <artifactId>pipeline-service-api</artifactId>
+      <version>${project.version}</version>
+      <type>hpi</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.blueocean</groupId>
+      <artifactId>profile-service-api</artifactId>
       <version>${project.version}</version>
       <type>hpi</type>
       <scope>provided</scope>

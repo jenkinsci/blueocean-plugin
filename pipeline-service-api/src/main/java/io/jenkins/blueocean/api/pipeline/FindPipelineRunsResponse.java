@@ -3,7 +3,7 @@ package io.jenkins.blueocean.api.pipeline;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import io.jenkins.blueocean.api.pipeline.model.Run;
-import io.jenkins.blueocean.commons.Identity;
+import io.jenkins.blueocean.security.Identity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
