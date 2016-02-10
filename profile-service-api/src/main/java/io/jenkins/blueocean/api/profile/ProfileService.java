@@ -1,9 +1,8 @@
 package io.jenkins.blueocean.api.profile;
 
-import hudson.ExtensionPoint;
 import io.jenkins.blueocean.api.profile.model.Organization;
 import io.jenkins.blueocean.api.profile.model.User;
-import io.jenkins.blueocean.commons.Identity;
+import io.jenkins.blueocean.security.Identity;
 
 import javax.annotation.Nonnull;
 
@@ -12,7 +11,7 @@ import javax.annotation.Nonnull;
  *
  * @author Vivek Pandey
  */
-public interface ProfileService extends ExtensionPoint {
+public interface ProfileService{
     /**
      * Gives {@link User}
      *

@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.api.profile.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Nonnull;
@@ -22,17 +21,10 @@ public class User {
     @JsonProperty("name")
     public final String name;
 
-    /** Email at this point is kept private as there is no current use case
-     * to show it in public
-     */
-    @JsonIgnore
-    private final String email;
 
     public User(@Nonnull @JsonProperty("id")String id,
-                @Nonnull @JsonProperty("name")String name,
-                @Nonnull @JsonProperty("email")String email) {
+                @Nonnull @JsonProperty("name")String name) {
         this.id = id;
         this.name = name;
-        this.email = email;
     }
 }

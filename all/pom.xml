@@ -28,15 +28,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>profile-service-api</artifactId>
       <version>${project.version}</version>
-    </dependency>    
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>blueocean-alpha</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>blueocean-bravo</artifactId>
+      <artifactId>embedded-driver</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

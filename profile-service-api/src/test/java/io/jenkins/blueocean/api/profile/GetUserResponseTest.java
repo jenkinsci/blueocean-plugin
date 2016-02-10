@@ -11,7 +11,7 @@ import org.junit.Test;
 public class GetUserResponseTest {
     @Test
     public void serializeDeserialize(){
-        GetUserResponse response = new GetUserResponse(new User("123", "John", "john@example.com"));
+        GetUserResponse response = new GetUserResponse(new User("123", "John"));
 
         String json = JsonConverter.toJson(response);
 
