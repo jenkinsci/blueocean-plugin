@@ -32,14 +32,14 @@ public class AuthenticationFilter extends PluginServletFilter{
         if(request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
             HttpServletRequest req = (HttpServletRequest)request;
             HttpServletResponse resp = (HttpServletResponse)response;
-            if(req.getPathInfo().contains("loginAction")) {
+            if(req.getPathInfo().startsWith(LoginAction.getPath())) {
                 super.doFilter(request, response, chain);
                 return;
             }
             Cookies cookies = new Cookies();
             AuthCookieToken token = cookies.readAuthCookieToken(req);
             if (token == null) {
-                resp.sendRedirect(req.getContextPath()+"/loginAction");
+                resp.sendRedirect(req.getContextPath() + LoginAction.getPath());
             } else {
                 IdentityUtils.setIdentity(request, new Identity(token.user));
                 super.doFilter(request, response, chain);

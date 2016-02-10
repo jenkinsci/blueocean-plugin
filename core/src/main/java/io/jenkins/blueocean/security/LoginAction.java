@@ -23,5 +23,7 @@ public class LoginAction {
         }
         return null;
     }
+
+    public static String getPath() { return "/loginAction"; }
 }
 
