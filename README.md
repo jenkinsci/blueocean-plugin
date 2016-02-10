@@ -2,6 +2,8 @@ This is BlueOcean repo. It is a multi-module maven project. Derived from Castle 
 
 Blue Ocean is the new UI project for Jenkins. 
 
+*Please do not commit anything in here that you do not intend to make open source*
+
 ![Pirate logo, because it's ocean and stuff](logo-yarrr.png)
 
 
@@ -36,7 +38,9 @@ This is where you run the app to include all plugins along with core. During dev
 
 ## war
 
-Create war file from all modulle to be run on CLI as *java -jar blueocean.war*
+Generates BlueOcean standalone war file, to be run as *java -jar blueocean.war*. 
+
+This does not include embedded-driver as it's a plugin to be installed on standalone jenkins war.
 
 # Build and Run
 
@@ -51,7 +55,13 @@ $ mvn hpi:run
 
 ## To do javascript development
 
-If you wish to make changes to blueocean.js, then you will need to run:
+If you wish to make changes to blueocean.js, then you will need to install gulp (http://gulpjs.com/), and then either run: 
+
+```
+$ ./dev_core.sh
+```
+
+or the following: 
 
 ```
 $ gulp rebundle
@@ -73,3 +83,15 @@ Builds all maven modules.
 ```
 $ mvn clean install
 ```
+
+## Hotswap reloading of .class files with IntelliJ
+Automatically deploys changes to an instance of blueocean that is run with hpi:run.
+
+1. Enable class reloading: Preferences > Build, Execution, Deployment > Debugger > HowSwap
+  * Reload classes in background
+  * Reload classes after compilation: always
+2. Create a Maven Run/Debug configuration
+ * Working Directory: `<project root>/all`
+ * Command `hpi:run`
+ * Runner > Properties: Enable Skip tests
+3. Debug new configuration, and after compilation the class file will be reloaded

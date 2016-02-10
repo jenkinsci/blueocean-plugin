@@ -17,6 +17,7 @@
 
   <properties>
     <java.level>6</java.level>
+      <jackson.version>2.2.2</jackson.version>
     <jenkins.version>1.639</jenkins.version>
     <!--<jenkins.version>1.609.3</jenkins.version>-->
     <!--<java.level>8</java.level>-->
@@ -24,6 +25,11 @@
 
   <modules>
     <module>core</module>
+    <module>blueocean-commons</module>
+    <module>blueocean-security-api</module>
+    <module>profile-service-api</module>
+    <module>pipeline-service-api</module>
+    <module>embedded-driver</module>
     <module>alpha</module>
     <module>bravo</module>
     <module>war</module>

@@ -21,12 +21,17 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>blueocean-alpha</artifactId>
+      <artifactId>pipeline-service-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>blueocean-bravo</artifactId>
+      <artifactId>profile-service-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>embedded-driver</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
@@ -46,7 +51,7 @@
           </execution>
         </executions>
         <configuration>
-          <!-- link to all the plugins via hpl for live reloading -->
+          <!-- links to all the plugins via hpl for live reloading -->
           <source>
             def plugins = new File(basedir, 'work/plugins');
             for (dep in project.dependencies) {
