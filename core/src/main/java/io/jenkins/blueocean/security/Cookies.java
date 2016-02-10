@@ -9,6 +9,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.jenkins.blueocean.commons.ServiceException;
+
 public class Cookies {
 
     private static final Long MAX_COOKIE_AGE = TimeUnit.DAYS.toMillis(365);
@@ -30,13 +32,12 @@ public class Cookies {
 
     public void writeAuthCookieToken(HttpServletResponse response, Identity identity) {
         AuthCookieToken token = new AuthCookieToken(MAX_COOKIE_AGE + System.currentTimeMillis(), identity.getName());
-        Cookie cookie = null;
         try {
-            cookie = new Cookie(AUTH_COOKIE_NAME, Base64.encodeBase64String(crypter.cookies.crypt(token.encode())));
+            Cookie cookie = new Cookie(AUTH_COOKIE_NAME, Base64.encodeBase64String(crypter.cookies.crypt(token.encode())));
             cookie.setPath("/");
             response.addCookie(cookie);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ServiceException.UnexpectedErrorExpcetion("Failed to set cookie", e);
         }
 
     }

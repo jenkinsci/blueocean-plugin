@@ -97,12 +97,12 @@ public class DisJenkins extends View implements StaplerProxy {
             }
 
         }
-            try {
-                PluginServletFilter.addFilter(new AuthenticationFilter());
-            } catch (ServletException e) {
-                e.printStackTrace();
-            }
-            j.save();
+        try {
+            PluginServletFilter.addFilter(new AuthenticationFilter());
+        } catch (ServletException e) {
+           throw new IOException("AuthenticationFilter failed to initialize.", e);
+        }
+        j.save();
     }
 
     /**
