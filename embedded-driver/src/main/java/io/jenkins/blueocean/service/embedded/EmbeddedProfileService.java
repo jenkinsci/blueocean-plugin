@@ -22,6 +22,7 @@ import io.jenkins.blueocean.security.Identity;
 import io.jenkins.blueocean.security.LoginDetails;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.security.LoginDetailsProvider;
+import jenkins.model.Jenkins;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -97,7 +98,16 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
     @Nonnull
     @Override
     public AuthenticateResponse authenticate(@Nonnull AuthenticateRequest request) {
-        LoginDetailsProvider loginDetailsProvider = AuthenticationProvider.getLoginDetailsProvider(request.loginDetails.getClass());
-        return new AuthenticateResponse(loginDetailsProvider.authenticate(request.loginDetails));
+        Jenkins j = Jenkins.getInstance();
+        if(j == null) {
+            throw new IllegalStateException("jenkins instance null");
+        }
+        for(AuthenticationProvider provider: j.getExtensionList(AuthenticationProvider.class)){
+            if(request.loginDetails.getClass() == provider.getLoginDetailsProvider().getLoginDetalsClass()) {
+                return new AuthenticateResponse(provider.getLoginDetailsProvider().authenticate(request.loginDetails));
+            }
+        }
+
+        return null;
     }
 }

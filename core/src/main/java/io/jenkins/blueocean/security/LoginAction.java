@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.security;
 
 import hudson.ExtensionList;
+import jenkins.model.Jenkins;
 
 /**
  * Created by ivan on 5/02/16.
@@ -8,14 +9,19 @@ import hudson.ExtensionList;
 public class LoginAction {
 
     public ExtensionList<AuthenticationProvider> getProviders() {
-        System.out.println(AuthenticationProvider.all().size()+"");
-
-        return AuthenticationProvider.all();
+        Jenkins j = Jenkins.getInstance();
+        if(j == null) {
+            throw new IllegalStateException("jenkins instance null");
+        }
+        return j.getExtensionList(AuthenticationProvider.class);
     }
-    public AuthenticationProvider getProvider(String id) {
-        System.out.println(AuthenticationProvider.all().size()+"");
-        return AuthenticationProvider.getAuthenticationProvider(id);
-
+    public AuthenticationProvider getProvider(String loginUrl) {
+        for(AuthenticationProvider provider: getProviders()){
+            if(loginUrl.equals(provider.getLoginUrl())){
+                return provider;
+            }
+        }
+        return null;
     }
 }
 

@@ -13,7 +13,7 @@ import hudson.Extension;
  * Created by ivan on 5/02/16.
  */
 @Extension
-public class PasswordAuthentication extends AuthenticationProvider {
+public class PasswordAuthentication implements AuthenticationProvider {
 
     @Override
     public String getLoginUrl() {
@@ -30,11 +30,6 @@ public class PasswordAuthentication extends AuthenticationProvider {
             rsp.setStatus(401);
         }
 
-    }
-
-    @Override
-    public String getPostLogoutUrl() {
-        return null;
     }
 
     @Override
