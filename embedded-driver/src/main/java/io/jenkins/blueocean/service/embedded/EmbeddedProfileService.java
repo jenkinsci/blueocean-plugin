@@ -108,6 +108,6 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
             }
         }
 
-        return null;
+        throw new ServiceException.BadRequestExpception("No matching authentication module found for " + request.loginDetails.getClass().getName());
     }
 }
