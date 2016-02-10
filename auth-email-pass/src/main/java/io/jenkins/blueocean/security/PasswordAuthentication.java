@@ -43,8 +43,8 @@ public class PasswordAuthentication implements AuthenticationProvider {
 
             @Override
             public Identity authenticate(PasswordLoginDetails loginDetails) {
-                if(loginDetails.getUser().equals("ivan")) {
-                    return new Identity(loginDetails.getUser());
+                if(loginDetails.user.equals("ivan")) {
+                    return new Identity(loginDetails.user);
                 } else {
                     return null;
                 }

@@ -1,30 +1,19 @@
 package io.jenkins.blueocean.security;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
- * Created by ivan on 9/02/16.
+ * @author Ivan Meredith
  */
-public class PasswordLoginDetails implements LoginDetails {
-    private String user;
-    private String password;
+final public class PasswordLoginDetails implements LoginDetails {
+    @JsonProperty("user")
+    final public String user;
 
-    public PasswordLoginDetails(String user, String password) {
+    @JsonProperty("password")
+    final public String password;
+
+    public PasswordLoginDetails(@JsonProperty("user") String user, @JsonProperty("password") String password) {
         this.user = user;
-        this.password = password;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
     }
 }
