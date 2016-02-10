@@ -24,7 +24,7 @@ import jenkins.model.Jenkins;
  * Created by ivan on 9/02/16.
  */
 @Extension
-public class AuthenticationFilter extends PluginServletFilter{
+final public class AuthenticationFilter extends PluginServletFilter{
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
