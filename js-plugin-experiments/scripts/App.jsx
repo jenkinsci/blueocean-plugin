@@ -15,6 +15,7 @@ export default class App extends Component {
                     <nav>
                         <Link to="/">Home</Link>
                         <Link to="/about">About</Link>
+                        <Link to="/Alien">Alien</Link>
                         <Link to="/dynamic">Dynamic</Link>
                     </nav>
                     {/* <button onClick={window.$HACK.addDynamicRoute}>Add route</button> */}
