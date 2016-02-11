@@ -58,10 +58,8 @@ export class Extension {
 
 /** Actually render the extension */
 function _renderExtension(element, extension, props) {
-    var $$ = extension; // TODO: Why the f*** do I need this?
     console.log("_renderExtension", extension);
-    
-    var component = <$$ {...props} />
+    var component = React.createElement(extension, props);
     try {
         ReactDOM.render(component, element);
     } catch (e) {
@@ -82,9 +80,10 @@ export class ExtensionPoint extends Component {
     }
     render() {
         var extensionDivs = [];
-        extensionPointStore.getExtensions(this.props.name).forEach((extension) => {
-          extensionDivs.push(<div key={extension.toString()} />);
-        });
+        var extensions = extensionPointStore.getExtensions(this.props.name);
+        for(var i = 0; i < extensions.length; i++) {
+          extensionDivs.push(<div key={i} />);
+        }
         return <div>
           {extensionDivs}
         </div>;
