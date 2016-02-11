@@ -66,14 +66,4 @@ public interface ProfileService{
      */
     @Nonnull
     FindUsersResponse findUsers(@Nonnull Identity identity, @Nonnull FindUsersRequest request);
-
-    /**
-     * Gives {@link AuthenticateResponse}
-     *
-     * @param request {@link AuthenticateRequest} instance
-     * @return {@link AuthenticateResponse} instance
-     * @throws io.jenkins.blueocean.commons.ServiceException if there is an exception in the server.
-     */
-    @Nonnull
-    AuthenticateResponse authenticate(@Nonnull AuthenticateRequest request);
 }

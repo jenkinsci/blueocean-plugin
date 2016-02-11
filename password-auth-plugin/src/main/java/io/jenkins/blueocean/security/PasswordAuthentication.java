@@ -1,13 +1,11 @@
 package io.jenkins.blueocean.security;
 
+import hudson.Extension;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import java.io.IOException;
-
 import javax.annotation.Nonnull;
-
-import hudson.Extension;
+import java.io.IOException;
 
 /**
  * Created by ivan on 5/02/16.
@@ -21,7 +19,7 @@ public class PasswordAuthentication implements AuthenticationProvider {
     }
 
     public void doLogin(StaplerRequest req, StaplerResponse rsp) throws IOException {
-        Identity identity = getLoginDetailsProvider().authenticate(new PasswordLoginDetails(req.getParameter("username"), req.getParameter("password")));
+        Identity identity = getLoginDetailsProvider().authenticate(new PasswordCredentials(req.getParameter("username"), req.getParameter("password")));
         if(identity != null) {
             Cookies cookies = new Cookies();
             cookies.writeAuthCookieToken(rsp, identity);
@@ -34,15 +32,15 @@ public class PasswordAuthentication implements AuthenticationProvider {
 
     @Override
     @Nonnull
-    public LoginDetailsProvider<PasswordLoginDetails> getLoginDetailsProvider() {
-        return new LoginDetailsProvider<PasswordLoginDetails>() {
+    public LoginDetailsProvider<PasswordCredentials> getLoginDetailsProvider() {
+        return new LoginDetailsProvider<PasswordCredentials>() {
             @Override
-            public Class<PasswordLoginDetails> getLoginDetalsClass() {
-                return PasswordLoginDetails.class;
+            public Class<PasswordCredentials> getLoginDetalsClass() {
+                return PasswordCredentials.class;
             }
 
             @Override
-            public Identity authenticate(PasswordLoginDetails loginDetails) {
+            public Identity authenticate(PasswordCredentials loginDetails) {
                 if(loginDetails.user.equals("ivan")) {
                     return new Identity(loginDetails.user);
                 } else {

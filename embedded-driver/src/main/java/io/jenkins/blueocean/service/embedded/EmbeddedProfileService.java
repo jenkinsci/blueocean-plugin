@@ -1,8 +1,6 @@
 package io.jenkins.blueocean.service.embedded;
 
 import hudson.Extension;
-import io.jenkins.blueocean.api.profile.AuthenticateRequest;
-import io.jenkins.blueocean.api.profile.AuthenticateResponse;
 import io.jenkins.blueocean.api.profile.CreateOrganizationRequest;
 import io.jenkins.blueocean.api.profile.CreateOrganizationResponse;
 import io.jenkins.blueocean.api.profile.FindUsersRequest;
@@ -17,12 +15,9 @@ import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.Organization;
 import io.jenkins.blueocean.api.profile.model.User;
 import io.jenkins.blueocean.api.profile.model.UserDetails;
-import io.jenkins.blueocean.security.AuthenticationProvider;
-import io.jenkins.blueocean.security.Identity;
-import io.jenkins.blueocean.security.LoginDetails;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.security.LoginDetailsProvider;
-import jenkins.model.Jenkins;
+import io.jenkins.blueocean.security.Credentials;
+import io.jenkins.blueocean.security.Identity;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -67,7 +62,7 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
 
         //TODO: How to get user's email in Jenkins
         return new GetUserDetailsResponse(new UserDetails(user.getId(), user.getFullName(),"none",
-                Collections.<LoginDetails>emptySet()));
+                Collections.<Credentials>emptySet()));
     }
 
     @Nonnull
@@ -93,21 +88,5 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
             users.add(new User(u.getId(), u.getDisplayName()));
         }
         return new FindUsersResponse(users, null, null);
-    }
-
-    @Nonnull
-    @Override
-    public AuthenticateResponse authenticate(@Nonnull AuthenticateRequest request) {
-        Jenkins j = Jenkins.getInstance();
-        if(j == null) {
-            throw new IllegalStateException("jenkins instance null");
-        }
-        for(AuthenticationProvider provider: j.getExtensionList(AuthenticationProvider.class)){
-            if(request.loginDetails.getClass() == provider.getLoginDetailsProvider().getLoginDetalsClass()) {
-                return new AuthenticateResponse(provider.getLoginDetailsProvider().authenticate(request.loginDetails));
-            }
-        }
-
-        throw new ServiceException.BadRequestExpception("No matching authentication module found for " + request.loginDetails.getClass().getName());
     }
 }

@@ -1,28 +1,18 @@
 package io.jenkins.blueocean.security;
 
-import hudson.ExtensionList;
-import jenkins.model.Jenkins;
-
 /**
- * Created by ivan on 5/02/16.
+ * This action displays the authentication providers UI
+ * The AuthenticationAction authenticates the post from this Action or GET from an OAuth flow
  */
 public class LoginAction {
 
-    public ExtensionList<AuthenticationProvider> getProviders() {
-        Jenkins j = Jenkins.getInstance();
-        if(j == null) {
-            throw new IllegalStateException("jenkins instance null");
-        }
-        return j.getExtensionList(AuthenticationProvider.class);
-    }
-    public AuthenticationProvider getProvider(String loginUrl) {
-        for(AuthenticationProvider provider: getProviders()){
-            if(loginUrl.equals(provider.getLoginUrl())){
-                return provider;
-            }
-        }
-        return null;
-    }
+//    public ExtensionList<AuthenticationProvider> getProviders() {
+//        Jenkins j = Jenkins.getInstance();
+//        if(j == null) {
+//            throw new IllegalStateException("jenkins instance null");
+//        }
+//        return j.getExtensionList(AuthenticationProvider.class);
+//    }
 
     public static String getPath() { return "/loginAction"; }
 }
