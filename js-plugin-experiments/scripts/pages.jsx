@@ -1,4 +1,34 @@
 import React, {Component} from 'react';
+import {extensionPointStore, ExtensionPoint} from './blue-ocean';
+
+function PiplineListHeader(props) {
+    return <h2>{props.pipelines.length} Pipelines</h2>;
+}
+
+var pipelines = [
+    {name:"Alpha", status:"green"},
+    {name:"Bravo", status:"green"},
+    {name:"Charlie", status:"red"},
+    {name:"Spaz", status:"green"}
+];
+
+// Register an extension
+
+class MyPipelineRowExtension extends Component {
+    render() {
+        return <div className={'pipelineStatus_'+this.props.pipeline.status}>{this.props.pipeline.status}</div>
+    }
+}
+
+extensionPointStore.addExtension("jenkins.pipeline.pipelineRow", MyPipelineRowExtension);
+
+
+function renderHomepagePipeline(pipeline) {
+    return <div key={pipeline.name}>
+        <h3>{pipeline.name}</h3>
+        <ExtensionPoint name="jenkins.pipeline.pipelineRow" pipeline={pipeline}/>
+    </div>
+}
 
 export class HomePage extends Component {
     render() {
@@ -7,6 +37,11 @@ export class HomePage extends Component {
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad architecto autem deleniti, dicta
                 exercitationem explicabo facere harum hic inventore laborum magnam magni maiores molestias nemo
                 recusandae rem saepe! Illo, perferendis?</p>
+
+
+            <PiplineListHeader pipelines={pipelines}/>
+            {pipelines.map(renderHomepagePipeline)}
+
         </article>
     }
 }
@@ -27,15 +62,15 @@ export class AboutPage extends Component {
     }
 }
 
-//export class ThirdPage extends Component {
-//    render() {
-//        return <article>
-//            <h1>This is the third page</h1>
-//            <p>Its route is not hard-coded.</p>
-//            <p><img src="/resources/dovescry.png"/></p>
-//        </article>
-//    }
-//}
+export class AlienPage extends Component {
+    render() {
+        return <article>
+            <h1>This is the third page</h1>
+            <p>It contains an alien plugin</p>
+            <div className="alien"/>
+        </article>
+    }
+}
 
 // TODO: Replace this with a "plugin container" component that also knows about routes
 

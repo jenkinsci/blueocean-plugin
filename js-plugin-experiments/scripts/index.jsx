@@ -5,7 +5,7 @@ import App from './App';
 import { Router, Route, Link } from 'react-router';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 
-import {HomePage, AboutPage, NotFoundPage} from './pages.jsx';
+import {HomePage, AboutPage, NotFoundPage, AlienPage} from './pages.jsx';
 
 import {PluginManager} from './blue-ocean';
 
@@ -36,6 +36,7 @@ render(
         <Route component={App}>
             <Route path="/" component={HomePage}/>
             <Route path="/about" component={AboutPage}/>
+            <Route path="/alien" component={AlienPage}/>
             <Route path="*" component={NotFoundPage}/>
         </Route>
     </Router>,
