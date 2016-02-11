@@ -1,38 +1,12 @@
 import React, {Component} from 'react';
-import {extensionPointStore, ExtensionPoint} from './blue-ocean';
+import {ExtensionPoint} from './blue-ocean';
+import AlienLairLink from './plugins/AlienLairLink.jsx'
+import AlienPageSubMenu from './plugins/AlienPageSubMenu.jsx'
+import PipelineViewStore from './stores/PipelineViewStore.js';
 
 function PiplineListHeader(props) {
     return <h2>{props.pipelines.length} Pipelines</h2>;
 }
-
-var pipelines = [
-    {name:"Alpha", status:"green"},
-    {name:"Bravo", status:"green"},
-    {name:"Charlie", status:"red"},
-    {name:"Spaz", status:"green"}
-];
-
-/** My first extension */
-class MyPipelineRowExtension extends Component {
-    render() {
-        return <div className={'pipelineStatus_'+this.props.pipeline.status}>{this.props.pipeline.status}</div>
-    }
-}
-extensionPointStore.addExtension("jenkins.pipeline.pipelineRow", MyPipelineRowExtension);
-
-
-/** My bad extension to show handling of failures */
-class MyBadExtension extends Component {
-    render() {        
-          if (shizzle.nizzle) { // oh dear, there is no shizzle or nizzle
-              return 
-                <div className={'pipelineStatus_'+this.props.pipeline.status}>{this.props.pipeline.status}</div>
-          }          
-    }
-}
-extensionPointStore.addExtension("jenkins.pipeline.pipelineRow", MyBadExtension);
-
-
 
 function renderHomepagePipeline(pipeline) {
     return <div key={pipeline.name}>
@@ -42,6 +16,17 @@ function renderHomepagePipeline(pipeline) {
 }
 
 export class HomePage extends Component {
+    state = {
+        pipelines: PipelineViewStore.getPipelines()
+    };
+    addNewPipeline() {
+        PipelineViewStore.addPipeline({name: this.refs.newPipelineName.getDOMNode().value});
+    }
+    componentDidMount() {
+        PipelineViewStore.registerListener(() => {
+            this.setState({pipelines: PipelineViewStore.getPipelines()})
+        });
+    }
     render() {
         return <article>
             <h1>Home</h1>
@@ -49,10 +34,11 @@ export class HomePage extends Component {
                 exercitationem explicabo facere harum hic inventore laborum magnam magni maiores molestias nemo
                 recusandae rem saepe! Illo, perferendis?</p>
 
-
-            <PiplineListHeader pipelines={pipelines}/>
-            {pipelines.map(renderHomepagePipeline)}
-
+            <PiplineListHeader pipelines={this.state.pipelines}/>
+            {this.state.pipelines.map(renderHomepagePipeline)}
+            
+            <input ref="newPipelineName" type="text" />
+            <button onClick={() => this.addNewPipeline()}>Add Pipeline</button>
         </article>
     }
 }
@@ -72,24 +58,6 @@ export class AboutPage extends Component {
         </article>
     }
 }
-
-class AlienPageSubMenu extends Component {
-    render() {
-        return <div>
-        <ExtensionPoint name="jenkins.pipeline.alienPageSubMenu" />
-        </div>
-    }
-}
-extensionPointStore.addExtension("jenkins.pipeline.alienPageHome", AlienPageSubMenu);
-
-class AlienLairLink extends Component {
-    render() {
-        return <div>
-            <a href="#">This is a link to the lair</a>
-        </div>;
-    }
-}
-extensionPointStore.addExtension("jenkins.pipeline.alienPageSubMenu", AlienLairLink);
 
 export class AlienPage extends Component {
     render() {

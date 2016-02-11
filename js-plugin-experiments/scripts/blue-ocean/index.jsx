@@ -82,8 +82,8 @@ export class ExtensionPoint extends Component {
     }
     render() {
         var extensionDivs = [];
-        extensionPointStore.getExtensions(this.props.name).forEach(() => {
-          extensionDivs.push(<div/>);
+        extensionPointStore.getExtensions(this.props.name).forEach((extension) => {
+          extensionDivs.push(<div key={extension.toString()} />);
         });
         return <div>
           {extensionDivs}
