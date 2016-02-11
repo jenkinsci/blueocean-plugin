@@ -114,3 +114,11 @@ footer {
     /*background:green;*/
     /*text:white;*/
 /*}*/
+
+.subMenu {
+    padding: 10px;
+    border: 1px solid #eee;
+}
+.subMenu > div {
+    border-bottom: 1px solid #f8f8f8;
+}

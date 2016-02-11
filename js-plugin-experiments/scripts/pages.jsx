@@ -73,12 +73,31 @@ export class AboutPage extends Component {
     }
 }
 
+class AlienPageSubMenu extends Component {
+    render() {
+        return <div>
+        <ExtensionPoint name="jenkins.pipeline.alienPageSubMenu" />
+        </div>
+    }
+}
+extensionPointStore.addExtension("jenkins.pipeline.alienPageHome", AlienPageSubMenu);
+
+class AlienLairLink extends Component {
+    render() {
+        return <div>
+            <a href="#">This is a link to the lair</a>
+        </div>;
+    }
+}
+extensionPointStore.addExtension("jenkins.pipeline.alienPageSubMenu", AlienLairLink);
+
 export class AlienPage extends Component {
     render() {
         return <article>
-            <h1>This is the third page</h1>
-            <p>It contains an alien plugin</p>
-            <div className="alien"/>
+            <h1>This is the third page with a dynamic menu</h1>
+            <div className="subMenu">
+                <ExtensionPoint name="jenkins.pipeline.alienPageHome" />
+            </div>
         </article>
     }
 }
