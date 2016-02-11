@@ -25,4 +25,8 @@ public final class Identity implements Principal {
      * no logged in user.
      */
     public static final Identity ANONYMOUS = new Identity("anonymous");
+
+    public boolean isAnonymous() {
+        return this.equals(ANONYMOUS);
+    }
 }

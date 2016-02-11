@@ -1,16 +1,16 @@
 package io.jenkins.blueocean.security;
 
+import com.google.inject.Singleton;
+import io.jenkins.blueocean.commons.ServiceException;
 import org.apache.commons.codec.binary.Base64;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-import io.jenkins.blueocean.commons.ServiceException;
-
+@Singleton
 public class Cookies {
 
     private static final Long MAX_COOKIE_AGE = TimeUnit.DAYS.toMillis(365);

@@ -1,8 +1,6 @@
 package io.jenkins.blueocean;
 
 import hudson.Extension;
-
-import io.jenkins.blueocean.security.IdentityUtils;
 import io.jenkins.blueocean.security.LoginAction;
 import io.jenkins.embryo.App;
 import org.kohsuke.stapler.HttpResponse;
@@ -21,9 +19,5 @@ public class BlueOceanUI extends App {
 
     public LoginAction getLoginAction() {
         return new LoginAction();
-    }
-
-    public String getCurrentUser() {
-        return IdentityUtils.getIdentity().getName();
     }
 }
