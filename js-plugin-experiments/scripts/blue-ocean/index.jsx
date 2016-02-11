@@ -6,6 +6,7 @@
 //===[ Imports ]====================================================================================================
 
 import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 
 //===[ Consts ]=====================================================================================================
 
@@ -55,27 +56,46 @@ export class Extension {
     }
 }
 
-var key = 1; // TODO: This is bad, mmkay
-
-function _renderExtension(extension) {
-    var $$ = extension; // TODO: Why the fuck do I need this?
+/** Actually render the extension */
+function _renderExtension(element, extension, props) {
+    var $$ = extension; // TODO: Why the f*** do I need this?
+    console.log("_renderExtension", extension);
+    
+    var component = <$$ {...props} />
     try {
-        console.log("_renderExtension", extension);
-        return <$$ {...this.props} key={key++}/>
+        ReactDOM.render(component, element);
     } catch (e) {
-        console.log("error rendering", extension.name, e);
-        return <div key={key++}>Error rendering {extension.name}: {e}</div>
+      console.log("error rendering", extension.name, e);
+      
+      var errorDiv = <div className="error alien">Error rendering {extension.name}: {e.toString()}</div>;
+      ReactDOM.render(errorDiv, element);
     }
 }
 
 // Renderer
 export class ExtensionPoint extends Component {
-
+    componentDidMount() {
+      this._renderExtensions();
+    }
+    componentDidUpdate() {
+      this._renderExtensions();
+    }
     render() {
-        return (
-            <div>
-                {extensionPointStore.getExtensions(this.props.name).map(_renderExtension.bind(this))}
-            </div>)
+        var extensionDivs = [];
+        extensionPointStore.getExtensions(this.props.name).forEach(() => {
+          extensionDivs.push(<div/>);
+        });
+        return <div>
+          {extensionDivs}
+        </div>;
+    }
+    
+    _renderExtensions() {
+          var el = ReactDOM.findDOMNode(this).children;
+          var extensions = extensionPointStore.getExtensions(this.props.name);
+          for(var i = 0; i < extensions.length; i++) {
+            _renderExtension(el[i], extensions[i], this.props);
+          }
     }
 }
 

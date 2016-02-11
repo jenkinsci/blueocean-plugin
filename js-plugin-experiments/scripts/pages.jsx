@@ -12,15 +12,26 @@ var pipelines = [
     {name:"Spaz", status:"green"}
 ];
 
-// Register an extension
-
+/** My first extension */
 class MyPipelineRowExtension extends Component {
     render() {
         return <div className={'pipelineStatus_'+this.props.pipeline.status}>{this.props.pipeline.status}</div>
     }
 }
-
 extensionPointStore.addExtension("jenkins.pipeline.pipelineRow", MyPipelineRowExtension);
+
+
+/** My bad extension to show handling of failures */
+class MyBadExtension extends Component {
+    render() {        
+          if (shizzle.nizzle) { // oh dear, there is no shizzle or nizzle
+              return 
+                <div className={'pipelineStatus_'+this.props.pipeline.status}>{this.props.pipeline.status}</div>
+          }          
+    }
+}
+extensionPointStore.addExtension("jenkins.pipeline.pipelineRow", MyBadExtension);
+
 
 
 function renderHomepagePipeline(pipeline) {
@@ -84,5 +95,3 @@ export class NotFoundPage extends Component {
         </article>
     }
 }
-
-
