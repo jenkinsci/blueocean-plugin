@@ -48,9 +48,9 @@ public class DisJenkins extends View implements StaplerProxy {
         return jenkins.getExtensionList(App.class).get(0);
     }
 
-/*
- * Stub out the View methods.
- */
+    /*
+     * Stub out the View methods.
+     */
     @Override
     public boolean contains(TopLevelItem item) {
         return false;
