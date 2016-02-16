@@ -5,7 +5,7 @@ export default class MyBadExtension extends Component {
     
       render() {
           console.log(this.props.pipeline);
-          if (shizzle.nizzle) { // oh dear, there is no shizzle or nizzle
+          if (this.props.pipeline.status !== "green") { // oh dear, there is no shizzle or nizzle
             return ( 
               <div>
                   <a href="#">logs</a>

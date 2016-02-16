@@ -8,8 +8,10 @@ import AlienPageSubMenu from './plugins/AlienPageSubMenu.jsx';
 import TopNavPipelineCounts from './plugins/TopNavPipelineCounts.jsx';
 import MyPipelineRowExtension from './plugins/MyPipelineRowExtension.jsx';
 import MyBadExtension from './plugins/MyBadExtension.jsx';
+import FailureLogLink from './plugins/failureLogLink.jsx'
 
 extensionPointStore.addExtension("jenkins.pipeline.pipelineRow", MyBadExtension);
+extensionPointStore.addExtension("jenkins.pipeline.pipelineRow", FailureLogLink);
 extensionPointStore.addExtension("jenkins.pipeline.pipelineRow", MyPipelineRowExtension);
 extensionPointStore.addExtension("jenkins.pipeline.alienPageHome", AlienPageSubMenu);
 extensionPointStore.addExtension("jenkins.pipeline.alienPageSubMenu", AlienLairLink);
