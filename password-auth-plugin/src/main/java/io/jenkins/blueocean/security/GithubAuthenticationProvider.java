@@ -17,6 +17,7 @@ public class GithubAuthenticationProvider extends AuthenticationProvider<GithubC
         if (!isTokenValid(loginDetails.login, loginDetails.accessToken)) {
             throw new UnauthorizedException("bad credentials");
         }
+        // TODO: find the user in jenkins that is represented by the login details. If the user is not found then throw NotFoundEx
         return loginDetails.login;
     }
 
