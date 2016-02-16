@@ -19,18 +19,18 @@ export class ExtensionPointStore {
     }
 
     addExtensionPoint(key) {
-        console.log("addExtensionPoint");
+        //console.log("addExtensionPoint");
         this.points[key] = this.points[key] || [];
     }
 
     addExtension(key, extension) {
-        console.log("addExtension");
+        //console.log("addExtension");
         this.addExtensionPoint(key);
         this.points[key].push(extension);
     }
 
     getExtensions(key) {
-        console.log("getExtensions", key, this.points);
+        //console.log("getExtensions", key, this.points);
         return this.points[key] || [];
     }
 
@@ -58,45 +58,57 @@ export class Extension {
 
 /** Actually render the extension */
 function _renderExtension(element, extension, props) {
-    console.log("_renderExtension", extension);
     var component = React.createElement(extension, props);
     try {
         ReactDOM.render(component, element);
     } catch (e) {
-      console.log("error rendering", extension.name, e);
-      
-      var errorDiv = <div className="error alien">Error rendering {extension.name}: {e.toString()}</div>;
-      ReactDOM.render(errorDiv, element);
+        console.log("error rendering", extension.name, e);
+
+        var errorDiv = <div className="error alien">Error rendering {extension.name}: {e.toString()}</div>;
+        ReactDOM.render(errorDiv, element);
     }
 }
 
 // Renderer
 export class ExtensionPoint extends Component {
     componentDidMount() {
-      this._renderExtensions();
+        this._renderExtensions();
     }
+
     componentDidUpdate() {
-      this._renderExtensions();
+        this._renderExtensions();
     }
+
     render() {
         var extensionDivs = [];
         var extensions = extensionPointStore.getExtensions(this.props.name);
-        for(var i = 0; i < extensions.length; i++) {
-          extensionDivs.push(<div key={i} />);
+
+        for (var i = 0; i < extensions.length; i++) {
+            extensionDivs.push(<div key={i}/>);
         }
-        return <div>
-          {extensionDivs}
-        </div>;
+
+         return React.createElement(this.props.wrappingElement, null, extensionDivs);
     }
-    
+
     _renderExtensions() {
-          var el = ReactDOM.findDOMNode(this).children;
-          var extensions = extensionPointStore.getExtensions(this.props.name);
-          for(var i = 0; i < extensions.length; i++) {
+        var el = ReactDOM.findDOMNode(this).children;
+        var extensions = extensionPointStore.getExtensions(this.props.name);
+        for (var i = 0; i < extensions.length; i++) {
             _renderExtension(el[i], extensions[i], this.props);
-          }
+        }
     }
 }
+
+ExtensionPoint.defaultProps = {
+    wrappingElement: "div"
+};
+
+ExtensionPoint.propTypes = {
+    name: React.PropTypes.string.isRequired,
+    wrappingElement: React.PropTypes.oneOfType([
+        React.PropTypes.string,
+        React.PropTypes.element])
+};
 
 //===[ PluginManager ]==============================================================================================
 
