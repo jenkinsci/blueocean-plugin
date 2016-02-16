@@ -14,12 +14,13 @@ public class PasswordAuthenticationProvider extends AuthenticationProvider<Passw
     }
 
     @Override
-    public void validate(PasswordCredentials loginDetails) {
+    public String validate(PasswordCredentials loginDetails) {
         String password = hash(loginDetails.password);
         String storedPasswordHash = getPasswordHashForUser(loginDetails.user);
         if (!storedPasswordHash.equals(hash(password))) {
             throw new UnauthorizedException("bad credentials");
         }
+        return loginDetails.user;
     }
 
     @Override

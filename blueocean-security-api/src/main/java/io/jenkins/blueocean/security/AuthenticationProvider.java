@@ -13,7 +13,7 @@ public abstract class AuthenticationProvider<T extends Credentials> {
     public abstract T getCredentials(HttpServletRequest req);
 
     /** Validate the credentials. Only called by AuthenticationService */
-    public abstract void validate(T loginDetails);
+    public abstract String validate(T loginDetails);
 
     /** The type of this provider */
     public abstract String getType();

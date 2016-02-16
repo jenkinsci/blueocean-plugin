@@ -13,10 +13,11 @@ public class GithubAuthenticationProvider extends AuthenticationProvider<GithubC
     }
 
     @Override
-    public void validate(GithubCredentials loginDetails) {
+    public String validate(GithubCredentials loginDetails) {
         if (!isTokenValid(loginDetails.login, loginDetails.accessToken)) {
             throw new UnauthorizedException("bad credentials");
         }
+        return loginDetails.login;
     }
 
     @Override

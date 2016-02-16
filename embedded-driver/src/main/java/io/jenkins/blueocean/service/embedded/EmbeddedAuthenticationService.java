@@ -2,7 +2,9 @@ package io.jenkins.blueocean.service.embedded;
 
 import com.google.inject.Inject;
 import io.jenkins.blueocean.api.profile.AuthenticationService;
+import io.jenkins.blueocean.api.profile.GetUserDetailsRequest;
 import io.jenkins.blueocean.api.profile.ProfileService;
+import io.jenkins.blueocean.api.profile.model.UserDetails;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.security.AuthenticationProvider;
 import io.jenkins.blueocean.security.Identity;
@@ -28,7 +30,8 @@ public class EmbeddedAuthenticationService implements AuthenticationService {
         if (provider == null) {
             throw new ServiceException.UnprocessableEntityException(req.type + " is unavailable");
         }
-        provider.validate(req.credentials);
-        return null;
+        String username = provider.validate(req.credentials);
+        UserDetails userDetails = profiles.getUserDetails(Identity.ROOT, new GetUserDetailsRequest(username)).userDetails;
+        return new AuthenticateResponse(userDetails);
     }
 }
