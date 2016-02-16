@@ -8,9 +8,6 @@ require('./register-plugins.js'); // this will be done by the server somehow
 // Root Blue Ocean UI component
 export default class App extends Component {
     render() {
-
-        console.log("Rendering App, props", this.props);
-
         return (
             <div id="outer">
                 <header>
