@@ -3,48 +3,12 @@
  * @type {RegExp}
  */
 
-//===[ Imports ]====================================================================================================
+import {ExtensionPoint, extensionPointStoreSingleton} from './extension-point.jsx';
 
-import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
+export const extensionPointStore = extensionPointStoreSingleton; // TODO: remove ugly global
+export {ExtensionPoint};
 
-//===[ Consts ]=====================================================================================================
-
-//===[ Extensions ]=================================================================================================
-
-// Manager
-export class ExtensionPointStore {
-    constructor() {
-        this.points = {};
-    }
-
-    addExtensionPoint(key) {
-        //console.log("addExtensionPoint");
-        this.points[key] = this.points[key] || [];
-    }
-
-    addExtension(key, extension) {
-        //console.log("addExtension");
-        this.addExtensionPoint(key);
-        this.points[key].push(extension);
-    }
-
-    getExtensions(key) {
-        //console.log("getExtensions", key, this.points);
-        return this.points[key] || [];
-    }
-
-    registerListener(key, handler) {
-    }
-
-    unRegisterListener(key, handler) {
-    }
-}
-
-// Ugly global
-export const extensionPointStore = new ExtensionPointStore();
-
-// Extension API for future
+// Extension API for future TODO: Convert to a Flow type if we're going to keep it here.
 export class Extension {
     mount(element, props) {
     }
@@ -56,59 +20,8 @@ export class Extension {
     }
 }
 
-/** Actually render the extension */
-function _renderExtension(element, extension, props) {
-    var component = React.createElement(extension, props);
-    try {
-        ReactDOM.render(component, element);
-    } catch (e) {
-        console.log("error rendering", extension.name, e);
 
-        var errorDiv = <div className="error alien">Error rendering {extension.name}: {e.toString()}</div>;
-        ReactDOM.render(errorDiv, element);
-    }
-}
 
-// Renderer
-export class ExtensionPoint extends Component {
-    componentDidMount() {
-        this._renderExtensions();
-    }
-
-    componentDidUpdate() {
-        this._renderExtensions();
-    }
-
-    render() {
-        var extensionDivs = [];
-        var extensions = extensionPointStore.getExtensions(this.props.name);
-
-        for (var i = 0; i < extensions.length; i++) {
-            extensionDivs.push(<div key={i}/>);
-        }
-
-         return React.createElement(this.props.wrappingElement, null, extensionDivs);
-    }
-
-    _renderExtensions() {
-        var el = ReactDOM.findDOMNode(this).children;
-        var extensions = extensionPointStore.getExtensions(this.props.name);
-        for (var i = 0; i < extensions.length; i++) {
-            _renderExtension(el[i], extensions[i], this.props);
-        }
-    }
-}
-
-ExtensionPoint.defaultProps = {
-    wrappingElement: "div"
-};
-
-ExtensionPoint.propTypes = {
-    name: React.PropTypes.string.isRequired,
-    wrappingElement: React.PropTypes.oneOfType([
-        React.PropTypes.string,
-        React.PropTypes.element])
-};
 
 //===[ PluginManager ]==============================================================================================
 
