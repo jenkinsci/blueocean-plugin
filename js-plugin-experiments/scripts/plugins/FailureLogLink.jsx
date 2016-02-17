@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 
 /** My bad extension to show handling of failures */
-export default class MyBadExtension extends Component {
+export default class FailureLogLink extends Component {
     
       render() {
           console.log(this.props.pipeline);
-          if (shizzle.nizzle) { // oh dear, there is no shizzle or nizzle
+          if (this.props.pipeline.status !== "green") { 
             return ( 
               <div>
-                  <a href="#">You should never see this</a>
+                  <a href="#">Show Log</a>
               </div>
             )
           } else {
