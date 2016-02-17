@@ -8,7 +8,7 @@ import AlienPageSubMenu from './plugins/AlienPageSubMenu.jsx';
 import TopNavPipelineCounts from './plugins/TopNavPipelineCounts.jsx';
 import MyPipelineRowExtension from './plugins/MyPipelineRowExtension.jsx';
 import MyBadExtension from './plugins/MyBadExtension.jsx';
-import FailureLogLink from './plugins/failureLogLink.jsx'
+import FailureLogLink from './plugins/FailureLogLink.jsx'
 
 extensionPointStore.addExtension("jenkins.pipeline.pipelineRow", MyBadExtension);
 extensionPointStore.addExtension("jenkins.pipeline.pipelineRow", FailureLogLink);

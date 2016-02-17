@@ -8,7 +8,7 @@ export default class MyBadExtension extends Component {
           if (shizzle.nizzle) { // oh dear, there is no shizzle or nizzle
             return ( 
               <div>
-                  <a href="#">logs</a>
+                  <a href="#">You should never see this</a>
               </div>
             )
           } else {
