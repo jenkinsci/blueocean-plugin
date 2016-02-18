@@ -67,6 +67,6 @@ public class UserDetails {
                 }
                 return null;
             }
-        }).getOrDefault(loginDetailsClass, null);
+        }).get(loginDetailsClass);
     }
 }
