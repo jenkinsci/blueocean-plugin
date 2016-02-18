@@ -65,9 +65,6 @@ public final class Run {
     @JsonProperty("result")
     public final Result result;
 
-    @JsonProperty("resultType")
-    public final Result.Type resultType;
-
     public enum Status {
         /** Build completed successfully */
         SUCCESSFUL,
@@ -129,11 +126,11 @@ public final class Run {
         this.runTrend = runTrend;
         this.enQueueTime = new Date(enQueueTime.getTime());
         this.result = result;
-        if(result != null) {
-            this.resultType = result.getType();
-        }else{
-            this.resultType = null;
-        }
+//        if(result != null) {
+//            this.resultType = result.getType();
+//        }else{
+//            this.resultType = null;
+//        }
 
     }
 

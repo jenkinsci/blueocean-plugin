@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.RestAssured;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.Shell;
@@ -13,8 +14,8 @@ import io.jenkins.blueocean.api.pipeline.GetPipelineResponse;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRunRequest;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRunResponse;
 import io.jenkins.blueocean.api.pipeline.PipelineService;
-import io.jenkins.blueocean.security.Identity;
 import io.jenkins.blueocean.commons.JsonConverter;
+import io.jenkins.blueocean.security.Identity;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,23 +39,27 @@ public class EmbeddedPipelineServiceTest {
     public JenkinsRule j = new JenkinsRule();
 
     @Before
-    public void before(){
+    public void before() {
         List<PipelineService> PipelineService = j.jenkins.getExtensionList(PipelineService.class);
         Assert.assertTrue(PipelineService.size() == 1);
         this.pipelineService = PipelineService.get(0);
+        RestAssured.baseURI = j.jenkins.getRootUrl()+"rest";
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
     public void getPipelineTest() throws IOException {
         j.createFreeStyleProject("pipeline1");
         GetPipelineResponse response = pipelineService.getPipeline(Identity.ANONYMOUS,
-                new GetPipelineRequest("Jenkins", "pipeline1"));
+            new GetPipelineRequest("jenkins", "pipeline1"));
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.pipeline);
 
         Assert.assertEquals("pipeline1", response.pipeline.name);
-        Assert.assertEquals("Jenkins", response.pipeline.organization);
+        Assert.assertEquals("jenkins", response.pipeline.organization);
     }
+
+
 
     @Test
     public void findPipelinesTest() throws IOException {
@@ -62,14 +67,14 @@ public class EmbeddedPipelineServiceTest {
         j.createFreeStyleProject("pipeline2");
 
         FindPipelinesResponse response = pipelineService.findPipelines(Identity.ANONYMOUS,
-                new FindPipelinesRequest("Jenkins", "pipeline"));
+            new FindPipelinesRequest("jenkins", "pipeline"));
         Assert.assertNotNull(response);
         Assert.assertEquals(2, response.pipelines.size());
 
         Assert.assertEquals("pipeline1", response.pipelines.get(0).name);
-        Assert.assertEquals("Jenkins", response.pipelines.get(0).organization);
+        Assert.assertEquals("jenkins", response.pipelines.get(0).organization);
         Assert.assertEquals("pipeline2", response.pipelines.get(1).name);
-        Assert.assertEquals("Jenkins", response.pipelines.get(1).organization);
+        Assert.assertEquals("jenkins", response.pipelines.get(1).organization);
     }
 
 
@@ -79,12 +84,12 @@ public class EmbeddedPipelineServiceTest {
         p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
         FreeStyleBuild b = p.scheduleBuild2(0).get();
         GetPipelineRunResponse response = pipelineService.getPipelineRun(Identity.ANONYMOUS,
-                new GetPipelineRunRequest("Jenkins", "pipeline1"));
+            new GetPipelineRunRequest("jenkins", "pipeline1", null));
         System.out.println(JsonConverter.toJson(response));
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.run);
         Assert.assertEquals(b.getId(), response.run.id);
-        Assert.assertEquals("Jenkins", response.run.organization);
+        Assert.assertEquals("jenkins", response.run.organization);
         Assert.assertEquals("pipeline1", response.run.pipeline);
         Assert.assertEquals(b.getStartTimeInMillis(), response.run.startTime.getTime());
     }
@@ -101,15 +106,15 @@ public class EmbeddedPipelineServiceTest {
         builds.push(p1.scheduleBuild2(0).get());
 
         FindPipelineRunsResponse response = pipelineService.findPipelineRuns(Identity.ANONYMOUS,
-                new FindPipelineRunsRequest("Jenkins", "pipeline1", false, Collections.EMPTY_LIST, null, null));
+            new FindPipelineRunsRequest("jenkins", "pipeline1", false, Collections.EMPTY_LIST, null, null));
 
-        System.out.println("Response: "+JsonConverter.toJson(response));
+        System.out.println("Response: " + JsonConverter.toJson(response));
         Assert.assertNotNull(response);
         Assert.assertEquals(builds.size(), response.runs.size());
-        for(int i = 0;i < response.runs.size(); i++){
+        for (int i = 0; i < response.runs.size(); i++) {
             FreeStyleBuild b = builds.pop();
             Assert.assertEquals(b.getId(), response.runs.get(i).id);
-            Assert.assertEquals("Jenkins", response.runs.get(i).organization);
+            Assert.assertEquals("jenkins", response.runs.get(i).organization);
             Assert.assertEquals("pipeline1", response.runs.get(i).pipeline);
             Assert.assertEquals(b.getStartTimeInMillis(), response.runs.get(i).startTime.getTime());
         }
@@ -131,22 +136,22 @@ public class EmbeddedPipelineServiceTest {
 
         Map<String, Stack<FreeStyleBuild>> buildMap = ImmutableMap.of(p1.getName(), p1builds, p2.getName(), p2builds);
         FindPipelineRunsResponse response = pipelineService.findPipelineRuns(Identity.ANONYMOUS,
-                new FindPipelineRunsRequest("Jenkins", null, false, Collections.EMPTY_LIST, null, null));
+            new FindPipelineRunsRequest("jenkins", null, false, Collections.EMPTY_LIST, null, null));
 
-        System.out.println("Response: "+JsonConverter.toJson(response));
+        System.out.println("Response: " + JsonConverter.toJson(response));
 
         Assert.assertNotNull(response);
         Assert.assertEquals(p1builds.size() + p2builds.size(), response.runs.size());
-        for(int i = 0;i < response.runs.size(); i++){
+        for (int i = 0; i < response.runs.size(); i++) {
             FreeStyleBuild b = buildMap.get(response.runs.get(i).pipeline).pop();
             Assert.assertEquals(b.getId(), response.runs.get(i).id);
-            Assert.assertEquals("Jenkins", response.runs.get(i).organization);
+            Assert.assertEquals("jenkins", response.runs.get(i).organization);
             Assert.assertEquals(b.getProject().getName(), response.runs.get(i).pipeline);
             Assert.assertEquals(b.getStartTimeInMillis(), response.runs.get(i).startTime.getTime());
         }
     }
 
-    public void getPipelineRunForWorkflow(){
+    public void getPipelineRunForWorkflow() {
 //        WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "Noddy Job");
 //
 //        String script = "node {" +

@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
 import hudson.Extension;
+import hudson.tasks.Mailer;
 import io.jenkins.blueocean.api.profile.CreateOrganizationRequest;
 import io.jenkins.blueocean.api.profile.CreateOrganizationResponse;
 import io.jenkins.blueocean.api.profile.FindUsersRequest;
@@ -15,9 +16,9 @@ import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.Organization;
 import io.jenkins.blueocean.api.profile.model.User;
 import io.jenkins.blueocean.api.profile.model.UserDetails;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.security.Identity;
 import io.jenkins.blueocean.security.LoginDetails;
-import io.jenkins.blueocean.commons.ServiceException;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -53,15 +54,15 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
     public GetUserDetailsResponse getUserDetails(@Nonnull Identity identity, @Nonnull GetUserDetailsRequest request) {
         hudson.model.User user = hudson.model.User.get(request.id, false, Collections.EMPTY_MAP);
         if (user == null) {
-            throw new ServiceException.NotFoundException(String.format("Request user %s not found", request.id));
+            throw new ServiceException.NotFoundException(String.format("Requested user %s not found", request.id));
         }
 
         if(!user.getId().equals(request.id)){
             throw new ServiceException.NotFoundException(String.format("User %s not found", request.id));
         }
 
-        //TODO: How to get user's email in Jenkins
-        return new GetUserDetailsResponse(new UserDetails(user.getId(), user.getFullName(),"none",
+        return new GetUserDetailsResponse(new UserDetails(user.getId(), user.getFullName(),
+            user.getProperty(Mailer.UserProperty.class).getAddress(),
                 Collections.<LoginDetails>emptySet()));
     }
 
@@ -69,7 +70,7 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
     @Override
     public GetOrganizationResponse getOrganization(@Nonnull Identity identity, @Nonnull GetOrganizationRequest request) {
         validateOrganization(request.name);
-        return new GetOrganizationResponse(new Organization(jenkins.getDisplayName()));
+        return new GetOrganizationResponse(new Organization(getJenkins().getDisplayName().toLowerCase()));
     }
 
     @Nonnull

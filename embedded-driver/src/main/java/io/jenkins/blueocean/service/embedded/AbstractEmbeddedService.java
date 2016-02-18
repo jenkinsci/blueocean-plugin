@@ -10,10 +10,12 @@ import jenkins.model.Jenkins;
  */
 public abstract class AbstractEmbeddedService {
 
-    protected final Jenkins jenkins = Jenkins.getActiveInstance();
+    protected Jenkins getJenkins(){
+        return Jenkins.getActiveInstance();
+    };
 
     protected void validateOrganization(String organization){
-        if (!organization.equals(Jenkins.getActiveInstance().getDisplayName())) {
+        if (!organization.equals(Jenkins.getActiveInstance().getDisplayName().toLowerCase())) {
             throw new ServiceException.UnprocessableEntityException(String.format("Organization %s not found",
                 organization));
         }

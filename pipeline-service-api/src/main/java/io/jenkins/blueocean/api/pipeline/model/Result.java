@@ -1,8 +1,10 @@
 package io.jenkins.blueocean.api.pipeline.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableMap;
+
+import javax.annotation.Nonnull;
+import java.util.Map;
 
 /**
  * Marker interface that describes build result
@@ -12,26 +14,15 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * @see JobResult
  * @see Run
  */
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "resultType")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = JobResult.class, name = "JOB"),
-        @JsonSubTypes.Type(value = PipelineResult.class, name = "PIPELINE") })
-public interface Result {
+public class Result{
+    @JsonProperty("type")
+    public final String type;
 
-    /** Result types, must be all names defined inside JsonSubTypes annotation */
-    enum Type {JOB, PIPELINE};
+    @JsonProperty("data")
+    public final Map<String, ?> data;
 
-    /**
-     * Gives what kind of Result this implements. This is to help a json processor client
-     * to know what kind of Result it is from the JSON packet of {@link Run}
-     *
-     * We don't serialize it in json as Jackson already adds resultType object.
-     *
-     * @return One of {@link Type}
-     */
-    @JsonIgnore
-    Type getType();
+    public Result(@Nonnull @JsonProperty("type") String type, @Nonnull @JsonProperty("data") Map<String, ?> data) {
+        this.type = type;
+        this.data = ImmutableMap.copyOf(data);
+    }
 }

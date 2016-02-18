@@ -10,7 +10,7 @@ import org.junit.Test;
 public class GetPipelineRunTest {
     @Test
     public void serializeDeserialize(){
-        GetPipelineRunRequest request = new GetPipelineRunRequest("cloudbees", "test1");
+        GetPipelineRunRequest request = new GetPipelineRunRequest("cloudbees", "test1", null);
 
         String json = JsonConverter.toJson(request);
 
