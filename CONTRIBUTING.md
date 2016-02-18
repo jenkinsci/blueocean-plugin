@@ -1,5 +1,5 @@
 # Jenkins
-BlueOcean is a Jenkins project that aspires to be well known and loved by Jenkins users. 
+Blue Ocean is a Jenkins project that aspires to be well known and loved by Jenkins users. 
 Thus, similar contributing guidelines apply as to Jenkins itself. 
 
 For information on contributing to Jenkins, check out the https://wiki.jenkins-ci.org/display/JENKINS/contributing and https://wiki.jenkins-ci.org/display/JENKINS/Extend+Jenkins wiki pages over at the official https://wiki.jenkins-ci.org. They will help you get started with contributing to Jenkins.
@@ -23,7 +23,7 @@ Squashing commits: if there are messy intermediate commits it is nice to squash 
 
 ## Java and Jenkins code
 
-For Jenkins-ish code on the server side (which blueocean is built on) - follow the same as: https://wiki.jenkins-ci.org/display/JENKINS/Beginners+Guide+to+Contributing#BeginnersGuidetoContributing-HowaboutJavacode%3F - you can make this a bit easier by importing the .editorconfig file into your favourite editor so it autoformats for you. 
+For Jenkins-ish code on the server side (which Blue Ocean is built on) - follow the same as: https://wiki.jenkins-ci.org/display/JENKINS/Beginners+Guide+to+Contributing#BeginnersGuidetoContributing-HowaboutJavacode%3F - you can make this a bit easier by importing the .editorconfig file into your favourite editor so it autoformats for you. 
 
 ## Javascript and web
 
@@ -36,7 +36,7 @@ WIP...
 
 # Plugins and extension points
 
-Blue Ocean is built on Jenkins, with things being plugins. Ths same applies to the UI and javascript code - extension points are embraced. Ideally all features are implemented as extensions vs in core, even if this means adding an ExtensionPoint to some code in core or another plugin. On the web, an extension point can be as simple as `<ExtensionPoint name="awsome.plugin.thing"/>` allowing others to add features to your plugin. 
+Blue Ocean is built on Jenkins, with things being plugins. Ths same applies to the UI and javascript code - extension points are embraced. Ideally all features are implemented as extensions vs in core, even if this means adding an ExtensionPoint to some code in core or another plugin. On the web, an extension point can be as simple as `<ExtensionPoint name="awesome.plugin.thing"/>` allowing others to add features to your plugin. 
 
 # Discussion and chat 
 
