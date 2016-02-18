@@ -3,7 +3,7 @@ import {extensionPointStore, ExtensionPoint} from './blue-ocean';
 
 import { Link } from 'react-router';
 
-require('./register-plugins.js'); // this will be done by the server somehow
+require('./blue-ocean/register-plugins.js'); // this will be done by the server somehow
 
 // Root Blue Ocean UI component
 export default class App extends Component {
@@ -18,8 +18,7 @@ export default class App extends Component {
                         <Link to="/Alien">Alien</Link>
                         <Link to="/dynamic">Dynamic</Link>
                         <ExtensionPoint name="jenkins.topNavigation.menu" />
-                    </nav>
-                    {/* <button onClick={window.$HACK.addDynamicRoute}>Add route</button> */}
+                    </nav>                    
                 </header>
                 <main>
                     {/* children currently set by router */}

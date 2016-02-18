@@ -9,27 +9,6 @@ import {HomePage, AboutPage, NotFoundPage, AlienPage} from './pages.jsx';
 
 import {PluginManager} from './blue-ocean';
 
-// ------------------------------------------------------------------------------------
-// THIS IS ALL BAD
-
-function addDynamicRoute() {
-    //if (routes.length == 3) {
-    console.log("adding Dynamic route");
-    //routes.unshift({ path: "/dynamic", name: "added dynamically",    component: ThirdPage,    key: (routeKey++)});
-    //renderApp();
-    //}
-}
-
-const pluginManager = new PluginManager();
-const registerPlugin = pluginManager.registerPlugin.bind(pluginManager);
-
-window.$HACK = {
-    addDynamicRoute,
-    registerPlugin
-};
-
-// ^^^ ALL BAD
-// ------------------------------------------------------------------------------------
 
 render(
     <Router history={createBrowserHistory()}>
