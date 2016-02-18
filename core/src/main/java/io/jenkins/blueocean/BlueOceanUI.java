@@ -11,7 +11,7 @@ import org.kohsuke.stapler.HttpResponses;
  * @author Kohsuke Kawaguchi
  */
 @Extension
-public class BlueOceanUI extends App {
+public class BlueOceanUI {
     public HttpResponse doHello() {
         return HttpResponses.plainText("Hello wolrd!");
     }
