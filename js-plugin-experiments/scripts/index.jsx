@@ -7,8 +7,6 @@ import createBrowserHistory from 'history/lib/createBrowserHistory';
 
 import {HomePage, AboutPage, NotFoundPage, AlienPage} from './pages.jsx';
 
-import {PluginManager} from './blue-ocean';
-
 
 render(
     <Router history={createBrowserHistory()}>
