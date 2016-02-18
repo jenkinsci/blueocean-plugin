@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.api.pipeline;
 
-import io.jenkins.blueocean.api.pipeline.model.JobResult;
+import com.google.common.collect.ImmutableMap;
+import io.jenkins.blueocean.api.pipeline.model.Result;
 import io.jenkins.blueocean.api.pipeline.model.Run;
 import io.jenkins.blueocean.commons.JsonConverter;
 import org.junit.Assert;
@@ -27,7 +28,7 @@ public class GetPipelineRunResponseTest {
                         .durationInMillis(10000L)
                         .runSummary("build sucessful")
                         .runTrend(Run.RunTrend.FIXED)
-                        .result(new JobResult())
+                        .result(new Result("job",ImmutableMap.of("status", "success")))
                         .build());
 
         String json = JsonConverter.toJson(response);
@@ -50,7 +51,7 @@ public class GetPipelineRunResponseTest {
         Assert.assertEquals(expected.enQueueTime, actual.enQueueTime);
         Assert.assertEquals(expected.runSummary, actual.runSummary);
         Assert.assertEquals(expected.runTrend, actual.runTrend);
-        Assert.assertTrue(actual.result instanceof JobResult);
+        Assert.assertEquals(expected.result.type, actual.result.type);
 
         System.out.println("Converted back from Json:\n"+JsonConverter.toJson(responseFromJson));
     }

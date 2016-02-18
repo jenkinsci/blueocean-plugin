@@ -12,7 +12,6 @@ import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.User;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.security.Identity;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +27,10 @@ public class EmbeddedProfileServiceTest {
 
     private ProfileService profileService;
 
+    @Rule
+    public JenkinsRule j = new JenkinsRule();
+
+
     @Before
     public void before(){
         List<ProfileService> profileServices = j.jenkins.getExtensionList(ProfileService.class);
@@ -35,13 +38,6 @@ public class EmbeddedProfileServiceTest {
         this.profileService = profileServices.get(0);
     }
 
-    @After
-    public void after(){
-
-    }
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
 
     @Test
     public void getUserTest() throws Exception {
@@ -51,9 +47,6 @@ public class EmbeddedProfileServiceTest {
         Assert.assertNotNull(response.user);
         Assert.assertEquals(response.user.id, "SYSTEM");
         Assert.assertEquals(response.user.fullName, "SYSTEM");
-
-
-
     }
 
     @Test
@@ -69,9 +62,9 @@ public class EmbeddedProfileServiceTest {
     @Test
     public void getOrganizationTest(){
         GetOrganizationResponse response = profileService.getOrganization(new Identity("alice"),
-                new GetOrganizationRequest("Jenkins"));
+                new GetOrganizationRequest("jenkins"));
         Assert.assertNotNull(response.organization);
-        Assert.assertEquals(response.organization.name, "Jenkins");
+        Assert.assertEquals(response.organization.name, "jenkins");
     }
 
     @Test
@@ -80,7 +73,7 @@ public class EmbeddedProfileServiceTest {
         j.jenkins.getUser(names[0]);
         j.jenkins.getUser(names[1]);
 
-        FindUsersResponse response = profileService.findUsers(new Identity("alice"), new FindUsersRequest("Jenkins", null, null));
+        FindUsersResponse response = profileService.findUsers(new Identity("alice"), new FindUsersRequest("jenkins", null, null));
 
         System.out.println(JsonConverter.toJson(response));
         Assert.assertTrue(response.users.size() == 2);

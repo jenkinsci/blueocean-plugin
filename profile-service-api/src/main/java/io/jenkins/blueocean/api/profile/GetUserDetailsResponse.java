@@ -12,10 +12,10 @@ import javax.annotation.Nullable;
  * @author Vivek Pandey
  */
 public final class GetUserDetailsResponse{
-    @JsonProperty("userDetails")
+    @JsonProperty("user")
     public final UserDetails userDetails;
 
-    public GetUserDetailsResponse(@Nullable @JsonProperty("userDetails")UserDetails userDetails) {
+    public GetUserDetailsResponse(@Nullable @JsonProperty("user")UserDetails userDetails) {
         this.userDetails = userDetails;
     }
 }

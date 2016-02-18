@@ -74,7 +74,7 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
     @Override
     public GetOrganizationResponse getOrganization(@Nonnull Identity identity, @Nonnull GetOrganizationRequest request) {
         validateOrganization(request.name);
-        return new GetOrganizationResponse(new Organization(jenkins.getDisplayName()));
+        return new GetOrganizationResponse(new Organization(getJenkins().getDisplayName().toLowerCase()));
     }
 
     @Nonnull

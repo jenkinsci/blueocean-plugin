@@ -16,8 +16,8 @@
   <name>Blue Ocean UI Parent</name>
 
   <properties>
-    <java.level>6</java.level>
-    <jackson.version>2.2.3</jackson.version>
+    <java.level>7</java.level>
+      <jackson.version>2.2.3</jackson.version>
     <jenkins.version>1.639</jenkins.version>
   </properties>
 
@@ -29,6 +29,7 @@
     <module>pipeline-service-api</module>
     <module>embedded-driver</module>
     <module>blueocean-github-oauth-plugin</module>
+    <module>blueocean-rest</module>
     <module>alpha</module>
     <module>bravo</module>
     <module>war</module>
