@@ -1,17 +1,29 @@
 import React, {Component} from 'react';
 
-import PipelineViewStore from '../stores/PipelineViewStore.js';
+import {store} from '../blue-ocean';
+// TODO: ^^^^^ get store from <Provider> or through jenkins, not import! See: https://goo.gl/jCbg08
 
 export default class TopNavPipelineCounts extends Component {
-    componentWillMount() {
-        PipelineViewStore.registerListener(function() {
-            this.setState({});
-        }.bind(this));
+
+    constructor() {
+        super();
+        this.state = {};
     }
-    
+
+    componentDidMount() {
+        const update = () => {this.setState({pipelines:store.getState().pipelines.pipelines});};
+        this.unsubscribe = store.subscribe(update);
+        update();
+    }
+
+    componentWillUnmount() {
+        this.unsubscribe();
+    }
+
     render() {
+        const pipelines = this.state.pipelines || [];
         return <div>
-            Num Pipelines: {PipelineViewStore.getPipelines().length}
+            Num Pipelines: {pipelines.length}
         </div>;
     }
 }

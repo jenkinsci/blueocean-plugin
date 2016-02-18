@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import {ExtensionPoint} from './blue-ocean';
+import {ExtensionPoint, store, actions} from './blue-ocean';
+// TODO: ^^^^^ get store from <Provider> or through jenkins, not import! See: https://goo.gl/jCbg08
 import AlienLairLink from './plugins/AlienLairLink.jsx'
 import AlienPageSubMenu from './plugins/AlienPageSubMenu.jsx'
-import PipelineViewStore from './stores/PipelineViewStore.js';
 
 function PiplineListHeader(props) {
-    return <h2>{props.pipelines.length} Pipelines</h2>;
+    const count = props.pipelines ? props.pipelines.length : 0;
+    return <h2>{count} Pipelines</h2>;
 }
 
 function renderHomepagePipeline(pipeline) {
@@ -15,19 +16,29 @@ function renderHomepagePipeline(pipeline) {
     </div>
 }
 
+// TODO: Split all this mess up into its own files
+
 export class HomePage extends Component {
-    state = {
-        pipelines: PipelineViewStore.getPipelines()
-    };
-    addNewPipeline() {
-        PipelineViewStore.addPipeline({name: this.refs.newPipelineName.getDOMNode().value});
+
+    constructor() {
+        super();
+        this.state = {};
     }
+
     componentDidMount() {
-        PipelineViewStore.registerListener(() => {
-            this.setState({pipelines: PipelineViewStore.getPipelines()})
-        });
+        const update = () => {this.setState({pipelines:store.getState().pipelines.pipelines});};
+        this.unsubscribe = store.subscribe(update);
+        update();
     }
+
+    componentWillUnmount() {
+        this.unsubscribe();
+    }
+
     render() {
+
+        const pipelines = this.state.pipelines || [];
+
         return <article>
             <h1>Home</h1>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad architecto autem deleniti, dicta
@@ -35,14 +46,23 @@ export class HomePage extends Component {
                 recusandae rem saepe! Illo, perferendis?</p>
 
             <PiplineListHeader pipelines={this.state.pipelines}/>
-            {this.state.pipelines.map(renderHomepagePipeline)}
+            {pipelines.map(renderHomepagePipeline)}
             
             <input ref="newPipelineName" type="text" />
             <button onClick={() => this.addNewPipeline()}>Add Pipeline</button>
         </article>
     }
+
+    addNewPipeline() {
+        const newPipeline = {
+            name: this.refs.newPipelineName.getDOMNode().value,
+            status: "green"
+        };
+        store.dispatch({type:actions.ADD_PIPELINE, pipeline:newPipeline});
+    }
 }
 
+// TODO: Put something useful here?
 export class AboutPage extends Component {
     render() {
         return <article>
@@ -59,6 +79,7 @@ export class AboutPage extends Component {
     }
 }
 
+// This is just some example code with a silly name.
 export class AlienPage extends Component {
     render() {
         return <article>
@@ -69,8 +90,6 @@ export class AlienPage extends Component {
         </article>
     }
 }
-
-// TODO: Replace this with a "plugin container" component that also knows about routes
 
 export class NotFoundPage extends Component {
     render() {
