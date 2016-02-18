@@ -92,6 +92,11 @@ public class ServiceException extends RuntimeException{
                 public Map<String, String> next() {
                     return errors.iterator().next();
                 }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
             };
         }
     }
