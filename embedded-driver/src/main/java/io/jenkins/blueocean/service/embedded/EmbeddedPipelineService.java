@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.service.embedded;
 
+import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
+import hudson.model.Job;
 import hudson.model.Project;
 import hudson.model.Result;
 import hudson.util.RunList;
@@ -13,11 +15,10 @@ import io.jenkins.blueocean.api.pipeline.GetPipelineResponse;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRunRequest;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRunResponse;
 import io.jenkins.blueocean.api.pipeline.PipelineService;
-import io.jenkins.blueocean.api.pipeline.model.JobResult;
 import io.jenkins.blueocean.api.pipeline.model.Pipeline;
 import io.jenkins.blueocean.api.pipeline.model.Run;
-import io.jenkins.blueocean.security.Identity;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.security.Identity;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class EmbeddedPipelineService extends AbstractEmbeddedService implements 
     public GetPipelineResponse getPipeline(@Nonnull Identity identity, @Nonnull GetPipelineRequest pipelineRequest) {
         validateOrganization(pipelineRequest.organization);
 
-        List<Project> projects = jenkins.getAllItems(Project.class);
+        List<Project> projects = getJenkins().getAllItems(Project.class);
         for (Project project : projects) {
             if (project.getName().equals(pipelineRequest.pipeline)) {
                 return new GetPipelineResponse(new Pipeline(pipelineRequest.organization, project.getName(),
@@ -55,15 +56,15 @@ public class EmbeddedPipelineService extends AbstractEmbeddedService implements 
     public FindPipelinesResponse findPipelines(@Nonnull Identity identity, @Nonnull FindPipelinesRequest findPipelinesRequest) {
         validateOrganization(findPipelinesRequest.organization);
 
-        List<Project> projects = jenkins.getAllItems(Project.class);
+        List<Job> projects = getJenkins().getAllItems(Job.class);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
-        for (Project project : projects) {
+        for (Job project : projects) {
             if (findPipelinesRequest.pipeline != null &&
-                    project.getName().contains(findPipelinesRequest.pipeline)) {
-
-                pipelines.add(new Pipeline(findPipelinesRequest.organization, project.getName(),
-                        Collections.EMPTY_LIST));
+                    !project.getName().contains(findPipelinesRequest.pipeline)) {
+                continue;
             }
+            pipelines.add(new Pipeline(findPipelinesRequest.organization, project.getName(),
+                    Collections.EMPTY_LIST));
         }
         return new FindPipelinesResponse(pipelines);
     }
@@ -73,18 +74,34 @@ public class EmbeddedPipelineService extends AbstractEmbeddedService implements 
     public GetPipelineRunResponse getPipelineRun(@Nonnull Identity identity, @Nonnull GetPipelineRunRequest request) {
         validateOrganization(request.organization);
 
-        List<Project> projects = jenkins.getAllItems(Project.class);
-        for (Project p : projects) {
+        List<Job> projects = getJenkins().getAllItems(Job.class);
+        for (Job p : projects) {
             if (!p.getName().equals(request.pipeline)) {
                 continue;
             }
             RunList<? extends hudson.model.Run> runList = p.getBuilds();
 
+            hudson.model.Run run = null;
+            if(request.run != null) {
+                for (hudson.model.Run r : runList) {
+                    if (r.getId().equals(request.run)) {
+                        run = r;
+                        break;
+                    }
+                }
+                if(run == null){
+                    throw new ServiceException.NotFoundException(
+                        String.format("Run %s not found in organization %s and pipeline %s",
+                            request.run, request.organization, request.pipeline));
+                }
+            }else{
+                run = runList.getLastBuild();
+            }
             return new GetPipelineRunResponse(
-                    createBoRun(runList.getLastBuild(), request.organization, request.pipeline));
+                    createBoRun(run.getClass().getSimpleName(),run, request.organization, request.pipeline));
         }
-        throw new ServiceException.NotFoundException(String.format("No run found for organization %s, pipeline: %s",
-                request.organization, request.pipeline));
+        throw new ServiceException.NotFoundException(String.format("Run id %s not found for organization %s, pipeline: %s",
+            request.run, request.organization, request.pipeline));
 
     }
 
@@ -94,8 +111,8 @@ public class EmbeddedPipelineService extends AbstractEmbeddedService implements 
         validateOrganization(request.organization);
 
         List<Run> runs = new ArrayList<Run>();
-        List<Project> projects = jenkins.getAllItems(Project.class);
-        for (Project p : projects) {
+        List<Job> projects = getJenkins().getAllItems(Job.class);
+        for (Job p : projects) {
             if (request.pipeline != null && !p.getName().equals(request.pipeline)) {
                 continue;
             }
@@ -103,7 +120,7 @@ public class EmbeddedPipelineService extends AbstractEmbeddedService implements 
             if (request.latestOnly) {
                 hudson.model.Run r = p.getLastBuild();
                 if(r != null) {
-                    Run run = createBoRun(r, request.organization, p.getName());
+                    Run run = createBoRun(r.getClass().getSimpleName(),r, request.organization, p.getName());
                     runs.add(run);
                 }else{
                     return new FindPipelineRunsResponse(runs,null, null);
@@ -113,14 +130,15 @@ public class EmbeddedPipelineService extends AbstractEmbeddedService implements 
 
                 Iterator<? extends hudson.model.Run> iterator = runList.iterator();
                 while (iterator.hasNext()) {
-                    runs.add(createBoRun(iterator.next(), request.organization, p.getName()));
+                    hudson.model.Run r = iterator.next();
+                    runs.add(createBoRun(r.getClass().getSimpleName(),r, request.organization, p.getName()));
                 }
             }
         }
         return new FindPipelineRunsResponse(runs, null, null);
     }
 
-    private  Run createBoRun(hudson.model.Run r, String organization, String pipeline) {
+    private  Run createBoRun(String buildClass, hudson.model.Run r, String organization, String pipeline) {
         Date endTime = null;
         if (!r.isBuilding()) {
             endTime = new Date(r.getStartTimeInMillis() + r.getDuration());
@@ -133,8 +151,7 @@ public class EmbeddedPipelineService extends AbstractEmbeddedService implements 
                 .durationInMillis(r.getDuration())
                 .status(getStatusFromJenkinsRun(r))
                 .runSummary(r.getBuildStatusSummary().message)
-                //TODO: need to determine how to check if it's pipeline build
-                .result(new JobResult())
+                .result(new io.jenkins.blueocean.api.pipeline.model.Result(buildClass, ImmutableMap.<String, Object>of()))
                 .build();
     }
 
