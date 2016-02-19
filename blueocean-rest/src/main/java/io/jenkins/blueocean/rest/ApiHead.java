@@ -19,12 +19,14 @@ import io.jenkins.blueocean.commons.guice.InjectLogger;
 import io.jenkins.blueocean.rest.router.Route;
 import io.jenkins.blueocean.rest.router.RouteContext;
 import io.jenkins.blueocean.rest.router.Router;
+import io.jenkins.blueocean.rest.sandbox.OrganizationContainer;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.slf4j.Logger;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -50,6 +52,12 @@ public final class ApiHead{
 
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
 
+    @Inject
+    OrganizationContainer orgContainer;
+
+    public OrganizationContainer getOrganizations() {
+        return orgContainer;
+    }
 
     public ApiHead() {
         this.profileService = getService(ProfileService.class);
