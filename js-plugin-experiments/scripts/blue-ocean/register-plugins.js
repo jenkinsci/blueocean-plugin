@@ -5,8 +5,7 @@ import {extensionPointStore, ExtensionPoint} from '.';
 
 import AlienLairLink from '../plugins/AlienLairLink.jsx';
 import AlienPageSubMenu from '../plugins/AlienPageSubMenu.jsx';
-import TopNavPipelineCounts from '../plugins/TopNavPipelineCounts.jsx';
-import MyPipelineRowExtension from '../plugins/MyPipelineRowExtension.jsx';
+import {TopNavPipelineCounts, MyPipelineRowExtension} from '../plugins/pipelines';
 import MyBadExtension from '../plugins/MyBadExtension.jsx';
 import FailureLogLink from '../plugins/FailureLogLink.jsx'
 

@@ -4,63 +4,9 @@ import {ExtensionPoint, store, actions} from './blue-ocean';
 import AlienLairLink from './plugins/AlienLairLink.jsx'
 import AlienPageSubMenu from './plugins/AlienPageSubMenu.jsx'
 
-function PiplineListHeader(props) {
-    const count = props.pipelines ? props.pipelines.length : 0;
-    return <h2>{count} Pipelines</h2>;
-}
 
-function renderHomepagePipeline(pipeline) {
-    return <div key={pipeline.name}>
-        <h3>{pipeline.name}</h3>
-        <ExtensionPoint name="jenkins.pipeline.pipelineRow" pipeline={pipeline}/>
-    </div>
-}
+// TODO: Split the rest of this mess up into its own files
 
-// TODO: Split all this mess up into its own files
-
-export class HomePage extends Component {
-
-    constructor() {
-        super();
-        this.state = {};
-    }
-
-    componentDidMount() {
-        const update = () => {this.setState({pipelines:store.getState().pipelines.pipelines});};
-        this.unsubscribe = store.subscribe(update);
-        update();
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
-    render() {
-
-        const pipelines = this.state.pipelines || [];
-
-        return <article>
-            <h1>Home</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad architecto autem deleniti, dicta
-                exercitationem explicabo facere harum hic inventore laborum magnam magni maiores molestias nemo
-                recusandae rem saepe! Illo, perferendis?</p>
-
-            <PiplineListHeader pipelines={this.state.pipelines}/>
-            {pipelines.map(renderHomepagePipeline)}
-            
-            <input ref="newPipelineName" type="text" />
-            <button onClick={() => this.addNewPipeline()}>Add Pipeline</button>
-        </article>
-    }
-
-    addNewPipeline() {
-        const newPipeline = {
-            name: this.refs.newPipelineName.getDOMNode().value,
-            status: "green"
-        };
-        store.dispatch({type:actions.ADD_PIPELINE, pipeline:newPipeline});
-    }
-}
 
 // TODO: Put something useful here?
 export class AboutPage extends Component {
