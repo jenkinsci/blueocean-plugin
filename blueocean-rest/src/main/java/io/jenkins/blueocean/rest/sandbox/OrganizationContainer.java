@@ -1,14 +1,14 @@
 package io.jenkins.blueocean.rest.sandbox;
 
 import hudson.ExtensionPoint;
+import io.jenkins.blueocean.api.profile.CreateOrganizationRequest;
+import io.jenkins.blueocean.commons.stapler.JsonBody;
 import org.kohsuke.stapler.WebMethod;
-
-import java.util.Iterator;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 public abstract class OrganizationContainer extends Container<Organization> implements ExtensionPoint {
     @WebMethod(name="",method="POST")
-    public abstract Organization create(@JsonParam String name);
+    public abstract Organization create(@JsonBody CreateOrganizationRequest req);
 }
