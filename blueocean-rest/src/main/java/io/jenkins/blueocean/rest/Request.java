@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -42,7 +43,7 @@ public class Request {
 
     private final Set<String> headers = new HashSet<>();
 
-    private InputStream body;
+    private Reader body;
 
     /**
      * Constructor
@@ -64,7 +65,7 @@ public class Request {
         this.params = getParams(requestList, matchedList);
         this.splat = getSplat(requestList, matchedList);
         try {
-            this.body = request.getInputStream();
+            this.body = request.getReader();
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorExpcetion("Failed to read request input stream: "+e.getMessage(), e);
         }

@@ -10,9 +10,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
 
 /**
@@ -25,16 +25,10 @@ public class JsonConverter{
 
     public static <T> T toJava(String data, Class<T> type) {
 
-        try {
-            return toJava(new ByteArrayInputStream(data.getBytes("UTF-8")), type);
-        } catch (IOException e) {
-            String msg = String.format("Failed to convert %s to type %s", data, type);
-            LOGGER.error(msg, e);
-            throw new ServiceException.UnexpectedErrorExpcetion(msg);
-        }
+        return toJava(new StringReader(data), type);
     }
 
-    public static <T> T toJava(InputStream data, Class<T> type) {
+    public static <T> T toJava(Reader data, Class<T> type) {
         try {
             return om.readValue(data, type);
         } catch (JsonParseException e){
