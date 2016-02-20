@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.sandbox.embedded;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hudson.XmlFile;
+import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.sandbox.Organization;
 import io.jenkins.blueocean.rest.sandbox.PipelineContainer;
 import jenkins.model.Jenkins;
