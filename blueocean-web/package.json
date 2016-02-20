@@ -8,6 +8,7 @@
     "jenkins-js-test": "0.0.16"
   },
   "dependencies": {
+    "@jenkins-cd/extension-store": "0.0.1",
     "bootstrap-detached": "^3.3.4-v6",
     "handlebars": "^3.0.3",
     "hbsfy": "^2.4.1",

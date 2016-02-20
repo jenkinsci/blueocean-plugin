@@ -2,8 +2,9 @@
  * Re-export things for convenience. 
  */
 
-import {ExtensionPoint, extensionPointStoreSingleton} from './extension-point.jsx';
+import extensions from '@jenkins-cd/js-extensions';
 import {store, actions} from './stores';
 
-export const extensionPointStore = extensionPointStoreSingleton; // TODO: remove ugly global
-export {ExtensionPoint, store, actions};
+export const extensionPointStore = extensions.store; // TODO: remove ugly global
+export const ExtensionPoint = extensions.ExtensionPoint;
+export {store, actions};
