@@ -3,8 +3,14 @@ package io.jenkins.blueocean.commons;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +25,7 @@ import java.util.Map;
  *
  * @author Vivek Pandey
  */
-public class ServiceException extends RuntimeException{
+public class ServiceException extends RuntimeException implements HttpResponse {
     public final int status;
     public final ErrorMessage errorMessage;
 
@@ -44,6 +50,15 @@ public class ServiceException extends RuntimeException{
     /** Convert ErrorMessage to JSON */
     public String toJson(){
         return JsonConverter.toJson(errorMessage);
+    }
+
+    @Override
+    public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
+        rsp.setStatus(status);
+        rsp.setContentType("application/json");
+        PrintWriter w = rsp.getWriter();
+        w.write(toJson());
+        w.close();
     }
 
     /**
