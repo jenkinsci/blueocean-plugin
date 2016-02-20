@@ -7,14 +7,13 @@ import {extensionPointStore, ExtensionPoint} from './blue-ocean';
 import { Router, Route, Link } from 'react-router';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 
-import {HomePage, AboutPage, NotFoundPage, AlienPage} from './pages.jsx';
-
+import {AboutPage, NotFoundPage, AlienPage} from './pages';
+import {PipelinesPage} from './plugins/pipelines';
 
 require('./blue-ocean/register-plugins.js'); // this will be done by the server somehow
 
-
-/** 
- * Root Blue Ocean UI component 
+/**
+ * Root Blue Ocean UI component
  */
 class App extends Component {
     render() {
@@ -51,7 +50,7 @@ class App extends Component {
 render(
     <Router history={createBrowserHistory()}>
         <Route component={App}>
-            <Route path="/" component={HomePage}/>
+            <Route path="/" component={PipelinesPage}/>
             <Route path="/about" component={AboutPage}/>
             <Route path="/alien" component={AlienPage}/>
             <Route path="*" component={NotFoundPage}/>
