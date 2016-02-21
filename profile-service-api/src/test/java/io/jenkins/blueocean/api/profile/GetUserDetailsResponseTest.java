@@ -2,9 +2,9 @@ package io.jenkins.blueocean.api.profile;
 
 import com.google.common.collect.ImmutableSet;
 import io.jenkins.blueocean.api.profile.model.UserDetails;
-import io.jenkins.blueocean.security.GithubLoginDetails;
 import io.jenkins.blueocean.commons.JsonConverter;
-import io.jenkins.blueocean.security.LoginDetails;
+import io.jenkins.blueocean.security.Credentials;
+import io.jenkins.blueocean.security.GithubCredentials;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ public class GetUserDetailsResponseTest {
 
         String accessToken = "1212121212";
         GetUserDetailsResponse response = new GetUserDetailsResponse(new UserDetails("123", "John", "john@example.com",
-                ImmutableSet.<LoginDetails>of(new GithubLoginDetails("alice", accessToken))));
+                ImmutableSet.<Credentials>of(new GithubCredentials("alice", accessToken))));
         String json = JsonConverter.toJson(response);
 
         System.out.println("Converted from Java:\n"+json);
@@ -28,7 +28,7 @@ public class GetUserDetailsResponseTest {
         Assert.assertEquals(response.userDetails.id, responseFromJson.userDetails.id);
         Assert.assertEquals(response.userDetails.name, responseFromJson.userDetails.name);
         Assert.assertEquals(response.userDetails.email, responseFromJson.userDetails.email);
-        GithubLoginDetails ld = (GithubLoginDetails) response.userDetails.getLoginDetails(GithubLoginDetails.class);
+        GithubCredentials ld = (GithubCredentials) response.userDetails.getLoginDetails(GithubCredentials.class);
         Assert.assertNotNull(ld);
         Assert.assertEquals(ld.accessToken, accessToken);
         Assert.assertEquals(ld.login, "alice");

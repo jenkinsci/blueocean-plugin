@@ -18,7 +18,7 @@ public interface ProfileService{
      * @param identity user identity in this context
      * @param request {@link GetUserRequest} instance
      * @return {@link GetUserResponse} instance
-     * @throws io.jenkins.blueocean.commons.ServiceException
+     * @throws io.jenkins.blueocean.commons.ServiceException if there is an exception in the server.
      */
     @Nonnull
     GetUserResponse getUser(@Nonnull Identity identity, @Nonnull GetUserRequest request);
@@ -29,7 +29,7 @@ public interface ProfileService{
      * @param identity user identity in this context
      * @param request {@link }GetUserDetailsRequest} instance
      * @return {@link GetUserDetailsResponse} instance
-     * @throws io.jenkins.blueocean.commons.ServiceException
+     * @throws io.jenkins.blueocean.commons.ServiceException if there is an exception in the server.
      */
     @Nonnull
     GetUserDetailsResponse getUserDetails(@Nonnull Identity identity, @Nonnull GetUserDetailsRequest request);
@@ -40,7 +40,7 @@ public interface ProfileService{
      * @param identity user identity in this context
      * @param request {@link GetOrganizationRequest} instance
      * @return {@link GetOrganizationResponse} instance
-     * @throws io.jenkins.blueocean.commons.ServiceException
+     * @throws io.jenkins.blueocean.commons.ServiceException if there is an exception in the server.
      */
     @Nonnull
     GetOrganizationResponse getOrganization(@Nonnull Identity identity, @Nonnull GetOrganizationRequest request);
@@ -51,7 +51,7 @@ public interface ProfileService{
      * @param identity user identity in this context
      * @param request {@link CreateOrganizationRequest} instance
      * @return {@link CreateOrganizationResponse} instance
-     * @throws io.jenkins.blueocean.commons.ServiceException
+     * @throws io.jenkins.blueocean.commons.ServiceException if there is an exception in the server.
      */
     @Nonnull
     CreateOrganizationResponse createOrganization(@Nonnull Identity identity, @Nonnull CreateOrganizationRequest request);
@@ -62,9 +62,8 @@ public interface ProfileService{
      * @param identity user identity in this context
      * @param request {@link FindUsersRequest} instance
      * @return {@link FindUsersResponse} instance
-     * @throws io.jenkins.blueocean.commons.ServiceException
+     * @throws io.jenkins.blueocean.commons.ServiceException if there is an exception in the server.
      */
     @Nonnull
     FindUsersResponse findUsers(@Nonnull Identity identity, @Nonnull FindUsersRequest request);
-
 }

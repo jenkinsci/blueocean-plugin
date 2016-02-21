@@ -10,6 +10,8 @@ import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewGroup;
 import hudson.model.listeners.ItemListener;
+import hudson.util.PluginServletFilter;
+import io.jenkins.blueocean.security.AuthenticationFilter;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
@@ -42,12 +44,13 @@ public class DisJenkins extends View implements StaplerProxy {
         if (jenkins == null) {
             throw new IllegalStateException("Jenkins instance is not ready");
         }
+
         return jenkins.getExtensionList(App.class).get(0);
     }
 
-/*
- * Stub out the View methods.
- */
+    /*
+     * Stub out the View methods.
+     */
     @Override
     public boolean contains(TopLevelItem item) {
         return false;
@@ -74,7 +77,7 @@ public class DisJenkins extends View implements StaplerProxy {
      * @throws IOException in case something goes wrong when creating views or when saving Jenkins configuration
      */
     @Initializer(after= InitMilestone.JOB_LOADED, before= InitMilestone.COMPLETED)
-    public static void install(Jenkins j) throws IOException {
+    public static void install(Jenkins j, AuthenticationFilter authFilter) throws IOException {
         LOGGER.log(Level.INFO, "Configuring Embryo Root View");
         DisJenkins v = new DisJenkins("Root", j);
         j.addView(v);
@@ -89,6 +92,12 @@ public class DisJenkins extends View implements StaplerProxy {
                     j.deleteView(oldView);
                 }
             }
+
+        }
+        try {
+            PluginServletFilter.addFilter(authFilter);
+        } catch (ServletException e) {
+           throw new IOException("AuthenticationFilter failed to initialize.", e);
         }
         j.save();
     }
@@ -102,10 +111,13 @@ public class DisJenkins extends View implements StaplerProxy {
         @Inject
         private Jenkins jenkins;
 
+        @Inject
+        private AuthenticationFilter authFilter;
+
         @Override
         public void onLoaded() {
             try {
-                install(jenkins);
+                install(jenkins, authFilter);
             } catch (IOException e) {
                 LOGGER.log(Level.INFO, "Failed to install Embryo");
             }

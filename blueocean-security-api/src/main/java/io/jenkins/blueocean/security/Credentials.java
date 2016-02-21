@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Abstraction to represent login details of an authentication provider.
+ * Abstraction to represent credentials of an authentication provider.
  * Must be Jackson serializable
  *
  * @author Vivek Pandey
@@ -16,15 +16,15 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * field added.
  *
  * While deserializing in to Java, Jackson will look at authProvider field and if it's "github"
- * then will deserialize json in to GithubLoginDetails.
+ * then will deserialize json in to GithubCredentials.
  *
- * Implementers of LoginDetails must ensure not to add their own authProvider field.
+ * Implementers of Credentials must ensure not to add their own authProvider field.
  */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
         property = "authProvider")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = GithubLoginDetails.class, name = "github")
+        @JsonSubTypes.Type(value = GithubCredentials.class, name = "github")
         })
-public interface LoginDetails {}
+public interface Credentials {}

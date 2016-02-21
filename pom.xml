@@ -25,6 +25,7 @@
 
   <modules>
     <module>core</module>
+    <module>password-auth-plugin</module>
     <module>blueocean-commons</module>
     <module>blueocean-security-api</module>
     <module>profile-service-api</module>

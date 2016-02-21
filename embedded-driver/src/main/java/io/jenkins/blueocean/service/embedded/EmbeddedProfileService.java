@@ -15,9 +15,9 @@ import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.Organization;
 import io.jenkins.blueocean.api.profile.model.User;
 import io.jenkins.blueocean.api.profile.model.UserDetails;
-import io.jenkins.blueocean.security.Identity;
-import io.jenkins.blueocean.security.LoginDetails;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.security.Credentials;
+import io.jenkins.blueocean.security.Identity;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
 
         //TODO: How to get user's email in Jenkins
         return new GetUserDetailsResponse(new UserDetails(user.getId(), user.getFullName(),"none",
-                Collections.<LoginDetails>emptySet()));
+                Collections.<Credentials>emptySet()));
     }
 
     @Nonnull
