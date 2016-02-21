@@ -20,7 +20,7 @@ public class GetUserResponseTest {
         GetUserResponse responseFromJson = JsonConverter.toJava(json, GetUserResponse.class);
 
 
-        Assert.assertEquals(response.user.name, responseFromJson.user.name);
+        Assert.assertEquals(response.user.fullName, responseFromJson.user.fullName);
         Assert.assertEquals(response.user.id, responseFromJson.user.id);
 
         System.out.println("Converted back from Json:\n"+JsonConverter.toJson(responseFromJson));

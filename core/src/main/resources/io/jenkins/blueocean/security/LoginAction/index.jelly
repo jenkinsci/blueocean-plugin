@@ -1,0 +1,22 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
+<st:contentType value="text/html;charset=UTF-8"/>
+<html>
+    <!-- HACK that need to be cleaned up -->
+    <j:new var="h" className="hudson.Functions" /><!-- instead of JSP functions -->
+    ${h.initPageVariables(context)}
+    <head resURL="${resURL}">
+    </head>
+
+
+    <!-- App -->
+    <body>
+        <h1>Choose a login provider</h1>
+        <ul>
+            <j:forEach var="provider" items="${it.getProviders()}">
+                <li><a href="${provider.getLoginUrl()}">${provider.getLoginUrl()}</a></li>
+            </j:forEach>
+        </ul>
+    </body>
+</html>
+</j:jelly>

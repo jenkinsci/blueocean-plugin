@@ -11,7 +11,7 @@
 
     <!-- App -->
     <body>
-      <h1>Hello</h1>
+      <h1>Hello ${it.getCurrentUserFullName()}. Your email address is ${it.getCurrentUserEmail()}</h1>
       <st:adjunct includes="io.jenkins.blueocean.blueocean"/>
     </body>
   </html>

@@ -10,8 +10,8 @@ import io.jenkins.blueocean.api.profile.GetUserRequest;
 import io.jenkins.blueocean.api.profile.GetUserResponse;
 import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.User;
-import io.jenkins.blueocean.security.Identity;
 import io.jenkins.blueocean.commons.JsonConverter;
+import io.jenkins.blueocean.security.Identity;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,7 +50,7 @@ public class EmbeddedProfileServiceTest {
 
         Assert.assertNotNull(response.user);
         Assert.assertEquals(response.user.id, "SYSTEM");
-        Assert.assertEquals(response.user.name, "SYSTEM");
+        Assert.assertEquals(response.user.fullName, "SYSTEM");
 
 
 
@@ -59,11 +59,11 @@ public class EmbeddedProfileServiceTest {
     @Test
     public void getUserDetailsTest() throws Exception {
         GetUserDetailsResponse response = profileService.getUserDetails(
-                Identity.ANONYMOUS, new GetUserDetailsRequest((j.jenkins.getUser("alice").getId())));
+                Identity.ANONYMOUS, GetUserDetailsRequest.byUserId(j.jenkins.getUser("alice").getId()));
 
         Assert.assertNotNull(response.userDetails);
         Assert.assertEquals(response.userDetails.id, j.jenkins.getUser("alice").getId());
-        Assert.assertEquals(response.userDetails.name, "alice");
+        Assert.assertEquals(response.userDetails.fullName, "alice");
     }
 
     @Test
@@ -88,7 +88,7 @@ public class EmbeddedProfileServiceTest {
         for(String name: names){
             boolean found = false;
             for(User user:response.users){
-                if(name.equals(user.name)){
+                if(name.equals(user.fullName)){
                     found = true;
                     break;
                 }
