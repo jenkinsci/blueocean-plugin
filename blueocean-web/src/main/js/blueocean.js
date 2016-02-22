@@ -1,2 +1,2 @@
-console.log("Hello world from "+require('./name').name+"!");
-
+// Initialise the Blue Ocean app.
+require('./init');

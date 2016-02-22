@@ -4,10 +4,13 @@
   "devDependencies": {
     "gulp": "^3.9.0",
     "jenkins-js-builder": "0.0.40",
-    "jenkins-js-test": "^1.0.0"
+    "jenkins-js-test": "^1.0.1"
   },
   "dependencies": {
-    "jenkins-js-modules": "^1.5.0",
+    "jenkins-js-modules": "^1.5.1",
+    "@jenkins-cd/js-extensions": "0.0.2",
+    "react": "^0.14.5",
+    "react-dom": "^0.14.5",
     "window-handle": "^1.0.0"
   }
 }
