@@ -3,17 +3,11 @@
   "version": "0.0.1",
   "devDependencies": {
     "gulp": "^3.9.0",
-    "jenkins-handlebars-rt": "^1.0.1",
-    "jenkins-js-builder": "0.0.33",
-    "jenkins-js-test": "0.0.16"
+    "jenkins-js-builder": "0.0.40",
+    "jenkins-js-test": "^1.0.0"
   },
   "dependencies": {
-    "bootstrap-detached": "^3.3.4-v6",
-    "handlebars": "^3.0.3",
-    "hbsfy": "^2.4.1",
-    "jenkins-js-builder": "0.0.36",
-    "jenkins-js-modules": "^1.4.0",
-    "moment": "^2.10.6",
-    "window-handle": "0.0.6"
+    "jenkins-js-modules": "^1.5.0",
+    "window-handle": "^1.0.0"
   }
 }
