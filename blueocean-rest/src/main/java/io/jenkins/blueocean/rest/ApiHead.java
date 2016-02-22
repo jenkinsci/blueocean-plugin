@@ -64,7 +64,7 @@ public final class ApiHead{
 
                 if(details != null && details) {
                     return profileService.getUserDetails(request.principal(),
-                        new GetUserDetailsRequest(request.pathParam(USER_ID_PARAM)));
+                        new GetUserDetailsRequest(request.pathParam(USER_ID_PARAM), null));
                 }else {
                     return profileService.getUser(request.principal(),
                         new GetUserRequest(request.pathParam(USER_ID_PARAM)));
