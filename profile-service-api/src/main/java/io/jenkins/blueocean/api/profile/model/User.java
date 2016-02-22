@@ -15,16 +15,18 @@ import javax.annotation.Nonnull;
  * @see UserDetails
  */
 public class User {
+    /** The id of the user */
     @JsonProperty("id")
     public final String id;
 
-    @JsonProperty("name")
-    public final String name;
+    /** The name of the user e.g. John Smith */
+    @JsonProperty("fullName")
+    public final String fullName;
 
 
     public User(@Nonnull @JsonProperty("id")String id,
-                @Nonnull @JsonProperty("name")String name) {
+                @Nonnull @JsonProperty("fullName")String fullName) {
         this.id = id;
-        this.name = name;
+        this.fullName = fullName;
     }
 }

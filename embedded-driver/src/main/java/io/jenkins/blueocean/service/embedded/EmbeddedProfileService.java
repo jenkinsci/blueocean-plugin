@@ -1,8 +1,16 @@
 package io.jenkins.blueocean.service.embedded;
 
-import hudson.Extension;
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.api.profile.CreateOrganizationRequest;
 import io.jenkins.blueocean.api.profile.CreateOrganizationResponse;
+import io.jenkins.blueocean.api.profile.CreateUserRequest;
+import io.jenkins.blueocean.api.profile.CreateUserResponse;
 import io.jenkins.blueocean.api.profile.FindUsersRequest;
 import io.jenkins.blueocean.api.profile.FindUsersResponse;
 import io.jenkins.blueocean.api.profile.GetOrganizationRequest;
@@ -14,55 +22,52 @@ import io.jenkins.blueocean.api.profile.GetUserResponse;
 import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.Organization;
 import io.jenkins.blueocean.api.profile.model.User;
-import io.jenkins.blueocean.api.profile.model.UserDetails;
-import io.jenkins.blueocean.security.Identity;
-import io.jenkins.blueocean.security.LoginDetails;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
+import io.jenkins.blueocean.security.Credentials;
+import io.jenkins.blueocean.security.Identity;
+import io.jenkins.blueocean.service.embedded.properties.CredentialsProperty;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * {@link ProfileService} implementation to be used embedded as plugin
  *
  * @author Vivek Pandey
  */
-@Extension
-public class EmbeddedProfileService extends AbstractEmbeddedService implements ProfileService{
+public class EmbeddedProfileService extends AbstractEmbeddedService implements ProfileService {
+
+    private final LoadingCache<String, Lock> userCreationLocks = CacheBuilder.newBuilder().weakValues().build(new CacheLoader<String, Lock>() {
+        @Override
+        public Lock load(String userId) throws Exception {
+            return new ReentrantLock();
+        }
+    });
 
     @Nonnull
     @Override
     public GetUserResponse getUser(@Nonnull Identity identity, @Nonnull GetUserRequest request) {
-        hudson.model.User user = hudson.model.User.get(request.id, false, Collections.EMPTY_MAP);
-
-        if(user == null){
-            return new GetUserResponse(new User(Identity.ANONYMOUS.getName(), Identity.ANONYMOUS.getName()));
-        }
-
-        if(!user.getId().equals(request.id)){
-            throw new ServiceException.NotFoundException(String.format("User %s not found", request.id));
-        }
-
-        return new GetUserResponse(new User(user.getId(), user.getFullName()));
+        hudson.model.User user = getJenkinsUser(request.id);
+        return new GetUserResponse(Mapper.mapUser(user));
     }
 
     @Nonnull
     @Override
     public GetUserDetailsResponse getUserDetails(@Nonnull Identity identity, @Nonnull GetUserDetailsRequest request) {
-        hudson.model.User user = hudson.model.User.get(request.id, false, Collections.EMPTY_MAP);
-        if (user == null) {
-            throw new ServiceException.NotFoundException(String.format("Request user %s not found", request.id));
+        hudson.model.User user;
+        if (request.byUserId != null) {
+            user = getJenkinsUser(request.byUserId);
+        } else if (request.byCredentials != null) {
+            user = getJenkinsUserByCredentials(request.byCredentials);
+        } else {
+            throw new ServiceException.UnprocessableEntityException("did not specify userId or credentials");
         }
-
-        if(!user.getId().equals(request.id)){
-            throw new ServiceException.NotFoundException(String.format("User %s not found", request.id));
-        }
-
-        //TODO: How to get user's email in Jenkins
-        return new GetUserDetailsResponse(new UserDetails(user.getId(), user.getFullName(),"none",
-                Collections.<LoginDetails>emptySet()));
+        return new GetUserDetailsResponse(Mapper.mapUserDetails(user));
     }
 
     @Nonnull
@@ -82,11 +87,65 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
     @Override
     public FindUsersResponse findUsers(@Nonnull Identity identity, @Nonnull FindUsersRequest request) {
         validateOrganization(request.organization);
-        //TODO: hudson.model.User.getAll() could be expensive, need to find better way to do it
         List<User> users = new ArrayList<User>();
         for(hudson.model.User u:hudson.model.User.getAll()){
             users.add(new User(u.getId(), u.getDisplayName()));
         }
         return new FindUsersResponse(users, null, null);
+    }
+
+    @Override
+    @Nonnull
+    public CreateUserResponse createUser(@Nonnull Identity identity, @Nonnull CreateUserRequest request) {
+        hudson.model.User user;
+        String userId = Objects.firstNonNull(request.email, request.fullName);
+        if (Strings.isNullOrEmpty(userId)) {
+            throw new ServiceException.UnprocessableEntityException("could not synthesise a user id");
+        }
+        // Try to create a user with the requested user id
+        // Lock is needed to force Jenkins to not synthesise the ID if there is a conflict
+        Lock lock = userCreationLocks.getUnchecked(userId);
+        if (lock.tryLock()) {
+            try {
+                hudson.model.User existingUser;
+                try {
+                    existingUser = getJenkinsUser(userId);
+                } catch (NotFoundException e) {
+                    existingUser = null;
+                }
+                if (existingUser == null) {
+                    user = hudson.model.User.get(userId, true, ImmutableMap.of());
+                    if (user == null) {
+                        throw new ServiceException.UnexpectedErrorExpcetion("created user was null");
+                    }
+                } else {
+                    throw new ServiceException.UnprocessableEntityException("user id already exists");
+                }
+            } finally {
+                lock.unlock();
+            }
+        } else {
+            throw new ServiceException.TooManyRequestsException("could not create user");
+        }
+        return new CreateUserResponse(Mapper.mapUserDetails(Mapper.mapJenkinsUser(user, request.email, request.fullName, request.credentials)));
+    }
+
+    /** Safe way to query a user without creating it at the same time */
+    hudson.model.User getJenkinsUser(String email) {
+        hudson.model.User user = hudson.model.User.get(email, false, ImmutableMap.of());
+        if (user == null) {
+            throw new ServiceException.NotFoundException("could not find user");
+        }
+        return user;
+    }
+
+    hudson.model.User getJenkinsUserByCredentials(Credentials credentials) {
+        for (hudson.model.User user : hudson.model.User.getAll()) {
+            Set<Credentials> credentialsSet = Mapper.mapCredentials(user);
+            if (Iterables.find(credentialsSet, credentials.identityPredicate(), null) != null) {
+                return user;
+            }
+        }
+        throw new ServiceException.NotFoundException("could not find user");
     }
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import io.jenkins.blueocean.security.LoginDetails;
+import io.jenkins.blueocean.security.Credentials;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,46 +24,46 @@ public class UserDetails {
     public final String id;
 
     /** user name */
-    @JsonProperty("name")
-    public final String name;
+    @JsonProperty("fullName")
+    public final String fullName;
 
     /** user email */
     @JsonProperty("email")
     public final String email;
 
-    @JsonProperty("loginDetails")
-    List<LoginDetails> loginDetails;
+    @JsonProperty("credentials")
+    List<Credentials> credentials;
 
 
     public UserDetails(@Nonnull @JsonProperty("id") String id,
-                       @Nonnull @JsonProperty("name") String name,
+                       @Nonnull @JsonProperty("fullName") String fullName,
                        @Nullable @JsonProperty("email") String email,
-                       @Nonnull @JsonProperty("loginDetails") Set<LoginDetails> loginDetails
+                       @Nonnull @JsonProperty("credentials") Set<Credentials> credentials
                        ) {
         this.id = id;
-        this.name = name;
+        this.fullName = fullName;
         this.email = email;
-        this.loginDetails = ImmutableList.copyOf(loginDetails);
+        this.credentials = ImmutableList.copyOf(credentials);
     }
 
     /** Gives User object */
     @JsonIgnore
     public @Nonnull User toUser(){
-        return new User(id, name);
+        return new User(id, fullName);
     }
 
     /**
      * @param loginDetailsClass of the login details implementation to look up
-     * @return  LoginDetails instance corresponding to the given LoginDetails class. Null if no such id found.
+     * @return  Credentials instance corresponding to the given Credentials class. Null if no such id found.
      */
     @JsonIgnore
     @SuppressWarnings("unchecked")
-    @Nullable public <T extends LoginDetails> LoginDetails getLoginDetails(Class<T> loginDetailsClass) {
-        return Maps.uniqueIndex(this.loginDetails, new Function<LoginDetails, Class<LoginDetails>>() {
+    @Nullable public <T extends Credentials> Credentials getLoginDetails(Class<T> loginDetailsClass) {
+        return Maps.uniqueIndex(this.credentials, new Function<Credentials, Class<Credentials>>() {
             @Override
-            public Class<LoginDetails> apply(@Nullable LoginDetails loginDetails) {
-                if(loginDetails != null) {
-                    return (Class<LoginDetails>) loginDetails.getClass();
+            public Class<Credentials> apply(@Nullable Credentials credentials) {
+                if(credentials != null) {
+                    return (Class<Credentials>) credentials.getClass();
                 }
                 return null;
             }

@@ -16,7 +16,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>blueocean-core</artifactId>
+      <artifactId>blueocean-commons</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

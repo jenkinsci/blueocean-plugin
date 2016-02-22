@@ -10,7 +10,8 @@ import org.junit.Test;
 public class GetUserDetailsRequestTest {
     @Test
     public void serializeDeserialize(){
-        GetUserDetailsRequest request = new GetUserDetailsRequest("123");
+
+        GetUserDetailsRequest request = GetUserDetailsRequest.byUserId("123");
 
         String json = JsonConverter.toJson(request);
 
@@ -19,7 +20,7 @@ public class GetUserDetailsRequestTest {
         GetUserDetailsRequest requestFromJson = JsonConverter.toJava(json, GetUserDetailsRequest.class);
 
 
-        Assert.assertEquals(request.id, requestFromJson.id);
+        Assert.assertEquals(request.byUserId, requestFromJson.byUserId);
         System.out.println("Converted back from Json:\n"+JsonConverter.toJson(requestFromJson));
     }
 }

@@ -17,22 +17,26 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>blueocean-core</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pipeline-service-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>profile-service-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>embedded-driver</artifactId>
-      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.blueocean</groupId>
+      <artifactId>blueocean-authentication-service</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-github-oauth-plugin</artifactId>
     </dependency>
   </dependencies>
 
@@ -70,7 +74,15 @@
           </source>
         </configuration>
       </plugin>
-
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+                <excludes>
+                    <exclude>InjectedTest.java</exclude>
+                </excludes>
+            </configuration>
+        </plugin>
     </plugins>
   </build>
 </project>
