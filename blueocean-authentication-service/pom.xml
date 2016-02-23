@@ -9,19 +9,20 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>BlueOcean :: Authentication Service API</name>
-    <artifactId>authentication-service-api</artifactId>
+    <name>BlueOcean :: Authentication Service</name>
+    <artifactId>blueocean-authentication-service</artifactId>
     <packaging>hpi</packaging>
 
     <dependencies>
-        <!-- included for models only -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>profile-service-api</artifactId>
+            <artifactId>blueocean-commons</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-security-api</artifactId>
+            <artifactId>blueocean-authentication-service-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

@@ -8,16 +8,19 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>blueocean-bravo</artifactId>
+  <artifactId>blueocean-pipeline-service-api</artifactId>
   <packaging>hpi</packaging>
 
-  <name>BlueOcean :: Bravo Plugin</name>
+  <name>BlueOcean :: Pipeline Service API</name>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-security-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>blueocean-commons</artifactId>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>
