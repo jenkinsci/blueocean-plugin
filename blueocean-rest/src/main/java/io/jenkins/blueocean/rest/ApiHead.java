@@ -26,7 +26,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.slf4j.Logger;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +74,7 @@ public final class ApiHead{
 
                 if(details != null && details) {
                     return profileService.getUserDetails(request.principal(),
-                        new GetUserDetailsRequest(request.pathParam(USER_ID_PARAM)));
+                        new GetUserDetailsRequest(request.pathParam(USER_ID_PARAM),null));
                 }else {
                     return profileService.getUser(request.principal(),
                         new GetUserRequest(request.pathParam(USER_ID_PARAM)));
