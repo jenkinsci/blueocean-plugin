@@ -7,6 +7,7 @@ import io.jenkins.blueocean.rest.sandbox.Organization;
 import io.jenkins.blueocean.rest.sandbox.PipelineContainer;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.verb.POST;
 
 import java.io.File;
 import java.io.IOError;
