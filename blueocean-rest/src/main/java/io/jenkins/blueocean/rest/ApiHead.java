@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest;
 
 import hudson.Extension;
 import hudson.ExtensionList;
+import io.jenkins.blueocean.RootRoutable;
 import io.jenkins.blueocean.api.pipeline.FindPipelineRunsRequest;
 import io.jenkins.blueocean.api.pipeline.FindPipelinesRequest;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRequest;
@@ -36,7 +37,7 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 @Extension
-public final class ApiHead{
+public final class ApiHead implements RootRoutable  {
 
     @InjectLogger
     private Logger logger;
@@ -186,6 +187,14 @@ public final class ApiHead{
                 }
             }
         });
+    }
+
+    /**
+     * This {@link ApiHead} gets bound to "/rest"
+     */
+    @Override
+    public String getUrlName() {
+        return "rest";
     }
 
     /**

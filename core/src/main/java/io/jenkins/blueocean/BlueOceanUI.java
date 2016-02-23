@@ -3,7 +3,6 @@ package io.jenkins.blueocean;
 import com.google.inject.Inject;
 import hudson.Extension;
 import hudson.ExtensionList;
-import jenkins.model.Jenkins;
 import io.jenkins.blueocean.api.profile.GetUserDetailsRequest;
 import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.config.ApplicationConfig;
@@ -50,17 +49,14 @@ public class BlueOceanUI {
         return profiles.getUserDetails(identity, GetUserDetailsRequest.byUserId(identity.user)).userDetails.email;
     }
 
-    public Object getRest(){
-        try {
-            ExtensionList extensions = Jenkins.getActiveInstance().getExtensionList("io.jenkins.blueocean.rest.ApiHead");
-            if(extensions.size() > 0){
-                return extensions.get(0);
-            }else{
-                return HttpResponses.notFound();
-            }
-        } catch (ClassNotFoundException e) {
-            return HttpResponses.notFound();
+    /**
+     * Exposes {@link RootRoutable}s to the URL space.
+     */
+    public RootRoutable getDynamic(String route) {
+        for (RootRoutable r : ExtensionList.lookup(RootRoutable.class)) {
+            if (r.getUrlName().equals(route))
+                return r;
         }
-
+        return null;
     }
 }
