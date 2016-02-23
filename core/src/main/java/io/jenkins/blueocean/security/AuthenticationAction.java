@@ -31,6 +31,7 @@ public final class AuthenticationAction {
         this.cookies = cookies;
     }
 
+    // KK: Ivan, we need to talk, there's a better way to do this
     public final void doDynamic(StaplerRequest req, StaplerResponse rsp) throws IOException {
         String authType = req.getRestOfPath().substring(1, req.getRestOfPath().length());
         AuthenticationProvider provider = AuthenticationProvider.getForType(authType);
