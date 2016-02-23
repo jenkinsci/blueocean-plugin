@@ -2,8 +2,6 @@ package io.jenkins.blueocean.service.embedded;
 
 import io.jenkins.blueocean.api.profile.FindUsersRequest;
 import io.jenkins.blueocean.api.profile.FindUsersResponse;
-import io.jenkins.blueocean.api.profile.GetOrganizationRequest;
-import io.jenkins.blueocean.api.profile.GetOrganizationResponse;
 import io.jenkins.blueocean.api.profile.GetUserDetailsRequest;
 import io.jenkins.blueocean.api.profile.GetUserDetailsResponse;
 import io.jenkins.blueocean.api.profile.GetUserRequest;
@@ -11,6 +9,7 @@ import io.jenkins.blueocean.api.profile.GetUserResponse;
 import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.User;
 import io.jenkins.blueocean.commons.JsonConverter;
+import io.jenkins.blueocean.rest.sandbox.Organization;
 import io.jenkins.blueocean.security.Identity;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationContainerImpl;
 import org.junit.Assert;
@@ -63,10 +62,8 @@ public class EmbeddedProfileServiceTest {
 
     @Test
     public void getOrganizationTest(){
-        GetOrganizationResponse response = profileService.getOrganization(new Identity("alice"),
-                new GetOrganizationRequest("jenkins"));
-        Assert.assertNotNull(response.organization);
-        Assert.assertEquals(response.organization.name, "jenkins");
+        Organization o = orgContainer.get("jenkins");
+        Assert.assertEquals(o.getName(), "jenkins");
     }
 
     @Test
