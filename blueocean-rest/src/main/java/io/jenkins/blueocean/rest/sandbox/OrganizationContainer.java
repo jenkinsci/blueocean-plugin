@@ -13,6 +13,9 @@ import org.kohsuke.stapler.verb.POST;
  * @author Kohsuke Kawaguchi
  */
 public abstract class OrganizationContainer extends Container<Organization> implements ApiRoutable, ExtensionPoint {
+    /**
+     * Creates a new organization.
+     */
     @WebMethod(name="") @POST
     public abstract Organization create(@JsonBody CreateOrganizationRequest req);
 

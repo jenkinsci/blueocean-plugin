@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.service.embedded;
 
-import hudson.Extension;
-import hudson.tasks.Mailer;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
@@ -9,30 +7,20 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import io.jenkins.blueocean.api.profile.CreateOrganizationRequest;
-import io.jenkins.blueocean.api.profile.CreateOrganizationResponse;
 import io.jenkins.blueocean.api.profile.CreateUserRequest;
 import io.jenkins.blueocean.api.profile.CreateUserResponse;
 import io.jenkins.blueocean.api.profile.FindUsersRequest;
 import io.jenkins.blueocean.api.profile.FindUsersResponse;
-import io.jenkins.blueocean.api.profile.GetOrganizationRequest;
-import io.jenkins.blueocean.api.profile.GetOrganizationResponse;
 import io.jenkins.blueocean.api.profile.GetUserDetailsRequest;
 import io.jenkins.blueocean.api.profile.GetUserDetailsResponse;
 import io.jenkins.blueocean.api.profile.GetUserRequest;
 import io.jenkins.blueocean.api.profile.GetUserResponse;
 import io.jenkins.blueocean.api.profile.ProfileService;
-import io.jenkins.blueocean.api.profile.model.Organization;
 import io.jenkins.blueocean.api.profile.model.User;
-import io.jenkins.blueocean.api.profile.model.UserDetails;
-import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.security.Identity;
-import io.jenkins.blueocean.security.LoginDetails;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.security.Credentials;
 import io.jenkins.blueocean.security.Identity;
-import io.jenkins.blueocean.service.embedded.properties.CredentialsProperty;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -74,19 +62,6 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
             throw new ServiceException.UnprocessableEntityException("did not specify userId or credentials");
         }
         return new GetUserDetailsResponse(Mapper.mapUserDetails(user));
-    }
-
-    @Nonnull
-    @Override
-    public GetOrganizationResponse getOrganization(@Nonnull Identity identity, @Nonnull GetOrganizationRequest request) {
-        validateOrganization(request.name);
-        return new GetOrganizationResponse(new Organization(getJenkins().getDisplayName().toLowerCase()));
-    }
-
-    @Nonnull
-    @Override
-    public CreateOrganizationResponse createOrganization(@Nonnull Identity identity, @Nonnull CreateOrganizationRequest request) {
-        throw new ServiceException.NotImplementedException("Not implemented yet");
     }
 
     @Nonnull

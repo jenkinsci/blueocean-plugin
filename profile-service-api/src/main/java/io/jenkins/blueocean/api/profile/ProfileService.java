@@ -35,28 +35,6 @@ public interface ProfileService{
     GetUserDetailsResponse getUserDetails(@Nonnull Identity identity, @Nonnull GetUserDetailsRequest request);
 
     /**
-     * Gives {@link Organization}
-     *
-     * @param identity user identity in this context
-     * @param request {@link GetOrganizationRequest} instance
-     * @return {@link GetOrganizationResponse} instance
-     * @throws io.jenkins.blueocean.commons.ServiceException if there is an exception in the server.
-     */
-    @Nonnull
-    GetOrganizationResponse getOrganization(@Nonnull Identity identity, @Nonnull GetOrganizationRequest request);
-
-    /**
-     * Creates a new Organization
-     *
-     * @param identity user identity in this context
-     * @param request {@link CreateOrganizationRequest} instance
-     * @return {@link CreateOrganizationResponse} instance
-     * @throws io.jenkins.blueocean.commons.ServiceException if there is an exception in the server.
-     */
-    @Nonnull
-    CreateOrganizationResponse createOrganization(@Nonnull Identity identity, @Nonnull CreateOrganizationRequest request);
-
-    /**
      * Gives {@link FindUsersResponse}
      *
      * @param identity user identity in this context

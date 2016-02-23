@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hudson.XmlFile;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.sandbox.Organization;
 import io.jenkins.blueocean.rest.sandbox.PipelineContainer;
@@ -9,21 +9,27 @@ import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.POST;
 
-import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 
 /**
+ * {@link Organization} implementation for the embedded use.
+ *
+ * @author Vivek Pandey
  * @author Kohsuke Kawaguchi
  */
 public class OrganizationImpl extends Organization {
-    @JsonProperty
-    String iconUrl;
+    /**
+     * In embedded mode, there's only one organization
+     */
+    public OrganizationImpl() {
+    }
 
-    @Override
-    public String getIconUrl() {
-        populate();
-        return iconUrl;
+    /**
+     * In embedded mode, there's only one organization
+     */
+    @JsonProperty
+    public String getName() {
+        return Jenkins.getInstance().getDisplayName().toLowerCase();
     }
 
     @Override
@@ -31,37 +37,15 @@ public class OrganizationImpl extends Organization {
         return null;
     }
 
-    private boolean populated;
-
-    private void populate() {
-        if (!populated) {
-            try {
-                getXmlFile().unmarshal(this);
-                populated = true;
-            } catch (IOException e) {
-                throw new IOError(e);
-            }
-        }
-    }
-
-    private XmlFile getXmlFile() {
-        return new XmlFile(new File(Jenkins.getInstance().getRootDir(),"organizations/"+name));
-    }
-
-    @Override
-    public Object doIndex() {
-        populate();
-        return super.doIndex();
-    }
-
     @WebMethod(name="") @POST
     public void update(@JsonBody OrganizationImpl given) throws IOException {
         given.validate();
-        getXmlFile().write(given);
+        throw new ServiceException.NotImplementedException("Not implemented yet");
+//        getXmlFile().write(given);
     }
 
     private void validate() {
-        if (name.length()<2)
-            throw new IllegalArgumentException("Invalid name: "+name);
+//        if (name.length()<2)
+//            throw new IllegalArgumentException("Invalid name: "+name);
     }
 }

@@ -13,7 +13,7 @@ public abstract class Resource {
      */
     @WebMethod(name="") @GET
     @TreeResponse /* this annotation does the above new Api(...).doJson(...) */
-    public Object /*getState*/ doIndex() {
+    public Object getState() {
         return this;
     }
 }

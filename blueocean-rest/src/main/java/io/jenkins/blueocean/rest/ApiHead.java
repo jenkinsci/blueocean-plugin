@@ -8,10 +8,7 @@ import io.jenkins.blueocean.api.pipeline.FindPipelinesRequest;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRequest;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRunRequest;
 import io.jenkins.blueocean.api.pipeline.PipelineService;
-import io.jenkins.blueocean.api.profile.CreateOrganizationRequest;
-import io.jenkins.blueocean.api.profile.CreateOrganizationResponse;
 import io.jenkins.blueocean.api.profile.FindUsersRequest;
-import io.jenkins.blueocean.api.profile.GetOrganizationRequest;
 import io.jenkins.blueocean.api.profile.GetUserDetailsRequest;
 import io.jenkins.blueocean.api.profile.GetUserRequest;
 import io.jenkins.blueocean.api.profile.ProfileService;
@@ -80,34 +77,12 @@ public final class ApiHead implements RootRoutable  {
             }
         });
 
-        Router.get(new Route.RouteImpl(String.format("users/%s",ORGANIZATION_ID_PARAM)) {
+        Router.get(new Route.RouteImpl(String.format("users/%s", ORGANIZATION_ID_PARAM)) {
             @Override
             public Object handle(Request request, Response response) {
                 response.status(200);
-                return profileService.getOrganization(request.principal(),
-                    new GetOrganizationRequest(request.pathParam(ORGANIZATION_ID_PARAM)));
-            }
-        });
-
-        Router.get(new Route.RouteImpl(String.format("organizations/%s",ORGANIZATION_ID_PARAM)) {
-            @Override
-            public Object handle(Request request, Response response) {
-                response.status(200);
-
-                return profileService.getOrganization(request.principal(),
-                    new GetOrganizationRequest(request.pathParam(ORGANIZATION_ID_PARAM)));
-
-            }
-        });
-
-        Router.post(new Route.RouteImpl("organizations") {
-            @Override
-            public Object handle(Request request, Response response) {
-                CreateOrganizationResponse createOrganizationResponse = profileService.createOrganization(request.principal(),
-                    new CreateOrganizationRequest(request.pathParam(ORGANIZATION_ID_PARAM)));
-                response.status(201);
-                response.header("Location", appendSlashToPath(request.uri())+createOrganizationResponse.organization);
-                return createOrganizationResponse;
+                return profileService.getUser(request.principal(),
+                        new GetUserRequest(request.pathParam(ORGANIZATION_ID_PARAM)));
             }
         });
 
