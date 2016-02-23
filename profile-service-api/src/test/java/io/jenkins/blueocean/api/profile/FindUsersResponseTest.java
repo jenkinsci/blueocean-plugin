@@ -27,7 +27,7 @@ public class FindUsersResponseTest {
         for(int i =0; i<response.users.size(); i++){
             User expected = response.users.get(i);
             User actual = responseFromJson.users.get(i);
-            Assert.assertEquals(expected.name, actual.name);
+            Assert.assertEquals(expected.fullName, actual.fullName);
             Assert.assertEquals(expected.id, actual.id);
         }
 

@@ -32,7 +32,6 @@ import java.util.List;
  *
  * @author Vivek Pandey
  */
-@Extension
 public class EmbeddedPipelineService extends AbstractEmbeddedService implements PipelineService {
 
     @Nonnull
