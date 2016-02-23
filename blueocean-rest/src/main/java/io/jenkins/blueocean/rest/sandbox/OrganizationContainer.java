@@ -6,6 +6,8 @@ import io.jenkins.blueocean.commons.stapler.JsonBody;
 import org.kohsuke.stapler.WebMethod;
 
 /**
+ * This is the head of the blue ocean API.
+ *
  * @author Kohsuke Kawaguchi
  */
 public abstract class OrganizationContainer extends Container<Organization> implements ExtensionPoint {

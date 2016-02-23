@@ -44,6 +44,7 @@ public final class ApiHead{
     private final ProfileService profileService;
 
     private final PipelineService pipelineService;
+    private final OrganizationContainer orgContainer;
 
     private static final String USER_ID_PARAM=":user-id";
     private static final String ORGANIZATION_ID_PARAM=":organization-id";
@@ -52,9 +53,10 @@ public final class ApiHead{
 
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
 
-    @Inject
-    OrganizationContainer orgContainer;
 
+    /**
+     * Maps the organizations API to the URL space.
+     */
     public OrganizationContainer getOrganizations() {
         return orgContainer;
     }
@@ -62,7 +64,7 @@ public final class ApiHead{
     public ApiHead() {
         this.profileService = getService(ProfileService.class);
         this.pipelineService = getService(PipelineService.class);
-
+        this.orgContainer = getService(OrganizationContainer.class);
 
         Router.get(new Route.RouteImpl(String.format("users/%s",USER_ID_PARAM)) {
             @Override

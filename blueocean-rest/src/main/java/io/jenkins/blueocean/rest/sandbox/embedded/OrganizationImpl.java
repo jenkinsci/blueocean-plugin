@@ -53,7 +53,7 @@ public class OrganizationImpl extends Organization {
         return super.doIndex();
     }
 
-    @WebMethod(name="",method="POST")
+    @WebMethod(name="") @POST
     public void update(@JsonBody OrganizationImpl given) throws IOException {
         given.validate();
         getXmlFile().write(given);
