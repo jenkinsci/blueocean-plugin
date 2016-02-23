@@ -19,7 +19,6 @@ import io.jenkins.blueocean.commons.guice.InjectLogger;
 import io.jenkins.blueocean.rest.router.Route;
 import io.jenkins.blueocean.rest.router.RouteContext;
 import io.jenkins.blueocean.rest.router.Router;
-import io.jenkins.blueocean.rest.sandbox.OrganizationContainer;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
@@ -45,7 +44,6 @@ public final class ApiHead{
     private final ProfileService profileService;
 
     private final PipelineService pipelineService;
-    private final OrganizationContainer orgContainer;
 
     private final Map<String,BlueOceanRestApi> apis = new HashMap<>();
 
@@ -64,7 +62,6 @@ public final class ApiHead{
 
         this.profileService = getService(ProfileService.class);
         this.pipelineService = getService(PipelineService.class);
-        this.orgContainer = getService(OrganizationContainer.class);
 
         Router.get(new Route.RouteImpl(String.format("users/%s",USER_ID_PARAM)) {
             @Override
