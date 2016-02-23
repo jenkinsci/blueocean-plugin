@@ -10,6 +10,7 @@ import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.POST;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -34,7 +35,7 @@ public class OrganizationContainerImpl extends OrganizationContainer {
 
     @Override
     public Iterator<Organization> iterator() {
-        return null;
+        return Collections.<Organization>singleton(new OrganizationImpl()).iterator();
     }
 
     protected void validateOrganization(String organization){
