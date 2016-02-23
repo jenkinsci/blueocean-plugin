@@ -27,7 +27,9 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Entrypoint for blueocean REST apis. $CONTEXT_PATH/rest being root. e.g. /jenkins/rest
@@ -46,6 +48,8 @@ public final class ApiHead{
     private final PipelineService pipelineService;
     private final OrganizationContainer orgContainer;
 
+    private final Map<String,BlueOceanRestApi> apis = new HashMap<>();
+
     private static final String USER_ID_PARAM=":user-id";
     private static final String ORGANIZATION_ID_PARAM=":organization-id";
     private static final String PIPELINE_ID_PARAM=":pipeline-id";
@@ -54,14 +58,11 @@ public final class ApiHead{
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
 
 
-    /**
-     * Maps the organizations API to the URL space.
-     */
-    public OrganizationContainer getOrganizations() {
-        return orgContainer;
-    }
-
     public ApiHead() {
+        for ( BlueOceanRestApi api : ExtensionList.lookup(BlueOceanRestApi.class)) {
+            apis.put(api.getUrlName(),api);
+        }
+
         this.profileService = getService(ProfileService.class);
         this.pipelineService = getService(PipelineService.class);
         this.orgContainer = getService(OrganizationContainer.class);
@@ -189,7 +190,13 @@ public final class ApiHead{
                 }
             }
         });
+    }
 
+    /**
+     * Exposes all {@link BlueOceanRestApi}s to URL space.
+     */
+    public BlueOceanRestApi getDynamic(String route) {
+        return apis.get(route);
     }
 
     public HttpResponse doDynamic(StaplerRequest request, StaplerResponse response){
