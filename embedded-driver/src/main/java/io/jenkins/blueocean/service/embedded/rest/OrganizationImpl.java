@@ -7,6 +7,7 @@ import io.jenkins.blueocean.rest.sandbox.Organization;
 import io.jenkins.blueocean.rest.sandbox.PipelineContainer;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.POST;
 
 import java.io.IOException;
@@ -35,6 +36,11 @@ public class OrganizationImpl extends Organization {
     @Override
     public PipelineContainer getPipelines() {
         return null;
+    }
+
+    @WebMethod(name="") @DELETE
+    public void delete() {
+        throw new ServiceException.NotImplementedException("Not implemented yet");
     }
 
     @WebMethod(name="") @POST
