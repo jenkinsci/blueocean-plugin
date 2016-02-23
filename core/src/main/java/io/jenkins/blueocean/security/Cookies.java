@@ -18,7 +18,7 @@ public class Cookies {
     private static final Long MAX_COOKIE_AGE = TimeUnit.DAYS.toMillis(365);
     private static final String AUTH_COOKIE_NAME = "BO";
 
-    private CryptService crypter;
+    private final CryptService crypter;
 
     @Inject
     public Cookies(ApplicationConfig applicationConfig) {
