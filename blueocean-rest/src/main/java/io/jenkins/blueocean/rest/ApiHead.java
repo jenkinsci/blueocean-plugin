@@ -46,7 +46,7 @@ public final class ApiHead implements RootRoutable  {
 
     private final PipelineService pipelineService;
 
-    private final Map<String,BlueOceanRestApi> apis = new HashMap<>();
+    private final Map<String,ApiRoutable> apis = new HashMap<>();
 
     private static final String USER_ID_PARAM=":user-id";
     private static final String ORGANIZATION_ID_PARAM=":organization-id";
@@ -57,7 +57,7 @@ public final class ApiHead implements RootRoutable  {
 
 
     public ApiHead() {
-        for ( BlueOceanRestApi api : ExtensionList.lookup(BlueOceanRestApi.class)) {
+        for ( ApiRoutable api : ExtensionList.lookup(ApiRoutable.class)) {
             apis.put(api.getUrlName(),api);
         }
 
@@ -198,9 +198,9 @@ public final class ApiHead implements RootRoutable  {
     }
 
     /**
-     * Exposes all {@link BlueOceanRestApi}s to URL space.
+     * Exposes all {@link ApiRoutable}s to URL space.
      */
-    public BlueOceanRestApi getDynamic(String route) {
+    public ApiRoutable getDynamic(String route) {
         return apis.get(route);
     }
 
