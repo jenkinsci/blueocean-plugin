@@ -29,7 +29,7 @@
     <module>blueocean-authentication-service</module>
     <module>blueocean-profile-service-api</module>
     <module>blueocean-pipeline-service-api</module>
-    <module>blueocean-embedded-driver</module>
+    <module>blueocean-plugin</module>
     <module>blueocean-github-oauth-plugin</module>
     <module>blueocean-standalone</module>
   </modules>
@@ -54,19 +54,19 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>profile-service-api</artifactId>
+            <artifactId>blueocean-profile-service-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>pipeline-service-api</artifactId>
+            <artifactId>blueocean-pipeline-service-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>authentication-service-api</artifactId>
+            <artifactId>blueocean-authentication-service-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -78,13 +78,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-all</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-core</artifactId>
+            <artifactId>blueocean-web</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -108,13 +102,13 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>embedded-driver</artifactId>
+            <artifactId>blueocean-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-war</artifactId>
+            <artifactId>blueocean-standalone</artifactId>
             <version>${project.version}</version>
         </dependency>
 

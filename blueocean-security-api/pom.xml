@@ -12,7 +12,7 @@
   <artifactId>blueocean-security-api</artifactId>
   <packaging>hpi</packaging>
 
-  <name>BlueOcean :: BlueOcean Security API</name>
+  <name>BlueOcean :: Security API</name>
 
   <dependencies>
       <dependency>

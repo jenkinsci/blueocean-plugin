@@ -18,12 +18,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-profile-service-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-security-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

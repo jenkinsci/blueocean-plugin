@@ -14,7 +14,7 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
-  <name>Blue Ocean WAR</name>
+  <name>BlueOcean :: Standalone Driver</name>
 
   <properties>
     <JENKINS_HOME>${basedir}/work</JENKINS_HOME>
@@ -57,14 +57,14 @@
     </dependency>
     <dependency>
       <groupId>io.jenkins.blueocean</groupId>
-      <artifactId>pipeline-service-api</artifactId>
+      <artifactId>blueocean-pipeline-service-api</artifactId>
       <version>${project.version}</version>
       <type>hpi</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.jenkins.blueocean</groupId>
-      <artifactId>profile-service-api</artifactId>
+      <artifactId>blueocean-profile-service-api</artifactId>
       <version>${project.version}</version>
       <type>hpi</type>
       <scope>provided</scope>

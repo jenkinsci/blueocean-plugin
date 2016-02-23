@@ -14,6 +14,8 @@
     <artifactId>blueocean-github-oauth-plugin</artifactId>
     <packaging>hpi</packaging>
 
+    <name>BlueOcean :: Github OAuth Plugin</name>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.oltu.oauth2</groupId>
@@ -22,12 +24,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-security-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-commons</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.kohsuke</groupId>

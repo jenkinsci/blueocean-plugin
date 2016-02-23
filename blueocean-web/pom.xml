@@ -12,7 +12,7 @@
     <artifactId>blueocean-core</artifactId>
     <packaging>hpi</packaging>
 
-    <name>BlueOcean :: Core</name>
+    <name>BlueOcean :: Web module</name>
 
     <dependencies>
         <dependency>
@@ -28,17 +28,14 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-security-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-profile-service-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-authentication-service-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jasypt</groupId>

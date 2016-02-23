@@ -9,36 +9,31 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueocean-embedded-driver</artifactId>
+    <artifactId>blueocean-plugin</artifactId>
     <packaging>hpi</packaging>
 
-    <name>BlueOcean :: BlueOcean Embedded Service API Driver</name>
+    <name>BlueOcean :: Jenkins Plugin</name>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-commons</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-security-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-profile-service-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-pipeline-service-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-authentication-service-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
