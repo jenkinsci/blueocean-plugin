@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.sandbox.embedded;
+package io.jenkins.blueocean.service.embedded.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hudson.XmlFile;

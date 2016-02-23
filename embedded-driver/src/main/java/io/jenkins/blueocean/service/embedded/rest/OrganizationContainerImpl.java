@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.sandbox.embedded;
+package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
 import io.jenkins.blueocean.api.profile.CreateOrganizationRequest;

@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.sandbox.embedded;
+package io.jenkins.blueocean.service.embedded.rest;
 
 /**
  * @author Kohsuke Kawaguchi
