@@ -12,31 +12,32 @@ import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.User;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.security.Identity;
-import org.junit.After;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationContainerImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
-import java.util.List;
+import javax.inject.Inject;
 
 /**
  * @author Vivek Pandey
  */
 public class EmbeddedProfileServiceTest {
 
-    private ProfileService profileService;
-
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
+    @Inject
+    public OrganizationContainerImpl orgContainer;
+
+    @Inject
+    private ProfileService profileService;
 
     @Before
     public void before(){
-        List<ProfileService> profileServices = j.jenkins.getExtensionList(ProfileService.class);
-        Assert.assertTrue(profileServices.size() == 1);
-        this.profileService = profileServices.get(0);
+        j.jenkins.getInjector().injectMembers(this);
     }
 
 
