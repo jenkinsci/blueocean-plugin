@@ -1,8 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.XmlFile;
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.sandbox.Pipeline;
 import jenkins.model.Jenkins;
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.verb.GET;
 
 import java.io.File;
 import java.io.IOError;
@@ -32,11 +35,13 @@ public class PipelineImpl extends Pipeline {
     }
 
     private XmlFile getXmlFile() {
-        return new XmlFile(new File(Jenkins.getInstance().getRootDir(),"organizations/"+name));
+//        return new XmlFile(new File(Jenkins.getInstance().getRootDir(),"organizations/"+name));
+        throw new UnsupportedOperationException("This is just an example");
     }
 
     @Override
-    public Object doIndex() {
+    @WebMethod(name="") @GET @TreeResponse
+    public Object getState() {
         populate();
         return super.getState();
     }
