@@ -13,7 +13,7 @@ import org.kohsuke.stapler.verb.POST;
 import java.util.Iterator;
 
 /**
- *
+ * {@link OrganizationContainer} for the embedded use
  *
  * @author Vivek Pandey
  * @author Kohsuke Kawaguchi
