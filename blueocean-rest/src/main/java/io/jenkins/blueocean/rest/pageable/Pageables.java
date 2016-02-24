@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.rest.pageable;
 
-import hudson.util.Iterators;
+import com.google.common.collect.Iterators;
 
 import java.util.Iterator;
 
@@ -24,8 +24,19 @@ public abstract class Pageables {
 
             @Override
             public Iterator<T> iterator() {
-                return Iterators.<T>empty();
+                return Iterators.<T>emptyIterator();
             }
         };
+    }
+
+    /**
+     * Poorman's {@link Pageable} implementation that does
+     * skipping by simply fast-forwarding {@link Iterator}
+     */
+    public static <T> Iterator<T> slice(Iterator<T> base, int start, int limit) {
+        // fast-forward
+        if (Iterators.skip(base,start)!=start)
+            throw new ArrayIndexOutOfBoundsException();
+        return Iterators.limit(base, limit);
     }
 }

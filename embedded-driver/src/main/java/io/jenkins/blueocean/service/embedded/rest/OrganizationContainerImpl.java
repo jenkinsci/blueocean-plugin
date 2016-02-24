@@ -24,7 +24,7 @@ public class OrganizationContainerImpl extends OrganizationContainer {
     @Override
     public Organization get(String name) {
         validateOrganization(name);
-        return new OrganizationImpl();
+        return OrganizationImpl.INSTANCE;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class OrganizationContainerImpl extends OrganizationContainer {
 
     @Override
     public Iterator<Organization> iterator() {
-        return Collections.<Organization>singleton(new OrganizationImpl()).iterator();
+        return Collections.<Organization>singleton(OrganizationImpl.INSTANCE).iterator();
     }
 
     protected void validateOrganization(String organization){

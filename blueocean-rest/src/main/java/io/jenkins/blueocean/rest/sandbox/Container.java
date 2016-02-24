@@ -2,15 +2,19 @@ package io.jenkins.blueocean.rest.sandbox;
 
 import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
+import io.jenkins.blueocean.rest.pageable.Pageable;
+import io.jenkins.blueocean.rest.pageable.Pageables;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
+
+import java.util.Iterator;
 
 /**
  * Stapler-bound REST endpoint for a collection of objects.
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class Container<T> implements Iterable<T> {
+public abstract class Container<T> implements Pageable<T> {
     /**
      * Gets the individual member by its name
      */
@@ -21,6 +25,14 @@ public abstract class Container<T> implements Iterable<T> {
     // for stapler
     public final T getDynamic(String name) {
         return get(name);
+    }
+
+    /**
+     * Base implementation of pagenation that is dumb.
+     */
+    @Override
+    public Iterator<T> iterator(int start, int limit) {
+        return Pageables.slice(iterator(),start,limit);
     }
 
     /**
