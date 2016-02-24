@@ -20,7 +20,7 @@ import org.kohsuke.stapler.Stapler;
  */
 @Extension
 public class BlueOceanUI {
-
+/* TODO: Ivan(?) needs to push this down into the security-api module
     @Inject
     private ProfileService profiles;
     @Inject
@@ -48,6 +48,7 @@ public class BlueOceanUI {
         Identity identity = (Identity)Stapler.getCurrentRequest().getUserPrincipal();
         return profiles.getUserDetails(identity, GetUserDetailsRequest.byUserId(identity.user)).userDetails.email;
     }
+*/
 
     /**
      * Exposes {@link RootRoutable}s to the URL space.

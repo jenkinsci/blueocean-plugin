@@ -13,13 +13,18 @@ import io.jenkins.blueocean.api.profile.GetUserRequest;
 import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.guice.InjectLogger;
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.router.Route;
 import io.jenkins.blueocean.rest.router.RouteContext;
 import io.jenkins.blueocean.rest.router.Router;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.verb.GET;
+import org.kohsuke.stapler.verb.POST;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -119,36 +124,33 @@ public final class ApiHead implements RootRoutable  {
                         request.pathParam(PIPELINE_ID_PARAM), request.pathParam(RUN_ID_PARAM)));
             }
         });
-        Router.get(new Route.RouteImpl("search"){
-            @Override
-            @SuppressWarnings({"unchecked"})
-            public Object handle(Request request, Response response) {
-                response.status(200);
+    }
 
-                Query query = Query.parse(request.queryParam("q", true));
-                assert query != null; //will never be the case since its taken care in request.queryParam()
-                switch (query.type){
-                    case "user":
-                        return profileService.findUsers(request.principal(),
-                            new FindUsersRequest(query.param("organization", true),
-                                query.param("start", Long.class),
-                                query.param("limit", Long.class)));
-                    case "pipeline":
-                        return pipelineService.findPipelines(request.principal(),
-                            new FindPipelinesRequest(query.param("organization", true), query.param("pipeline")));
-                    case "run":
-                        return pipelineService.findPipelineRuns(request.principal(),
-                            new FindPipelineRunsRequest(query.param("organization", true),
-                                query.param("pipeline"),
-                                query.param("latestOnly", Boolean.class),
-                                query.param("branches", List.class),
-                                query.param("start", Long.class),
-                                query.param("limit", Long.class)));
-                    default:
-                        throw new ServiceException.BadRequestExpception("Unknown query type: "+query.type);
-                }
-            }
-        });
+    /**
+     * Search API
+     */
+    @WebMethod(name="search") @GET @TreeResponse
+    public Object[] search(@QueryParameter Query query) {
+        switch (query.type){
+            case "user":
+                return profileService.findUsers(request.principal(),
+                    new FindUsersRequest(query.param("organization", true),
+                        query.param("start", Long.class),
+                        query.param("limit", Long.class)));
+            case "pipeline":
+                return pipelineService.findPipelines(request.principal(),
+                    new FindPipelinesRequest(query.param("organization", true), query.param("pipeline")));
+            case "run":
+                return pipelineService.findPipelineRuns(request.principal(),
+                    new FindPipelineRunsRequest(query.param("organization", true),
+                        query.param("pipeline"),
+                        query.param("latestOnly", Boolean.class),
+                        query.param("branches", List.class),
+                        query.param("start", Long.class),
+                        query.param("limit", Long.class)));
+            default:
+                throw new ServiceException.BadRequestExpception("Unknown query type: "+query.type);
+        }
     }
 
     /**
