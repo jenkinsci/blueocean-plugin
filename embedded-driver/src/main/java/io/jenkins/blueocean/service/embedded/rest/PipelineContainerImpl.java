@@ -19,7 +19,9 @@ public class PipelineContainerImpl extends PipelineContainer {
         if (p instanceof Project) {
             return new PipelineImpl((Project)p);
         }
-        return null;
+
+        // TODO: I'm going to turn this into a decorator annotation
+        throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", name));
     }
 
     @Override
