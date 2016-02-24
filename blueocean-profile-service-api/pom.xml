@@ -8,15 +8,19 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>blueocean-commons</artifactId>
+  <artifactId>blueocean-profile-service-api</artifactId>
   <packaging>hpi</packaging>
 
-  <name>BlueOcean :: Commons API</name>
+  <name>BlueOcean :: Profile Service API</name>
+
   <dependencies>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-security-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-commons</artifactId>
     </dependency>
   </dependencies>
 </project>

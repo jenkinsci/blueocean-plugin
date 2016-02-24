@@ -9,16 +9,14 @@ Blue Ocean is the new UI project for Jenkins.
 
 # Module Breakdown
 
-## core
-All core functionality code lives here.
+## blueocean-web
+BlueOcean Web module, everything web related lives here including root url handling. 
 
 * js
     * blueocean.js
         * It is the entry point for blueocean UI. It defines extension point and for demonstration it defines dependency on another  extension **name**
 
 * java
-    * embryo
-        * Replaces classic jenkins, will eventually be replaced by embryo code
     * blueocean
         * BlueOceanUI.java is entry point for blue ocean backend
 
@@ -28,34 +26,31 @@ All core functionality code lives here.
 * pom.xml
     * *metrics* and *variant* plugins are there for example to show this is where we can add dependency on external plugins
 
-## alpha and bravo
-
-These are just example of extensions. In due course we will be adding such extensions to this repo.
-
-## all
-
 This is where you run the app to include all plugins along with core. During development it can be used to include all extensions.
 
-## war
+## blueocean-plugin
 
-Generates BlueOcean standalone war file, to be run as *java -jar blueocean.war*.
-
-This does not include embedded-driver as it's a plugin to be installed on standalone jenkins war.
+BlueOcean Jenkins plugin. 
 
 # Build and Run
 
-## Build and run core module
+    mvn clean install
+    mvn clean install -DskipTests # to skip running tests
+
+## Build and run BlueOcean Jenkins plugin
 ```
-$ cd core
+$ cd blueocean-plugin
 $ mvn hpi:run
 ```
 
-- Open http://localhost:8080/jenkins in your browser. Also open JS console on the browser to see message printed from blueocean.js.
+- Open http://localhost:8080/jenkins/bo in your browser. Also open JS console on the browser to see message printed from blueocean.js.
 - Open http://localhost:8080/jenkins/hello in your browser. "Hello World" is printed by BlueOceanUI.doHello() method.
 
 ## To do javascript development
 
 If you wish to make changes to blueocean.js, then you will need to install gulp (http://gulpjs.com/), and then either run:
+
+>TODO: maven profile that defines dependency on blueocean-plugin to do UI development
 
 ```
 $ ./dev_core.sh
