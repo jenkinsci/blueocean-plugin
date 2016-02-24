@@ -6,9 +6,9 @@
 target/*
 **/target/*
 *~
-core/node
-core/node_modules
-core/work
+blueocean-web/node
+blueocean-web/node_modules
+blueocean-web/work
 work
-war/overlays
 app.properties
+

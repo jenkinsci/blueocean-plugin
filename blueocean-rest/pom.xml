@@ -16,35 +16,27 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>blueocean-core</artifactId>
-      <version>${project.version}</version>
+      <artifactId>blueocean-web</artifactId>
     </dependency>
 
       <dependency>
           <groupId>${project.groupId}</groupId>
           <artifactId>blueocean-commons</artifactId>
-          <version>${project.version}</version>
       </dependency>
 
       <dependency>
           <groupId>${project.groupId}</groupId>
           <artifactId>blueocean-security-api</artifactId>
-          <version>${project.version}</version>
       </dependency>
 
       <dependency>
           <groupId>${project.groupId}</groupId>
-          <artifactId>profile-service-api</artifactId>
-          <version>${project.version}</version>
+          <artifactId>blueocean-profile-service-api</artifactId>
       </dependency>
 
       <dependency>
           <groupId>${project.groupId}</groupId>
-          <artifactId>pipeline-service-api</artifactId>
-          <version>${project.version}</version>
+          <artifactId>blueocean-pipeline-service-api</artifactId>
       </dependency>
-
-
-
   </dependencies>
 </project>
