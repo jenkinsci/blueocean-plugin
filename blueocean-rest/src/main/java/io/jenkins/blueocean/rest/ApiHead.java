@@ -7,7 +7,6 @@ import io.jenkins.blueocean.api.pipeline.FindPipelineRunsRequest;
 import io.jenkins.blueocean.api.pipeline.FindPipelinesRequest;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRunRequest;
 import io.jenkins.blueocean.api.pipeline.PipelineService;
-import io.jenkins.blueocean.api.profile.FindUsersRequest;
 import io.jenkins.blueocean.api.profile.GetUserDetailsRequest;
 import io.jenkins.blueocean.api.profile.GetUserRequest;
 import io.jenkins.blueocean.api.profile.ProfileService;
@@ -20,7 +19,6 @@ import io.jenkins.blueocean.rest.router.Route;
 import io.jenkins.blueocean.rest.router.RouteContext;
 import io.jenkins.blueocean.rest.router.Router;
 import jenkins.model.Jenkins;
-import org.apache.tools.ant.types.FilterSet.OnMissing;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -30,7 +28,6 @@ import org.kohsuke.stapler.verb.GET;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -132,7 +129,7 @@ public final class ApiHead implements RootRoutable  {
      * Search API
      */
     @WebMethod(name="search") @GET @PagedResponse
-    public Pageable<?> search(@QueryParameter Query query) {
+    public Pageable<?> search(@QueryParameter("q") Query query) {
         for (OmniSearch os : OmniSearch.all()) {
             if (os.getType().equals(query.type))
                 return os.search(query);

@@ -7,7 +7,9 @@ import io.jenkins.blueocean.rest.sandbox.Pipeline;
 import io.jenkins.blueocean.rest.sandbox.PipelineContainer;
 import jenkins.model.Jenkins;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Vivek Pandey
@@ -26,6 +28,11 @@ public class PipelineContainerImpl extends PipelineContainer {
 
     @Override
     public Iterator<Pipeline> iterator() {
-        return null;
+        List<Project> projects = Jenkins.getActiveInstance().getAllItems(Project.class);
+        List<Pipeline> pipelines = new ArrayList<>();
+        for (Project project : projects) {
+            pipelines.add(new PipelineImpl(project));
+        }
+        return pipelines.iterator();
     }
 }

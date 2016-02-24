@@ -6,8 +6,10 @@ import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.model.Project;
 import hudson.tasks.Shell;
 import io.jenkins.blueocean.commons.JsonConverter;
+import org.junit.Assert;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,9 +44,37 @@ public class EmbeddedPipelineServiceRestTest{
         RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1")
             .then().log().all()
             .statusCode(200)
-            .body("pipeline.organization", Matchers.equalTo("jenkins"))
-            .body("pipeline.name", Matchers.equalTo("pipeline1"));
+            .body("organization", Matchers.equalTo("jenkins"))
+            .body("name", Matchers.equalTo("pipeline1"));
     }
+
+    @Test
+    public void deletePipelineTest() throws IOException {
+        Project p = j.createFreeStyleProject("pipeline1");
+
+        RestAssured.given().log().all().delete("/organizations/jenkins/pipelines/pipeline1/")
+            .then().log().all()
+            .statusCode(200);
+
+        Assert.assertNull(j.jenkins.getItem(p.getName()));
+    }
+
+
+    @Test
+    public void getPipelinesTest() throws IOException {
+        Project p1 = j.createFreeStyleProject("pipeline1");
+        Project p2 = j.createFreeStyleProject("pipeline2");
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/")
+            .then().log().all()
+            .statusCode(200)
+            .body("[0].organization", Matchers.equalTo("jenkins"))
+            .body("[0].name", Matchers.equalTo(p1.getName()))
+            .body("[0].displayName", Matchers.equalTo(p1.getDisplayName()))
+            .body("[1].organization", Matchers.equalTo("jenkins"))
+            .body("[1].name", Matchers.equalTo(p2.getName()))
+            .body("[1].displayName", Matchers.equalTo(p2.getDisplayName()));
+    }
+
 
     @Test
     public void findPipelinesTest() throws IOException {
@@ -54,10 +84,10 @@ public class EmbeddedPipelineServiceRestTest{
         RestAssured.given().log().all().get("/search?q=type:pipeline;organization:jenkins")
             .then().log().all()
             .statusCode(200)
-            .body("pipelines[0].organization", Matchers.equalTo("jenkins"))
-            .body("pipelines[0].name", Matchers.equalTo(p1.getName()))
-            .body("pipelines[1].organization", Matchers.equalTo("jenkins"))
-            .body("pipelines[1].name", Matchers.equalTo(p2.getName()));
+            .body("[0].organization", Matchers.equalTo("jenkins"))
+            .body("[0].name", Matchers.equalTo(p1.getName()))
+            .body("[1].organization", Matchers.equalTo("jenkins"))
+            .body("[1].name", Matchers.equalTo(p2.getName()));
     }
 
     @Test

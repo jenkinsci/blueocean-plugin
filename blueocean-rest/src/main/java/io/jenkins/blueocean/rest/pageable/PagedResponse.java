@@ -2,7 +2,6 @@ package io.jenkins.blueocean.rest.pageable;
 
 import com.google.common.collect.Iterators;
 import hudson.model.Api;
-import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -37,14 +36,17 @@ public @interface PagedResponse {
             return new HttpResponse() {
                 @Override
                 public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                    int start = Integer.parseInt(req.getParameter("start"));
-                    int limit = Integer.parseInt(req.getParameter("limit"));
+                    int start = (req.getParameter("start") != null)?Integer.parseInt(req.getParameter("start")):-1;
+                    int limit = (req.getParameter("limit") != null) ? Integer.parseInt(req.getParameter("limit")):-1;
 
-                    Object[] page = Iterators.toArray(resp.iterator(start, limit),Object.class);
-
-                    // TODO: this is still a toy just to show the concept
-                    rsp.setHeader("Link","<"+req.getRequestURI()+"&start="+(start+limit)+">; rel=\"next\"");
-
+                    Object[] page;
+                    if(start >= 0 && limit>=0 ){
+                        page = Iterators.toArray(resp.iterator(start, limit),Object.class);
+                        // TODO: this is still a toy just to show the concept
+                        rsp.setHeader("Link","<"+req.getRequestURI()+"&start="+(start+limit)+">; rel=\"next\"");
+                    }else{
+                        page = Iterators.toArray(resp.iterator(),Object.class);
+                    }
                     new Api(page).doJson(req, rsp);
                 }
             };

@@ -37,7 +37,7 @@ public class OrganizationImpl extends Organization {
 
     @Override
     public PipelineContainer getPipelines() {
-        return null;
+        return new PipelineContainerImpl();
     }
 
     @WebMethod(name="") @DELETE

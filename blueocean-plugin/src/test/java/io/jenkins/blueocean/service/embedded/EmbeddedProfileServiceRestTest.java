@@ -52,7 +52,7 @@ public class EmbeddedProfileServiceRestTest {
         RestAssured.given().log().all().get("/organizations/jenkins")
             .then().log().all()
             .statusCode(200)
-            .body("organization.name", Matchers.equalTo("jenkins"));
+            .body("name", Matchers.equalTo("jenkins"));
     }
 
     @Test
