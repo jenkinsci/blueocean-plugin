@@ -44,7 +44,7 @@ public @interface TreeResponse {
             return new HttpResponse() {
                 @Override
                 public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                    if (node instanceof Object[]) {
+                    if (resp instanceof Object[]) {
                         // TODO: Kohsuke is going to make this array handling a part of Stapler
                         Flavor flavor = Flavor.JSON;
                         rsp.setContentType(flavor.contentType);
@@ -63,9 +63,9 @@ public @interface TreeResponse {
                         ExportConfig config = new ExportConfig();
                         config.prettyPrint = req.hasParameter("pretty");
 
-                        DataWriter dw = flavor.createDataWriter(node, w, config);
+                        DataWriter dw = flavor.createDataWriter(resp, w, config);
                         dw.startArray();
-                        for (Object item : (Object[])node) {
+                        for (Object item : (Object[])resp) {
                             Model p = MODEL_BUILDER.get(item.getClass());
                             p.writeTo(item, pruner, dw);
                         }
