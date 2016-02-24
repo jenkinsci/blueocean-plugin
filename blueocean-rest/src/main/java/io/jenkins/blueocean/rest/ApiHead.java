@@ -5,7 +5,6 @@ import hudson.ExtensionList;
 import io.jenkins.blueocean.RootRoutable;
 import io.jenkins.blueocean.api.pipeline.FindPipelineRunsRequest;
 import io.jenkins.blueocean.api.pipeline.FindPipelinesRequest;
-import io.jenkins.blueocean.api.pipeline.GetPipelineRequest;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRunRequest;
 import io.jenkins.blueocean.api.pipeline.PipelineService;
 import io.jenkins.blueocean.api.profile.FindUsersRequest;
@@ -91,19 +90,7 @@ public final class ApiHead implements RootRoutable  {
             public Object handle(Request request, Response response) {
                 response.status(200);
                 return pipelineService.findPipelines(request.principal(),
-                    new FindPipelinesRequest(request.pathParam(ORGANIZATION_ID_PARAM), null));
-            }
-        });
-
-
-        Router.get(new Route.RouteImpl(String.format("organizations/%s/pipelines/%s",
-            ORGANIZATION_ID_PARAM, PIPELINE_ID_PARAM)){
-            @Override
-            public Object handle(Request request, Response response) {
-                response.status(200);
-                return pipelineService.getPipeline(request.principal(),
-                    new GetPipelineRequest(request.pathParam(ORGANIZATION_ID_PARAM),
-                        request.pathParam(PIPELINE_ID_PARAM)));
+                        new FindPipelinesRequest(request.pathParam(ORGANIZATION_ID_PARAM), null));
             }
         });
 
