@@ -12,7 +12,6 @@ import io.jenkins.blueocean.api.profile.ProfileService;
 public class EmbeddedModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(ProfileService.class).to(EmbeddedProfileService.class).asEagerSingleton();
         bind(PipelineService.class).to(EmbeddedPipelineService.class).asEagerSingleton();
     }
 }

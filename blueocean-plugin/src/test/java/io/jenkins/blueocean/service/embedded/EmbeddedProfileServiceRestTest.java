@@ -5,6 +5,8 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 import hudson.model.User;
 import hudson.tasks.Mailer;
+import io.jenkins.blueocean.rest.sandbox.Organization;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationContainerImpl;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -21,10 +24,14 @@ public class EmbeddedProfileServiceRestTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
+    @Inject
+    public OrganizationContainerImpl orgContainer;
+
     @Before
     public void before() {
         RestAssured.baseURI = j.jenkins.getRootUrl()+"bo/rest";
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        j.jenkins.getInjector().injectMembers(this);
     }
 
     @Test

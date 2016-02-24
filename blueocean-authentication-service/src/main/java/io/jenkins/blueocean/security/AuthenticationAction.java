@@ -20,13 +20,11 @@ import java.io.IOException;
 public final class AuthenticationAction {
 
     private final AuthenticationService auth;
-    private final ProfileService profileService;
     private final Cookies cookies;
 
     @Inject
-    public AuthenticationAction(AuthenticationService auth, ProfileService profileService, Cookies cookies) {
+    public AuthenticationAction(AuthenticationService auth, Cookies cookies) {
         this.auth = auth;
-        this.profileService = profileService;
         this.cookies = cookies;
     }
 
