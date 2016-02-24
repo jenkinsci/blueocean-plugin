@@ -31,7 +31,6 @@
     <module>blueocean-pipeline-service-api</module>
     <module>blueocean-plugin</module>
     <module>blueocean-github-oauth-plugin</module>
-    <module>blueocean-standalone</module>
   </modules>
 
   <repositories>

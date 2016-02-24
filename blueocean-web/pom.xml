@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueocean-core</artifactId>
+    <artifactId>blueocean-web</artifactId>
     <packaging>hpi</packaging>
 
     <name>BlueOcean :: Web module</name>

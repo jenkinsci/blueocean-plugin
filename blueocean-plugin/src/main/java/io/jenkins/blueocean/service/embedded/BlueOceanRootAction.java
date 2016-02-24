@@ -1,7 +1,8 @@
-package io.jenkins.blueocean;
+package io.jenkins.blueocean.service.embedded;
 
 import hudson.Extension;
 import hudson.model.RootAction;
+import io.jenkins.blueocean.BlueOceanUI;
 import org.kohsuke.stapler.StaplerProxy;
 
 import javax.inject.Inject;
