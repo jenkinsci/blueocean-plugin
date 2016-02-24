@@ -22,7 +22,9 @@ public class OrganizationImpl extends Organization {
     /**
      * In embedded mode, there's only one organization
      */
-    public OrganizationImpl() {
+    public static final OrganizationImpl INSTANCE = new OrganizationImpl();
+
+    private OrganizationImpl() {
     }
 
     /**
