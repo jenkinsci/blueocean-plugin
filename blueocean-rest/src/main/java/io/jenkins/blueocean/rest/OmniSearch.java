@@ -17,7 +17,7 @@ public abstract class OmniSearch<T> implements ExtensionPoint {
 
     public abstract Pageable<T> search(Query q);
 
-    public static final ExtensionList<OmniSearch> all() {
+    public static ExtensionList<OmniSearch> all() {
         return ExtensionList.lookup(OmniSearch.class);
     }
 }
