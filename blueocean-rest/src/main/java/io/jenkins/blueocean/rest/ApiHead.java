@@ -64,31 +64,6 @@ public final class ApiHead implements RootRoutable  {
         this.profileService = getService(ProfileService.class);
         this.pipelineService = getService(PipelineService.class);
 
-        Router.get(new Route.RouteImpl(String.format("users/%s",USER_ID_PARAM)) {
-            @Override
-            public Object handle(Request request, Response response) {
-                response.status(200);
-                Boolean details = request.queryParam("details", Boolean.class);
-
-                if(details != null && details) {
-                    return profileService.getUserDetails(request.principal(),
-                        new GetUserDetailsRequest(request.pathParam(USER_ID_PARAM), null));
-                }else {
-                    return profileService.getUser(request.principal(),
-                        new GetUserRequest(request.pathParam(USER_ID_PARAM)));
-                }
-            }
-        });
-
-        Router.get(new Route.RouteImpl(String.format("users/%s", ORGANIZATION_ID_PARAM)) {
-            @Override
-            public Object handle(Request request, Response response) {
-                response.status(200);
-                return profileService.getUser(request.principal(),
-                        new GetUserRequest(request.pathParam(ORGANIZATION_ID_PARAM)));
-            }
-        });
-
         Router.get(new Route.RouteImpl(String.format("organizations/%s/pipelines", ORGANIZATION_ID_PARAM)){
             @Override
             public Object handle(Request request, Response response) {
