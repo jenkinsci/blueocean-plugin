@@ -28,6 +28,8 @@ public class OrganizationContainerImpl extends OrganizationContainer {
     }
 
     @Override
+    // TODO: these three annotations are redundant as the same things are defined in the base method
+    // TODO: improve Stapler to remove them
     @WebMethod(name="") @POST
     public Organization create(@JsonBody CreateOrganizationRequest req) {
         throw new ServiceException.NotImplementedException("Not implemented yet");
