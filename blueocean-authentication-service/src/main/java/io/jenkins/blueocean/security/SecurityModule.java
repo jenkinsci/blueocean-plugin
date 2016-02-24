@@ -2,7 +2,7 @@ package io.jenkins.blueocean.security;
 
 import com.google.inject.AbstractModule;
 import hudson.Extension;
-import io.jenkins.blueocean.config.ApplicationConfig;
+import io.jenkins.blueocean.security.config.ApplicationConfig;
 
 /**
  * @author Ivan Meredith

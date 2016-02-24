@@ -1,4 +1,4 @@
-package com.blueocean.authentication;
+package io.jenkins.blueocean.security.authentication;
 
 import com.google.inject.AbstractModule;
 import hudson.Extension;

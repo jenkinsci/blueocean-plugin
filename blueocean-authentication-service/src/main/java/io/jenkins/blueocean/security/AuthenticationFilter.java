@@ -3,7 +3,7 @@ package io.jenkins.blueocean.security;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import hudson.util.PluginServletFilter;
-import io.jenkins.blueocean.config.ApplicationConfig;
+import io.jenkins.blueocean.security.config.ApplicationConfig;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

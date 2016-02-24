@@ -1,8 +1,8 @@
-package io.jenkins.blueocean;
+package io.jenkins.blueocean.security;
 
 import com.google.inject.AbstractModule;
 import hudson.Extension;
-import io.jenkins.blueocean.config.ApplicationConfig;
+import io.jenkins.blueocean.security.config.ApplicationConfig;
 
 /**
  * Creates guice bindings for classes in blueocean-commons

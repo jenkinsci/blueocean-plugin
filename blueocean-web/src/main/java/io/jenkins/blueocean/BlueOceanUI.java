@@ -10,36 +10,6 @@ import hudson.ExtensionList;
  */
 @Extension
 public class BlueOceanUI {
-/* TODO: Ivan(?) needs to push this down into the security-api module
-    @Inject
-    private ProfileService profiles;
-    @Inject
-    private LoginAction loginAction;
-    @Inject
-    private ApplicationConfig appConfig;
-    @Inject
-    private Cookies cookies;
-
-    public LoginAction getLoginAction() {
-        return loginAction;
-    }
-
-    public HttpResponse getLogoutAction() {
-        cookies.removeAuthCookieToken(Stapler.getCurrentResponse());
-        return HttpResponses.redirectTo(appConfig.getApplicationPath());
-    }
-
-    public String getCurrentUserFullName() {
-        Identity identity = (Identity)Stapler.getCurrentRequest().getUserPrincipal();
-        return profiles.getUserDetails(identity, GetUserDetailsRequest.byUserId(identity.user)).userDetails.fullName;
-    }
-
-    public String getCurrentUserEmail() {
-        Identity identity = (Identity)Stapler.getCurrentRequest().getUserPrincipal();
-        return profiles.getUserDetails(identity, GetUserDetailsRequest.byUserId(identity.user)).userDetails.email;
-    }
-*/
-
     /**
      * Exposes {@link RootRoutable}s to the URL space.
      */

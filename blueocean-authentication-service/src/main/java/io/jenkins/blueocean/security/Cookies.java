@@ -2,7 +2,7 @@ package io.jenkins.blueocean.security;
 
 import com.google.inject.Singleton;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.config.ApplicationConfig;
+import io.jenkins.blueocean.security.config.ApplicationConfig;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.inject.Inject;

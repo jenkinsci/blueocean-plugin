@@ -26,11 +26,6 @@
 
       <dependency>
           <groupId>${project.groupId}</groupId>
-          <artifactId>blueocean-security-api</artifactId>
-      </dependency>
-
-      <dependency>
-          <groupId>${project.groupId}</groupId>
           <artifactId>blueocean-profile-service-api</artifactId>
       </dependency>
 

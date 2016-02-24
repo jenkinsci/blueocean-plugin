@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.config;
+package io.jenkins.blueocean.security.config;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;

@@ -1,12 +1,10 @@
 package io.jenkins.blueocean.auth.github;
 
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import hudson.Extension;
-import io.jenkins.blueocean.config.ApplicationConfig;
+import io.jenkins.blueocean.security.config.ApplicationConfig;
 
 /**
  * @author Ivan Meredith
