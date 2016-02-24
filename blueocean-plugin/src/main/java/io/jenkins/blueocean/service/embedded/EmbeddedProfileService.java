@@ -7,8 +7,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import io.jenkins.blueocean.api.profile.CreateUserRequest;
-import io.jenkins.blueocean.api.profile.CreateUserResponse;
 import io.jenkins.blueocean.api.profile.FindUsersRequest;
 import io.jenkins.blueocean.api.profile.FindUsersResponse;
 import io.jenkins.blueocean.api.profile.GetUserDetailsRequest;
@@ -73,42 +71,6 @@ public class EmbeddedProfileService extends AbstractEmbeddedService implements P
             users.add(new User(u.getId(), u.getDisplayName()));
         }
         return new FindUsersResponse(users, null, null);
-    }
-
-    @Override
-    @Nonnull
-    public CreateUserResponse createUser(@Nonnull Identity identity, @Nonnull CreateUserRequest request) {
-        hudson.model.User user;
-        String userId = Objects.firstNonNull(request.email, request.fullName);
-        if (Strings.isNullOrEmpty(userId)) {
-            throw new ServiceException.UnprocessableEntityException("could not synthesise a user id");
-        }
-        // Try to create a user with the requested user id
-        // Lock is needed to force Jenkins to not synthesise the ID if there is a conflict
-        Lock lock = userCreationLocks.getUnchecked(userId);
-        if (lock.tryLock()) {
-            try {
-                hudson.model.User existingUser;
-                try {
-                    existingUser = getJenkinsUser(userId);
-                } catch (NotFoundException e) {
-                    existingUser = null;
-                }
-                if (existingUser == null) {
-                    user = hudson.model.User.get(userId, true, ImmutableMap.of());
-                    if (user == null) {
-                        throw new ServiceException.UnexpectedErrorExpcetion("created user was null");
-                    }
-                } else {
-                    throw new ServiceException.UnprocessableEntityException("user id already exists");
-                }
-            } finally {
-                lock.unlock();
-            }
-        } else {
-            throw new ServiceException.TooManyRequestsException("could not create user");
-        }
-        return new CreateUserResponse(Mapper.mapUserDetails(Mapper.mapJenkinsUser(user, request.email, request.fullName, request.credentials)));
     }
 
     /** Safe way to query a user without creating it at the same time */

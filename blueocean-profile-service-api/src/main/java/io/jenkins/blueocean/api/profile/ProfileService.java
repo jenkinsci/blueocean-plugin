@@ -43,15 +43,4 @@ public interface ProfileService{
      */
     @Nonnull
     FindUsersResponse findUsers(@Nonnull Identity identity, @Nonnull FindUsersRequest request);
-
-    /**
-     * Gives {@link CreateUserResponse}
-     *
-     * @param identity user identity in this context
-     * @param request {@link CreateUserRequest} instance
-     * @return {@link FindUsersResponse} instance
-     * @throws io.jenkins.blueocean.commons.ServiceException if there is an exception in the server.
-     */
-    @Nonnull
-    CreateUserResponse createUser(@Nonnull Identity identity, @Nonnull CreateUserRequest request);
 }
