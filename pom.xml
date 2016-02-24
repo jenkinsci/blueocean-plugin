@@ -18,7 +18,7 @@
   <properties>
     <java.level>7</java.level>
     <jackson.version>2.2.3</jackson.version>
-    <!-- pleae build b00ecb28dea12422f69625bce688b9a6eea4ecbd from jenkinsci/jenkins locally  -->
+    <!-- please build 490b3b4f3b3ffb3be755be964a212b826d4d21aa from jenkinsci/jenkins locally  -->
     <jenkins.version>1.650-SNAPSHOT</jenkins.version>
   </properties>
 
