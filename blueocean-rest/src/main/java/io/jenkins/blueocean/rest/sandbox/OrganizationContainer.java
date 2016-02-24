@@ -23,4 +23,9 @@ public abstract class OrganizationContainer extends Container<Organization> impl
     public final String getUrlName() {
         return "organizations";
     }
+
+    /**
+     * A set of users who belong to this organization.
+     */
+    public abstract UserContainer getUsers();
 }
