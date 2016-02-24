@@ -6,10 +6,12 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.sandbox.Organization;
 import io.jenkins.blueocean.rest.sandbox.OrganizationContainer;
+import io.jenkins.blueocean.rest.sandbox.UserContainer;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.POST;
 
+import javax.inject.Inject;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -21,6 +23,9 @@ import java.util.Iterator;
  */
 @Extension
 public class OrganizationContainerImpl extends OrganizationContainer {
+    @Inject
+    UserContainerImpl users;
+
     @Override
     public Organization get(String name) {
         validateOrganization(name);
@@ -45,5 +50,14 @@ public class OrganizationContainerImpl extends OrganizationContainer {
             throw new ServiceException.UnprocessableEntityException(String.format("Organization %s not found",
                 organization));
         }
+    }
+
+    /**
+     * In the embedded case, there's only one organization and everyone belongs there,
+     * so we can just return that singleton.
+     */
+    @Override
+    public UserContainer getUsers() {
+        return users;
     }
 }
