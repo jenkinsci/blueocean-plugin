@@ -2,6 +2,8 @@ package io.jenkins.blueocean.rest;
 
 import com.google.common.collect.ImmutableMap;
 import io.jenkins.blueocean.commons.ServiceException;
+import org.apache.commons.beanutils.Converter;
+import org.kohsuke.stapler.Stapler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,4 +80,14 @@ public class Query {
         return new Query(type, params);
     }
 
+    public static class StaplerConverterImpl implements Converter {
+        public Object convert(Class type, Object value) {
+            if (value==null)
+                return null;
+            if (value instanceof String) {
+                return parse((String) value);
+            }
+            throw new UnsupportedOperationException();
+        }
+    }
 }
