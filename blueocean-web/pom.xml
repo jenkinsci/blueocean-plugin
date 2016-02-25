@@ -40,4 +40,15 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <dependencies>
+                <dependency>
+                    <groupId>io.jenkins.blueocean</groupId>
+                    <artifactId>blueocean-plugin</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
