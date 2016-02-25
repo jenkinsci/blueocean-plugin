@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
+import hudson.model.User;
 import hudson.util.AdaptedIterator;
 import io.jenkins.blueocean.rest.sandbox.BOUser;
 import io.jenkins.blueocean.rest.sandbox.BOUserContainer;
@@ -17,7 +18,7 @@ import java.util.Iterator;
 public class UserContainerImpl extends BOUserContainer {
     @Override
     public BOUser get(String name) {
-        hudson.model.User user = hudson.model.User.get(name, false, ImmutableMap.of());
+        User user = User.get(name, false, ImmutableMap.of());
         if (user==null)     return null;
         return new UserImpl(user);
     }
@@ -27,9 +28,9 @@ public class UserContainerImpl extends BOUserContainer {
      */
     @Override
     public Iterator<BOUser> iterator() {
-        return new AdaptedIterator<hudson.model.User, BOUser>(hudson.model.User.getAll()) {
+        return new AdaptedIterator<User, BOUser>(User.getAll()) {
             @Override
-            protected BOUser adapt(hudson.model.User item) {
+            protected BOUser adapt(User item) {
                 return new UserImpl(item);
             }
         };
