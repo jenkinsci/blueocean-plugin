@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import io.jenkins.blueocean.api.authentication.AuthenticateRequest;
 import io.jenkins.blueocean.api.authentication.AuthenticateResponse;
 import io.jenkins.blueocean.api.authentication.AuthenticationService;
-import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.UserDetails;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
@@ -16,11 +15,8 @@ import javax.annotation.Nonnull;
 
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final ProfileService profiles;
-
     @Inject
-    public AuthenticationServiceImpl(ProfileService profiles) {
-        this.profiles = profiles;
+    public AuthenticationServiceImpl() {
     }
 
     @Override

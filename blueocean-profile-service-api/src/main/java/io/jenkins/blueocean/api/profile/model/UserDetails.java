@@ -42,10 +42,4 @@ public class UserDetails {
         this.email = email;
         this.credentials = ImmutableList.copyOf(credentials);
     }
-
-    /** Gives User object */
-    @JsonIgnore
-    public @Nonnull User toUser(){
-        return new User(id, fullName);
-    }
 }

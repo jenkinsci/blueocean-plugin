@@ -7,7 +7,6 @@ import io.jenkins.blueocean.api.pipeline.FindPipelineRunsRequest;
 import io.jenkins.blueocean.api.pipeline.FindPipelinesRequest;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRunRequest;
 import io.jenkins.blueocean.api.pipeline.PipelineService;
-import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.guice.InjectLogger;
 import io.jenkins.blueocean.rest.pageable.Pageable;

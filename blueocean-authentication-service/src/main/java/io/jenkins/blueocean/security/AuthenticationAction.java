@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import io.jenkins.blueocean.api.authentication.AuthenticateRequest;
 import io.jenkins.blueocean.api.authentication.AuthenticateResponse;
 import io.jenkins.blueocean.api.authentication.AuthenticationService;
-import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.UserDetails;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.commons.ServiceException.UnprocessableEntityException;
