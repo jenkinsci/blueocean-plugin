@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.pageable;
 
 import com.google.common.collect.Iterators;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -14,19 +15,7 @@ public abstract class Pageables {
      * Returns an empty {@link Pageable}
      */
     public static <T> Pageable<T> empty() {
-        return new Pageable<T>() {
-            @Override
-            public Iterator<T> iterator(int start, int limit) {
-                if (start!=0 || limit!=0)
-                    throw new ArrayIndexOutOfBoundsException();
-                return iterator();
-            }
-
-            @Override
-            public Iterator<T> iterator() {
-                return Iterators.<T>emptyIterator();
-            }
-        };
+        return wrap(Collections.<T>emptyList());
     }
 
     /**
@@ -38,5 +27,22 @@ public abstract class Pageables {
         if (Iterators.skip(base,start)!=start)
             throw new ArrayIndexOutOfBoundsException();
         return Iterators.limit(base, limit);
+    }
+
+    /**
+     * Wraps {@link Iterable} into a {@link Pageable}
+     */
+    public static <T> Pageable<T> wrap(final Iterable<T> base) {
+        return new Pageable<T>() {
+            @Override
+            public Iterator<T> iterator(int start, int limit) {
+                return slice(iterator(),start,limit);
+            }
+
+            @Override
+            public Iterator<T> iterator() {
+                return base.iterator();
+            }
+        };
     }
 }
