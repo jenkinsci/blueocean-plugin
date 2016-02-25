@@ -3,8 +3,8 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Project;
 import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.sandbox.BOPipeline;
-import io.jenkins.blueocean.rest.sandbox.BOPipelineContainer;
+import io.jenkins.blueocean.rest.model.BOPipeline;
+import io.jenkins.blueocean.rest.model.BOPipelineContainer;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;

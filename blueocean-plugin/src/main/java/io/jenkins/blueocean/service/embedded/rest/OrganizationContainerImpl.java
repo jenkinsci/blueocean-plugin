@@ -1,15 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
-import io.jenkins.blueocean.api.profile.CreateOrganizationRequest;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.JsonBody;
-import io.jenkins.blueocean.rest.sandbox.BOOrganization;
-import io.jenkins.blueocean.rest.sandbox.BOOrganizationContainer;
-import io.jenkins.blueocean.rest.sandbox.BOUserContainer;
+import io.jenkins.blueocean.rest.model.BOOrganization;
+import io.jenkins.blueocean.rest.model.BOOrganizationContainer;
+import io.jenkins.blueocean.rest.model.BOUserContainer;
 import jenkins.model.Jenkins;
-import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.verb.POST;
 
 import javax.inject.Inject;
 import java.util.Collections;
@@ -30,14 +26,6 @@ public class OrganizationContainerImpl extends BOOrganizationContainer {
     public BOOrganization get(String name) {
         validateOrganization(name);
         return OrganizationImpl.INSTANCE;
-    }
-
-    @Override
-    // TODO: these three annotations are redundant as the same things are defined in the base method
-    // TODO: improve Stapler to remove them
-    @WebMethod(name="") @POST
-    public BOOrganization create(@JsonBody CreateOrganizationRequest req) {
-        throw new ServiceException.NotImplementedException("Not implemented yet");
     }
 
     @Override

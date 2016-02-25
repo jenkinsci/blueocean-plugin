@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.sandbox;
+package io.jenkins.blueocean.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hudson.model.Run;
@@ -16,35 +16,47 @@ import java.util.Date;
  * @author Vivek Pandey
  */
 public abstract class BORun extends Resource {
+    public static final String ORGANIZATION="organization";
+    public static final String ID="id";
+    public static final String PIPELINE="pipeline";
+    public static final String STATUS="status";
+    public static final String START_TIME="startTime";
+    public static final String END_TIME="endTime";
+    public static final String ENQUEUE_TIME="enQueueTime";
+    public static final String DURATION_IN_MILLIS="durationInMillis";
+    public static final String BRANCH = "branch";
+    public static final String COMMIT_ID = "commitId";
+    public static final String TYPE = "type";
+    public static final String RUN_SUMMARY = "runSummary";
 
     /** Date String format */
     public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     /** Name of the organization */
-    @Exported
-    @JsonProperty("organization")
+    @Exported(name = ORGANIZATION)
+    @JsonProperty(ORGANIZATION)
     public abstract String getOrganization();
 
     /** BORun id - unique within a pipeline */
-    @JsonProperty("id")
-    @Exported
+    @Exported(name = ID)
+    @JsonProperty(ID)
     public abstract String getId();
 
     /** Pipeline name - unique within an organization */
-    @JsonProperty("pipeline")
-    @Exported
+    @Exported(name = PIPELINE)
+    @JsonProperty(PIPELINE)
     public abstract String getPipeline();
 
     /** BORun status */
-    @JsonProperty("status")
-    @Exported
+    @JsonProperty(STATUS)
+    @Exported(name = STATUS)
     public abstract Status getStatus();
 
     /** Build execution start time inside executor */
     public abstract Date getStartTime();
 
-    @JsonProperty("startTime")
-    @Exported(name="startTime")
+    @JsonProperty(START_TIME)
+    @Exported(name=START_TIME)
     public final String getStartTimeString(){
         return new SimpleDateFormat(DATE_FORMAT_STRING).format(getStartTime());
     }
@@ -54,8 +66,8 @@ public abstract class BORun extends Resource {
      */
     public abstract Date getEnQueueTime();
 
-     @JsonProperty("enQueueTime")
-     @Exported(name="enQueueTime")
+     @JsonProperty(ENQUEUE_TIME)
+     @Exported(name=ENQUEUE_TIME)
      public final String getEnQueueTimeString() {
         return new SimpleDateFormat(DATE_FORMAT_STRING).format(getEnQueueTime());
      }
@@ -63,37 +75,35 @@ public abstract class BORun extends Resource {
      /**Build end time*/
     public abstract Date getEndTime();
 
-    @JsonProperty("endTime")
-    @Exported(name="endTime")
+    @JsonProperty(END_TIME)
+    @Exported(name=END_TIME)
     public final String getEndTimeString(){
         return new SimpleDateFormat(DATE_FORMAT_STRING).format(getEndTime());
     }
 
     /**  Build duration in milli seconds */
-    @JsonProperty("durationInMillis")
-    @Exported
+    @JsonProperty(DURATION_IN_MILLIS)
+    @Exported(name = DURATION_IN_MILLIS)
     public abstract Long getDurationInMillis();
 
     /**  Branch on which build is executed */
-    @JsonProperty("branch")
-    @Exported
+    @JsonProperty(BRANCH)
+    @Exported(name = BRANCH)
     public abstract String getBranch();
 
     /** Commit id on which build is executing */
-    @JsonProperty("commitId")
-    @Exported
+    @JsonProperty(COMMIT_ID)
+    @Exported(name = COMMIT_ID)
     public abstract String getCommitId();
 
     /** Build summary */
-    @JsonProperty("runSummary")
-    @Exported
+    @JsonProperty(RUN_SUMMARY)
+    @Exported(name = RUN_SUMMARY)
     public abstract String getRunSummary();
 
-    /** Result of run */
-    @JsonProperty("result")
-    @Exported
-
     /** Type of Run. Type name to be Jenkins {@link Run#getClass()#getSimpleName()} */
+    @JsonProperty(TYPE)
+    @Exported(name=TYPE)
     public abstract String getType();
 
     public enum Status{
@@ -110,20 +120,6 @@ public abstract class BORun extends Resource {
 
         /** Unknown status */
         UNKNOWN;
-
-        static Status get(String value){
-            if(value.equals(SUCCESS)){
-                return SUCCESS;
-            }else if(value.equals(UNSTABLE)){
-                return UNSTABLE;
-            }else if(value.equals(FAILURE)){
-                return FAILURE;
-            }else if(value.equals(NOT_BUILT)){
-                return NOT_BUILT;
-            }else{
-                return UNKNOWN;
-            }
-        }
     }
 
 }

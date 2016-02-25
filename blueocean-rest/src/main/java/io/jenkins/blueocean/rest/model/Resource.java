@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.sandbox;
+package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import org.kohsuke.stapler.WebMethod;

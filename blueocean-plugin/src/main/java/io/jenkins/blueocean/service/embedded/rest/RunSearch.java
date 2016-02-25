@@ -12,7 +12,7 @@ import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
-import io.jenkins.blueocean.rest.sandbox.BORun;
+import io.jenkins.blueocean.rest.model.BORun;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;

@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Project;
-import io.jenkins.blueocean.rest.sandbox.BOBranchContainer;
-import io.jenkins.blueocean.rest.sandbox.BOPipeline;
-import io.jenkins.blueocean.rest.sandbox.BORunContainer;
+import io.jenkins.blueocean.rest.model.BOBranchContainer;
+import io.jenkins.blueocean.rest.model.BOPipeline;
+import io.jenkins.blueocean.rest.model.BORunContainer;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 

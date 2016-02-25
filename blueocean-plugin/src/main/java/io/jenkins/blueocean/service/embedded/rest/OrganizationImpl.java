@@ -3,12 +3,12 @@ package io.jenkins.blueocean.service.embedded.rest;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
-import io.jenkins.blueocean.rest.sandbox.BOOrganization;
-import io.jenkins.blueocean.rest.sandbox.BOPipelineContainer;
+import io.jenkins.blueocean.rest.model.BOOrganization;
+import io.jenkins.blueocean.rest.model.BOPipelineContainer;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
-import org.kohsuke.stapler.verb.POST;
+import org.kohsuke.stapler.verb.PUT;
 
 import java.io.IOException;
 
@@ -45,7 +45,7 @@ public class OrganizationImpl extends BOOrganization {
         throw new ServiceException.NotImplementedException("Not implemented yet");
     }
 
-    @WebMethod(name="") @POST
+    @WebMethod(name="") @PUT
     public void update(@JsonBody OrganizationImpl given) throws IOException {
         given.validate();
         throw new ServiceException.NotImplementedException("Not implemented yet");

@@ -6,7 +6,7 @@ import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
-import io.jenkins.blueocean.rest.sandbox.BOPipeline;
+import io.jenkins.blueocean.rest.model.BOPipeline;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;

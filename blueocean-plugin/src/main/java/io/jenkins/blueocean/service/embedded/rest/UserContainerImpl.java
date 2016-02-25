@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.util.AdaptedIterator;
-import io.jenkins.blueocean.rest.sandbox.BOUser;
-import io.jenkins.blueocean.rest.sandbox.BOUserContainer;
+import io.jenkins.blueocean.rest.model.BOUser;
+import io.jenkins.blueocean.rest.model.BOUserContainer;
 
 import java.util.Iterator;
 

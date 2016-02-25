@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import io.jenkins.blueocean.rest.sandbox.BOBranch;
+import io.jenkins.blueocean.rest.model.BOBranch;
 
 /**
  * @author Vivek Pandey

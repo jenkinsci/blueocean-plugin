@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.sandbox;
+package io.jenkins.blueocean.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
@@ -9,24 +9,35 @@ import org.kohsuke.stapler.export.Exported;
  * @author Vivek Pandey
  */
 public abstract class BOPipeline extends Resource {
-    @Exported
+    public static final String ORGANIZATION="organization";
+    public static final String NAME="name";
+    public static final String DISPLAY_NAME="displayName";
+    public static final String BRANCHES="branches";
+    public static final String RUNS="runs";
+
+    @Exported(name = ORGANIZATION)
+    @JsonProperty(ORGANIZATION)
     public abstract String getOrganization();
 
     /** Name of the pipeline */
-    @Exported
+    @Exported(name = NAME)
+    @JsonProperty(NAME)
     public abstract String getName();
 
     /**
      * Human readable name of this pipeline
      */
-    @Exported
+    @Exported(name = DISPLAY_NAME)
+    @JsonProperty(DISPLAY_NAME)
     public abstract String getDisplayName();
 
+    //TODO: collections should serailize as reference to the resource or pagination can't be done
     /** Set of branches available with this pipeline */
-    @JsonProperty("branches")
+    @JsonProperty(BRANCHES)
     public abstract BOBranchContainer getBranches();
 
     /** Gives Runs in this pipeline */
+    @JsonProperty(RUNS)
     public abstract BORunContainer getRuns();
 
 }

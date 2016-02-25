@@ -1,8 +1,8 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import io.jenkins.blueocean.rest.sandbox.BOBranch;
-import io.jenkins.blueocean.rest.sandbox.BOBranchContainer;
-import io.jenkins.blueocean.rest.sandbox.BOPipeline;
+import io.jenkins.blueocean.rest.model.BOBranch;
+import io.jenkins.blueocean.rest.model.BOBranchContainer;
+import io.jenkins.blueocean.rest.model.BOPipeline;
 
 import java.util.Iterator;
 

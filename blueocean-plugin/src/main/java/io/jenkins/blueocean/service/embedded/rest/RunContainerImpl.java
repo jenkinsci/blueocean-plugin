@@ -3,9 +3,9 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Job;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.sandbox.BOPipeline;
-import io.jenkins.blueocean.rest.sandbox.BORun;
-import io.jenkins.blueocean.rest.sandbox.BORunContainer;
+import io.jenkins.blueocean.rest.model.BOPipeline;
+import io.jenkins.blueocean.rest.model.BORun;
+import io.jenkins.blueocean.rest.model.BORunContainer;
 import jenkins.model.Jenkins;
 
 import java.util.Iterator;

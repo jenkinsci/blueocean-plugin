@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.sandbox;
+package io.jenkins.blueocean.rest.model;
 
 /**
  * @author Vivek Pandey

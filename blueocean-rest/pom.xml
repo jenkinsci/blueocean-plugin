@@ -23,15 +23,5 @@
           <groupId>${project.groupId}</groupId>
           <artifactId>blueocean-commons</artifactId>
       </dependency>
-
-      <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>blueocean-profile-service-api</artifactId>
-      </dependency>
-
-      <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>blueocean-pipeline-service-api</artifactId>
-      </dependency>
   </dependencies>
 </project>

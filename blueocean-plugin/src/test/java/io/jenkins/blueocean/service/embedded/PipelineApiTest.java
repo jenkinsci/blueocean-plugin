@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author Vivek Pandey
  */
-public class EmbeddedPipelineServiceRestTest{
+public class PipelineApiTest {
 
     @Rule
     public JenkinsRule j = new JenkinsRule();

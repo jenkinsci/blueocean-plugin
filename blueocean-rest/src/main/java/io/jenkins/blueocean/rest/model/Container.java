@@ -1,11 +1,9 @@
-package io.jenkins.blueocean.rest.sandbox;
+package io.jenkins.blueocean.rest.model;
 
 import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
-import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
 

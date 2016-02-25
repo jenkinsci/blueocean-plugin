@@ -1,5 +1,6 @@
-package io.jenkins.blueocean.rest.sandbox;
+package io.jenkins.blueocean.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -8,8 +9,10 @@ import org.kohsuke.stapler.export.Exported;
  * @author Vivek Pandey
  */
 public abstract class BOBranch extends Resource{
+    public static final String NAME="name";
 
     /** Branch name */
-    @Exported
+    @Exported(name = NAME)
+    @JsonProperty(NAME)
     public abstract String getName();
 }

@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Run;
-import io.jenkins.blueocean.rest.sandbox.BORun;
+import io.jenkins.blueocean.rest.model.BORun;
 
 import java.util.Date;
 

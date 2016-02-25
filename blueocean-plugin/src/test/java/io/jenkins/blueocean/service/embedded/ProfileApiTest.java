@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * @author Vivek Pandey
  */
-public class EmbeddedProfileServiceRestTest {
+public class ProfileApiTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
@@ -76,10 +76,10 @@ public class EmbeddedProfileServiceRestTest {
 
         response.then().log().all().statusCode(200);
 
-        Assert.assertTrue(names.contains((String)response.path("users[0].id")));
-        Assert.assertTrue(names.contains((String)response.path("users[0].name")));
-        Assert.assertTrue(names.contains((String)response.path("users[1].id")));
-        Assert.assertTrue(names.contains((String)response.path("users[1].name")));
+        Assert.assertTrue(names.contains(response.path("[0].id")));
+        Assert.assertTrue(names.contains(response.path("[0].fullName")));
+        Assert.assertTrue(names.contains(response.path("[1].id")));
+        Assert.assertTrue(names.contains(response.path("[1].fullName")));
     }
 
 

@@ -1,9 +1,7 @@
-package io.jenkins.blueocean.rest.sandbox;
+package io.jenkins.blueocean.rest.model;
 
-import io.jenkins.blueocean.security.Credentials;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
-
-import java.util.List;
 
 /**
  * API endpoint for a user
@@ -12,27 +10,28 @@ import java.util.List;
  * @author Vivek Pandey
  */
 public abstract class BOUser extends Resource {
+    public static final String ID="id";
+    public static final String FULL_NAME="fullName";
+    public static final String EMAIL="email";
     /**
      * The id of the user
      */
-    @Exported
+    @Exported(name=ID)
+    @JsonProperty(ID)
     public abstract String getId();
 
     /**
      * The name of the user e.g. John Smith
      */
-    @Exported
+    @Exported(name = FULL_NAME)
+    @JsonProperty(FULL_NAME)
     public abstract String getFullName();
 
     /**
      * Email address of this user.
      */
-    @Exported
+    @Exported(name = EMAIL)
     // restricted to authorized users only
     public abstract String getEmail();
-
-    @Exported(inline=true)
-    // restricted to authorized users only
-    public abstract List<Credentials> getCredentials();
 
 }
