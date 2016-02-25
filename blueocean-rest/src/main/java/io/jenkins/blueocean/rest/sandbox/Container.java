@@ -2,8 +2,10 @@ package io.jenkins.blueocean.rest.sandbox;
 
 import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
+import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
 
@@ -39,7 +41,8 @@ public abstract class Container<T> implements Pageable<T> {
      * When GET is requested on '/', serve the collection
      */
     @WebMethod(name="") @GET @TreeResponse
-    public Object[] list() {
+    // if we wanted collection listing to take filtering parameters, we can do that with one additional parameter
+    public Object[] list(/*@QueryParameter Query q*/) {
         // TODO: pagenation
         return Iterables.toArray(this,Object.class);
     }
