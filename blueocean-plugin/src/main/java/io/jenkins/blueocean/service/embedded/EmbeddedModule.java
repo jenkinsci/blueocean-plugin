@@ -3,7 +3,6 @@ package io.jenkins.blueocean.service.embedded;
 import com.google.inject.AbstractModule;
 import hudson.Extension;
 import io.jenkins.blueocean.api.pipeline.PipelineService;
-import io.jenkins.blueocean.api.profile.ProfileService;
 
 /**
  * @author Ivan Meredith
@@ -12,7 +11,6 @@ import io.jenkins.blueocean.api.profile.ProfileService;
 public class EmbeddedModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(ProfileService.class).to(EmbeddedProfileService.class).asEagerSingleton();
         bind(PipelineService.class).to(EmbeddedPipelineService.class).asEagerSingleton();
     }
 }

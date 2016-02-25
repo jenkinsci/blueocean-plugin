@@ -4,8 +4,6 @@ import com.google.inject.Inject;
 import io.jenkins.blueocean.api.authentication.AuthenticateRequest;
 import io.jenkins.blueocean.api.authentication.AuthenticateResponse;
 import io.jenkins.blueocean.api.authentication.AuthenticationService;
-import io.jenkins.blueocean.api.profile.CreateUserRequest;
-import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.api.profile.model.UserDetails;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.commons.ServiceException.UnprocessableEntityException;
@@ -21,13 +19,11 @@ import java.io.IOException;
 public final class AuthenticationAction {
 
     private final AuthenticationService auth;
-    private final ProfileService profileService;
     private final Cookies cookies;
 
     @Inject
-    public AuthenticationAction(AuthenticationService auth, ProfileService profileService, Cookies cookies) {
+    public AuthenticationAction(AuthenticationService auth, Cookies cookies) {
         this.auth = auth;
-        this.profileService = profileService;
         this.cookies = cookies;
     }
 
@@ -45,8 +41,15 @@ public final class AuthenticationAction {
         if (authResp.userDetails != null) {
             userDetails = authResp.userDetails;
         } else if (provider.allowSignup()) {
-            userDetails = profileService.createUser(Identity.ANONYMOUS,
-                CreateUserRequest.fromUserPrototype(authResp.userPrototype, authType, credentials)).userDetails;
+            // KK: I need to better understand how authentication works in BlueOcean,
+            // the way I think of it has always been that authentication happens 'out of band'
+            // at the level of BlueOcean, so that embedded usage can authenticate users
+            // via SecurityRealm, and Panther can do it via its own thing.
+            // In this view, having BlueOcean API defines signup doesn't make sense.
+            throw new UnsupportedOperationException();
+//            userDetails = profileService.createUser(Identity.ANONYMOUS,
+//                CreateUserRequest.fromUserPrototype(authResp.userPrototype, authType, credentials)).userDetails;
+
         } else {
             throw new NotFoundException("cant find user");
         }

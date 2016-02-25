@@ -7,9 +7,6 @@ import io.jenkins.blueocean.api.pipeline.FindPipelineRunsRequest;
 import io.jenkins.blueocean.api.pipeline.FindPipelinesRequest;
 import io.jenkins.blueocean.api.pipeline.GetPipelineRunRequest;
 import io.jenkins.blueocean.api.pipeline.PipelineService;
-import io.jenkins.blueocean.api.profile.GetUserDetailsRequest;
-import io.jenkins.blueocean.api.profile.GetUserRequest;
-import io.jenkins.blueocean.api.profile.ProfileService;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.guice.InjectLogger;
 import io.jenkins.blueocean.rest.pageable.Pageable;
@@ -42,8 +39,6 @@ public final class ApiHead implements RootRoutable  {
     @InjectLogger
     private Logger logger;
 
-    private final ProfileService profileService;
-
     private final PipelineService pipelineService;
 
     private final Map<String,ApiRoutable> apis = new HashMap<>();
@@ -61,33 +56,7 @@ public final class ApiHead implements RootRoutable  {
             apis.put(api.getUrlName(),api);
         }
 
-        this.profileService = getService(ProfileService.class);
         this.pipelineService = getService(PipelineService.class);
-
-        Router.get(new Route.RouteImpl(String.format("users/%s",USER_ID_PARAM)) {
-            @Override
-            public Object handle(Request request, Response response) {
-                response.status(200);
-                Boolean details = request.queryParam("details", Boolean.class);
-
-                if(details != null && details) {
-                    return profileService.getUserDetails(request.principal(),
-                        new GetUserDetailsRequest(request.pathParam(USER_ID_PARAM), null));
-                }else {
-                    return profileService.getUser(request.principal(),
-                        new GetUserRequest(request.pathParam(USER_ID_PARAM)));
-                }
-            }
-        });
-
-        Router.get(new Route.RouteImpl(String.format("users/%s", ORGANIZATION_ID_PARAM)) {
-            @Override
-            public Object handle(Request request, Response response) {
-                response.status(200);
-                return profileService.getUser(request.principal(),
-                        new GetUserRequest(request.pathParam(ORGANIZATION_ID_PARAM)));
-            }
-        });
 
         Router.get(new Route.RouteImpl(String.format("organizations/%s/pipelines", ORGANIZATION_ID_PARAM)){
             @Override

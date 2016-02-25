@@ -3,7 +3,6 @@ package io.jenkins.blueocean.service.embedded;
 import com.google.common.collect.ImmutableSet;
 import hudson.model.UserProperty;
 import hudson.tasks.Mailer;
-import io.jenkins.blueocean.api.profile.model.User;
 import io.jenkins.blueocean.api.profile.model.UserDetails;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.security.Credentials;
@@ -23,11 +22,6 @@ public final class Mapper {
         Set<Credentials> credentials = credentialsProperty != null ? credentialsProperty.credentials : ImmutableSet.<Credentials>of();
         return new UserDetails(user.getId(), user.getFullName(), email, credentials);
     }
-
-    static User mapUser(hudson.model.User user) {
-        return new User(user.getId(), user.getFullName());
-    }
-
     static Set<Credentials> mapCredentials(hudson.model.User user) {
         CredentialsProperty credentialsProperty = user.getProperty(CredentialsProperty.class);
         return credentialsProperty != null ? credentialsProperty.credentials : ImmutableSet.<Credentials>of();

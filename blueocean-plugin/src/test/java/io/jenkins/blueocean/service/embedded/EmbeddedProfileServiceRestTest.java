@@ -3,6 +3,10 @@ package io.jenkins.blueocean.service.embedded;
 import com.google.common.collect.ImmutableList;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
+import hudson.model.User;
+import hudson.tasks.Mailer;
+import io.jenkins.blueocean.rest.sandbox.Organization;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationContainerImpl;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -19,32 +24,39 @@ public class EmbeddedProfileServiceRestTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
+    @Inject
+    public OrganizationContainerImpl orgContainer;
+
     @Before
     public void before() {
         RestAssured.baseURI = j.jenkins.getRootUrl()+"bo/rest";
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        j.jenkins.getInjector().injectMembers(this);
     }
 
     @Test
     public void getUserTest() throws Exception {
+        User system = j.jenkins.getUser("SYSTEM");
 
-        RestAssured.given().log().all().get("/users/"+j.jenkins.getUser("SYSTEM").getId())
+        RestAssured.given().log().all().get("/users/{id}/", system.getId())
             .then().log().all()
             .statusCode(200)
-            .body("user.id", Matchers.equalTo(j.jenkins.getUser("SYSTEM").getId()))
-            .body("user.name", Matchers.equalTo(j.jenkins.getUser("SYSTEM").getFullName()));
+            .body("id", Matchers.equalTo(system.getId()))
+            .body("fullName", Matchers.equalTo(system.getFullName()));
     }
 
     @Test
     public void getUserDetailsTest() throws Exception {
         hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+        user.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
-        RestAssured.given().log().all().get("/users/"+user.getId()+"?details=true")
+        RestAssured.given().log().all().get("/users/{id}/",user.getId())
             .then().log().all()
             .statusCode(200)
-            .body("user.id", Matchers.equalTo(user.getId()))
-            .body("user.name", Matchers.equalTo(user.getFullName()))
-            .body("user.email", Matchers.equalTo("none"));
+            .body("id", Matchers.equalTo(user.getId()))
+            .body("fullName", Matchers.equalTo(user.getFullName()))
+            .body("email", Matchers.equalTo("alice@jenkins-ci.org"));
     }
 
     @Test
