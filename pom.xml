@@ -25,14 +25,8 @@
   <modules>
     <module>blueocean-web</module>
     <module>blueocean-commons</module>
-    <module>blueocean-security-api</module>
     <module>blueocean-rest</module>
-    <module>blueocean-authentication-service-api</module>
-    <module>blueocean-authentication-service</module>
-    <module>blueocean-profile-service-api</module>
-    <module>blueocean-pipeline-service-api</module>
     <module>blueocean-plugin</module>
-    <module>blueocean-github-oauth-plugin</module>
   </modules>
 
   <repositories>
