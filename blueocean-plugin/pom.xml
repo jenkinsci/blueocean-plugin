@@ -38,4 +38,51 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <version>2.0</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <source>
+                         //
+                         // The following code makes HPI dev a bit easier in this multi-module project, as it
+                         // permits "linking" of the HPIs by copying of their "the.hpl" files into the work/plugins
+                         // dir of this plugin. So, when running this plugin using "mvn hpi:run", changes in the
+                         // "linked" plugins will also be automatically picked up.
+                         //
+                         // See the following closure and it's uses after.
+                         //
+
+                        def linkHPI = {String pluginId, String pluginDir = pluginId ->
+                            def workPluginsDir = new File(basedir, 'work/plugins');
+                            def theHpl = new File(new File(basedir.parentFile, pluginDir), 'target/test-classes/the.hpl');
+
+                            if (theHpl.file) {
+                                workPluginsDir.mkdirs();
+                                ant.copy(file: theHpl, tofile: new File(workPluginsDir, pluginId + '.hpl'), overwrite: true, verbose: true);
+                            } else {
+                                println('Warning: no such file ' + theHpl);
+                            }
+                        };
+
+                        //
+                        // Link in other sub-modules. Add as needed.
+                        //
+                        linkHPI('blueocean-web');
+                    </source>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
