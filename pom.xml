@@ -46,25 +46,6 @@
     <dependencies>
 
         <!-- Module versions -->
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-profile-service-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-pipeline-service-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-authentication-service-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-commons</artifactId>
@@ -79,19 +60,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-security-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-github-oauth-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-authentication-service</artifactId>
+            <artifactId>blueocean-rest</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -101,11 +70,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-standalone</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- 3rd party dependencies -->
 
