@@ -181,6 +181,14 @@
           <skip>true</skip>
         </configuration>
       </plugin>
+      <plugin>
+        <!-- No use worrying about this while we make such drastic changes left & right in every commit -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
