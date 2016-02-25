@@ -6,9 +6,8 @@
 target/*
 **/target/*
 *~
-blueocean-web/node
-blueocean-web/node_modules
-blueocean-web/work
+node
+node_modules
 work
 app.properties
 
