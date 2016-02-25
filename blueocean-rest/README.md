@@ -1,11 +1,11 @@
 # Usage
 
-## Run embedded-driver
+## Run BlueOcean plugin
 
-    cd embedded-driver
+    cd bluecoean-plugin
     mvn hpi:run
     
-This will launch jenkins with BO plugin. 
+This will launch jenkins with BlueOcean plugin. 
 
 BlueOcean UI is available at:
     
@@ -22,45 +22,28 @@ BlueOcean rest API base URL is:
     curl -v -X GET  http://localhost:8080/jenkins/bo/rest/users/alice 
     
     {
-      "user" : {
-        "id" : "alice",
-        "name" : "Alice"
-      }
+      "id" : "alice",
+      "fullName" : "Alice"
+      "email" : "alice@example.com"
     }
-
-## Get user details
-
-    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/users/alice\?details\=true    
-    
-    {
-      "userDetails" : {
-        "id" : "alice",
-        "name" : "Alice",
-        "email" : "none"
-      }
-    }
-
-> Backend needs to send email of user if present
 
 ## Find users in an organization
 
     curl -v -X GET  http://localhost:8080/jenkins/bo/rest/search\?q\=type:user\;organization:jenkins
     
-    {
-      "users" : [ {
+    [ 
+      {
         "id" : "alice",
         "name" : "Alice"
-      } ]
-    }
+      } 
+    ]
 
 ## Get organization details
 
     curl -v -X GET  http://localhost:8080/jenkins/bo/rest/organizations/jenkins
     
     {
-      "organization" : {
-        "name" : "jenkins"
-      }
+      "name" : "jenkins"
     }
 
 ## Get a Pipeline
@@ -68,31 +51,29 @@ BlueOcean rest API base URL is:
     curl -v -X GET  "http://localhost:8080/jenkins/bo/rest/organizations/jenkins/pipelines/test1"
 
     {
-      "pipeline" : {
-        "organization" : "jenkins",
-        "name" : "test1",
-        "branches" : [ ]
-      }
+      "organization" : "jenkins",
+      "name" : "test1",
+      "branches" : [ ]
     }
 
 ## Get Pipelines
 
     curl -v -X GET  http://localhost:8080/jenkins/bo/rest/organizations/jenkins/pipelines
     
-    {
-      "pipelines" : [ {
+    [ 
+      {
         "organization" : "jenkins",
         "name" : "test1",
         "branches" : [ ]
-      } ]
-    }
+      } 
+    ]
     
 ## Get all runs in a pipeline
     
     curl -v -X GET  http://localhost:8080/jenkins/bo/rest/organizations/jenkins/pipelines/test1/runs
     
-    {
-      "runs" : [ {
+    [ 
+      {
         "id" : "2",
         "pipeline" : "test1",
         "organization" : "jenkins",
@@ -102,10 +83,7 @@ BlueOcean rest API base URL is:
         "endTime" : "2016-02-19T11:14:53.109Z",
         "durationInMillis" : 35,
         "runSummary" : "stable",
-        "result" : {
-          "type" : "FreeStyleBuild",
-          "data" : { }
-        }
+        "type" : "FreeStyleBuild"
       }, {
         "id" : "1",
         "pipeline" : "test1",
@@ -116,35 +94,10 @@ BlueOcean rest API base URL is:
         "endTime" : "2016-02-18T19:39:36.747Z",
         "durationInMillis" : 68,
         "runSummary" : "stable",
-        "result" : {
-          "type" : "FreeStyleBuild",
-          "data" : { }
-        }
-      } ]
-    }  
+        "type" : "FreeStyleBuild"
+      } 
+    ]
     
-
-## Get latest run of a pipeline
-
-    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/organizations/jenkins/pipelines/test1/runs\?latestOnly\=true
-    
-    {
-      "runs" : [ {
-        "id" : "2",
-        "pipeline" : "test1",
-        "organization" : "jenkins",
-        "status" : "SUCCESSFUL",
-        "startTime" : "2016-02-19T11:14:53.074Z",
-        "enQueueTime" : "2016-02-19T11:14:53.072Z",
-        "endTime" : "2016-02-19T11:14:53.109Z",
-        "durationInMillis" : 35,
-        "runSummary" : "stable",
-        "result" : {
-          "type" : "FreeStyleBuild",
-          "data" : { }
-        }
-      } ]
-    }
 
 ## Get a run details
 
@@ -161,9 +114,56 @@ BlueOcean rest API base URL is:
         "endTime" : "2016-02-19T11:14:41.482Z",
         "durationInMillis" : 68,
         "runSummary" : "stable",
-        "result" : {
-          "type" : "FreeStyleBuild",
-          "data" : { }
-        }
+        "type" : "FreeStyleBuild"
       }
     }      
+
+## Find latest run of a pipeline
+
+    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/?q=type:run;organization:jenkins;pipeline:test1;latestOnly:true
+    
+    [ {
+        "id" : "2",
+        "pipeline" : "test1",
+        "organization" : "jenkins",
+        "status" : "SUCCESSFUL",
+        "startTime" : "2016-02-19T11:14:53.074Z",
+        "enQueueTime" : "2016-02-19T11:14:53.072Z",
+        "endTime" : "2016-02-19T11:14:53.109Z",
+        "durationInMillis" : 35,
+        "runSummary" : "stable",
+        "type" : "FreeStyleBuild"
+        }
+      } 
+    ]
+
+## Find latest run on all pipelines
+
+    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/?q=type:run;organization:jenkins;latestOnly:true
+    
+    [ {
+        "id" : "2",
+        "pipeline" : "test1",
+        "organization" : "jenkins",
+        "status" : "SUCCESSFUL",
+        "startTime" : "2016-02-19T11:14:53.074Z",
+        "enQueueTime" : "2016-02-19T11:14:53.072Z",
+        "endTime" : "2016-02-19T11:14:53.109Z",
+        "durationInMillis" : 35,
+        "runSummary" : "stable",
+        "type" : "FreeStyleBuild"
+        }
+      },
+      {
+        "id" : "2",
+        "pipeline" : "test2",
+        "organization" : "jenkins",
+        "status" : "SUCCESSFUL",
+        "startTime" : "2016-02-19T11:14:53.074Z",
+        "enQueueTime" : "2016-02-19T11:14:53.072Z",
+        "endTime" : "2016-02-19T11:14:53.109Z",
+        "durationInMillis" : 35,
+        "runSummary" : "stable",
+        "type" : "FreeStyleBuild"
+      }       
+    ]
