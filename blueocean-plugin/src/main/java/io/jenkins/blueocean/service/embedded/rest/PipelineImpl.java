@@ -1,8 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Project;
-import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.sandbox.Pipeline;
+import io.jenkins.blueocean.rest.sandbox.BOPipeline;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 
@@ -11,7 +10,7 @@ import java.io.IOException;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class PipelineImpl extends Pipeline {
+public class PipelineImpl extends BOPipeline {
     private final Project project;
 
     protected PipelineImpl(Project project) {

@@ -7,11 +7,11 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class Organization extends Resource {
+public abstract class BOOrganization extends Resource {
     @Exported
     public abstract String getName();
 
-    public abstract PipelineContainer getPipelines();
+    public abstract BOPipelineContainer getPipelines();
 
 }
 

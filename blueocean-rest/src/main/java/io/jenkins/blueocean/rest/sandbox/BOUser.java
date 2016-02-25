@@ -11,7 +11,7 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  * @author Vivek Pandey
  */
-public abstract class User extends Resource {
+public abstract class BOUser extends Resource {
     /**
      * The id of the user
      */

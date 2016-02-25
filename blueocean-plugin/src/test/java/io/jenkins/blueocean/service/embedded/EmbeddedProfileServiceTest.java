@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.service.embedded;
 
-import io.jenkins.blueocean.rest.sandbox.Organization;
+import io.jenkins.blueocean.rest.sandbox.BOOrganization;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationContainerImpl;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +28,7 @@ public class EmbeddedProfileServiceTest {
 
     @Test
     public void getOrganizationTest(){
-        Organization o = orgContainer.get("jenkins");
+        BOOrganization o = orgContainer.get("jenkins");
         Assert.assertEquals(o.getName(), "jenkins");
     }
 }

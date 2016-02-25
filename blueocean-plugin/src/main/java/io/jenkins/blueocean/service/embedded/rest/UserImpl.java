@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.tasks.Mailer;
-import io.jenkins.blueocean.rest.sandbox.User;
+import io.jenkins.blueocean.rest.sandbox.BOUser;
 import io.jenkins.blueocean.security.Credentials;
 import io.jenkins.blueocean.service.embedded.properties.CredentialsProperty;
 import jenkins.model.Jenkins;
@@ -11,12 +11,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@link User} implementation backed by in-memory {@link hudson.model.User}
+ * {@link BOUser} implementation backed by in-memory {@link hudson.model.User}
  *
  * @author Kohsuke Kawaguchi
  * @author Vivek Pandey
  */
-public class UserImpl extends User {
+public class UserImpl extends BOUser {
     private final hudson.model.User user;
 
     public UserImpl(hudson.model.User user) {

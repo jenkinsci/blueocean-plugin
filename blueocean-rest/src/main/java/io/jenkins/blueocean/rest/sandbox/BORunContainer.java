@@ -5,7 +5,7 @@ package io.jenkins.blueocean.rest.sandbox;
  *
  * @author Vivek Pandey
  */
-public abstract class RunContainer extends Container<BORun> {
+public abstract class BORunContainer extends Container<BORun> {
     /** BORun belongs to this Pipeline */
-    public abstract Pipeline getPipeline(String name);
+    public abstract BOPipeline getPipeline(String name);
 }

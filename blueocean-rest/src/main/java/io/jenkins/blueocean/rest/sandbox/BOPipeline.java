@@ -7,7 +7,7 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @author Vivek Pandey
  */
-public abstract class Pipeline extends Resource {
+public abstract class BOPipeline extends Resource {
     @Exported
     public abstract String getOrganization();
 

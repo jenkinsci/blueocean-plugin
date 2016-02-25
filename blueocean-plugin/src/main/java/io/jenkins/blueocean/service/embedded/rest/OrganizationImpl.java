@@ -3,8 +3,8 @@ package io.jenkins.blueocean.service.embedded.rest;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
-import io.jenkins.blueocean.rest.sandbox.Organization;
-import io.jenkins.blueocean.rest.sandbox.PipelineContainer;
+import io.jenkins.blueocean.rest.sandbox.BOOrganization;
+import io.jenkins.blueocean.rest.sandbox.BOPipelineContainer;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
@@ -13,12 +13,12 @@ import org.kohsuke.stapler.verb.POST;
 import java.io.IOException;
 
 /**
- * {@link Organization} implementation for the embedded use.
+ * {@link BOOrganization} implementation for the embedded use.
  *
  * @author Vivek Pandey
  * @author Kohsuke Kawaguchi
  */
-public class OrganizationImpl extends Organization {
+public class OrganizationImpl extends BOOrganization {
     /**
      * In embedded mode, there's only one organization
      */
@@ -36,7 +36,7 @@ public class OrganizationImpl extends Organization {
     }
 
     @Override
-    public PipelineContainer getPipelines() {
+    public BOPipelineContainer getPipelines() {
         return new PipelineContainerImpl();
     }
 

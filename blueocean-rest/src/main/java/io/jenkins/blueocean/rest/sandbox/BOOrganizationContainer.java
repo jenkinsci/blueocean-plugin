@@ -12,12 +12,12 @@ import org.kohsuke.stapler.verb.POST;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class OrganizationContainer extends Container<Organization> implements ApiRoutable, ExtensionPoint {
+public abstract class BOOrganizationContainer extends Container<BOOrganization> implements ApiRoutable, ExtensionPoint {
     /**
      * Creates a new organization.
      */
     @WebMethod(name="") @POST
-    public abstract Organization create(@JsonBody CreateOrganizationRequest req);
+    public abstract BOOrganization create(@JsonBody CreateOrganizationRequest req);
 
     @Override
     public final String getUrlName() {
@@ -27,5 +27,5 @@ public abstract class OrganizationContainer extends Container<Organization> impl
     /**
      * A set of users who belong to this organization.
      */
-    public abstract UserContainer getUsers();
+    public abstract BOUserContainer getUsers();
 }

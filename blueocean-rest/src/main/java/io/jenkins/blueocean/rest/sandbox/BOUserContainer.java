@@ -11,17 +11,17 @@ import java.util.Iterator;
  * @author Vivek Pandey
  * @author Kohsuke Kawaguchi
  */
-public abstract class UserContainer extends Container<User> implements ApiRoutable, ExtensionPoint {
+public abstract class BOUserContainer extends Container<BOUser> implements ApiRoutable, ExtensionPoint {
     @Override
     public final String getUrlName() {
         return "users";
     }
 
     /**
-     * Most {@link UserContainer}s will be unlikely to support iteration.
+     * Most {@link BOUserContainer}s will be unlikely to support iteration.
      */
     @Override
-    public Iterator<User> iterator() {
+    public Iterator<BOUser> iterator() {
         throw new UnsupportedOperationException();
     }
 }

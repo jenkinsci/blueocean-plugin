@@ -5,8 +5,8 @@ import hudson.model.Job;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.sandbox.BORun;
-import io.jenkins.blueocean.rest.sandbox.Pipeline;
-import io.jenkins.blueocean.rest.sandbox.RunContainer;
+import io.jenkins.blueocean.rest.sandbox.BOPipeline;
+import io.jenkins.blueocean.rest.sandbox.BORunContainer;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
@@ -16,11 +16,11 @@ import java.util.List;
 /**
  * @author Vivek Pandey
  */
-public class RunContainerImpl extends RunContainer {
+public class RunContainerImpl extends BORunContainer {
 
-    private final Pipeline pipeline;
+    private final BOPipeline pipeline;
 
-    public RunContainerImpl(Pipeline pipeline) {
+    public RunContainerImpl(BOPipeline pipeline) {
         this.pipeline = pipeline;
     }
 
@@ -79,7 +79,7 @@ public class RunContainerImpl extends RunContainer {
     }
 
     @Override
-    public Pipeline getPipeline(String name) {
+    public BOPipeline getPipeline(String name) {
         return pipeline;
     }
 }

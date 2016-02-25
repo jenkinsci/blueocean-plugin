@@ -3,8 +3,8 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Project;
 import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.sandbox.Pipeline;
-import io.jenkins.blueocean.rest.sandbox.PipelineContainer;
+import io.jenkins.blueocean.rest.sandbox.BOPipeline;
+import io.jenkins.blueocean.rest.sandbox.BOPipelineContainer;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author Vivek Pandey
  */
-public class PipelineContainerImpl extends PipelineContainer {
+public class PipelineContainerImpl extends BOPipelineContainer {
     @Override
     public PipelineImpl get(String name) {
         TopLevelItem p = Jenkins.getActiveInstance().getItem(name);
@@ -27,9 +27,9 @@ public class PipelineContainerImpl extends PipelineContainer {
     }
 
     @Override
-    public Iterator<Pipeline> iterator() {
+    public Iterator<BOPipeline> iterator() {
         List<Project> projects = Jenkins.getActiveInstance().getAllItems(Project.class);
-        List<Pipeline> pipelines = new ArrayList<>();
+        List<BOPipeline> pipelines = new ArrayList<>();
         for (Project project : projects) {
             pipelines.add(new PipelineImpl(project));
         }
