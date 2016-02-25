@@ -33,12 +33,7 @@ public class FreeStyleRun extends BORun {
 
     @Override
     public Status getStatus() {
-        return getStatusFromJenkinsRun(run);
-    }
-
-    @Override
-    public RunTrend getRunTrend() {
-        return null;
+        return run.getResult() != null ? Status.valueOf(run.getResult().toString()) : Status.UNKNOWN;
     }
 
     @Override
@@ -48,7 +43,7 @@ public class FreeStyleRun extends BORun {
 
     @Override
     public Date getEnQueueTime() {
-        return null;
+        return new Date(run.getTimeInMillis());
     }
 
     @Override
@@ -84,24 +79,5 @@ public class FreeStyleRun extends BORun {
         return run.getClass().getSimpleName();
     }
 
-    private BORun.Status getStatusFromJenkinsRun(hudson.model.Run r){
-        hudson.model.Result result = r.getResult();
-        if(result == null){
-            return BORun.Status.EXECUTING;
-        }
-        if (result == hudson.model.Result.SUCCESS) {
-            return BORun.Status.SUCCESSFUL;
-        } else if (result == hudson.model.Result.FAILURE || result == hudson.model.Result.UNSTABLE) {
-            return BORun.Status.FAILING;
-        } else if (!result.isCompleteBuild()) {
-            return BORun.Status.EXECUTING;
-        }else if(r.hasntStartedYet()){
-            return BORun.Status.IN_QUEUE;
-        }else if(result == hudson.model.Result.ABORTED){
-            return BORun.Status.ABORTED;
-        } else if (result == hudson.model.Result.NOT_BUILT){
-            return BORun.Status.NOT_BUILT;
-        }
-        return BORun.Status.UNKNOWN;
-    }
+
 }

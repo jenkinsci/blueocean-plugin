@@ -3,7 +3,6 @@ package io.jenkins.blueocean.rest;
 import com.google.common.collect.ImmutableMap;
 import io.jenkins.blueocean.commons.ServiceException;
 import org.apache.commons.beanutils.Converter;
-import org.kohsuke.stapler.Stapler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,11 +42,14 @@ public class Query {
         return param(key, type, false);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T param(String key, Class<T> type, boolean required){
         String value = params.get(key);
         if(value == null && required){
             throw new ServiceException.BadRequestExpception(
                 String.format("%s is required parameter to execute query for type %s", key, type));
+        }else if (value == null && Boolean.class.isAssignableFrom(type)){
+            return (T) Boolean.FALSE;
         }else if (value == null){
             return null;
         }

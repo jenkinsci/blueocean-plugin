@@ -10,7 +10,6 @@ import io.jenkins.blueocean.rest.sandbox.BOPipeline;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -36,16 +35,6 @@ public class PipelineSearch extends OmniSearch<BOPipeline>{
             pipelines.add(new PipelineImpl(project));
         }
 
-        return new Pageable<BOPipeline>() {
-            @Override
-            public Iterator<BOPipeline> iterator(int start, int limit) {
-                return Pageables.slice(pipelines.iterator(),start,limit);
-            }
-
-            @Override
-            public Iterator<BOPipeline> iterator() {
-                return pipelines.iterator();
-            }
-        };
+        return Pageables.wrap(pipelines);
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import hudson.model.Run;
 import org.kohsuke.stapler.export.Exported;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -15,6 +16,10 @@ import java.util.Date;
  * @author Vivek Pandey
  */
 public abstract class BORun extends Resource {
+
+    /** Date String format */
+    public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
     /** Name of the organization */
     @Exported
     @JsonProperty("organization")
@@ -35,26 +40,34 @@ public abstract class BORun extends Resource {
     @Exported
     public abstract Status getStatus();
 
-    /** BORun trend */
-    @JsonProperty("runTrend")
-    @Exported
-    public abstract RunTrend getRunTrend();
-
-
     /** Build execution start time inside executor */
-    @JsonProperty("startTime")
-    @Exported
     public abstract Date getStartTime();
 
-    /** Time when build is scheduled and is in queue waiting for executor */
-    @JsonProperty("enQueueTime")
-    @Exported
+    @JsonProperty("startTime")
+    @Exported(name="startTime")
+    public final String getStartTimeString(){
+        return new SimpleDateFormat(DATE_FORMAT_STRING).format(getStartTime());
+    }
+
+    /**
+     * Time when build is scheduled and is in queue waiting for executor
+     */
     public abstract Date getEnQueueTime();
 
-    /**Build end time*/
-    @JsonProperty("endTime")
-    @Exported
+     @JsonProperty("enQueueTime")
+     @Exported(name="enQueueTime")
+     public final String getEnQueueTimeString() {
+        return new SimpleDateFormat(DATE_FORMAT_STRING).format(getEnQueueTime());
+     }
+
+     /**Build end time*/
     public abstract Date getEndTime();
+
+    @JsonProperty("endTime")
+    @Exported(name="endTime")
+    public final String getEndTimeString(){
+        return new SimpleDateFormat(DATE_FORMAT_STRING).format(getEndTime());
+    }
 
     /**  Build duration in milli seconds */
     @JsonProperty("durationInMillis")
@@ -83,35 +96,34 @@ public abstract class BORun extends Resource {
     /** Type of Run. Type name to be Jenkins {@link Run#getClass()#getSimpleName()} */
     public abstract String getType();
 
-    public enum Status {
+    public enum Status{
         /** Build completed successfully */
-        SUCCESSFUL,
+        SUCCESS,
+
+        UNSTABLE,
 
         /** Build failed */
-        FAILING,
-
-        /** Build is executing, not in the queue */
-        EXECUTING,
-
-        /** Build is in queue, waiting to be executed */
-        IN_QUEUE,
-
-        /** Build was aborted by user */
-        ABORTED,
-
-        /** Unknown status */
-        UNKNOWN,
+        FAILURE,
 
         /** In multi stage build (maven2), a build step might not execute due to failure in previous step */
-        NOT_BUILT
-    }
+        NOT_BUILT,
 
-    public enum RunTrend {
-        /** Build was broekn in earlier build, got fixed now */
-        FIXED,
+        /** Unknown status */
+        UNKNOWN;
 
-        /** Build has been broken for a while */
-        BROKEN_FOR_LONG_TIME
+        static Status get(String value){
+            if(value.equals(SUCCESS)){
+                return SUCCESS;
+            }else if(value.equals(UNSTABLE)){
+                return UNSTABLE;
+            }else if(value.equals(FAILURE)){
+                return FAILURE;
+            }else if(value.equals(NOT_BUILT)){
+                return NOT_BUILT;
+            }else{
+                return UNKNOWN;
+            }
+        }
     }
 
 }

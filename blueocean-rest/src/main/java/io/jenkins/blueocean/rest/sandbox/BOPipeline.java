@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.sandbox;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -21,7 +22,11 @@ public abstract class BOPipeline extends Resource {
     @Exported
     public abstract String getDisplayName();
 
-//    /** Set of branches available with this pipeline */
-//    @JsonProperty("branches")
-//    public final List<String> branches;
+    /** Set of branches available with this pipeline */
+    @JsonProperty("branches")
+    public abstract BOBranchContainer getBranches();
+
+    /** Gives Runs in this pipeline */
+    public abstract BORunContainer getRuns();
+
 }

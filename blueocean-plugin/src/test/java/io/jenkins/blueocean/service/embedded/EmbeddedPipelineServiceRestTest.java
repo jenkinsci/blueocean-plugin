@@ -99,11 +99,11 @@ public class EmbeddedPipelineServiceRestTest{
         RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId())
             .then().log().all()
             .statusCode(200)
-            .body("run.id", Matchers.equalTo(b.getId()))
-            .body("run.pipeline", Matchers.equalTo(p.getName()))
-            .body("run.pipeline", Matchers.equalTo(p.getName()))
-            .body("run.organization", Matchers.equalTo("jenkins"))
-            .body("run.startTime", Matchers.equalTo(
+            .body("id", Matchers.equalTo(b.getId()))
+            .body("pipeline", Matchers.equalTo(p.getName()))
+            .body("pipeline", Matchers.equalTo(p.getName()))
+            .body("organization", Matchers.equalTo("jenkins"))
+            .body("startTime", Matchers.equalTo(
                 new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
     }
 
@@ -114,14 +114,13 @@ public class EmbeddedPipelineServiceRestTest{
         FreeStyleBuild b = p.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b);
 
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline5/runs/?latestOnly=true")
+        RestAssured.given().log().all().get("/search?q=type:run;organization:jenkins;pipeline:pipeline5;latestOnly:true")
             .then().log().all()
             .statusCode(200)
-            .body("runs[0].id", Matchers.equalTo(b.getId()))
-            .body("runs[0].pipeline", Matchers.equalTo(p.getName()))
-            .body("runs[0].pipeline", Matchers.equalTo(p.getName()))
-            .body("runs[0].organization", Matchers.equalTo("jenkins"))
-            .body("runs[0].startTime", Matchers.equalTo(
+            .body("[0].id", Matchers.equalTo(b.getId()))
+            .body("[0].pipeline", Matchers.equalTo(p.getName()))
+            .body("[0].organization", Matchers.equalTo("jenkins"))
+            .body("[0].startTime", Matchers.equalTo(
                 new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
     }
 
@@ -135,10 +134,10 @@ public class EmbeddedPipelineServiceRestTest{
         RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline6/runs")
             .then().log().all()
             .statusCode(200)
-            .body("runs[0].id", Matchers.equalTo(b.getId()))
-            .body("runs[0].pipeline", Matchers.equalTo(p.getName()))
-            .body("runs[0].organization", Matchers.equalTo("jenkins"))
-            .body("runs[0].startTime", Matchers.equalTo(
+            .body("[0].id", Matchers.equalTo(b.getId()))
+            .body("[0].pipeline", Matchers.equalTo(p.getName()))
+            .body("[0].organization", Matchers.equalTo("jenkins"))
+            .body("[0].startTime", Matchers.equalTo(
                 new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
     }
 
@@ -157,16 +156,16 @@ public class EmbeddedPipelineServiceRestTest{
         j.assertBuildStatusSuccess(b11);
         j.assertBuildStatusSuccess(b12);
 
-        ValidatableResponse response = RestAssured.given().log().all().get("/search?q=type:run;organization:jenkins;pipeline=pipeline1")
+        ValidatableResponse response = RestAssured.given().log().all().get("/search?q=type:run;organization:jenkins;pipeline:pipeline1")
             .then().log().all()
             .statusCode(200);
 
         for (int i = 0; i < builds.size(); i++) {
             FreeStyleBuild b = builds.pop();
-            response.body(String.format("runs[%s].id",i), Matchers.equalTo(b.getId()))
-                .body(String.format("runs[%s].pipeline",i), Matchers.equalTo(b.getParent().getName()))
-                .body(String.format("runs[%s].organization",i), Matchers.equalTo("jenkins"))
-                .body(String.format("runs[%s].startTime",i), Matchers.equalTo(
+            response.body(String.format("[%s].id",i), Matchers.equalTo(b.getId()))
+                .body(String.format("[%s].pipeline",i), Matchers.equalTo(b.getParent().getName()))
+                .body(String.format("[%s].organization",i), Matchers.equalTo("jenkins"))
+                .body(String.format("[%s].startTime",i), Matchers.equalTo(
                     new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
         }
     }
@@ -193,12 +192,12 @@ public class EmbeddedPipelineServiceRestTest{
             .statusCode(200);
 
         for (int i = 0; i < 4; i++) {
-            String pipeline = r.path(String.format("runs[%s].pipeline",i));
+            String pipeline = r.path(String.format("[%s].pipeline",i));
             FreeStyleBuild b = buildMap.get(pipeline).pop();
-            response.body(String.format("runs[%s].id",i), Matchers.equalTo(b.getId()))
-                .body(String.format("runs[%s].pipeline",i), Matchers.equalTo(pipeline))
-                .body(String.format("runs[%s].organization",i), Matchers.equalTo("jenkins"))
-                .body(String.format("runs[%s].startTime",i), Matchers.equalTo(
+            response.body(String.format("[%s].id",i), Matchers.equalTo(b.getId()))
+                .body(String.format("[%s].pipeline",i), Matchers.equalTo(pipeline))
+                .body(String.format("[%s].organization",i), Matchers.equalTo("jenkins"))
+                .body(String.format("[%s].startTime",i), Matchers.equalTo(
                     new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
         }
     }

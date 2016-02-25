@@ -1,7 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Project;
+import io.jenkins.blueocean.rest.sandbox.BOBranchContainer;
 import io.jenkins.blueocean.rest.sandbox.BOPipeline;
+import io.jenkins.blueocean.rest.sandbox.BORunContainer;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 
@@ -11,7 +13,7 @@ import java.io.IOException;
  * @author Kohsuke Kawaguchi
  */
 public class PipelineImpl extends BOPipeline {
-    private final Project project;
+    /* package */final Project project;
 
     protected PipelineImpl(Project project) {
         this.project = project;
@@ -30,6 +32,16 @@ public class PipelineImpl extends BOPipeline {
     @Override
     public String getDisplayName() {
         return project.getDisplayName();
+    }
+
+    @Override
+    public BOBranchContainer getBranches() {
+        return new BranchContainerImpl(this);
+    }
+
+    @Override
+    public BORunContainer getRuns() {
+        return new RunContainerImpl(this);
     }
 
     @WebMethod(name="") @DELETE

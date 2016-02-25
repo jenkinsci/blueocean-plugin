@@ -1,15 +1,13 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.model.FreeStyleBuild;
 import hudson.model.Job;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.sandbox.BORun;
 import io.jenkins.blueocean.rest.sandbox.BOPipeline;
+import io.jenkins.blueocean.rest.sandbox.BORun;
 import io.jenkins.blueocean.rest.sandbox.BORunContainer;
 import jenkins.model.Jenkins;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,9 +16,9 @@ import java.util.List;
  */
 public class RunContainerImpl extends BORunContainer {
 
-    private final BOPipeline pipeline;
+    private final PipelineImpl pipeline;
 
-    public RunContainerImpl(BOPipeline pipeline) {
+    public RunContainerImpl(PipelineImpl pipeline) {
         this.pipeline = pipeline;
     }
 
@@ -58,24 +56,7 @@ public class RunContainerImpl extends BORunContainer {
 
     @Override
     public Iterator<BORun> iterator() {
-        List<BORun> runs = new ArrayList<>();
-        List<Job> projects = Jenkins.getActiveInstance().getAllItems(Job.class);
-        for (Job p : projects) {
-            if (pipeline != null && !p.getName().equals(pipeline.getName())) {
-                continue;
-            }
-
-            RunList<? extends hudson.model.Run> runList = p.getBuilds();
-
-            Iterator<? extends hudson.model.Run> iterator = runList.iterator();
-            while (iterator.hasNext()) {
-                hudson.model.Run r = iterator.next();
-                if (r.getClass().getSimpleName().equals(FreeStyleBuild.class.getSimpleName())) {
-                    runs.add(new FreeStyleRun(r));//TODO: fix this, there are other run types
-                }
-            }
-        }
-        return runs.iterator();
+        return RunSearch.findRuns(pipeline.project,false).iterator();
     }
 
     @Override
