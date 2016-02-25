@@ -32,6 +32,13 @@ public final class ApiHead implements RootRoutable  {
 
     /**
      * Search API
+     *
+     * Gives collection starting from start parameter value with max numbers &lt;= limit
+     *
+     *
+     * @param query query object parsed from value of q URL query parameter
+     *
+     * @return Gives pageable collection always non-null
      */
     @WebMethod(name="search") @GET @PagedResponse
     public Pageable<?> search(@QueryParameter("q") Query query) {
@@ -39,8 +46,6 @@ public final class ApiHead implements RootRoutable  {
             if (os.getType().equals(query.type))
                 return os.search(query);
         }
-
-//        throw new ServiceException.BadRequestExpception("Unknown query type: "+query.type);
         return Pageables.empty();
     }
 
@@ -54,6 +59,9 @@ public final class ApiHead implements RootRoutable  {
 
     /**
      * Exposes all {@link ApiRoutable}s to URL space.
+     *
+     * @param route current URL route handled by ApiHead
+     * @return {@link ApiRoutable} object
      */
     public ApiRoutable getDynamic(String route) {
         return apis.get(route);

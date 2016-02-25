@@ -17,6 +17,10 @@ import java.util.Iterator;
 public abstract class Container<T> implements Pageable<T> {
     /**
      * Gets the individual member by its name
+     *
+     * @param name identifying the member
+     *
+     * @return individual member
      */
     public abstract T get(String name);
 
@@ -28,7 +32,7 @@ public abstract class Container<T> implements Pageable<T> {
     }
 
     /**
-     * Base implementation of pagenation that is dumb.
+     * Base implementation of pagination that is dumb.
      */
     @Override
     public Iterator<T> iterator(int start, int limit) {
@@ -37,6 +41,7 @@ public abstract class Container<T> implements Pageable<T> {
 
     /**
      * When GET is requested on '/', serve the collection
+     * @return collection in this container
      */
     @WebMethod(name="") @GET @TreeResponse
     // if we wanted collection listing to take filtering parameters, we can do that with one additional parameter

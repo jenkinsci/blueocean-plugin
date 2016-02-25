@@ -14,21 +14,21 @@ public abstract class BOUser extends Resource {
     public static final String FULL_NAME="fullName";
     public static final String EMAIL="email";
     /**
-     * The id of the user
+     * @return The id of the user
      */
     @Exported(name=ID)
     @JsonProperty(ID)
     public abstract String getId();
 
     /**
-     * The name of the user e.g. John Smith
+     * @return The name of the user e.g. John Smith
      */
     @Exported(name = FULL_NAME)
     @JsonProperty(FULL_NAME)
     public abstract String getFullName();
 
     /**
-     * Email address of this user.
+     * @return Email address of this user.
      */
     @Exported(name = EMAIL)
     // restricted to authorized users only

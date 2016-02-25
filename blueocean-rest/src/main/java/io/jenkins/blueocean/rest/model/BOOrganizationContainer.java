@@ -17,6 +17,8 @@ public abstract class BOOrganizationContainer extends Container<BOOrganization> 
 
     /**
      * A set of users who belong to this organization.
+     *
+     * @return {@link BOUserContainer}
      */
     public abstract BOUserContainer getUsers();
 }

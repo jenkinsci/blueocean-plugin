@@ -11,7 +11,11 @@ import org.kohsuke.stapler.export.Exported;
 public abstract class BOBranch extends Resource{
     public static final String NAME="name";
 
-    /** Branch name */
+    /**
+     *  Branch name
+     *
+     *  @return gives branch name
+     */
     @Exported(name = NAME)
     @JsonProperty(NAME)
     public abstract String getName();

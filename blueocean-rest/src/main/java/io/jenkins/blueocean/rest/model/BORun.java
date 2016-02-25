@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hudson.model.Run;
 import org.kohsuke.stapler.export.Exported;
 
 import java.text.SimpleDateFormat;
@@ -32,29 +31,42 @@ public abstract class BORun extends Resource {
     /** Date String format */
     public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
-    /** Name of the organization */
+    /**
+     * @return name of the organization
+     */
     @Exported(name = ORGANIZATION)
     @JsonProperty(ORGANIZATION)
     public abstract String getOrganization();
 
-    /** BORun id - unique within a pipeline */
+    /**
+     * @return {@link BORun} id - unique within a pipeline
+     */
     @Exported(name = ID)
     @JsonProperty(ID)
     public abstract String getId();
 
-    /** Pipeline name - unique within an organization */
+    /**
+     * @return Pipeline name - unique within an organization
+     */
     @Exported(name = PIPELINE)
     @JsonProperty(PIPELINE)
     public abstract String getPipeline();
 
-    /** BORun status */
+    /**
+     * @return BORun status
+     */
     @JsonProperty(STATUS)
     @Exported(name = STATUS)
     public abstract Status getStatus();
 
-    /** Build execution start time inside executor */
+    /**
+     * @return Build execution start time inside executor
+     */
     public abstract Date getStartTime();
 
+    /**
+     * @return run start time
+     */
     @JsonProperty(START_TIME)
     @Exported(name=START_TIME)
     public final String getStartTimeString(){
@@ -62,7 +74,7 @@ public abstract class BORun extends Resource {
     }
 
     /**
-     * Time when build is scheduled and is in queue waiting for executor
+     * @return Time when build is scheduled and is in queue waiting for executor
      */
     public abstract Date getEnQueueTime();
 
@@ -72,7 +84,9 @@ public abstract class BORun extends Resource {
         return new SimpleDateFormat(DATE_FORMAT_STRING).format(getEnQueueTime());
      }
 
-     /**Build end time*/
+    /**
+     * @return Build end time
+     */
     public abstract Date getEndTime();
 
     @JsonProperty(END_TIME)
@@ -81,27 +95,37 @@ public abstract class BORun extends Resource {
         return new SimpleDateFormat(DATE_FORMAT_STRING).format(getEndTime());
     }
 
-    /**  Build duration in milli seconds */
+    /**
+     * @return Build duration in milli seconds
+     */
     @JsonProperty(DURATION_IN_MILLIS)
     @Exported(name = DURATION_IN_MILLIS)
     public abstract Long getDurationInMillis();
 
-    /**  Branch on which build is executed */
+    /**
+     * @return Branch on which build is executed
+     */
     @JsonProperty(BRANCH)
     @Exported(name = BRANCH)
     public abstract String getBranch();
 
-    /** Commit id on which build is executing */
+    /**
+     * @return Commit id on which build is executing
+     */
     @JsonProperty(COMMIT_ID)
     @Exported(name = COMMIT_ID)
     public abstract String getCommitId();
 
-    /** Build summary */
+    /**
+     * @return Build summary
+     */
     @JsonProperty(RUN_SUMMARY)
     @Exported(name = RUN_SUMMARY)
     public abstract String getRunSummary();
 
-    /** Type of Run. Type name to be Jenkins {@link Run#getClass()#getSimpleName()} */
+    /**
+     * @return Type of Run. Type name to be Jenkins Run.getClass().getSimpleName()
+     */
     @JsonProperty(TYPE)
     @Exported(name=TYPE)
     public abstract String getType();

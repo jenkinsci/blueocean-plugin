@@ -14,6 +14,8 @@ import org.kohsuke.stapler.verb.GET;
 public abstract class Resource {
     /**
      * Returns the DTO object that gets databound to Json/XML etc. for state transfer
+     *
+     * @return DTO object
      */
     @WebMethod(name="") @GET
     @TreeResponse /* this annotation does the above new Api(...).doJson(...) */
