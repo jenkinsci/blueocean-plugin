@@ -8,7 +8,7 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @author Vivek Pandey
  */
-public abstract class BOPipeline extends Resource {
+public abstract class BluePipeline extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String NAME="name";
     public static final String DISPLAY_NAME="displayName";
@@ -42,12 +42,12 @@ public abstract class BOPipeline extends Resource {
      * @return Set of branches available with this pipeline
      */
     @JsonProperty(BRANCHES)
-    public abstract BOBranchContainer getBranches();
+    public abstract BlueBranchContainer getBranches();
 
     /**
      * @return Gives Runs in this pipeline
      */
     @JsonProperty(RUNS)
-    public abstract BORunContainer getRuns();
+    public abstract BlueRunContainer getRuns();
 
 }

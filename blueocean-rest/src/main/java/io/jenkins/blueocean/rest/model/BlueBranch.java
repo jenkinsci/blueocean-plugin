@@ -8,7 +8,7 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @author Vivek Pandey
  */
-public abstract class BOBranch extends Resource{
+public abstract class BlueBranch extends Resource{
     public static final String NAME="name";
 
     /**

@@ -10,9 +10,9 @@ import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
-import io.jenkins.blueocean.rest.model.BORun;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
@@ -25,14 +25,14 @@ import java.util.List;
  * @author Vivek Pandey
  */
 @Extension
-public class RunSearch extends OmniSearch<BORun> {
+public class RunSearch extends OmniSearch<BlueRun> {
     @Override
     public String getType() {
         return "run";
     }
 
     @Override
-    public Pageable<BORun> search(Query q) {
+    public Pageable<BlueRun> search(Query q) {
 
         String pipeline = q.param("pipeline", false);
 
@@ -49,8 +49,8 @@ public class RunSearch extends OmniSearch<BORun> {
         return Pageables.wrap(findRuns(null,latestOnly));
     }
 
-    public static Iterable<BORun> findRuns(Job pipeline, boolean latestOnly){
-        final List<BORun> runs = new ArrayList<>();
+    public static Iterable<BlueRun> findRuns(Job pipeline, boolean latestOnly){
+        final List<BlueRun> runs = new ArrayList<>();
         List<Job> pipelines;
         if(pipeline != null){
             pipelines = ImmutableList.of(pipeline);

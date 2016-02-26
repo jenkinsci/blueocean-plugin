@@ -1,29 +1,29 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import io.jenkins.blueocean.rest.model.BOBranch;
-import io.jenkins.blueocean.rest.model.BOBranchContainer;
-import io.jenkins.blueocean.rest.model.BOPipeline;
+import io.jenkins.blueocean.rest.model.BlueBranch;
+import io.jenkins.blueocean.rest.model.BlueBranchContainer;
+import io.jenkins.blueocean.rest.model.BluePipeline;
 
 import java.util.Iterator;
 
 /**
  * @author Vivek Pandey
  */
-public class BranchContainerImpl extends BOBranchContainer {
-    private final BOPipeline pipeline;
+public class BranchContainerImpl extends BlueBranchContainer {
+    private final BluePipeline pipeline;
 
-    public BranchContainerImpl(BOPipeline pipeline) {
+    public BranchContainerImpl(BluePipeline pipeline) {
         this.pipeline = pipeline;
     }
 
     //TODO: implement rest of the methods
     @Override
-    public BOBranch get(String name) {
+    public BlueBranch get(String name) {
         return null;
     }
 
     @Override
-    public Iterator<BOBranch> iterator() {
+    public Iterator<BlueBranch> iterator() {
         return null;
     }
 }

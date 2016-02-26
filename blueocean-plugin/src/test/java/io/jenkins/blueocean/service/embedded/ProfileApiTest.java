@@ -28,7 +28,7 @@ public class ProfileApiTest {
 
     @Before
     public void before() {
-        RestAssured.baseURI = j.jenkins.getRootUrl()+"bo/rest";
+        RestAssured.baseURI = j.jenkins.getRootUrl()+"blue/rest";
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         j.jenkins.getInjector().injectMembers(this);
     }

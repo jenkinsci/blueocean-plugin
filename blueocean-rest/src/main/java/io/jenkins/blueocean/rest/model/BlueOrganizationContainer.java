@@ -8,7 +8,7 @@ import io.jenkins.blueocean.rest.ApiRoutable;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class BOOrganizationContainer extends Container<BOOrganization> implements ApiRoutable, ExtensionPoint {
+public abstract class BlueOrganizationContainer extends Container<BlueOrganization> implements ApiRoutable, ExtensionPoint {
 
     @Override
     public final String getUrlName() {
@@ -18,7 +18,7 @@ public abstract class BOOrganizationContainer extends Container<BOOrganization> 
     /**
      * A set of users who belong to this organization.
      *
-     * @return {@link BOUserContainer}
+     * @return {@link BlueUserContainer}
      */
-    public abstract BOUserContainer getUsers();
+    public abstract BlueUserContainer getUsers();
 }

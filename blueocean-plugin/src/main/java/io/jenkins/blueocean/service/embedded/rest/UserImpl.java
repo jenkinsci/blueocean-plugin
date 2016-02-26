@@ -2,16 +2,16 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.User;
 import hudson.tasks.Mailer;
-import io.jenkins.blueocean.rest.model.BOUser;
+import io.jenkins.blueocean.rest.model.BlueUser;
 import jenkins.model.Jenkins;
 
 /**
- * {@link BOUser} implementation backed by in-memory {@link User}
+ * {@link BlueUser} implementation backed by in-memory {@link User}
  *
  * @author Kohsuke Kawaguchi
  * @author Vivek Pandey
  */
-public class UserImpl extends BOUser {
+public class UserImpl extends BlueUser {
     private final User user;
 
     public UserImpl(User user) {

@@ -14,12 +14,12 @@ BlueOcean UI is available at:
 
 BlueOcean rest API base URL is:
     
-    http://localhost:8080/jenkins/bo/rest
+    http://localhost:8080/jenkins/blue/rest
 
 
 ## Get a user
 
-    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/users/alice 
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/users/alice 
     
     {
       "id" : "alice",
@@ -29,7 +29,7 @@ BlueOcean rest API base URL is:
 
 ## Find users in an organization
 
-    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/search\?q\=type:user\;organization:jenkins
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/search\?q\=type:user\;organization:jenkins
     
     [ 
       {
@@ -40,7 +40,7 @@ BlueOcean rest API base URL is:
 
 ## Get organization details
 
-    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/organizations/jenkins
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins
     
     {
       "name" : "jenkins"
@@ -48,7 +48,7 @@ BlueOcean rest API base URL is:
 
 ## Get a Pipeline
 
-    curl -v -X GET  "http://localhost:8080/jenkins/bo/rest/organizations/jenkins/pipelines/test1"
+    curl -v -X GET  "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test1"
 
     {
       "organization" : "jenkins",
@@ -58,7 +58,7 @@ BlueOcean rest API base URL is:
 
 ## Get Pipelines
 
-    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/organizations/jenkins/pipelines
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines
     
     [ 
       {
@@ -70,7 +70,7 @@ BlueOcean rest API base URL is:
     
 ## Get all runs in a pipeline
     
-    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/organizations/jenkins/pipelines/test1/runs
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test1/runs
     
     [ 
       {
@@ -101,7 +101,7 @@ BlueOcean rest API base URL is:
 
 ## Get a run details
 
-    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/organizations/jenkins/pipelines/test2/runs/1    
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test2/runs/1    
     
     {
       "run" : {
@@ -120,7 +120,7 @@ BlueOcean rest API base URL is:
 
 ## Find latest run of a pipeline
 
-    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/?q=type:run;organization:jenkins;pipeline:test1;latestOnly:true
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/?q=type:run;organization:jenkins;pipeline:test1;latestOnly:true
     
     [ {
         "id" : "2",
@@ -139,7 +139,7 @@ BlueOcean rest API base URL is:
 
 ## Find latest run on all pipelines
 
-    curl -v -X GET  http://localhost:8080/jenkins/bo/rest/?q=type:run;organization:jenkins;latestOnly:true
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/?q=type:run;organization:jenkins;latestOnly:true
     
     [ {
         "id" : "2",

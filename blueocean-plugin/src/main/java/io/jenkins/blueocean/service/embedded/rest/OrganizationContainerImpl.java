@@ -2,9 +2,9 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.model.BOOrganization;
-import io.jenkins.blueocean.rest.model.BOOrganizationContainer;
-import io.jenkins.blueocean.rest.model.BOUserContainer;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.rest.model.BlueOrganizationContainer;
+import io.jenkins.blueocean.rest.model.BlueUserContainer;
 import jenkins.model.Jenkins;
 
 import javax.inject.Inject;
@@ -12,25 +12,25 @@ import java.util.Collections;
 import java.util.Iterator;
 
 /**
- * {@link BOOrganizationContainer} for the embedded use
+ * {@link BlueOrganizationContainer} for the embedded use
  *
  * @author Vivek Pandey
  * @author Kohsuke Kawaguchi
  */
 @Extension
-public class OrganizationContainerImpl extends BOOrganizationContainer {
+public class OrganizationContainerImpl extends BlueOrganizationContainer {
     @Inject
     UserContainerImpl users;
 
     @Override
-    public BOOrganization get(String name) {
+    public BlueOrganization get(String name) {
         validateOrganization(name);
         return OrganizationImpl.INSTANCE;
     }
 
     @Override
-    public Iterator<BOOrganization> iterator() {
-        return Collections.<BOOrganization>singleton(OrganizationImpl.INSTANCE).iterator();
+    public Iterator<BlueOrganization> iterator() {
+        return Collections.<BlueOrganization>singleton(OrganizationImpl.INSTANCE).iterator();
     }
 
     protected void validateOrganization(String organization){
@@ -45,7 +45,7 @@ public class OrganizationContainerImpl extends BOOrganizationContainer {
      * so we can just return that singleton.
      */
     @Override
-    public BOUserContainer getUsers() {
+    public BlueUserContainer getUsers() {
         return users;
     }
 }

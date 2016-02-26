@@ -3,9 +3,9 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Job;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.model.BOPipeline;
-import io.jenkins.blueocean.rest.model.BORun;
-import io.jenkins.blueocean.rest.model.BORunContainer;
+import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import jenkins.model.Jenkins;
 
 import java.util.Iterator;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author Vivek Pandey
  */
-public class RunContainerImpl extends BORunContainer {
+public class RunContainerImpl extends BlueRunContainer {
 
     private final PipelineImpl pipeline;
 
@@ -24,7 +24,7 @@ public class RunContainerImpl extends BORunContainer {
 
 
     @Override
-    public BORun get(String name) {
+    public BlueRun get(String name) {
         List<Job> projects = Jenkins.getActiveInstance().getAllItems(Job.class);
         for (Job p : projects) {
             if (!p.getName().equals(pipeline.getName())) {
@@ -55,12 +55,12 @@ public class RunContainerImpl extends BORunContainer {
     }
 
     @Override
-    public Iterator<BORun> iterator() {
+    public Iterator<BlueRun> iterator() {
         return RunSearch.findRuns(pipeline.project,false).iterator();
     }
 
     @Override
-    public BOPipeline getPipeline(String name) {
+    public BluePipeline getPipeline(String name) {
         return pipeline;
     }
 }

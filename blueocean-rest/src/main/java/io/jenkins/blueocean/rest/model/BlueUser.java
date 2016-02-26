@@ -9,7 +9,7 @@ import org.kohsuke.stapler.export.Exported;
  * @author Kohsuke Kawaguchi
  * @author Vivek Pandey
  */
-public abstract class BOUser extends Resource {
+public abstract class BlueUser extends Resource {
     public static final String ID="id";
     public static final String FULL_NAME="fullName";
     public static final String EMAIL="email";

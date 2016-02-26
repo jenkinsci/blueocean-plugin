@@ -8,7 +8,7 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class BOOrganization extends Resource {
+public abstract class BlueOrganization extends Resource {
     public static final String NAME="name";
     public static final String PIPELINES="pipelines";
 
@@ -17,7 +17,7 @@ public abstract class BOOrganization extends Resource {
     public abstract String getName();
 
     @JsonProperty(PIPELINES)
-    public abstract BOPipelineContainer getPipelines();
+    public abstract BluePipelineContainer getPipelines();
 
 }
 

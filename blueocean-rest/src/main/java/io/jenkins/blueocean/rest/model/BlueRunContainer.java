@@ -1,15 +1,15 @@
 package io.jenkins.blueocean.rest.model;
 
 /**
- * BORun API
+ * BlueRun API
  *
  * @author Vivek Pandey
  */
-public abstract class BORunContainer extends Container<BORun> {
+public abstract class BlueRunContainer extends Container<BlueRun> {
     /**
      *
      * @param name pipeline name
      * @return pipeline with the given name as parameter
      */
-    public abstract BOPipeline getPipeline(String name);
+    public abstract BluePipeline getPipeline(String name);
 }

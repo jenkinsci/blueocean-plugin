@@ -14,7 +14,7 @@ import java.util.Date;
  *
  * @author Vivek Pandey
  */
-public abstract class BORun extends Resource {
+public abstract class BlueRun extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String ID="id";
     public static final String PIPELINE="pipeline";
@@ -39,7 +39,7 @@ public abstract class BORun extends Resource {
     public abstract String getOrganization();
 
     /**
-     * @return {@link BORun} id - unique within a pipeline
+     * @return {@link BlueRun} id - unique within a pipeline
      */
     @Exported(name = ID)
     @JsonProperty(ID)
@@ -53,7 +53,7 @@ public abstract class BORun extends Resource {
     public abstract String getPipeline();
 
     /**
-     * @return BORun status
+     * @return BlueRun status
      */
     @JsonProperty(STATUS)
     @Exported(name = STATUS)

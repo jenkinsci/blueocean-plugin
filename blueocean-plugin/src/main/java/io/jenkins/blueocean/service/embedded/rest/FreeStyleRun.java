@@ -1,14 +1,14 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Run;
-import io.jenkins.blueocean.rest.model.BORun;
+import io.jenkins.blueocean.rest.model.BlueRun;
 
 import java.util.Date;
 
 /**
  * @author Vivek Pandey
  */
-public class FreeStyleRun extends BORun {
+public class FreeStyleRun extends BlueRun {
 
     private final Run run;
 

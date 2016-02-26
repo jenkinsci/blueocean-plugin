@@ -8,6 +8,7 @@
 
 You typically build only once or unless needed to compile java class or update other blueocean plugins 
      
+    cd blueocean-web
     mvn clean install -Pdev
 
 > to skip tests run the above command with -DskipTests options    
