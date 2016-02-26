@@ -1,0 +1,14 @@
+{
+  "name": "blueocean-admin",
+  "version": "0.0.1",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "jenkins-js-builder": "0.0.50",
+    "jenkins-js-test": "^1.0.1"
+  },
+  "dependencies": {
+    "@jenkins-cd/js-extensions": "0.0.2",
+    "jenkins-js-modules": "^1.5.1",
+    "window-handle": "^1.0.0"
+  }
+}
