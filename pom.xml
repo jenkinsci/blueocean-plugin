@@ -18,19 +18,15 @@
   <properties>
     <java.level>7</java.level>
     <jackson.version>2.2.3</jackson.version>
-    <jenkins.version>1.639</jenkins.version>
+    <!-- please build 490b3b4f3b3ffb3be755be964a212b826d4d21aa from jenkinsci/jenkins locally  -->
+    <jenkins.version>1.650-SNAPSHOT</jenkins.version>
   </properties>
 
   <modules>
     <module>blueocean-web</module>
     <module>blueocean-commons</module>
-    <module>blueocean-security-api</module>
-    <module>blueocean-authentication-service-api</module>
-    <module>blueocean-authentication-service</module>
-    <module>blueocean-profile-service-api</module>
-    <module>blueocean-pipeline-service-api</module>
+    <module>blueocean-rest</module>
     <module>blueocean-plugin</module>
-    <module>blueocean-github-oauth-plugin</module>
   </modules>
 
   <repositories>
@@ -50,25 +46,6 @@
     <dependencies>
 
         <!-- Module versions -->
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-profile-service-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-pipeline-service-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-authentication-service-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-commons</artifactId>
@@ -83,19 +60,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-security-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-github-oauth-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-authentication-service</artifactId>
+            <artifactId>blueocean-rest</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -105,11 +70,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-standalone</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- 3rd party dependencies -->
 
@@ -175,6 +135,14 @@
         <!-- TODO: java8 signature doesn't exist yet -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- No use worrying about this while we make such drastic changes left & right in every commit -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
         <configuration>
           <skip>true</skip>
         </configuration>

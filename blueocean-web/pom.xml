@@ -25,30 +25,6 @@
             <artifactId>variant</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-security-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-profile-service-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-authentication-service-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jasypt</groupId>
-            <artifactId>jasypt</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -64,4 +40,38 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>dev</id>
+                <build>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.codehaus.gmaven</groupId>
+                            <artifactId>groovy-maven-plugin</artifactId>
+                            <version>2.0</version>
+                            <executions>
+                                <execution>
+                                    <phase>install</phase>
+                                    <goals>
+                                        <goal>execute</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <configuration>
+                                <source>
+                                    def plugins = new File(basedir, 'work/plugins');
+                                    plugins.mkdirs();
+                                    def blueoceanPlugins = ["blueocean-commons","blueocean-rest","blueocean-plugin"]
+                                    for (a in blueoceanPlugins) {
+                                        def name = a + ".hpi";
+                                        def p = new File(basedir, "../" + a + "/target/"+ name);
+                                        ant.copy(file: p, tofile: new File(plugins,name), overwrite: true, verbose: true);
+                                    }
+                                </source>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </build>
+        </profile>
+    </profiles>
 </project>

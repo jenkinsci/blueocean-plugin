@@ -3,8 +3,14 @@ package io.jenkins.blueocean.commons;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +25,7 @@ import java.util.Map;
  *
  * @author Vivek Pandey
  */
-public class ServiceException extends RuntimeException{
+public class ServiceException extends RuntimeException implements HttpResponse {
     public final int status;
     public final ErrorMessage errorMessage;
 
@@ -46,6 +52,15 @@ public class ServiceException extends RuntimeException{
         return JsonConverter.toJson(errorMessage);
     }
 
+    @Override
+    public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
+        rsp.setStatus(status);
+        rsp.setContentType("application/json");
+        PrintWriter w = rsp.getWriter();
+        w.write(toJson());
+        w.close();
+    }
+
     /**
      * Describes JSON based error message.
      *
@@ -66,7 +81,7 @@ public class ServiceException extends RuntimeException{
 
         public final int code;
 
-        public ErrorMessage(@NonNull Integer code, @NonNull String message) {
+        public ErrorMessage(@Nonnull Integer code, @Nonnull String message) {
             this.code=code;
             this.message = message;
         }
@@ -264,11 +279,48 @@ public class ServiceException extends RuntimeException{
         }
     }
 
-    public static final int BAD_REQUEST = 401;
+
+    public static class UnsupportedMediaTypeException extends ServiceException{
+
+        public UnsupportedMediaTypeException(String message) {
+            super(UNSUPPORTED_MEDIA_TYPE, message);
+        }
+
+        public UnsupportedMediaTypeException(String message, Throwable throwable ) {
+            super(UNSUPPORTED_MEDIA_TYPE, message, throwable);
+        }
+
+        public UnsupportedMediaTypeException(ErrorMessage errorMessage) {
+            super(UNSUPPORTED_MEDIA_TYPE, errorMessage.message);
+        }
+        public UnsupportedMediaTypeException(ErrorMessage errorMessage, Throwable throwable ) {
+            super(UNSUPPORTED_MEDIA_TYPE, errorMessage.message, throwable);
+        }
+    }
+
+    public static class MethodNotAllowedException extends ServiceException{
+
+        public MethodNotAllowedException(String message) {
+            super(METHOD_NOT_ALLOWED, message);
+        }
+
+        public MethodNotAllowedException(String message, Throwable throwable ) {
+            super(METHOD_NOT_ALLOWED, message, throwable);
+        }
+
+        public MethodNotAllowedException(ErrorMessage errorMessage) {
+            super(METHOD_NOT_ALLOWED, errorMessage.message);
+        }
+        public MethodNotAllowedException(ErrorMessage errorMessage, Throwable throwable ) {
+            super(METHOD_NOT_ALLOWED, errorMessage.message, throwable);
+        }
+    }
+    public static final int BAD_REQUEST = 400;
     public static final int UNAUTHORIZED = 401;
     public static final int FORBIDDEN = 403;
     public static final int NOT_FOUND = 404;
     public static final int METHOD_NOT_ALLOWED = 405;
+    public static final int UNSUPPORTED_MEDIA_TYPE = 415;
     public static final int CONFLICT = 409;
     public static final int UNPROCESSABLE_ENTITY = 422;
     public static final int TOO_MANY_REQUESTS = 429;

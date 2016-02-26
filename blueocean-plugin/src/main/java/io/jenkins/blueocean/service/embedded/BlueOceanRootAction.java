@@ -26,11 +26,11 @@ public class BlueOceanRootAction implements RootAction, StaplerProxy {
     }
 
     /**
-     * This would map to /jenkins/bo/
+     * This would map to /jenkins/blue/
      */
     @Override
     public String getUrlName() {
-        return "bo";
+        return "blue";
     }
 
     @Override

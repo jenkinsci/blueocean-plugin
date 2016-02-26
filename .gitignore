@@ -6,10 +6,8 @@
 target/*
 **/target/*
 *~
-
 node
 node_modules
-
 work
-war/overlays
 app.properties
+
