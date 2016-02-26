@@ -43,12 +43,35 @@
     <profiles>
         <profile>
             <id>dev</id>
-            <dependencies>
-                <dependency>
-                    <groupId>io.jenkins.blueocean</groupId>
-                    <artifactId>blueocean-plugin</artifactId>
-                </dependency>
-            </dependencies>
+                <build>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.codehaus.gmaven</groupId>
+                            <artifactId>groovy-maven-plugin</artifactId>
+                            <version>2.0</version>
+                            <executions>
+                                <execution>
+                                    <phase>install</phase>
+                                    <goals>
+                                        <goal>execute</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <configuration>
+                                <source>
+                                    def plugins = new File(basedir, 'work/plugins');
+                                    plugins.mkdirs();
+                                    def blueoceanPlugins = ["blueocean-commons","blueocean-rest","blueocean-plugin"]
+                                    for (a in blueoceanPlugins) {
+                                        def name = a + ".hpi";
+                                        def p = new File(basedir, "../" + a + "/target/"+ name);
+                                        ant.copy(file: p, tofile: new File(plugins,name), overwrite: true, verbose: true);
+                                    }
+                                </source>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </build>
         </profile>
     </profiles>
 </project>
