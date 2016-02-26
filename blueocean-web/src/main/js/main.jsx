@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {render} from 'react-dom';
 
-//import {ExtensionPoint} from '@jenkins-cd/js-extensions';
+import {ExtensionPoint} from '@jenkins-cd/js-extensions';
 
 /**
  * Root Blue Ocean UI component
@@ -12,6 +12,10 @@ class App extends Component {
             <div id="outer">
                 <header>
                     <span className="jenkins-logo" />
+                    <nav>
+                        <a href="/">Home</a>
+                        <ExtensionPoint name="jenkins.topNavigation.menu" />
+                    </nav>
                 </header>
                 <main>
                     {/* children currently set by router */}
