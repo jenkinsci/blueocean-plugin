@@ -13,7 +13,7 @@ class App extends Component {
                 <header>
                     <span className="jenkins-logo" />
                     <nav>
-                        <a href="/">Home</a>
+                        <div className="nav-link"><a href="/">Home</a></div>
                         <ExtensionPoint name="jenkins.topNavigation.menu" />
                     </nav>
                 </header>

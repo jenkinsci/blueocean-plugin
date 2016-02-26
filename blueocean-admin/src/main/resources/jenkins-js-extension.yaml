@@ -1,5 +1,0 @@
-extensions:
-  - main: menu/Admin
-    extensionPoint: jenkins.topNavigation.menu
-  - main: menu/Reports
-    extensionPoint: jenkins.topNavigation.menu

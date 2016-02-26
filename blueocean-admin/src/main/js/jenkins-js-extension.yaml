@@ -1,0 +1,3 @@
+extensions:
+  - component: AdminNavLink
+    extensionPoint: jenkins.topNavigation.menu

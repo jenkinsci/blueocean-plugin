@@ -3,5 +3,8 @@
 //
 var builder = require('jenkins-js-builder');
 
-builder.bundle('src/main/js/blueocean-admin.js')
-  .inDir('target/classes/io/jenkins/blueocean');
+//
+// TODO: auto-generated this bundle from jenkins-js-extensions.yaml
+//
+builder.bundle('src/main/js/jenkins-js-extensions.jsx')
+  .inDir('target/classes/io/jenkins/blueocean-admin');
