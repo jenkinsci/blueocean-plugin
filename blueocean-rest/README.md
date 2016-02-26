@@ -58,7 +58,7 @@ BlueOcean rest API base URL is:
 
 ## Get Pipelines
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/
     
     [ 
       {
