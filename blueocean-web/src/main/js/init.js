@@ -1,3 +1,6 @@
+//
+// Application initialization.
+//
 var jenkinsMods = require('jenkins-js-modules');
 
 // Create and export the shared js-extensions instance. This

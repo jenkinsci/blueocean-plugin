@@ -1,25 +1,37 @@
-// See https://github.com/jenkinsci/js-test
+//
+// Test that we can load the app
+//
 
-var jsTest = require("jenkins-js-test");
+// See http://zombie.js.org/
+var Browser = require("zombie");
 
 describe("blueocean.js", function () {
 
-    it("- test init", function (done) {
-        jsTest.onPage(function() {
-            // Load blueocean module. That will trigger init, which will export js-extensions,
-            // making it available from js-modules to other .js bundles in plugins etc.
-            jsTest.requireSrcModule('blueocean');
+    it("- test App load", function (done) {
+        var browser = new Browser();
+        var loads = [];
 
-            // An import of jenkins-cd:js-extensions should work. This mimics what will happen
-            // in plugins. They will build their bundles using js-builder, which will import
-            // @jenkins-cd/js-extensions and use it to register the ExtensionPoint impls defined
-            // in the plugin's metadata file.
-            var jenkinsMods = require('jenkins-js-modules');
-            jenkinsMods.import('jenkins-cd:js-extensions')
-                .onFulfilled(function(extensions) {
-                    expect(extensions).toBeDefined();
-                    done();
-                });
+        browser.debug();
+        browser.on('request', function(request) {
+            var url = request.url;
+            loads.push(url);
+        });
+
+        browser.visit('http://localhost:18999/src/test/js/zombie-test-01.html', function() {
+            expect(browser.success).toBe(true);
+
+            // Check the requests are as expected.
+            expect(loads.length).toBe(2);
+            expect(loads[0]).toBe('http://localhost:18999/src/test/js/zombie-test-01.html');
+            expect(loads[1]).toBe('http://localhost:18999/target/classes/io/jenkins/blueocean/no_imports/blueocean.js');
+
+            // Check for some of the elements. We know that the following should
+            // be rendered by the React components.
+            browser.assert.elements('header', 1);
+            browser.assert.elements('footer', 1);
+            browser.assert.elements('span.jenkins-logo', 1);
+
+            done();
         });
     });
 });
