@@ -9,8 +9,11 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.tasks.Shell;
 import io.jenkins.blueocean.commons.JsonConverter;
-import org.junit.Assert;
 import org.hamcrest.Matchers;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,7 +64,7 @@ public class PipelineApiTest {
 
 
     @Test
-    public void getPipelinesTest() throws IOException {
+    public void getFreeStyleJobTest() throws IOException {
         Project p1 = j.createFreeStyleProject("pipeline1");
         Project p2 = j.createFreeStyleProject("pipeline2");
         RestAssured.given().log().all().get("/organizations/jenkins/pipelines/")
@@ -74,6 +77,7 @@ public class PipelineApiTest {
             .body("[1].name", Matchers.equalTo(p2.getName()))
             .body("[1].displayName", Matchers.equalTo(p2.getDisplayName()));
     }
+
 
 
     @Test
@@ -139,6 +143,90 @@ public class PipelineApiTest {
             .body("[0].organization", Matchers.equalTo("jenkins"))
             .body("[0].startTime", Matchers.equalTo(
                 new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
+    }
+
+
+    @Test
+    public void getPipelineJobsTest() throws IOException {
+        WorkflowJob p1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        WorkflowJob p2 = j.jenkins.createProject(WorkflowJob.class, "pipeline2");
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/")
+            .then().log().all()
+            .statusCode(200)
+            .body("[0].organization", Matchers.equalTo("jenkins"))
+            .body("[0].name", Matchers.equalTo(p1.getName()))
+            .body("[0].displayName", Matchers.equalTo(p1.getDisplayName()))
+            .body("[1].organization", Matchers.equalTo("jenkins"))
+            .body("[1].name", Matchers.equalTo(p2.getName()))
+            .body("[1].displayName", Matchers.equalTo(p2.getDisplayName()));
+    }
+
+    @Test
+    public void getPipelineJobRunTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition("" +
+            "node {" +
+            "   stage ('Build1'); " +
+            "   echo ('Building'); " +
+            "   stage ('Test1'); " +
+            "   echo ('Testing'); " +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1")
+            .then().log().all()
+            .statusCode(200)
+            .body("id", Matchers.equalTo(b1.getId()))
+            .body("pipeline", Matchers.equalTo(b1.getParent().getName()))
+            .body("organization", Matchers.equalTo("jenkins"))
+            .body("startTime", Matchers.equalTo(
+                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b1.getStartTimeInMillis()))));
+    }
+
+
+    @Test
+    public void getPipelineJobRunsTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+//        WorkflowJob job2 = j.jenkins.createProject(WorkflowJob.class, "pipeline2");
+
+        job1.setDefinition(new CpsFlowDefinition("" +
+            "node {" +
+            "   stage ('Build1'); " +
+            "   echo ('Building'); " +
+            "   stage ('Test1'); " +
+            "   echo ('Testing'); " +
+            "}"));
+
+//        job2.setDefinition(new CpsFlowDefinition("" +
+//            "node {" +
+//            "   stage ('Build1'); " +
+//            "   echo ('Building'); " +
+//            "   stage ('Test1'); " +
+//            "   echo ('Testing'); " +
+//            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        WorkflowRun b2 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b2);
+
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs")
+            .then().log().all()
+            .statusCode(200)
+            .body("[0].id", Matchers.equalTo(b2.getId()))
+            .body("[0].pipeline", Matchers.equalTo(b2.getParent().getName()))
+            .body("[0].organization", Matchers.equalTo("jenkins"))
+            .body("[0].startTime", Matchers.equalTo(
+                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b2.getStartTimeInMillis()))))
+            .body("[1].id", Matchers.equalTo(b1.getId()))
+            .body("[1].pipeline", Matchers.equalTo(b1.getParent().getName()))
+            .body("[1].organization", Matchers.equalTo("jenkins"))
+            .body("[1].startTime", Matchers.equalTo(
+                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b1.getStartTimeInMillis()))));
     }
 
     @Test
