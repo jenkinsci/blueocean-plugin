@@ -27,7 +27,6 @@
     <module>blueocean-commons</module>
     <module>blueocean-rest</module>
     <module>blueocean-plugin</module>
-    <module>blueocean-github-oauth-plugin</module>
     <module>blueocean-admin</module>
   </modules>
 
