@@ -29,7 +29,7 @@ public @interface PagedResponse {
     class Processor extends Interceptor {
         @Override
         public Object invoke(StaplerRequest request, StaplerResponse response, Object instance, Object[] arguments)
-                throws IllegalAccessException, InvocationTargetException {
+                throws IllegalAccessException, InvocationTargetException, ServletException {
 
             final Pageable<?> resp = (Pageable<?>)target.invoke(request, response, instance, arguments);
 
