@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.jayway.restassured.response.Response;
+import hudson.model.FreeStyleProject;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
@@ -50,9 +51,35 @@ public class MultiBranchTest {
         setupScm();
     }
 
-
     @Test
     public void getMultiBranchPipelines() throws IOException, ExecutionException, InterruptedException {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        FreeStyleProject f = j.jenkins.createProject(FreeStyleProject.class, "f");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+        given().log().all().get("/organizations/jenkins/pipelines/").then().log().all().statusCode(200)
+            .body("size()", Matchers.is(2))
+            .body("[0].organization", Matchers.equalTo("jenkins"))
+            .body("[0].name", Matchers.equalTo(f.getName()))
+            .body("[0].displayName", Matchers.equalTo(f.getDisplayName()))
+            .body("[1].organization", Matchers.equalTo("jenkins"))
+            .body("[1].name", Matchers.equalTo(mp.getName()))
+            .body("[1].displayName", Matchers.equalTo(mp.getDisplayName()))
+            .body("[1].numberOfFailingBranches", Matchers.equalTo(0))
+            .body("[1].numberOfSuccessfulBranches", Matchers.equalTo(0))
+            .body("[1].totalNumberOfBranches", Matchers.equalTo(3));
+    }
+
+
+
+    @Test
+    public void getMultiBranchPipeline() throws IOException, ExecutionException, InterruptedException {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
             new DefaultBranchPropertyStrategy(new BranchProperty[0])));

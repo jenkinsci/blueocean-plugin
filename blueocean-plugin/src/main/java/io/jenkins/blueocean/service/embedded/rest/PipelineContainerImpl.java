@@ -8,6 +8,7 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,11 +38,15 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         for (BuildableItem item : items) {
             if(item instanceof MultiBranchProject){
                 pipelines.add(new MultiBranchBluePipeline((MultiBranchProject) item));
-            }else if(item instanceof Job){
+            }else if(!isMultiBranchProjectJob(item) && item instanceof Job){
                 pipelines.add(new PipelineImpl((Job) item));
             }
         }
         return pipelines.iterator();
+    }
+
+    private boolean isMultiBranchProjectJob(BuildableItem item){
+        return item instanceof WorkflowJob && item.getParent() instanceof MultiBranchProject;
     }
 
 }
