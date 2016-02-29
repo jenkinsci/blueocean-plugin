@@ -70,7 +70,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
             RunList<? extends Run> runList = p.getBuilds();
 
             for (Run r : runList) {
-                runs.add(AbstractBlueRun.getBlueRun(r));
+                runs.add(AbstractRunImpl.getBlueRun(r));
             }
         }
         return runs;
@@ -80,7 +80,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
         if(job != null){
             Run r = job.getLastBuild();
             if(r != null) {
-                AbstractBlueRun.getBlueRun(r);
+                AbstractRunImpl.getBlueRun(r);
             }
         }
         return null;

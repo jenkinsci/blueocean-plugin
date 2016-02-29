@@ -12,10 +12,10 @@ import java.util.Date;
  *
  * @author Vivek Pandey
  */
-public abstract class AbstractBlueRun extends BlueRun {
+public abstract class AbstractRunImpl extends BlueRun {
     private final Run run;
 
-    public AbstractBlueRun(Run run) {
+    public AbstractRunImpl(Run run) {
         this.run = run;
     }
     @Override
@@ -81,8 +81,8 @@ public abstract class AbstractBlueRun extends BlueRun {
         return run.getClass().getSimpleName();
     }
 
-    public static class BasicRun extends AbstractBlueRun{
-        public BasicRun(Run run) {
+    public static class BasicRunImpl extends AbstractRunImpl {
+        public BasicRunImpl(Run run) {
             super(run);
         }
     }
@@ -90,11 +90,11 @@ public abstract class AbstractBlueRun extends BlueRun {
     protected static BlueRun getBlueRun(Run r){
         //TODO: We need to take care several other job types
         if (r.getClass().getSimpleName().equals(FreeStyleBuild.class.getSimpleName())) {
-            return new FreeStyleRun(r);
+            return new FreeStyleRunImpl(r);
         }else if(r.getClass().getSimpleName().equals(WorkflowRun.class.getSimpleName())){
-            return new PipelineRun(r);
+            return new PipelineRunImpl(r);
         }else{
-            return new BasicRun(r);
+            return new BasicRunImpl(r);
         }
     }
 }

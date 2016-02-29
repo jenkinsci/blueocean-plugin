@@ -50,7 +50,7 @@ public class RunContainerImpl extends BlueRunContainer {
             } else {
                 run = runList.getLastBuild();
             }
-            return  AbstractBlueRun.getBlueRun(run);
+            return  AbstractRunImpl.getBlueRun(run);
         }
         throw new ServiceException.NotFoundException(String.format("Run id %s not found for organization %s, pipeline: %s",
             name, pipeline.getOrganization(), job.getName()));

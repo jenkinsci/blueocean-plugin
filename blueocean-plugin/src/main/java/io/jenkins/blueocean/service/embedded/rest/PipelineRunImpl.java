@@ -7,8 +7,8 @@ import hudson.model.Run;
  *
  * @author Vivek Pandey
  */
-public class PipelineRun extends AbstractBlueRun {
-    public PipelineRun(Run run) {
+public class PipelineRunImpl extends AbstractRunImpl {
+    public PipelineRunImpl(Run run) {
         super(run);
     }
 }
