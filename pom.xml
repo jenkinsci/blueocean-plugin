@@ -27,6 +27,7 @@
     <module>blueocean-commons</module>
     <module>blueocean-rest</module>
     <module>blueocean-plugin</module>
+    <module>blueocean-admin</module>
   </modules>
 
   <repositories>
@@ -70,6 +71,12 @@
             <version>${project.version}</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- 3rd party dependencies -->
 

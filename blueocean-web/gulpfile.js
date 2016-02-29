@@ -1,11 +1,14 @@
 //
-// See https://github.com/tfennelly/jenkins-js-builder
+// See https://github.com/jenkinsci/js-builder
 //
 var builder = require('jenkins-js-builder');
 
+//
+// Create the main "App" bundle.
+// generateNoImportsBundle makes it easier to test with zombie.
+//
 builder.bundle('src/main/js/blueocean.js')
-//  .withExternalModuleMapping('bootstrap-detached', 'bootstrap:bootstrap3', {addDefaultCSS: true})
-//  .withExternalModuleMapping('handlebars', 'handlebars:handlebars3')
-//  .less('src/main/less/pipelineeditor.less')
-  .inDir('target/classes/io/jenkins/blueocean');
+    .inDir('target/classes/io/jenkins/blueocean')
+    .less('src/main/less/blueocean.less')
+    .generateNoImportsBundle();
 

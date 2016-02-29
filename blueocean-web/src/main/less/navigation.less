@@ -1,0 +1,43 @@
+#blueocean-root {
+
+  header {
+    nav {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      padding: 0 0.5rem 0.5rem 0;
+
+      .nav-link {
+        a {
+          color: white;
+          font-weight: bold;
+          text-decoration: none;
+          display: block;
+          border-radius: 0.4rem;
+          padding: 0.2rem 0.8rem;
+          margin: 0.5rem 0 0 0.5rem;
+          flex: 1 1 auto;
+        }
+
+        a:hover {
+          box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.3);
+          background: rgba(0, 0, 0, 0.3);
+        }
+      }
+    }
+
+    nav::after {
+      content: '';
+      flex: 10000 0 auto;
+      margin: 0;
+      padding: 0;
+      height: 0;
+    }
+
+    // TODO: Fix this ... ExtensionPoint rendering is wrapping everything in divs, causing grrrr
+    nav div {
+      display: inline-block;
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@jenkins-cd/js-extensions",
+  "version": "0.0.2",
+  "description": "Jenkins Extension Store",
+  "main": "index.js",
+  "scripts": {
+    "build": "jsx ExtensionPoint.jsx > ExtensionPoint.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "npm run build"
+  },
+  "author": "Tom Fennelly <tom.fennelly@gmail.com> (https://github.com/tfennelly)",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7"
+  },
+  "devDependencies": {
+    "react-tools": "^0.13.3"
+  }
+}
