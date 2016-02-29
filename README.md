@@ -2,6 +2,8 @@ This is BlueOcean repo. It is a multi-module maven project. Each sub-directory a
 
 Blue Ocean is the new UI project for Jenkins.
 
+[![Build Status](https://cloudbees.ci.cloudbees.com/buildStatus/icon?job=Blue Ocean Plugin)](https://cloudbees.ci.cloudbees.com/job/Blue Ocean Plugin)
+
 ![Pirate logo, because it's ocean and stuff](logo-yarrr.png)
 Yarr...
 
