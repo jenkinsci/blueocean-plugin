@@ -207,7 +207,6 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         }
     ]
     
-    
 ## Get MultiBranch job's branch run detail
     
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/feature2/runs/1
