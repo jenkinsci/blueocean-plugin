@@ -1,7 +1,0 @@
-# Githib client details
-github.client.id=xxx
-github.client.secret=yyy
-
-# Cookie crypter
-cookie.password=c8hTtLA2qt72VYmcfqTXtAM6UzBlHygDjiYsKKeCaqwv6XnMVI
-cookie.salt=Lu0TID26hiNjn7r4K/VzzSgzGeSbmylyfSNfbxoyMXueammsy0CbHpS1jDWpdxD3rbM8+aWnLcUecBpqS07GsQ==

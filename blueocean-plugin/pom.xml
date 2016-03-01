@@ -119,6 +119,8 @@
                         //
                         linkHPI('blueocean-web');
                         linkHPI('blueocean-admin'); // Test plugin
+                        linkHPI('blueocean-rest');
+                        linkHPI('blueocean-commons');
                     </source>
                 </configuration>
             </plugin>
