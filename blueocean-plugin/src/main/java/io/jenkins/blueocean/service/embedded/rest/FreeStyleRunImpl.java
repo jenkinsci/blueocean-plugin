@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 
 /**
@@ -9,7 +10,23 @@ import hudson.model.Run;
  */
 public class FreeStyleRunImpl extends AbstractRunImpl {
 
-    public FreeStyleRunImpl(Run run) {
-        super(run);
+    private final FreeStyleBuild run;
+    public FreeStyleRunImpl(FreeStyleBuild run) {
+        this.run = run;
+    }
+
+    @Override
+    protected Run getRun() {
+        return null;
+    }
+
+    @Override
+    public String getBranch() {
+        return null;
+    }
+
+    @Override
+    public String getCommitId() {
+        return null;
     }
 }

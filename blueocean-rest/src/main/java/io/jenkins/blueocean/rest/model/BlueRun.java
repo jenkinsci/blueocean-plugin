@@ -146,4 +146,8 @@ public abstract class BlueRun extends Resource {
         UNKNOWN;
     }
 
+    public static abstract class ChangeLog{
+
+    }
+
 }

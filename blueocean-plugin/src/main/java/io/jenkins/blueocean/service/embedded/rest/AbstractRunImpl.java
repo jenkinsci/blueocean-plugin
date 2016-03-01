@@ -13,11 +13,8 @@ import java.util.Date;
  * @author Vivek Pandey
  */
 public abstract class AbstractRunImpl extends BlueRun {
-    private final Run run;
+    protected abstract Run getRun();
 
-    public AbstractRunImpl(Run run) {
-        this.run = run;
-    }
     @Override
     public String getOrganization() {
         return OrganizationImpl.INSTANCE.getName();
@@ -25,74 +22,87 @@ public abstract class AbstractRunImpl extends BlueRun {
 
     @Override
     public String getId() {
-        return run.getId();
+        return getRun().getId();
     }
 
     @Override
     public String getPipeline() {
-        return run.getParent().getName();
+        return getRun().getParent().getName();
     }
 
     @Override
     public Status getStatus() {
-        return run.getResult() != null ? Status.valueOf(run.getResult().toString()) : Status.UNKNOWN;
+        return getRun().getResult() != null ? Status.valueOf(getRun().getResult().toString()) : Status.UNKNOWN;
     }
 
     @Override
     public Date getStartTime() {
-        return new Date(run.getStartTimeInMillis());
+        return new Date(getRun().getStartTimeInMillis());
     }
 
     @Override
     public Date getEnQueueTime() {
-        return new Date(run.getTimeInMillis());
+        return new Date(getRun().getTimeInMillis());
     }
 
     @Override
     public Date getEndTime() {
-        if (!run.isBuilding()) {
-            return new Date(run.getStartTimeInMillis() + run.getDuration());
+        if (!getRun().isBuilding()) {
+            return new Date(getRun().getStartTimeInMillis() + getRun().getDuration());
         }
         return null;
     }
 
     @Override
     public Long getDurationInMillis() {
-        return run.getDuration();
+        return getRun().getDuration();
     }
 
     @Override
-    public String getBranch() {
-        return null;
-    }
+    public abstract String getBranch();
 
     @Override
-    public String getCommitId() {
-        return null;
-    }
+    public abstract String getCommitId();
 
     @Override
     public String getRunSummary() {
-        return run.getBuildStatusSummary().message;
+        return getRun().getBuildStatusSummary().message;
     }
 
     @Override
     public String getType() {
-        return run.getClass().getSimpleName();
+        return getRun().getClass().getSimpleName();
     }
 
     public static class BasicRunImpl extends AbstractRunImpl {
-        public BasicRunImpl(Run run) {
-            super(run);
+        private final Run run;
+
+        public BasicRunImpl(Run run){
+            this.run = run;
+        }
+
+        @Override
+        protected Run getRun() {
+            return run;
+        }
+
+        @Override
+        public String getBranch() {
+            return null;
+        }
+
+        @Override
+        public String getCommitId() {
+            return null;
         }
     }
 
     protected static BlueRun getBlueRun(Run r){
         //TODO: We need to take care several other job types
-        if (r.getClass().getSimpleName().equals(FreeStyleBuild.class.getSimpleName())) {
-            return new FreeStyleRunImpl(r);
-        }else if(r.getClass().getSimpleName().equals(WorkflowRun.class.getSimpleName())){
-            return new PipelineRunImpl(r);
+        if (r instanceof FreeStyleBuild) {
+            return new FreeStyleRunImpl((FreeStyleBuild)r);
+        }else if(r instanceof WorkflowRun){
+            return new PipelineRunImpl((WorkflowRun)r);
         }else{
             return new BasicRunImpl(r);
         }
