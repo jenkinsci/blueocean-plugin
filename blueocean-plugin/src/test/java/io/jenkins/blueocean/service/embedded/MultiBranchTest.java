@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.jayway.restassured.response.Response;
+import com.jayway.restassured.response.ValidatableResponse;
 import hudson.model.FreeStyleProject;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
@@ -10,6 +11,7 @@ import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsArrayContainingInAnyOrder;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -90,13 +92,17 @@ public class MultiBranchTest {
 
         mp.scheduleBuild2(0).getFuture().get();
 
-        given().log().all().get("/organizations/jenkins/pipelines/p/").then().log().all().statusCode(200)
-            .body("organization", Matchers.equalTo("jenkins"))
+        Response response = given().log().all().get("/organizations/jenkins/pipelines/p/");
+        ValidatableResponse validatableResponse = response.then().log().all().statusCode(200);
+            validatableResponse.body("organization", Matchers.equalTo("jenkins"))
             .body("name", Matchers.equalTo(mp.getName()))
             .body("displayName", Matchers.equalTo(mp.getDisplayName()))
             .body("numberOfFailingBranches", Matchers.equalTo(0))
             .body("numberOfSuccessfulBranches", Matchers.equalTo(0))
             .body("totalNumberOfBranches", Matchers.equalTo(3));
+
+        List<String> names = with(response.asString()).get("branchNames");
+        IsArrayContainingInAnyOrder.arrayContainingInAnyOrder(names, branches);
 
 
         Response r = given().log().all().get("/organizations/jenkins/pipelines/p/branches");
