@@ -27,7 +27,7 @@ public class BranchImpl extends BlueBranch {
     }
 
     @Override
-    public int getWeather() {
+    public int getWeatherScore() {
         return job.getBuildHealth().getScore();
     }
 

@@ -14,6 +14,7 @@ public abstract class BluePipeline extends Resource {
     public static final String DISPLAY_NAME="displayName";
     public static final String BRANCHES="branches";
     public static final String RUNS="runs";
+    public static final String WEATHER="weather";
 
     /**
      * @return name of the organization
@@ -36,8 +37,16 @@ public abstract class BluePipeline extends Resource {
     @JsonProperty(DISPLAY_NAME)
     public abstract String getDisplayName();
 
-    //TODO: collections should serailize as reference to the resource or pagination can't be done
 
+    /**
+     * @return weather health score percentile
+     */
+    @Exported(name = WEATHER)
+    @JsonProperty(WEATHER)
+    public abstract int getWeather();
+
+
+    //TODO: collections should serailize as reference to the resource or pagination can't be done
     /**
      * @return Set of branches available with this pipeline
      */

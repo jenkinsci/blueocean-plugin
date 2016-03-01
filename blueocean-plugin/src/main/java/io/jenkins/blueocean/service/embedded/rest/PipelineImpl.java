@@ -39,6 +39,11 @@ public class PipelineImpl extends BluePipeline {
     }
 
     @Override
+    public int getWeatherScore() {
+        return job.getBuildHealth().getScore();
+    }
+
+    @Override
     public BlueBranchContainer getBranches() {
         return new BlueBranchContainer() {
             @Override

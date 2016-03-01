@@ -42,13 +42,15 @@ public class PipelineApiTest {
 
     @Test
     public void getPipelineTest() throws IOException {
-        j.createFreeStyleProject("pipeline1");
+        Project p = j.createFreeStyleProject("pipeline1");
 
         RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1")
             .then().log().all()
             .statusCode(200)
             .body("organization", Matchers.equalTo("jenkins"))
-            .body("name", Matchers.equalTo("pipeline1"));
+            .body("name", Matchers.equalTo("pipeline1"))
+            .body("displayName", Matchers.equalTo("pipeline1"))
+            .body("weatherScore", Matchers.is(p.getBuildHealth().getScore()));
     }
 
     @Test
@@ -73,9 +75,11 @@ public class PipelineApiTest {
             .body("[0].organization", Matchers.equalTo("jenkins"))
             .body("[0].name", Matchers.equalTo(p1.getName()))
             .body("[0].displayName", Matchers.equalTo(p1.getDisplayName()))
+            .body("[0].weatherScore", Matchers.is(p1.getBuildHealth().getScore()))
             .body("[1].organization", Matchers.equalTo("jenkins"))
             .body("[1].name", Matchers.equalTo(p2.getName()))
-            .body("[1].displayName", Matchers.equalTo(p2.getDisplayName()));
+            .body("[1].displayName", Matchers.equalTo(p2.getDisplayName()))
+            .body("[1].weatherScore", Matchers.is(p1.getBuildHealth().getScore()));
     }
 
 
