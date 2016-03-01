@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -63,6 +64,8 @@ public abstract class BlueRun extends Resource {
      * @return Build execution start time inside executor
      */
     public abstract Date getStartTime();
+
+    public abstract Container<?> getChangeSet();
 
     /**
      * @return run start time

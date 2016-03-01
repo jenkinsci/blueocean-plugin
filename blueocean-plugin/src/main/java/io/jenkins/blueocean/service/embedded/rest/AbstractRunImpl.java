@@ -1,11 +1,19 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
+import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Containers;
+import io.jenkins.blueocean.rest.model.GenericContainer;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.kohsuke.stapler.export.Exported;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -14,6 +22,25 @@ import java.util.Date;
  */
 public abstract class AbstractRunImpl extends BlueRun {
     protected abstract Run getRun();
+
+    @Exported
+    public Container<?> getChangeSet() {
+        Run r = getRun();
+        if (r instanceof AbstractBuild) {
+            AbstractBuild<?,?> ab = (AbstractBuild) r;
+
+            Map<String,Object> m = new HashMap<>();
+            int cnt=0;
+            for (ChangeLogSet.Entry e : ab.getChangeSet()) {
+                cnt++;
+                String id = e.getCommitId();
+                if (id==null)   id = String.valueOf(cnt);
+                m.put(id,e);
+            }
+            return Containers.from(m);
+        }
+        return null;
+    }
 
     @Override
     public String getOrganization() {
