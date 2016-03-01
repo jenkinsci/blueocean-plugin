@@ -10,8 +10,9 @@
     "zombie": "^4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/js-extensions": "0.0.2",
-    "jenkins-js-modules": "^1.5.2",
+    "@jenkins-cd/js-extensions": "0.0.3",
+    "jenkins-js-modules": "^1.5.4",
+    "jquery-detached": "^2.1.4-v4",
     "react": "^0.14.5",
     "react-dom": "^0.14.5",
     "window-handle": "^1.0.0"
