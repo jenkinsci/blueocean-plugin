@@ -73,7 +73,8 @@ public class MultiBranchTest {
             .body("[1].displayName", Matchers.equalTo(mp.getDisplayName()))
             .body("[1].numberOfFailingBranches", Matchers.equalTo(0))
             .body("[1].numberOfSuccessfulBranches", Matchers.equalTo(0))
-            .body("[1].totalNumberOfBranches", Matchers.equalTo(3));
+            .body("[1].totalNumberOfBranches", Matchers.equalTo(3))
+            .body("[1].primaryBranchWeather", Matchers.is(100));
     }
 
 
@@ -103,10 +104,14 @@ public class MultiBranchTest {
 
         String body = r.asString();
         List<String> branchNames = with(body).get("name");
+        List<Integer> weather = with(body).get("weather");
         for(String n:branches){
             assertTrue(branchNames.contains(n));
         }
 
+        for(int s:weather){
+            assertEquals(100, s);
+        }
     }
 
     @Test

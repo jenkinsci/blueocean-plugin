@@ -1,30 +1,25 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
-import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BlueBranchContainer;
-import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import jenkins.branch.MultiBranchProject;
-import org.kohsuke.stapler.export.Exported;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * @author Vivek Pandey
  */
-public class MultiBranchBluePipeline extends BluePipeline {
+public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     /*package*/ final MultiBranchProject mbp;
 
-    public MultiBranchBluePipeline(MultiBranchProject mbp) {
+    public MultiBranchPipelineImpl(MultiBranchProject mbp) {
         this.mbp = mbp;
     }
 
@@ -43,22 +38,51 @@ public class MultiBranchBluePipeline extends BluePipeline {
         return mbp.getDisplayName();
     }
 
-    @JsonProperty("totalNumberOfBranches")
-    @Exported
+    @Override
     public int getTotalNumberOfBranches(){
         return mbp.getAllJobs().size();
     }
 
-    @JsonProperty("totalNumberOfFailingBranches")
-    @Exported
+    @Override
     public int getNumberOfFailingBranches(){
         return countRunStatus(Result.FAILURE);
     }
 
-    @JsonProperty("totalNumberOfSuccessfulBranches")
-    @Exported
+    @Override
     public int getNumberOfSuccessfulBranches(){
         return countRunStatus(Result.SUCCESS);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public int getMasterBranchStatusPercentile(){
+        Job j = mbp.getBranch("master");
+        if(j == null) {
+            j = mbp.getBranch("production");
+            if(j == null){ //get latest
+                Collection<Job>  jbs = mbp.getAllJobs();
+                if(jbs.size() > 0){
+                    Job[] jobs = new Job[jbs.size()];
+                    Arrays.sort(jobs, new Comparator<Job>() {
+                        @Override
+                        public int compare(Job o1, Job o2) {
+                            long t1 = o1.getLastBuild().getTimeInMillis() + o1.getLastBuild().getDuration();
+                            long t2 = o2.getLastBuild().getTimeInMillis() + o2.getLastBuild().getDuration();
+                            if(t1<2){
+                                return -1;
+                            }else if(t1 > t2){
+                                return 1;
+                            }else{
+                                return 0;
+                            }
+                        }
+                    });
+
+                    return jobs[jobs.length - 1].getBuildHealth().getScore();
+                }
+            }
+        }
+        return j == null ? 0 : j.getBuildHealth().getScore();
     }
 
     @Override
@@ -66,7 +90,7 @@ public class MultiBranchBluePipeline extends BluePipeline {
         return new BranchContainerImpl(this);
     }
 
-    @Exported(name = "branches")
+    @Override
     public Collection<String> getBranchNames() {
         Collection<Job> jobs =  mbp.getAllJobs();
         List<String> branches = new ArrayList<>();
@@ -74,29 +98,6 @@ public class MultiBranchBluePipeline extends BluePipeline {
             branches.add(j.getName());
         }
         return branches;
-    }
-
-
-    // This is MultiBranchProject, it doesn't have build of it's own. Its a Folder.
-    @Override
-    public BlueRunContainer getRuns() {
-        return new BlueRunContainer() {
-            @Override
-            public BluePipeline getPipeline(String name) {
-                return null;
-            }
-
-            @Override
-            public BlueRun get(String name) {
-                throw new ServiceException.NotFoundException(
-                    String.format("%s is multi-branch project. No run with name: %s found.", mbp.getName(),name));
-            }
-
-            @Override
-            public Iterator<BlueRun> iterator() {
-                return Collections.emptyIterator();
-            }
-        };
     }
 
     private int countRunStatus(Result result){
