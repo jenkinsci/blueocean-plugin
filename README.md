@@ -10,7 +10,7 @@ Yarr...
 
 ## blueocean-web
 
-BlueOcean Web module, everything interesting web related lives here. If you are doing web, you want to be in here. You probably want to look at the README for this. 
+BlueOcean Web module, everything interesting web related lives here. If you are doing web, you want to be in here. You probably want to look at the README for this for how to play with it.
 
 ## blueocean-plugin
 
