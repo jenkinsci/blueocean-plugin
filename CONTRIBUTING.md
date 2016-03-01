@@ -9,13 +9,18 @@ For information on contributing to Jenkins, check out the https://wiki.jenkins-c
 
 All changes should come via pull requests, never to master directly. A pull request can be as a branch on this repo or from a forked one, doesn't matter. If a branch on this repo, name it topic/x feature/x or bug/x - depending on what you are doing. Once it is merged, please do delete the branch. 
 
-Once a pull request is ready to be considered, @-mention the team (at least) asking for review. Mentioning an individual that may know about the area is good to (one or more). `@reviewbybees` can also be used to drag in some attention (CloudBees employees would also ideally use this for a cross review).
+You can open a Pull Request at any time. People often like to do this because it allows them to utilize the Pull Request Builder on their PR, as well as allowing them to capture early feedback.
 
-Once there are 1 or more +1/LGTM/:bee: or amusing positive looking emoji, the PR can be merged ideally by the author of the PR. A :bug: or a -1 means that the issues raised need addressing and should be. 
+If the PR:
+
+* Is still a "Work In Progress" (i.e. incomplete), then please mark it with the "__work-in-progress__" label (GitHub label).
+* Ready for review, then please mark it with the "__needs-review__" label (GitHub label). You should also @-mention the team (at least) that you'd like to get the review from. Mentioning an individual that may know about the area is good to (one or more). `@reviewbybees` can also be used to drag in some attention (CloudBees employees would also ideally use this for a cross review).
+
+> __Note__: It's perfectly fine to use both of the above labels at the same time. However, if the PR is still a __work-in-progress__, it's a good idea to list the tasks that are done and the tasks still todo (using a [GitHub checklist](https://github.com/blog/1375-task-lists-in-gfm-issues-pulls-comments)), giving reviewers a clear idea of where the PR is. 
+
+Once the PR is no longer a __work-in-progress__, is building fine (according to the Pull Request Builder) and has 1 or more +1/LGTM/:bee: or amusing positive looking emoji, the PR can be merged ideally by the author of the PR. A :bug: or a -1 means that the issues raised need addressing and should be. 
 
 Avoid "bike shed" discussions about styles or whitespace unless it really impacts the changeset. The contributor can be encouraged to apply editor automation in future (if it is available).
-
-Avoid opening pull requests until you think it is ready for consideration. Leave things in a feature branch otherwise. 
 
 Squashing commits: if there are messy intermediate commits it is nice to squash things for the reviewer (but not mandatory). Always think about how to make it quick and easy for a reviewer (perhaps with more smaller PR's if needed).
 
