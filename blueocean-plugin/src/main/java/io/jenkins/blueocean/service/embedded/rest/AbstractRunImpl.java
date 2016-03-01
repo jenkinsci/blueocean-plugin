@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.console.AnnotatedLargeText;
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -27,6 +28,10 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Exported
     public Container<?> getChangeSet() {
         return null;
+    }
+
+    public AnnotatedLargeText getLogText() {
+        return run.getLogText();
     }
 
     @Override
