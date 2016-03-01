@@ -18,7 +18,7 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
     public static final String NUMBER_OF_FAILING_BRANCHES="numberOfFailingBranches";
     public static final String NUMBER_OF_SUCCESSFULT_BRANCHES="numberOfSuccessfulBranches";
     public static final String PRIMARY_BRANCH_WEATHER="primaryBranchWeather";
-    public static final String BRANCHES="branches";
+    public static final String BRANCH_NAMES ="branchNames";
 
     /**
      * @return total number of branches
@@ -56,8 +56,8 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
     /**
      * @return Gives array of branch names
      */
-    @Exported(name = BRANCHES)
-    @JsonProperty(BRANCHES)
+    @Exported(name = BRANCH_NAMES)
+    @JsonProperty(BRANCH_NAMES)
     public abstract Collection<String> getBranchNames();
 
     /**
