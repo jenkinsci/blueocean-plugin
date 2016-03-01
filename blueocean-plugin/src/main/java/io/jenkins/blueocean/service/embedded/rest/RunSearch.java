@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.collect.ImmutableList;
 import hudson.Extension;
-import hudson.model.FreeStyleBuild;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TopLevelItem;
@@ -16,7 +15,7 @@ import io.jenkins.blueocean.rest.pageable.Pageables;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,45 +39,51 @@ public class RunSearch extends OmniSearch<BlueRun> {
 
         if(pipeline != null){
             TopLevelItem p = Jenkins.getActiveInstance().getItem(pipeline);
+            if(latestOnly){
+                BlueRun r = getLatestRun((Job)p);
+                if(r != null) {
+                    return Pageables.wrap(Collections.singletonList(r));
+                }else{
+                    Pageables.empty();
+                }
+            }
             if (p instanceof Job) {
-                return Pageables.wrap(findRuns((Job)p,latestOnly));
+                return Pageables.wrap(findRuns((Job)p));
             }else{
                 throw new ServiceException.BadRequestExpception(String.format("Pipeline %s not found", pipeline));
             }
+        }else if(latestOnly){
+            return Pageables.empty();
         }
-        return Pageables.wrap(findRuns(null,latestOnly));
+        return Pageables.wrap(findRuns(null));
     }
 
-    public static Iterable<BlueRun> findRuns(Job pipeline, boolean latestOnly){
+    public static Iterable<BlueRun> findRuns(Job pipeline){
         final List<BlueRun> runs = new ArrayList<>();
-        List<Job> pipelines;
+        Iterable<Job> pipelines;
         if(pipeline != null){
             pipelines = ImmutableList.of(pipeline);
         }else{
             pipelines = Jenkins.getActiveInstance().getItems(Job.class);
         }
         for (Job p : pipelines) {
-            if (latestOnly) {
-                hudson.model.Run r = p.getLastBuild();
-                if(r != null) {
-                    if (r.getClass().getSimpleName().equals(FreeStyleBuild.class.getSimpleName())) {
-                        runs.add(new FreeStyleRun(r));
-                    }
-                }else{
-                    Pageables.empty();
-                }
-            }else{
-                RunList<? extends Run> runList = p.getBuilds();
+            RunList<? extends Run> runList = p.getBuilds();
 
-                Iterator<? extends Run> iterator = runList.iterator();
-                while (iterator.hasNext()) {
-                    hudson.model.Run r = iterator.next();
-                    if (r.getClass().getSimpleName().equals(FreeStyleBuild.class.getSimpleName())) {
-                        runs.add(new FreeStyleRun(r));//TODO: fix this, there are other run types
-                    }
-                }
+            for (Run r : runList) {
+                runs.add(AbstractRunImpl.getBlueRun(r));
             }
         }
         return runs;
     }
+
+    private BlueRun getLatestRun(Job job){
+        if(job != null){
+            Run r = job.getLastBuild();
+            if(r != null) {
+                AbstractRunImpl.getBlueRun(r);
+            }
+        }
+        return null;
+    }
+
 }
