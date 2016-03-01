@@ -231,3 +231,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "status": "SUCCESS",
         "type": "WorkflowRun"
     }
+
+## Get changes for the build
+
+    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/feature2/runs/1/changesets/3/601366d

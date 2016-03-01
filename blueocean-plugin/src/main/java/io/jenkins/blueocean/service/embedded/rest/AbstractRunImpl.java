@@ -1,44 +1,31 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
-import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Containers;
-import io.jenkins.blueocean.rest.model.GenericContainer;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Basic {@link BlueRun} implementation.
  *
  * @author Vivek Pandey
  */
-public abstract class AbstractRunImpl extends BlueRun {
-    protected abstract Run getRun();
+public class AbstractRunImpl<T extends Run> extends BlueRun {
+    protected final T run;
 
+    public AbstractRunImpl(T run) {
+        this.run = run;
+    }
+
+    /**
+     * Subtype should return
+     */
     @Exported
     public Container<?> getChangeSet() {
-        Run r = getRun();
-        if (r instanceof AbstractBuild) {
-            AbstractBuild<?,?> ab = (AbstractBuild) r;
-
-            Map<String,Object> m = new HashMap<>();
-            int cnt=0;
-            for (ChangeLogSet.Entry e : ab.getChangeSet()) {
-                cnt++;
-                String id = e.getCommitId();
-                if (id==null)   id = String.valueOf(cnt);
-                m.put(id,e);
-            }
-            return Containers.from(m);
-        }
         return null;
     }
 
@@ -49,79 +36,60 @@ public abstract class AbstractRunImpl extends BlueRun {
 
     @Override
     public String getId() {
-        return getRun().getId();
+        return run.getId();
     }
 
     @Override
     public String getPipeline() {
-        return getRun().getParent().getName();
+        return run.getParent().getName();
     }
 
     @Override
     public Status getStatus() {
-        return getRun().getResult() != null ? Status.valueOf(getRun().getResult().toString()) : Status.UNKNOWN;
+        return run.getResult() != null ? Status.valueOf(run.getResult().toString()) : Status.UNKNOWN;
     }
 
     @Override
     public Date getStartTime() {
-        return new Date(getRun().getStartTimeInMillis());
+        return new Date(run.getStartTimeInMillis());
     }
 
     @Override
     public Date getEnQueueTime() {
-        return new Date(getRun().getTimeInMillis());
+        return new Date(run.getTimeInMillis());
     }
 
     @Override
     public Date getEndTime() {
-        if (!getRun().isBuilding()) {
-            return new Date(getRun().getStartTimeInMillis() + getRun().getDuration());
+        if (!run.isBuilding()) {
+            return new Date(run.getStartTimeInMillis() + run.getDuration());
         }
         return null;
     }
 
     @Override
     public Long getDurationInMillis() {
-        return getRun().getDuration();
+        return run.getDuration();
     }
 
     @Override
-    public abstract String getBranch();
+    public String getBranch() {
+        return null;
+    }
 
     @Override
-    public abstract String getCommitId();
+    public String getCommitId() {
+        return null;
+    }
 
     @Override
     public String getRunSummary() {
-        return getRun().getBuildStatusSummary().message;
+        return run.getBuildStatusSummary().message;
     }
 
     @Override
     public String getType() {
-        return getRun().getClass().getSimpleName();
-    }
-
-    public static class BasicRunImpl extends AbstractRunImpl {
-        private final Run run;
-
-        public BasicRunImpl(Run run){
-            this.run = run;
-        }
-
-        @Override
-        protected Run getRun() {
-            return run;
-        }
-
-        @Override
-        public String getBranch() {
-            return null;
-        }
-
-        @Override
-        public String getCommitId() {
-            return null;
-        }
+        return run.getClass().getSimpleName();
     }
 
     protected static BlueRun getBlueRun(Run r){
@@ -131,7 +99,7 @@ public abstract class AbstractRunImpl extends BlueRun {
         }else if(r instanceof WorkflowRun){
             return new PipelineRunImpl((WorkflowRun)r);
         }else{
-            return new BasicRunImpl(r);
+            return new AbstractRunImpl<>(r);
         }
     }
 }
