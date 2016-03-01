@@ -1,0 +1,504 @@
+/*!
+* Jenkins Design Language CSS Theme
+*
+* Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+*/
+
+
+//
+// Google Fonts - fetch online for now
+// --------------------------------------------------
+
+@import url(https://fonts.googleapis.com/css?family=Lato:400,400italic,700,900|Source+Code+Pro:400,700);
+
+//
+// Load core variables and mixins
+// --------------------------------------------------
+
+@import "variables.less";
+@import "mixins.less";
+
+//
+// Base font size
+// --------------------------------------------------
+
+html {
+    font-size:62.5%; // Make 1rem == 10px
+}
+
+#root {
+    font-size:1.4rem;
+}
+
+//
+// Turn off ligatures
+// --------------------------------------------------
+
+body {
+    text-rendering: optimizeSpeed;
+    font-feature-settings: "kern" on, "liga" off;
+    -moz-font-feature-settings: "kern" on, "liga" off;
+}
+
+//
+// Some basics
+// --------------------------------------------------
+
+// Default All headings to basically "bold and display:block"
+h1, h2, h3, h4, h5 h6 {
+    font-size:100%;
+    margin:0;
+    padding:0;
+}
+
+// Make h1 slightly bigger :)
+h1 {
+    font-size:1.8rem;
+}
+
+.label-danger {
+    background-color: @brand-danger;
+}
+
+.label-warning {
+    background-color: @brand-warning;
+}
+
+.label-info {
+    background-color: @brand-info;
+}
+
+.label-success {
+    background-color: @brand-success;
+}
+
+.label-primary {
+    background-color: @brand-primary;
+}
+
+.btn-link {
+    color: @link-color;
+}
+
+a {
+    text-decoration: none;
+}
+
+.list-group-item.active>.badge,
+.nav-pills>.active>a>.badge,
+a {
+    color: @link-color;
+}
+
+.list-group-item.active .list-group-item-text,
+.list-group-item.active:focus .list-group-item-text,
+.list-group-item.active:hover .list-group-item-text {
+    color: white;
+}
+
+a:hover {
+    color: @link-hover-color;
+    text-decoration: @link-hover-decoration;
+}
+
+.nav-pills>li.active>a,
+.nav-pills>li.active>a:focus {
+    background-color: @link-color;
+}
+
+.nav-pills>li.active>a:hover {
+    background-color: @link-hover-color;
+}
+
+.progress-bar {
+    background-color: @progress-bar-bg;
+}
+
+body {
+    font-family: @font-family-base;
+    background-color: @body-bg;
+}
+
+code, pre, kbd {
+    font-family: @font-family-monospace;
+}
+
+
+//
+// Buttons
+// --------------------------------------------------
+
+// Common styles
+.btn-default,
+.btn-primary,
+.btn-success,
+.btn-info,
+.btn-warning,
+.btn-danger {
+    text-shadow: 0 -1px 0 rgba(0,0,0,.2);
+    @shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 1px 1px rgba(0,0,0,.075);
+    .box-shadow(@shadow);
+
+    // Reset the shadow
+    &:active,
+    &.active {
+        .box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+    }
+
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+        .box-shadow(none);
+    }
+
+    .badge {
+        text-shadow: none;
+    }
+}
+
+// Mixin for generating new styles
+.btn-styles(@btn-color: #555) {
+
+    background-color: @btn-color;
+    border: none;
+    text-shadow: none;
+    box-shadow: none;
+
+    &:hover,
+    &:focus  {
+        background-color: darken(@btn-color, 12%);
+        background-position: 0 -15px;
+    }
+
+    &:active,
+    &.active {
+        background-color: darken(@btn-color, 12%);
+        border-color: darken(@btn-color, 14%);
+    }
+
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+        &,
+        &:hover,
+        &:focus,
+        &.focus,
+        &:active,
+        &.active {
+            background-color: darken(@btn-color, 12%);
+            background-image: none;
+        }
+    }
+}
+
+// Common styles
+.btn {
+    // Remove the gradient for the pressed/active state
+    &:active,
+    &.active {
+        background-image: none;
+    }
+}
+
+// Apply the mixin to the buttons
+.btn-default { .btn-styles(@btn-default-bg); }
+.btn-primary { .btn-styles(@btn-primary-bg); }
+.btn-success { .btn-styles(@btn-success-bg); }
+.btn-info    { .btn-styles(@btn-info-bg); }
+.btn-warning { .btn-styles(@btn-warning-bg); }
+.btn-danger  { .btn-styles(@btn-danger-bg); }
+
+
+//
+// Images
+// --------------------------------------------------
+
+.thumbnail,
+.img-thumbnail {
+    .box-shadow(0 1px 2px rgba(0,0,0,.075));
+}
+
+
+//
+// Dropdowns
+// --------------------------------------------------
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+    #gradient > .vertical(@start-color: @dropdown-link-hover-bg; @end-color: darken(@dropdown-link-hover-bg, 5%));
+    background-color: darken(@dropdown-link-hover-bg, 5%);
+}
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+    #gradient > .vertical(@start-color: @dropdown-link-active-bg; @end-color: darken(@dropdown-link-active-bg, 5%));
+    background-color: darken(@dropdown-link-active-bg, 5%);
+}
+
+
+
+// Fix active state of dropdown items in collapsed mode
+@media (max-width: @grid-float-breakpoint-max) {
+    .navbar .navbar-nav .open .dropdown-menu > .active > a {
+        &,
+        &:hover,
+        &:focus {
+            color: #fff;
+            #gradient > .vertical(@start-color: @dropdown-link-active-bg; @end-color: darken(@dropdown-link-active-bg, 5%));
+        }
+    }
+}
+
+//
+// Alerts
+// --------------------------------------------------
+
+// Common styles
+.alert {
+    border:none;
+}
+
+// Mixin for generating new styles
+.alert-styles(@color; @text-color; @border-color) {
+    background-color: @color;
+    color: @text-color;
+    border-radius: 3px;
+}
+
+// Apply the mixin to the alerts
+.alert-success    { .alert-styles(@alert-success-bg,    @alert-success-text,    @alert-success-border); }
+.alert-info       { .alert-styles(@alert-info-bg,       @alert-info-text,       @alert-info-border);    }
+.alert-warning    { .alert-styles(@alert-warning-bg,    @alert-warning-text,    @alert-warning-border); }
+.alert-danger     { .alert-styles(@alert-danger-bg,     @alert-danger-text,     @alert-danger-border);  }
+
+
+//
+// Progress bars
+// --------------------------------------------------
+
+// Give the progress background some depth
+.progress {
+    #gradient > .vertical(@start-color: darken(@progress-bg, 4%); @end-color: @progress-bg)
+}
+
+// Mixin for generating new styles
+.progress-bar-styles(@color) {
+    #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 10%));
+}
+
+// Apply the mixin to the progress bars
+.progress-bar            { .progress-bar-styles(@progress-bar-bg); }
+.progress-bar-success    { .progress-bar-styles(@progress-bar-success-bg); }
+.progress-bar-info       { .progress-bar-styles(@progress-bar-info-bg); }
+.progress-bar-warning    { .progress-bar-styles(@progress-bar-warning-bg); }
+.progress-bar-danger     { .progress-bar-styles(@progress-bar-danger-bg); }
+
+// Reset the striped class because our mixins don't do multiple gradients and
+// the above custom styles override the new `.progress-bar-striped` in v3.2.0.
+.progress-bar-striped {
+    #gradient > .striped();
+}
+
+
+//
+// List groups
+// --------------------------------------------------
+
+.list-group {
+    border-radius: @border-radius-base;
+    .box-shadow(0 1px 2px rgba(0,0,0,.075));
+}
+.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+    text-shadow: 0 -1px 0 darken(@list-group-active-bg, 10%);
+    #gradient > .vertical(@start-color: @list-group-active-bg; @end-color: darken(@list-group-active-bg, 7.5%));
+    border-color: darken(@list-group-active-border, 7.5%);
+
+    .badge {
+        text-shadow: none;
+    }
+}
+
+
+//
+// Panels
+// --------------------------------------------------
+
+// Common styles
+.panel {
+    .box-shadow(0 1px 2px rgba(0,0,0,.05));
+}
+
+// Mixin for generating new styles
+.panel-heading-styles(@color) {
+    background-color: @color;
+    #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 5%));
+    color: white;
+    border: inherit;
+}
+
+// Apply the mixin to the panel headings only
+.panel-default > .panel-heading   { .panel-heading-styles(@panel-default-heading-bg); }
+.panel-primary > .panel-heading   { .panel-heading-styles(@panel-primary-heading-bg); }
+.panel-success > .panel-heading   { .panel-heading-styles(@panel-success-heading-bg); }
+.panel-info > .panel-heading      { .panel-heading-styles(@panel-info-heading-bg); }
+.panel-warning > .panel-heading   { .panel-heading-styles(@panel-warning-heading-bg); }
+.panel-danger > .panel-heading    { .panel-heading-styles(@panel-danger-heading-bg); }
+
+// Fix all the hardcoded borders set in bootstrap.css
+.panel-default  { border-color: @panel-default-border; }
+.panel-primary  { border-color: @panel-primary-border; }
+.panel-success  { border-color: @panel-success-border; }
+.panel-info     { border-color: @panel-info-border;    }
+.panel-warning  { border-color: @panel-warning-border; }
+.panel-danger   { border-color: @panel-danger-border;  }
+
+
+//
+// Wells
+// --------------------------------------------------
+
+.well {
+    #gradient > .vertical(@start-color: darken(@well-bg, 5%); @end-color: @well-bg);
+    border-color: darken(@well-bg, 10%);
+    @shadow: inset 0 1px 3px rgba(0,0,0,.05), 0 1px 0 rgba(255,255,255,.1);
+    .box-shadow(@shadow);
+}
+
+
+//
+// Tables
+// --------------------------------------------------
+
+table {
+    width:100%;
+}
+
+thead tr {
+    border-bottom:solid 1px;
+}
+
+td,th {
+    padding:0.5em 0;
+    text-align:left;
+}
+
+th:first-child,
+td:first-child {
+    padding-left:1em;
+}
+
+
+//
+// Code / Logs
+// --------------------------------------------------
+
+code {
+    background-color: @pre-bg;
+    color: @pre-color;
+    font-size:1.1rem;
+}
+
+code.block {
+    background-color: @pre-bg;
+    color: @pre-color;
+    display: block;
+    padding: 0.5rem;
+    white-space: pre;
+    overflow:auto;
+    max-height:@pre-scrollable-max-height;
+    border:solid 1px darken(@pre-bg, 20%);;
+}
+
+code.inline {
+    display: inline-block;
+    padding: inherit;
+    white-space: pre-wrap;
+}
+
+//
+// Layout
+// --------------------------------------------------
+
+// TODO: Add an override available on <body> that turns this off for extra-wide pages
+.content-width {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.global-header {
+    font-size:1.8rem;
+    background-color: @header-bg;
+    color: white;
+}
+
+.global-header a {
+    color: white;
+}
+
+.global-header nav {
+    text-align:center;
+    padding: 2rem 0;
+}
+
+.global-header nav a {
+    color: white;
+    font-weight: normal;
+    text-decoration: none;
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+}
+
+.global-header a:hover {
+    color: black;
+}
+
+.sub-header {
+    background-color: @sub-header-bg;
+    color: @text-color;
+    padding: 0;
+}
+
+.sub-header a {
+    color: @text-color;
+}
+
+.sub-header nav {
+    // TODO: This will need to be converted to flexbox once it becomes more populated
+    .content-width;
+    padding: 2rem 0;
+}
+
+.sub-header nav.page-tabs {
+    padding:0;
+}
+
+.page-tabs a {
+    display:inline-block;
+    padding: 0.2em 1em;
+}
+
+.page-tabs a.selected {
+    border-bottom:solid 2px @brand-primary;
+}
+
+.page-tabs a.selected:hover,
+.page-tabs a.selected:active {
+    text-decoration:none;
+}
+
+main article {
+    .content-width;
+    padding:1rem 0;
+}
+
+.container-fluid {
+    padding:0;
+}
+
+footer {
+    text-align: center;
+    margin:1em;
+}
