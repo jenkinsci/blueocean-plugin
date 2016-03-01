@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/js-extensions",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Jenkins Extension Store",
   "main": "index.js",
   "scripts": {
@@ -15,6 +15,12 @@
     "react-dom": "^0.14.7"
   },
   "devDependencies": {
+    "gulp": "^3.9.1",
+    "jenkins-js-builder": "0.0.51",
+    "jenkins-js-test": "^1.0.1",
     "react-tools": "^0.13.3"
+  },
+  "dependencies": {
+    "jenkins-js-modules": "^1.5.4"
   }
 }

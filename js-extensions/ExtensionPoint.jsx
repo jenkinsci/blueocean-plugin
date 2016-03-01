@@ -4,8 +4,20 @@ var store = require('./store.js');
 
 var ExtensionPoint = React.createClass({
 
+    getInitialState: function () {
+        // Initial state is the set of extensions.
+        return {
+            extensions: []
+        };
+    },
+
     componentDidMount: function() {
-        this._renderAllExtensions();
+        var thisEp = this;
+        store.loadExtensions(this.props.name, function(extensions) {
+            thisEp.setState({
+                extensions: extensions
+            });
+        });
     },
 
     componentDidUpdate: function() {
@@ -16,9 +28,12 @@ var ExtensionPoint = React.createClass({
         this._unmountAllExtensions();
     },
 
+    // TODO: resolve possible differences/inconsistencies between render, _renderAllExtensions and _renderExtension
+    // Something looks wrong with all of that... nested render, render, render
+
     render: function() {
         var extensionDivs = [];
-        var extensions = store.getExtensions(this.props.name);
+        var extensions = this.state.extensions;
 
         for (var i = 0; i < extensions.length; i++) {
             extensionDivs.push(<div key={i}/>);
