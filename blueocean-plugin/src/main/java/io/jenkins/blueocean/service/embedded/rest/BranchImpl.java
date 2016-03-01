@@ -27,6 +27,11 @@ public class BranchImpl extends BlueBranch {
     }
 
     @Override
+    public int getWeather() {
+        return job.getBuildHealth().getScore();
+    }
+
+    @Override
     public BlueRunContainer getRuns() {
         return new RunContainerImpl(pipeline, job);
     }

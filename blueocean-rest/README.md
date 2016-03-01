@@ -188,7 +188,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         ],
         "numberOfFailingBranches": 0,
         "numberOfSuccessfulBranches": 3,
-        "totalNumberOfBranches": 3
+        "totalNumberOfBranches": 3,
+        "primaryBranchWeather":100
     }
     
 ## Get MultiBranch pipeline branches 
@@ -197,13 +198,16 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     
     [
         {
-            "name": "master"
+            "name": "master",
+            "weather":100
         },
         {
-            "name": "feature1"
+            "name": "feature1",
+            "weather":100
         },
         {
-            "name": "feature2"
+            "name": "feature2",
+            "weather":100
         }
     ]
     

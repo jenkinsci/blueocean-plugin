@@ -13,9 +13,9 @@ import java.util.List;
  * @author Vivek Pandey
  */
 public class BranchContainerImpl extends BlueBranchContainer {
-    private final MultiBranchBluePipeline pipeline;
+    private final MultiBranchPipelineImpl pipeline;
 
-    public BranchContainerImpl(MultiBranchBluePipeline pipeline) {
+    public BranchContainerImpl(MultiBranchPipelineImpl pipeline) {
         this.pipeline = pipeline;
     }
 

@@ -11,6 +11,7 @@ import org.kohsuke.stapler.export.Exported;
 public abstract class BlueBranch extends Resource{
     public static final String NAME="name";
     public static final String RUNS="runs";
+    public static final String WEATHER="weather";
 
     /**
      *  Branch name
@@ -20,6 +21,17 @@ public abstract class BlueBranch extends Resource{
     @Exported(name = NAME)
     @JsonProperty(NAME)
     public abstract String getName();
+
+
+    /**
+     *  Branch name
+     *
+     *  @return gives branch name
+     */
+    @Exported(name = WEATHER)
+    @JsonProperty(WEATHER)
+    public abstract int getWeather();
+
 
     /**
      * @return Gives Runs in this pipeline

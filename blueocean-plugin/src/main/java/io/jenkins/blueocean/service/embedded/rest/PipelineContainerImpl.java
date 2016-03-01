@@ -24,7 +24,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         if(p instanceof Job){
             return new PipelineImpl((Job)p);
         }else if (p instanceof MultiBranchProject) {
-            return new MultiBranchBluePipeline((MultiBranchProject) p);
+            return new MultiBranchPipelineImpl((MultiBranchProject) p);
         }
 
         // TODO: I'm going to turn this into a decorator annotation
@@ -37,7 +37,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         List<BluePipeline> pipelines = new ArrayList<>();
         for (BuildableItem item : items) {
             if(item instanceof MultiBranchProject){
-                pipelines.add(new MultiBranchBluePipeline((MultiBranchProject) item));
+                pipelines.add(new MultiBranchPipelineImpl((MultiBranchProject) item));
             }else if(!isMultiBranchProjectJob(item) && item instanceof Job){
                 pipelines.add(new PipelineImpl((Job) item));
             }
