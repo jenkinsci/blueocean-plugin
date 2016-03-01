@@ -80,14 +80,18 @@ public class JenkinsJSExtensions {
                     while (dataResources.hasMoreElements()) {
                         URL dataRes = dataResources.nextElement();
                         StringWriter fileContentBuffer = new StringWriter();
+
+                        LOGGER.debug("Reading 'jenkins-js-extension.json' from '{}'.", dataRes);
+
                         try {
                             IOUtils.copy(dataRes.openStream(), fileContentBuffer, Charset.forName("UTF-8"));
                             responseData.add(JSONObject.fromObject(fileContentBuffer.toString()));
                         } catch (Exception e) {
-                            LOGGER.warn("Error reading 'jenkins-js-extension.json' from '" + dataRes + "'. Extensions defined in the host plugin will not be active.", e);
+                            LOGGER.error("Error reading 'jenkins-js-extension.json' from '" + dataRes + "'. Extensions defined in the host plugin will not be active.", e);
                         }
                     }
                 } catch (IOException e) {
+                    LOGGER.error("Error scanning the classpath for 'jenkins-js-extension.json' files. Plugin contributed extensions will not be active.", e);
                 }
             }
 
