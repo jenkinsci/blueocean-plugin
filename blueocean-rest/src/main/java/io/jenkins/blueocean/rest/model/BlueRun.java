@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -65,6 +64,9 @@ public abstract class BlueRun extends Resource {
      */
     public abstract Date getStartTime();
 
+    /**
+     * @return Gives change set of a run
+     */
     public abstract Container<?> getChangeSet();
 
     /**
@@ -104,20 +106,6 @@ public abstract class BlueRun extends Resource {
     @JsonProperty(DURATION_IN_MILLIS)
     @Exported(name = DURATION_IN_MILLIS)
     public abstract Long getDurationInMillis();
-
-    /**
-     * @return Branch on which build is executed
-     */
-    @JsonProperty(BRANCH)
-    @Exported(name = BRANCH)
-    public abstract String getBranch();
-
-    /**
-     * @return Commit id on which build is executing
-     */
-    @JsonProperty(COMMIT_ID)
-    @Exported(name = COMMIT_ID)
-    public abstract String getCommitId();
 
     /**
      * @return Build summary

@@ -19,16 +19,6 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     }
 
     @Override
-    public String getBranch() {
-        return null;
-    }
-
-    @Override
-    public String getCommitId() {
-        return null;
-    }
-
-    @Override
     public Container<?> getChangeSet() {
         Map<String,Object> m = new HashMap<>();
         int cnt=0;

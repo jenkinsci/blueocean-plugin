@@ -25,7 +25,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     /**
      * Subtype should return
      */
-    @Exported
+    @Exported(inline = true)
     public Container<?> getChangeSet() {
         return null;
     }
@@ -75,16 +75,6 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public Long getDurationInMillis() {
         return run.getDuration();
-    }
-
-    @Override
-    public String getBranch() {
-        return null;
-    }
-
-    @Override
-    public String getCommitId() {
-        return null;
     }
 
     @Override

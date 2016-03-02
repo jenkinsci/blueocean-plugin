@@ -20,16 +20,6 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
-    public String getBranch() {
-        return run.getParent().getName();
-    }
-
-    @Override
-    public String getCommitId() {
-        return null;
-    }
-
-    @Override
     public Container<?> getChangeSet() {
         Map<String,Object> m = new HashMap<>();
         int cnt=0;
