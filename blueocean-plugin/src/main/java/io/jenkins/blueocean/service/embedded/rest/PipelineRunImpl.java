@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
+import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -21,16 +22,23 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Override
     public Container<ChangeSetResource> getChangeSet() {
-        Map<String,ChangeSetResource> m = new HashMap<>();
-        int cnt=0;
+        Map<String, ChangeSetResource> m = new HashMap<>();
+        int cnt = 0;
         for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
             for (ChangeLogSet.Entry e : cs) {
                 cnt++;
                 String id = e.getCommitId();
-                if (id==null)   id = String.valueOf(cnt);
-                m.put(id,new ChangeSetResource(e));
+                if (id == null) id = String.valueOf(cnt);
+                m.put(id, new ChangeSetResource(e));
             }
         }
         return Containers.fromResourceMap(m);
+    }
+
+    public BluePipelineNodeContainer getNodes() {
+        if (run != null) {
+            return new PipelineNodeContainerImpl(run);
+        }
+        return null;
     }
 }

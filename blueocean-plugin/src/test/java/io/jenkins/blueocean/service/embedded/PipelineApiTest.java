@@ -183,7 +183,7 @@ public class PipelineApiTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1")
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1/stages/")
             .then().log().all()
             .statusCode(200)
             .body("id", Matchers.equalTo(b1.getId()))
@@ -194,6 +194,45 @@ public class PipelineApiTest {
             .body("startTime", Matchers.equalTo(
                 new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b1.getStartTimeInMillis()))));
     }
+
+
+    @Test
+    public void getPipelineJobRunNodesTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+
+        job1.setDefinition(new CpsFlowDefinition("stage 'build'\n" +
+            "node{\n" +
+            "  echo \"Building...\"\n" +
+            "}\n" +
+            "\n" +
+            "stage 'test'\n" +
+            "parallel 'unit':{\n" +
+            "  node{\n" +
+            "    echo \"Unit testing...\"\n" +
+            "  }\n" +
+            "},'integration':{\n" +
+            "  node{\n" +
+            "    echo \"Integration testing...\"\n" +
+            "  }\n" +
+            "}, 'ui':{\n" +
+            "  node{\n" +
+            "    echo \"UI testing...\"\n" +
+            "  }\n" +
+            "}\n" +
+            "\n" +
+            "stage 'deploy'\n" +
+            "node{\n" +
+            "  echo \"Deploying\"\n" +
+            "}"));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/")
+            .then().log().all()
+            .statusCode(200);
+    }
+
 
 
     @Test

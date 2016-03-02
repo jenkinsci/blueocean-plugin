@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;

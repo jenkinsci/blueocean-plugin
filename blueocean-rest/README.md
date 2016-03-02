@@ -390,6 +390,87 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "type": "WorkflowRun"
     }
     
+# Get Pipeline run nodes
+    curl -v  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/
+    
+    [
+        {
+            "displayName": "build",
+            "edges": [
+                {
+                    "durationInMillis": 234,
+                    "id": "9"
+                }
+            ],
+            "id": "3",
+            "startTime": "2016-03-11T00:32:52.273-0800",
+            "status": "SUCCESS"
+        },
+        {
+            "displayName": "test",
+            "edges": [
+                {
+                    "durationInMillis": 4,
+                    "id": "13"
+                },
+                {
+                    "durationInMillis": 6,
+                    "id": "14"
+                },
+                {
+                    "durationInMillis": 9,
+                    "id": "15"
+                }
+            ],
+            "id": "9",
+            "startTime": "2016-03-11T00:32:52.507-0800",
+            "status": "SUCCESS"
+        },
+        {
+            "displayName": "unit",
+            "edges": [
+                {
+                    "durationInMillis": 161,
+                    "id": "35"
+                }
+            ],
+            "id": "13",
+            "startTime": "2016-03-11T00:32:52.511-0800",
+            "status": "SUCCESS"
+        },
+        {
+            "displayName": "deploy",
+            "edges": null,
+            "id": "35",
+            "startTime": "2016-03-11T00:32:52.672-0800",
+            "status": "SUCCESS"
+        },
+        {
+            "displayName": "integration",
+            "edges": [
+                {
+                    "durationInMillis": 159,
+                    "id": "35"
+                }
+            ],
+            "id": "14",
+            "startTime": "2016-03-11T00:32:52.513-0800",
+            "status": "SUCCESS"
+        },
+        {
+            "displayName": "ui",
+            "edges": [
+                {
+                    "durationInMillis": 156,
+                    "id": "35"
+                }
+            ],
+            "id": "15",
+            "startTime": "2016-03-11T00:32:52.516-0800",
+            "status": "SUCCESS"
+        }
+    ]
+    
 # Get Log for a run
 
 Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response. 
