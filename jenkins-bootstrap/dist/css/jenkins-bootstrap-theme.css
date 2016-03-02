@@ -3,7 +3,6 @@
 *
 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
 */
-@import url(https://fonts.googleapis.com/css?family=Lato:400,400italic,700,900|Source+Code+Pro:400,700);
 html {
   font-size: 62.5%;
 }
@@ -27,6 +26,11 @@ h5 h6 {
 }
 h1 {
   font-size: 1.8rem;
+  font-family: LatoLatinWebLight;
+  letter-spacing: 1.1px;
+}
+main {
+  color: #4a4a4a;
 }
 .label-danger {
   background-color: #C4000A;
@@ -610,6 +614,10 @@ table {
 thead tr {
   border-bottom: solid 1px;
 }
+th {
+  font-family: LatoLatinWebSemibold;
+  font-weight: normal;
+}
 td,
 th {
   padding: 0.5em 0;
@@ -661,7 +669,9 @@ code.inline {
   font-weight: normal;
   text-decoration: none;
   display: inline-block;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 2rem;
+  font-family: LatoLatinWebLight;
+  letter-spacing: 1.24px;
 }
 .global-header a:hover {
   color: black;
@@ -678,7 +688,7 @@ code.inline {
   max-width: 80rem;
   margin-left: auto;
   margin-right: auto;
-  padding: 2rem 0;
+  padding: 3rem 0;
 }
 .sub-header nav.page-tabs {
   padding: 0;
@@ -686,9 +696,11 @@ code.inline {
 .page-tabs a {
   display: inline-block;
   padding: 0.2em 1em;
+  height: 30px;
 }
 .page-tabs a.selected {
-  border-bottom: solid 2px #168BB9;
+  border-bottom: solid 3px #168BB9;
+  font-family: LatoLatinWebSemibold;
 }
 .page-tabs a.selected:hover,
 .page-tabs a.selected:active {
