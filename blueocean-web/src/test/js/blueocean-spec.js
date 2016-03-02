@@ -3,21 +3,21 @@
 //
 
 // See http://zombie.js.org/
-var Browser = require("zombie");
+var Browser = require('zombie');
 
-describe("blueocean.js", function () {
+describe('blueocean.js', () => {
 
-    it("- test App load", function (done) {
+    it('- test App load', (done) => {
         var browser = new Browser();
         var loads = [];
 
         browser.debug();
-        browser.on('request', function(request) {
+        browser.on('request', (request) => {
             var url = request.url;
             loads.push(url);
         });
 
-        browser.visit('http://localhost:18999/src/test/js/zombie-test-01.html', function() {
+        browser.visit('http://localhost:18999/src/test/js/zombie-test-01.html',  () => {
             expect(browser.success).toBe(true);
 
             // Check the requests are as expected.
