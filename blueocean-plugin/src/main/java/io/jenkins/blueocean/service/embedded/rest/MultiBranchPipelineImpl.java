@@ -1,10 +1,15 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
+import org.jenkinsci.plugins.workflow.multibranch.BranchJobProperty;
+
 import hudson.model.Job;
+import hudson.model.JobProperty;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueBranchContainer;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
+import jenkins.branch.Branch;
 import jenkins.branch.MultiBranchProject;
 
 import java.util.ArrayList;
@@ -40,17 +45,32 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public int getTotalNumberOfBranches(){
-        return mbp.getAllJobs().size();
+        return countJobs(false);
     }
 
     @Override
     public int getNumberOfFailingBranches(){
-        return countRunStatus(Result.FAILURE);
+        return countRunStatus(Result.FAILURE, false);
     }
 
     @Override
     public int getNumberOfSuccessfulBranches(){
-        return countRunStatus(Result.SUCCESS);
+        return countRunStatus(Result.SUCCESS, false);
+    }
+
+    @Override
+    public int getTotalNumberOfPullRequests() {
+        return countJobs(true);
+    }
+
+    @Override
+    public int getNumberOfFailingPullRequests() {
+        return countRunStatus(Result.FAILURE, true);
+    }
+
+    @Override
+    public int getNumberOfSuccessfulPullRequests() {
+        return countRunStatus(Result.SUCCESS, true);
     }
 
     @Override
@@ -100,17 +120,41 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         return branches;
     }
 
-    private int countRunStatus(Result result){
+    private int countRunStatus(Result result, boolean pullRequests){
         Collection<Job> jobs = mbp.getAllJobs();
         int count=0;
         for(Job j:jobs){
-            j.getBuildStatusUrl();
-            Run run = j.getLastBuild();
-            if(run.getResult() == result){
-                count++;
+            if(pullRequests && isPullRequest(j) || !pullRequests && !isPullRequest(j)) {
+                j.getBuildStatusUrl();
+                Run run = j.getLastBuild();
+                if (run.getResult() == result) {
+                    count++;
+                }
             }
         }
         return count;
     }
 
+    private int countJobs(boolean pullRequests) {
+        Collection<Job> jobs = mbp.getAllJobs();
+        int counter = 0;
+
+        for(Job job: jobs){
+            if(pullRequests && isPullRequest(job) || !pullRequests && !isPullRequest(job)) {
+                counter += 1;
+            }
+        }
+
+        return counter;
+    }
+    private boolean isPullRequest(Job job) {
+        JobProperty property = job.getProperty(BranchJobProperty.class);
+        if(property != null && property instanceof BranchJobProperty) {
+            Branch branch = ((BranchJobProperty) property).getBranch();
+            if(branch != null && branch.getHead() != null && branch.getHead() instanceof PullRequestSCMHead) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
