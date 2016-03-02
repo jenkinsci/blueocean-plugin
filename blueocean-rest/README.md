@@ -191,6 +191,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "totalNumberOfBranches": 3,
         "weatherScore":100
     }
+
     
 ## Get MultiBranch pipeline branches 
 
