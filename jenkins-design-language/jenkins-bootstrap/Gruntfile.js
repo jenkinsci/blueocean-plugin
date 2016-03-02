@@ -73,7 +73,7 @@ module.exports = function (grunt) {
                 src: [
                     "icons/*"
                 ],
-                dest: "dist/"    
+                dest: "dist/"
             },
             octicons: {
                 expand: true,
@@ -86,6 +86,22 @@ module.exports = function (grunt) {
                     "octicons/*.css"
                 ],
                 dest: "dist/"
+            },
+            fontsCSS: {
+                expand: true,
+                cwd: "fonts/",
+                src: [
+                  "*.css"
+                ],
+                dest: "dist/css"
+            },
+            fonts: {
+                expand: true,
+                cwd: "fonts/",
+                src: [
+                  "*.woff"
+                ],
+                dest: "dist/fonts"
             }
         },
 
