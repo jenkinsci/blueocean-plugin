@@ -19,15 +19,15 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     }
 
     @Override
-    public Container<?> getChangeSet() {
-        Map<String,Object> m = new HashMap<>();
+    public Container<ChangeSetResource> getChangeSet() {
+        Map<String,ChangeSetResource> m = new HashMap<>();
         int cnt=0;
         for (ChangeLogSet.Entry e : run.getChangeSet()) {
             cnt++;
             String id = e.getCommitId();
             if (id==null)   id = String.valueOf(cnt);
-            m.put(id,new ChangeSetWrapper(e));
+            m.put(id,new ChangeSetResource(e));
         }
-        return Containers.from(m);
+        return Containers.fromResourceMap(m);
     }
 }

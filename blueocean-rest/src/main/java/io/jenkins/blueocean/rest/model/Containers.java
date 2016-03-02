@@ -12,11 +12,11 @@ import java.util.Map;
  */
 public class Containers {
     @ExportedBean
-    public abstract static class AbstractContainer extends Container<Resource>{
+    public abstract static class AbstractContainer<T extends Resource> extends Container<T> {
     }
-    public static <T> Container<Resource> from(final List<T> base) {
 
-        return new AbstractContainer() {
+    public static <T> Container<Resource> from(final List<T> base) {
+        return new AbstractContainer<Resource>() {
             @Override
             public Resource get(String name) {
                 int idx = Integer.parseInt(name);   // TODO: more graceful error check
@@ -37,19 +37,12 @@ public class Containers {
                     }
                 };
             }
-
-            @Override
-            public int size() {
-                return base.size();
-            }
-
-
         };
     }
 
     public static <T> Container<Resource> from(final Map<String,T> base) {
 
-        return new AbstractContainer() {
+        return new AbstractContainer<Resource>() {
             @Override
             public Resource get(String name) {
                 T u = base.get(name);
@@ -66,10 +59,21 @@ public class Containers {
                     }
                 };
             }
+        };
+    }
+
+    public static <T extends Resource> Container<T> fromResourceMap(final Map<String,T> base) {
+        return new AbstractContainer<T>() {
+            @Override
+            public T get(String name) {
+                T u = base.get(name);
+                if (u==null)    return null;
+                return u;
+            }
 
             @Override
-            public int size() {
-                return base.entrySet().size();
+            public Iterator<T> iterator() {
+                return base.values().iterator();
             }
         };
     }
