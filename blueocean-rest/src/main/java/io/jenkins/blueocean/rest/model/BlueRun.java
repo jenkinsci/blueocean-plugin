@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
@@ -14,6 +15,7 @@ import java.util.Date;
  *
  * @author Vivek Pandey
  */
+@JsonInclude
 public abstract class BlueRun extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String ID="id";
@@ -67,6 +69,7 @@ public abstract class BlueRun extends Resource {
     /**
      * @return Gives change set of a run
      */
+    @Exported(inline = true)
     public abstract Container<?> getChangeSet();
 
     /**
@@ -136,9 +139,4 @@ public abstract class BlueRun extends Resource {
         /** Unknown status */
         UNKNOWN;
     }
-
-    public static abstract class ChangeLog{
-
-    }
-
 }

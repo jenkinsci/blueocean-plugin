@@ -5,7 +5,6 @@ import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.kohsuke.stapler.export.Exported;
 
 import java.util.Date;
 
@@ -24,7 +23,6 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     /**
      * Subtype should return
      */
-    @Exported(inline = true)
     public Container<?> getChangeSet() {
         return null;
     }
