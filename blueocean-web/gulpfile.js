@@ -1,7 +1,7 @@
 //
 // See https://github.com/jenkinsci/js-builder
 //
-var builder = require('jenkins-js-builder');
+var builder = require('@jenkins-cd/js-builder');
 
 //
 // Create the main "App" bundle.
