@@ -59,7 +59,7 @@ LoadCountMonitor.prototype.onchange = function(callback) {
 };
 
 function loadBundles(extensionPointId, onBundlesLoaded) {
-    var jsModules = require('jenkins-js-modules');
+    var jsModules = require('@jenkins-cd/js-modules');
     var loadCountMonitor = new LoadCountMonitor();
 
     function loadPluginBundle(pluginMetadata) {

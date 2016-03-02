@@ -4,7 +4,7 @@ exports.initialize = function(oncomplete) {
     //
     // Application initialization.
     //
-    var jenkinsMods = require('jenkins-js-modules');
+    var jenkinsMods = require('@jenkins-cd/js-modules');
 
     // Create and export the shared js-extensions instance. This
     // will be accessible to bundles from plugins etc at runtime, allowing them to register
