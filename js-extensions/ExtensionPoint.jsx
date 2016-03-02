@@ -4,8 +4,18 @@ var store = require('./store.js');
 
 var ExtensionPoint = React.createClass({
 
+    getInitialState: function () {
+        // Initial state is empty. See the componentDidMount and render functions.
+        return {};
+    },
+
     componentDidMount: function() {
-        this._renderAllExtensions();
+        var thisEp = this;
+        store.loadExtensions(this.props.name, function(extensions) {
+            thisEp.setState({
+                extensions: extensions
+            });
+        });
     },
 
     componentDidUpdate: function() {
@@ -16,23 +26,48 @@ var ExtensionPoint = React.createClass({
         this._unmountAllExtensions();
     },
 
+    // TODO: resolve possible differences/inconsistencies between render, _renderAllExtensions and _renderExtension
+    // Something looks wrong with all of that... nested render, render, render
+
     render: function() {
-        var extensionDivs = [];
-        var extensions = store.getExtensions(this.props.name);
+        var extensions = this.state.extensions;
 
-        for (var i = 0; i < extensions.length; i++) {
-            extensionDivs.push(<div key={i}/>);
+        if (!extensions) {
+            // Initial state. componentDidMount will kick in and load the extensions.
+            return null;
+        } else if (extensions.length === 0) {
+            console.warn('No "' + this.props.name + '" ExtensionPoint implementations were found across the installed plugin set. See ExtensionList:');
+            console.log(store.getExtensionList());
+            return null;
+        } else {
+            // Add a <div> for each of the extensions. See the __renderAllExtensions function.
+            var extensionDivs = [];
+            for (var i = 0; i < extensions.length; i++) {
+                extensionDivs.push(<div key={i}/>);
+            }
+            return React.createElement(this.props.wrappingElement, null, extensionDivs);
         }
-
-        return React.createElement(this.props.wrappingElement, null, extensionDivs);
     },
 
     _renderAllExtensions: function() {
         // TODO: This needs to be a lot cleverer if the list of extensions for a specific point can change
-        const el = ReactDOM.findDOMNode(this).children;
-        const extensions = store.getExtensions(this.props.name);
-        for (var i = 0; i < extensions.length; i++) {
-            this._renderExtension(el[i], extensions[i]);
+        const el = ReactDOM.findDOMNode(this);
+        if (el) {
+            const children = el.children;
+            if (children) {
+                const extensions = store.getExtensions(this.props.name);
+
+                // The number of children should be exactly the same as the number
+                // of extensions. See the render function for where these are added.
+                if (!extensions || extensions.length !== children.length) {
+                    console.error('Unexpected error in Jenkins ExtensionPoint rendering (' + this.props.name + '). Expecting a child DOM node for each extension point.');
+                    return;
+                }
+                // render each extension on the allocated child node.
+                for (var i = 0; i < extensions.length; i++) {
+                    this._renderExtension(children[i], extensions[i]);
+                }
+            }
         }
     },
 
