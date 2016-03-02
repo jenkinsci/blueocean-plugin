@@ -14,7 +14,7 @@ public abstract class BluePipeline extends Resource {
     public static final String DISPLAY_NAME="displayName";
     public static final String BRANCHES="branches";
     public static final String RUNS="runs";
-    public static final String WEATHER="weather";
+    public static final String WEATHER_SCORE ="weatherScore";
 
     /**
      * @return name of the organization
@@ -41,9 +41,9 @@ public abstract class BluePipeline extends Resource {
     /**
      * @return weather health score percentile
      */
-    @Exported(name = WEATHER)
-    @JsonProperty(WEATHER)
-    public abstract int getWeather();
+    @Exported(name = WEATHER_SCORE)
+    @JsonProperty(WEATHER_SCORE)
+    public abstract int getWeatherScore();
 
 
     //TODO: collections should serailize as reference to the resource or pagination can't be done
