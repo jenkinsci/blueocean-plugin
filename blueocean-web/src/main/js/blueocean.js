@@ -1,15 +1,8 @@
 // Initialise the Blue Ocean app.
-require('./init.jsx');
+var init = require('./init.jsx');
 
-var jenkinsMods = require('jenkins-js-modules');
+init.initialize(function() {
 
-//
-// TODO: automate extensions bundle script loading from inside ExtensionPoint (on demand).
-//
-jenkinsMods.addScript('io/jenkins/blueocean-admin/jenkins-js-extension.js', {
-    scriptSrcBase: '@adjunct',
-    success: function() {
-        // start the App
-        require('./main.jsx');
-    }
+    // start the App
+    require('./main.jsx');
 });
