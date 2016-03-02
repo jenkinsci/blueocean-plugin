@@ -1,0 +1,36 @@
+[
+  {
+    "extensions": [
+      {
+        "component": "component-1.1",
+        "extensionPoint": "ep-1"
+      },
+      {
+        "component": "component-1.2",
+        "extensionPoint": "ep-1"
+      },
+      {
+        "component": "component-1.3",
+        "extensionPoint": "ep-2"
+      }
+    ],
+    "hpiPluginId": "plugin-1"
+  },
+  {
+    "extensions": [
+      {
+        "component": "component-2.1",
+        "extensionPoint": "ep-1"
+      },
+      {
+        "component": "component-2.2",
+        "extensionPoint": "ep-2"
+      },
+      {
+        "component": "component-1.3",
+        "extensionPoint": "ep-2"
+      }
+    ],
+    "hpiPluginId": "plugin-2"
+  }
+]
