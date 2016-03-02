@@ -5,16 +5,13 @@ var points = {};
 /**
  * The ExtensionPoint metadata.
  */
-var extensionPointMetadata = [];
-
-// TODO: Probably need some sort of mechanism to support refreshing of the ExtensionPoint info based on plugin install/uninstall.
-// We need an eventbus of some sort.
+var extensionPointList = [];
 
 exports.setExtensionPointMetadata = function(data) {
     // This data should come from <jenkins>/blue/javaScriptExtensionInfo
     if (data) {
         // We clone the data because we add to it.
-        extensionPointMetadata = JSON.parse(JSON.stringify(data));
+        extensionPointList = JSON.parse(JSON.stringify(data));
     }
 };
 
@@ -29,13 +26,16 @@ exports.addExtension = function (key, extension) {
 
 exports.loadExtensions = function(key, onload) {
     loadBundles(key, function() {
-        var point = points[key];
-        onload(point);
+        onload(exports.getExtensions(key));
     });
 };
 
 exports.getExtensions = function(key) {
     return points[key] || [];
+};
+
+exports.getExtensionList = function() {
+    return extensionPointList;
 };
 
 function LoadCountMonitor() {
@@ -82,6 +82,7 @@ function loadBundles(extensionPointId, onBundlesLoaded) {
                     for (var i = 0; i < pluginMetadata.loadCountMonitors.length; i++) {
                         pluginMetadata.loadCountMonitors[i].dec();
                     }
+                    delete pluginMetadata.loadCountMonitors;
                 }
             });
         } else {
@@ -98,8 +99,8 @@ function loadBundles(extensionPointId, onBundlesLoaded) {
     // Iterate over each plugin in extensionPointMetadata, async loading
     // the extension point .js bundle (if not already loaded) for each of the
     // plugins that implement the specified extensionPointId.
-    for(var i1 = 0; i1 < extensionPointMetadata.length; i1++) {
-        var pluginMetadata = extensionPointMetadata[i1];
+    for(var i1 = 0; i1 < extensionPointList.length; i1++) {
+        var pluginMetadata = extensionPointList[i1];
         var extensions = pluginMetadata.extensions;
 
         for(var i2 = 0; i2 < extensions.length; i2++) {
