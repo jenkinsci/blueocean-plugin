@@ -30,7 +30,8 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON("package.json"),
 
         clean: {
-            dist: "dist"
+            dist: "dist",
+            licenses: "licenses"
         },
 
         less: {
@@ -93,7 +94,7 @@ module.exports = function (grunt) {
                 src: [
                   "*.css"
                 ],
-                dest: "dist/css"
+                dest: "dist/css/"
             },
             fonts: {
                 expand: true,
@@ -101,7 +102,15 @@ module.exports = function (grunt) {
                 src: [
                   "*.woff"
                 ],
-                dest: "dist/fonts"
+                dest: "dist/fonts/"
+            },
+            licenses: {
+                expand:true,
+                cwd: "node_modules/",
+                src: [
+                    "octicons/LICENSE.txt"
+                ],
+                dest: "licenses/"
             }
         },
 
