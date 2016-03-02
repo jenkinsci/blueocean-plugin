@@ -7,7 +7,6 @@ import io.jenkins.blueocean.rest.pageable.Pageables;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
 
-import java.util.AbstractCollection;
 import java.util.Iterator;
 
 /**
@@ -15,8 +14,7 @@ import java.util.Iterator;
  *
  * @author Kohsuke Kawaguchi
  */
-//TODO: extending AbstractCollection is workaround and should be removed once Stapler starts serializing Iterable
-public abstract class Container<T> extends AbstractCollection<T> implements Pageable<T> {
+public abstract class Container<T> implements Pageable<T> {
     /**
      * Gets the individual member by its name
      *
@@ -31,11 +29,6 @@ public abstract class Container<T> extends AbstractCollection<T> implements Page
     // for stapler
     public final T getDynamic(String name) {
         return get(name);
-    }
-
-    @Override
-    public int size() {
-        return 0;
     }
 
     /**
