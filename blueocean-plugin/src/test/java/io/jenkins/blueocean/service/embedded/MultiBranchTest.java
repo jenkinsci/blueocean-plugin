@@ -70,13 +70,14 @@ public class MultiBranchTest {
             .body("[0].organization", Matchers.equalTo("jenkins"))
             .body("[0].name", Matchers.equalTo(f.getName()))
             .body("[0].displayName", Matchers.equalTo(f.getDisplayName()))
+            .body("[0].weatherScore", Matchers.is(f.getBuildHealth().getScore()))
             .body("[1].organization", Matchers.equalTo("jenkins"))
             .body("[1].name", Matchers.equalTo(mp.getName()))
             .body("[1].displayName", Matchers.equalTo(mp.getDisplayName()))
             .body("[1].numberOfFailingBranches", Matchers.equalTo(0))
             .body("[1].numberOfSuccessfulBranches", Matchers.equalTo(0))
             .body("[1].totalNumberOfBranches", Matchers.equalTo(3))
-            .body("[1].primaryBranchWeather", Matchers.is(100));
+            .body("[1].weatherScore", Matchers.is(mp.getBranch("master").getBuildHealth().getScore()));
     }
 
 
@@ -110,7 +111,7 @@ public class MultiBranchTest {
 
         String body = r.asString();
         List<String> branchNames = with(body).get("name");
-        List<Integer> weather = with(body).get("weather");
+        List<Integer> weather = with(body).get("weatherScore");
         for(String n:branches){
             assertTrue(branchNames.contains(n));
         }
@@ -169,7 +170,7 @@ public class MultiBranchTest {
                 .body("pipeline", Matchers.equalTo(b.getParent().getName()))
                 .body("organization", Matchers.equalTo("jenkins"))
                 .body("startTime", Matchers.equalTo(
-                    new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));;
+                    new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
             i++;
         }
 

@@ -75,7 +75,16 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     @SuppressWarnings("unchecked")
-    public int getMasterBranchStatusPercentile(){
+    public int getWeatherScore(){
+        /**
+         * TODO: this code need cleanup once MultiBranchProject exposes default branch. At present
+         *
+         * At present we look for master as primary branch, if not found we find the latest build and return
+         * its score.
+         *
+         * If there are no builds taken place 0 score is returned.
+         */
+
         Job j = mbp.getBranch("master");
         if(j == null) {
             j = mbp.getBranch("production");

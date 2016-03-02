@@ -20,7 +20,6 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
     public static final String TOTAL_NUMBER_OF_PULL_REQUESTS="totalNumberOfPullRequests";
     public static final String NUMBER_OF_FAILING_PULL_REQUESTS="numberOfFailingPullRequests";
     public static final String NUMBER_OF_SUCCESSFULT_PULL_REQUESTS="numberOfSuccessfulPullRequests";
-    public static final String PRIMARY_BRANCH_WEATHER="primaryBranchWeather";
     public static final String BRANCH_NAMES ="branchNames";
 
     /**
@@ -63,13 +62,6 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
     @JsonProperty(NUMBER_OF_SUCCESSFULT_BRANCHES)
     @Exported(name = NUMBER_OF_SUCCESSFULT_PULL_REQUESTS)
     public abstract int getNumberOfSuccessfulPullRequests();
-
-    /**
-     * @return Primary branch weather score
-     */
-    @Exported(name = PRIMARY_BRANCH_WEATHER)
-    @JsonProperty(PRIMARY_BRANCH_WEATHER)
-    public abstract int getMasterBranchStatusPercentile();
 
     /**
      * @return Gives {@link BlueBranchContainer}
