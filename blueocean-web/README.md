@@ -5,6 +5,8 @@ Look for blueocean.js for excitement.
 
 # Running Blue Ocean in development
 
+If you want to add to some extension points, take a look at the blueocean-admin module (actually a plugin) for an example.
+
 ## Firstly build all modules from root
 
     cd .. 
