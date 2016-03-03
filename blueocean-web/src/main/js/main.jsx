@@ -20,6 +20,7 @@ class App extends Component {
                 <main>
                     {/* children currently set by router */}
                     {this.props.children}
+                    <ExtensionPoint name="jenkins.main.body"/>
                 </main>
                 <footer>
                     <p>This is a footer. I'm sure you'll agree.</p>
