@@ -81,6 +81,11 @@ public abstract class AbstractRunImpl extends BlueRun {
         return run.getClass().getSimpleName();
     }
 
+    @Override
+    public Object getLog() {
+        return new LogResource(run);
+    }
+
     public static class BasicRunImpl extends AbstractRunImpl {
         public BasicRunImpl(Run run) {
             super(run);
