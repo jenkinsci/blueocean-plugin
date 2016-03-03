@@ -1,0 +1,31 @@
+{
+  "name": "blueocean-commons",
+  "version": "1.0.0",
+  "description": "common js infrastructure code use to be used in the subprojects. The general stuff.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/cloudbees/blueocean.git"
+  },
+  "keywords": [
+    "js",
+    "commons",
+    "react"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cloudbees/blueocean/issues"
+  },
+  "homepage": "https://github.com/cloudbees/blueocean#readme",
+  "devDependencies": {
+    "semver": "^5.1.0"
+  },
+  "dependencies": {
+    "moment": "^2.11.2",
+    "targetenv": "^1.0.0"
+  }
+}
