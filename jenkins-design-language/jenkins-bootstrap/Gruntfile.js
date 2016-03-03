@@ -1,5 +1,6 @@
+"use strict";
 /*
-Build file for Jenkins Blue Ocean Bootstrap theme.
+    Build file for Jenkins Design Language theme.
 */
 
 var autoprefixerBrowsers = [
@@ -41,10 +42,10 @@ module.exports = function (grunt) {
                     sourceMap: true,
                     outputSourceFiles: true,
                     sourceMapURL: "<%= pkg.name %>-theme.css.map",
-                    sourceMapFilename: "dist/css/<%= pkg.name %>-theme.css.map"
+                    sourceMapFilename: "dist/assets/css/<%= pkg.name %>-theme.css.map"
                 },
                 src: "less/theme.less",
-                dest: "dist/css/<%= pkg.name %>-theme.css"
+                dest: "dist/assets/css/<%= pkg.name %>-theme.css"
             }
         },
 
@@ -56,7 +57,7 @@ module.exports = function (grunt) {
                 options: {
                     map: true
                 },
-                src: "dist/css/<%= pkg.name %>-theme.css"
+                src: "dist/assets/css/<%= pkg.name %>-theme.css"
             }
         },
 
@@ -67,14 +68,14 @@ module.exports = function (grunt) {
                 src: [
                     "normalize.css"
                 ],
-                dest: "dist/css/"
+                dest: "dist/assets/css/"
             },
             icons: {
                 expand: true,
                 src: [
                     "icons/*"
                 ],
-                dest: "dist/"
+                dest: "dist/assets/"
             },
             octicons: {
                 expand: true,
@@ -86,23 +87,23 @@ module.exports = function (grunt) {
                     "octicons/octicons.svg",
                     "octicons/*.css"
                 ],
-                dest: "dist/"
+                dest: "dist/assets/"
             },
             fontsCSS: {
                 expand: true,
                 cwd: "fonts/",
                 src: [
-                  "*.css"
+                    "*.css"
                 ],
-                dest: "dist/css/"
+                dest: "dist/assets/css/"
             },
             fonts: {
                 expand: true,
                 cwd: "fonts/",
                 src: [
-                  "*.woff"
+                    "*.woff"
                 ],
-                dest: "dist/fonts/"
+                dest: "dist/assets/fonts/"
             },
             licenses: {
                 expand:true,
@@ -114,7 +115,25 @@ module.exports = function (grunt) {
             }
         },
 
+        babel: {
+            options: {
+                plugins: ["transform-react-jsx"],
+                presets: ["es2015", "react"]
+                // TODO: presets: ["es2015", "react", "stage-0"]
+            },
+            jsx: {
+                files: [{
+                    expand: true,
+                    cwd: "src/js/",
+                    src: ["**/*.{js,jsx}"],
+                    dest: "dist/js/",
+                    ext: ".js"
+                }]
+            }
+        },
+
         watch: {
+            // TODO: Watch src, run babel.
             less: {
                 files: "less/**/*.less",
                 tasks: "less"
@@ -123,5 +142,5 @@ module.exports = function (grunt) {
     });
 
     // Default task.
-    grunt.registerTask("default", ["clean:dist", "less", "autoprefixer", "copy"]);
+    grunt.registerTask("default", ["clean:dist", "babel", "less", "autoprefixer", "copy"]);
 }

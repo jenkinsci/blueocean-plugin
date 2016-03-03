@@ -3,12 +3,23 @@ import {render} from 'react-dom';
 
 import {extensionPointStore, ExtensionPoint} from './blue-ocean';
 
-
 import { Router, Route, Link } from 'react-router';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 
 import {AboutPage, NotFoundPage, AlienPage} from './pages';
 import {PipelinesPage} from './plugins/pipelines';
+
+import {components} from 'jenkins-design-language';
+
+let {
+    WeatherIcon,
+    Page,
+    GlobalNav,
+    GlobalHeader,
+    PageHeader,
+    Title,
+    PageTabs
+    } = components;
 
 require('./blue-ocean/register-plugins.js'); // this will be done by the server somehow
 
@@ -18,17 +29,24 @@ require('./blue-ocean/register-plugins.js'); // this will be done by the server 
 class App extends Component {
     render() {
         return (
-            <div id="outer">
-                <header>
-                    <img src="/resources/logo.png" width="150" id="jenkins-logo"/>
-                    <nav>
+            <Page>
+                <GlobalHeader>
+                    <GlobalNav>
                         <Link to="/">Home</Link>
                         <Link to="/about">About</Link>
                         <Link to="/Alien">Alien</Link>
                         <Link to="/dynamic">Dynamic</Link>
-                        <ExtensionPoint name="jenkins.topNavigation.menu" />
-                    </nav>                    
-                </header>
+                        <ExtensionPoint name="jenkins.topNavigation.menu"/>
+                    </GlobalNav>
+                </GlobalHeader>
+                <PageHeader>
+                    <Title>FooBar</Title>
+                    <PageTabs>
+                        <a href="#">Alpha</a>
+                        <a href="#">Bravo</a>
+                        <a href="#">Charlie</a>
+                    </PageTabs>
+                </PageHeader>
                 <main>
                     {/* children currently set by router */}
                     {this.props.children}
@@ -36,16 +54,16 @@ class App extends Component {
                 <footer>
                     <p>This is a footer. I'm sure you'll agree.</p>
                 </footer>
-            </div>
+            </Page>
         );
     }
 }
 
 
-/** 
- * We need some work to make routes both dynamic, and work with extensions that run in a sub tree. 
- * so as it is now, the routes are just hard coded to the components 
- * TODO:  ideally there would be one ExtensionPoint and they can contribute to the routes. 
+/**
+ * We need some work to make routes both dynamic, and work with extensions that run in a sub tree.
+ * so as it is now, the routes are just hard coded to the components
+ * TODO:  ideally there would be one ExtensionPoint and they can contribute to the routes.
  */
 render(
     <Router history={createBrowserHistory()}>
