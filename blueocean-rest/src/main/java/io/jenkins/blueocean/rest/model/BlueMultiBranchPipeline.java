@@ -17,6 +17,9 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
     public static final String TOTAL_NUMBER_OF_BRANCHES="totalNumberOfBranches";
     public static final String NUMBER_OF_FAILING_BRANCHES="numberOfFailingBranches";
     public static final String NUMBER_OF_SUCCESSFULT_BRANCHES="numberOfSuccessfulBranches";
+    public static final String TOTAL_NUMBER_OF_PULL_REQUESTS="totalNumberOfPullRequests";
+    public static final String NUMBER_OF_FAILING_PULL_REQUESTS="numberOfFailingPullRequests";
+    public static final String NUMBER_OF_SUCCESSFULT_PULL_REQUESTS="numberOfSuccessfulPullRequests";
     public static final String BRANCH_NAMES ="branchNames";
 
     /**
@@ -39,6 +42,26 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
     @JsonProperty(NUMBER_OF_SUCCESSFULT_BRANCHES)
     @Exported(name = NUMBER_OF_SUCCESSFULT_BRANCHES)
     public abstract int getNumberOfSuccessfulBranches();
+
+    /**
+    * @return total number of pull requests
+    */
+    @JsonProperty(TOTAL_NUMBER_OF_BRANCHES)
+    @Exported(name = TOTAL_NUMBER_OF_PULL_REQUESTS)
+    public abstract int  getTotalNumberOfPullRequests();
+    /**
+     * @return total number of pull requests
+     */
+    @JsonProperty(NUMBER_OF_FAILING_BRANCHES)
+    @Exported(name = NUMBER_OF_FAILING_PULL_REQUESTS)
+    public abstract int getNumberOfFailingPullRequests();
+
+    /**
+     * @return total number of pull requests
+     */
+    @JsonProperty(NUMBER_OF_SUCCESSFULT_BRANCHES)
+    @Exported(name = NUMBER_OF_SUCCESSFULT_PULL_REQUESTS)
+    public abstract int getNumberOfSuccessfulPullRequests();
 
     /**
      * @return Gives {@link BlueBranchContainer}
