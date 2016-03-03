@@ -2,7 +2,7 @@
   "name": "blueocean-admin",
   "version": "0.0.1",
   "scripts": {
-    "preinstall": "(export I=../blueocean-commons/js/projectBuilder/dependencyLinker.js && test -e $I && node $I) || true"
+    "preinstall": "(export I=../projectBuilder/dependencyLinker.js && test -e $I && node $I) || true"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.5.0",
@@ -19,7 +19,6 @@
     "window-handle": "^1.0.0"
   },
   "blueoceanDependencies": {
-    "blueocean-commons": "blueocean-commons",
     "jenkins-bootstrap": "jenkins-design-language/jenkins-bootstrap"
   }
 }

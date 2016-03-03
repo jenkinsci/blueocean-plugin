@@ -11,7 +11,7 @@ var
 
 var skipGitDependencies = process.env.SKIP_GIT_DEPS === 'true';
 
-var projectRoot = path.resolve(path.join(__dirname), '../../..');
+var projectRoot = path.resolve(__dirname);
 var globalNpmCacheFolder = path.join(projectRoot, '.npmcache');
 var installedCacheFile = path.join(projectRoot, 'installedCache.tmp');
 
