@@ -1,3 +1,5 @@
 extensions:
   - component: AdminNavLink
     extensionPoint: jenkins.topNavigation.menu
+  - component: OrganisationPipelines
+    extensionPoint: jenkins.main.body

@@ -1,0 +1,6 @@
+dist/*
+node_modules/*
+**/node_modules/*
+target/**
+src/main/java/**
+node/**

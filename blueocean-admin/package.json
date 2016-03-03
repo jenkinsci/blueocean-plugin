@@ -5,12 +5,12 @@
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-react": "^6.5.0",
     "gulp": "^3.9.0",
-    "jenkins-js-builder": "0.0.51",
-    "jenkins-js-test": "^1.0.1"
+    "@jenkins-cd/js-builder": "^0.0.3",
+    "@jenkins-cd/js-test": "^1.x"
   },
   "dependencies": {
-    "@jenkins-cd/js-extensions": "0.0.2",
-    "jenkins-js-modules": "^1.5.2",
+    "@jenkins-cd/js-extensions": "0.0.7",
+    "@jenkins-cd/js-modules": "^0.x",
     "react": "^0.14.5",
     "react-dom": "^0.14.5",
     "window-handle": "^1.0.0"
