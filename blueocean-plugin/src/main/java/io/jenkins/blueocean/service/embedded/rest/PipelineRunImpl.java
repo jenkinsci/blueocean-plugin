@@ -20,17 +20,17 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
-    public Container<?> getChangeSet() {
-        Map<String,Object> m = new HashMap<>();
+    public Container<ChangeSetResource> getChangeSet() {
+        Map<String,ChangeSetResource> m = new HashMap<>();
         int cnt=0;
         for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
             for (ChangeLogSet.Entry e : cs) {
                 cnt++;
                 String id = e.getCommitId();
                 if (id==null)   id = String.valueOf(cnt);
-                m.put(id,new ChangeSetWrapper(e));
+                m.put(id,new ChangeSetResource(e));
             }
         }
-        return Containers.from(m);
+        return Containers.fromResourceMap(m);
     }
 }

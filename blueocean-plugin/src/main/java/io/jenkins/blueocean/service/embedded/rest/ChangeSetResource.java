@@ -1,13 +1,13 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.model.User;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
+import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 
-import java.util.Collections;
+import java.text.SimpleDateFormat;
 
 /**
  * Represents a single commit as a REST resource.
@@ -18,7 +18,6 @@ import java.util.Collections;
  *
  * @author Vivek Pandey
  */
-@ExportedBean
 public class ChangeSetResource extends Resource {
     private final ChangeLogSet.Entry changeSet;
 
@@ -31,8 +30,17 @@ public class ChangeSetResource extends Resource {
         return changeSet;
     }
 
+    @Exported(inline = true)
+    public BlueUser getAuthor() {
+        return new UserImpl(changeSet.getAuthor());
+    }
+
     @Exported
-    public User getAuthor() {
-        return User.get(changeSet.getAuthor().getId(), false, Collections.emptyMap());
+    public String getTimestamp(){
+        if(changeSet.getTimestamp() > 0) {
+            return new SimpleDateFormat(BlueRun.DATE_FORMAT_STRING).format(changeSet.getTimestamp());
+        }else{
+            return null;
+        }
     }
 }

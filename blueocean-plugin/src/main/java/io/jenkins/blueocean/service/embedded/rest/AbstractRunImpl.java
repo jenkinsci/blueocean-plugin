@@ -5,7 +5,6 @@ import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.kohsuke.stapler.export.Exported;
 
 import java.util.Date;
 
@@ -21,13 +20,14 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         this.run = run;
     }
 
-    /**
-     * Allow properties reachable through {@link Run} to be exposed upon request (via the tree parameter).
-     */
-    @Exported
-    public T getRun() {
-        return run;
-    }
+    //TODO: It serializes jenkins Run model children, enable this code after fixing it
+//    /**
+//     * Allow properties reachable through {@link Run} to be exposed upon request (via the tree parameter).
+//     */
+//    @Exported
+//    public T getRun() {
+//        return run;
+//    }
 
     /**
      * Subtype should return

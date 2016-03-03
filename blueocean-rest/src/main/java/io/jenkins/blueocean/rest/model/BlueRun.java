@@ -31,7 +31,7 @@ public abstract class BlueRun extends Resource {
     public static final String RUN_SUMMARY = "runSummary";
 
     /** Date String format */
-    public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
     /**
      * @return name of the organization

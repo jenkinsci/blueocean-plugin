@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import hudson.model.FreeStyleProject;
+import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
@@ -228,6 +229,8 @@ public class MultiBranchTest {
         WorkflowRun b4 = p.getLastBuild();
         assertEquals(2, b4.getNumber());
 
+        ChangeLogSet.Entry changeLog = b4.getChangeSets().get(0).iterator().next();
+
         Response run = given().log().all().get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId()+"/");
         run.then().log().all().statusCode(200)
             .statusCode(200)
@@ -235,9 +238,10 @@ public class MultiBranchTest {
             .body("pipeline", Matchers.equalTo(b4.getParent().getName()))
             .body("organization", Matchers.equalTo("jenkins"))
             .body("startTime", Matchers.equalTo(
-                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b4.getStartTimeInMillis()))));;
-
-
+                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b4.getStartTimeInMillis()))))
+            .body("changeSet[0].author.id", Matchers.equalTo(changeLog.getAuthor().getId()))
+            .body("changeSet[0].author.fullName", Matchers.equalTo(changeLog.getAuthor().getFullName()))
+            .body("changeSet[0].commitId", Matchers.equalTo(changeLog.getCommitId()));
     }
 
     private void setupScm() throws Exception {

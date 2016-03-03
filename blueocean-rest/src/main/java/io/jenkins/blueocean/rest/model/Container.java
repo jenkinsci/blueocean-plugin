@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import com.google.common.collect.Iterables;
-import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
