@@ -50,7 +50,11 @@ public class BranchImpl extends BlueBranch {
     @Override
     public Collection<BlueBranchProperty> getProperties() {
         PullRequestBranchProperty prProperty = getPRProperty();
-        return ImmutableList.<BlueBranchProperty>of(prProperty);
+        if(prProperty != null) {
+            return ImmutableList.<BlueBranchProperty>of(prProperty);
+        } else {
+            return ImmutableList.<BlueBranchProperty>of();
+        }
     }
 
     private PullRequestBranchProperty getPRProperty() {

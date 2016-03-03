@@ -5,6 +5,8 @@ import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
 
+import javax.annotation.Nonnull;
+
 /**
  * Pipeline Branch API
  *
@@ -48,6 +50,7 @@ public abstract class BlueBranch extends Resource{
      */
     @Exported(name = BRANCH_PROPERTIES)
     @JsonProperty(BRANCH_PROPERTIES)
+    @Nonnull
     public abstract Collection<BlueBranchProperty> getProperties();
 
 }
