@@ -3,6 +3,8 @@ package io.jenkins.blueocean.rest.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
+import java.util.Collection;
+
 /**
  * Pipeline Branch API
  *
@@ -12,6 +14,7 @@ public abstract class BlueBranch extends Resource{
     public static final String NAME="name";
     public static final String RUNS="runs";
     public static final String WEATHER_SCORE ="weatherScore";
+    public static final String BRANCH_PROPERTIES = "branchProperties";
 
     /**
      *  Branch name
@@ -38,5 +41,13 @@ public abstract class BlueBranch extends Resource{
      */
     @JsonProperty(RUNS)
     public abstract BlueRunContainer getRuns();
+
+
+    /**
+     * @return Collection of properties that describe the pipeline
+     */
+    @Exported(name = BRANCH_PROPERTIES)
+    @JsonProperty(BRANCH_PROPERTIES)
+    public abstract Collection<BlueBranchProperty> getProperties();
 
 }
