@@ -41,11 +41,11 @@ module.exports = function (grunt) {
                     strictMath: true,
                     sourceMap: true,
                     outputSourceFiles: true,
-                    sourceMapURL: "<%= pkg.name %>-theme.css.map",
-                    sourceMapFilename: "dist/assets/css/<%= pkg.name %>-theme.css.map"
+                    sourceMapURL: "<%= pkg.name %>.css.map",
+                    sourceMapFilename: "dist/assets/css/<%= pkg.name %>.css.map"
                 },
                 src: "less/theme.less",
-                dest: "dist/assets/css/<%= pkg.name %>-theme.css"
+                dest: "dist/assets/css/<%= pkg.name %>.css"
             }
         },
 
@@ -57,7 +57,7 @@ module.exports = function (grunt) {
                 options: {
                     map: true
                 },
-                src: "dist/assets/css/<%= pkg.name %>-theme.css"
+                src: "dist/assets/css/<%= pkg.name %>.css"
             }
         },
 
