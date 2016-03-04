@@ -10,4 +10,5 @@ node
 node_modules
 work
 app.properties
+.npmcache
 
