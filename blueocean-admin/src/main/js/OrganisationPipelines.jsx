@@ -17,12 +17,17 @@ export default class OrganisationPipelines extends Component {
      }
     
     render() {        
+      
+        var prefix = document.getElementsByTagName("head")[0].getAttribute("data-adjuncturl");
         return <div>
                   <h1><p>This is also from a plugin. Number of pipelines: {this.state.pipelines.length} </p></h1>
                     <iframe width="420" height="315" src="//www.youtube.com/embed/xZuQz1tO8aQ"></iframe>  
                     <p/>
-                    {this.state.pipelines.map(renderHomepagePipeline)}                    
+                    {this.state.pipelines.map(renderHomepagePipeline)}   
+                    <img src={prefix + "/images/pic.png"}/>                 
                 </div>;
+                
+                
     }
 }
 
