@@ -7,11 +7,11 @@ var
   path = require('path'),
   execFile = require('child_process').execFile,
   execFileSync = require('child_process').execFileSync,
-  semver = require('semver');
+  semver = require('./semver');
 
 var skipGitDependencies = process.env.SKIP_GIT_DEPS === 'true';
 
-var projectRoot = path.resolve(__dirname);
+var projectRoot = path.resolve(path.join(__dirname), '../');
 var globalNpmCacheFolder = path.join(projectRoot, '.npmcache');
 var installedCacheFile = path.join(projectRoot, 'installedCache.tmp');
 
