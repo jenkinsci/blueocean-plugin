@@ -91,7 +91,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             if(j == null){ //get latest
                 Collection<Job>  jbs = mbp.getAllJobs();
                 if(jbs.size() > 0){
-                    Job[] jobs = new Job[jbs.size()];
+                    Job[] jobs = jbs.toArray(new Job[jbs.size()]);
                     Arrays.sort(jobs, new Comparator<Job>() {
                         @Override
                         public int compare(Job o1, Job o2) {
