@@ -81,6 +81,23 @@ public class MultiBranchTest {
     }
 
 
+    @Test
+    public void getMultiBranchPipelinesWithNonMasterBranch() throws Exception {
+        sampleRepo.git("branch","-D", "master");
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+        given().log().all().get("/organizations/jenkins/pipelines/").then().log().all().statusCode(200);
+    }
+
+
 
     @Test
     public void getMultiBranchPipeline() throws IOException, ExecutionException, InterruptedException {
@@ -209,7 +226,6 @@ public class MultiBranchTest {
         sampleRepo.write("file", "subsequent content2");
         sampleRepo.git("commit", "--all", "--message=tweaked2");
     }
-
 
     private WorkflowJob scheduleAndFindBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
         mp.scheduleBuild2(0).getFuture().get();
