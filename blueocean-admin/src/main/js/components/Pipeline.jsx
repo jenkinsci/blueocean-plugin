@@ -31,7 +31,6 @@ export default class Pipeline extends Component {
       { pipeline, simple = false } = this.props,
       {
         name,
-        branchNames,
         weatherScore,
         numberOfSuccessfulBranches,
         numberOfFailingBranches,
@@ -41,8 +40,7 @@ export default class Pipeline extends Component {
 
     let
       multiBranch,
-      multiPr,
-      displayName = name;
+      multiPr;
 
     if(!simple) {
       multiBranch = (<td>
@@ -52,27 +50,13 @@ export default class Pipeline extends Component {
       multiPr = (<td>{numberOfSuccessfulPullRequests} passing
       | {numberOfFailingPullRequests} failing
       </td>);
-      //FIXME: when we have a solution how to do it better @style
-      displayName = (<a
-        style={{
-          color: this.state.clicked ? 'green' : 'black',
-          cursor: 'pointer'
-        }}
-        onClick={() => this.setState({
-          clicked: !this.state.clicked
-        })}>
-        {this.state.clicked ? <span>
-            {branchNames.map( branchName => <span key={branchName}>{branchName}&nbsp;</span>)}
-            <span style={{ color: 'black' }}>@{name}</span>
-          </span>
-          : name}
-      </a>);
-
+    } else {
+      multiBranch = multiPr = (<td></td>)
     }
 
     return (<tr key={name}>
       <td>
-        {displayName}
+        {name}
       </td>
       <td><WeatherIcon score={weatherScore}/></td>
       {multiBranch}
