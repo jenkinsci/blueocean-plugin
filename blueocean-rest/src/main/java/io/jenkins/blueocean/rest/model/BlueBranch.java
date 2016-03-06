@@ -43,14 +43,4 @@ public abstract class BlueBranch extends Resource{
      */
     @JsonProperty(RUNS)
     public abstract BlueRunContainer getRuns();
-
-
-    /**
-     * @return Collection of properties that describe the pipeline
-     */
-    @Exported(name = BRANCH_PROPERTIES)
-    @JsonProperty(BRANCH_PROPERTIES)
-    @Nonnull
-    public abstract Collection<BlueBranchProperty> getProperties();
-
 }
