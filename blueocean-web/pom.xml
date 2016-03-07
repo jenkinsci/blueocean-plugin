@@ -13,6 +13,10 @@
     <packaging>hpi</packaging>
 
     <name>BlueOcean :: Web module</name>
+    
+    <properties>
+        <npm.loglevel>--loglevel warn</npm.loglevel>
+    </properties>
 
     <dependencies>
         <dependency>
