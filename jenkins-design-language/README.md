@@ -5,3 +5,4 @@ Reusable components and design elements that adhere to the Jenkins Design Langua
 TODO: 
 
 * Do not require nodejs on the build system 
+* Publish to public npm repo
