@@ -11,8 +11,8 @@
   "dependencies": {
     "@jenkins-cd/js-extensions": "0.0.7",
     "@jenkins-cd/js-modules": "^0.x",
+    "jenkins-design-language": "0.0.1",
     "react": "^0.14.5",
-    "jenkins-design-language": "../jenkins-design-language/jenkins-bootstrap",
     "react-dom": "^0.14.5",
     "window-handle": "^1.0.0"
   }
