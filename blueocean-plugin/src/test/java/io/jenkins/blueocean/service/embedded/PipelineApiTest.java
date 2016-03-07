@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded;
 import com.google.common.collect.ImmutableMap;
 
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import hudson.model.FreeStyleBuild;
@@ -234,6 +235,30 @@ public class PipelineApiTest {
             .body("[1].organization", Matchers.equalTo("jenkins"))
             .body("[1].startTime", Matchers.equalTo(
                 new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b1.getStartTimeInMillis()))));
+    }
+
+    @Test
+    public void getPipelineJobRunsLogTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("" +
+            "node {" +
+            "   stage ('Build1'); " +
+            "   echo ('Building'); " +
+            "   stage ('Test1'); " +
+            "   echo ('Testing'); " +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        Response response = RestAssured.given().log().all()
+            .accept(ContentType.TEXT)
+            .get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0");
+
+            response.then().log().all()
+            .statusCode(200);
+        int size = Integer.parseInt(response.getHeader("X-Text-Size"));
+        Assert.assertTrue(size > 0);
     }
 
     @Test

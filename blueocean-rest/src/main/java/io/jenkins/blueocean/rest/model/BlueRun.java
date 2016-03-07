@@ -142,6 +142,18 @@ public abstract class BlueRun extends Resource {
     @Exported(name=TYPE)
     public abstract String getType();
 
+    /**
+     * @return Instance of stapler aware instance that can do the following:
+     * <p></p><ul>
+     *  <li>Must be able to process start query parameter. 'start' parameter is the byte offset in the actual log file</li>
+     *  <li>Must produce following HTTP headers in the response</li>
+     *  <li>X-Text-Size  It is the byte offset of the raw log file client should use in the next request as value of start query parameter.</li>
+     *  <li>X-More-Data  If  its true, then client should repeat the request after some delay. In the repeated request it should use
+     *                    X-TEXT-SIZE header value with *start* query parameter.</li>
+     *  </ul>
+     */
+    public abstract Object getLog();
+
     public enum BlueRunState {
         NOT_STARTED,
         RUNNING,
