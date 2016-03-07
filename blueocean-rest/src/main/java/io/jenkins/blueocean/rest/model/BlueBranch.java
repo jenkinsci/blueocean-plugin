@@ -38,5 +38,4 @@ public abstract class BlueBranch extends Resource{
      */
     @JsonProperty(RUNS)
     public abstract BlueRunContainer getRuns();
-
 }
