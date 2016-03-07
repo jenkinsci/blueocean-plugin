@@ -14,10 +14,6 @@
 
     <name>BlueOcean :: Web module</name>
     
-    <properties>
-        <npm.loglevel>--loglevel warn</npm.loglevel>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
