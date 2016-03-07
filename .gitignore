@@ -3,11 +3,13 @@
 *.iml
 *.ipr
 *.iws
-target/*
-**/target/*
+**/target/
 *~
 node
 node_modules
 work
 app.properties
-
+npm-debug.log
+**/.settings/
+**/.project
+**/.classpath

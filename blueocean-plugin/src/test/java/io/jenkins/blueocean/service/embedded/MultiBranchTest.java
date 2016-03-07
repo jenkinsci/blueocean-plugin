@@ -186,6 +186,7 @@ public class MultiBranchTest {
                 .body("id", Matchers.equalTo(b.getId()))
                 .body("pipeline", Matchers.equalTo(b.getParent().getName()))
                 .body("organization", Matchers.equalTo("jenkins"))
+                .body("pullRequest", Matchers.nullValue())
                 .body("startTime", Matchers.equalTo(
                     new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
             i++;

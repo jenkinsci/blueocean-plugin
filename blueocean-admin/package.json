@@ -1,16 +1,28 @@
 {
   "name": "blueocean-admin",
   "version": "0.0.1",
+  "scripts": {
+    "test": "mocha  --compilers js:babel-core/register --recursive",
+    "test:watch": "npm test -- --watch --reporter min"
+  },
   "devDependencies": {
+    "@jenkins-cd/js-builder": "^0.0.3",
+    "@jenkins-cd/js-test": "^1.x",
+    "babel": "^6.5.2",
+    "babel-core": "^6.6.5",
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "chai": "^3.5.0",
     "gulp": "^3.9.0",
-    "@jenkins-cd/js-builder": "^0.0.3",
-    "@jenkins-cd/js-test": "^1.x"
+    "mocha": "^2.4.5",
+    "react-addons-test-utils": "^0.14.7",
+    "skin-deep": "^0.14.0"
   },
   "dependencies": {
     "@jenkins-cd/js-extensions": "0.0.7",
     "@jenkins-cd/js-modules": "^0.x",
+    "jenkins-design-language": "0.0.1",
     "react": "^0.14.5",
     "react-dom": "^0.14.5",
     "window-handle": "^1.0.0"
