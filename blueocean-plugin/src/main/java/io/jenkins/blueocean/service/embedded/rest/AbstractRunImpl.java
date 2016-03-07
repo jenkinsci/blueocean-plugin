@@ -55,8 +55,8 @@ public abstract class AbstractRunImpl extends BlueRun {
     }
 
     @Override
-    public BlueRunResultState getResultState() {
-        return run.getResult() != null ? BlueRunResultState.valueOf(run.getResult().toString()) : BlueRunResultState.UNKNOWN;
+    public BlueRunResult getResult() {
+        return run.getResult() != null ? BlueRunResult.valueOf(run.getResult().toString()) : BlueRunResult.UNKNOWN;
     }
 
     @Override

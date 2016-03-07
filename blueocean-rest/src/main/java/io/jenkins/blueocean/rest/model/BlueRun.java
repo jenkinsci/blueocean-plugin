@@ -26,7 +26,7 @@ public abstract class BlueRun extends Resource {
     public static final String COMMIT_ID = "commitId";
     public static final String TYPE = "type";
     public static final String RUN_SUMMARY = "runSummary";
-    public static final String RESULT_STATE = "resultState";
+    public static final String RESULT = "result";
     public static final String STATE = "state";
 
 
@@ -110,9 +110,9 @@ public abstract class BlueRun extends Resource {
      *
      * @return The result state of the job (e.g unstable)
      */
-    @Exported(name=RESULT_STATE)
-    @JsonProperty(RESULT_STATE)
-    public abstract BlueRunResultState getResultState();
+    @Exported(name= RESULT)
+    @JsonProperty(RESULT)
+    public abstract BlueRunResult getResult();
 
     /**
      * @return Branch on which build is executed
@@ -160,7 +160,7 @@ public abstract class BlueRun extends Resource {
         FINISHED
     }
 
-    public enum BlueRunResultState{
+    public enum BlueRunResult {
         /** Build completed successfully */
         SUCCESS,
 
