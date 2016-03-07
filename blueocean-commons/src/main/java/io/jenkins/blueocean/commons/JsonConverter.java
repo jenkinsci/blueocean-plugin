@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
  **/
 public class JsonConverter{
     private static  final Logger LOGGER = LoggerFactory.getLogger(JsonConverter.class);
-    public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final ObjectMapper om = createObjectMapper();
 
     public static <T> T toJava(String data, Class<T> type) {

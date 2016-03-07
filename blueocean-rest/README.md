@@ -232,6 +232,47 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "type": "WorkflowRun"
     }
 
+## Get change set for a run
+
+    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/runs/2/
+    
+    {
+        "changeSet": [
+            {
+                "author": {
+                    "email": "vivek.pandey@gmail.com",
+                    "fullName": "vivek.pandey",
+                    "id": "vivek.pandey"
+                },
+                "affectedPaths": [
+                    "file"
+                ],
+                "commitId": "e2d1d695a2009ac44d97e6e7a542ba3786153c41",
+                "comment": "tweaked11\n",
+                "date": "2016-03-02 16:49:26 -0800",
+                "id": "e2d1d695a2009ac44d97e6e7a542ba3786153c41",
+                "msg": "tweaked11",
+                "paths": [
+                    {
+                        "editType": "edit",
+                        "file": "file"
+                    }
+                ],
+                "timestamp": "2016-03-02T16:49:26.000-0800"
+            }
+        ],
+        "durationInMillis": 348,
+        "enQueueTime": "2016-03-02T16:49:26.548-0800",
+        "endTime": "2016-03-02T16:49:26.898-0800",
+        "id": "2",
+        "organization": "jenkins",
+        "pipeline": "master",
+        "runSummary": "stable",
+        "startTime": "2016-03-02T16:49:26.550-0800",
+        "status": "SUCCESS",
+        "type": "WorkflowRun"
+    }
+    
 # Get Log for a run
 
 Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response. 

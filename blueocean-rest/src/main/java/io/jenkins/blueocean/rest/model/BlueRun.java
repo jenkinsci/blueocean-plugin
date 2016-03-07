@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
@@ -14,6 +15,7 @@ import java.util.Date;
  *
  * @author Vivek Pandey
  */
+@JsonInclude
 public abstract class BlueRun extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String ID="id";
@@ -29,7 +31,7 @@ public abstract class BlueRun extends Resource {
     public static final String RUN_SUMMARY = "runSummary";
 
     /** Date String format */
-    public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
     /**
      * @return name of the organization
@@ -63,6 +65,12 @@ public abstract class BlueRun extends Resource {
      * @return Build execution start time inside executor
      */
     public abstract Date getStartTime();
+
+    /**
+     * @return Gives change set of a run
+     */
+    @Exported(inline = true)
+    public abstract Container<?> getChangeSet();
 
     /**
      * @return run start time
@@ -101,20 +109,6 @@ public abstract class BlueRun extends Resource {
     @JsonProperty(DURATION_IN_MILLIS)
     @Exported(name = DURATION_IN_MILLIS)
     public abstract Long getDurationInMillis();
-
-    /**
-     * @return Branch on which build is executed
-     */
-    @JsonProperty(BRANCH)
-    @Exported(name = BRANCH)
-    public abstract String getBranch();
-
-    /**
-     * @return Commit id on which build is executing
-     */
-    @JsonProperty(COMMIT_ID)
-    @Exported(name = COMMIT_ID)
-    public abstract String getCommitId();
 
     /**
      * @return Build summary
@@ -157,5 +151,4 @@ public abstract class BlueRun extends Resource {
         /** Unknown status */
         UNKNOWN;
     }
-
 }
