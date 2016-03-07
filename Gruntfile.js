@@ -1,6 +1,6 @@
 "use strict";
 /*
-    Build file for Jenkins Design Language theme.
+Build file for Jenkins Design Language theme.
 */
 
 var autoprefixerBrowsers = [
@@ -61,7 +61,21 @@ module.exports = function (grunt) {
             }
         },
 
+        cssmin: {
+            options: {
+                compatibility: 'ie8',
+                keepSpecialComments: '*',
+                sourceMap: true,
+                advanced: false
+            },
+            minifyTheme: {
+                src: 'dist/assets/css/<%= pkg.name %>.css',
+                dest: 'dist/assets/css/<%= pkg.name %>.min.css'
+            },
+        },
+
         copy: {
+            //TODO: Collapse this monstrosity down. See: https://www.npmjs.com/package/grunt-contrib-copy
             normalize: {
                 expand: true,
                 cwd: "node_modules/normalize.css/",
@@ -105,11 +119,19 @@ module.exports = function (grunt) {
                 ],
                 dest: "dist/assets/fonts/"
             },
-            licenses: {
+            licenses_installed: {
                 expand:true,
                 cwd: "node_modules/",
                 src: [
                     "octicons/LICENSE.txt"
+                ],
+                dest: "licenses/"
+            },
+            licenses_bundled: {
+                expand:true,
+                flatten:true,
+                src: [
+                    "fonts/OFL.txt"
                 ],
                 dest: "licenses/"
             }
@@ -118,8 +140,7 @@ module.exports = function (grunt) {
         babel: {
             options: {
                 plugins: ["transform-react-jsx"],
-                presets: ["es2015", "react"]
-                // TODO: presets: ["es2015", "react", "stage-0"]
+                presets: ["es2015", "react", "stage-0"]
             },
             jsx: {
                 files: [{
@@ -141,6 +162,9 @@ module.exports = function (grunt) {
         },
     });
 
+    // Less etc
+    grunt.registerTask("make-css", ["less", "autoprefixer", "cssmin"]);
+
     // Default task.
-    grunt.registerTask("default", ["clean:dist", "babel", "less", "autoprefixer", "copy"]);
+    grunt.registerTask("default", ["clean:dist", "babel", "make-css", "copy"]);
 }

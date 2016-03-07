@@ -1,7 +1,7 @@
 /*!
 * Jenkins Design Language CSS Theme
 *
-* Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+* Licensed under MIT
 */
 
 //
@@ -12,7 +12,7 @@
 @import "mixins.less";
 
 //
-// Base font size
+// Base font stuffs
 // --------------------------------------------------
 
 html {
@@ -23,19 +23,20 @@ html {
     font-size:1.4rem;
 }
 
-//
-// Turn off ligatures
-// --------------------------------------------------
-
 body {
     text-rendering: optimizeSpeed;
     font-feature-settings: "kern" on, "liga" off;
     -moz-font-feature-settings: "kern" on, "liga" off;
+    //TODO: Do we really want this for everything? -webkit-font-smoothing: antialiased;
 }
 
 //
 // Some basics
 // --------------------------------------------------
+
+* {
+    box-sizing:border-box;
+}
 
 // Default All headings to basically "bold and display:block"
 h1, h2, h3, h4, h5 h6 {
@@ -47,7 +48,7 @@ h1, h2, h3, h4, h5 h6 {
 // Make h1 slightly bigger :)
 h1 {
     font-size:1.8rem;
-    font-family: LatoLatinWebLight;
+    font-family: @font-family-nav;
     letter-spacing: 1.1px;
 }
 
@@ -374,12 +375,19 @@ table {
     width:100%;
 }
 
-thead tr {
+thead tr:last-child {
     border-bottom:solid 1px;
+    th {
+        padding-bottom:1.5rem;
+    }
+}
+
+tbody tr:first-child td {
+    padding-top:1rem;
 }
 
 th {
-  font-family: LatoLatinWebMedium;
+  font-family: @font-family-headings;
   font-weight: normal;
 }
 
@@ -402,6 +410,7 @@ code {
     background-color: @pre-bg;
     color: @pre-color;
     font-size:1.1rem;
+    -webkit-font-smoothing: antialiased; // Good for the light on dark text
 }
 
 code.block {
@@ -420,6 +429,19 @@ code.inline {
     padding: inherit;
     white-space: pre-wrap;
 }
+
+//
+// Mono Icons
+// --------------------------------------------------
+
+.material-icons {
+    color: @brand-primary;
+}
+
+.material-icons.selected {
+    color: @brand-warning;
+}
+
 
 //
 // Layout
@@ -457,9 +479,9 @@ code.inline {
     font-weight: normal;
     text-decoration: none;
     display: inline-block;
-    padding: 0.5rem 2rem;
-    font-family: LatoLatinWebLight;
-    letter-spacing: 1.24px;
+    padding: 0.5rem 1rem;
+    font-family: @font-family-nav;
+    letter-spacing: 1.12px;
 }
 
 .global-header a:hover {
@@ -488,13 +510,14 @@ code.inline {
 
 .page-tabs a {
     display:inline-block;
-    padding: 0.2em 1em;
-    height: 30px;
+    padding: 0.6rem 1rem 0;
+    height:30px;
+    border-bottom:solid 3px rgba(0,0,0,0);
+    font-family: @font-family-nav;
 }
 
 .page-tabs a.selected {
     border-bottom:solid 3px @brand-primary;
-    font-family: LatoLatinWebMedium;
 }
 
 .page-tabs a.selected:hover,
