@@ -4,7 +4,7 @@
     "description": "Styles, assets, and React classes for Jenkins Design Language",
     "main": "dist/js/index.js",
     "scripts": {
-        "prepublish": "npm run grunt",
+        "prepublish": "./pre-publish.sh",
         "grunt": "grunt",
         "test": "grunt test"
     },
