@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import  Pipelines from './components/Pipelines';
-import {components} from 'jenkins-design-language';
+import {components} from '@jenkins-cd/design-language';
 
 const { Page } = components;
 

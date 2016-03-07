@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {components} from 'jenkins-design-language';
+import {components} from '@jenkins-cd/design-language';
 const { WeatherIcon, Table } = components;
 
 /*
