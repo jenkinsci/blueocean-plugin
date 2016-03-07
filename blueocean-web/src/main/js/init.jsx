@@ -12,6 +12,12 @@ exports.initialize = function(oncomplete) {
     var extensions = require('@jenkins-cd/js-extensions');
     jenkinsMods.export('jenkins-cd', 'js-extensions', extensions);
 
+    // Load and export the react modules, allowing them to be imported by other bundles.
+    var react = require('react');
+    var reactDOM = require('react-dom');
+    jenkinsMods.export('react', 'react', react);
+    jenkinsMods.export('react', 'react-dom', reactDOM);
+
     // Manually register extention points. TODO: we will be auto-registering these.
     extensions.store.addExtension("jenkins.topNavigation.menu", AboutNavLink);
 

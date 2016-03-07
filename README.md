@@ -8,9 +8,13 @@ Yarr...
 # Modules of note
 (check the readme in each of them!)
 
+## blueocean-admin
+
+Example plugin - a starting point. Take a look at it if you want to extend blue ocean. 
+
 ## blueocean-web
 
-BlueOcean Web module, everything interesting web related lives here. If you are doing web, you want to be in here. You probably want to look at the README for this for how to play with it.
+BlueOcean Web module, core web module with layout and extention points. You probably want to look at the README for this for how to play with it. This should mostly be infrastructure and core components.
 
 ## blueocean-plugin
 

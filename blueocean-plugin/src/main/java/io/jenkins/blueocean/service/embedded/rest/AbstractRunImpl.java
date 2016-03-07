@@ -89,6 +89,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return run.getClass().getSimpleName();
     }
 
+    @Override
+    public Object getLog() {
+        return new LogResource(run);
+    }
+
     protected static BlueRun getBlueRun(Run r){
         //TODO: We need to take care several other job types
         if (r instanceof FreeStyleBuild) {

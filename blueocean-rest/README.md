@@ -234,8 +234,6 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
 
 ## Get change set for a run
 
-> Ignore data lement in the changeSet for now, use timestamp, which is the commit time.
-
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/runs/2/
     
     {
@@ -275,3 +273,45 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "type": "WorkflowRun"
     }
     
+# Get Log for a run
+
+Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response. 
+
+* X-More-Data
+
+If *X-More-Data* is true, then client should repeat the request after some delay. In the repeated request it should use 
+*X-TEXT-SIZE* header value with *start* query parameter.       
+
+* X-TEXT-SIZE
+
+X-TEXT-SIZE is the byte offset of the raw log file client should use in the next request as value of start query parameter.
+
+* start
+
+start query parameter tells API to send log starting from this offset in the log file.
+ 
+
+    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0
+    
+    Content-Type: text/plain; charset=utf-8
+    X-Text-Size: 1835
+    X-More-Data: false
+
+    Started
+    [Pipeline] Allocate node : Start
+    Running on master in /var/folders/5q/51y3qf0x5t39d4c4c_c2l1s40000gn/T/hudson6188345779815397724test/workspace/pipeline1
+    [Pipeline] node {
+    [Pipeline] stage (Build1)
+    Entering stage Build1
+    Proceeding
+    [Pipeline] echo
+    Building
+    [Pipeline] stage (Test1)
+    Entering stage Test1
+    Proceeding
+    [Pipeline] echo
+    Testing
+    [Pipeline] } //node
+    [Pipeline] Allocate node : End
+    [Pipeline] End of Pipeline
+    Finished: SUCCESS
