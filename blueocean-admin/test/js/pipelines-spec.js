@@ -3,7 +3,7 @@ import { assert} from 'chai';
 import sd from 'skin-deep';
 
 
-import Pipelines from '../../main/js/components/Pipelines.jsx';
+import Pipelines from '../../src/main/js/components/Pipelines.jsx';
 
 const
   pipelines = [{

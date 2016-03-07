@@ -2,7 +2,7 @@
   "name": "blueocean-admin",
   "version": "0.0.1",
   "scripts": {
-    "test": "mocha  --compilers js:babel-core/register --recursive 'src/test/js/**.js'",
+    "test": "mocha  --compilers js:babel-core/register --recursive",
     "test:watch": "npm test -- --watch --reporter min"
   },
   "devDependencies": {

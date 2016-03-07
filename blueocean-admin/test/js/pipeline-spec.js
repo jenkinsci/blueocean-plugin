@@ -4,7 +4,7 @@ import { assert} from 'chai';
 import sd from 'skin-deep';
 
 
-import Pipeline from '../../main/js/components/Pipeline.jsx';
+import Pipeline from '../../src/main/js/components/Pipeline.jsx';
 
 const
   pipelineMulti = {
@@ -87,7 +87,7 @@ describe("weatherIcon pipeline component simple rendering", () => {
 
   before('render element', () => renderer.render(testElementSimple));
 
-  it("renders a pipeline", () => {
+  it("renders a weather-icon", () => {
     const
       result = renderer.getRenderOutput(),
       children = result.props.children,
