@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
+
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
@@ -186,6 +187,8 @@ public class PipelineApiTest {
             .body("id", Matchers.equalTo(b1.getId()))
             .body("pipeline", Matchers.equalTo(b1.getParent().getName()))
             .body("organization", Matchers.equalTo("jenkins"))
+            .body("state", Matchers.equalTo("FINISHED"))
+            .body("resultState", Matchers.equalTo("SUCCESS"))
             .body("startTime", Matchers.equalTo(
                 new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b1.getStartTimeInMillis()))));
     }

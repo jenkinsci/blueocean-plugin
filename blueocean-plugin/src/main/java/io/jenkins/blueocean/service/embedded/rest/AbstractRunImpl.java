@@ -34,11 +34,6 @@ public abstract class AbstractRunImpl extends BlueRun {
     }
 
     @Override
-    public Status getStatus() {
-        return run.getResult() != null ? Status.valueOf(run.getResult().toString()) : Status.UNKNOWN;
-    }
-
-    @Override
     public Date getStartTime() {
         return new Date(run.getStartTimeInMillis());
     }
@@ -46,6 +41,22 @@ public abstract class AbstractRunImpl extends BlueRun {
     @Override
     public Date getEnQueueTime() {
         return new Date(run.getTimeInMillis());
+    }
+
+    @Override
+    public BlueRunState getStateObj() {
+        if(!run.hasntStartedYet() && run.isBuilding()) {
+            return BlueRunState.RUNNING;
+        } else if(!run.isLogUpdated()){
+            return BlueRunState.FINISHED;
+        } else {
+            return BlueRunState.FINISHED;
+        }
+    }
+
+    @Override
+    public BlueRunResultState getResultState() {
+        return run.getResult() != null ? BlueRunResultState.valueOf(run.getResult().toString()) : BlueRunResultState.UNKNOWN;
     }
 
     @Override
