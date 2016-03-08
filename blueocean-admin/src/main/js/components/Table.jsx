@@ -3,7 +3,7 @@ import React, {Component, PropTypes} from 'react';
 export default class Table extends Component {
 
   render() {
-    const { headers } = this.props;
+    const { headers, children } = this.props;
     return (<table>
       { headers && <thead>
         <tr>
@@ -11,9 +11,7 @@ export default class Table extends Component {
         </tr>
       </thead> }
 
-      <tbody>
-        {this.props.children}
-      </tbody>
+      { headers ? (<tbody>{children}</tbody>) : {children}}
 
     </table>);
   }
