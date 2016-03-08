@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import  Pipelines from './components/Pipelines';
 import {components} from '@jenkins-cd/design-language';
 
-const { Page, WeatherIcon } = components;
+const { Page } = components;
 
 export default class OrganisationPipelines extends Component {
   constructor() {
@@ -24,8 +24,6 @@ export default class OrganisationPipelines extends Component {
     return <Page>
       <div>CloudBees {link}</div>
       {(pipelines && pipelines.length > 0) ? <Pipelines pipelines={pipelines}/> : link}
-      <p />
-      And the weather outside ... <WeatherIcon score="31"/>
     </Page>;
   }
 }
