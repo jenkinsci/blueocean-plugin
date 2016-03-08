@@ -10,6 +10,7 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -48,5 +49,4 @@ public class PipelineContainerImpl extends BluePipelineContainer {
     private boolean isMultiBranchProjectJob(BuildableItem item){
         return item instanceof WorkflowJob && item.getParent() instanceof MultiBranchProject;
     }
-
 }

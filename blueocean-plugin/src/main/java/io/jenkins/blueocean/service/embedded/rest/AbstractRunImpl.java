@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.Container;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.util.Date;
@@ -12,12 +13,29 @@ import java.util.Date;
  *
  * @author Vivek Pandey
  */
-public abstract class AbstractRunImpl extends BlueRun {
-    private final Run run;
+public class AbstractRunImpl<T extends Run> extends BlueRun {
+    protected final T run;
 
-    public AbstractRunImpl(Run run) {
+    public AbstractRunImpl(T run) {
         this.run = run;
     }
+
+    //TODO: It serializes jenkins Run model children, enable this code after fixing it
+//    /**
+//     * Allow properties reachable through {@link Run} to be exposed upon request (via the tree parameter).
+//     */
+//    @Exported
+//    public T getRun() {
+//        return run;
+//    }
+
+    /**
+     * Subtype should return
+     */
+    public Container<?> getChangeSet() {
+        return null;
+    }
+
     @Override
     public String getOrganization() {
         return OrganizationImpl.INSTANCE.getName();
@@ -73,16 +91,6 @@ public abstract class AbstractRunImpl extends BlueRun {
     }
 
     @Override
-    public String getBranch() {
-        return null;
-    }
-
-    @Override
-    public String getCommitId() {
-        return null;
-    }
-
-    @Override
     public String getRunSummary() {
         return run.getBuildStatusSummary().message;
     }
@@ -97,20 +105,14 @@ public abstract class AbstractRunImpl extends BlueRun {
         return new LogResource(run);
     }
 
-    public static class BasicRunImpl extends AbstractRunImpl {
-        public BasicRunImpl(Run run) {
-            super(run);
-        }
-    }
-
     protected static BlueRun getBlueRun(Run r){
         //TODO: We need to take care several other job types
-        if (r.getClass().getSimpleName().equals(FreeStyleBuild.class.getSimpleName())) {
-            return new FreeStyleRunImpl(r);
-        }else if(r.getClass().getSimpleName().equals(WorkflowRun.class.getSimpleName())){
-            return new PipelineRunImpl(r);
+        if (r instanceof FreeStyleBuild) {
+            return new FreeStyleRunImpl((FreeStyleBuild)r);
+        }else if(r instanceof WorkflowRun){
+            return new PipelineRunImpl((WorkflowRun)r);
         }else{
-            return new BasicRunImpl(r);
+            return new AbstractRunImpl<>(r);
         }
     }
 }
