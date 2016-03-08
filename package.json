@@ -1,5 +1,5 @@
 {
-  "name": "jenkins-design-language",
+  "name": "@jenkins-cd/design-language",
   "version": "0.0.1",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/index.js",
