@@ -104,7 +104,6 @@ BlueOcean rest API base URL is:
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test2/runs/1    
     
     {
-      "run" : {
         "id" : "1",
         "pipeline" : "test2",
         "organization" : "jenkins",
@@ -218,8 +217,6 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/feature2/runs/1
     
     {
-        "branch": null,
-        "commitId": null,
         "durationInMillis": 1578,
         "enQueueTime": "2016-02-26T19:07:00.183Z",
         "endTime": "2016-02-26T19:07:01.765Z",
@@ -229,7 +226,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "runSummary": "stable",
         "startTime": "2016-02-26T19:07:00.187Z",
         "status": "SUCCESS",
-        "type": "WorkflowRun"
+        "type": "WorkflowRun",
+        "changeSet": []
     }
 
 ## Get change set for a run
