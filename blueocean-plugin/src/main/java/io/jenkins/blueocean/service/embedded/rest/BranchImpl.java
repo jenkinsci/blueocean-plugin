@@ -10,6 +10,7 @@ import hudson.model.Job;
 import hudson.model.JobProperty;
 import io.jenkins.blueocean.rest.model.BlueBranch;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import jenkins.branch.Branch;
 
@@ -38,6 +39,12 @@ public class BranchImpl extends BlueBranch {
     @Override
     public int getWeatherScore() {
         return job.getBuildHealth().getScore();
+    }
+
+
+    @Override
+    public BlueRun getLatestRun() {
+        return AbstractRunImpl.getBlueRun(job.getLastBuild());
     }
 
     @Override

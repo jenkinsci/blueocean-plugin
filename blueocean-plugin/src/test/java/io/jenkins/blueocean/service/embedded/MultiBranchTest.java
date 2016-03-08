@@ -262,6 +262,45 @@ public class MultiBranchTest {
             .body("changeSet[0].commitId", Matchers.equalTo(changeLog.getCommitId()));
     }
 
+    @Test
+    public void getMultiBranchPipelineBraches() throws Exception {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+        WorkflowRun b1 = p.getLastBuild();
+        assertEquals(1, b1.getNumber());
+        assertEquals(3, mp.getItems().size());
+
+        sampleRepo.git("checkout","master");
+        sampleRepo.write("file", "subsequent content11");
+        sampleRepo.git("commit", "--all", "--message=tweaked11");
+
+        p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+        WorkflowRun b4 = p.getLastBuild();
+        assertEquals(2, b4.getNumber());
+
+        ChangeLogSet.Entry changeLog = b4.getChangeSets().get(0).iterator().next();
+
+        Response run = given().log().all().get("/organizations/jenkins/pipelines/p/branches/");
+        run.then().log().all().statusCode(200)
+            .statusCode(200)
+            .body("id", Matchers.equalTo(b4.getId()))
+            .body("pipeline", Matchers.equalTo(b4.getParent().getName()))
+            .body("organization", Matchers.equalTo("jenkins"))
+            .body("startTime", Matchers.equalTo(
+                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b4.getStartTimeInMillis()))))
+            .body("changeSet[0].author.id", Matchers.equalTo(changeLog.getAuthor().getId()))
+            .body("changeSet[0].author.fullName", Matchers.equalTo(changeLog.getAuthor().getFullName()))
+            .body("changeSet[0].commitId", Matchers.equalTo(changeLog.getCommitId()));
+    }
+
     private void setupScm() throws Exception {
         // create git repo
         sampleRepo.init();
