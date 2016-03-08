@@ -10,7 +10,7 @@ builder.lint('none');
 // Explicitly setting the src paths in order to allow the rebundle task to
 // watch for changes in the JDL (js, css, icons etc).
 // See https://github.com/jenkinsci/js-builder#setting-src-and-test-spec-paths
-builder.src(['src/main/js', 'src/main/less', 'node_modules/@jenkins-cd/design-language']);
+builder.src(['src/main/js', 'src/main/less', 'node_modules/@jenkins-cd/design-language/dist']);
 
 //
 // Create the main "App" bundle.
