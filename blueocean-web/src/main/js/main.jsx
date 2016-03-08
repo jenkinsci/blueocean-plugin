@@ -18,10 +18,6 @@ class App extends Component {
                     </nav>
                 </header>
                 <main>
-                    <div className="label-warning">
-                        This is a label warning styled using the Jenkins Design Language (using CSS class <span className="label-info">label-warning</span>)
-                    </div>
-
                     <ExtensionPoint name="jenkins.main.body"/>
                 </main>
                 <footer>
