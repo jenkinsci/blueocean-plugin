@@ -25,7 +25,7 @@ export default class Pipeline extends Component {
   }
 
   render() {
-    const { pipeline, simple = false } = this.props;
+    const { pipeline, simple = false, hack } = this.props;
 
     const {
         name,
@@ -59,12 +59,18 @@ export default class Pipeline extends Component {
       <td><WeatherIcon score={weatherScore}/></td>
       {multiBranch}
       {multiPr}
-      <td><i className='material-icons'>&#xE83A;</i></td>
+      <td>
+        <i className='material-icons'>&#xE83A;</i>
+        { !simple && <button
+          onClick={hack.bind(null, pipeline)}
+          >multiBranch</button>}
+      </td>
     </tr>);
   }
 }
 
 Pipeline.propTypes = {
   pipeline: PropTypes.object.isRequired,
-  simple: PropTypes.bool
+  simple: PropTypes.bool,
+  hack: PropTypes.func.isRequired
 };

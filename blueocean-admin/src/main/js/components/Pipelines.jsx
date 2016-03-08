@@ -6,7 +6,7 @@ import Table from './Table';
 export default class Pipelines extends Component {
 
   render() {
-    const {pipelines} = this.props;
+    const {pipelines, hack} = this.props;
     // Early out
     if (!pipelines) {
       return null;
@@ -24,11 +24,13 @@ export default class Pipelines extends Component {
         { multiBranch.map(
           (pipeline, index) => <Pipeline
             key={index}
+            hack={hack}
             pipeline={new PipelineRecord(pipeline)}/>
         )}
         { noMultiBranch.map(
           (pipeline, index) => <Pipeline
             key={index}
+            hack={hack}
             simple={true}
             pipeline={new PipelineRecord(pipeline)}/>)}
       </Table>);
@@ -36,5 +38,6 @@ export default class Pipelines extends Component {
 }
 
 Pipelines.propTypes = {
-  pipelines: PropTypes.object.isRequired
+  pipelines: PropTypes.object.isRequired,
+  hack: PropTypes.func.isRequired
 };
