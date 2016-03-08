@@ -7,6 +7,11 @@ var builder = require('@jenkins-cd/js-builder');
 // Will get fixed with https://github.com/cloudbees/blueocean/pull/55
 builder.lint('none');
 
+// Explicitly setting the src paths in order to allow the rebundle task to
+// watch for changes in the JDL (js, css, icons etc).
+// See https://github.com/jenkinsci/js-builder#setting-src-and-test-spec-paths
+builder.src(['src/main/js', 'src/main/less', 'node_modules/@jenkins-cd/design-language']);
+
 //
 // Create the main "App" bundle.
 // generateNoImportsBundle makes it easier to test with zombie.
