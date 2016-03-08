@@ -20,7 +20,6 @@ public abstract class BlueRun extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String ID="id";
     public static final String PIPELINE="pipeline";
-    public static final String STATUS="status";
     public static final String START_TIME="startTime";
     public static final String END_TIME="endTime";
     public static final String ENQUEUE_TIME="enQueueTime";
@@ -29,6 +28,9 @@ public abstract class BlueRun extends Resource {
     public static final String COMMIT_ID = "commitId";
     public static final String TYPE = "type";
     public static final String RUN_SUMMARY = "runSummary";
+    public static final String RESULT = "result";
+    public static final String STATE = "state";
+
 
     /** Date String format */
     public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
@@ -54,12 +56,6 @@ public abstract class BlueRun extends Resource {
     @JsonProperty(PIPELINE)
     public abstract String getPipeline();
 
-    /**
-     * @return BlueRun status
-     */
-    @JsonProperty(STATUS)
-    @Exported(name = STATUS)
-    public abstract Status getStatus();
 
     /**
      * @return Build execution start time inside executor
@@ -111,6 +107,22 @@ public abstract class BlueRun extends Resource {
     public abstract Long getDurationInMillis();
 
     /**
+     *
+     * @return The state of the run
+     */
+    @Exported(name=STATE)
+    @JsonProperty(STATE)
+    public abstract BlueRunState getStateObj();
+
+    /**
+     *
+     * @return The result state of the job (e.g unstable)
+     */
+    @Exported(name= RESULT)
+    @JsonProperty(RESULT)
+    public abstract BlueRunResult getResult();
+
+    /**
      * @return Build summary
      */
     @JsonProperty(RUN_SUMMARY)
@@ -136,7 +148,13 @@ public abstract class BlueRun extends Resource {
      */
     public abstract Object getLog();
 
-    public enum Status{
+    public enum BlueRunState {
+        NOT_STARTED,
+        RUNNING,
+        FINISHED
+    }
+
+    public enum BlueRunResult {
         /** Build completed successfully */
         SUCCESS,
 
