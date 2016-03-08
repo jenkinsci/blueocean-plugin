@@ -44,7 +44,7 @@ If you are working on adding features to the JDL, you'll probably want to do tha
 way i.e you will not want to have to publish changes after every change (or use relative `package.json` paths)
 and then run `npm install`.
 
-At the moment, the most sane way of doing that is to simply use `npm link` and change watches to trigger
+At the moment, the most sane way of doing that is to simply use `npm link` and change-watches to trigger
 rebundling where necessary e.g. in the `blueocean-web` plugin.
 
 ### Step 1: `npm link` the JDL code
@@ -60,13 +60,13 @@ In the `jenkins-design-language` folder, run `npm run grunt watch`.
 In the `blueocean-web` folder, run `npm link @jenkins-cd/design-language`.
 
 It may seem strange that you need to do this, but there's a good reason. Blue Ocean does not load and
-instantiate multiple instances of `react` (and `react-dom`) and `@jenkins-cd/design-language`. That simply
+instantiate multiple instances of `react` (and `react-dom`) and `@jenkins-cd/design-language` for every plugin. That simply
 would not work (for a number of reasons). Instead, `blueocean-web` is responsible for creating and `export`ing
 shared instances of these modules via [js-modules]. Then, other plugins that need access to these shared component
 instances `import` them via [js-modules]. For that reason, `blueocean-web` needs to know about ("watch for")
-changes in the `@jenkins-cd/design-language` that you are working.
+changes in the `@jenkins-cd/design-language` as you are working on it.
 
-> To reiterate a point made earlin this doc, if you use [js-builder] to build your plugin's `.js` bundle, then all
+> To reiterate a point made earlier in this doc, if you use [js-builder] to build your plugin's `.js` bundle, then all
 > of the above runtime pluming is done for you automatically.
 
 ### Step 4: `watch` for `blueocean-web` changes (and rebundle)
@@ -82,7 +82,7 @@ code, triggering a rebundle of `blueocean-web` code, making it available to the 
 
 ### Steps 5 + 6: `npm link` the JDL code into other HPI plugin projects + `watch` and `rebundle` there too
 
-Basically ... repeating Steps 3 and 5 in other HPI plugins that you are working on.
+Basically ... repeating Steps 3 and 4 in other HPI plugins that you are working on.
 
 ### Publish a new version of `@jenkins-cd/design-language`
 
@@ -90,7 +90,7 @@ Once your changes have been made (and through the PR contribution process), we n
 of the `@jenkins-cd/design-language` package to the NPM registry (to the `jenkins-cd` organization).
 
 If you're not already a member of the `jenkins-cd` organization, please ping us and we'll add you. Otherwise,
-someone else will publish a new version of the package.
+someone else can publish a new version of the package for you.
 
 [React]: https://reactjs.org/
 [js-builder]: https://github.com/jenkinsci/js-builder
