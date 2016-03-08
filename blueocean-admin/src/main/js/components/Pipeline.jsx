@@ -1,23 +1,21 @@
 import React, {Component, PropTypes} from 'react';
 import {components} from 'jenkins-design-language';
-const { WeatherIcon, Table } = components;
+import Immutable from 'immutable';
+const { WeatherIcon } = components;
 
-/*
- {
- 'displayName': 'beers',
- 'name': 'beers',
- 'organization': 'jenkins',
- 'weatherScore': 0,
- 'branchNames': ['master'],
- 'numberOfFailingBranches': 1,
- 'numberOfFailingPullRequests': 0,
- 'numberOfSuccessfulBranches': 0,
- 'numberOfSuccessfulPullRequests': 0,
- 'totalNumberOfBranches': 1,
- 'totalNumberOfPullRequests': 0
- }
- {}
- */
+export const PipelineRecord = Immutable.Record({
+  'displayName': '',
+  'name': '',
+  'organization': '',
+  'weatherScore': 0,
+  'branchNames': null,
+  'numberOfFailingBranches': 0,
+  'numberOfFailingPullRequests': 0,
+  'numberOfSuccessfulBranches': 0,
+  'numberOfSuccessfulPullRequests': 0,
+  'totalNumberOfBranches': 0,
+  'totalNumberOfPullRequests': 0
+});
 
 export default class Pipeline extends Component {
 
@@ -27,9 +25,9 @@ export default class Pipeline extends Component {
   }
 
   render() {
-    const
-      { pipeline, simple = false } = this.props,
-      {
+    const { pipeline, simple = false } = this.props;
+
+    const {
         name,
         weatherScore,
         numberOfSuccessfulBranches,

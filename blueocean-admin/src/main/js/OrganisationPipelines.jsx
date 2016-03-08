@@ -1,30 +1,23 @@
 import React, {Component} from 'react';
-import  Pipelines from './components/Pipelines';
-import {components} from 'jenkins-design-language';
-
-const { Page } = components;
+import Immutable from 'immutable';
+import  Dashboard from './components/Dashboard';
 
 export default class OrganisationPipelines extends Component {
   constructor() {
     super();
-    this.state = {pipelines: []};
+    this.state = {pipelines: null};
   }
 
   componentDidMount() {
     fetchPipelineData((data) => {
-      this.setState({pipelines: data});
+      this.setState({
+        pipelines: Immutable.fromJS(data)
+      });
     });
   }
 
   render() {
-    const
-      { pipelines } = this.state,
-      link = <a target='_blank' href="/jenkins/view/All/newJob">New Pipeline</a>;
-
-    return <Page>
-      <div>CloudBees {link}</div>
-      {(pipelines && pipelines.length > 0) ? <Pipelines pipelines={pipelines}/> : link}
-    </Page>;
+    return this.state.pipelines ? <Dashboard pipelines={this.state.pipelines}/> : null;
   }
 }
 
@@ -34,10 +27,8 @@ function fetchPipelineData(onLoad) {
   xmlhttp.onreadystatechange =  () => {
     if (xmlhttp.readyState == XMLHttpRequest.DONE) {
       if (xmlhttp.status == 200) {
-        console.log(xmlhttp.responseText);
         var pipes = JSON.parse(xmlhttp.responseText);
         onLoad(pipes);
-        console.log(pipes);
       } else {
         console.log('something else other than 200 was returned')
       }

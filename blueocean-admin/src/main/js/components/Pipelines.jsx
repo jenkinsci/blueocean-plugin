@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import Pipeline from './Pipeline';
-import {components} from 'jenkins-design-language';
-const { Table } = components;
+import Pipeline, { PipelineRecord } from './Pipeline';
+import Immutable from 'immutable';
+import Table from './Table';
 
 export default class Pipelines extends Component {
 
@@ -12,38 +12,29 @@ export default class Pipelines extends Component {
       return null;
     }
     const multiBranch = pipelines.filter(pipeline => {
-      return !!pipeline.branchNames;
+      return !! new PipelineRecord(pipeline).branchNames;
     });
     const noMultiBranch = pipelines.filter(pipeline => {
-      return !pipeline.branchNames;
+      return !new PipelineRecord(pipeline).branchNames;
     });
     return (
-      <Table className="multiBranch">
-        <thead>
-        <tr>
-          <th>Name</th>
-          <th>Status</th>
-          <th>Branches</th>
-          <th>Pull Requests</th>
-          <th></th>
-        </tr>
-        </thead>
-        <tbody>
+      <Table
+        className="multiBranch"
+        headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
         { multiBranch.map(
           (pipeline, index) => <Pipeline
             key={index}
-            pipeline={pipeline}/>
+            pipeline={new PipelineRecord(pipeline)}/>
         )}
         { noMultiBranch.map(
           (pipeline, index) => <Pipeline
             key={index}
             simple={true}
-            pipeline={pipeline}/>)}
-        </tbody>
+            pipeline={new PipelineRecord(pipeline)}/>)}
       </Table>);
   }
 }
 
 Pipelines.propTypes = {
-  pipelines: PropTypes.array.isRequired
+  pipelines: PropTypes.object.isRequired
 };

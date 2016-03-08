@@ -22,6 +22,7 @@
   "dependencies": {
     "@jenkins-cd/js-extensions": "0.0.7",
     "@jenkins-cd/js-modules": "^0.x",
+    "immutable": "^3.7.6",
     "jenkins-design-language": "0.0.1",
     "react": "^0.14.5",
     "react-dom": "^0.14.5",
