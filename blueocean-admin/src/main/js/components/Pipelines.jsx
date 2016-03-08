@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import Pipeline from './Pipeline';
-import {components} from 'jenkins-design-language';
+import {components} from '@jenkins-cd/design-language';
 const { Table } = components;
 
 export default class Pipelines extends Component {
