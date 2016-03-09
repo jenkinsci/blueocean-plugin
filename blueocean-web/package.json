@@ -1,5 +1,5 @@
 {
-  "name": "blueocean-core",
+  "name": "blueocean-web",
   "version": "0.0.1",
   "scripts": {
     "lint": "gulp lint --silent",
