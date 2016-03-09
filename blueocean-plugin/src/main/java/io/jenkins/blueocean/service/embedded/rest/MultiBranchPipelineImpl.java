@@ -1,22 +1,34 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
 import org.jenkinsci.plugins.workflow.multibranch.BranchJobProperty;
+import org.kohsuke.stapler.export.Exported;
 
 import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.Result;
 import hudson.model.Run;
+import io.jenkins.blueocean.rest.model.BlueBranch;
 import io.jenkins.blueocean.rest.model.BlueBranchContainer;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
+import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.Container;
 import jenkins.branch.Branch;
 import jenkins.branch.MultiBranchProject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author Vivek Pandey
@@ -166,4 +178,40 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         }
         return false;
     }
+
+    @Override
+    public BlueRunContainer getRuns() {
+        return new BlueRunContainer() {
+            @Override
+            public BluePipeline getPipeline(String name) {
+                return null;
+            }
+
+            @Override
+            public BlueRun get(String name) {
+                return null;
+            }
+
+            @Override
+            public Iterator<BlueRun> iterator() {
+                List<BlueRun> c = new ArrayList();
+                for(final BlueBranch b: getBranches()) {
+                    for(final BlueRun r: b.getRuns()) {
+                        c.add(r);
+                    }
+                }
+                c.sort(new Comparator<BlueRun>() {
+                    @Override
+                    public int compare(BlueRun o1, BlueRun o2) {
+                        return o1.getStartTime().compareTo(o2.getStartTime());
+                    }
+                });
+                return c.iterator();
+            }
+        };
+    }
+
+
+
+
 }
