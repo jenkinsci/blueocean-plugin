@@ -4,7 +4,7 @@ import { assert} from 'chai';
 import sd from 'skin-deep';
 
 
-import Pipeline from '../../src/main/js/components/Pipeline.jsx';
+import Pipeline from '../../main/js/components/Pipeline.jsx';
 
 const
   hack= ()=>{},
