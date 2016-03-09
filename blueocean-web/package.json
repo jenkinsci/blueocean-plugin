@@ -2,11 +2,15 @@
   "name": "blueocean-core",
   "version": "0.0.1",
   "scripts": {
-    "lint": "gulp lint",
-    "lint:fix": "npm run lint -- --fix"
+    "lint": "gulp lint --silent",
+    "lint:fix": "gulp lint --fixLint --silent",
+    "test": "gulp test --silent",
+    "retest": "gulp retest --silent",
+    "bundle": "gulp bundle --silent",
+    "rebundle": "gulp rebundle --silent"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.10",
+    "@jenkins-cd/js-builder": "0.0.11",
     "@jenkins-cd/js-test": "^1.x",
     "babel-eslint": "^5.0.0",
     "babel-preset-es2015": "^6.5.0",

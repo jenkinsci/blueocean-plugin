@@ -2,11 +2,15 @@
   "name": "blueocean-admin",
   "version": "0.0.1",
   "scripts": {
+    "lint": "gulp lint --silent",
+    "lint:fix": "gulp lint --fixLint --silent",
     "test": "mocha  --compilers js:babel-core/register --recursive",
-    "test:watch": "npm test -- --watch --reporter min"
+    "test:watch": "npm test -- --watch --reporter min",
+    "bundle": "gulp bundle --silent",
+    "rebundle": "gulp rebundle --silent"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.10",
+    "@jenkins-cd/js-builder": "0.0.11",
     "@jenkins-cd/js-test": "^1.x",
     "babel": "^6.5.2",
     "babel-core": "^6.6.5",
