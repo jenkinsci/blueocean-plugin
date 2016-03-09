@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import Pipelines from './Pipelines';
 import MultiBranch from './MultiBranch';
-import {components} from 'jenkins-design-language';
+import {components} from '@jenkins-cd/design-language';
 
 const { Page } = components;
 
