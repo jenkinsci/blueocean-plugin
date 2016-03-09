@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {render} from 'react-dom';
+import React, { Component } from 'react';
+import { render } from 'react-dom';
 
-import {ExtensionPoint} from '@jenkins-cd/js-extensions';
+import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
 /**
  * Root Blue Ocean UI component
@@ -18,11 +18,7 @@ class App extends Component {
                     </nav>
                 </header>
                 <main>
-                    <div className="label-warning">
-                        This is a label warning styled using the Jenkins Design Language (using CSS class <span className="label-info">label-warning</span>)
-                    </div>
-
-                    <ExtensionPoint name="jenkins.main.body"/>
+                    <ExtensionPoint name="jenkins.main.body" />
                 </main>
                 <footer>
                     <p>This is a footer. I'm sure you'll agree.</p>
