@@ -40,6 +40,10 @@ indent_size = 4
 indent_style = space
 indent_size = 4
 
+[**.jsx]
+indent_style = space
+indent_size = 4
+
 [**.css]
 indent_style = space
 indent_size = 4

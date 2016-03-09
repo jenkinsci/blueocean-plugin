@@ -18,25 +18,24 @@ export default class Pipelines extends Component {
       return !new PipelineRecord(pipeline).branchNames;
     });
     return (<div>
-        <div>CloudBees {link}</div>
-        <Table
-          className="multiBranch"
-          headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
-          { multiBranch.map(
-            (pipeline, index) => <Pipeline
-              key={index}
-              hack={hack}
-              pipeline={new PipelineRecord(pipeline)}/>
-          )}
-          { noMultiBranch.map(
-            (pipeline, index) => <Pipeline
-              key={index}
-              hack={hack}
-              simple={true}
-              pipeline={new PipelineRecord(pipeline)}/>)}
-        </Table>
-      </div>
-      );
+      <div>CloudBees {link}</div>
+      <Table
+        className="multiBranch"
+        headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
+        { multiBranch.map(
+          (pipeline, index) => <Pipeline
+            key={index}
+            hack={hack}
+            pipeline={new PipelineRecord(pipeline)}/>
+        )}
+        { noMultiBranch.map(
+          (pipeline, index) => <Pipeline
+            key={index}
+            hack={hack}
+            simple={true}
+            pipeline={new PipelineRecord(pipeline)}/>)}
+      </Table>
+    </div>);
   }
 }
 

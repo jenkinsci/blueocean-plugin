@@ -21,35 +21,34 @@ export default class Pipeline extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {clicked: false};
+    this.state = { clicked: false };
   }
 
   render() {
     const { pipeline, simple = false, hack } = this.props;
 
     const {
-        name,
-        weatherScore,
-        numberOfSuccessfulBranches,
-        numberOfFailingBranches,
-        numberOfSuccessfulPullRequests,
-        numberOfFailingPullRequests
-      } = pipeline;
+      name,
+      weatherScore,
+      numberOfSuccessfulBranches,
+      numberOfFailingBranches,
+      numberOfSuccessfulPullRequests,
+      numberOfFailingPullRequests
+    } = pipeline;
 
-    let
-      multiBranch,
-      multiPr;
+    let multiBranch;
+    let multiPr;
 
-    if(!simple) {
+    if (!simple) {
       multiBranch = (<td>
-        {numberOfSuccessfulBranches} passing
-        | {numberOfFailingBranches} failing
+          {numberOfSuccessfulBranches} passing
+          | {numberOfFailingBranches} failing
       </td>);
       multiPr = (<td>{numberOfSuccessfulPullRequests} passing
-      | {numberOfFailingPullRequests} failing
+          | {numberOfFailingPullRequests} failing
       </td>);
     } else {
-      multiBranch = multiPr = (<td></td>)
+      multiBranch = multiPr = (<td></td>);
     }
 
     return (<tr key={name}>
