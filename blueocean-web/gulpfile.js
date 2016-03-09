@@ -3,10 +3,6 @@
 //
 var builder = require('@jenkins-cd/js-builder');
 
-// Disable js-builder based linting for now.
-// Will get fixed with https://github.com/cloudbees/blueocean/pull/55
-builder.lint('none');
-
 // Explicitly setting the src paths in order to allow the rebundle task to
 // watch for changes in the JDL (js, css, icons etc).
 // See https://github.com/jenkinsci/js-builder#setting-src-and-test-spec-paths

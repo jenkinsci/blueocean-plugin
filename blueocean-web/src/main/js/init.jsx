@@ -14,7 +14,7 @@ exports.initialize = function (oncomplete) {
 
     // Create and export a shared instance of the design
     // language React classes.
-    var jdl = require('@jenkins-cd/design-language');
+    const jdl = require('@jenkins-cd/design-language');
     jenkinsMods.export('jenkins-cd', 'jdl', jdl);
 
     // Load and export the react modules, allowing them to be imported by other bundles.
