@@ -6,6 +6,8 @@ import Immutable from 'immutable';
 import Pipelines from '../../src/main/js/components/Pipelines.jsx';
 
 const
+  hack= ()=>{},
+  link = <a target='_blank' href="/jenkins/view/All/newJob">New Pipeline</a>,
   pipelines = [{
     'displayName': 'moreBeers',
     'name': 'morebeers',
@@ -33,7 +35,9 @@ describe("pipelines", () => {
 
   beforeEach(() => {
     tree = sd.shallowRender(React.createElement(Pipelines, {
-      pipelines: Immutable.fromJS(pipelines)
+      pipelines: Immutable.fromJS(pipelines),
+      link: link,
+      hack: hack
     }));
   });
 

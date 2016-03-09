@@ -18,9 +18,9 @@ export default class Dashboard extends Component {
       link = <a target='_blank' href="/jenkins/view/All/newJob">New Pipeline</a>;
 
     return <Page>
-      <div>CloudBees {link}</div>
       {(this.state.view ==='pipelines' && pipelines && pipelines.size > 0)
         && <Pipelines
+          link={link}
           pipelines={pipelines}
           hack={(pipeline) => {
             this.setState({
@@ -29,8 +29,13 @@ export default class Dashboard extends Component {
             });
           }}
         />}
+
       { this.state.view ==='multiBranch' && <MultiBranch
-        pipeline={this.state.pipeline}/>}
+        pipeline={this.state.pipeline} back={ () =>  this.setState({
+          pipeline: null,
+          view: 'pipelines'
+          })
+        }/>}
     </Page>;
   }
 }

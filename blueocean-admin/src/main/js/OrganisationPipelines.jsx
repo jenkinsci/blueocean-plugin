@@ -1,39 +1,15 @@
 import React, {Component} from 'react';
 import Immutable from 'immutable';
 import  Dashboard from './components/Dashboard';
+import AjaxHoc from './AjaxHoc'
 
-export default class OrganisationPipelines extends Component {
-  constructor() {
-    super();
-    this.state = {pipelines: null};
-  }
-
-  componentDidMount() {
-    fetchPipelineData((data) => {
-      this.setState({
-        pipelines: Immutable.fromJS(data)
-      });
-    });
-  }
-
+class OrganisationPipelines extends Component {
   render() {
-    return this.state.pipelines ? <Dashboard pipelines={this.state.pipelines}/> : null;
+    return this.props.data ? <Dashboard pipelines={this.props.data}/> : null;
   }
 }
+const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
 
-/** FIXME: Ghetto ajax loading of pipeline data for an org @store*/
-function fetchPipelineData(onLoad) {
-  var xmlhttp = new XMLHttpRequest();
-  xmlhttp.onreadystatechange =  () => {
-    if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-      if (xmlhttp.status == 200) {
-        var pipes = JSON.parse(xmlhttp.responseText);
-        onLoad(pipes);
-      } else {
-        console.log('something else other than 200 was returned')
-      }
-    }
-  };
-  xmlhttp.open("GET", "/jenkins/blue/rest/organizations/jenkins/pipelines/", true);
-  xmlhttp.send();
-}
+export default AjaxHoc(OrganisationPipelines ,props =>({
+  url: baseUrl
+}));
