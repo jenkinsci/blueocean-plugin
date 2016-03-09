@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react';
 import Pipeline, { PipelineRecord } from './Pipeline';
-import Immutable from 'immutable';
 import Table from './Table';
 
 export default class Pipelines extends Component {
@@ -11,12 +10,8 @@ export default class Pipelines extends Component {
     if (!pipelines) {
       return null;
     }
-    const multiBranch = pipelines.filter(pipeline => {
-      return !! new PipelineRecord(pipeline).branchNames;
-    });
-    const noMultiBranch = pipelines.filter(pipeline => {
-      return !new PipelineRecord(pipeline).branchNames;
-    });
+    const multiBranch = pipelines.filter(pipeline => !! new PipelineRecord(pipeline).branchNames);
+    const noMultiBranch = pipelines.filter(pipeline => !new PipelineRecord(pipeline).branchNames);
     return (<div>
       <div>CloudBees {link}</div>
       <Table

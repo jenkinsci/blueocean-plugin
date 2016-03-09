@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import Immutable from 'immutable';
 import {components} from '@jenkins-cd/design-language';
-const { WeatherIcon, Table } = components;
+const { WeatherIcon } = components;
 
 export const PipelineRecord = Immutable.Record({
   'displayName': '',
