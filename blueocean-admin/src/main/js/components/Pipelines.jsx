@@ -14,8 +14,10 @@ export default class Pipelines extends Component {
             return null;
         }
 
-        const multiBranch = pipelines.filter(pipeline => !!new PipelineRecord(pipeline).branchNames);
-        const noMultiBranch = pipelines.filter(pipeline => !new PipelineRecord(pipeline).branchNames);
+        const multiBranch = pipelines.filter(pipeline =>
+            !!new PipelineRecord(pipeline).branchNames);
+        const noMultiBranch = pipelines.filter(pipeline =>
+            !new PipelineRecord(pipeline).branchNames);
 
         return (
             <Page>
@@ -26,19 +28,22 @@ export default class Pipelines extends Component {
                     <article>
                         <Table
                           className="multiBranch"
-                          headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
+                          headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}
+                        >
                             { multiBranch.map(
                                 (pipeline, index) => <Pipeline
                                   key={index}
                                   hack={hack}
-                                  pipeline={new PipelineRecord(pipeline)} />
+                                  pipeline={new PipelineRecord(pipeline)}
+                                />
                             )}
                             { noMultiBranch.map(
                                 (pipeline, index) => <Pipeline
                                   key={index}
                                   hack={hack}
                                   simple
-                                  pipeline={new PipelineRecord(pipeline)} />)}
+                                  pipeline={new PipelineRecord(pipeline)}
+                                />)}
                         </Table>
                     </article>
                 </main>
@@ -49,5 +54,5 @@ export default class Pipelines extends Component {
 Pipelines.propTypes = {
     pipelines: PropTypes.object.isRequired,
     link: PropTypes.object.isRequired,
-    hack: PropTypes.func.isRequired
+    hack: PropTypes.func.isRequired,
 };

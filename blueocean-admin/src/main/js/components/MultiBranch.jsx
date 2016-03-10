@@ -13,10 +13,11 @@ export default class MultiBranch extends Component {
         }
         const {
             name,
-            weatherScore
+            weatherScore,
             } = pipeline;
 
-        const headers = ['Health', 'Status', 'Branch', 'Last commit', 'Latest message', 'Completed'];
+        const headers =
+            ['Health', 'Status', 'Branch', 'Last commit', 'Latest message', 'Completed'];
 
         return (
             <Page>
@@ -26,7 +27,8 @@ export default class MultiBranch extends Component {
                 <main>
                     <article>
                         <Table className="multiBranch"
-                          headers={headers}>
+                          headers={headers}
+                        >
                             {pipeline.branchNames.map((branch, index) =>
                                 <Branches key={index} branch={branch} pipeline={pipeline} />)}
                             <tr>
@@ -43,8 +45,5 @@ export default class MultiBranch extends Component {
 
 MultiBranch.propTypes = {
     pipeline: PropTypes.object.isRequired,
-    back: PropTypes.func.isRequired
+    back: PropTypes.func.isRequired,
 };
-
-
-
