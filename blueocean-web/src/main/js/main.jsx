@@ -10,22 +10,21 @@ class App extends Component {
     render() {
         return (
             <div id="outer">
-                <header>
-                    <span className="jenkins-logo" />
+                <header className="global-header">
                     <nav>
-                        <div className="nav-link"><a href="/">Home</a></div>
-                        <ExtensionPoint name="jenkins.topNavigation.menu" />
+                        <a href="#">Pipelines</a>
+                        <a href="#">Applications</a>
+                        <a href="#">Reports</a>
+                        <a href="#">Administration</a>
                     </nav>
+                    {/* TODO: <ExtensionPoint name="jenkins.main.globalNav" wrappingElement="nav"/> */}
                 </header>
                 <main>
-                    <ExtensionPoint name="jenkins.main.body" />
+                    <ExtensionPoint name="jenkins.main.body"/>
                 </main>
-                <footer>
-                    <p>This is a footer. I'm sure you'll agree.</p>
-                </footer>
             </div>
         );
     }
 }
 
-render(<App />, document.getElementById('blueocean-root'));
+render(<App />, document.getElementById('root'));
