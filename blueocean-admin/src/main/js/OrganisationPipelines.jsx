@@ -1,49 +1,15 @@
 import React, { Component } from 'react';
-import Pipelines from './components/Pipelines';
-import { components } from '@jenkins-cd/design-language';
+import Immutable from 'immutable';
+import Dashboard from './components/Dashboard';
+import AjaxHoc from './AjaxHoc';
 
-const { Page } = components;
-
-/** FIXME: Ghetto ajax loading of pipeline data for an org @store*/
-function fetchPipelineData(onLoad) {
-    const xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState === XMLHttpRequest.DONE) {
-            if (xmlhttp.status === 200) {
-                console.log(xmlhttp.responseText);
-                const pipes = JSON.parse(xmlhttp.responseText);
-                onLoad(pipes);
-                console.log(pipes);
-            } else {
-                console.log('something else other than 200 was returned');
-            }
-        }
-    };
-    // TODO: fixme ... the url may not have a "/jenkins" prefix
-    xmlhttp.open('GET', '/jenkins/blue/rest/organizations/jenkins/pipelines/', true);
-    xmlhttp.send();
-}
-
-export default class OrganisationPipelines extends Component {
-    constructor() {
-        super();
-        this.state = { pipelines: [] };
-    }
-
-    componentDidMount() {
-        fetchPipelineData((data) => {
-            this.setState({ pipelines: data });
-        });
-    }
-
+class OrganisationPipelines extends Component {
     render() {
-        const { pipelines } = this.state;
-        // TODO: fixme "/jenkins"
-        const link = <a target="_blank" href="/jenkins/view/All/newJob">New Pipeline</a>;
-
-        return (<Page>
-            <div>CloudBees {link}</div>
-            {(pipelines && pipelines.length > 0) ? <Pipelines pipelines={pipelines} /> : link}
-        </Page>);
+        return this.props.data ? <Dashboard pipelines={this.props.data} /> : null;
     }
 }
+const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
+
+export default AjaxHoc(OrganisationPipelines, props => ({
+    url: baseUrl
+}));
