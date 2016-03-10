@@ -1,8 +1,7 @@
 // Initialise the Blue Ocean app.
-var init = require('./init.jsx');
+const init = require('./init.jsx');
 
-init.initialize( () => {
-
+init.initialize(() => {
     // start the App
     require('./main.jsx');
 });

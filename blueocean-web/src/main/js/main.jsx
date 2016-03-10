@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {render} from 'react-dom';
+import React, { Component } from 'react';
+import { render } from 'react-dom';
 
-import {ExtensionPoint} from '@jenkins-cd/js-extensions';
+import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
 /**
  * Root Blue Ocean UI component
