@@ -4,13 +4,13 @@
   "scripts": {
     "lint": "gulp lint --silent",
     "lint:fix": "gulp lint --fixLint --silent",
-    "test": "mocha  --compilers js:babel-core/register --recursive",
-    "test:watch": "npm test -- --watch --reporter min",
+    "test": "gulp test --silent",
+    "retest": "gulp retest --silent",
     "bundle": "gulp bundle --silent",
     "rebundle": "gulp rebundle --silent"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.11",
+    "@jenkins-cd/js-builder": "0.0.12",
     "@jenkins-cd/js-test": "^1.x",
     "babel": "^6.5.2",
     "babel-core": "^6.6.5",
@@ -20,6 +20,7 @@
     "chai": "^3.5.0",
     "eslint-plugin-react": "^4.1.0",
     "gulp": "^3.9.0",
+    "gulp-mocha": "^2.2.0",
     "mocha": "^2.4.5",
     "react-addons-test-utils": "^0.14.7",
     "skin-deep": "^0.14.0"
