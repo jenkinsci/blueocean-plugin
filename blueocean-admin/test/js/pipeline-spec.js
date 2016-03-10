@@ -7,6 +7,7 @@ import sd from 'skin-deep';
 import Pipeline from '../../src/main/js/components/Pipeline.jsx';
 
 const
+  hack= ()=>{},
   pipelineMulti = {
     'displayName': 'moreBeers',
     'name': 'morebeers',
@@ -27,10 +28,12 @@ const
     'weatherScore': 0
   },
   testElementSimple = (<Pipeline
+      hack={hack}
       pipeline={pipelineSimple}
       simple={true}/>
   ),
   testElementMulti = (<Pipeline
+      hack={hack}
       pipeline={pipelineMulti}/>
   );
 
