@@ -10,6 +10,7 @@
 
     <head data-rooturl="${rootURL}" data-resurl="${resURL}" data-adjuncturl="${rootURL}/${j.getAdjuncts('').rootURL}">
         <title>Jenkins Blue Ocean</title>
+        <link rel="stylesheet" href="${resURL}/plugin/blueocean-web/assets/css/jenkins-design-language.css" type="text/css" />
     </head>
 
     <body>
