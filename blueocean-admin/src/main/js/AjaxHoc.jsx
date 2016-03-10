@@ -7,14 +7,14 @@ export default (ComposedComponent, getStateFromStores = props => props) => class
         const getFetchData = getStateFromStores(props);
         this.state = {
             data: null,
-            url: getFetchData.url
+            url: getFetchData.url,
         };
     }
 
     componentDidMount() {
         this.fetchPipelineData(data => {
             this.setState({
-                data: Immutable.fromJS(data)
+                data: Immutable.fromJS(data),
             });
         });
     }
