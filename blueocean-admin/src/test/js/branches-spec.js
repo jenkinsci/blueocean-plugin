@@ -4,7 +4,7 @@ import { assert} from 'chai';
 import sd from 'skin-deep';
 
 
-import {Branche} from '../../src/main/js/components/Branches.jsx';
+import {Branche} from '../../main/js/components/Branches.jsx';
 
 const
   pipeline = {

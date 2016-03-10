@@ -5,7 +5,7 @@ import sd from 'skin-deep';
 import Immutable from 'immutable';
 
 
-import Dashboard from '../../src/main/js/components/Dashboard.jsx';
+import Dashboard from '../../main/js/components/Dashboard.jsx';
 
 const
   pipelines = [{
@@ -37,8 +37,10 @@ describe("Dashboard should render", () => {
 
   it("renders the Dashboard", () => {
     const
-      page = tree.subTree('Page').getRenderOutput();
-    assert.isNotNull(page.props.children[0]);
+      page = tree.subTree('Pipelines').getRenderOutput();
+    assert.equal(page.props.pipelines.size, 2);
+    assert.isNotNull(page.props.link);
+    assert.isNotNull(page.props.hack);
   });
 
 });
@@ -46,13 +48,11 @@ describe("Dashboard should not render", () => {
   let tree;
 
   beforeEach(() => {
-    tree = sd.shallowRender(<Dashboard/>)
+    tree = sd.shallowRender(<Dashboard/>);
   });
 
-  it("renders the Dashboard", () => {
-    const
-      page = tree.subTree('Page').getRenderOutput();
-    assert.isUndefined(page.props.children[0]);
+  it("does not renders the Dashboard if no pipeline", () => {
+    assert.isNull(tree.getRenderOutput());
   });
 
 });
