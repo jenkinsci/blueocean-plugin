@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import Pipelines from './Pipelines';
 import MultiBranch from './MultiBranch';
 
@@ -6,7 +6,7 @@ export default class Dashboard extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {view: 'pipelines'};
+        this.state = { view: 'pipelines' };
     }
 
     showPipelinesView() {
@@ -27,16 +27,16 @@ export default class Dashboard extends Component {
         const
             { pipelines } = this.props,
             { pipeline } = this.state,
-            link = <a target='_blank' href="/jenkins/view/All/newJob">New Pipeline</a>;
+            link = <a target="_blank" href="/jenkins/view/All/newJob">New Pipeline</a>;
 
         if (this.state.view === 'pipelines' && pipelines && pipelines.size > 0) {
             return <Pipelines link={link}
-                              pipelines={pipelines}
-                              hack={(pipeline) => { this.showMultiBranchView(pipeline) }}/>;
+              pipelines={pipelines}
+              hack={(pipeline) => { this.showMultiBranchView(pipeline); }} />;
         }
 
         if (this.state.view === 'multiBranch') {
-            return <MultiBranch pipeline={pipeline} back={ () => this.showPipelinesView() }/>;
+            return <MultiBranch pipeline={pipeline} back={ () => this.showPipelinesView() } />;
         }
     }
 }

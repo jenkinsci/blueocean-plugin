@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import Pipeline, { PipelineRecord } from './Pipeline';
 import Table from './Table';
 
@@ -8,7 +8,7 @@ const { Page, PageHeader, Title } = components;
 export default class Pipelines extends Component {
 
     render() {
-        const {pipelines, hack, link} = this.props;
+        const { pipelines, hack, link } = this.props;
         // Early out
         if (!pipelines) {
             return null;
@@ -25,20 +25,20 @@ export default class Pipelines extends Component {
                 <main>
                     <article>
                         <Table
-                            className="multiBranch"
-                            headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
+                          className="multiBranch"
+                          headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
                             { multiBranch.map(
                                 (pipeline, index) => <Pipeline
-                                    key={index}
-                                    hack={hack}
-                                    pipeline={new PipelineRecord(pipeline)}/>
+                                  key={index}
+                                  hack={hack}
+                                  pipeline={new PipelineRecord(pipeline)} />
                             )}
                             { noMultiBranch.map(
                                 (pipeline, index) => <Pipeline
-                                    key={index}
-                                    hack={hack}
-                                    simple={true}
-                                    pipeline={new PipelineRecord(pipeline)}/>)}
+                                  key={index}
+                                  hack={hack}
+                                  simple
+                                  pipeline={new PipelineRecord(pipeline)} />)}
                         </Table>
                     </article>
                 </main>
