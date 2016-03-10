@@ -96,7 +96,12 @@ public abstract class BlueRun extends Resource {
     @JsonProperty(END_TIME)
     @Exported(name=END_TIME)
     public final String getEndTimeString(){
-        return new SimpleDateFormat(DATE_FORMAT_STRING).format(getEndTime());
+        Date endTime = getEndTime();
+        if(endTime == null) {
+            return null;
+        } else {
+            return new SimpleDateFormat(DATE_FORMAT_STRING).format(endTime);
+        }
     }
 
     /**
