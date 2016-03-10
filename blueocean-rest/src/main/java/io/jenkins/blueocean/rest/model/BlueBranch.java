@@ -12,6 +12,7 @@ public abstract class BlueBranch extends Resource{
     public static final String NAME="name";
     public static final String RUNS="runs";
     public static final String WEATHER_SCORE ="weatherScore";
+    public static final String LATEST_RUN = "latestRun";
 
     /**
      *  Branch name
@@ -32,6 +33,12 @@ public abstract class BlueBranch extends Resource{
     @JsonProperty(WEATHER_SCORE)
     public abstract int getWeatherScore();
 
+    /**
+     * @return The Latest Run for the branch
+     */
+    @Exported(name = LATEST_RUN, inline = true)
+    @JsonProperty(LATEST_RUN)
+    public abstract BlueRun getLatestRun();
 
     /**
      * @return Gives Runs in this pipeline

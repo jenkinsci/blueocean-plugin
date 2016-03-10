@@ -80,6 +80,11 @@
             <artifactId>blueocean-admin</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git</artifactId>
+            <version>2.4.2</version>
+        </dependency>
     </dependencies>
 
     <build>

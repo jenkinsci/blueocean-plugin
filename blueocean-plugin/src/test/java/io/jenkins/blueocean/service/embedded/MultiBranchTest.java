@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import hudson.model.FreeStyleProject;
+import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
@@ -168,7 +169,8 @@ public class MultiBranchTest {
         assertEquals(1, b3.getNumber());
 
         Response r = given().log().all().get("/organizations/jenkins/pipelines/p/branches");
-        r.then().log().all().statusCode(200);
+        r.then().log().all().statusCode(200)
+            .body("latestRun[0].pipeline", Matchers.equalTo("feature1"));
 
         String body = r.asString();
         List<String> branchNames = with(body).get("name");
@@ -224,6 +226,59 @@ public class MultiBranchTest {
     }
 
     @Test
+    public void getMultiBranchPipelineActivityRuns() throws Exception {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+        WorkflowRun b1 = p.getLastBuild();
+        assertEquals(1, b1.getNumber());
+        assertEquals(3, mp.getItems().size());
+
+        //execute feature 1 branch build
+        p = scheduleAndFindBranchProject(mp, "feature1");
+        j.waitUntilNoActivity();
+        WorkflowRun b2 = p.getLastBuild();
+        assertEquals(1, b2.getNumber());
+
+
+        //execute feature 2 branch build
+        p = scheduleAndFindBranchProject(mp, "feature2");
+        j.waitUntilNoActivity();
+        WorkflowRun b3 = p.getLastBuild();
+        assertEquals(1, b3.getNumber());
+
+        WorkflowRun firstStart = b1;
+
+        if(b2.getStartTimeInMillis() < firstStart.getStartTimeInMillis()) {
+            firstStart = b2;
+        }
+        if(b3.getStartTimeInMillis() < firstStart.getStartTimeInMillis()) {
+            firstStart = b3;
+        }
+
+        BuildData d = firstStart.getAction(BuildData.class);
+
+        String commitId = "";
+        if(d != null) {
+            commitId = d.getLastBuiltRevision().getSha1String();
+        }
+        Response r = given().log().all().get("/organizations/jenkins/pipelines/p/runs");
+        r.then().log().all().statusCode(200)
+            .body("size()",Matchers.is(3))
+            .body("pipeline[0]",Matchers.equalTo(firstStart.getParent().getName()))
+            .body("id[0]", Matchers.equalTo(firstStart.getNumber()+""))
+            .body("commitId[0]", Matchers.equalTo(commitId));
+
+
+    }
+
+    @Test
     public void getMultiBranchPipelineRunChangeSets() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -261,6 +316,8 @@ public class MultiBranchTest {
             .body("changeSet[0].author.fullName", Matchers.equalTo(changeLog.getAuthor().getFullName()))
             .body("changeSet[0].commitId", Matchers.equalTo(changeLog.getCommitId()));
     }
+
+
 
     private void setupScm() throws Exception {
         // create git repo

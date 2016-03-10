@@ -205,15 +205,69 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     [
         {
             "name": "master",
-            "weatherScore":100
+            "weatherScore":100,
+            "latestRun": {
+                  "changeSet": [
+
+                  ],
+                  "durationInMillis": 0,
+                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
+                  "endTime": null,
+                  "id": "1",
+                  "organization": "jenkins",
+                  "pipeline": "feature1",
+                  "result": "UNKNOWN",
+                  "runSummary": "?",
+                  "startTime": "2016-03-10T15:14:08.788+1300",
+                  "state": "RUNNING",
+                  "type": "WorkflowRun",
+                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
+                },
+            "pullRequest": null
         },
         {
             "name": "feature1",
-            "weatherScore":100
+            "weatherScore":100,
+            "latestRun": {
+                  "changeSet": [
+
+                  ],
+                  "durationInMillis": 0,
+                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
+                  "endTime": null,
+                  "id": "1",
+                  "organization": "jenkins",
+                  "pipeline": "feature1",
+                  "result": "UNKNOWN",
+                  "runSummary": "?",
+                  "startTime": "2016-03-10T15:14:08.788+1300",
+                  "state": "RUNNING",
+                  "type": "WorkflowRun",
+                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
+            },
+            "pullRequest": null
         },
         {
             "name": "feature2",
-            "weatherScore":100
+            "weatherScore":100,
+            "latestRun": {
+                  "changeSet": [
+
+                  ],
+                  "durationInMillis": 0,
+                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
+                  "endTime": null,
+                  "id": "1",
+                  "organization": "jenkins",
+                  "pipeline": "feature1",
+                  "result": "UNKNOWN",
+                  "runSummary": "?",
+                  "startTime": "2016-03-10T15:14:08.788+1300",
+                  "state": "RUNNING",
+                  "type": "WorkflowRun",
+                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
+            },
+            "pullRequest": null
         }
     ]
     
@@ -236,6 +290,64 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "type": "WorkflowRun",
         "changeSet": []
     }
+
+## Get all runs for all branches on a multibranch pipeline (ordered by date)
+
+     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs
+
+    [
+        {
+            "changeSet": [
+
+            ],
+            "durationInMillis": 1875,
+            "enQueueTime": "2016-03-10T15:27:13.687+1300",
+            "endTime": "2016-03-10T15:27:15.567+1300",
+            "id": "1",
+            "organization": "jenkins",
+            "pipeline": "feature1",
+            "result": "SUCCESS",
+            "runSummary": "stable",
+            "startTime": "2016-03-10T15:27:13.692+1300",
+            "state": "FINISHED",
+            "type": "WorkflowRun",
+            "commitId": "52615df5828f1dddf672b86d64196294e3fbee88"
+        },
+        {
+            "changeSet": [
+
+            ],
+            "durationInMillis": 1716,
+            "enQueueTime": "2016-03-10T15:27:13.692+1300",
+            "endTime": "2016-03-10T15:27:15.409+1300",
+            "id": "1",
+            "organization": "jenkins",
+            "pipeline": "master",
+            "result": "SUCCESS",
+            "runSummary": "stable",
+            "startTime": "2016-03-10T15:27:13.693+1300",
+            "state": "FINISHED",
+            "type": "WorkflowRun",
+            "commitId": "bfd1f72dc63ca63a8c1b152dc9263c7c81862afa"
+        },
+        {
+            "changeSet": [
+
+            ],
+            "durationInMillis": 1714,
+            "enQueueTime": "2016-03-10T15:27:13.700+1300",
+            "endTime": "2016-03-10T15:27:15.415+1300",
+            "id": "1",
+            "organization": "jenkins",
+            "pipeline": "feature2",
+            "result": "SUCCESS",
+            "runSummary": "stable",
+            "startTime": "2016-03-10T15:27:13.701+1300",
+            "state": "FINISHED",
+            "type": "WorkflowRun",
+            "commitId": "84cb56b50589e720385ef2491a1ebab9d227da6e"
+        }
+    ]
 
 ## Get change set for a run
 

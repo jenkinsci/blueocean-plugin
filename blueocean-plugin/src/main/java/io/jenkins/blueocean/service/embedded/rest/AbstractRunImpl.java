@@ -1,10 +1,14 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
+import hudson.plugins.git.util.BuildData;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.kohsuke.stapler.export.Exported;
 
 import java.util.Date;
 
@@ -113,6 +117,18 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
             return new PipelineRunImpl((WorkflowRun)r);
         }else{
             return new AbstractRunImpl<>(r);
+        }
+    }
+
+    @Exported(name = "commitId")
+    @JsonProperty("commitId")
+    public String getCommitId(){
+        BuildData data = run.getAction(BuildData.class);
+
+        if(data == null){
+            return null;
+        } else {
+            return data.getLastBuiltRevision().getSha1String();
         }
     }
 }
