@@ -54,7 +54,6 @@ export default class OrganisationPipelines extends Component {
                             : <p>No pipelines</p> )}
                     </article>
                 </main>
-            {(pipelines && pipelines.length > 0) ? <Pipelines pipelines={pipelines} /> : link}
         </Page>);
   }
 }
