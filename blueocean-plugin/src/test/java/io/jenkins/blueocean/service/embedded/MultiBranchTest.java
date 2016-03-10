@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import hudson.model.FreeStyleProject;
+import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
@@ -261,11 +262,18 @@ public class MultiBranchTest {
             firstStart = b3;
         }
 
+        BuildData d = firstStart.getAction(BuildData.class);
+
+        String commitId = "";
+        if(d != null) {
+            commitId = d.getLastBuiltRevision().getSha1String();
+        }
         Response r = given().log().all().get("/organizations/jenkins/pipelines/p/runs");
         r.then().log().all().statusCode(200)
             .body("size()",Matchers.is(3))
             .body("pipeline[0]",Matchers.equalTo(firstStart.getParent().getName()))
-            .body("id[1]", Matchers.equalTo(firstStart.getNumber()+""));
+            .body("id[0]", Matchers.equalTo(firstStart.getNumber()+""))
+            .body("commitId[0]", Matchers.equalTo(commitId));
 
 
     }
