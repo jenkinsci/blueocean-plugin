@@ -31,8 +31,6 @@ describe('blueocean.js', () => {
             // Check for some of the elements. We know that the following should
             // be rendered by the React components.
             browser.assert.elements('header', 1);
-            browser.assert.elements('footer', 1);
-            browser.assert.elements('span.jenkins-logo', 1);
 
             done();
         });
