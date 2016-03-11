@@ -97,9 +97,6 @@ public class PipelineNodeFilter {
                             parallels.add(r.getNode());
                         }else if(isStage.apply(r.getNode())){
                             nextStage = r.getNode();
-                            if(nodeMap.get(nextStage) == null){
-                                nodeMap.put(nextStage, new ArrayList<FlowNode>());
-                            }
                             i=j;
                             break;
                         }
@@ -112,6 +109,12 @@ public class PipelineNodeFilter {
                         }
                         if(previous != null) {
                             getOrCreate(previous).add(f);
+                        }
+                    }
+
+                    if(nextStage != null){
+                        if(nodeMap.get(nextStage) == null){
+                            nodeMap.put(nextStage, new ArrayList<FlowNode>());
                         }
                     }
 
