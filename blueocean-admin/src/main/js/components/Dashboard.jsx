@@ -26,7 +26,7 @@ export default class Dashboard extends Component {
     render() {
         const { pipelines } = this.props;
         const { pipeline } = this.state;
-        const link = <a target="_blank" href="/jenkins/view/All/newJob">New Pipeline</a>;
+        const link = <a target="_blank" className="btn-primary" href="/jenkins/view/All/newJob">New Pipeline</a>;
 
         if (this.state.view === 'pipelines' && pipelines && pipelines.size > 0) {
             return (<Pipelines link={link}

@@ -25,6 +25,9 @@
 @brand-danger:          #C4000A;
 @brand-danger-lite:     #D54C53;
 
+@brand-grey:            #767374;
+@brand-grey-lite:       #DBDAD8;
+
 //== Scaffolding
 //
 //## Settings for some of the most global styles.
@@ -61,6 +64,7 @@
 
 @font-family-headings:    "LatoLatinWebMedium", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
 @font-family-nav:         "LatoLatinWebLight", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-btn:         "LatoLatinWebSemibold", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 @font-size-h1:            floor((@font-size-base * 2.6)); // ~36px
 @font-size-h2:            floor((@font-size-base * 2.15)); // ~30px
@@ -127,56 +131,37 @@
 @caret-width-large:         5px;
 
 
-//== Tables
-//
-//## Customizes the `.table` component with basic values, each used across all table variations.
-
-//** Padding for `<th>`s and `<td>`s.
-@table-cell-padding:            8px;
-//** Padding for cells in `.table-condensed`.
-@table-condensed-cell-padding:  5px;
-
-//** Default background color used for all tables.
-@table-bg:                      transparent;
-//** Background color used for `.table-striped`.
-@table-bg-accent:               #f9f9f9;
-//** Background color used for `.table-hover`.
-@table-bg-hover:                #f5f5f5;
-@table-bg-active:               @table-bg-hover;
-
-//** Border color for table and cell borders.
-@table-border-color:            #ddd;
-
-
 //== Buttons
 //
 //## For each of Bootstrap's buttons, define text, background and border color.
 
-@btn-font-weight:                normal;
-
-@btn-default-color:              #333;
-@btn-default-bg:                 #ddd;
-@btn-default-border:             #ccc;
+@btn-default-color:              @text-color;
+@btn-default-bg:                 @brand-grey-lite;
+@btn-default-border:             @brand-grey-lite;
 
 @btn-primary-color:              #fff;
 @btn-primary-bg:                 @brand-primary;
-@btn-primary-border:             darken(@btn-primary-bg, 5%);
+@btn-primary-border:             @btn-primary-bg;
 
 @btn-success-color:              #fff;
 @btn-success-bg:                 @brand-success;
-@btn-success-border:             darken(@btn-success-bg, 5%);
+@btn-success-border:             @btn-success-bg;
 
 @btn-info-color:                 #fff;
 @btn-info-bg:                    @brand-info;
-@btn-info-border:                darken(@btn-info-bg, 5%);
+@btn-info-border:                @btn-info-bg;
 
 @btn-warning-color:              #fff;
 @btn-warning-bg:                 @brand-warning;
-@btn-warning-border:             darken(@btn-warning-bg, 5%);
+@btn-warning-border:             @btn-warning-bg;
 
 @btn-danger-color:               #fff;
 @btn-danger-bg:                  @brand-danger;
-@btn-danger-border:              darken(@btn-danger-bg, 5%);
+@btn-danger-border:              @btn-danger-bg;
+
+@btn-ghost-color:                @text-color;
+@btn-ghost-bg:                   rgba(0,0,0,0);
+@btn-ghost-border:               @text-color;
 
 @btn-link-disabled-color:        @gray-light;
 
