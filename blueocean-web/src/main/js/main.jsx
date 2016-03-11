@@ -17,10 +17,9 @@ class App extends Component {
                         <a href="#">Reports</a>
                         <a href="#">Administration</a>
                     </nav>
-                    {/* TODO: <ExtensionPoint name="jenkins.main.globalNav" wrappingElement="nav"/> */}
                 </header>
                 <main>
-                    <ExtensionPoint name="jenkins.main.body"/>
+                    <ExtensionPoint name="jenkins.main.body" />
                 </main>
             </div>
         );
