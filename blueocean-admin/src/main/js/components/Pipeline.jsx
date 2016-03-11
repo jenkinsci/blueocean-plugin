@@ -61,8 +61,11 @@ export default class Pipeline extends Component {
       <td>
         <i className='material-icons'>&#xE83A;</i>
         { !simple && <button
-          onClick={hack.bind(null, pipeline)}
+          onClick={hack.MultiBranch.bind(null, pipeline)}
           >multiBranch</button>}
+        <button
+          onClick={hack.Activity.bind(null, pipeline)}
+          >Activities</button>
       </td>
     </tr>);
   }
@@ -71,5 +74,5 @@ export default class Pipeline extends Component {
 Pipeline.propTypes = {
   pipeline: PropTypes.object.isRequired,
   simple: PropTypes.bool,
-  hack: PropTypes.func.isRequired
+  hack: PropTypes.object.isRequired
 };

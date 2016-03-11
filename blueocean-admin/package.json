@@ -32,6 +32,7 @@
     "immutable": "^3.7.6",
     "lodash": "^4.6.1",
     "moment": "^2.12.0",
+    "moment-duration-format": "^1.3.0",
     "react": "^0.14.5",
     "react-dom": "^0.14.5",
     "window-handle": "^1.0.0"

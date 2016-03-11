@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import Pipelines from '../../main/js/components/Pipelines.jsx';
 
 const
-  hack= ()=>{},
+  hack={bla:()=>{}} ,
   link = <a target='_blank' href="/jenkins/view/All/newJob">New Pipeline</a>,
   pipelines = [{
     'displayName': 'moreBeers',

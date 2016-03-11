@@ -7,7 +7,10 @@ import sd from 'skin-deep';
 import Pipeline from '../../main/js/components/Pipeline.jsx';
 
 const
-  hack= ()=>{},
+  hack={
+    MultiBranch:()=>{},
+    Activity:()=>{},
+  } ,
   pipelineMulti = {
     'displayName': 'moreBeers',
     'name': 'morebeers',
