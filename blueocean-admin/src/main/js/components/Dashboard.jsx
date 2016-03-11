@@ -25,9 +25,13 @@ export default class Dashboard extends Component {
     }
     showActivityView(pipeline) {
         this.setState({
-            pipeline: pipeline,
-            view: 'ACTIVITY'
+            pipeline,
+            view: 'ACTIVITY',
         });
+    }
+
+    back() {
+        this.showPipelinesView();
     }
 
     render() {
@@ -36,22 +40,23 @@ export default class Dashboard extends Component {
         const link = <a target="_blank" href="/jenkins/view/All/newJob">New Pipeline</a>;
 
         const hack = {
-            MultiBranch: (pipeline) => { this.showMultiBranchView(pipeline) },
-            Activity: (pipeline) => { this.showActivityView(pipeline) },
+            MultiBranch: (pipe) => { this.showMultiBranchView(pipe); },
+            Activity: (pipe) => { this.showActivityView(pipe); },
         };
         if (this.state.view === 'pipelines' && pipelines && pipelines.size > 0) {
             return (<Pipelines link={link}
               pipelines={pipelines}
-              hack={hack} />);
+              hack={hack}
+            />);
         }
 
         if (this.state.view === 'multiBranch') {
             // eslint-disable-next-line react/jsx-no-bind
-            return (<MultiBranch pipeline={pipeline} back={ () => this.showPipelinesView() } />);
+            return (<MultiBranch pipeline={pipeline} back={this.back} />);
         }
 
         if (this.state.view === 'activity') {
-            return <Activity pipeline={pipeline} back={ () => this.showPipelinesView() }/>;
+            return <Activity pipeline={pipeline} back={this.back} />;
         }
         return null;
     }
