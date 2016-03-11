@@ -9,6 +9,7 @@
     "bundle": "gulp bundle --silent",
     "rebundle": "gulp rebundle --silent"
   },
+
   "devDependencies": {
     "@jenkins-cd/js-builder": "0.0.13",
     "@jenkins-cd/js-test": "^1.x",
@@ -25,6 +26,7 @@
     "react-addons-test-utils": "^0.14.7",
     "skin-deep": "^0.14.0"
   },
+
   "dependencies": {
     "@jenkins-cd/design-language": "0.0.3",
     "@jenkins-cd/js-extensions": "0.0.7",
