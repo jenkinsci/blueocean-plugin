@@ -39,8 +39,10 @@
             </nav>
         </header>
         <header class="sub-header">
-            <nav>
+            <nav class="page-title">
+                <span class="weather-icon weather-partially-sunny"></span>
                 <h1>Page Title</h1>
+                <a href="#" class="btn btn-primary">New Pipeline</a>
             </nav>
             <nav class="page-tabs">
                 <a href="#">Activity</a>
@@ -66,41 +68,50 @@
                     <tbody>
                         <tr>
                             <td>CloudBees / Panther-Apple-TV</td>
-                            <td><img src="../../dist/assets/icons/Sunny@2x.png" alt="Icon Description" width="32"></td>
+                            <td><span class="weather-icon weather-raining"></span></td>
                             <td>2 Failing</td>
                             <td>21 Passing</td>
                             <td><i class="material-icons">&#xE83A;</i></td>
                         </tr>
                         <tr>
                             <td>CloudBees / Private SaaS Edition</td>
-                            <td><img src="../../dist/assets/icons/Partially%20Sunny@2x.png" alt="Icon Description" width="32"></td>
+                            <td><span class="weather-icon weather-storm"></span></td>
                             <td>2 Failing</td>
                             <td>21 Passing</td>
                             <td><i class="material-icons">&#xE83A;</i></td>
                         </tr>
                         <tr>
                             <td>CloudBees / Non-Git pipeline</td>
-                            <td><img src="../../dist/assets/icons/Cloudy@2x.png" alt="Icon Description" width="32"></td>
+                            <td><span class="weather-icon weather-cloudy"></span></td>
                             <td>2 Failing</td>
                             <td>21 Passing</td>
                             <td><i class="material-icons">&#xE83A;</i></td>
                         </tr>
                         <tr>
                             <td>CloudBees / Console</td>
-                            <td><img src="../../dist/assets/icons/Raining@2x.png" alt="Icon Description" width="32"></td>
+                            <td><span class="weather-icon weather-partially-sunny"></span></td>
                             <td>2 Failing</td>
                             <td>21 Passing</td>
                             <td><i class="material-icons selected">&#xE838;</i></td>
                         </tr>
                         <tr>
                             <td>CloudBees / cbn</td>
-                            <td><img src="../../dist/assets/icons/Storm@2x.png" alt="Icon Description" width="32"></td>
+                            <td><span class="weather-icon weather-sunny"></span></td>
                             <td>2 Failing</td>
                             <td>21 Passing</td>
                             <td><i class="material-icons">&#xE83A;</i></td>
                         </tr>
                     </tbody>
                 </table>
+            </article>
+            <article>
+                <h3>Buttons</h3>
+                <p><strong>Primary</strong> as button <button class="btn btn-primary">Example</button>, then
+                    anchor <a href="#" class="btn btn-primary">Example</a>.</p>
+                <p><strong>Plain</strong> as button <button class="btn">Example</button>, then
+                    anchor <a href="#" class="btn">Example</a>.</p>
+                <p><strong>Ghost</strong> as button <button class="btn btn-ghost">Example</button>, then
+                    anchor <a href="#" class="btn btn-ghost">Example</a>.</p>
             </article>
             <article>
                 <code class="block">user@ComicalWorkstationName &gt; mvn compile

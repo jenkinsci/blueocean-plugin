@@ -1,7 +1,7 @@
 {
   "name": "@jenkins-cd/design-language",
   "jdlName": "jenkins-design-language",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/index.js",
   "scripts": {
@@ -9,7 +9,13 @@
     "grunt": "grunt",
     "test": "grunt test"
   },
-  "author": "jmcdonald@cloudbees.com",
+  "author": "Josh McDonald <jmcdonald@cloudbees.com> (https://www.cloudbees.com/)",
+  "contributors": [
+    "James Dumay <jameswdumay@gmail.com>",
+    "Josh McDonald <josh@joshmcdonald.info>",
+    "Michael Neale <michael.neale@gmail.com>",
+    "tfennelly <tom.fennelly@gmail.com>"
+  ],
   "license": "MIT",
   "devDependencies": {
     "babel-plugin-transform-react-jsx": "^6.6.4",
