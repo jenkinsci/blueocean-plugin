@@ -335,7 +335,7 @@ public class MultiBranchTest {
         assertEquals(3, mp.getItems().size());
 
 
-        Response r = given().log().all().get("/organizations/jenkins/pipelines/p/branches/master/runs/1/stages");
+        Response r = given().log().all().get("/organizations/jenkins/pipelines/p/branches/master/runs/1/nodes");
         r.then().log().all().statusCode(200);
 
 

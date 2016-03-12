@@ -42,7 +42,7 @@ public class PipelineNodeFilter {
         }
         List<BluePipelineNode> stages = new ArrayList<>();
         for(FlowNode node: nodeMap.keySet()){
-            stages.add(new PipelineNodeImpl(run,node, nodeMap.get(node)));
+            stages.add(new PipelineNodeImpl(node, nodeMap.get(node)));
         }
         return stages;
     }

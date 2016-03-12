@@ -10,8 +10,8 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.tasks.Shell;
 import io.jenkins.blueocean.commons.JsonConverter;
+import io.jenkins.blueocean.service.embedded.rest.PipelineNodeFilter;
 import org.hamcrest.Matchers;
-import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -188,7 +188,7 @@ public class PipelineApiTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1/stages/")
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1")
             .then().log().all()
             .statusCode(200)
             .body("id", Matchers.equalTo(b1.getId()))
@@ -237,17 +237,6 @@ public class PipelineApiTest {
         nodeGraphTable.build();
         List<FlowNode> nodes = getStages(nodeGraphTable);
         List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
-
-        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-            if(row.getNode().getAction(StageAction.class) != null || row.getNode().getAction(ThreadNameAction.class) != null){
-                nodes.add(row.getNode());
-            }
-            if(row.getNode().getAction(ThreadNameAction.class) != null){
-                parallelNodes.add(row.getNode());
-            }
-
-        }
-
 
         Assert.assertEquals(6, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
@@ -488,7 +477,8 @@ public class PipelineApiTest {
     private List<FlowNode> getStages(FlowGraphTable nodeGraphTable){
         List<FlowNode> nodes = new ArrayList<>();
         for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-            if(row.getNode().getAction(StageAction.class) != null || row.getNode().getAction(ThreadNameAction.class) != null){
+            if(PipelineNodeFilter.isStage.apply(row.getNode()) ||
+                PipelineNodeFilter.isParallel.apply(row.getNode())){
                 nodes.add(row.getNode());
             }
         }
@@ -499,7 +489,7 @@ public class PipelineApiTest {
         List<FlowNode> parallelNodes = new ArrayList<>();
 
         for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-            if(row.getNode().getAction(ThreadNameAction.class) != null){
+            if(PipelineNodeFilter.isParallel.apply(row.getNode())){
                 parallelNodes.add(row.getNode());
             }
         }
