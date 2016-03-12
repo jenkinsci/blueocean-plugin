@@ -4,7 +4,6 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,11 +21,8 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
 
     public PipelineNodeContainerImpl(WorkflowRun run) {
         this.run = run;
-
-        FlowGraphTable nodeGraphTable = new FlowGraphTable(run.getExecution());
-        nodeGraphTable.build();
-
-        PipelineNodeFilter stageVisitor = new PipelineNodeFilter(nodeGraphTable.getRows());
+        
+        PipelineNodeFilter stageVisitor = new PipelineNodeFilter(run);
         this.nodes = stageVisitor.getPipelineNodes();
         for(BluePipelineNode node: nodes){
             nodeMap.put(node.getId(), node);

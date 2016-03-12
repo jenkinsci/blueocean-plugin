@@ -6,6 +6,7 @@ import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 
 import javax.annotation.Nonnull;
@@ -24,9 +25,14 @@ import java.util.Map;
 public class PipelineNodeFilter {
 
     private final List<FlowGraphTable.Row> rows;
+    private final WorkflowRun run;
 
-    public PipelineNodeFilter(List<FlowGraphTable.Row> rows) {
-        this.rows = rows;
+    public PipelineNodeFilter(WorkflowRun run) {
+        this.run = run;
+        FlowGraphTable nodeGraphTable = new FlowGraphTable(run.getExecution());
+        nodeGraphTable.build();
+
+        this.rows = nodeGraphTable.getRows();
     }
 
     public List<BluePipelineNode> getPipelineNodes(){
@@ -36,26 +42,26 @@ public class PipelineNodeFilter {
         }
         List<BluePipelineNode> stages = new ArrayList<>();
         for(FlowNode node: nodeMap.keySet()){
-            stages.add(new PipelineNodeImpl(node, nodeMap.get(node)));
+            stages.add(new PipelineNodeImpl(run,node, nodeMap.get(node)));
         }
         return stages;
     }
 
-    private final Predicate<FlowNode> acceptable = new Predicate<FlowNode>() {
+    public final Predicate<FlowNode> acceptable = new Predicate<FlowNode>() {
         @Override
         public boolean apply(@Nullable FlowNode input) {
             return isStage.apply(input) || isParallel.apply(input);
         }
     };
 
-    private final Predicate<FlowNode> isStage = new Predicate<FlowNode>() {
+    public static final Predicate<FlowNode> isStage = new Predicate<FlowNode>() {
         @Override
         public boolean apply(@Nullable FlowNode input) {
             return input !=null && input.getAction(StageAction.class) != null;
         }
     };
 
-    private final  Predicate<FlowNode> isParallel = new Predicate<FlowNode>() {
+    public static final  Predicate<FlowNode> isParallel = new Predicate<FlowNode>() {
         @Override
         public boolean apply(@Nullable FlowNode input) {
             return input !=null && input.getAction(LabelAction.class) != null &&
