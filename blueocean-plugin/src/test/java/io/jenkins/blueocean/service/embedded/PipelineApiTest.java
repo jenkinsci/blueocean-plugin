@@ -346,6 +346,63 @@ public class PipelineApiTest {
 
     }
 
+    @Test
+    public void getPipelineJobRunNodeLogTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+
+        job1.setDefinition(new CpsFlowDefinition("stage 'build'\n" +
+            "node{\n" +
+            "  echo \"Building...\"\n" +
+            "}\n" +
+            "\n" +
+            "stage 'test'\n" +
+            "parallel 'unit':{\n" +
+            "  node{\n" +
+            "    echo \"Unit testing...\"\n" +
+            "  }\n" +
+            "},'integration':{\n" +
+            "  node{\n" +
+            "    echo \"Integration testing...\"\n" +
+            "  }\n" +
+            "}, 'ui':{\n" +
+            "  node{\n" +
+            "    echo \"UI testing...\"\n" +
+            "  }\n" +
+            "}\n" +
+            "\n" +
+            "stage 'deploy'\n" +
+            "node{\n" +
+            "  echo \"Deploying\"\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
+        nodeGraphTable.build();
+        List<FlowNode> nodes = getStages(nodeGraphTable);
+        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+
+        Assert.assertEquals(6, nodes.size());
+        Assert.assertEquals(3, parallelNodes.size());
+
+        RestAssured.given().log().all()
+            .get("/organizations/jenkins/pipelines/pipeline1/runs/1/log")
+            .then().log().all()
+            .statusCode(200);
+
+
+        RestAssured.given().log().all()
+            .get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+nodes.get(0).getId()+"/log")
+            .then().log().all()
+            .statusCode(200);
+
+        RestAssured.given().log().all()
+            .get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+parallelNodes.get(0).getId()+"/log")
+            .then().log().all()
+            .statusCode(200);
+    }
+
 
     @Test
     public void getPipelineJobRunsTest() throws Exception {

@@ -470,8 +470,25 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "status": "SUCCESS"
         }
     ]
+
+# Get a Pipeline run node's detail
+
+    curl -v  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/3
     
-# Get Log for a run
+    {
+        "displayName": "build",
+        "edges": [
+            {
+                "durationInMillis": 234,
+                "id": "9"
+            }
+        ],
+        "id": "3",
+        "startTime": "2016-03-11T00:32:52.273-0800",
+        "status": "SUCCESS"
+    }
+        
+# Fetching logs
 
 Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response. 
 
@@ -487,7 +504,8 @@ X-TEXT-SIZE is the byte offset of the raw log file client should use in the next
 * start
 
 start query parameter tells API to send log starting from this offset in the log file.
- 
+    
+## Get Log for a run
 
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0
     
@@ -513,3 +531,17 @@ start query parameter tells API to send log starting from this offset in the log
     [Pipeline] Allocate node : End
     [Pipeline] End of Pipeline
     Finished: SUCCESS
+
+## Get Log for a pipeline node
+
+    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/3/log
+    
+    Content-Type: text/plain; charset=utf-8
+    X-Text-Size: 164
+    Content-Length: 168
+    Server: Jetty(6.1.26)
+    
+    Entering stage build
+    Proceeding
+    Running on master in /var/folders/5q/51y3qf0x5t39d4c4c_c2l1s40000gn/T/hudson8758973583122932916test/workspace/pipeline1
+    Building...

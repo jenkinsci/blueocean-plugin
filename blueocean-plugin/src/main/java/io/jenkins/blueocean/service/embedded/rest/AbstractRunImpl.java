@@ -105,7 +105,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public Object getLog() {
-        return new LogResource(run);
+        return new LogResource(run.getLogText());
     }
 
     protected static BlueRun getBlueRun(Run r){

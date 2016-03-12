@@ -31,6 +31,10 @@ public abstract class BluePipelineNode extends Resource{
         return new SimpleDateFormat(BlueRun.DATE_FORMAT_STRING).format(getStartTime());
     }
 
+    /**
+     * @return Gives logs associated with this node
+     */
+    public abstract Object getLog();
 
     @ExportedBean
     public abstract static class Edge{
