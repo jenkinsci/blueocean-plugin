@@ -13,6 +13,7 @@ export default (ComposedComponent, getStateFromStores = props => props) => class
 
     componentDidMount() {
         this.fetchPipelineData(data => {
+            // eslint-disable-next-line
             this.setState({
                 data: Immutable.fromJS(data),
             });
@@ -32,6 +33,7 @@ export default (ComposedComponent, getStateFromStores = props => props) => class
                     const data = JSON.parse(xmlhttp.responseText);
                     onLoad(data);
                 } else {
+                    // eslint-disable-next-line
                     console.log('something else other than 200 was returned');
                 }
             }
