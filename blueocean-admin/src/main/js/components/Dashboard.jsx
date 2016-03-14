@@ -37,7 +37,7 @@ export default class Dashboard extends Component {
     render() {
         const { pipelines } = this.props;
         const { pipeline } = this.state;
-        const link = <a target="_blank" href="/jenkins/view/All/newJob">New Pipeline</a>;
+        const link = <a target="_blank" className="btn-primary" href="/jenkins/view/All/newJob">New Pipeline</a>;
 
         /*
          this is a hack that will be removed when we have routes in place and we get

@@ -22,7 +22,7 @@ export default class Pipelines extends Component {
         return (
             <Page>
                 <PageHeader>
-                    <Title>CloudBees {link}</Title>
+                    <Title><h1>CloudBees</h1> {link}</Title>
                 </PageHeader>
                 <main>
                     <article>

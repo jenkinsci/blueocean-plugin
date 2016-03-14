@@ -22,7 +22,7 @@ export default class MultiBranch extends Component {
         return (
             <Page>
                 <PageHeader>
-                    <Title><WeatherIcon score={weatherScore} /> CloudBees / {name}</Title>
+                    <Title><WeatherIcon score={weatherScore} /> <h1>CloudBees / {name}</h1></Title>
                 </PageHeader>
                 <main>
                     <article>
@@ -33,7 +33,7 @@ export default class MultiBranch extends Component {
                                 <Branches key={index} branch={branch} pipeline={pipeline} />)}
                             <tr>
                                 <td colSpan={headers.length}>
-                                    <button onClick={back}>Dashboard</button>
+                                    <button className="btn" onClick={back}>Dashboard</button>
                                 </td>
                             </tr>
                         </Table>
