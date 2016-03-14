@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Job;
-import hudson.model.JobProperty;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueBranch;
@@ -10,10 +9,9 @@ import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
-import jenkins.branch.Branch;
 import jenkins.branch.MultiBranchProject;
-import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
-import org.jenkinsci.plugins.workflow.multibranch.BranchJobProperty;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.actions.ChangeRequestAction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -161,14 +159,8 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         return counter;
     }
     private boolean isPullRequest(Job job) {
-        JobProperty property = job.getProperty(BranchJobProperty.class);
-        if(property != null && property instanceof BranchJobProperty) {
-            Branch branch = ((BranchJobProperty) property).getBranch();
-            if(branch != null && branch.getHead() != null && branch.getHead() instanceof PullRequestSCMHead) {
-                return true;
-            }
-        }
-        return false;
+        SCMHead head = SCMHead.HeadByItem.findHead(job);
+        return head != null && head.getAction(ChangeRequestAction.class) != null;
     }
 
     @Override

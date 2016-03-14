@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
 import org.jenkinsci.plugins.workflow.multibranch.BranchJobProperty;
 import org.kohsuke.stapler.export.Exported;
 
@@ -12,7 +11,10 @@ import io.jenkins.blueocean.rest.model.BlueBranch;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.branch.Branch;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.actions.ChangeRequestAction;
 
 /**
  * @author Vivek Pandey
@@ -55,40 +57,41 @@ public class BranchImpl extends BlueBranch {
     @Exported(name = PULL_REQUEST, inline = true)
     @JsonProperty(PULL_REQUEST)
     public PullRequest getPullRequest() {
-        JobProperty property = job.getProperty(BranchJobProperty.class);
-        if (property != null && property instanceof BranchJobProperty) {
-            Branch branch = ((BranchJobProperty) property).getBranch();
-            if(branch != null && branch.getHead() != null && branch.getHead() instanceof PullRequestSCMHead) {
-                return new PullRequest(((PullRequestSCMHead) branch.getHead()).getNumber());
+        SCMHead head = SCMHead.HeadByItem.findHead(job);
+        if(head != null) {
+            ChangeRequestAction action = head.getAction(ChangeRequestAction.class);
+            if(action != null){
+                return new PullRequest(action.getId(), action.getURL().toExternalForm(), action.getTitle(), action.getAuthor());
             }
         }
-
         return null;
     }
 
-    static class PullRequest {
-        private static final String PULL_REQUEST_NUMBER = "number";
-        private static final String PULL_REQUEST_USER = "user";
+    public static class PullRequest extends Resource {
+        private static final String PULL_REQUEST_NUMBER = "id";
+        private static final String PULL_REQUEST_AUTHOR = "author";
         private static final String PULL_REQUEST_TITLE = "title";
         private static final String PULL_REQUEST_URL = "url";
 
-        private final int number;
+        private final String id;
 
         private final String url;
 
         private final String title;
 
-        private final String user;
+        private final String author;
 
-        public PullRequest(int number) {
-            this.number = number;
-            url = title = user = "Not supported yet";
+        public PullRequest(String id, String url, String title, String author) {
+            this.id = id;
+            this.url = url;
+            this.title = title;
+            this.author = author;
         }
 
         @Exported(name = PULL_REQUEST_NUMBER)
         @JsonProperty(PULL_REQUEST_NUMBER)
-        public int getNumber() {
-            return number;
+        public String getId() {
+            return id;
         }
 
 
@@ -106,10 +109,10 @@ public class BranchImpl extends BlueBranch {
         }
 
 
-        @Exported(name = PULL_REQUEST_USER)
-        @JsonProperty(PULL_REQUEST_USER)
-        public String getUser() {
-            return user;
+        @Exported(name = PULL_REQUEST_AUTHOR)
+        @JsonProperty(PULL_REQUEST_AUTHOR)
+        public String getAuthor() {
+            return author;
         }
     }
 
