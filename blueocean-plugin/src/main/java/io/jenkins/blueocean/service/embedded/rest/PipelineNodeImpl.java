@@ -4,6 +4,7 @@ import com.google.common.base.Predicate;
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -16,7 +17,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Implementation of {@link BluePipelineNode}.
+ *
  * @author Vivek Pandey
+ * @see FlowNode
  */
 public class PipelineNodeImpl extends BluePipelineNode {
     private final FlowNode node;
@@ -33,25 +37,8 @@ public class PipelineNodeImpl extends BluePipelineNode {
             return;
         }
         this.edges = new ArrayList<>();
-        for(final FlowNode n : children){
-            this.edges.add(new Edge(){
-                @Override
-                public String getId() {
-                    return n.getId();
-                }
-
-                @Override
-                public long getDurationInMillis() {
-                    TimingAction t = stage.getAction(TimingAction.class);
-                    TimingAction c = n.getAction(TimingAction.class);
-                    if(t!= null){
-                        if(c != null){
-                            return c.getStartTime() - t.getStartTime();
-                        }
-                    }
-                    return -1;
-                }
-            });
+        for(final FlowNode c : children){
+            this.edges.add(new EdgeImpl(node,c));
         }
     }
 
@@ -68,7 +55,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
-    public Status getStatus() {
+    public BlueRun.BlueRunResult getResult() {
         return PipelineStageUtil.getStatus(node);
     }
 
@@ -132,4 +119,30 @@ public class PipelineNodeImpl extends BluePipelineNode {
             return input.getAction(LogAction.class) != null;
         }
     };
+    private static class EdgeImpl extends Edge{
+        private final FlowNode node;
+        private final FlowNode edge;
+
+        public EdgeImpl(FlowNode node, FlowNode edge) {
+            this.node = node;
+            this.edge = edge;
+        }
+
+        @Override
+        public String getId() {
+            return edge.getId();
+        }
+
+        @Override
+        public long getDurationInMillis() {
+            TimingAction t = node.getAction(TimingAction.class);
+            TimingAction c = edge.getAction(TimingAction.class);
+            if(t!= null){
+                if(c != null){
+                    return c.getStartTime() - t.getStartTime();
+                }
+            }
+            return -1;
+        }
+    }
 }

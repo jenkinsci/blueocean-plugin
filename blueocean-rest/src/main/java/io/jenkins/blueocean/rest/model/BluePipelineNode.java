@@ -8,6 +8,48 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Abstraction of Pipeline run node.
+ *
+ * This node is a node in Pipeline run and a vetext in DAG. Each sub-steps in this pipeline node is
+ * represented as edges.
+ *
+ * e.g.
+ * <pre>
+ * stage 'build'
+ * node{
+ *   echo "Building..."
+ * }
+ * stage 'test'
+ * parallel 'unit':{
+ *   node{
+ *     echo "Unit testing..."
+ *   }
+ * },'integration':{
+ *   node{
+ *     echo "Integration testing..."
+ *   }
+ * }
+ * stage 'deploy'
+ * node{
+ * echo "Deploying"
+ * }
+ *</pre>
+ *
+ * Above pipeline script is modeled as:
+ *
+ *  <pre>
+ * build : test
+ * test : unit, integration
+ * unit : deploy
+ * integration: deploy
+ * deploy
+ *
+ *
+ *                   /---- unit ----------\
+ * build---&gt;test---&gt;/                     \------&gt; deploy
+ *                  \----- integration ---/
+ *
+ *</pre>
  * @author Vivek Pandey
  */
 public abstract class BluePipelineNode extends Resource{
@@ -19,7 +61,7 @@ public abstract class BluePipelineNode extends Resource{
     public abstract String getDisplayName();
 
     @Exported
-    public abstract Status getStatus();
+    public abstract BlueRun.BlueRunResult getResult();
 
     public abstract Date getStartTime();
 
@@ -43,15 +85,6 @@ public abstract class BluePipelineNode extends Resource{
 
         @Exported
         public abstract long getDurationInMillis();
-    }
-
-    public enum Status{
-        NOT_EXECUTED,
-        ABORTED,
-        SUCCESS,
-        IN_PROGRESS,
-        PAUSED_PENDING_INPUT,
-        FAILED;
     }
 
 }
