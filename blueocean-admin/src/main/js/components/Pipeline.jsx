@@ -62,9 +62,11 @@ export default class Pipeline extends Component {
       <td>
         <i className="material-icons">&#xE83A;</i>
         { !simple && <button
-          onClick={hack.bind(null, pipeline)} // eslint-disable-line react/jsx-no-bind
-        >multiBranch
-        </button>}
+          onClick={hack.MultiBranch.bind(null, pipeline)}
+        >multiBranch</button>}
+        <button
+          onClick={hack.Activity.bind(null, pipeline)}
+        >Activities</button>
       </td>
     </tr>);
     }

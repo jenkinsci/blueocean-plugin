@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Pipelines from './Pipelines';
+import Activity from './Activity';
 import MultiBranch from './MultiBranch';
 
 export default class Dashboard extends Component {
@@ -22,25 +23,46 @@ export default class Dashboard extends Component {
             view: 'multiBranch',
         });
     }
+    showActivityView(pipeline) {
+        this.setState({
+            pipeline,
+            view: 'ACTIVITY',
+        });
+    }
+
+    back() {
+        this.showPipelinesView();
+    }
 
     render() {
         const { pipelines } = this.props;
         const { pipeline } = this.state;
         const link = <a target="_blank" className="btn-primary" href="/jenkins/view/All/newJob">New Pipeline</a>;
 
+        /*
+         this is a hack that will be removed when we have routes in place and we get
+         the pipeline from there. Since this is not the original design and to make
+         sure it gets removed and raises questions it is called hack, since ux-81.
+         */
+        const hack = {
+            MultiBranch: (pipe) => { this.showMultiBranchView(pipe); },
+            Activity: (pipe) => { this.showActivityView(pipe); },
+        };
         if (this.state.view === 'pipelines' && pipelines && pipelines.size > 0) {
             return (<Pipelines link={link}
               pipelines={pipelines}
-              hack={(pipeline) => { this.showMultiBranchView(pipeline); }} />); // eslint-disable-line
+              hack={hack}
+            />);
         }
 
         if (this.state.view === 'multiBranch') {
             // eslint-disable-next-line react/jsx-no-bind
-            return (<MultiBranch pipeline={pipeline} back={ () => this.showPipelinesView() } />);
+            return (<MultiBranch pipeline={pipeline} back={this.back} />);
         }
 
-        // TODO: Verify that this is ok.
-        // There was an ESLint error because of the missing return.
+        if (this.state.view === 'activity') {
+            return <Activity pipeline={pipeline} back={this.back} />;
+        }
         return null;
     }
 }
