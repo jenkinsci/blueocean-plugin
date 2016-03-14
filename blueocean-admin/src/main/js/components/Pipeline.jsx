@@ -62,10 +62,10 @@ export default class Pipeline extends Component {
       <td>
         <i className="material-icons">&#xE83A;</i>
         { !simple && <button
-          onClick={hack.MultiBranch.bind(null, pipeline)}// eslint-disable-line
+          onClick={hack.MultiBranch.bind(null, pipeline)}
         >multiBranch</button>}
         <button
-          onClick={hack.Activity.bind(null, pipeline)}// eslint-disable-line
+          onClick={hack.Activity.bind(null, pipeline)}
         >Activities</button>
       </td>
     </tr>);

@@ -66,6 +66,6 @@ Activities.propTypes = {
 
 const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
 
-export default AjaxHoc(Activities, props => ({// eslint-disable-line
+export default AjaxHoc(Activities, props => ({
     url: `${baseUrl}${props.pipeline.name}/runs`,
 }));
