@@ -3,8 +3,13 @@ package io.jenkins.blueocean.rest.model;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.servlet.ServletException;
+
+import io.jenkins.blueocean.commons.ServiceException;
 
 /**
  * BlueOCean Run model.
@@ -185,4 +190,8 @@ public abstract class BlueRun extends Resource {
         @Exported(name=SIZE)
         public abstract long getSize();
     }
+
+    @PUT
+    @WebMethod(name="stop")
+    public abstract BlueRunState stop();
 }

@@ -124,6 +124,20 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @Test
+    public void getPipelineRunStopTest() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pipeline4");
+        p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
+        FreeStyleBuild b = p.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b);
+
+        RestAssured.given().log().all().post("/organizations/jenkins/pipelines/pipeline4/runs/1/stop")
+            .then().log().all()
+            .statusCode(200)
+            .body("ss", Matchers.equalTo("aa"));
+    }
+
+
+    @Test
     public void getPipelineRunLatestTest() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject("pipeline5");
         p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));

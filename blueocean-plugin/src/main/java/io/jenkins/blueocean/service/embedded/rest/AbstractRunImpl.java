@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
@@ -86,6 +87,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return run.getResult() != null ? BlueRunResult.valueOf(run.getResult().toString()) : BlueRunResult.UNKNOWN;
     }
 
+
     @Override
     public Date getEndTime() {
         if (!run.isBuilding()) {
@@ -164,5 +166,10 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         } else {
             return data.getLastBuiltRevision().getSha1String();
         }
+    }
+
+    @Override
+    public BlueRunState stop() {
+        throw new ServiceException.NotImplementedException("dtop should be implemented on a subclass");
     }
 }

@@ -6,9 +6,13 @@ import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.kohsuke.stapler.HttpResponse;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.ServletException;
 
 /**
  * Pipeline Run
@@ -40,5 +44,11 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             return new PipelineNodeContainerImpl(run);
         }
         return null;
+    }
+
+    @Override
+    public BlueRunState stop() {
+        run.doStop();
+        return getStateObj();
     }
 }
