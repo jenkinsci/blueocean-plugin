@@ -170,7 +170,8 @@ public class MultiBranchTest {
 
         Response r = given().log().all().get("/organizations/jenkins/pipelines/p/branches");
         r.then().log().all().statusCode(200)
-            .body("latestRun[0].pipeline", Matchers.equalTo("feature1"));
+            .body("latestRun[0].pipeline", Matchers.anyOf(Matchers.equalTo("feature1"),
+                Matchers.equalTo("feature2"), Matchers.equalTo("master")));
 
         String body = r.asString();
         List<String> branchNames = with(body).get("name");

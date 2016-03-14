@@ -1,11 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
-import org.jenkinsci.plugins.workflow.multibranch.BranchJobProperty;
-import org.kohsuke.stapler.export.Exported;
-
 import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.Result;
@@ -16,19 +10,17 @@ import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
-import io.jenkins.blueocean.rest.model.Container;
 import jenkins.branch.Branch;
 import jenkins.branch.MultiBranchProject;
+import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
+import org.jenkinsci.plugins.workflow.multibranch.BranchJobProperty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * @author Vivek Pandey
@@ -194,7 +186,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
             @Override
             public Iterator<BlueRun> iterator() {
-                List<BlueRun> c = new ArrayList();
+                List<BlueRun> c = new ArrayList<>();
                 for(final BlueBranch b: getBranches()) {
                     for(final BlueRun r: b.getRuns()) {
                         c.add(r);
