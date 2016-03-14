@@ -19,6 +19,8 @@ import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import jenkins.branch.Branch;
 import jenkins.branch.MultiBranchProject;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.actions.ChangeRequestAction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -169,14 +171,8 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         return counter;
     }
     private boolean isPullRequest(Job job) {
-        JobProperty property = job.getProperty(BranchJobProperty.class);
-        if(property != null && property instanceof BranchJobProperty) {
-            Branch branch = ((BranchJobProperty) property).getBranch();
-            if(branch != null && branch.getHead() != null && branch.getHead() instanceof PullRequestSCMHead) {
-                return true;
-            }
-        }
-        return false;
+        SCMHead head = SCMHead.HeadByItem.findHead(job);
+        return head != null && head.getAction(ChangeRequestAction.class) != null;
     }
 
     @Override
