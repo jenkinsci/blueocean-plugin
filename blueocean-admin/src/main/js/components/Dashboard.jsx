@@ -39,6 +39,11 @@ export default class Dashboard extends Component {
         const { pipeline } = this.state;
         const link = <a target="_blank" href="/jenkins/view/All/newJob">New Pipeline</a>;
 
+        /*
+         this is a hack that will be removed when we have routes in place and we get
+         the pipeline from there. Since this is not the original design and to make
+         sure it gets removed and raises questions it is called hack, since ux-81.
+         */
         const hack = {
             MultiBranch: (pipe) => { this.showMultiBranchView(pipe); },
             Activity: (pipe) => { this.showActivityView(pipe); },
