@@ -26,18 +26,17 @@ export default class Dashboard extends Component {
     showActivityView(pipeline) {
         this.setState({
             pipeline,
-            view: 'ACTIVITY',
+            view: 'activity',
         });
-    }
-
-    back() {
-        this.showPipelinesView();
     }
 
     render() {
         const { pipelines } = this.props;
         const { pipeline } = this.state;
         const link = <a target="_blank" className="btn-primary" href="/jenkins/view/All/newJob">New Pipeline</a>;
+        const back = () => {
+            this.showPipelinesView();
+        };
 
         /*
          this is a hack that will be removed when we have routes in place and we get
@@ -57,11 +56,11 @@ export default class Dashboard extends Component {
 
         if (this.state.view === 'multiBranch') {
             // eslint-disable-next-line react/jsx-no-bind
-            return (<MultiBranch pipeline={pipeline} back={this.back} />);
+            return (<MultiBranch pipeline={pipeline} back={back} />);
         }
 
         if (this.state.view === 'activity') {
-            return <Activity pipeline={pipeline} back={this.back} />;
+            return <Activity pipeline={pipeline} back={back} />;
         }
         return null;
     }

@@ -22,7 +22,7 @@ export default class Pipelines extends Component {
         return (
             <Page>
                 <PageHeader>
-                    <Title><h1>CloudBees</h1> {link}</Title>
+                    <Title>CloudBees {link}</Title>
                 </PageHeader>
                 <main>
                     <article>
@@ -54,5 +54,5 @@ export default class Pipelines extends Component {
 Pipelines.propTypes = {
     pipelines: PropTypes.object.isRequired,
     link: PropTypes.object.isRequired,
-    hack: PropTypes.func.isRequired,
+    hack: PropTypes.object.isRequired,
 };
