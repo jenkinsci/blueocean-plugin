@@ -1,22 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import Immutable from 'immutable';
 import { components } from '@jenkins-cd/design-language';
 const { WeatherIcon } = components;
-
-// TODO: Is there something we can do about the new-cap eslint error here
-export const PipelineRecord = Immutable.Record({ // eslint-disable-line new-cap
-    displayName: '',
-    name: '',
-    organization: '',
-    weatherScore: 0,
-    branchNames: null,
-    numberOfFailingBranches: 0,
-    numberOfFailingPullRequests: 0,
-    numberOfSuccessfulBranches: 0,
-    numberOfSuccessfulPullRequests: 0,
-    totalNumberOfBranches: 0,
-    totalNumberOfPullRequests: 0,
-});
 
 export default class Pipeline extends Component {
 
@@ -29,13 +13,13 @@ export default class Pipeline extends Component {
         const { pipeline, simple = false, hack } = this.props;
 
         const {
-      name,
-      weatherScore,
-      numberOfSuccessfulBranches,
-      numberOfFailingBranches,
-      numberOfSuccessfulPullRequests,
-      numberOfFailingPullRequests,
-    } = pipeline;
+            name,
+            weatherScore,
+            numberOfSuccessfulBranches,
+            numberOfFailingBranches,
+            numberOfSuccessfulPullRequests,
+            numberOfFailingPullRequests,
+        } = pipeline;
 
         let multiBranch;
         let multiPr;
@@ -64,6 +48,11 @@ export default class Pipeline extends Component {
         { !simple && <button
           onClick={hack.MultiBranch.bind(null, pipeline)}
         >multiBranch</button>}
+        { !simple &&
+          (numberOfSuccessfulPullRequests > 0 || numberOfFailingPullRequests > 0)
+          && <button
+          onClick={hack.Pr.bind(null, pipeline)}
+        >pr</button>}
         <button
           onClick={hack.Activity.bind(null, pipeline)}
         >Activities</button>

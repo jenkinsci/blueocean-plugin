@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import Pipeline, { PipelineRecord } from './Pipeline';
+import Pipeline from './Pipeline';
+import { pipelineRecord } from './records';
 import Table from './Table';
 
 import { components } from '@jenkins-cd/design-language';
@@ -15,9 +16,9 @@ export default class Pipelines extends Component {
         }
 
         const multiBranch = pipelines.filter(pipeline =>
-            !!new PipelineRecord(pipeline).branchNames);
+            !!new pipelineRecord(pipeline).branchNames);
         const noMultiBranch = pipelines.filter(pipeline =>
-            !new PipelineRecord(pipeline).branchNames);
+            !new pipelineRecord(pipeline).branchNames);
 
         return (
             <Page>
@@ -34,7 +35,7 @@ export default class Pipelines extends Component {
                                 (pipeline, index) => <Pipeline
                                   key={index}
                                   hack={hack}
-                                  pipeline={new PipelineRecord(pipeline)}
+                                  pipeline={new pipelineRecord(pipeline)}
                                 />
                             )}
                             { noMultiBranch.map(
@@ -42,7 +43,7 @@ export default class Pipelines extends Component {
                                   key={index}
                                   hack={hack}
                                   simple
-                                  pipeline={new PipelineRecord(pipeline)}
+                                  pipeline={new pipelineRecord(pipeline)}
                                 />)}
                         </Table>
                     </article>

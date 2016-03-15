@@ -9,6 +9,7 @@ import Pipeline from '../../main/js/components/Pipeline.jsx';
 const
   hack={
     MultiBranch:()=>{},
+    Pr:()=>{},
     Activity:()=>{},
   } ,
   pipelineMulti = {

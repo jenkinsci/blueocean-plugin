@@ -22,7 +22,7 @@ export default class MultiBranch extends Component {
         return (
             <Page>
                 <PageHeader>
-                    <Title><WeatherIcon score={weatherScore} /> <h1>CloudBees / {name}</h1></Title>
+                    <Title><WeatherIcon score={weatherScore} /> CloudBees / {name}</Title>
                 </PageHeader>
                 <main>
                     <article>

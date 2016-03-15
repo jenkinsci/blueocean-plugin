@@ -1,53 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import Immutable from 'immutable';
 import moment from 'moment';
 require('moment-duration-format');
 
-export const ActivityRecord = Immutable.Record({// eslint-disable-line
-    changeSet: [{
-        author: {
-            email: null,
-            fullName: null,
-            id: null,
-        },
-        affectedPaths: null,
-        commitId: null,
-        comment: null,
-        date: null,
-        id: null,
-        msg: null,
-        paths: null,
-        timestamp: null,
-    }],
-    durationInMillis: null,
-    enQueueTime: null,
-    endTime: null,
-    id: null,
-    organization: null,
-    pipeline: null,
-    result: null,
-    runSummary: null,
-    startTime: null,
-    state: null,
-    type: null,
-    commitId: null,
-});
-
-export const ChangeSetRecord = Immutable.Record({// eslint-disable-line
-    author: {
-        email: null,
-        fullName: null,
-        id: null,
-    },
-    affectedPaths: null,
-    commitId: null,
-    comment: null,
-    date: null,
-    id: null,
-    msg: null,
-    paths: null,
-    timestamp: null,
-});
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
  */
@@ -73,7 +27,7 @@ export default class Runs extends Component {
             <td>{data.result}</td>
             <td>{data.id}</td>
             <td>{changeset && changeset.commitId && changeset.commitId.substring(0, 8)}</td>
-            <td>{data.pipeline}</td>
+            <td>{decodeURIComponent(data.pipeline)}</td>
             <td>{changeset && changeset.comment}</td>
             <td>
                 {duration} minutes
@@ -87,4 +41,3 @@ Runs.propTypes = {
     data: PropTypes.object.isRequired,
     changeset: PropTypes.object.isRequired,
 };
-
