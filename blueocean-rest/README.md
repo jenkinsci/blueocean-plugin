@@ -504,8 +504,9 @@ X-TEXT-SIZE is the byte offset of the raw log file client should use in the next
 * start
 
 start query parameter tells API to send log starting from this offset in the log file.
+
     
-## Get Log for a run
+## Get Log for a Pipeline run
 
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0
     
@@ -531,6 +532,8 @@ start query parameter tells API to send log starting from this offset in the log
     [Pipeline] Allocate node : End
     [Pipeline] End of Pipeline
     Finished: SUCCESS
+
+> Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essetnailly a folder hence no logs.
 
 ## Get Log for a pipeline node
 
