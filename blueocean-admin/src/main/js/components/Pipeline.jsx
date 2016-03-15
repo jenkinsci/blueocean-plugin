@@ -75,5 +75,5 @@ export default class Pipeline extends Component {
 Pipeline.propTypes = {
     pipeline: PropTypes.object.isRequired,
     simple: PropTypes.bool,
-    hack: PropTypes.func.isRequired,
+    hack: PropTypes.object.isRequired,
 };
