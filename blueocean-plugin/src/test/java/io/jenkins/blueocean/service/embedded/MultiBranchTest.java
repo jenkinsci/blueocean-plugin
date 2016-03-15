@@ -170,7 +170,8 @@ public class MultiBranchTest {
 
         Response r = given().log().all().get("/organizations/jenkins/pipelines/p/branches");
         r.then().log().all().statusCode(200)
-            .body("latestRun[0].pipeline", Matchers.equalTo("feature1"));
+            .body("latestRun[0].pipeline", Matchers.anyOf(Matchers.equalTo("feature1"),
+                Matchers.equalTo("feature2"), Matchers.equalTo("master")));
 
         String body = r.asString();
         List<String> branchNames = with(body).get("name");
@@ -319,24 +320,64 @@ public class MultiBranchTest {
 
 
 
+    @Test
+    public void getMultiBranchPipelineRunStages() throws Exception {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+        WorkflowRun b1 = p.getLastBuild();
+        assertEquals(1, b1.getNumber());
+        assertEquals(3, mp.getItems().size());
+
+
+        Response r = given().log().all().get("/organizations/jenkins/pipelines/p/branches/master/runs/1/nodes");
+        r.then().log().all().statusCode(200);
+
+
+    }
+
+
     private void setupScm() throws Exception {
         // create git repo
         sampleRepo.init();
-        sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; node {checkout scm; echo readFile('file')}");
+        sampleRepo.write("Jenkinsfile", "stage 'build'\n "+"node {echo 'Building'}\n"+
+            "stage 'test'\nnode { echo 'Testing'}\n"+
+            "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        );
         sampleRepo.write("file", "initial content");
         sampleRepo.git("add", "Jenkinsfile");
         sampleRepo.git("commit", "--all", "--message=flow");
 
         //create feature branch
         sampleRepo.git("checkout", "-b", "feature1");
-        sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; node {checkout scm; echo readFile('file').toUpperCase()}");
+        sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
+            "   stage ('Build'); " +
+            "   echo ('Building'); " +
+            "   stage ('Test'); " +
+            "   echo ('Testing'); " +
+            "   stage ('Deploy'); " +
+            "   echo ('Deploying'); " +
+            "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content1");
         sampleRepo.git("commit", "--all", "--message=tweaked1");
 
         //create feature branch
         sampleRepo.git("checkout", "-b", "feature2");
-        sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; node {checkout scm; echo readFile('file').toUpperCase()}");
+        sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
+            "   stage ('Build'); " +
+            "   echo ('Building'); " +
+            "   stage ('Test'); " +
+            "   echo ('Testing'); " +
+            "   stage ('Deploy'); " +
+            "   echo ('Deploying'); " +
+            "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content2");
         sampleRepo.git("commit", "--all", "--message=tweaked2");

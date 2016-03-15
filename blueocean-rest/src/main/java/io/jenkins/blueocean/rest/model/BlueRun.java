@@ -32,8 +32,10 @@ public abstract class BlueRun extends Resource {
     public static final String STATE = "state";
 
 
+
     /** Date String format */
     public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
 
     /**
      * @return name of the organization
