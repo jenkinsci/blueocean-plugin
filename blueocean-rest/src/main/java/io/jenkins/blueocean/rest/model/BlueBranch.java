@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -44,5 +45,6 @@ public abstract class BlueBranch extends Resource{
      * @return Gives Runs in this pipeline
      */
     @JsonProperty(RUNS)
+    @Navigable
     public abstract BlueRunContainer getRuns();
 }

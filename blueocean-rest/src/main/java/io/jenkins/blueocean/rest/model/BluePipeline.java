@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -45,18 +46,11 @@ public abstract class BluePipeline extends Resource {
     @JsonProperty(WEATHER_SCORE)
     public abstract int getWeatherScore();
 
-
-    //TODO: collections should serailize as reference to the resource or pagination can't be done
-    /**
-     * @return Set of branches available with this pipeline
-     */
-    @JsonProperty(BRANCHES)
-    public abstract BlueBranchContainer getBranches();
-
     /**
      * @return Gives Runs in this pipeline
      */
     @JsonProperty(RUNS)
+    @Navigable
     public abstract BlueRunContainer getRuns();
 
 }

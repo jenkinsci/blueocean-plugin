@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
@@ -66,6 +67,7 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
     /**
      * @return Gives {@link BlueBranchContainer}
      */
+    @Navigable
     public abstract BlueBranchContainer getBranches();
 
     /**
