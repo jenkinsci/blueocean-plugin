@@ -48,12 +48,12 @@ BlueOcean rest API base URL is:
 
 ## Get a Pipeline
 
-    curl -v -X GET  "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test1"
+    curl -v -X GET  "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1"
 
     {
       "organization" : "jenkins",
-      "name" : "test1",
-      "displayName": "test1",
+      "name" : "pipeline1",
+      "displayName": "pipeline1",
       "weatherScore": 100
     }
 
@@ -64,8 +64,8 @@ BlueOcean rest API base URL is:
     [ 
       {
       "organization" : "jenkins",
-      "name" : "test1",
-      "displayName": "test1",
+      "name" : "pipeline1",
+      "displayName": "pipeline1",
       "weatherScore": 100
       } 
     ]
