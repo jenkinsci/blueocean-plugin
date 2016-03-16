@@ -115,7 +115,7 @@ BlueOcean rest API base URL is:
 
 ## Find latest run of a pipeline
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/?q=type:run;organization:jenkins;pipeline:test1;latestOnly:true
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/?q=type:run;organization:jenkins;pipeline:pipeline1;latestOnly:true
     
     [ 
       {
