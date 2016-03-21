@@ -48,8 +48,8 @@ export class Branche extends Component {
             <td><WeatherIcon score={pipeline.weatherScore} /></td>
             <td>{latestRun.result}</td>
             <td>{decodeURIComponent(branch)}</td>
-            <td>{idCommit}</td>
-            <td>{msgCommit}</td>
+            <td>{idCommit || '-'}</td>
+            <td>{msgCommit || '-'}</td>
             <td>{moment(latestRun.endTime).fromNow()}</td>
         </tr>);
     }

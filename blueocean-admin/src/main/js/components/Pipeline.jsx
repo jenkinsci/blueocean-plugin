@@ -33,7 +33,7 @@ export default class Pipeline extends Component {
           | {numberOfFailingPullRequests} failing
       </td>);
         } else {
-            multiBranch = multiPr = (<td></td>);
+            multiBranch = multiPr = (<td> - </td>);
         }
 
         return (<tr key={name}>
