@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-export const pipelineRecord = Immutable.Record({ // eslint-disable-line new-cap
+export const PipelineRecord = Immutable.Record({ // eslint-disable-line new-cap
     displayName: '',
     name: '',
     organization: '',
@@ -14,8 +14,8 @@ export const pipelineRecord = Immutable.Record({ // eslint-disable-line new-cap
     totalNumberOfPullRequests: 0,
 });
 
-export const activityRecord = Immutable.Record({// eslint-disable-line
-    changeSet: changeSetRecord,
+export const ActivityRecord = Immutable.Record({// eslint-disable-line
+    changeSet: ChangeSetRecord,
     durationInMillis: null,
     enQueueTime: null,
     endTime: null,
@@ -30,7 +30,7 @@ export const activityRecord = Immutable.Record({// eslint-disable-line
     commitId: null,
 });
 
-export const changeSetRecord = Immutable.Record({// eslint-disable-line
+export const ChangeSetRecord = Immutable.Record({// eslint-disable-line
     author: {
         email: null,
         fullName: null,
@@ -46,16 +46,16 @@ export const changeSetRecord = Immutable.Record({// eslint-disable-line
     timestamp: null,
 });
 
-export const runsRecords = Immutable.Record({
-    latestRun: activityRecord,
-    name: null,
-    weatherScore: 0,
-    pullRequest: prRecords,
-  }
+export const RunsRecord = Immutable.Record({
+        latestRun: ActivityRecord,
+        name: null,
+        weatherScore: 0,
+        pullRequest: PullRequestRecord,
+    }
 );
 
-export const prRecords = Immutable.Record({
-  pullRequest: {
+export const PullRequestRecord = Immutable.Record({
+    pullRequest: {
         author: null,
         id: null,
         title: null,

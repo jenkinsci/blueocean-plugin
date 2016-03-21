@@ -3,7 +3,7 @@ import AjaxHoc from '../AjaxHoc';
 import Table from './Table';
 import PullRequest from './PullRequest';
 
-import { runsRecords } from './records';
+import { RunsRecord } from './records';
 
 import { components } from '@jenkins-cd/design-language';
 const { Page, PageHeader, Title, WeatherIcon } = components;
@@ -33,7 +33,7 @@ export class PullRequests extends Component {
                 <article>
                     <Table headers={headers}>
                         { data.filter((run) => run.get('pullRequest')).map((run, index) => {
-                            const result = new runsRecords(run.toJS());
+                            const result = new RunsRecord(run.toJS());
                             return (<PullRequest
                                 key={index}
                                 pr={result}

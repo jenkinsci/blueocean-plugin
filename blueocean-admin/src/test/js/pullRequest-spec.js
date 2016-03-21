@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import moment from 'moment';
 
 import PullRequest from '../../main/js/components/PullRequest.jsx';
-import { runsRecords } from '../../main/js/components/records.jsx';
+import { RunsRecord } from '../../main/js/components/records.jsx';
 import { latestRuns as data } from './latestRuns'
 
 const pr = data.filter((run) => run.pullRequest);
@@ -14,7 +14,7 @@ const pr = data.filter((run) => run.pullRequest);
 describe('PullRequest should render', () => {
     let tree = null;
     beforeEach(() => {
-        const immData = new runsRecords(pr[0]);
+        const immData = new RunsRecord(pr[0]);
         tree = sd.shallowRender(<PullRequest pr={immData} />);
     });
 
@@ -23,7 +23,7 @@ describe('PullRequest should render', () => {
         assert.equal(result.length, 5);
         assert.equal(data.length, 2);
         assert.equal(pr.length, 1);
-        const im = new runsRecords(pr[0]);
+        const im = new RunsRecord(pr[0]);
 
     });
 });

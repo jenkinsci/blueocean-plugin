@@ -3,7 +3,7 @@ import AjaxHoc from '../AjaxHoc';
 import Table from './Table';
 import Runs from './Runs';
 
-import { activityRecord, changeSetRecord } from './records';
+import { ActivityRecord, ChangeSetRecord } from './records';
 
 import { components } from '@jenkins-cd/design-language';
 const { Page, PageHeader, Title, WeatherIcon } = components;
@@ -38,13 +38,13 @@ export class Activities extends Component {
                             changeset = run.get('changeSet');
                             if (changeset.size > 0) {
                                 changeset = changeset.toJS();
-                                latestRecord = new changeSetRecord(
+                                latestRecord = new ChangeSetRecord(
                                     changeset[Object.keys(changeset)[0]]);
                             }
                             return (<Runs
                               key={index}
                               changeset={latestRecord}
-                              data={new activityRecord(run)}
+                              data={new ActivityRecord(run)}
                             />);
                         })}
 
