@@ -15,8 +15,8 @@ export default class PullRequest extends Component {
     return (<tr key={latestRun.id}>
         <td>{latestRun.result}</td>
         <td>{latestRun.id}</td>
-        <td>{pullRequest.title}</td>
-        <td>{pullRequest.author}</td>
+        <td>{pullRequest.title || '-'}</td>
+        <td>{pullRequest.author || '-'}</td>
         <td>{moment(latestRun.endTime).fromNow()}</td>
     </tr>);
   }

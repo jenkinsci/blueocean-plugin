@@ -57,7 +57,7 @@ describe("pipeline component simple rendering", () => {
     // simple element has no children
     assert.equal(children[2].type, 'td');
     assert.isObject(children[2].props);
-    assert.isUndefined(children[2].props.children);
+    assert.equal(children[2].props.children, ' - ');
   });
 
 });

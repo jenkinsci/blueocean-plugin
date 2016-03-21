@@ -26,9 +26,9 @@ export default class Runs extends Component {
         return (<tr key={data.id}>
             <td>{data.result}</td>
             <td>{data.id}</td>
-            <td>{changeset && changeset.commitId && changeset.commitId.substring(0, 8)}</td>
+            <td>{changeset && changeset.commitId && changeset.commitId.substring(0, 8)  || '-'}</td>
             <td>{decodeURIComponent(data.pipeline)}</td>
-            <td>{changeset && changeset.comment}</td>
+            <td>{changeset && changeset.comment || '-'}</td>
             <td>
                 {duration} minutes
             </td>
