@@ -1,14 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import AjaxHoc from '../AjaxHoc';
 import Table from './Table';
-import Pr from './Pr';
+import PullRequest from './PullRequest';
 
 import { runsRecords } from './records';
 
 import { components } from '@jenkins-cd/design-language';
 const { Page, PageHeader, Title, WeatherIcon } = components;
 
-export class Prs extends Component {
+export class PullRequests extends Component {
     render() {
         const { pipeline, data, back } = this.props;
 
@@ -34,7 +34,7 @@ export class Prs extends Component {
                     <Table headers={headers}>
                         { data.filter((run) => run.get('pullRequest')).map((run, index) => {
                             const result = new runsRecords(run.toJS());
-                            return (<Pr
+                            return (<PullRequest
                                 key={index}
                                 pr={result}
                             />);
@@ -52,7 +52,7 @@ export class Prs extends Component {
     }
 }
 
-Prs.propTypes = {
+PullRequests.propTypes = {
     pipeline: PropTypes.object.isRequired,
     back: PropTypes.func.isRequired,
     data: PropTypes.object,
@@ -60,6 +60,6 @@ Prs.propTypes = {
 
 const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
 
-export default AjaxHoc(Prs, props => ({
+export default AjaxHoc(PullRequests, props => ({
     url: `${baseUrl}${props.pipeline.name}/branches`,
 }));

@@ -5,20 +5,20 @@ import sd from 'skin-deep';
 import Immutable from 'immutable';
 import moment from 'moment';
 
-import Pr from '../../main/js/components/Pr.jsx';
+import PullRequest from '../../main/js/components/PullRequest.jsx';
 import { runsRecords } from '../../main/js/components/records.jsx';
 import { latestRuns as data } from './latestRuns'
 
 const pr = data.filter((run) => run.pullRequest);
 
-describe('PR should render', () => {
+describe('PullRequest should render', () => {
     let tree = null;
     beforeEach(() => {
         const immData = new runsRecords(pr[0]);
-        tree = sd.shallowRender(<Pr pr={immData} />);
+        tree = sd.shallowRender(<PullRequest pr={immData} />);
     });
 
-    it('does renders the PR with data', () => {
+    it('does renders the PullRequest with data', () => {
         const result = tree.everySubTree('td');
         assert.equal(result.length, 5);
         assert.equal(data.length, 2);
@@ -28,13 +28,13 @@ describe('PR should render', () => {
     });
 });
 
-describe('PR should not render', () => {
+describe('PullRequest should not render', () => {
     let tree = null;
     beforeEach(() => {
-        tree = sd.shallowRender(<Pr />);
+        tree = sd.shallowRender(<PullRequest />);
     });
 
-    it('does renders the PR without data', () => {
+    it('does renders the PullRequest without data', () => {
         assert.isNull(tree.getRenderOutput());
     });
 });

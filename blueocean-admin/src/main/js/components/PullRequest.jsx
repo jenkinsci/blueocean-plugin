@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 
-export default class Pr extends Component {
+export default class PullRequest extends Component {
 
   render() {
     const { pr } = this.props;
@@ -22,6 +22,6 @@ export default class Pr extends Component {
   }
 }
 
-Pr.propTypes = {
+PullRequest.propTypes = {
     pr: PropTypes.object,
 };

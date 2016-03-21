@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import Pipelines from './Pipelines';
 import Activity from './Activity';
 import MultiBranch from './MultiBranch';
-import Prs from './Prs';
+import PullRequests from './PullRequests';
 
 export default class Dashboard extends Component {
 
@@ -74,7 +74,7 @@ export default class Dashboard extends Component {
         }
 
         if (this.state.view === 'pr') {
-            return <Prs pipeline={pipeline} back={back} />;
+            return <PullRequests pipeline={pipeline} back={back} />;
         }
         return null;
     }

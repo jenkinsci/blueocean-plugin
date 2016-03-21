@@ -7,7 +7,7 @@ import { latestRuns as data } from './latestRuns'
 
 const pr = data.filter((run) => run.pullRequest);
 
-import {Prs} from '../../main/js/components/Prs.jsx';
+import {PullRequests} from '../../main/js/components/PullRequests.jsx';
 
 const pipeline = {
     'displayName': 'moreBeers',
@@ -23,37 +23,37 @@ const pipeline = {
     'totalNumberOfPullRequests': 0
 };
 
-describe("Prs should render", () => {
+describe("PullRequests should render", () => {
   let tree = null;
 
   beforeEach(() => {
-    tree = sd.shallowRender(<Prs
+    tree = sd.shallowRender(<PullRequests
       data={ Immutable.fromJS(data)}
       back={() => {}}
       pipeline={ Immutable.fromJS(pipeline)}/>);
   });
 
-  it("does renders the Prs with data", () => {
+  it("does renders the PullRequests with data", () => {
     // does WeatherIcon renders the value from the pipeline?
     const weatherIcon = tree.subTree('WeatherIcon').getRenderOutput();
     assert.isNotNull(weatherIcon);
     assert.isNotNull(weatherIcon.props.score);
     // does data renders?
-    const runs = tree.subTree('Pr').getRenderOutput();
+    const runs = tree.subTree('PullRequest').getRenderOutput();
     assert.isNotNull(runs.props.changeset)
   });
 
 });
 
-describe("Prs should not render", () => {
+describe("PullRequests should not render", () => {
   let tree = null;
 
   beforeEach(() => {
 
-    tree = sd.shallowRender(<Prs/>);
+    tree = sd.shallowRender(<PullRequests/>);
   });
 
-  it("does not renders the Prs without data", () => {
+  it("does not renders the PullRequests without data", () => {
     assert.isNull(tree.getRenderOutput());
   });
 
