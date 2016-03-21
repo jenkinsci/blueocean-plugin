@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import Pipeline, { PipelineRecord } from './Pipeline';
+import Pipeline from './Pipeline';
+import { PipelineRecord } from './records';
 import Table from './Table';
 
 import { components } from '@jenkins-cd/design-language';

@@ -1,14 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import AjaxHoc from '../AjaxHoc';
 import Table from './Table';
-import Runs from './Runs';
+import PullRequest from './PullRequest';
 
-import { ActivityRecord, ChangeSetRecord } from './records';
+import { RunsRecord } from './records';
 
 import { components } from '@jenkins-cd/design-language';
 const { Page, PageHeader, Title, WeatherIcon } = components;
 
-export class Activities extends Component {
+export class PullRequests extends Component {
     render() {
         const { pipeline, data, back } = this.props;
 
@@ -20,9 +20,8 @@ export class Activities extends Component {
           name,
           weatherScore,
         } = pipeline;
-        const headers = ['Status', 'Build', 'Commit', 'Branch', 'Message', 'Duration', 'Completed'];
 
-        let latestRecord = {};
+        const headers = ['Status', 'Latest Build', 'Summary', 'Author', 'Completed'];
 
         return (<Page>
 
@@ -33,18 +32,11 @@ export class Activities extends Component {
             <main>
                 <article>
                     <Table headers={headers}>
-                        { data.map((run, index) => {
-                            let
-                            changeset = run.get('changeSet');
-                            if (changeset.size > 0) {
-                                changeset = changeset.toJS();
-                                latestRecord = new ChangeSetRecord(
-                                    changeset[Object.keys(changeset)[0]]);
-                            }
-                            return (<Runs
-                              key={index}
-                              changeset={latestRecord}
-                              data={new ActivityRecord(run)}
+                        { data.filter((run) => run.get('pullRequest')).map((run, index) => {
+                            const result = new RunsRecord(run.toJS());
+                            return (<PullRequest
+                                key={index}
+                                pr={result}
                             />);
                         })}
 
@@ -60,7 +52,7 @@ export class Activities extends Component {
     }
 }
 
-Activities.propTypes = {
+PullRequests.propTypes = {
     pipeline: PropTypes.object.isRequired,
     back: PropTypes.func.isRequired,
     data: PropTypes.object,
@@ -68,6 +60,6 @@ Activities.propTypes = {
 
 const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
 
-export default AjaxHoc(Activities, props => ({
-    url: `${baseUrl}${props.pipeline.name}/runs`,
+export default AjaxHoc(PullRequests, props => ({
+    url: `${baseUrl}${props.pipeline.name}/branches`,
 }));

@@ -47,7 +47,7 @@ export class Branche extends Component {
         return (<tr key={branch}>
             <td><WeatherIcon score={pipeline.weatherScore} /></td>
             <td>{latestRun.result}</td>
-            <td>{branch}</td>
+            <td>{decodeURIComponent(branch)}</td>
             <td>{idCommit}</td>
             <td>{msgCommit}</td>
             <td>{moment(latestRun.endTime).fromNow()}</td>
@@ -64,5 +64,5 @@ const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
 
 // eslint-disable-next-line
 export default AjaxHoc(Branche, props => ({
-    url: `${baseUrl}${props.pipeline.name}/branches/${props.branch}/runs`,
+    url: `${baseUrl}${props.pipeline.name}/branches/${encodeURIComponent(props.branch)}/runs`,
 }));

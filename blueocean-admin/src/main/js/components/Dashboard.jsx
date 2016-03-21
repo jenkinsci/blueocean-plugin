@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import Pipelines from './Pipelines';
 import Activity from './Activity';
 import MultiBranch from './MultiBranch';
+import PullRequests from './PullRequests';
 
 export default class Dashboard extends Component {
 
@@ -19,10 +20,18 @@ export default class Dashboard extends Component {
 
     showMultiBranchView(pipeline) {
         this.setState({
-            pipeline: pipeline, // eslint-disable-line object-shorthand
+            pipeline,
             view: 'multiBranch',
         });
     }
+
+    showPrView(pipeline) {
+        this.setState({
+            pipeline,
+            view: 'pr',
+        });
+    }
+
     showActivityView(pipeline) {
         this.setState({
             pipeline,
@@ -45,6 +54,7 @@ export default class Dashboard extends Component {
          */
         const hack = {
             MultiBranch: (pipe) => { this.showMultiBranchView(pipe); },
+            Pr: (pipe) => { this.showPrView(pipe); },
             Activity: (pipe) => { this.showActivityView(pipe); },
         };
         if (this.state.view === 'pipelines' && pipelines && pipelines.size > 0) {
@@ -61,6 +71,10 @@ export default class Dashboard extends Component {
 
         if (this.state.view === 'activity') {
             return <Activity pipeline={pipeline} back={back} />;
+        }
+
+        if (this.state.view === 'pr') {
+            return <PullRequests pipeline={pipeline} back={back} />;
         }
         return null;
     }
