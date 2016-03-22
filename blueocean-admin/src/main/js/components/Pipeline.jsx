@@ -9,7 +9,7 @@ export default class Pipeline extends Component {
         this.state = { clicked: false };
     }
 
-    calculateResponse (passing, failing) {
+    calculateResponse(passing, failing) {
         if (failing > 0) {
             return (`${failing} failing`);
         } else if (passing > 0) {
