@@ -25,6 +25,19 @@ const
     'totalNumberOfBranches': 1,
     'totalNumberOfPullRequests': 0
   },
+  pipelineMultiSuccess = {
+    'displayName': 'moreBeersSuccess',
+    'name': 'morebeersSuccess',
+    'organization': 'jenkins',
+    'weatherScore': 0,
+    'branchNames': ['master'],
+    'numberOfFailingBranches': 0,
+    'numberOfFailingPullRequests': 0,
+    'numberOfSuccessfulBranches': 3,
+    'numberOfSuccessfulPullRequests': 3,
+    'totalNumberOfBranches': 3,
+    'totalNumberOfPullRequests': 3
+  },
   pipelineSimple = {
     'displayName': 'beers',
     'name': 'beers',
@@ -35,6 +48,11 @@ const
       hack={hack}
       pipeline={pipelineSimple}
       simple={true}/>
+  ),
+  testElementMultiSuccess = (<Pipeline
+      hack={hack}
+      pipeline={pipelineMultiSuccess}
+      />
   ),
   testElementMulti = (<Pipeline
       hack={hack}
@@ -68,7 +86,7 @@ describe("pipeline component multiBranch rendering", () => {
 
   before('render element', () => renderer.render(testElementMulti));
 
-  it("renders a pipeline", () => {
+  it("renders a pipeline with error branch", () => {
     const
       result = renderer.getRenderOutput(),
       children = result.props.children;
@@ -80,10 +98,30 @@ describe("pipeline component multiBranch rendering", () => {
     assert.isObject(children[2].props);
     // multiBranch has more information
     assert.isDefined(children[2].props.children);
-    assert.equal(children[2].props.children[0], pipelineMulti.numberOfSuccessfulBranches);
-    assert.equal(children[2].props.children[2], pipelineMulti.numberOfFailingBranches);
-    assert.equal(children[3].props.children[0], pipelineMulti.numberOfSuccessfulPullRequests);
-    assert.equal(children[3].props.children[2], pipelineMulti.numberOfFailingPullRequests);
+    assert.equal(children[2].props.children[0], pipelineMulti.numberOfFailingBranches);
+  });
+
+});
+
+describe("pipeline component multiBranch rendering - success", () => {
+  const
+    renderer = createRenderer();
+
+  before('render element', () => renderer.render(testElementMultiSuccess));
+
+  it("renders a pipeline with success branch", () => {
+    const
+      result = renderer.getRenderOutput(),
+      children = result.props.children;
+
+    assert.equal(result.type, 'tr');
+    assert.equal(children[0].props.children, pipelineMultiSuccess.name);
+    // simple element has no children
+    assert.equal(children[2].type, 'td');
+    assert.isObject(children[2].props);
+    // multiBranch has more information
+    assert.isDefined(children[2].props.children);
+    assert.equal(children[2].props.children[0], pipelineMultiSuccess.numberOfSuccessfulBranches);
   });
 
 });

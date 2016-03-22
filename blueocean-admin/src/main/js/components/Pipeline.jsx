@@ -9,6 +9,16 @@ export default class Pipeline extends Component {
         this.state = { clicked: false };
     }
 
+    calculateResponse(passing, failing) {
+        if (failing > 0) {
+            return (`${failing} failing`);
+        } else if (passing > 0) {
+            return (`${passing} passing`);
+        } else {
+            return '-';
+        }
+    }
+
     render() {
         const { pipeline, simple = false, hack } = this.props;
 
@@ -26,12 +36,11 @@ export default class Pipeline extends Component {
 
         if (!simple) {
             multiBranch = (<td>
-          {numberOfSuccessfulBranches} passing
-          | {numberOfFailingBranches} failing
-      </td>);
-            multiPr = (<td>{numberOfSuccessfulPullRequests} passing
-          | {numberOfFailingPullRequests} failing
-      </td>);
+                {this.calculateResponse(numberOfSuccessfulBranches, numberOfFailingBranches)}
+            </td>);
+            multiPr = (<td>
+                {this.calculateResponse(numberOfSuccessfulPullRequests, numberOfFailingPullRequests)}
+            </td>);
         } else {
             multiBranch = multiPr = (<td> - </td>);
         }
