@@ -59,6 +59,7 @@ LoadCountMonitor.prototype.onchange = function(callback) {
 };
 
 function loadBundles(extensionPointId, onBundlesLoaded) {
+
     var jsModules = require('@jenkins-cd/js-modules');
     var loadCountMonitor = new LoadCountMonitor();
 
@@ -100,8 +101,11 @@ function loadBundles(extensionPointId, onBundlesLoaded) {
     // the extension point .js bundle (if not already loaded) for each of the
     // plugins that implement the specified extensionPointId.
     for(var i1 = 0; i1 < extensionPointList.length; i1++) {
+
         var pluginMetadata = extensionPointList[i1];
         var extensions = pluginMetadata.extensions;
+
+        console.log("md", pluginMetadata, "extensions", extensions);
 
         for(var i2 = 0; i2 < extensions.length; i2++) {
             if (extensions[i2].extensionPoint === extensionPointId) {

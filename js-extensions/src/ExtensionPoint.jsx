@@ -2,6 +2,8 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var store = require('./store.js');
 
+// TODO: Move this package to babel, and update this to ES6
+
 var ExtensionPoint = React.createClass({
 
     getInitialState: function () {
@@ -11,7 +13,7 @@ var ExtensionPoint = React.createClass({
 
     componentDidMount: function() {
         var thisEp = this;
-        store.loadExtensions(this.props.name, function(extensions) {
+        ExtensionPoint.registerExtensionPoint(this.props.name, function(extensions) {
             thisEp.setState({
                 extensions: extensions
             });
@@ -26,9 +28,12 @@ var ExtensionPoint = React.createClass({
         this._unmountAllExtensions();
     },
 
-    // TODO: resolve possible differences/inconsistencies between render, _renderAllExtensions and _renderExtension
-    // Something looks wrong with all of that... nested render, render, render
-
+    /**
+     * This method renders the "leaf node" container divs, one for each registered extension, that live in the same
+     * react hierarchy as the &lt;ExtensionPoint&gt; instance itself. As far as our react is concerned, these are
+     * childless divs that are never updated. Actually rendering the extensions themselves is done by
+     * _renderAllExtensions.
+     */
     render: function() {
         var extensions = this.state.extensions;
 
@@ -49,8 +54,15 @@ var ExtensionPoint = React.createClass({
         }
     },
 
+    /**
+     * For each extension, we have created a "leaf node" element in the DOM. This method creates a new react hierarchy
+     * for each, and instructs it to render. From that point on we have a separation that keeps the main app insulated
+     * from any plugin issues that may cause react to throw while updating. Inspired by Nylas N1.
+     */
     _renderAllExtensions: function() {
-        // TODO: This needs to be a lot cleverer if the list of extensions for a specific point can change
+        // NB: This needs to be a lot cleverer if the list of extensions for a specific point can change;
+        // We will need to link each extension with its containing element, in some way that doesn't leak :) Easy in
+        // browsers with WeakMap, less so otherwise.
         const el = ReactDOM.findDOMNode(this);
         if (el) {
             const children = el.children;
@@ -84,11 +96,23 @@ var ExtensionPoint = React.createClass({
         }
     },
 
-    /** Clean up child extensions */
+    /**
+     * Clean up child extensions' react hierarchies. Necessary because they live in their own react hierarchies that
+     * would otherwise not be notified when this is being unmounted.
+     */
     _unmountAllExtensions: function() {
         var children = ReactDOM.findDOMNode(this).children;
         for (var i = 0; i < children.length; i++) {
-            ReactDOM.unmountComponentAtNode(children[i]); // TODO: Can this throw?
+            var child = children[i];
+            try {
+                if (child) {
+                    ReactDOM.unmountComponentAtNode(child);
+                }
+            }
+            catch (err) {
+                // Log and continue, don't want to stop unmounting children
+                console.log("Error unmounting component", child, err);
+            }
         }
     }
 });
@@ -100,6 +124,22 @@ ExtensionPoint.defaultProps = {
 ExtensionPoint.propTypes = {
     name: React.PropTypes.string.isRequired,
     wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element])
+};
+
+/**
+ * Provide a static helper to avoid having to expose the store
+ */
+ExtensionPoint.getExtensions = function getExtensions(name) {
+    return store.getExtensions(name);
+};
+
+/**
+ * Register the existence of an ExtensionPoint and load the extensions. onLoad is (extensions)=>{}
+ */
+ExtensionPoint.registerExtensionPoint = function registerExtensionPoint (name, onLoad) {
+    store.loadExtensions(name, function (extensions) {
+        if (typeof onLoad === "function") onLoad(extensions);
+    });
 };
 
 module.exports = ExtensionPoint;
