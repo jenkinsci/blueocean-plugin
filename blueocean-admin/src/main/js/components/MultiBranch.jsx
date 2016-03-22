@@ -1,14 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import Table from './Table';
+import AjaxHoc from '../AjaxHoc';
 import Branches from './Branches';
 import { components } from '@jenkins-cd/design-language';
+import { RunsRecord } from './records';
 const { WeatherIcon, Page, PageHeader, Title } = components;
 
-export default class MultiBranch extends Component {
+export class MultiBranch extends Component {
     render() {
-        const { pipeline, back } = this.props;
+        const { pipeline, data, back } = this.props;
         // early out
-        if (!pipeline) {
+        if (!data || !pipeline) {
             return null;
         }
         const {
@@ -29,8 +31,11 @@ export default class MultiBranch extends Component {
                         <Table className="multiBranch"
                           headers={headers}
                         >
-                            {pipeline.branchNames.map((branch, index) =>
-                                <Branches key={index} branch={branch} pipeline={pipeline} />)}
+                            {data.map((run, index) => {
+                                    const result = new RunsRecord(run.toJS());
+                                    return <Branches key={index} data={result} />;
+                                })
+                            }
                             <tr>
                                 <td colSpan={headers.length}>
                                     <button className="btn" onClick={back}>Dashboard</button>
@@ -46,4 +51,11 @@ export default class MultiBranch extends Component {
 MultiBranch.propTypes = {
     pipeline: PropTypes.object.isRequired,
     back: PropTypes.func.isRequired,
+    data: PropTypes.object,
 };
+
+const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
+
+export default AjaxHoc(MultiBranch, props => ({
+    url: `${baseUrl}${props.pipeline.name}/branches`,
+}));

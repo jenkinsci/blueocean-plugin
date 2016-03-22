@@ -2,12 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import { createRenderer } from 'react-addons-test-utils';
 import { assert } from 'chai';
 import sd from 'skin-deep';
-import Immutable from 'immutable';
 import moment from 'moment';
 
 import PullRequest from '../../main/js/components/PullRequest.jsx';
 import { RunsRecord } from '../../main/js/components/records.jsx';
-import { latestRuns as data } from './latestRuns'
+import { latestRuns as data } from './latestRuns';
 
 const pr = data.filter((run) => run.pullRequest);
 
