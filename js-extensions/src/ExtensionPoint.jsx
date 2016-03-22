@@ -137,7 +137,7 @@ ExtensionPoint.getExtensions = function getExtensions(name) {
  * Register the existence of an ExtensionPoint and load the extensions. onLoad is (extensions)=>{}
  */
 ExtensionPoint.registerExtensionPoint = function registerExtensionPoint (name, onLoad) {
-    store.loadExtensions(name, (extensions) => {
+    store.loadExtensions(name, function (extensions) {
         if (typeof onLoad === "function") onLoad(extensions);
     });
 };
