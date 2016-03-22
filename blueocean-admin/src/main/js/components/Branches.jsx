@@ -1,7 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import AjaxHoc from '../AjaxHoc';
 import moment from 'moment';
-import _ from 'lodash';
 import { components } from '@jenkins-cd/design-language';
 const { WeatherIcon } = components;
 
