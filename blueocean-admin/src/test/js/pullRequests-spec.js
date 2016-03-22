@@ -3,7 +3,7 @@ import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
 import Immutable from 'immutable';
-import { latestRuns as data } from './latestRuns'
+import { latestRuns as data } from './latestRuns';
 
 const pr = data.filter((run) => run.pullRequest);
 

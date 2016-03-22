@@ -2,24 +2,11 @@ import React from 'react';
 import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
+import Immutable from 'immutable';
+import { latestRuns as data } from './latestRuns';
+import { RunsRecord } from '../../main/js/components/records.jsx';
 
-
-import {Branche} from '../../main/js/components/Branches.jsx';
-
-const
-  pipeline = {
-    'displayName': 'moreBeers',
-    'name': 'morebeers',
-    'organization': 'jenkins',
-    'weatherScore': 0,
-    'branchNames': ['master'],
-    'numberOfFailingBranches': 1,
-    'numberOfFailingPullRequests': 0,
-    'numberOfSuccessfulBranches': 0,
-    'numberOfSuccessfulPullRequests': 0,
-    'totalNumberOfBranches': 1,
-    'totalNumberOfPullRequests': 0
-  };
+import Branches from '../../main/js/components/Branches.jsx';
 
 describe("Branches should render", () => {
   let tree;
@@ -27,15 +14,35 @@ describe("Branches should render", () => {
     renderer = createRenderer();
 
   beforeEach(() => {
-    tree = sd.shallowRender(<Branche pipeline={pipeline} branch={pipeline.branchNames[0]}/>);
+    const branch = new RunsRecord(data[0]);
+    tree = sd.shallowRender(<Branches data={branch} />);
   });
 
   it("renders the Branches", () => {
     const
       row = tree.everySubTree('td')
     ;
+    const weatherIcon =row[0].getRenderOutput();
+    assert.isNotNull(weatherIcon);
+    assert.isNotNull(weatherIcon.props.score);
+    assert.equal(weatherIcon.props.score, data[0].score);
+    // dash for empty or id
+    assert.equal(row[3].getRenderOutput().props.children, data[0].latestRun.changeSet[0].commitId);
     assert.equal(row.length, 6);
   });
+});
 
+describe("Branches should not render", () => {
+  let tree;
+  const
+    renderer = createRenderer();
+
+  beforeEach(() => {
+    tree = sd.shallowRender(<Branches />);
+  });
+
+  it("renders the Branches", () => {
+    assert.isNull(tree.getRenderOutput());
+  });
 });
 
