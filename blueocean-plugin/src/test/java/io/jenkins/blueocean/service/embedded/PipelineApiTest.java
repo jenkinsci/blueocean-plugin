@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -46,6 +47,21 @@ public class PipelineApiTest {
         RestAssured.baseURI = j.jenkins.getRootUrl()+"blue/rest";
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
+
+    @Test
+    public void getFolderPipelineTest() throws IOException {
+        MockFolder folder = j.createFolder("folder1");
+        Project p = folder.createProject(FreeStyleProject.class, "test1");
+
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/test1")
+            .then().log().all()
+            .statusCode(200)
+            .body("organization", Matchers.equalTo("jenkins"))
+            .body("name", Matchers.equalTo("test1"))
+            .body("displayName", Matchers.equalTo("test1"))
+            .body("weatherScore", Matchers.is(p.getBuildHealth().getScore()));
+    }
+
 
     @Test
     public void getPipelineTest() throws IOException {
