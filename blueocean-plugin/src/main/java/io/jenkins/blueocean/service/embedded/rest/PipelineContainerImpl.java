@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.BuildableItem;
 import hudson.model.Job;
-import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -10,7 +9,6 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,11 +19,11 @@ import java.util.List;
 public class PipelineContainerImpl extends BluePipelineContainer {
     @Override
     public BluePipeline get(String name) {
-        TopLevelItem p = Jenkins.getActiveInstance().getItem(name);
-        if(p instanceof Job){
-            return new PipelineImpl((Job)p);
-        }else if (p instanceof MultiBranchProject) {
-            return new MultiBranchPipelineImpl((MultiBranchProject) p);
+
+        for (BluePipeline bluePipeline : this) {
+            if (bluePipeline.getName().equals(name)) {
+                return bluePipeline;
+            }
         }
 
         // TODO: I'm going to turn this into a decorator annotation
