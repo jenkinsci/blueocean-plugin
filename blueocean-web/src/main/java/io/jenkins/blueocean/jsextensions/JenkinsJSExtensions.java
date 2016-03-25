@@ -23,11 +23,10 @@
  */
 package io.jenkins.blueocean.jsextensions;
 
-import hudson.PluginManager;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.PluginWrapper;
 import jenkins.model.Jenkins;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -40,6 +39,8 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -49,77 +50,82 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Restricted(NoExternalUse.class)
 public class JenkinsJSExtensions {
-
+    public static final JenkinsJSExtensions INSTANCE = new JenkinsJSExtensions();
     private static  final Logger LOGGER = LoggerFactory.getLogger(JenkinsJSExtensions.class);
-
+    private final ObjectMapper mapper = new ObjectMapper();
+    
     /**
-     * The list of active plugins "as we know it". Used to determine if plugins have
+     * The list of active pluginCache "as we know it". Used to determine if pluginCache have
      * been installed, uninstalled, deactivated etc.
      * <p>
      * We only do this because there's no jenkins mechanism for "listening" to
      * changes in the active plugin list.
      */
-    private static List<PluginWrapper> lastKnownPluginList;
-    /**
-     * The {@code jenkins-js-extension} data for the plugins in {@code lastKnownPluginList}.
-     * Starts with an empty array.
-     */
-    private static byte[] lastKnownPluginExtensionData = toBytes(new JSONArray());
+    private final List<PluginWrapper> pluginCache = new CopyOnWriteArrayList<>();
 
-    public static byte[] getJenkinsJSExtensionData() {
-        List<PluginWrapper> activePluginList = getActivePlugins();
+    private JenkinsJSExtensions() {
+    }
 
-        if (!activePluginList.equals(lastKnownPluginList)) {
-            JSONArray responseData = new JSONArray();
-            // The active plugin list has changed in some way. Lets gather the info
-            // for the new list.
-            if (!activePluginList.isEmpty()) {
-                //
-                try {
-                    for (PluginWrapper pluginWrapper : activePluginList) {
-                        Enumeration<URL> dataResources = pluginWrapper.classLoader.getResources("jenkins-js-extension.json");
-                        while (dataResources.hasMoreElements()) {
-                            URL dataRes = dataResources.nextElement();
-                            StringWriter fileContentBuffer = new StringWriter();
 
-                            LOGGER.debug("Reading 'jenkins-js-extension.json' from '{}'.", dataRes);
+    private final Map<String, Map> jsExtensionCache = new ConcurrentHashMap<>();
 
-                            try {
-                                IOUtils.copy(dataRes.openStream(), fileContentBuffer, Charset.forName("UTF-8"));
-                                responseData.add(JSONObject.fromObject(fileContentBuffer.toString()));
-                            } catch (Exception e) {
-                                LOGGER.error("Error reading 'jenkins-js-extension.json' from '" + dataRes + "'. Extensions defined in the host plugin will not be active.", e);
-                            }
+
+    public byte[] getJenkinsJSExtensionData() {
+        try {
+            refreshCacheIfNeeded();
+            return mapper.writeValueAsBytes(jsExtensionCache.values());
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Failed to serialize to JSON: "+e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getGav(Map ext){
+        return ext.get("hpiPluginId") != null ? (String)ext.get("hpiPluginId") : null;
+    }
+
+    private void refreshCacheIfNeeded(){
+        List<PluginWrapper> latestPlugins = Jenkins.getActiveInstance().getPluginManager().getPlugins();
+        if(!latestPlugins.equals(pluginCache)){
+            refreshCache(latestPlugins);
+        }
+    }
+    private synchronized void refreshCache(List<PluginWrapper> latestPlugins){
+        if(!latestPlugins.equals(pluginCache)) {
+            pluginCache.clear();
+            pluginCache.addAll(latestPlugins);
+            refreshCache(pluginCache);
+        }
+        for (PluginWrapper pluginWrapper : pluginCache) {
+            //skip probing plugin if already read
+            if (jsExtensionCache.get(pluginWrapper.getLongName()) != null) {
+                continue;
+            }
+            try {
+                Enumeration<URL> dataResources = pluginWrapper.classLoader.getResources("jenkins-js-extension.json");
+                while (dataResources.hasMoreElements()) {
+                    URL dataRes = dataResources.nextElement();
+                    StringWriter fileContentBuffer = new StringWriter();
+
+                    LOGGER.debug("Reading 'jenkins-js-extension.json' from '{}'.", dataRes);
+
+                    try {
+                        IOUtils.copy(dataRes.openStream(), fileContentBuffer, Charset.forName("UTF-8"));
+                        Map ext = mapper.readValue(dataRes.openStream(), Map.class);
+                        String pluginId = getGav(ext);
+                        if (pluginId != null) {
+                            jsExtensionCache.put(pluginId, ext);
+                        } else {
+                            LOGGER.error(String.format("Plugin %s JS extension has missing hpiPluginId", pluginWrapper.getLongName()));
                         }
+                    } catch (Exception e) {
+                        LOGGER.error("Error reading 'jenkins-js-extension.json' from '" + dataRes + "'. Extensions defined in the host plugin will not be active.", e);
                     }
-
-                } catch (IOException e) {
-                    LOGGER.error("Error scanning the classpath for 'jenkins-js-extension.json' files. Plugin contributed extensions will not be active.", e);
                 }
-            }
-
-            lastKnownPluginList = activePluginList;
-            lastKnownPluginExtensionData = toBytes(responseData);
-        }
-
-        return lastKnownPluginExtensionData;
-    }
-
-    private static List<PluginWrapper> getActivePlugins() {
-        PluginManager pluginManager = Jenkins.getActiveInstance().getPluginManager();
-        List<PluginWrapper> allPlugins = pluginManager.getPlugins();
-        List<PluginWrapper> activePlugins = new CopyOnWriteArrayList<>();
-
-        for (PluginWrapper plugin : allPlugins) {
-            if (plugin.isActive()) {
-                activePlugins.add(plugin);
+            } catch (IOException e) {
+                LOGGER.error(String.format("Error locating jenkins-js-extension.json for plugin %s", pluginWrapper.getLongName()));
             }
         }
-
-        return activePlugins;
     }
 
-    private static byte[] toBytes(JSONArray jsonObjects) {
-        return jsonObjects.toString().getBytes(Charset.forName("UTF-8"));
-    }
 }
