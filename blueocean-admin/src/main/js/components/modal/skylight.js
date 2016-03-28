@@ -94,27 +94,13 @@ class SkyLight extends React.Component {
             <section className="skylight-wrapper">
                 {overlay}
                 <div style={dialogStyles}>
-                    <div style={{
-                        padding: '25px 20px 25px 50px',
-                        backgroundColor: '#168BB9',
-                        color: '#ffffff',
-                        fontSize: '18px',
-                        fontWeight: 'normal',
-                        width: '100%',
-                        top: 'auto',
-                    }}>
+                    <div style={styles.header}>
                         <a onClick={() => this.hide()} role="button" style={closeButtonStyle}>&times;</a>
                         {
                             header ? header : <Header {...titleStyle} {...rest} close={() => this.hide()}/>
                         }
                     </div>
-                    <div style={{
-                            backgroundColor: '#FFF',
-                            color: '#000',
-                            overflow: 'auto',
-                            padding: '25px 20px 25px 50px',
-                        }
-                    }>
+                    <div style={styles.content}>
                         {
                             body ? body : <span>no</span>
                         }
