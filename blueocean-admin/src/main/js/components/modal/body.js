@@ -7,14 +7,20 @@ class Body extends Component {
         const {
             props: {
                 children,
+                body = 'no body'
             },
         } = this;
-        return children;
+      if (children) {
+          return children;
+      } else {
+          return (<span>{body}</span>);
+      }
     }
 }
 
 Body.propTypes = {
     children: PropTypes.node,
+    body: PropTypes.string,
 };
 
 export default Body;

@@ -1,6 +1,7 @@
-const styles = {
+const defaultStyles = {
     overlayStyles: {
         position: 'fixed',
+        display: 'block',
         top: 0,
         left: 0,
         width: '100%',
@@ -10,6 +11,7 @@ const styles = {
     },
     dialogStyles: {
         width: '98%',
+        display: 'block',
         height: '98%',
         position: 'absolute',
         top: '1%',
@@ -50,4 +52,4 @@ const styles = {
     }
 };
 
-export default styles;
+export default defaultStyles;

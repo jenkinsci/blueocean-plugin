@@ -5,16 +5,15 @@ class Header extends Component {
         const {
             props: {
                 children,
-                title,
+                title = 'no title',
                 titleStyle
                 },
             } = this;
-
         if (children) {
             return children;
         } else {
             return (
-                <h2 style={titleStyle}>{title || 'no title'}</h2>
+                <h2 style={titleStyle} className="title">{title}</h2>
             );
         }
 
