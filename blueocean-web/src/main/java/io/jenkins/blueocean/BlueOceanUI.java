@@ -3,17 +3,15 @@ package io.jenkins.blueocean;
 import hudson.Extension;
 import hudson.ExtensionList;
 import io.jenkins.blueocean.jsextensions.JenkinsJSExtensions;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.verb.GET;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 /**
  * Root of Blue Ocean UI
@@ -45,9 +43,9 @@ public class BlueOceanUI {
 
     // TODO: Look into using new Stapler stuff for doing this.
     @Restricted(DoNotUse.class)
+    @GET
     public HttpResponse doJavaScriptExtensionInfo() {
-        byte[] responseData = JenkinsJSExtensions.getJenkinsJSExtensionData();
-        return new JsonResponse(responseData);
+        return new JsonResponse(JenkinsJSExtensions.INSTANCE.getJenkinsJSExtensionData());
     }
 
     private class JsonResponse implements HttpResponse {
@@ -61,7 +59,6 @@ public class BlueOceanUI {
         @Override
         public void generateResponse(StaplerRequest staplerRequest, StaplerResponse staplerResponse, Object o) throws IOException, ServletException {
             staplerResponse.setContentType("application/json; charset=UTF-8");
-            staplerResponse.setContentLength(data.length);
             staplerResponse.getOutputStream().write(data);
         }
     }
