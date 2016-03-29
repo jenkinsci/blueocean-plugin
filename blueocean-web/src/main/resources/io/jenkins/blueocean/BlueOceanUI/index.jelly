@@ -11,6 +11,7 @@
 
         <head data-rooturl="${rootURL}"
               data-resurl="${resURL}"
+              data-appurl="${rootURL}/${it.uIUrlBase}"
               data-adjuncturl="${rootURL}/${j.getAdjuncts('').rootURL}">
 
             <title>Jenkins Blue Ocean</title>
@@ -30,7 +31,7 @@
         </head>
 
         <body>
-            <!-- App -->
+            <!-- App root -->
             <div id="root" class="container-fluid">Loading...</div>
             <!--
             The following Stapler adjunct adds the blueocean JavaScript bundle, as well

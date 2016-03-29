@@ -23,14 +23,24 @@ import java.nio.charset.Charset;
 @Extension
 public class BlueOceanUI {
     /**
-     * Exposes {@link RootRoutable}s to the URL space.
+     * Exposes {@link RootRoutable}s to the URL space. Returns <code>this</code> if none found, allowing the UI to
+     * resolve routes. This also has the side effect that we won't be able to generate 404s for any URL that *might*
+     * resolve to a valid UI route. If and when we implement server-side rendering of initial state or to solidify the
+     * routes on the back-end for real 404s, we'll need to complicate this behaviour :D
      */
-    public RootRoutable getDynamic(String route) {
+    public Object getDynamic(String route) {
         for (RootRoutable r : ExtensionList.lookup(RootRoutable.class)) {
             if (r.getUrlName().equals(route))
                 return r;
         }
-        return null;
+        return this;
+    }
+
+    /**
+     * The base of all BlueOcean URLs (underneath wherever Jenkins itself is deployed).
+     */
+    public String getUIUrlBase() {
+        return "blue";
     }
 
     // TODO: Look into using new Stapler stuff for doing this.
@@ -54,5 +64,5 @@ public class BlueOceanUI {
             staplerResponse.setContentLength(data.length);
             staplerResponse.getOutputStream().write(data);
         }
-    };
+    }
 }

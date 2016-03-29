@@ -1,13 +1,18 @@
 {
   "name": "blueocean-web",
   "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudbees/blueocean.git"
+  },
   "scripts": {
     "lint": "gulp lint --silent",
     "lint:fix": "gulp lint --fixLint --silent",
     "test": "gulp test --silent",
-    "retest": "gulp retest --silent",
-    "bundle": "gulp bundle --silent",
-    "rebundle": "gulp rebundle --silent"
+    "retest": "gulp retest",
+    "bundle": "gulp bundle",
+    "rebundle": "gulp rebundle"
   },
   "devDependencies": {
     "@jenkins-cd/js-builder": "0.0.14",
@@ -21,12 +26,13 @@
     "zombie": "^4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0",
-    "@jenkins-cd/js-extensions": "0.0.7",
+    "@jenkins-cd/design-language": "^0.x",
+    "@jenkins-cd/js-extensions": "^0.x",
     "@jenkins-cd/js-modules": "^0.x",
     "jquery-detached": "^2.1.4-v4",
-    "react": "^0.14.5",
-    "react-dom": "^0.14.5",
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7",
+    "react-router": "^2.0.1",
     "window-handle": "^1.0.0"
   }
 }
