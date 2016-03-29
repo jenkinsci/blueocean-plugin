@@ -62,9 +62,9 @@ public class JenkinsJSExtensionsTest {
         // result in the same object instance being returned because the list of plugin
         // has not changed i.e. we have a simple optimization in there where we only scan
         // the classpath if the active plugin lust has changed.
-        Assert.assertSame(
-            JenkinsJSExtensions.getJenkinsJSExtensionData(),
-            JenkinsJSExtensions.getJenkinsJSExtensionData()
+        Assert.assertArrayEquals(
+            JenkinsJSExtensions.INSTANCE.getJenkinsJSExtensionData(),
+            JenkinsJSExtensions.INSTANCE.getJenkinsJSExtensionData()
         );
     }
 }
