@@ -19,23 +19,25 @@ const styles = {
         zIndex: 100,
         boxShadow: '0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28)'
     },
-    header: {
+    headerStyle: {
         padding: '25px 20px 25px 50px',
         backgroundColor: '#168BB9',
         color: '#ffffff',
         fontSize: '18px',
         fontWeight: 'normal',
         overflowY: 'auto',
-        maxHeight: '30%'
+        maxHeight: '20%',
+        minHeight: '5%'
     },
-    content: {
+    contentStyle: {
         backgroundColor: '#FFF',
         color: '#000',
         overflowY: 'auto',
-        maxHeight: '92%',
+        maxHeight: '90%',
+        minHeight: '75%',
         padding: '25px 20px 25px 50px',
     },
-    title: {
+    titleStyle: {
         marginTop: '0'
     },
     closeButtonStyle: {

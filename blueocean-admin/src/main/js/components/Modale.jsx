@@ -13,24 +13,11 @@ class Modale extends Component {
         return (
             <div>
                 <section>
-                    <h1>React SkyLight</h1>
                     <button onClick={() => this.refs.simpleDialog.show()}>Open Modal</button>
                 </section>
                 <SkyLight hideOnOverlayClicked
                           ref="simpleDialog">
-
-                    <Header>
-                        <ul>
-                            <li>Lorem ipsum dolor sit amet, impetus dissentiunt vix ne. Vix accumsan adipisci no, ius no populo voluptaria, no eam viderer appareat persequeris. Ex harum tollit nullam mea. Mei sanctus placerat ut, ad mei recusabo instructior, quo eu nonumes deleniti principes. Ceteros oportere aliquando ei pro, et dolores forensibus quo, te zril adolescens vix. Pro at illum dicit referrentur, fabellas conclusionemque ne nam.
-                            </li>
-                            <li>
-                                Mel nonumes salutandi cu, cu cum nobis altera. Nibh facilis fabellas quo ut, ex decore legere commodo est. Eum et errem ludus dolorem, ut eam offendit suavitate similique. No eirmod malorum eligendi pri. Nec an illum iracundia dissentias, ad solum justo facete vis, dicam aperiri fuisset vel et. Ne vim facilisis assueverit philosophia, an intellegebat consequuntur mei, soleat eruditi apeirian in duo.
-                            </li>
-                            <li>
-                                No duo mazim labores sensibus, eum delenit indoctum instructior in. Vero primis vix te, ne sit eros porro repudiandae. Per platonem intellegam adversarium an. His et lorem animal labores, duo iudico ubique suscipit id.
-                            </li>
-                        </ul>
-                    </Header>
+                    <Header title="Hi, xxx simple modal"/>
 
                     <Body>
                         <ul>

@@ -14,7 +14,7 @@ class Header extends Component {
             return children;
         } else {
             return (
-                <h2 style={titleStyle}>{title}</h2>
+                <h2 style={titleStyle}>{title || 'no title'}</h2>
             );
         }
 

@@ -10,22 +10,30 @@ class SkyLight extends React.Component {
     }
 
     componentWillUpdate(nextProps, nextState) {
-        if (nextState.isVisible && !this.state.isVisible && this.props.beforeOpen) {
-            this.props.beforeOpen();
+
+        const {isVisible} = this.state;
+        const {beforeOpen, beforeClose} = this.props;
+
+        if (nextState.isVisible && !isVisible && beforeOpen) {
+            beforeOpen();
         }
 
-        if (!nextState.isVisible && this.state.isVisible && this.props.beforeClose) {
-            this.props.beforeClose();
+        if (!nextState.isVisible && isVisible && beforeClose) {
+            beforeClose();
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (!prevState.isVisible && this.state.isVisible && this.props.afterOpen) {
-            this.props.afterOpen();
+
+        const {isVisible} = this.state;
+        const {afterOpen, afterClose} = this.props;
+
+        if (!prevState.isVisible && isVisible && afterOpen) {
+            afterOpen();
         }
 
-        if (prevState.isVisible && !this.state.isVisible && this.props.afterClose) {
-            this.props.afterClose();
+        if (prevState.isVisible && !isVisible && afterClose) {
+            afterClose();
         }
     }
 
@@ -38,16 +46,27 @@ class SkyLight extends React.Component {
     }
 
     onOverlayClicked() {
-        if (this.props.hideOnOverlayClicked) {
+        const {hideOnOverlayClicked, onOverlayClicked } = this.props;
+        if (hideOnOverlayClicked) {
             this.hide();
-            if (this.props.onOverlayClicked) {
-                this.props.onOverlayClicked();
+            if (onOverlayClicked) {
+                onOverlayClicked();
             }
         }
 
-        if (this.props.onOverlayClicked) {
-            this.props.onOverlayClicked();
+        if (onOverlayClicked) {
+            onOverlayClicked();
         }
+    }
+
+    getStyles() {
+        const styleArray = ['dialogStyles', 'overlayStyles', 'closeButtonStyle', 'titleStyle', 'headerStyle', 'contentStyle'];
+        let returnObject = {};
+        styleArray.map((item) =>{
+            returnObject[item] = Object.assign({}, styles[item], this.props[item]);
+        });
+        return returnObject;
+
     }
 
     getParts(children, part) {
@@ -59,12 +78,17 @@ class SkyLight extends React.Component {
     }
 
     render() {
-        var overlay;
+        let overlay;
 
-        var dialogStyles = Object.assign({}, styles.dialogStyles, this.props.dialogStyles);
-        var overlayStyles = Object.assign({}, styles.overlayStyles, this.props.overlayStyles);
-        var closeButtonStyle = Object.assign({}, styles.closeButtonStyle, this.props.closeButtonStyle);
-        var titleStyle = Object.assign({}, styles.title, this.props.titleStyle);
+        const {
+            dialogStyles,
+            overlayStyles,
+            closeButtonStyle,
+            titleStyle,
+            contentStyle,
+            headerStyle,
+        } = this.getStyles();
+
 
         if (this.state.isVisible) {
             overlayStyles.display = 'block';
@@ -84,28 +108,25 @@ class SkyLight extends React.Component {
                 ...rest,
                 },
             } = this;
-        const header = this.getParts(children, 'Header');
+
+        const head = this.getParts(children, 'Header');
         const body = this.getParts(children, 'Body');
-
-        console.log('header', header, 'body', body);
-
 
         return (
             <section className="skylight-wrapper">
                 {overlay}
                 <div style={dialogStyles}>
-                    <div style={styles.header}>
+                    <div style={headerStyle}>
                         <a onClick={() => this.hide()} role="button" style={closeButtonStyle}>&times;</a>
                         {
-                            header ? header : <Header {...titleStyle} {...rest} close={() => this.hide()}/>
+                            head ? head : <Header {...titleStyle} {...rest} close={() => this.hide()}/>
                         }
                     </div>
-                    <div style={styles.content}>
+                    <div style={contentStyle}>
                         {
-                            body ? body : <span>no</span>
+                            body ? body : <span>no body</span>
                         }
                     </div>
-
 
                 </div>
             </section>
