@@ -29,6 +29,7 @@
     "@jenkins-cd/design-language": "^0.x",
     "@jenkins-cd/js-extensions": "^0.x",
     "@jenkins-cd/js-modules": "^0.x",
+    "history": "^2.0.1",
     "jquery-detached": "^2.1.4-v4",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
