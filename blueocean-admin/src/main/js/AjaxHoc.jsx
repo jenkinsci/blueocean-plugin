@@ -8,9 +8,6 @@ function placeholder(props) {
 // FIXME: We should rename this to something clearer and lose the capital A if we're going to keep it.
 export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder) {
 
-    // Keep track of the last used URL, so we won't re-load it
-    let lastURL = null;
-
     return class extends Component {
         constructor(props) {
             super(props);
@@ -19,6 +16,7 @@ export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder
             const url = getURLFromProps(props);
 
             this.state = {data, url};
+            this._lastUrl = null; // Keeping this out of the react state so we can set it any time
         }
 
         componentWillReceiveProps(nextProps) {
@@ -32,13 +30,12 @@ export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder
 
         maybeLoad() {
             const {url} = this.state;
-
-            if (url && url != lastURL) {
-                lastURL = url;
+            if (url && url != this._lastUrl) {
+                this._lastUrl = url;
                 this.fetchPipelineData(data => {
                     // eslint-disable-next-line
                     this.setState({
-                        data: Immutable.fromJS(data),
+                        data: Immutable.fromJS(data)
                     });
                 });
             }
