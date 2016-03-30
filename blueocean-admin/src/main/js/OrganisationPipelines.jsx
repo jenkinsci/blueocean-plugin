@@ -38,7 +38,7 @@ OrganisationPipelines.childContextTypes = {
     pipeline: PropTypes.object
 };
 
-const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
-
 // eslint-disable-next-line
-export default AjaxHoc(OrganisationPipelines, props => baseUrl);
+export default AjaxHoc(OrganisationPipelines, (props, config) =>
+     `${config.getAppURLBase()}/rest/organizations/jenkins/pipelines/`);
+

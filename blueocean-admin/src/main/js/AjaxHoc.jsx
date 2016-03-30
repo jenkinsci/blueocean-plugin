@@ -1,27 +1,36 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import Immutable from 'immutable';
 
-function placeholder(props) {
+function placeholder(...ignored) {
     return null;
 }
 
 // FIXME: We should rename this to something clearer and lose the capital A if we're going to keep it.
 export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder) {
 
-    return class extends Component {
+    class Wrapped extends Component {
         constructor(props) {
             super(props);
 
             const data = null;
-            const url = getURLFromProps(props);
+            const url = null;
 
             this.state = {data, url};
             this._lastUrl = null; // Keeping this out of the react state so we can set it any time
         }
 
-        componentWillReceiveProps(nextProps) {
-            const url = getURLFromProps(nextProps);
+        checkUrl(props) {
+            const config = this.context.config;
+            const url = getURLFromProps(props, config);
             this.setState({url}, () => this.maybeLoad());
+        }
+
+        componentWillReceiveProps(nextProps) {
+           this.checkUrl(nextProps);
+        }
+
+        componentWillMount() {
+            this.checkUrl(this.props);
         }
 
         componentDidMount() {
@@ -76,5 +85,11 @@ export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder
             xmlhttp.open('GET', url, true);
             xmlhttp.send();
         }
+    }
+
+    Wrapped.contextTypes = {
+        config: PropTypes.object
     };
+
+    return Wrapped;
 }

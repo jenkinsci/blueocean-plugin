@@ -29,8 +29,8 @@ exports.initialize = function (oncomplete) {
     // Get the extension list metadata from Jenkins.
     // Might want to do some flux fancy-pants stuff for this.
     const $ = require('jquery-detached').getJQuery();
-    const jenkinsRoot = jenkinsMods.getRootURL();
-    $.getJSON(`${jenkinsRoot}/blue/javaScriptExtensionInfo`, (data) => {
+    const appRoot = $("head").data("appurl");
+    $.getJSON(`${appRoot}/javaScriptExtensionInfo`, (data) => {
         extensions.store.setExtensionPointMetadata(data);
         oncomplete();
     });
