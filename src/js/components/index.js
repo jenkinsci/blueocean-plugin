@@ -1,3 +1,4 @@
+export {ModalView, ModalBody, ModalStyles, ModalHeader} from './modal/modalview';
 export {WeatherIcon} from './weather-icon';
 export {Page} from './page';
 export {GlobalHeader, GlobalNav} from './global-header';
