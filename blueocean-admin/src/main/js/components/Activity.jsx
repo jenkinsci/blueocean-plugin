@@ -2,15 +2,19 @@ import React, { Component, PropTypes } from 'react';
 import AjaxHoc from '../AjaxHoc';
 import Table from './Table';
 import Runs from './Runs';
+import { Link } from 'react-router';
+import { urlPrefix } from '../config';
 
 import { ActivityRecord, ChangeSetRecord } from './records';
 
 import { components } from '@jenkins-cd/design-language';
 const { Page, PageHeader, Title, WeatherIcon } = components;
 
-export class Activities extends Component {
+import pipelinePropProvider from './pipelinePropProvider';
+
+export class Activity extends Component {
     render() {
-        const { pipeline, data, back } = this.props;
+        const { pipeline, data } = this.props;
 
         if (!data || !pipeline) {
             return null;
@@ -27,7 +31,7 @@ export class Activities extends Component {
         return (<Page>
 
             <PageHeader>
-                <Title><WeatherIcon score={weatherScore} /> CloudBees / {name}</Title>
+                <Title><WeatherIcon score={weatherScore} /> <h1>CloudBees / {name}</h1></Title>
             </PageHeader>
 
             <main>
@@ -50,7 +54,7 @@ export class Activities extends Component {
 
                         <tr>
                             <td colSpan={headers.length}>
-                                <button onClick={back}>Dashboard</button>
+                                <Link className="btn" to={urlPrefix}>Dashboard</Link>
                             </td>
                         </tr>
                     </Table>
@@ -60,14 +64,13 @@ export class Activities extends Component {
     }
 }
 
-Activities.propTypes = {
-    pipeline: PropTypes.object.isRequired,
-    back: PropTypes.func.isRequired,
+Activity.propTypes = {
+    pipeline: PropTypes.object,
     data: PropTypes.object,
 };
 
 const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
 
-export default AjaxHoc(Activities, props => ({
-    url: `${baseUrl}${props.pipeline.name}/runs`,
-}));
+// Decorated for ajax as well as getting pipeline from context
+export default pipelinePropProvider(AjaxHoc(Activity,
+    props => props.pipeline ? (`${baseUrl}${props.pipeline.name}/runs`) : null));

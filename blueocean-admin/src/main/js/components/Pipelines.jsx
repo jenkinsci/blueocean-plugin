@@ -9,42 +9,31 @@ const { Page, PageHeader, Title } = components;
 export default class Pipelines extends Component {
 
     render() {
-        const { pipelines, hack, link } = this.props;
+        const { pipelines } = this.context;
+
         // Early out
         if (!pipelines) {
-            return null;
+            return <div>No pipelines found.</div>;
         }
 
-        const multiBranch = pipelines.filter(pipeline =>
-            !!new PipelineRecord(pipeline).branchNames);
-        const noMultiBranch = pipelines.filter(pipeline =>
-            !new PipelineRecord(pipeline).branchNames);
+        const pipelineRecords = pipelines
+            .map(data => new PipelineRecord(data))
+            .sort(pipeline => !!pipeline.branchNames);
 
         return (
             <Page>
                 <PageHeader>
-                    <Title>CloudBees {link}</Title>
+                    <Title>
+                        <h1>CloudBees</h1>
+                        <a target="_blank" className="btn-primary" href="/jenkins/view/All/newJob">New Pipeline</a>
+                    </Title>
                 </PageHeader>
                 <main>
                     <article>
-                        <Table
-                          className="multiBranch"
-                          headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}
-                        >
-                            { multiBranch.map(
-                                (pipeline, index) => <Pipeline
-                                  key={index}
-                                  hack={hack}
-                                  pipeline={new PipelineRecord(pipeline)}
-                                />
-                            )}
-                            { noMultiBranch.map(
-                                (pipeline, index) => <Pipeline
-                                  key={index}
-                                  hack={hack}
-                                  simple
-                                  pipeline={new PipelineRecord(pipeline)}
-                                />)}
+                        <Table className="multiBranch" headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
+                            { pipelineRecords
+                                .map(pipeline => <Pipeline key={pipeline.name} pipeline={pipeline}/>)
+                                .toArray() }
                         </Table>
                     </article>
                 </main>
@@ -52,8 +41,6 @@ export default class Pipelines extends Component {
     }
 }
 
-Pipelines.propTypes = {
-    pipelines: PropTypes.object.isRequired,
-    link: PropTypes.object.isRequired,
-    hack: PropTypes.object.isRequired,
+Pipelines.contextTypes = {
+    pipelines: PropTypes.object
 };

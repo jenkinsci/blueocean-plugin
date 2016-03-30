@@ -34,11 +34,10 @@ describe("pipelines", () => {
   let tree;
 
   beforeEach(() => {
-    tree = sd.shallowRender(React.createElement(Pipelines, {
-      pipelines: Immutable.fromJS(pipelines),
-      link: link,
-      hack: hack
-    }));
+      tree = sd.shallowRender(
+          ()=>React.createElement(Pipelines), // For some reason using a fn turns on context
+          {pipelines: Immutable.fromJS(pipelines)}
+      );
   });
 
   it("renders pipelines - check header to be as expected", () => {

@@ -1,5 +1,7 @@
+# Extensions in this plugin
+# NB: "component" currently maps to modules, not "symbols" so make sure to "export default"
 extensions:
   - component: AdminNavLink
     extensionPoint: jenkins.topNavigation.menu
-  - component: OrganisationPipelines
-    extensionPoint: jenkins.main.body
+  - component: PipelineRoutes
+    extensionPoint: jenkins.main.routes
