@@ -18,17 +18,17 @@ export class PullRequests extends Component {
             return null;
         }
         const
-          {
-          name,
-          weatherScore,
-        } = pipeline;
+            {
+                name,
+                weatherScore,
+                } = pipeline;
 
         const headers = ['Status', 'Latest Build', 'Summary', 'Author', 'Completed'];
 
         return (<Page>
 
             <PageHeader>
-                <Title><WeatherIcon score={weatherScore} /> <h1>CloudBees / {name}</h1></Title>
+                <Title><WeatherIcon score={weatherScore}/> <h1>CloudBees / {name}</h1></Title>
             </PageHeader>
 
             <main>
@@ -50,7 +50,7 @@ export class PullRequests extends Component {
                     </Table>
                 </article>
             </main>
-          </Page>);
+        </Page>);
     }
 }
 
@@ -59,8 +59,9 @@ PullRequests.propTypes = {
     data: PropTypes.object,
 };
 
-const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
-
 // Decorated for ajax as well as getting pipeline from context
-export default pipelinePropProvider(AjaxHoc(PullRequests,
-    props => props.pipeline ? (`${baseUrl}${props.pipeline.name}/branches`) : null ));
+export default pipelinePropProvider(AjaxHoc(PullRequests, (props, config) => {
+    if (!props.pipeline) return null;
+    return `${config.getAppURLBase()}/rest/organizations/jenkins` +
+        `/pipelines/${props.pipeline.name}/branches`;
+}));

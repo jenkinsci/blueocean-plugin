@@ -57,9 +57,9 @@ MultiBranch.propTypes = {
     data: PropTypes.object,
 };
 
-const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
-
 // Decorated for ajax as well as getting pipeline from context
-export default pipelinePropProvider(AjaxHoc(MultiBranch,
-    props => props.pipeline ? (`${baseUrl}${props.pipeline.name}/branches`) : undefined));
-
+export default pipelinePropProvider(AjaxHoc(MultiBranch, (props, config) => {
+    if (!props.pipeline) return null;
+    return `${config.getAppURLBase()}/rest/organizations/jenkins` +
+        `/pipelines/${props.pipeline.name}/branches`;
+}));
