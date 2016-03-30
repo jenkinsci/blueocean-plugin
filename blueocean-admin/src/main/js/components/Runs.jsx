@@ -39,9 +39,7 @@ export default class Runs extends Component {
                                                        isVisible={this.state.isVisible}
                                                        afterClose={() => this.setState({isVisible: false})}/>
                 }
-                <a onClick={() => {
-                    this.setState({isVisible: true})
-                }}>
+                <a onClick={() => this.setState({isVisible: true})}>
                     {data.result}
                 </a>
             </td>
