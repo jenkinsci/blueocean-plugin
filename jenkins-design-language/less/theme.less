@@ -581,3 +581,61 @@ footer {
     text-align: center;
     margin: 1em;
 }
+
+// Modal css
+.overlayStyles {
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    zIndex: 99;
+    background-color: rgba(0,0,0,0.3);
+}
+
+.dialog {
+    width: 100%;
+    display: block;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    border-radius: 2px;
+    z-index: 100;
+    box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28);
+}
+
+.dialog .header {
+    padding: 25px 20px 25px 50px;
+    background-color: #168BB9;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: normal;
+    overflow-y: auto;
+    max-height: 20%;
+    min-height: 5%;
+}
+
+.dialog .content {
+    background-color: #FFF;
+    color: #000;
+    overflow-y: auto;
+    max-height: 90%;
+    min-height: 75%;
+    padding: 25px 20px 25px 50px;
+}
+
+.header .title {
+    margin-top: 0
+}
+
+.header .closeButton {
+    cursor: pointer;
+    position: absolute;
+    font-size: 3em;
+    color: #ffffff;
+    right: 20px;
+    top: 5px
+}

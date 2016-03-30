@@ -1,6 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import ModalView from 'react-header-modal';
+
+import { components } from '@jenkins-cd/design-language';
+const { ModalView, ModalBody } = components;
+
 require('moment-duration-format');
 
 /*
@@ -35,9 +38,27 @@ export default class Runs extends Component {
                 {
                     this.state.isVisible && <ModalView hideOnOverlayClicked
                                                        title={`Branch ${name}`}
-                                                       body={JSON.stringify(data)}
                                                        isVisible={this.state.isVisible}
-                                                       afterClose={() => this.setState({isVisible: false})}/>
+                                                       afterClose={() => this.setState({isVisible: false})}>
+                        <ModalBody>
+                            <dl>
+                                <dt>Status</dt>
+                                <dd>{data.result}</dd>
+                                <dt>Build</dt>
+                                <dd>{data.id}</dd>
+                                <dt>Commit</dt>
+                                <dd>{changeset && changeset.commitId && changeset.commitId.substring(0, 8)  || '-'}</dd>
+                                <dt>Branch</dt>
+                                <dd>{name}</dd>
+                                <dt>Message</dt>
+                                <dd>{changeset && changeset.comment || '-'}</dd>
+                                <dt>Duration</dt>
+                                <dd>{duration} minutes</dd>
+                                <dt>Completed</dt>
+                                <dd>{moment(data.endTime).fromNow()}</dd>
+                            </dl>
+                        </ModalBody>
+                    </ModalView>
                 }
                 <a onClick={() => this.setState({isVisible: true})}>
                     {data.result}
