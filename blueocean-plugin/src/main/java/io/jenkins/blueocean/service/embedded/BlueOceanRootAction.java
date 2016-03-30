@@ -30,7 +30,7 @@ public class BlueOceanRootAction implements RootAction, StaplerProxy {
      */
     @Override
     public String getUrlName() {
-        return "blue";
+        return app.getUIUrlBase();
     }
 
     @Override

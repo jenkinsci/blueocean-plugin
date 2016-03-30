@@ -11,7 +11,7 @@
   <artifactId>blueocean-rest</artifactId>
   <packaging>hpi</packaging>
 
-  <name>BlueOcean :: Alpha Plugin</name>
+  <name>BlueOcean :: Rest module</name>
 
   <dependencies>
     <dependency>

@@ -105,8 +105,6 @@ function loadBundles(extensionPointId, onBundlesLoaded) {
         var pluginMetadata = extensionPointList[i1];
         var extensions = pluginMetadata.extensions;
 
-        console.log("md", pluginMetadata, "extensions", extensions);
-
         for(var i2 = 0; i2 < extensions.length; i2++) {
             if (extensions[i2].extensionPoint === extensionPointId) {
                 // This plugin implements the ExtensionPoint.

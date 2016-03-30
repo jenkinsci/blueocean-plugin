@@ -1,16 +1,18 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import AjaxHoc from '../AjaxHoc';
 import Table from './Table';
 import PullRequest from './PullRequest';
-
 import { RunsRecord } from './records';
+import { urlPrefix } from '../config';
+import pipelinePropProvider from './pipelinePropProvider';
 
 import { components } from '@jenkins-cd/design-language';
 const { Page, PageHeader, Title, WeatherIcon } = components;
 
 export class PullRequests extends Component {
     render() {
-        const { pipeline, data, back } = this.props;
+        const { pipeline, data } = this.props;
 
         if (!data || !pipeline) {
             return null;
@@ -26,7 +28,7 @@ export class PullRequests extends Component {
         return (<Page>
 
             <PageHeader>
-                <Title><WeatherIcon score={weatherScore} /> CloudBees / {name}</Title>
+                <Title><WeatherIcon score={weatherScore} /> <h1>CloudBees / {name}</h1></Title>
             </PageHeader>
 
             <main>
@@ -42,7 +44,7 @@ export class PullRequests extends Component {
 
                         <tr>
                             <td colSpan={headers.length}>
-                                <button onClick={back}>Dashboard</button>
+                                <Link className="btn" to={urlPrefix}>Dashboard</Link>
                             </td>
                         </tr>
                     </Table>
@@ -53,13 +55,12 @@ export class PullRequests extends Component {
 }
 
 PullRequests.propTypes = {
-    pipeline: PropTypes.object.isRequired,
-    back: PropTypes.func.isRequired,
+    pipeline: PropTypes.object,
     data: PropTypes.object,
 };
 
 const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
 
-export default AjaxHoc(PullRequests, props => ({
-    url: `${baseUrl}${props.pipeline.name}/branches`,
-}));
+// Decorated for ajax as well as getting pipeline from context
+export default pipelinePropProvider(AjaxHoc(PullRequests,
+    props => props.pipeline ? (`${baseUrl}${props.pipeline.name}/branches`) : null ));

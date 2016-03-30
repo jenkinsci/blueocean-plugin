@@ -1,18 +1,22 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import Table from './Table';
 import AjaxHoc from '../AjaxHoc';
 import Branches from './Branches';
 import { components } from '@jenkins-cd/design-language';
-import { RunsRecord } from './records';
 const { WeatherIcon, Page, PageHeader, Title } = components;
+import { RunsRecord } from './records';
+import { urlPrefix } from '../config';
+import pipelinePropProvider from './pipelinePropProvider';
 
 export class MultiBranch extends Component {
     render() {
-        const { pipeline, data, back } = this.props;
+        const { pipeline, data } = this.props;
         // early out
         if (!data || !pipeline) {
             return null;
         }
+
         const {
             name,
             weatherScore,
@@ -24,7 +28,7 @@ export class MultiBranch extends Component {
         return (
             <Page>
                 <PageHeader>
-                    <Title><WeatherIcon score={weatherScore} /> CloudBees / {name}</Title>
+                    <Title><WeatherIcon score={weatherScore} /> <h1>CloudBees / {name}</h1></Title>
                 </PageHeader>
                 <main>
                     <article>
@@ -38,7 +42,7 @@ export class MultiBranch extends Component {
                             }
                             <tr>
                                 <td colSpan={headers.length}>
-                                    <button className="btn" onClick={back}>Dashboard</button>
+                                    <Link className="btn" to={urlPrefix}>Dashboard</Link>
                                 </td>
                             </tr>
                         </Table>
@@ -49,13 +53,13 @@ export class MultiBranch extends Component {
 }
 
 MultiBranch.propTypes = {
-    pipeline: PropTypes.object.isRequired,
-    back: PropTypes.func.isRequired,
+    pipeline: PropTypes.object,
     data: PropTypes.object,
 };
 
 const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
 
-export default AjaxHoc(MultiBranch, props => ({
-    url: `${baseUrl}${props.pipeline.name}/branches`,
-}));
+// Decorated for ajax as well as getting pipeline from context
+export default pipelinePropProvider(AjaxHoc(MultiBranch,
+    props => props.pipeline ? (`${baseUrl}${props.pipeline.name}/branches`) : undefined));
+

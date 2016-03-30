@@ -4,7 +4,7 @@ import { assert} from 'chai';
 import sd from 'skin-deep';
 import Immutable from 'immutable';
 
-import {Activities} from '../../main/js/components/Activity.jsx';
+import {Activity} from '../../main/js/components/Activity.jsx';
 
 const
   data = [
@@ -148,9 +148,8 @@ describe("Activity should render", () => {
   let tree = null;
 
   beforeEach(() => {
-    tree = sd.shallowRender(<Activities
+    tree = sd.shallowRender(<Activity
       data={ Immutable.fromJS(data)}
-      back={() => {}}
       pipeline={ Immutable.fromJS(pipeline)}/>);
   });
 
@@ -171,7 +170,7 @@ describe("Activity should not render", () => {
 
   beforeEach(() => {
 
-    tree = sd.shallowRender(<Activities/>);
+    tree = sd.shallowRender(<Activity/>);
   });
 
   it("does not renders the Activity without data", () => {
