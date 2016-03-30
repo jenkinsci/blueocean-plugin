@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-
 import { components } from '@jenkins-cd/design-language';
 const { ModalView, ModalBody } = components;
 
