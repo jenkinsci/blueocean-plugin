@@ -15,9 +15,7 @@ $ npm install --save @jenkins-cd/design-languages
 Once installed, you can use the JDL components in the [React] components in your plugin e.g.
   
 ```javascript
-import { components } from '@jenkins-cd/design-language';
-
-const { WeatherIcon } = components;
+import { WeatherIcon } from '@jenkins-cd/design-language';
 
 export default class WeatherIconBox extends Component {
   render() {
