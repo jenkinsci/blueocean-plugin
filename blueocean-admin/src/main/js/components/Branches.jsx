@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import { components } from '@jenkins-cd/design-language';
-const { WeatherIcon } = components;
-
+import { WeatherIcon } from '@jenkins-cd/design-language';
 
 export default class Branches extends Component {
 

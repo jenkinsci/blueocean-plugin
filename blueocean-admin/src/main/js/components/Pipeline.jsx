@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { components } from '@jenkins-cd/design-language';
-const { WeatherIcon } = components;
+import { WeatherIcon } from '@jenkins-cd/design-language';
 
 import { urlPrefix } from '../config';
 

@@ -3,8 +3,7 @@ import Pipeline from './Pipeline';
 import { PipelineRecord } from './records';
 import Table from './Table';
 
-import { components } from '@jenkins-cd/design-language';
-const { Page, PageHeader, Title } = components;
+import { Page, PageHeader, Title } from '@jenkins-cd/design-language';
 
 export default class Pipelines extends Component {
 

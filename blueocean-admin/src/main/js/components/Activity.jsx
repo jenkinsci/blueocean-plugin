@@ -7,8 +7,7 @@ import { urlPrefix } from '../config';
 
 import { ActivityRecord, ChangeSetRecord } from './records';
 
-import { components } from '@jenkins-cd/design-language';
-const { Page, PageHeader, Title, WeatherIcon } = components;
+import { Page, PageHeader, Title, WeatherIcon } from '@jenkins-cd/design-language';
 
 import pipelinePropProvider from './pipelinePropProvider';
 
