@@ -3,7 +3,7 @@
   "jdlName": "jenkins-design-language",
   "version": "0.0.5",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
-  "main": "dist/js/index.js",
+  "main": "dist/js/components/index.js",
   "scripts": {
     "prepublish": "./pre-publish.sh",
     "grunt": "grunt",
