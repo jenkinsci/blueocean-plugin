@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import { components } from '@jenkins-cd/design-language';
-const { ModalView, ModalBody } = components;
+import {  ModalView, ModalBody  } from '@jenkins-cd/design-language';
 
 require('moment-duration-format');
 

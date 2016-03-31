@@ -7,8 +7,7 @@ import { RunsRecord } from './records';
 import { urlPrefix } from '../config';
 import pipelinePropProvider from './pipelinePropProvider';
 
-import { components } from '@jenkins-cd/design-language';
-const { Page, PageHeader, Title, WeatherIcon } = components;
+import {  Page, PageHeader, Title, WeatherIcon } from '@jenkins-cd/design-language';
 
 export class PullRequests extends Component {
     render() {
