@@ -4,7 +4,6 @@ import Table from './Table';
 import AjaxHoc from '../AjaxHoc';
 import Branches from './Branches';
 import { WeatherIcon, Page, PageHeader, Title } from '@jenkins-cd/design-language';
-//const { WeatherIcon, Page, PageHeader, Title } = components;
 import { RunsRecord } from './records';
 import { urlPrefix } from '../config';
 import pipelinePropProvider from './pipelinePropProvider';
