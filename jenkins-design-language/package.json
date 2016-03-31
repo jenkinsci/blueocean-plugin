@@ -1,7 +1,7 @@
 {
   "name": "@jenkins-cd/design-language",
   "jdlName": "jenkins-design-language",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/index.js",
   "scripts": {
@@ -14,6 +14,7 @@
     "James Dumay <jameswdumay@gmail.com>",
     "Josh McDonald <josh@joshmcdonald.info>",
     "Michael Neale <michael.neale@gmail.com>",
+    "Thorsten Scherler <scherler@gmail.com>",
     "tfennelly <tom.fennelly@gmail.com>"
   ],
   "license": "MIT",
