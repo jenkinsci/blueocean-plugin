@@ -15,7 +15,7 @@
     "rebundle": "gulp rebundle"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.16",
+    "@jenkins-cd/js-builder": "0.0.17",
     "@jenkins-cd/js-test": "^1.x",
     "babel-eslint": "^6.0.0",
     "babel-preset-es2015": "^6.5.0",

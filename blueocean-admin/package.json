@@ -10,7 +10,7 @@
     "rebundle": "gulp rebundle"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.16",
+    "@jenkins-cd/js-builder": "0.0.17",
     "@jenkins-cd/js-test": "^1.x",
     "babel": "^6.5.2",
     "babel-core": "^6.6.5",
