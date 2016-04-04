@@ -4,6 +4,7 @@
   "scripts": {
     "lint": "gulp lint --silent",
     "lint:fix": "gulp lint --fixLint --silent",
+    "lint:watch": "gulp lint:watch",
     "test": "gulp test --silent",
     "retest": "gulp retest --silent",
     "bundle": "gulp bundle --silent",
