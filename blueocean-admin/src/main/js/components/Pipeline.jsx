@@ -18,6 +18,10 @@ export default class Pipeline extends Component {
 
     render() {
         const { pipeline } = this.props;
+        // Early out
+        if (!pipeline) {
+            return null;
+        }
         const simple = !pipeline.branchNames;
         const {
             name,
