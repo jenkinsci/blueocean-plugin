@@ -22,12 +22,14 @@ class App extends Component {
         return (
             <div id="outer">
                 <header className="global-header">
+                    <ExtensionPoint name="jenkins.main.header.left"/>
                     <nav>
                         <Link to="/pipelines">Pipelines</Link>
                          <a href="#">Applications</a>
                          <a href="#">Reports</a>
                          <a href="#">Administration</a>
                     </nav>
+                    <ExtensionPoint name="jenkins.main.header.right"/>
                 </header>
                 <main>
                     {this.props.children /* Set by react-router */ }

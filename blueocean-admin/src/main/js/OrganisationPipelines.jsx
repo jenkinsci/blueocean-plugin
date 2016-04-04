@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import AjaxHoc from './AjaxHoc';
 
+
 class OrganisationPipelines extends Component {
 
     getChildContext() {
@@ -41,4 +42,3 @@ OrganisationPipelines.childContextTypes = {
 // eslint-disable-next-line
 export default AjaxHoc(OrganisationPipelines, (props, config) =>
      `${config.getAppURLBase()}/rest/organizations/jenkins/pipelines/`);
-

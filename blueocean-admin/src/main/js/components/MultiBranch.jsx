@@ -7,6 +7,7 @@ import { WeatherIcon, Page, PageHeader, Title } from '@jenkins-cd/design-languag
 import { RunsRecord } from './records';
 import { urlPrefix } from '../config';
 import pipelinePropProvider from './pipelinePropProvider';
+import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
 export class MultiBranch extends Component {
     render() {
@@ -31,6 +32,7 @@ export class MultiBranch extends Component {
                 </PageHeader>
                 <main>
                     <article>
+                        <ExtensionPoint name="jenkins.pipelines.multibranch.top"/>
                         <Table className="multiBranch"
                           headers={headers}
                         >
