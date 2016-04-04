@@ -55,13 +55,13 @@ Here, we simply have two stories for the built-in `button` component. But, you c
 
 #### Configurations for storybook
 
-Now you need to tell Storybook where it should load the stories from. For that, you need to write a simple configuration file. Add the following file to `.storybook/config.js`:
+Now you need to tell Storybook where it should load the stories from. For that, you need to add the new story to the configuration file `.storybook/config.js`:
 
 ```js
 import { configure } from '@kadira/storybook';
 
 function loadStories() {
-  require('../components/stories/button');
+  require('../components/stories/button'); // add this line after the loadStories()
   // require as many as stories you need.
 }
 
