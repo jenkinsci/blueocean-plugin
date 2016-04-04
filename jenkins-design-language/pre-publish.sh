@@ -5,4 +5,4 @@ set -e
 # a "prepublish" when pulling in a local dep, but doesn't run "install" first... 
 # It *also* liket to run "prepublish" after "install" which gives us a loop. 
 test -d "node_modules" || npm install 
-npm run grunt
+npm run gulp
