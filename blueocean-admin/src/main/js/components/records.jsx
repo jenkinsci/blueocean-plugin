@@ -1,6 +1,9 @@
 import Immutable from 'immutable';
-
-export const PipelineRecord = Immutable.Record({ // eslint-disable-line new-cap
+/* We cannot extend Record
+since we would return a function, */
+/* eslint new-cap: [0] */
+const { Record } = Immutable;
+export const PipelineRecord = Record({
     displayName: '',
     name: '',
     organization: '',
@@ -14,23 +17,7 @@ export const PipelineRecord = Immutable.Record({ // eslint-disable-line new-cap
     totalNumberOfPullRequests: 0,
 });
 
-export const ActivityRecord = Immutable.Record({// eslint-disable-line
-    changeSet: ChangeSetRecord,
-    durationInMillis: null,
-    enQueueTime: null,
-    endTime: null,
-    id: null,
-    organization: null,
-    pipeline: null,
-    result: null,
-    runSummary: null,
-    startTime: null,
-    state: null,
-    type: null,
-    commitId: null,
-});
-
-export const ChangeSetRecord = Immutable.Record({// eslint-disable-line
+export const ChangeSetRecord = Record({
     author: {
         email: null,
         fullName: null,
@@ -46,7 +33,32 @@ export const ChangeSetRecord = Immutable.Record({// eslint-disable-line
     timestamp: null,
 });
 
-export const RunsRecord = Immutable.Record({
+export const ActivityRecord = Record({
+    changeSet: ChangeSetRecord,
+    durationInMillis: null,
+    enQueueTime: null,
+    endTime: null,
+    id: null,
+    organization: null,
+    pipeline: null,
+    result: null,
+    runSummary: null,
+    startTime: null,
+    state: null,
+    type: null,
+    commitId: null,
+});
+
+export const PullRequestRecord = Record({
+    pullRequest: {
+        author: null,
+        id: null,
+        title: null,
+        url: null,
+    },
+});
+
+export const RunsRecord = Record({
     latestRun: ActivityRecord,
     name: null,
     weatherScore: 0,
@@ -54,11 +66,3 @@ export const RunsRecord = Immutable.Record({
 }
 );
 
-export const PullRequestRecord = Immutable.Record({
-    pullRequest: {
-        author: null,
-        id: null,
-        title: null,
-        url: null,
-    }
-});

@@ -30,13 +30,15 @@ export default class Runs extends Component {
         }
 
         const afterClose = () => this.setState({ isVisible: false });
+        const open = () => this.setState({ isVisible: true });
         return (<tr key={data.id}>
             <td>
                 {
                     this.state.isVisible && <ModalView hideOnOverlayClicked
                       title={`Branch ${name}`}
                       isVisible={this.state.isVisible}
-                      afterClose={afterClose}>
+                      afterClose={afterClose}
+                    >
                         <ModalBody>
                             <dl>
                                 <dt>Status</dt>
@@ -44,7 +46,12 @@ export default class Runs extends Component {
                                 <dt>Build</dt>
                                 <dd>{data.id}</dd>
                                 <dt>Commit</dt>
-                                <dd>{changeset && changeset.commitId && changeset.commitId.substring(0, 8) || '-'}</dd>
+                                <dd>
+                                    {changeset
+                                        && changeset.commitId
+                                        && changeset.commitId.substring(0, 8) || '-'
+                                    }
+                                </dd>
                                 <dt>Branch</dt>
                                 <dd>{name}</dd>
                                 <dt>Message</dt>
@@ -57,7 +64,7 @@ export default class Runs extends Component {
                         </ModalBody>
                     </ModalView>
                 }
-                <a onClick={() => this.setState({ isVisible: true })}>
+                <a onClick={open}>
                     {data.result}
                 </a>
             </td>

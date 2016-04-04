@@ -25,9 +25,9 @@ export default class Pipelines extends Component {
                     <Title>
                         <h1>CloudBees</h1>
                         <a
-                            target="_blank"
-                            className="btn-primary"
-                            href="/jenkins/view/All/newJob"
+                          target="_blank"
+                          className="btn-primary"
+                          href="/jenkins/view/All/newJob"
                         >
                             New Pipeline
                         </a>
@@ -36,11 +36,13 @@ export default class Pipelines extends Component {
                 <main>
                     <article>
                         <Table
-                            className="multiBranch"
-                            headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
+                          className="multiBranch"
+                          headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}
+                        >
                             { pipelineRecords
                                 .map(pipeline => <Pipeline
-                                    key={pipeline.name} pipeline={pipeline} />)
+                                  key={pipeline.name} pipeline={pipeline}
+                                />)
                                 .toArray() }
                         </Table>
                     </article>
