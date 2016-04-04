@@ -4,11 +4,8 @@ import Table from './Table';
 import Runs from './Runs';
 import { Link } from 'react-router';
 import { urlPrefix } from '../config';
-
 import { ActivityRecord, ChangeSetRecord } from './records';
-
 import { Page, PageHeader, Title, WeatherIcon } from '@jenkins-cd/design-language';
-
 import pipelinePropProvider from './pipelinePropProvider';
 
 export class Activity extends Component {

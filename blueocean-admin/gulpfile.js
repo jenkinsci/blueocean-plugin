@@ -1,7 +1,7 @@
 //
 // See https://github.com/jenkinsci/js-builder
 //
-var builder = require('@jenkins-cd/js-builder');
+var builder = require('xxx-builder');
 
 //
 // Redefine the "test" task to use mocha and support es6.
