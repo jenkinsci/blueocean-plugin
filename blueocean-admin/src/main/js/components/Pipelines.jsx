@@ -24,14 +24,23 @@ export default class Pipelines extends Component {
                 <PageHeader>
                     <Title>
                         <h1>CloudBees</h1>
-                        <a target="_blank" className="btn-primary" href="/jenkins/view/All/newJob">New Pipeline</a>
+                        <a
+                            target="_blank"
+                            className="btn-primary"
+                            href="/jenkins/view/All/newJob"
+                        >
+                            New Pipeline
+                        </a>
                     </Title>
                 </PageHeader>
                 <main>
                     <article>
-                        <Table className="multiBranch" headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
+                        <Table
+                            className="multiBranch"
+                            headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
                             { pipelineRecords
-                                .map(pipeline => <Pipeline key={pipeline.name} pipeline={pipeline} />)
+                                .map(pipeline => <Pipeline
+                                    key={pipeline.name} pipeline={pipeline} />)
                                 .toArray() }
                         </Table>
                     </article>
@@ -41,5 +50,5 @@ export default class Pipelines extends Component {
 }
 
 Pipelines.contextTypes = {
-    pipelines: PropTypes.object
+    pipelines: PropTypes.object,
 };

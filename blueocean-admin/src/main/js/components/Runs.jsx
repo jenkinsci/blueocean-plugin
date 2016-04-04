@@ -22,22 +22,21 @@ export default class Runs extends Component {
             duration = moment.duration(
                 Number(data.durationInMillis), 'milliseconds').format('hh:mm:ss');
 
-        const
-            durationArray = duration.split(':'),
-            name = decodeURIComponent(data.pipeline)
-            ;
+        const durationArray = duration.split(':');
+        const name = decodeURIComponent(data.pipeline);
 
         if (durationArray.length === 1) {
             duration = `00:${duration}`;
         }
 
+        const afterClose = () => this.setState({ isVisible: false });
         return (<tr key={data.id}>
             <td>
                 {
                     this.state.isVisible && <ModalView hideOnOverlayClicked
                       title={`Branch ${name}`}
                       isVisible={this.state.isVisible}
-                      afterClose={() => this.setState({ isVisible: false })}>
+                      afterClose={afterClose}>
                         <ModalBody>
                             <dl>
                                 <dt>Status</dt>

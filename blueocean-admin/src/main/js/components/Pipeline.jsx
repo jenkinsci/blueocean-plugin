@@ -7,13 +7,13 @@ import { urlPrefix } from '../config';
 export default class Pipeline extends Component {
 
     calculateResponse(passing, failing) {
+        let restponse = '-';
         if (failing > 0) {
-            return (`${failing} failing`);
+            restponse = (`${failing} failing`);
         } else if (passing > 0) {
-            return (`${passing} passing`);
-        } else {
-            return '-';
+            restponse = (`${passing} passing`);
         }
+        return restponse;
     }
 
     render() {
@@ -28,7 +28,8 @@ export default class Pipeline extends Component {
             numberOfFailingPullRequests,
             } = pipeline;
 
-        const hasPullRequests = !simple && (numberOfSuccessfulPullRequests || numberOfFailingPullRequests);
+        const hasPullRequests = !simple && (
+            numberOfSuccessfulPullRequests || numberOfFailingPullRequests);
 
         const multiBranchURL = `${urlPrefix}/${name}/branches`;
         const pullRequestsURL = `${urlPrefix}/${name}/pr`;
@@ -40,13 +41,16 @@ export default class Pipeline extends Component {
         let pullRequestsLink = null;
 
         if (!simple) {
-            multiBranchLabel = this.calculateResponse(numberOfSuccessfulBranches, numberOfFailingBranches);
-            multiPrLabel = this.calculateResponse(numberOfSuccessfulPullRequests, numberOfFailingPullRequests);
+            multiBranchLabel = this.calculateResponse(
+                numberOfSuccessfulBranches, numberOfFailingBranches);
+            multiPrLabel = this.calculateResponse(
+                numberOfSuccessfulPullRequests, numberOfFailingPullRequests);
 
             multiBranchLink = <Link className="btn" to={multiBranchURL}>multiBranch</Link>;
 
-            if (hasPullRequests)
+            if (hasPullRequests) {
                 pullRequestsLink = <Link className="btn" to={pullRequestsURL}>pr</Link>;
+            }
         }
 
         // FIXME: Visual alignment of the last column
@@ -68,5 +72,5 @@ export default class Pipeline extends Component {
 }
 
 Pipeline.propTypes = {
-    pipeline: PropTypes.object.isRequired
+    pipeline: PropTypes.object.isRequired,
 };
