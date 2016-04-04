@@ -23,3 +23,6 @@ builder.defineTask('test', function() {
             throw e;
         });
 });
+builder.gulp.task('lint:watch', function () {
+    builder.gulp.watch(['src/main/js/**/*.js', 'src/main/js/**/*.jsx'], ['lint']);
+});

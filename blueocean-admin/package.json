@@ -4,12 +4,14 @@
   "scripts": {
     "lint": "gulp lint --silent",
     "lint:fix": "gulp lint --fixLint --silent",
+    "lint:watch": "gulp lint:watch",
     "test": "gulp test --silent",
     "retest": "gulp retest --silent",
     "bundle": "gulp bundle --silent",
     "rebundle": "gulp rebundle"
   },
   "devDependencies": {
+    "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@jenkins-cd/js-builder": "0.0.17",
     "@jenkins-cd/js-test": "^1.x",
     "babel": "^6.5.2",

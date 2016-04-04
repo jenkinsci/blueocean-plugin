@@ -7,5 +7,5 @@ export {
     Pipelines,
     MultiBranch,
     Activity,
-    PullRequests
+    PullRequests,
 };

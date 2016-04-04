@@ -3,8 +3,8 @@ import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
 
-
 import Pipeline from '../../main/js/components/Pipeline.jsx';
+import { PipelineRecord } from '../../main/js/components/records.jsx';
 
 const
   hack={
@@ -59,6 +59,13 @@ const
       pipeline={pipelineMulti}/>
   );
 
+describe("PipelineRecord can be created ", () => {
+    it("without error", () => {
+        const pipeRecord = new PipelineRecord(pipelineMultiSuccess);
+        console.log(pipeRecord)
+    })
+});
+
 describe("pipeline component simple rendering", () => {
   const
     renderer = createRenderer();
@@ -77,7 +84,6 @@ describe("pipeline component simple rendering", () => {
     assert.isObject(children[2].props);
     assert.equal(children[2].props.children, ' - ');
   });
-
 });
 
 describe("pipeline component multiBranch rendering", () => {

@@ -10,10 +10,10 @@ export default class Branches extends Component {
         if (!data) {
             return null;
         }
-        const { latestRun, weatherScore, name} = data;
-        const { result, endTime, changeSet} = latestRun;
+        const { latestRun, weatherScore, name } = data;
+        const { result, endTime, changeSet } = latestRun;
 
-        const {commitId, msg } = changeSet[0] || {};
+        const { commitId, msg } = changeSet[0] || {};
 
         return (<tr key={name}>
             <td><WeatherIcon score={weatherScore} /></td>
