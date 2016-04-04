@@ -34,8 +34,8 @@ export default class Pipeline extends Component {
         const pullRequestsURL = `${urlPrefix}/${name}/pr`;
         const activitiesURL = `${urlPrefix}/${name}/activity`;
 
-        let multiBranchLabel = " - ";
-        let multiPrLabel = " - ";
+        let multiBranchLabel = ' - ';
+        let multiPrLabel = ' - ';
         let multiBranchLink = null;
         let pullRequestsLink = null;
 
@@ -53,7 +53,7 @@ export default class Pipeline extends Component {
         return (
             <tr>
                 <td>{name}</td>
-                <td><WeatherIcon score={weatherScore}/></td>
+                <td><WeatherIcon score={weatherScore} /></td>
                 <td>{multiBranchLabel}</td>
                 <td>{multiPrLabel}</td>
                 <td>

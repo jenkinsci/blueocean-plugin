@@ -12,7 +12,7 @@ export default function pipelinePropProvider(WrappedComponent) {
     class Wrapper extends Component {
         render() {
             const { pipeline } = this.context;
-            return <WrappedComponent {...this.props} pipeline={pipeline}/>;
+            return <WrappedComponent {...this.props} pipeline={pipeline} />;
         }
     }
 

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import {  ModalView, ModalBody  } from '@jenkins-cd/design-language';
+import { ModalView, ModalBody } from '@jenkins-cd/design-language';
 
 require('moment-duration-format');
 
@@ -10,7 +10,7 @@ require('moment-duration-format');
 export default class Runs extends Component {
     constructor(props) {
         super(props);
-        this.state = {isVisible: false};
+        this.state = { isVisible: false };
     }
     render() {
         const { data, changeset } = this.props;
@@ -25,7 +25,7 @@ export default class Runs extends Component {
         const
             durationArray = duration.split(':'),
             name = decodeURIComponent(data.pipeline)
-        ;
+            ;
 
         if (durationArray.length === 1) {
             duration = `00:${duration}`;
@@ -35,9 +35,9 @@ export default class Runs extends Component {
             <td>
                 {
                     this.state.isVisible && <ModalView hideOnOverlayClicked
-                                                       title={`Branch ${name}`}
-                                                       isVisible={this.state.isVisible}
-                                                       afterClose={() => this.setState({isVisible: false})}>
+                      title={`Branch ${name}`}
+                      isVisible={this.state.isVisible}
+                      afterClose={() => this.setState({ isVisible: false })}>
                         <ModalBody>
                             <dl>
                                 <dt>Status</dt>
@@ -45,7 +45,7 @@ export default class Runs extends Component {
                                 <dt>Build</dt>
                                 <dd>{data.id}</dd>
                                 <dt>Commit</dt>
-                                <dd>{changeset && changeset.commitId && changeset.commitId.substring(0, 8)  || '-'}</dd>
+                                <dd>{changeset && changeset.commitId && changeset.commitId.substring(0, 8) || '-'}</dd>
                                 <dt>Branch</dt>
                                 <dd>{name}</dd>
                                 <dt>Message</dt>
@@ -58,12 +58,12 @@ export default class Runs extends Component {
                         </ModalBody>
                     </ModalView>
                 }
-                <a onClick={() => this.setState({isVisible: true})}>
+                <a onClick={() => this.setState({ isVisible: true })}>
                     {data.result}
                 </a>
             </td>
             <td>{data.id}</td>
-            <td>{changeset && changeset.commitId && changeset.commitId.substring(0, 8)  || '-'}</td>
+            <td>{changeset && changeset.commitId && changeset.commitId.substring(0, 8) || '-'}</td>
             <td>{name}</td>
             <td>{changeset && changeset.comment || '-'}</td>
             <td>

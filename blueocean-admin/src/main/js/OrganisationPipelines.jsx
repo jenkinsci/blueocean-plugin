@@ -10,9 +10,9 @@ class OrganisationPipelines extends Component {
         // The specific pipeline we may be focused on
         let pipeline;
 
-        if(pipelines && this.props.params && this.props.params.pipeline) {
+        if (pipelines && this.props.params && this.props.params.pipeline) {
             const name = this.props.params.pipeline;
-            pipeline = pipelines.find(aPipeLine => aPipeLine.get("name") == name);
+            pipeline = pipelines.find(aPipeLine => aPipeLine.get('name') == name);
             // FIXME: This foo.get("bar") syntax is not ideal ^^^
 
             // Convert back to a real JS object

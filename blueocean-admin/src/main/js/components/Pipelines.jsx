@@ -31,7 +31,7 @@ export default class Pipelines extends Component {
                     <article>
                         <Table className="multiBranch" headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}>
                             { pipelineRecords
-                                .map(pipeline => <Pipeline key={pipeline.name} pipeline={pipeline}/>)
+                                .map(pipeline => <Pipeline key={pipeline.name} pipeline={pipeline} />)
                                 .toArray() }
                         </Table>
                     </article>

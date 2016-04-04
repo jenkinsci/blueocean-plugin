@@ -3,16 +3,16 @@ import moment from 'moment';
 
 export default class PullRequest extends Component {
 
-  render() {
-    const { pr } = this.props;
-    if (!pr) {
-      return null;
+    render() {
+      const { pr } = this.props;
+      if (!pr) {
+        return null;
     }
-    const { latestRun, pullRequest } = pr;
-    if (!latestRun || !pullRequest) {
-      return null;
+      const { latestRun, pullRequest } = pr;
+      if (!latestRun || !pullRequest) {
+        return null;
     }
-    return (<tr key={latestRun.id}>
+      return (<tr key={latestRun.id}>
         <td>{latestRun.result}</td>
         <td>{latestRun.id}</td>
         <td>{pullRequest.title || '-'}</td>

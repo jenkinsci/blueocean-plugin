@@ -7,7 +7,7 @@ import { RunsRecord } from './records';
 import { urlPrefix } from '../config';
 import pipelinePropProvider from './pipelinePropProvider';
 
-import {  Page, PageHeader, Title, WeatherIcon } from '@jenkins-cd/design-language';
+import { Page, PageHeader, Title, WeatherIcon } from '@jenkins-cd/design-language';
 
 export class PullRequests extends Component {
     render() {
@@ -27,7 +27,7 @@ export class PullRequests extends Component {
         return (<Page>
 
             <PageHeader>
-                <Title><WeatherIcon score={weatherScore}/> <h1>CloudBees / {name}</h1></Title>
+                <Title><WeatherIcon score={weatherScore} /> <h1>CloudBees / {name}</h1></Title>
             </PageHeader>
 
             <main>
@@ -36,8 +36,8 @@ export class PullRequests extends Component {
                         { data.filter((run) => run.get('pullRequest')).map((run, index) => {
                             const result = new RunsRecord(run.toJS());
                             return (<PullRequest
-                                key={index}
-                                pr={result}
+                              key={index}
+                              pr={result}
                             />);
                         })}
 

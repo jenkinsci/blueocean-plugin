@@ -47,11 +47,11 @@ export const ChangeSetRecord = Immutable.Record({// eslint-disable-line
 });
 
 export const RunsRecord = Immutable.Record({
-        latestRun: ActivityRecord,
-        name: null,
-        weatherScore: 0,
-        pullRequest: PullRequestRecord,
-    }
+    latestRun: ActivityRecord,
+    name: null,
+    weatherScore: 0,
+    pullRequest: PullRequestRecord,
+}
 );
 
 export const PullRequestRecord = Immutable.Record({

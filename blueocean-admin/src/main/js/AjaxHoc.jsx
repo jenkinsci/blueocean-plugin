@@ -15,18 +15,18 @@ export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder
             const data = null;
             const url = null;
 
-            this.state = {data, url};
+            this.state = { data, url };
             this._lastUrl = null; // Keeping this out of the react state so we can set it any time
         }
 
         checkUrl(props) {
             const config = this.context.config;
             const url = getURLFromProps(props, config);
-            this.setState({url}, () => this.maybeLoad());
+            this.setState({ url }, () => this.maybeLoad());
         }
 
         componentWillReceiveProps(nextProps) {
-           this.checkUrl(nextProps);
+            this.checkUrl(nextProps);
         }
 
         componentWillMount() {
@@ -38,7 +38,7 @@ export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder
         }
 
         maybeLoad() {
-            const {url} = this.state;
+            const { url } = this.state;
             if (url && url != this._lastUrl) {
                 this._lastUrl = url;
                 this.fetchPipelineData(data => {
@@ -51,7 +51,7 @@ export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder
         }
 
         render() {
-            return <ComposedComponent {...this.props} data={ this.state.data }/>;
+            return <ComposedComponent {...this.props} data={ this.state.data } />;
         }
 
         /** FIXME: Ghetto ajax loading of pipeline data for an org @store*/

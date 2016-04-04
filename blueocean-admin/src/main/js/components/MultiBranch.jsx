@@ -35,9 +35,9 @@ export class MultiBranch extends Component {
                           headers={headers}
                         >
                             {data.map((run, index) => {
-                                    const result = new RunsRecord(run.toJS());
-                                    return <Branches key={index} data={result} />;
-                                })
+                                const result = new RunsRecord(run.toJS());
+                                return <Branches key={index} data={result} />;
+                            })
                             }
                             <tr>
                                 <td colSpan={headers.length}>

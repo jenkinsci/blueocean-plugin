@@ -8,9 +8,9 @@ import { rootRoutePath } from './config';
 
 export default (
     <Route path={rootRoutePath} component={OrganisationPipelines}>
-        <IndexRoute component={Pipelines}/>
-        <Route path=":pipeline/branches" component={MultiBranch}/>
-        <Route path=":pipeline/activity" component={Activity}/>
-        <Route path=":pipeline/pr" component={PullRequests}/>
+        <IndexRoute component={Pipelines} />
+        <Route path=":pipeline/branches" component={MultiBranch} />
+        <Route path=":pipeline/activity" component={Activity} />
+        <Route path=":pipeline/pr" component={PullRequests} />
     </Route>
 );
