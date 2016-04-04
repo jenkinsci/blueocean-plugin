@@ -1,0 +1,3 @@
+{
+  "extends": "@jenkins-cd/jenkins/react"
+}
