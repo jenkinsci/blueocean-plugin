@@ -101,17 +101,20 @@ var ExtensionPoint = React.createClass({
      * would otherwise not be notified when this is being unmounted.
      */
     _unmountAllExtensions: function() {
-        var children = ReactDOM.findDOMNode(this).children;
-        for (var i = 0; i < children.length; i++) {
-            var child = children[i];
-            try {
-                if (child) {
-                    ReactDOM.unmountComponentAtNode(child);
+        var thisNode = ReactDOM.findDOMNode(this);
+        var children = thisNode ? thisNode.children : null;
+        if (children && children.length) {
+            for (var i = 0; i < children.length; i++) {
+                var child = children[i];
+                try {
+                    if (child) {
+                        ReactDOM.unmountComponentAtNode(child);
+                    }
                 }
-            }
-            catch (err) {
-                // Log and continue, don't want to stop unmounting children
-                console.log("Error unmounting component", child, err);
+                catch (err) {
+                    // Log and continue, don't want to stop unmounting children
+                    console.log("Error unmounting component", child, err);
+                }
             }
         }
     }
