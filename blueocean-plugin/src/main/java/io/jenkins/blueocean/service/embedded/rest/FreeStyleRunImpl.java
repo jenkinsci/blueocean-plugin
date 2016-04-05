@@ -42,6 +42,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
         return Containers.fromResourceMap(m);
     }
 
+    @PUT
     @Override
     public BlueRunState stop() {
         try {
