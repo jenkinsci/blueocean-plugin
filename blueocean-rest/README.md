@@ -1,5 +1,7 @@
 # Usage
 
+Note: all data POSTed much be JSON to avoid needing a crumb.
+
 ## Run BlueOcean plugin
 
     cd bluecoean-plugin
@@ -15,7 +17,6 @@ BlueOcean UI is available at:
 BlueOcean rest API base URL is:
     
     http://localhost:8080/jenkins/blue/rest
-
 
 ## Get a user
 

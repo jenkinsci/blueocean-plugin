@@ -44,6 +44,28 @@ public class ProfileApiTest {
             .body("fullName", Matchers.equalTo(system.getFullName()));
     }
 
+    //UX-159
+    @Test
+    public void postCrumbTest() throws Exception {
+        User system = j.jenkins.getUser("SYSTEM");
+
+        RestAssured.given().contentType("application/json").log().all().post("/users/{id}/", system.getId())
+            .then().log().all()
+            .statusCode(200)
+            .body("id", Matchers.equalTo(system.getId()))
+            .body("fullName", Matchers.equalTo(system.getFullName()));
+    }
+
+    //UX-159
+    @Test
+    public void postCrumbFailTest() throws Exception {
+        User system = j.jenkins.getUser("SYSTEM");
+
+        RestAssured.given().log().all().post("/users/{id}/", system.getId())
+            .then().log().all()
+            .statusCode(403);
+    }
+
     @Test
     public void getUserDetailsTest() throws Exception {
         hudson.model.User user = j.jenkins.getUser("alice");
