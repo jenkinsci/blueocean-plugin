@@ -1,6 +1,8 @@
 # Usage
 
-Note: all data POSTed much be JSON to avoid needing a crumb.
+## Crumbs
+
+To avoid needing a crumb to POST data, the header "Content-Type: application/json" must be used.
 
 ## Run BlueOcean plugin
 
