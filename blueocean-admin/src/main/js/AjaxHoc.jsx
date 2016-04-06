@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Immutable from 'immutable';
 
+const requestDone = 4; // Because Zombie is garbage
+
 function placeholder() {
     return null;
 }
@@ -62,7 +64,7 @@ export default function ajaxHoc(ComposedComponent, getURLFromProps = placeholder
             }
 
             xmlhttp.onreadystatechange = () => {
-                if (xmlhttp.readyState === XMLHttpRequest.DONE) {
+                if (xmlhttp.readyState === requestDone) {
                     if (xmlhttp.status === 200) {
                         let data = null;
                         try {
