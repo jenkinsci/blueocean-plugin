@@ -2,7 +2,8 @@
 
 ## Crumbs
 
-To avoid needing a crumb to POST data, the header "Content-Type: application/json" must be used.
+Jenkins usually requires a "crumb" with posted reuqests to prevent request forgery and other shenanigans. 
+To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
 
 ## Run BlueOcean plugin
 
