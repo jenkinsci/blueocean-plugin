@@ -2,7 +2,7 @@ describe("store.js", function () {
 
     it("- test ", function (done) {
         var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-01.json');
-        var store = require('../store');
+        var store = require('../src/store');
         var jsModules = require('@jenkins-cd/js-modules');
         var pluginsLoaded = {};
         var loaded = 0;

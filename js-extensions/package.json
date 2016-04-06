@@ -5,8 +5,8 @@
   "main": "index.js",
   "files": ["index.js","dist","README.md"],
   "scripts": {
-    "build": "jsx src/ExtensionPoint.jsx > dist/ExtensionPoint.js && cp src/store.js dist/",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && mkdir dist && jsx src/ExtensionPoint.jsx > dist/ExtensionPoint.js && cp src/store.js dist/",
+    "test": "gulp test",
     "prepublish": "npm run build"
   },
   "author": "Tom Fennelly <tom.fennelly@gmail.com> (https://github.com/tfennelly)",
@@ -22,6 +22,6 @@
     "react-tools": "^0.13.3"
   },
   "dependencies": {
-    "@jenkins-cd/js-modules": "0.0.1"
+    "@jenkins-cd/js-modules": "^0.0.2"
   }
 }
