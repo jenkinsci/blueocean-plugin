@@ -13,7 +13,7 @@ builder.src(['src/main/js', 'src/main/less', 'node_modules/@jenkins-cd/design-la
 // generateNoImportsBundle makes it easier to test with zombie.
 //
 builder.bundle('src/main/js/blueocean.js')
-    .withExternalModuleMapping('jquery-detached', 'jquery-detached:jquery2')
+    .withExternalModuleMapping('jquery-detached', 'plugin/jquery-detached:jquery2')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/main/less/blueocean.less')
     .generateNoImportsBundle();
