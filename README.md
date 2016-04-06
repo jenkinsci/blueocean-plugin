@@ -3,6 +3,7 @@ This is BlueOcean repo. It is a multi-module maven project. Each sub-directory a
 
 Blue Ocean is the new UI project for Jenkins.
 
+
 ![Pirate logo, because it's ocean and stuff](logo-yarrr.png)
 Yarr...
 

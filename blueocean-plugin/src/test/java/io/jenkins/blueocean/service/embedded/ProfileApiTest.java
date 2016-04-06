@@ -66,6 +66,8 @@ public class ProfileApiTest {
             .statusCode(403);
     }
 
+
+
     @Test
     public void getUserDetailsTest() throws Exception {
         hudson.model.User user = j.jenkins.getUser("alice");
