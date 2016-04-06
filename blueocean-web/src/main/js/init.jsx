@@ -2,7 +2,7 @@ import AboutNavLink from './about/AboutNavLink.jsx';
 
 const requestDone = 4; // Because Zombie is garbage
 
-// Basically copied from AjaxHoc.
+// Basically copied from AjaxHoc
 function getURL(url, onLoad) {
     const xmlhttp = new XMLHttpRequest();
 
