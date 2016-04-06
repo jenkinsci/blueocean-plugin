@@ -9,11 +9,7 @@ const results = {
     failure: {
         fill: '#d54c53',
         stroke: '#cf3a41',
-    },
-    queued: {
-        fill: '#a9c6e6',
-        stroke: '#4a90e2',
-    },
+    }
 };
 
 export default class SvgStatus extends Component {
@@ -21,8 +17,8 @@ export default class SvgStatus extends Component {
         const {
             result = 'failure',
             title = 'No title',
-            width = '320px',
-            height = '320px',
+            width = '32px',
+            height = '32px',
             colors = {
                 backgrounds: {
                     box: 'none',
@@ -56,13 +52,13 @@ export default class SvgStatus extends Component {
             />
 
             <circle
-                cx="50"
-                cy="50"
-                r="40"
-                stroke={colors.strokes.inner}
-                fill={colors.backgrounds.inner}
-                strokeWidth="2"
-                strokeLinecap="round"
+              cx="50"
+              cy="50"
+              r="40"
+              stroke={colors.strokes.inner}
+              fill={colors.backgrounds.inner}
+              strokeWidth="2"
+              strokeLinecap="round"
             />
 
         </svg>);

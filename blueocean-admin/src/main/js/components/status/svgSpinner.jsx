@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-const { string, object } = PropTypes;
+const { string, object, number } = PropTypes;
 
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
     const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
@@ -25,23 +25,12 @@ function describeArc(x, y, radius, startAngle, endAngle) {
 }
 
 export default class SvgSpinner extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { rotate: 90 };
-        this.tick = () => this.setState({ rotate: this.state.rotate === 360 ? 45 : this.state.rotate + 45 });
-    }
-
-    componentDidMount() {
-        this.timer = setInterval(this.tick, 500);
-    }
-    componentWillUnmount() {
-        clearInterval(this.timer);
-    }
     render() {
         const {
+            percentage = 12.5,
             title = 'No title',
-            width = '320px',
-            height = '320px',
+            width = '32px',
+            height = '32px',
             colors = {
                 backgrounds: {
                     box: 'none',
@@ -55,11 +44,8 @@ export default class SvgSpinner extends Component {
             },
         } = this.props;
 
-        const d = describeArc(50, 50, 40, 0, 270);
-        const { rotate } = this.state;
-
-
-        console.log('rotate', rotate);
+        const rotate = percentage / 100 * 360;
+        const d = describeArc(50, 50, 40, 0, rotate);
 
         return (<svg xmlns="http://www.w3.org/2000/svg"
           width={width}
@@ -68,27 +54,6 @@ export default class SvgSpinner extends Component {
           preserveAspectRatio="xMidYMid"
         >
             <title id="title">{title}</title>
-            <symbol>
-                <g id="running">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      stroke={colors.strokes.outer}
-                      fill={colors.backgrounds.outer}
-                      strokeWidth="10"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      id="arc1"
-                      fill="none"
-                      stroke={colors.strokes.path}
-                      strokeWidth="10"
-                      d={d}
-
-                    />
-                </g>
-            </symbol>
             <rect
               x="0"
               y="0"
@@ -97,21 +62,31 @@ export default class SvgSpinner extends Component {
               fill={colors.backgrounds.box}
               className="bk"
             />
-            <use
-                xlinkHref="#running"
-                x="0"
-                y="0"
-                transform={`rotate(${rotate} 50 50)`}
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              stroke={rotate === 360 ? colors.strokes.path : colors.strokes.outer}
+              fill={colors.backgrounds.outer}
+              strokeWidth="10"
+              strokeLinecap="round"
             />
+            <path
+              id="arc1"
+              fill="none"
+              stroke={colors.strokes.path}
+              strokeWidth="10"
+              d={d}
 
+            />
         </svg>);
     }
-
 }
 
 SvgSpinner.propTypes = {
     title: string,
     width: string,
     height: string,
+    percentage: number,
     colors: object,
 };
