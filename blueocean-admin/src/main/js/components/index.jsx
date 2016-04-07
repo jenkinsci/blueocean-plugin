@@ -9,5 +9,5 @@ export {
     MultiBranch,
     Activity,
     PullRequests,
-    PipelinePage
+    PipelinePage,
 };

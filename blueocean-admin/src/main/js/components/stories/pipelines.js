@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import Pipeline from '../PipelineRowItem.jsx';
+import PipelineRowItem from '../PipelineRowItem.jsx';
 import { PipelineRecord } from '../records.jsx';
 import Table from '../Table.jsx';
 

@@ -3,7 +3,6 @@ import { Link } from 'react-router';
 import Table from './Table';
 import ajaxHoc from '../AjaxHoc';
 import Branches from './Branches';
-import { WeatherIcon, Page, PageHeader, Title } from '@jenkins-cd/design-language';
 import { RunsRecord } from './records';
 import { urlPrefix } from '../config';
 
@@ -15,11 +14,6 @@ export class MultiBranch extends Component {
             return null;
         }
 
-        const {
-            name,
-            weatherScore,
-            } = pipeline;
-
         const headers =
             ['Health', 'Status', 'Branch', 'Last commit', 'Latest message', 'Completed'];
 
@@ -27,11 +21,11 @@ export class MultiBranch extends Component {
             <main>
                 <article>
                     <Table className="multiBranch"
-                           headers={headers}
+                      headers={headers}
                     >
                         {data.map((run, index) => {
                             const result = new RunsRecord(run.toJS());
-                            return <Branches key={index} data={result}/>;
+                            return <Branches key={index} data={result} />;
                         })
                         }
                         <tr>
