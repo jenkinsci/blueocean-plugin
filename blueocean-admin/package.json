@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.20",
+    "@jenkins-cd/js-builder": "0.0.23",
     "@jenkins-cd/js-test": "1.1.1",
     "@kadira/storybook": "^1.3.0",
     "babel": "^6.5.2",
@@ -33,8 +33,8 @@
   },
   "dependencies": {
     "@jenkins-cd/design-language": "0.0.5",
-    "@jenkins-cd/js-extensions": "0.0.9",
-    "@jenkins-cd/js-modules": "0.0.1",
+    "@jenkins-cd/js-extensions": "0.0.10",
+    "@jenkins-cd/js-modules": "0.0.2",
     "immutable": "^3.7.6",
     "moment": "^2.12.0",
     "moment-duration-format": "^1.3.0",
@@ -42,5 +42,8 @@
     "react-dom": "^0.14.5",
     "react-router": "^2.0.1",
     "window-handle": "^1.0.0"
+  },
+  "jenkinscd" : {
+    "extDependencies": ["immutable", "react-router"]
   }
 }
