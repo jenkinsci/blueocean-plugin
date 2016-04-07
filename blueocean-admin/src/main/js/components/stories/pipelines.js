@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import Pipeline from '../Pipeline.jsx';
+import PipelineRowItem from '../PipelineRowItem.jsx';
 import { PipelineRecord } from '../records.jsx';
 import Table from '../Table.jsx';
 
@@ -13,7 +13,7 @@ storiesOf('pipelines', module)
           className="multiBranch"
           headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}
         >
-            <Pipeline
+            <PipelineRowItem
               pipeline={new PipelineRecord({
                   displayName: 'moreBeersSuccess',
                   name: 'morebeersSuccess',
@@ -28,7 +28,7 @@ storiesOf('pipelines', module)
                   totalNumberOfPullRequests: 3,
               })}
             />
-            <Pipeline
+            <PipelineRowItem
               pipeline={new PipelineRecord({
                   displayName: 'moreBeers',
                   name: 'morebeers',
@@ -46,6 +46,6 @@ storiesOf('pipelines', module)
         </Table>
     ))
 .add('no pipeline should return null', () => (
-     <Pipeline />
+     <PipelineRowItem />
 ))
 ;

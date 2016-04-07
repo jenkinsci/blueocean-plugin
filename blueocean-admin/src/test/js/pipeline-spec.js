@@ -3,7 +3,7 @@ import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
 
-import Pipeline from '../../main/js/components/Pipeline.jsx';
+import PipelineRowItem from '../../main/js/components/PipelineRowItem.jsx';
 import { PipelineRecord } from '../../main/js/components/records.jsx';
 
 const
@@ -44,17 +44,17 @@ const
     'organization': 'jenkins',
     'weatherScore': 0
   },
-  testElementSimple = (<Pipeline
+  testElementSimple = (<PipelineRowItem
       hack={hack}
       pipeline={pipelineSimple}
       simple={true}/>
   ),
-  testElementMultiSuccess = (<Pipeline
+  testElementMultiSuccess = (<PipelineRowItem
       hack={hack}
       pipeline={pipelineMultiSuccess}
       />
   ),
-  testElementMulti = (<Pipeline
+  testElementMulti = (<PipelineRowItem
       hack={hack}
       pipeline={pipelineMulti}/>
   );
