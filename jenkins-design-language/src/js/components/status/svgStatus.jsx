@@ -23,12 +23,9 @@ export default class SvgStatus extends Component {
                 backgrounds: {
                     box: 'none',
                     inner: results[result.toLowerCase()] ? results[result.toLowerCase()].fill : 'none',
-                    outer: 'none',
                 },
                 strokes: {
                     inner: results[result.toLowerCase()] ? results[result.toLowerCase()].stroke : 'none',
-                    outer: '#a9c6e6',
-                    path: '#4a90e2',
 
                 },
             },
