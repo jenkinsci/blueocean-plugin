@@ -8,6 +8,9 @@ import { ActivityRecord, ChangeSetRecord } from './records';
 import { Page, PageHeader, Title, WeatherIcon } from '@jenkins-cd/design-language';
 import pipelinePropProvider from './pipelinePropProvider';
 
+let baseUrl;
+let multiBranch;
+
 export class Activity extends Component {
     render() {
         const { pipeline, data } = this.props;
@@ -23,7 +26,6 @@ export class Activity extends Component {
         const headers = ['Status', 'Build', 'Commit', 'Branch', 'Message', 'Duration', 'Completed'];
 
         let latestRecord = {};
-
         return (<Page>
 
             <PageHeader>
@@ -42,9 +44,11 @@ export class Activity extends Component {
                                     changeset[Object.keys(changeset)[0]]);
                             }
                             return (<Runs
+                              baseUrl={baseUrl}
+                              multiBranch={multiBranch}
                               key={index}
                               changeset={latestRecord}
-                              data={new ActivityRecord(run)}
+                              result={new ActivityRecord(run)}
                             />);
                         })}
 
@@ -66,8 +70,10 @@ Activity.propTypes = {
 };
 
 // Decorated for ajax as well as getting pipeline from context
-export default pipelinePropProvider(ajaxHoc(Activity, (props, config) => {
-    if (!props.pipeline) return null;
-    return `${config.getAppURLBase()}/rest/organizations/jenkins` +
-        `/pipelines/${props.pipeline.name}/runs`;
+export default pipelinePropProvider(ajaxHoc(Activity, ({pipeline}, config) => {
+    if (!pipeline) return null;
+    multiBranch = !!pipeline.branchNames;
+    baseUrl =`${config.getAppURLBase()}/rest/organizations/jenkins` +
+        `/pipelines/${pipeline.name}`;
+    return `${baseUrl}/runs`;
 }));

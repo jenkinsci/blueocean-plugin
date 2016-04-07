@@ -1,9 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import { WeatherIcon } from '@jenkins-cd/design-language';
+import { WeatherIcon, ModalView, ModalBody } from '@jenkins-cd/design-language';
+
+const {object} = PropTypes;
 
 export default class Branches extends Component {
-
+    constructor(props) {
+        super(props);
+        this.state = { isVisible: false };
+    }
     render() {
         const { data } = this.props;
         // early out
@@ -14,10 +19,39 @@ export default class Branches extends Component {
         const { result, endTime, changeSet } = latestRun;
 
         const { commitId, msg } = changeSet[0] || {};
-
+        const afterClose = () => this.setState({ isVisible: false });
+        const open = () => this.setState({ isVisible: true });
         return (<tr key={name}>
             <td><WeatherIcon score={weatherScore} /></td>
-            <td>{result}</td>
+            <td>
+                {
+                    this.state.isVisible && <ModalView hideOnOverlayClicked
+                      title={`Branch ${name}`}
+                      isVisible={this.state.isVisible}
+                      afterClose={afterClose}
+                    >
+                        <ModalBody>
+                            <dl>
+                                <dt>Health</dt>
+                                <dd><WeatherIcon score={weatherScore} /></dd>
+                                <dt>Status</dt>
+                                <dd>{result}</dd>
+                                <dt>Branch</dt>
+                                <dd>{decodeURIComponent(name)}</dd>
+                                <dt>Commit</dt>
+                                <dd>{commitId || '-'}</dd>
+                                <dt>Message</dt>
+                                <dd>{msg || '-'}</dd>
+                                <dt>Completed</dt>
+                                <dd>{moment(endTime).fromNow()}</dd>
+                            </dl>
+                        </ModalBody>
+                    </ModalView>
+                }
+                <a onClick={open}>
+                    {result}
+                </a>
+            </td>
             <td>{decodeURIComponent(name)}</td>
             <td>{commitId || '-'}</td>
             <td>{msg || '-'}</td>
@@ -27,5 +61,6 @@ export default class Branches extends Component {
 }
 
 Branches.propTypes = {
-    data: PropTypes.object.isRequired,
+    data: object.isRequired,
 };
+

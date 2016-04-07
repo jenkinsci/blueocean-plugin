@@ -1,6 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
+import ajaxHoc from '../AjaxHoc';
 import { ModalView, ModalBody } from '@jenkins-cd/design-language';
+
+const { bool, object, string } = PropTypes;
 
 require('moment-duration-format');
 
@@ -13,17 +16,17 @@ export default class Runs extends Component {
         this.state = { isVisible: false };
     }
     render() {
-        const { data, changeset } = this.props;
+        const { result, changeset, baseUrl, multiBranch = false } = this.props;
         // early out
-        if (!data && data.toJS) {
+        if (!result && result.toJS) {
             return null;
         }
         let
             duration = moment.duration(
-                Number(data.durationInMillis), 'milliseconds').format('hh:mm:ss');
+                Number(result.durationInMillis), 'milliseconds').format('hh:mm:ss');
 
         const durationArray = duration.split(':');
-        const name = decodeURIComponent(data.pipeline);
+        const name = decodeURIComponent(result.pipeline);
 
         if (durationArray.length === 1) {
             duration = `00:${duration}`;
@@ -31,7 +34,7 @@ export default class Runs extends Component {
 
         const afterClose = () => this.setState({ isVisible: false });
         const open = () => this.setState({ isVisible: true });
-        return (<tr key={data.id}>
+        return (<tr key={result.id}>
             <td>
                 {
                     this.state.isVisible && <ModalView hideOnOverlayClicked
@@ -42,9 +45,9 @@ export default class Runs extends Component {
                         <ModalBody>
                             <dl>
                                 <dt>Status</dt>
-                                <dd>{data.result}</dd>
+                                <dd>{result.result}</dd>
                                 <dt>Build</dt>
-                                <dd>{data.id}</dd>
+                                <dd>{result.id}</dd>
                                 <dt>Commit</dt>
                                 <dd>
                                     {changeset
@@ -59,28 +62,40 @@ export default class Runs extends Component {
                                 <dt>Duration</dt>
                                 <dd>{duration} minutes</dd>
                                 <dt>Completed</dt>
-                                <dd>{moment(data.endTime).fromNow()}</dd>
+                                <dd>{moment(result.endTime).fromNow()}</dd>
                             </dl>
                         </ModalBody>
                     </ModalView>
                 }
                 <a onClick={open}>
-                    {data.result}
+                    {result.result}
                 </a>
             </td>
-            <td>{data.id}</td>
+            <td>{result.id}</td>
             <td>{changeset && changeset.commitId && changeset.commitId.substring(0, 8) || '-'}</td>
             <td>{name}</td>
             <td>{changeset && changeset.comment || '-'}</td>
             <td>
                 {duration} minutes
             </td>
-            <td>{moment(data.endTime).fromNow()}</td>
+            <td>{moment(result.endTime).fromNow()}</td>
         </tr>);
     }
 }
 
 Runs.propTypes = {
-    data: PropTypes.object.isRequired,
-    changeset: PropTypes.object.isRequired,
+    result: object.isRequired,
+    changeset: object.isRequired,
+    baseUrl: string.isRequired,
+    multiBranch: bool,
 };
+// Decorated for ajax
+export default ajaxHoc(Runs, ({baseUrl, multiBranch, result}, config) => {
+    console.log('¿?', baseUrl, multiBranch, result)
+    if(multiBranch) {
+        console.log(`${baseUrl}/branches/${result.pipeline}/runs/${result.id}/log/`)
+    } else {
+        console.log(`${baseUrl}/runs/${result.id}/log/`)
+    }
+    return `${baseUrl}/runs`;
+});

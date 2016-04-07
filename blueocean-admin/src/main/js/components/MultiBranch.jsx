@@ -36,7 +36,11 @@ export class MultiBranch extends Component {
                         >
                             {data.map((run, index) => {
                                 const result = new RunsRecord(run.toJS());
-                                return <Branches key={index} data={result} />;
+                                return <Branches
+                                  key={index}
+                                  data={result}
+                                  baseUrl={baseUrl}
+                                />;
                             })
                             }
                             <tr>
@@ -57,8 +61,8 @@ MultiBranch.propTypes = {
 };
 
 // Decorated for ajax as well as getting pipeline from context
-export default pipelinePropProvider(ajaxHoc(MultiBranch, (props, config) => {
-    if (!props.pipeline) return null;
+export default pipelinePropProvider(ajaxHoc(MultiBranch, ({pipeline}, config) => {
+    if (!pipeline) return null;
     return `${config.getAppURLBase()}/rest/organizations/jenkins` +
-        `/pipelines/${props.pipeline.name}/branches`;
+        `/pipelines/${pipeline.name}/branches`;
 }));
