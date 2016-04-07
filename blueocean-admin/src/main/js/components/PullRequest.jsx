@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
+import { StatusIndicator } from '@jenkins-cd/design-language';
 
 export default class PullRequest extends Component {
 
@@ -12,8 +13,9 @@ export default class PullRequest extends Component {
         if (!latestRun || !pullRequest) {
             return null;
         }
+        const result = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
         return (<tr key={latestRun.id}>
-            <td>{latestRun.result}</td>
+            <td><StatusIndicator result={result} /></td>
             <td>{latestRun.id}</td>
             <td>{pullRequest.title || '-'}</td>
             <td>{pullRequest.author || '-'}</td>

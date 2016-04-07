@@ -36,7 +36,7 @@ You can write your stories anywhere you want. But keeping them close to your com
 
 Let's write some stories:
 
-```js
+```javascript
 // src/main/js/components/stories/button.js
 
 import React from 'react';
@@ -57,15 +57,26 @@ Here, we simply have two stories for the built-in `button` component. But, you c
 
 Now you need to tell Storybook where it should load the stories from. For that, you need to add the new story to the configuration file `.storybook/config.js`:
 
-```js
+
+```javascript
+// .storybook/config.js
 import { configure } from '@kadira/storybook';
 
 function loadStories() {
-  require('../components/stories/button'); // add this line after the loadStories()
-  // require as many as stories you need.
+  require('../src/main/js/components/stories/index');
+  require('../components/stories/button'); // add this line
 }
 
 configure(loadStories, module);
+```
+
+or to the `src/main/js/components/stories/index.js` (this is the preferred way):
+
+```javascript
+// src/main/js/components/stories/index.js
+require('./pipelines');
+require('./status');
+require('./button'); // add this line
 ```
 
 That's it. Now simply run “npm run storybook” and start developing your components.
