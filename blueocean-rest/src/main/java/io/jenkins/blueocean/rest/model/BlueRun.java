@@ -156,7 +156,7 @@ public abstract class BlueRun extends Resource {
     public abstract Object getLog();
 
     public enum BlueRunState {
-        NOT_STARTED,
+        QUEUED,
         RUNNING,
         FINISHED
     }
