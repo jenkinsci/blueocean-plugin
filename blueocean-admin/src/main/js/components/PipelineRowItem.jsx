@@ -4,7 +4,7 @@ import { WeatherIcon } from '@jenkins-cd/design-language';
 
 import { urlPrefix } from '../config';
 
-export default class Pipeline extends Component {
+export default class PipelineRowItem extends Component {
 
     calculateResponse(passing, failing) {
         let restponse = '-';
@@ -75,6 +75,6 @@ export default class Pipeline extends Component {
     }
 }
 
-Pipeline.propTypes = {
+PipelineRowItem.propTypes = {
     pipeline: PropTypes.object.isRequired,
 };

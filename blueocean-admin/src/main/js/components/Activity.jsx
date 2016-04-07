@@ -6,7 +6,6 @@ import { Link } from 'react-router';
 import { urlPrefix } from '../config';
 import { ActivityRecord, ChangeSetRecord } from './records';
 import { Page, PageHeader, Title, WeatherIcon } from '@jenkins-cd/design-language';
-import pipelinePropProvider from './pipelinePropProvider';
 
 export class Activity extends Component {
     render() {
@@ -15,48 +14,36 @@ export class Activity extends Component {
         if (!data || !pipeline) {
             return null;
         }
-        const
-          {
-          name,
-          weatherScore,
-        } = pipeline;
         const headers = ['Status', 'Build', 'Commit', 'Branch', 'Message', 'Duration', 'Completed'];
 
         let latestRecord = {};
 
-        return (<Page>
-
-            <PageHeader>
-                <Title><WeatherIcon score={weatherScore} /> <h1>CloudBees / {name}</h1></Title>
-            </PageHeader>
-
-            <main>
-                <article>
-                    <Table headers={headers}>
-                        { data.map((run, index) => {
-                            let
+        return (<main>
+            <article>
+                <Table headers={headers}>
+                    { data.map((run, index) => {
+                        let
                             changeset = run.get('changeSet');
-                            if (changeset.size > 0) {
-                                changeset = changeset.toJS();
-                                latestRecord = new ChangeSetRecord(
-                                    changeset[Object.keys(changeset)[0]]);
-                            }
-                            return (<Runs
-                              key={index}
-                              changeset={latestRecord}
-                              data={new ActivityRecord(run)}
-                            />);
-                        })}
+                        if (changeset.size > 0) {
+                            changeset = changeset.toJS();
+                            latestRecord = new ChangeSetRecord(
+                                changeset[Object.keys(changeset)[0]]);
+                        }
+                        return (<Runs
+                            key={index}
+                            changeset={latestRecord}
+                            data={new ActivityRecord(run)}
+                        />);
+                    })}
 
-                        <tr>
-                            <td colSpan={headers.length}>
-                                <Link className="btn" to={urlPrefix}>Dashboard</Link>
-                            </td>
-                        </tr>
-                    </Table>
-                </article>
-            </main>
-          </Page>);
+                    <tr>
+                        <td colSpan={headers.length}>
+                            <Link className="btn" to={urlPrefix}>Dashboard</Link>
+                        </td>
+                    </tr>
+                </Table>
+            </article>
+        </main>);
     }
 }
 
@@ -66,8 +53,8 @@ Activity.propTypes = {
 };
 
 // Decorated for ajax as well as getting pipeline from context
-export default pipelinePropProvider(ajaxHoc(Activity, (props, config) => {
+export default ajaxHoc(Activity, (props, config) => {
     if (!props.pipeline) return null;
     return `${config.getAppURLBase()}/rest/organizations/jenkins` +
         `/pipelines/${props.pipeline.name}/runs`;
-}));
+});

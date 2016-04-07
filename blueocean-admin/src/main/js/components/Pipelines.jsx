@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import Pipeline from './Pipeline';
+import PipelineRowItem from './PipelineRowItem';
 import { PipelineRecord } from './records';
 import Table from './Table';
 
-import { Page, PageHeader, Title } from '@jenkins-cd/design-language';
+import { Page, PageHeader, Title, PageTabs, TabLink  } from '@jenkins-cd/design-language';
 
 export default class Pipelines extends Component {
 
@@ -40,7 +40,7 @@ export default class Pipelines extends Component {
                           headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}
                         >
                             { pipelineRecords
-                                .map(pipeline => <Pipeline
+                                .map(pipeline => <PipelineRowItem
                                   key={pipeline.name} pipeline={pipeline}
                                 />)
                                 .toArray() }
