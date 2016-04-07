@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import SvgSpinner from './svgSpinner.jsx';
-import SvgStatus from './svgStatus.jsx';
+import SvgSpinner from './svgSpinner';
+import SvgStatus from './svgStatus';
 
 const { number, string } = PropTypes;
 

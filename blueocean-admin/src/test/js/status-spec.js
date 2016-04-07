@@ -1,10 +1,11 @@
+//FIXME: should be part of the jdl, but test are broken there
 import React from 'react';
 import { assert} from 'chai';
 import sd from 'skin-deep';
 import Immutable from 'immutable';
 
 import { StatusIndicator, SvgStatus, SvgSpinner }
-    from '../../main/js/components/status/StatusIndicator.jsx';
+    from '@jenkins-cd/design-language';
 
 const props = {
     width: '640px',

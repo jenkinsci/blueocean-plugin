@@ -22,18 +22,17 @@ export default class SvgStatus extends Component {
             colors = {
                 backgrounds: {
                     box: 'none',
-                    inner: results[result.toLowerCase()].fill,
+                    inner: results[result.toLowerCase()] ? results[result.toLowerCase()].fill : 'none',
                     outer: 'none',
                 },
                 strokes: {
-                    inner: results[result.toLowerCase()].stroke,
+                    inner: results[result.toLowerCase()] ? results[result.toLowerCase()].stroke : 'none',
                     outer: '#a9c6e6',
                     path: '#4a90e2',
 
                 },
             },
         } = this.props;
-
 
         return (<svg xmlns="http://www.w3.org/2000/svg"
           width={width}
@@ -52,6 +51,7 @@ export default class SvgStatus extends Component {
             />
 
             <circle
+              className={result}
               cx="50"
               cy="50"
               r="40"
@@ -63,7 +63,6 @@ export default class SvgStatus extends Component {
 
         </svg>);
     }
-
 }
 
 SvgStatus.propTypes = {

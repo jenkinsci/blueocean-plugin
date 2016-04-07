@@ -1,11 +1,16 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import { StatusIndicator } from '../status/StatusIndicator.jsx';
+import { StatusIndicator } from '@jenkins-cd/design-language';
 import RunningIndicator from '../RunningIndicator.jsx';
 
 const props = {
     width: '640px',
     height: '640px',
+};
+
+const smaller = {
+    width: '320px',
+    height: '320px',
 };
 
 storiesOf('StatusIndicators', module)
@@ -58,15 +63,19 @@ storiesOf('StatusIndicators', module)
     .add('all', () => (
         <div>
             <StatusIndicator
+              {...smaller}
               result="SUCCESS"
             />
             <StatusIndicator
+              {...smaller}
               result="FAILURE"
             />
             <StatusIndicator
+              {...smaller}
               result="QUEUED"
             />
             <StatusIndicator
+              {...smaller}
               result="RUNNING"
               percentage={50}
             />

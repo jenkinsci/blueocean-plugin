@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import { ModalView, ModalBody } from '@jenkins-cd/design-language';
+import { ModalView, ModalBody, StatusIndicator } from '@jenkins-cd/design-language';
 
 require('moment-duration-format');
 
@@ -31,6 +31,7 @@ export default class Runs extends Component {
 
         const afterClose = () => this.setState({ isVisible: false });
         const open = () => this.setState({ isVisible: true });
+        const result = data.result === 'UNKNOWN' ? data.state : data.result;
         return (<tr key={data.id}>
             <td>
                 {
@@ -42,7 +43,9 @@ export default class Runs extends Component {
                         <ModalBody>
                             <dl>
                                 <dt>Status</dt>
-                                <dd>{data.result}</dd>
+                                <dd>
+                                    <StatusIndicator result={result} />
+                                </dd>
                                 <dt>Build</dt>
                                 <dd>{data.id}</dd>
                                 <dt>Commit</dt>
@@ -65,7 +68,7 @@ export default class Runs extends Component {
                     </ModalView>
                 }
                 <a onClick={open}>
-                    {data.result}
+                    <StatusIndicator result={result} />
                 </a>
             </td>
             <td>{data.id}</td>

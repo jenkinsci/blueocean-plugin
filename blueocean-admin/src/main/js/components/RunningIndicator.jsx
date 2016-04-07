@@ -1,12 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { StatusIndicator } from './status/StatusIndicator.jsx';
+import { StatusIndicator } from '@jenkins-cd/design-language';
 
 const { number } = PropTypes;
 
 /*
 DEMO of running state with raising percentages
  */
-
 export default class RunningIndicator extends Component {
     constructor(props) {
         super(props);

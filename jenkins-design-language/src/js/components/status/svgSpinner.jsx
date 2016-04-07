@@ -27,6 +27,7 @@ function describeArc(x, y, radius, startAngle, endAngle) {
 export default class SvgSpinner extends Component {
     render() {
         const {
+            result = 'failure',
             percentage = 12.5,
             title = 'No title',
             width = '32px',
@@ -48,6 +49,7 @@ export default class SvgSpinner extends Component {
         const d = describeArc(50, 50, 40, 0, rotate);
 
         return (<svg xmlns="http://www.w3.org/2000/svg"
+          className={result === 'queued' ? 'spin' : ''}
           width={width}
           height={height}
           viewBox="0 0 100 100"
@@ -72,7 +74,7 @@ export default class SvgSpinner extends Component {
               strokeLinecap="round"
             />
             <path
-              id="arc1"
+              className={result}
               fill="none"
               stroke={colors.strokes.path}
               strokeWidth="10"
@@ -86,6 +88,7 @@ export default class SvgSpinner extends Component {
 SvgSpinner.propTypes = {
     title: string,
     width: string,
+    result: string,
     height: string,
     percentage: number,
     colors: object,
