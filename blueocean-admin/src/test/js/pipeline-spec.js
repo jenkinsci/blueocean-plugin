@@ -3,7 +3,7 @@ import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
 
-import Pipeline from '../../main/js/components/PipelineRowItem.jsx';
+import PipelineRowItem from '../../main/js/components/PipelineRowItem.jsx';
 import { PipelineRecord } from '../../main/js/components/records.jsx';
 
 const
