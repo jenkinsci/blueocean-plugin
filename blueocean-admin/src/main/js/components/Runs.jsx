@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import ajaxHoc from '../AjaxHoc';
-import { ModalView, ModalBody } from '@jenkins-cd/design-language';
+import { ModalView, ModalBody, StatusIndicator } from '@jenkins-cd/design-language';
 
 const { bool, object, string } = PropTypes;
 
@@ -34,6 +33,7 @@ export default class Runs extends Component {
 
         const afterClose = () => this.setState({ isVisible: false });
         const open = () => this.setState({ isVisible: true });
+        const resultRun = data.result === 'UNKNOWN' ? data.state : data.result;
         return (<tr key={result.id}>
             <td>
                 {
@@ -45,7 +45,9 @@ export default class Runs extends Component {
                         <ModalBody>
                             <dl>
                                 <dt>Status</dt>
-                                <dd>{result.result}</dd>
+                                <dd>
+                                    <StatusIndicator result={resultRun} />
+                                </dd>
                                 <dt>Build</dt>
                                 <dd>{result.id}</dd>
                                 <dt>Commit</dt>
@@ -68,7 +70,7 @@ export default class Runs extends Component {
                     </ModalView>
                 }
                 <a onClick={open}>
-                    {result.result}
+                    <StatusIndicator result={resultRun} />
                 </a>
             </td>
             <td>{result.id}</td>

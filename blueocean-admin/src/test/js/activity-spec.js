@@ -1,5 +1,4 @@
 import React from 'react';
-import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
 import Immutable from 'immutable';

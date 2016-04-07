@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import { WeatherIcon, ModalView, ModalBody } from '@jenkins-cd/design-language';
+import { WeatherIcon, ModalView, ModalBody, StatusIndicator } from '@jenkins-cd/design-language';
 
 const {object} = PropTypes;
 
@@ -16,8 +16,7 @@ export default class Branches extends Component {
             return null;
         }
         const { latestRun, weatherScore, name } = data;
-        const { result, endTime, changeSet } = latestRun;
-
+        const { result, endTime, changeSet, state } = latestRun;
         const { commitId, msg } = changeSet[0] || {};
         const afterClose = () => this.setState({ isVisible: false });
         const open = () => this.setState({ isVisible: true });
@@ -49,7 +48,7 @@ export default class Branches extends Component {
                     </ModalView>
                 }
                 <a onClick={open}>
-                    {result}
+                    <StatusIndicator result={result === 'UNKNOWN' ? state : result} />
                 </a>
             </td>
             <td>{decodeURIComponent(name)}</td>
