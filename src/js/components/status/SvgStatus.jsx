@@ -37,7 +37,7 @@ export default class SvgStatus extends Component {
           viewBox="0 0 100 100"
           preserveAspectRatio="xMidYMid"
         >
-            <title id="title">{title}</title>
+            <title>{title}</title>
             <rect
               x="0"
               y="0"
