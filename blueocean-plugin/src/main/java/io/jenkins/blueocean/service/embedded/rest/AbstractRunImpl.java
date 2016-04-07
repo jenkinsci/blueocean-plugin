@@ -66,12 +66,12 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueRunState getStateObj() {
-        if(!run.hasntStartedYet() && run.isBuilding()) {
+        if(!run.hasntStartedYet() && run.isLogUpdated()) {
             return BlueRunState.RUNNING;
         } else if(!run.isLogUpdated()){
             return BlueRunState.FINISHED;
         } else {
-            return BlueRunState.FINISHED;
+            return BlueRunState.NOT_STARTED;
         }
     }
 
