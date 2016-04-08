@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import { StatusIndicator } from '@jenkins-cd/design-language';
 
+const { object } = PropTypes;
+
 export default class PullRequest extends Component {
     render() {
         const { pr } = this.props;
@@ -24,5 +26,5 @@ export default class PullRequest extends Component {
 }
 
 PullRequest.propTypes = {
-    pr: PropTypes.object,
+    pr: object,
 };

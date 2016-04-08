@@ -6,6 +6,8 @@ import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
 import { urlPrefix } from '../config';
 
+const { object, array } = PropTypes;
+
 export class PullRequests extends Component {
     render() {
         const { pipeline, data } = this.props;
@@ -40,8 +42,8 @@ export class PullRequests extends Component {
 }
 
 PullRequests.propTypes = {
-    pipeline: PropTypes.object,
-    data: PropTypes.array,
+    pipeline: object,
+    data: array,
 };
 
 // Decorated for ajax as well as getting pipeline from context
