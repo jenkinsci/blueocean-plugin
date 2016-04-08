@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import { WeatherIcon, ModalView, ModalBody, StatusIndicator } from '@jenkins-cd/design-language';
 
-const {object} = PropTypes;
+const { object } = PropTypes;
 
 export default class Branches extends Component {
     constructor(props) {

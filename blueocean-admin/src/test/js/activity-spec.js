@@ -157,9 +157,6 @@ describe("Activity should render", () => {
     const weatherIcon = tree.subTree('WeatherIcon').getRenderOutput();
     assert.isNotNull(weatherIcon);
     assert.isNotNull(weatherIcon.props.score);
-    // does data renders?
-    const runs = tree.subTree('Runs').getRenderOutput();
-    assert.isNotNull(runs.props.changeset)
   });
 
 });
@@ -168,7 +165,6 @@ describe("Activity should not render", () => {
   let tree = null;
 
   beforeEach(() => {
-
     tree = sd.shallowRender(<Activity/>);
   });
 

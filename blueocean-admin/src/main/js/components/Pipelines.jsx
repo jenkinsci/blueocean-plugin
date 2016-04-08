@@ -43,7 +43,7 @@ export default class Pipelines extends Component {
                                 .map(pipeline => <Pipeline
                                   key={pipeline.name} pipeline={pipeline}
                                 />)
-                                .toArray() }
+                            }
                         </Table>
                     </article>
                 </main>
@@ -52,5 +52,5 @@ export default class Pipelines extends Component {
 }
 
 Pipelines.contextTypes = {
-    pipelines: PropTypes.object,
+    pipelines: PropTypes.array,
 };

@@ -38,9 +38,6 @@ describe("PullRequests should render", () => {
     const weatherIcon = tree.subTree('WeatherIcon').getRenderOutput();
     assert.isNotNull(weatherIcon);
     assert.isNotNull(weatherIcon.props.score);
-    // does data renders?
-    const runs = tree.subTree('PullRequest').getRenderOutput();
-    assert.isNotNull(runs.props.changeset)
   });
 
 });

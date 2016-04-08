@@ -1,9 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-//import { LogConsole } from './LogConsole.jsx';
 import { LogConsole } from '@jenkins-cd/design-language';
 
-import {log} from '../../../../test/js/runs_log'
+import { log } from '../../../../test/js/runs_log';
 
 storiesOf('LogConsole', module)
     .add('render xxx', () => (

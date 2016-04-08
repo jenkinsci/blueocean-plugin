@@ -37,8 +37,8 @@ export class Activity extends Component {
                     <Table headers={headers}>
                         { data.map((run, index) => {
                             let
-                            changeset = run.get('changeSet');
-                            if (changeset.size > 0) {
+                            changeset = run.changeSet;
+                            if (changeset && changeset.size > 0) {
                                 changeset = changeset.toJS();
                                 latestRecord = new ChangeSetRecord(
                                     changeset[Object.keys(changeset)[0]]);
@@ -66,7 +66,7 @@ export class Activity extends Component {
 
 Activity.propTypes = {
     pipeline: PropTypes.object,
-    data: PropTypes.object,
+    data: PropTypes.array,
 };
 
 // Decorated for ajax as well as getting pipeline from context
