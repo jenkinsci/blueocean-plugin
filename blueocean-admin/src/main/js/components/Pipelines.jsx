@@ -5,6 +5,8 @@ import Table from './Table';
 
 import { Page, PageHeader, Title } from '@jenkins-cd/design-language';
 
+const {array} = PropTypes;
+
 export default class Pipelines extends Component {
 
     render() {
@@ -52,5 +54,5 @@ export default class Pipelines extends Component {
 }
 
 Pipelines.contextTypes = {
-    pipelines: PropTypes.array,
+    pipelines:  array,
 };
