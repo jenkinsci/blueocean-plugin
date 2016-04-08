@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Link} from 'react-router';
 
 export class PageHeader extends Component {
     render() {
@@ -20,6 +21,33 @@ export class Title extends Component {
 
 export class PageTabs extends Component {
     render() {
-        return <nav className="page-tabs">{this.props.children}</nav>;
+        const base = this.props.base;
+        return (
+            <nav className="page-tabs">
+                {React.Children.map(this.props.children, child => React.cloneElement(child, {base}))}
+            </nav>
+        );
     }
 }
+
+PageTabs.propTypes = {
+    base: React.PropTypes.string
+};
+
+export class TabLink extends Component {
+    render() {
+        const base = this.props.base || "";
+        const routeUrl = base + this.props.to;
+        const linkClassName = this.context.router.isActive(routeUrl) ? "selected" : undefined;
+        return <Link to={routeUrl} className={linkClassName}>{this.props.children}</Link>;
+    }
+}
+
+TabLink.propTypes = {
+    base: React.PropTypes.string,
+    to: React.PropTypes.string.isRequired
+};
+
+TabLink.contextTypes = {
+    router: React.PropTypes.object
+};

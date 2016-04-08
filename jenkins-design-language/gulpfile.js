@@ -26,6 +26,7 @@ const config = {
     },
     less: {
         sources: "less/theme.less",
+        watch: "less/**/*.less", // Watch includes as well as main
         dest: "dist/assets/css"
     },
     copy: {
@@ -60,6 +61,13 @@ const config = {
     },
     clean: ["dist", "licenses"]
 };
+
+// Watch
+
+gulp.task("watch", ["default"], () => {
+   gulp.watch(config.react.sources, ["compile-react"]);
+   gulp.watch(config.less.watch, ["less"]);
+});
 
 // Default to clean and build
 

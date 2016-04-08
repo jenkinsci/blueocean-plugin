@@ -34,10 +34,9 @@ describe("PullRequests should render", () => {
   });
 
   it("does renders the PullRequests with data", () => {
-    // does WeatherIcon renders the value from the pipeline?
-    const weatherIcon = tree.subTree('WeatherIcon').getRenderOutput();
-    assert.isNotNull(weatherIcon);
-    assert.isNotNull(weatherIcon.props.score);
+    // does data renders?
+    const runs = tree.subTree('PullRequest').getRenderOutput();
+    assert.isNotNull(runs.props.changeset)
   });
 
 });

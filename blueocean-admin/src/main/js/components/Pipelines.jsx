@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import Pipeline from './Pipeline';
+import PipelineRowItem from './PipelineRowItem';
 import { PipelineRecord } from './records';
 import Table from './Table';
 
@@ -40,7 +40,7 @@ export default class Pipelines extends Component {
                           headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}
                         >
                             { pipelineRecords
-                                .map(pipeline => <Pipeline
+                                .map(pipeline => <PipelineRowItem
                                   key={pipeline.name} pipeline={pipeline}
                                 />)
                             }
