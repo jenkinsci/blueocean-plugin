@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-const { number, string } = PropTypes;
+const {any} = PropTypes;
 
 class LogConsole extends Component {
     render() {
@@ -10,14 +10,13 @@ class LogConsole extends Component {
             return null;
         }
         return (<code
-          dangerouslySetInnerHTML={{__html: result}}
           className="block"
-        />)
+        >{result}</code>)
     }
 }
 
 LogConsole.propTypes = {
-    result: string.isRequired,
+    result: any.isRequired,
 };
 
 export {LogConsole};

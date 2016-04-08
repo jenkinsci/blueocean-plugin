@@ -445,19 +445,47 @@ td:first-child {
 
 code {
     background-color: @pre-bg;
+    width: 100%;
     color: @pre-color;
+    float: left;
+      padding: 15px 0;
+      min-height: 12px;
+      line-height: 18px;
+      white-space: normal;
+      background-color: #333;
+      border: 1px solid #ddd;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      position: relative;
+      counter-reset: line-numbering;
+    //overflow-x: auto;
+
+
     font-size: 1.1rem;
     -webkit-font-smoothing: antialiased; // Good for the light on dark text
 }
-
+code div {
+  margin: 0;
+  padding: 0 15px 0 5px;
+    word-wrap:break-word;
+    display: inline;
+}
+code div::before {
+    content: counter(line-numbering);
+    counter-increment: line-numbering;
+    padding-right: 1em;
+  text-align: right;
+  color: #fff;
+  opacity: 0.33;
+}
 code.block {
     background-color: @pre-bg;
     color: @pre-color;
     display: block;
     padding: 0.5rem;
     white-space: pre;
-    overflow: auto;
-    max-height: @pre-scrollable-max-height;
+    //max-height: @pre-scrollable-max-height;
     border: solid 1px darken(@pre-bg, 20%);;
 }
 
