@@ -582,18 +582,43 @@ code.inline {
     color: @text-color;
     display: inline-block;
     padding: 0.6rem 1rem 0;
-    height: 30px;
-    border-bottom: solid 3px rgba(0, 0, 0, 0);
+    height: 33px;
     font-family: @font-family-nav;
-}
-
-.page-tabs a.selected {
-    border-bottom: solid 3px @brand-primary;
-}
-
-.page-tabs a.selected:hover,
-.page-tabs a.selected:active {
     text-decoration: none;
+
+    // For transforming underline
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+    margin-bottom: -3px;
+}
+
+.page-tabs a:before {
+    // For transforming underline
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: @brand-primary;
+    height: 3px;
+    transition-timing-function: ease-out;
+    transition-duration: 0.2s;
+    transform: translateY(3px);
+    transition-property: transform;
+}
+
+.page-tabs a.selected:before,
+.page-tabs:hover a.selected:hover:before,
+.page-tabs a:hover:before {
+    // For transforming underline
+    transform: translateY(0);
+}
+
+.page-tabs:hover a.selected:before {
+    // For transforming underline
+    transform: translateY(3px);
 }
 
 main article {
