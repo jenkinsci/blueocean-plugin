@@ -56,8 +56,8 @@ Activity.propTypes = {
 };
 
 // Decorated for ajax as well as getting pipeline from context
-export default ajaxHoc(Activity, (props, config) => {
-    if (!props.pipeline) return null;
+export default ajaxHoc(Activity, ({pipeline}, config) => {
+    if (!pipeline) return null;
     multiBranch = !!pipeline.branchNames;
     baseUrl =`${config.getAppURLBase()}/rest/organizations/jenkins` +
         `/pipelines/${pipeline.name}`;
