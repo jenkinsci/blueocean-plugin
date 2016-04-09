@@ -460,15 +460,27 @@ code {
     font-size: 1.1rem;
     -webkit-font-smoothing: antialiased; // Good for the light on dark text
 }
+code p:hover{
+    background-color: @pre-color-hover;
+}
+code p {
+  margin: 0;
+}
+code p::nth-line {
+  color: yellow !important;
+}
 code a {
     margin: 0;
     padding: 0 15px 0 5px;
     word-wrap:break-word;
     display: inline;
-    background-color: @pre-bg;
     color: @pre-color;
 }
-code a::before {
+code a:hover {
+    color: @pre-color;
+    text-decoration: none;
+}
+code p a::before {
     content: counter(line-numbering);
     counter-increment: line-numbering;
     padding-right: 1em;
