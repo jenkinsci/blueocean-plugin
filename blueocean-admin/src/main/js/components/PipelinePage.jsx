@@ -5,7 +5,7 @@ import {
     Title,
     PageTabs,
     TabLink,
-    WeatherIcon
+    WeatherIcon,
 } from '@jenkins-cd/design-language';
 import { urlPrefix } from '../config';
 

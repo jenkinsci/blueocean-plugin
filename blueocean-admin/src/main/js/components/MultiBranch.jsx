@@ -23,13 +23,13 @@ export class MultiBranch extends Component {
             <main>
                 <article>
                     <Table className="multiBranch"
-                           headers={headers}
+                      headers={headers}
                     >
                         {data.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<Branches
-                                key={index}
-                                data={result}
+                              key={index}
+                              data={result}
                             />);
                         })
                         }

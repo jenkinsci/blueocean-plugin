@@ -3,7 +3,7 @@ import ajaxHoc from '../AjaxHoc';
 import moment from 'moment';
 import { ModalView, ModalBody, StatusIndicator, LogConsole } from '@jenkins-cd/design-language';
 
-const { bool, object, string, any } = PropTypes;
+const { object, string, any } = PropTypes;
 
 require('moment-duration-format');
 
@@ -15,22 +15,6 @@ export default class Runs extends Component {
         super(props);
         this.state = { isVisible: false };
     }
-    /*
-    componentDidMount() {
-        let url;
-        const {baseUrl, multiBranch, result} = this.props;
-        if(multiBranch) {
-            url = `${baseUrl}/branches/${result.pipeline}/runs/${result.id}/log/`;
-        } else {
-            url = `${baseUrl}/runs/${result.id}/log/`;
-        }
-        console.log(url)
-        fetchPipelineData(data => {
-          this.setState({
-            data: data,
-          });
-        }, url, false);
-    }*/
     render() {
         const { result, changeset, data } = this.props;
         // early out
@@ -39,10 +23,9 @@ export default class Runs extends Component {
         }
         let lines = [];
         if (data && data.split) {
-            lines = data.split('\n')
+            lines = data.split('\n');
         }
-        console.log(lines.length)
-        const log = lines.map((line, index) => <div key={index}>${line}</div>);
+        const log = lines.map((line, index) => <a key={index}>${line}</a>);
 
         let
             duration = moment.duration(
@@ -113,14 +96,16 @@ export default class Runs extends Component {
 }
 
 Runs.propTypes = {
-    result: any.isRequired,
+    result: any.isRequired, // FIXME: create a shape
     data: string,
     changeset: object.isRequired,
-    baseUrl: string.isRequired,
-    multiBranch: bool,
+    pipeline: object,
 };
 // Decorated for ajax
-export default ajaxHoc(Runs, ({ baseUrl, multiBranch, result }, config) => {
+export default ajaxHoc(Runs, ({ branchNames, name, result }, config) => {
+    const multiBranch = !!branchNames;
+    const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
+        `/pipelines/${name}`;
     let url;
     if (multiBranch) {
         url = `${baseUrl}/branches/${encodeURI(result.pipeline)}/runs/${result.id}/log/`;
