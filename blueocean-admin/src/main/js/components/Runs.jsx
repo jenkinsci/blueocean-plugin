@@ -25,7 +25,9 @@ export default class Runs extends Component {
         if (data && data.split) {
             lines = data.split('\n');
         }
-        const log = lines.map((line, index) => <a key={index}>${line}</a>);
+        const log = lines.map((line, index) => <p>
+            <a key={index} name={index}>${line}</a>
+        </p>);
 
         let
             duration = moment.duration(
