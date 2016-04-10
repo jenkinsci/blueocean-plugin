@@ -1,13 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import Immutable from 'immutable';
 
-function placeholder(...ignored) {
+const requestDone = 4; // Because Zombie is garbage
+
+function placeholder() {
     return null;
 }
 
-// FIXME: We should rename this to something clearer and lose the capital A if we're going to keep it.
-export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder) {
-
+// FIXME: We should rename this to something clearer and
+// lose the capital A if we're going to keep it.
+export default function ajaxHoc(ComposedComponent, getURLFromProps = placeholder) {
     class Wrapped extends Component {
         constructor(props) {
             super(props);
@@ -15,19 +17,10 @@ export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder
             const data = null;
             const url = null;
 
-            this.state = {data, url};
+            this.state = { data, url };
             this._lastUrl = null; // Keeping this out of the react state so we can set it any time
         }
 
-        checkUrl(props) {
-            const config = this.context.config;
-            const url = getURLFromProps(props, config);
-            this.setState({url}, () => this.maybeLoad());
-        }
-
-        componentWillReceiveProps(nextProps) {
-           this.checkUrl(nextProps);
-        }
 
         componentWillMount() {
             this.checkUrl(this.props);
@@ -37,21 +30,27 @@ export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder
             this.maybeLoad();
         }
 
+        componentWillReceiveProps(nextProps) {
+            this.checkUrl(nextProps);
+        }
+
         maybeLoad() {
-            const {url} = this.state;
-            if (url && url != this._lastUrl) {
+            const { url } = this.state;
+            if (url && url !== this._lastUrl) {
                 this._lastUrl = url;
                 this.fetchPipelineData(data => {
                     // eslint-disable-next-line
                     this.setState({
-                        data: Immutable.fromJS(data)
+                        data: Immutable.fromJS(data),
                     });
                 });
             }
         }
 
-        render() {
-            return <ComposedComponent {...this.props} data={ this.state.data }/>;
+        checkUrl(props) {
+            const config = this.context.config;
+            const url = getURLFromProps(props, config);
+            this.setState({ url }, () => this.maybeLoad());
         }
 
         /** FIXME: Ghetto ajax loading of pipeline data for an org @store*/
@@ -65,7 +64,7 @@ export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder
             }
 
             xmlhttp.onreadystatechange = () => {
-                if (xmlhttp.readyState === XMLHttpRequest.DONE) {
+                if (xmlhttp.readyState === requestDone) {
                     if (xmlhttp.status === 200) {
                         let data = null;
                         try {
@@ -85,10 +84,15 @@ export default function AjaxHoc(ComposedComponent, getURLFromProps = placeholder
             xmlhttp.open('GET', url, true);
             xmlhttp.send();
         }
+
+        render() {
+            return <ComposedComponent {...this.props} data={ this.state.data } />;
+        }
+
     }
 
     Wrapped.contextTypes = {
-        config: PropTypes.object
+        config: PropTypes.object,
     };
 
     return Wrapped;

@@ -10,9 +10,9 @@ class OrganisationPipelines extends Component {
         // The specific pipeline we may be focused on
         let pipeline;
 
-        if(pipelines && this.props.params && this.props.params.pipeline) {
+        if (pipelines && this.props.params && this.props.params.pipeline) {
             const name = this.props.params.pipeline;
-            pipeline = pipelines.find(aPipeLine => aPipeLine.get("name") == name);
+            pipeline = pipelines.find(aPipeLine => aPipeLine.get('name') === name);
             // FIXME: This foo.get("bar") syntax is not ideal ^^^
 
             // Convert back to a real JS object
@@ -30,12 +30,12 @@ class OrganisationPipelines extends Component {
 OrganisationPipelines.propTypes = {
     data: PropTypes.object, // From Ajax wrapper
     params: PropTypes.object, // From react-router
-    children: PropTypes.node // From react-router
+    children: PropTypes.node, // From react-router
 };
 
 OrganisationPipelines.childContextTypes = {
     pipelines: PropTypes.object,
-    pipeline: PropTypes.object
+    pipeline: PropTypes.object,
 };
 
 // eslint-disable-next-line

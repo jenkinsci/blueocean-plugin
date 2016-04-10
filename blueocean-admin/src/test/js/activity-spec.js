@@ -1,5 +1,4 @@
 import React from 'react';
-import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
 import Immutable from 'immutable';
@@ -154,10 +153,6 @@ describe("Activity should render", () => {
   });
 
   it("does renders the Activity with data", () => {
-    // does WeatherIcon renders the value from the pipeline?
-    const weatherIcon = tree.subTree('WeatherIcon').getRenderOutput();
-    assert.isNotNull(weatherIcon);
-    assert.isNotNull(weatherIcon.props.score);
     // does data renders?
     const runs = tree.subTree('Runs').getRenderOutput();
     assert.isNotNull(runs.props.changeset)
