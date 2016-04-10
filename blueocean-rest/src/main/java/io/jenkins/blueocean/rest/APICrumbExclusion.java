@@ -25,7 +25,8 @@ public class APICrumbExclusion extends CrumbExclusion{
         for (RootRoutable r : ExtensionList.lookup(RootRoutable.class)) {
             String path = getExclusionPath(r.getUrlName());
             if (pathInfo != null && pathInfo.startsWith(path)) {
-                if(httpServletRequest.getHeader("Content-Type").contains("application/json")) {
+                String header = httpServletRequest.getHeader("Content-Type");
+                if(header != null && header.contains("application/json")) {
                     filterChain.doFilter(httpServletRequest, httpServletResponse);
                     return true;
                 } else {

@@ -70,7 +70,8 @@ public final class ApiHead implements RootRoutable  {
         StaplerRequest request = Stapler.getCurrentRequest();
         String m = request.getMethod();
         if(m.equalsIgnoreCase("POST") || m.equalsIgnoreCase("PUT") || m.equalsIgnoreCase("PATCH")) {
-            if(!request.getHeader("Content-Type").contains("application/json")) {
+            String header = request.getHeader("Content-Type");
+            if(header == null || !header.contains("application/json")) {
                 throw new ServiceException(415, "Content-Type: application/json required");
             }
         }
