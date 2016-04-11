@@ -3,10 +3,13 @@ package io.jenkins.blueocean.rest;
 import hudson.Extension;
 import hudson.ExtensionList;
 import io.jenkins.blueocean.RootRoutable;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
 
@@ -64,6 +67,14 @@ public final class ApiHead implements RootRoutable  {
      * @return {@link ApiRoutable} object
      */
     public ApiRoutable getDynamic(String route) {
+        StaplerRequest request = Stapler.getCurrentRequest();
+        String m = request.getMethod();
+        if(m.equalsIgnoreCase("POST") || m.equalsIgnoreCase("PUT") || m.equalsIgnoreCase("PATCH")) {
+            String header = request.getHeader("Content-Type");
+            if(header == null || !header.contains("application/json")) {
+                throw new ServiceException(415, "Content-Type: application/json required");
+            }
+        }
         return apis.get(route);
     }
 
