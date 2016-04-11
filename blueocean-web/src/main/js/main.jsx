@@ -22,7 +22,7 @@ class App extends Component {
         return (
             <div id="outer">
                 <header className="global-header">
-                    <ExtensionPoint name="jenkins.topNavigation.menu"/>
+                    <ExtensionPoint name="jenkins.logo.top"/>
                     <nav>
                         <Link to="/pipelines">Pipelines</Link>
                          <a href="#">Applications</a>
