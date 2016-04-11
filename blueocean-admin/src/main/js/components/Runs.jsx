@@ -21,13 +21,6 @@ export default class Runs extends Component {
         if (!result && !data) {
             return null;
         }
-        let lines = [];
-        if (data && data.split) {
-            lines = data.split('\n');
-        }
-        const log = lines.map((line, index) => <p>
-            <a key={index} name={index}>${line}</a>
-        </p>);
 
         let
             duration = moment.duration(
@@ -76,7 +69,7 @@ export default class Runs extends Component {
                                     <dt>Completed</dt>
                                     <dd>{moment(result.endTime).fromNow()}</dd>
                                 </dl>
-                                 <LogConsole key={`${result.id}${name}`} result={log} />
+                                 <LogConsole key={`${result.id}${name}`} result={data} />
                             </div>
                         </ModalBody>
                     </ModalView>

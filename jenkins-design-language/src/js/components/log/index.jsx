@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-const {any} = PropTypes;
+const {string} = PropTypes;
 
 class LogConsole extends Component {
     render() {
@@ -9,14 +9,22 @@ class LogConsole extends Component {
         if (!result) {
             return null;
         }
+
+        let lines = [];
+        if (result && result.split) {
+            lines = result.split('\n');
+        }
+
         return (<code
           className="block"
-        >{result}</code>)
+        >{lines.map((line, index) => <p key={index}>
+            <a key={index} name={index}>{line}</a>
+        </p>)}</code>)
     }
 }
 
 LogConsole.propTypes = {
-    result: any.isRequired,
+    result: string.isRequired,
 };
 
 export {LogConsole};
