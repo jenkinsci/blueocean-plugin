@@ -56,6 +56,9 @@ export default class PipelineRowItem extends Component {
             if (hasPullRequests) {
                 pullRequestsLink = <Link to={pullRequestsURL}>{multiPrLabel}</Link>;
             }
+        } else {
+            multiBranchLink = multiBranchLabel;
+            pullRequestsLink = multiPrLabel;
         }
 
         // FIXME: Visual alignment of the last column
