@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "scripts": {
     "storybook": "start-storybook -p 9001",
-    "lint": "gulp lint --silent",
-    "lint:fix": "gulp lint --fixLint --silent",
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint --fixLint",
     "lint:watch": "gulp lint:watch",
-    "test": "gulp test --silent",
-    "test:watch": "gulp test:watch --silent",
-    "bundle": "gulp bundle --silent",
+    "test": "gulp test",
+    "test:watch": "gulp test:watch",
+    "bundle": "gulp bundle",
     "bundle:watch": "gulp bundle:watch"
   },
   "devDependencies": {
