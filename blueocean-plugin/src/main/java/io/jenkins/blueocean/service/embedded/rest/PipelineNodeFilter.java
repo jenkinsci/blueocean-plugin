@@ -1,7 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
+import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
@@ -13,6 +15,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +29,10 @@ public class PipelineNodeFilter {
 
     private final List<FlowGraphTable.Row> rows;
     private final WorkflowRun run;
+    private FlowNode lastNode;
+
+    List<BluePipelineNode> stages = new ArrayList<>();
+
 
     public PipelineNodeFilter(WorkflowRun run) {
         this.run = run;
@@ -42,7 +49,13 @@ public class PipelineNodeFilter {
         }
         List<BluePipelineNode> stages = new ArrayList<>();
         for(FlowNode node: nodeMap.keySet()){
-            stages.add(new PipelineNodeImpl(run, node, nodeMap.get(node)));
+            if(errorNodes.get(node) != null){
+                ErrorAction[] errorActions = Iterables.toArray(errorNodes.get(node), ErrorAction.class);
+                stages.add(new PipelineNodeImpl(run, node, nodeMap.get(node), errorActions));
+            }else{
+                stages.add(new PipelineNodeImpl(run, node, nodeMap.get(node)));
+            }
+
         }
         return stages;
     }
@@ -70,7 +83,7 @@ public class PipelineNodeFilter {
     };
 
     private final Map<FlowNode, List<FlowNode>> nodeMap = new LinkedHashMap<>();
-
+    private final Map<FlowNode, List<ErrorAction>> errorNodes = new HashMap<>();
     /**
      * Identifies Pipeline nodes and parallel branches, identifies the edges connecting them
      *
@@ -80,13 +93,19 @@ public class PipelineNodeFilter {
         for(int i=0; i< rows.size(); i++) {
             FlowGraphTable.Row row = rows.get(i);
             FlowNode flowNode = row.getNode();
+
+            ErrorAction action = flowNode.getError();
+            if(previous != null && action != null){
+                putErrorAction(previous,action);
+            }
             if (acceptable.apply(flowNode)) {
-
                 getOrCreate(flowNode);
-
                 if(isStage.apply(flowNode)) {
                     if(previous == null){
                         previous = flowNode;
+                        if(action != null){
+                            putErrorAction(previous,action);
+                        }
                     }else {
                         nodeMap.get(previous).add(flowNode);
                         previous = flowNode;
@@ -97,12 +116,21 @@ public class PipelineNodeFilter {
 
                     //fast forward till you find another stage
                     FlowNode nextStage=null;
+                    FlowNode prevParallelNode=flowNode;
                     for(int j=i+1; j<rows.size();j++){
                         FlowGraphTable.Row r = rows.get(j);
-                        if(isParallel.apply(r.getNode())){
-                            parallels.add(r.getNode());
-                        }else if(isStage.apply(r.getNode())){
-                            nextStage = r.getNode();
+                        FlowNode n = r.getNode();
+                        if(n.getError() != null){
+                            putErrorAction(prevParallelNode,n.getError());
+                            if(previous != null) {
+                                putErrorAction(previous, n.getError());
+                            }
+                        }
+                        if(isParallel.apply(n)){
+                            prevParallelNode = n;
+                            parallels.add(n);
+                        }else if(isStage.apply(n)){
+                            nextStage = n;
                             i=j;
                             break;
                         }
@@ -139,4 +167,13 @@ public class PipelineNodeFilter {
         return nodes;
     }
 
+
+    private void putErrorAction(@Nonnull FlowNode node, @Nonnull ErrorAction action){
+        List<ErrorAction> actions = errorNodes.get(node);
+        if(actions == null){
+            actions = new ArrayList<>();
+            errorNodes.put(node, actions);
+        }
+        actions.add(action);
+    }
 }
