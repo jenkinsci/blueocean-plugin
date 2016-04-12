@@ -21,7 +21,8 @@ export default class Runs extends Component {
         if (!result && !data) {
             return null;
         }
-
+        const { pipeline } = this.context;
+        console.log(pipeline);
         let
             duration = moment.duration(
                 Number(result.durationInMillis), 'milliseconds').format('hh:mm:ss');
@@ -94,6 +95,9 @@ Runs.propTypes = {
     result: any.isRequired, // FIXME: create a shape
     data: string,
     changeset: object.isRequired,
+    pipeline: object,
+};
+Runs.contextTypes = {
     pipeline: object,
 };
 // Decorated for ajax
