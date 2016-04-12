@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 
@@ -10,16 +10,30 @@ import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
  */
 public class PipelineStageUtil {
 
-    public static BlueRun.BlueRunResult getStatus(FlowNode node){
-        if (node.getError() == null) {
-            return BlueRun.BlueRunResult.SUCCESS;
-        } else if(node.getError().getError() instanceof FlowInterruptedException){
-            Result result = ((FlowInterruptedException)node.getError().getError()).getResult();
-            return BlueRun.BlueRunResult.valueOf(result.toString());
-        } else{
+    public static BlueRun.BlueRunResult getStatus(FlowNode node, ErrorAction errorAction){
+        if(errorAction == null || errorAction.getError() == null){
+            if(node.getExecution().isComplete()){
+                return BlueRun.BlueRunResult.SUCCESS;
+            }else{
+                return BlueRun.BlueRunResult.UNKNOWN;
+            }
+        }
+        if(errorAction.getError()  != null && errorAction.getError() instanceof FlowInterruptedException){
+            return BlueRun.BlueRunResult.ABORTED;
+        }else{
             return BlueRun.BlueRunResult.FAILURE;
         }
     }
 
+    public static BlueRun.BlueRunState getState(FlowNode node){
+        if(node.isRunning()){
+            return BlueRun.BlueRunState.RUNNING;
+        }else if(node.getExecution().isComplete()){
+            return BlueRun.BlueRunState.FINISHED;
+        }else{
+            return BlueRun.BlueRunState.NOT_STARTED;
+        }
 
+
+    }
 }
