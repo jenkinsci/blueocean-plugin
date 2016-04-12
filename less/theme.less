@@ -451,14 +451,11 @@ code {
     min-height: 12px;
     white-space: normal;
     border: 1px solid @pre-border-color;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
     border-radius: 4px;
     position: relative;
     counter-reset: line-numbering;
     overflow-x: auto;
     font-size: 1.1rem;
-    -webkit-font-smoothing: antialiased; // Good for the light on dark text
 }
 code p:hover{
     background-color: @pre-color-hover;
@@ -471,7 +468,7 @@ code p::nth-line {
 }
 code a {
     margin: 0;
-    padding: 0 15px 0 5px;
+    padding: 0 15px 0 20px;
     word-wrap:break-word;
     display: inline;
     color: @pre-color;
@@ -483,6 +480,9 @@ code a:hover {
 code p a::before {
     content: counter(line-numbering);
     counter-increment: line-numbering;
+    float: left;
+    width: 0;
+    white-space: nowrap;
     padding-right: 1em;
     text-align: right;
     color: #fff;
