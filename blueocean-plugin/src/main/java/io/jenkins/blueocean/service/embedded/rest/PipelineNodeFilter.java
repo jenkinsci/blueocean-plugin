@@ -93,8 +93,6 @@ public class PipelineNodeFilter {
         for(int i=0; i< rows.size(); i++) {
             FlowGraphTable.Row row = rows.get(i);
             FlowNode flowNode = row.getNode();
-            System.out.println("Node:"+flowNode.getDisplayName());
-            System.out.println("ErrorAction:"+(flowNode.getError() != null ? flowNode.getError().getDisplayName() : null));
 
             ErrorAction action = flowNode.getError();
             if(previous != null && action != null){
