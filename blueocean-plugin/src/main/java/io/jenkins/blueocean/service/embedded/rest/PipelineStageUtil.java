@@ -31,7 +31,7 @@ public class PipelineStageUtil {
         }else if(node.getExecution().isComplete()){
             return BlueRun.BlueRunState.FINISHED;
         }else{
-            return BlueRun.BlueRunState.NOT_STARTED;
+            return BlueRun.BlueRunState.QUEUED;
         }
 
 
