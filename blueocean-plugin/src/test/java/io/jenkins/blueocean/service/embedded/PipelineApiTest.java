@@ -449,6 +449,41 @@ public class PipelineApiTest {
     }
 
     @Test
+    public void getPipelineJobAbortTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition("" +
+            "node {" +
+            "   stage ('Build1'); " +
+            "   sh('sleep 60') " +
+            "   stage ('Test1'); " +
+            "   echo ('Testing'); " +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
+        for (int i = 0; i < 10; i++) {
+            b1.doStop();
+            if (b1.getResult() != null) {
+                break;
+            }
+            Thread.sleep(1000);
+        }
+        j.assertBuildStatus(Result.ABORTED, b1);
+
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1")
+            .then().log().all()
+            .statusCode(200)
+            .body("id", Matchers.equalTo(b1.getId()))
+            .body("pipeline", Matchers.equalTo(b1.getParent().getName()))
+            .body("organization", Matchers.equalTo("jenkins"))
+            .body("state", Matchers.equalTo("FINISHED"))
+            .body("result", Matchers.equalTo("ABORTED"))
+            .body("startTime", Matchers.equalTo(
+                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b1.getStartTimeInMillis()))));
+    }
+
+
+    @Test
     public void getPipelineJobRunNodeLogTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 
