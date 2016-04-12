@@ -174,6 +174,8 @@ public abstract class BlueRun extends Resource {
         NOT_BUILT,
 
         /** Unknown status */
-        UNKNOWN;
+        UNKNOWN,
+
+        ABORTED,
     }
 }
