@@ -7,9 +7,9 @@
     "url": "https://github.com/cloudbees/blueocean.git"
   },
   "scripts": {
-    "lint": "gulp lint --silent",
-    "lint:fix": "gulp lint --fixLint --silent",
-    "test": "gulp test --silent",
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint --fixLint",
+    "test": "gulp test",
     "test:watch": "gulp test:watch",
     "bundle": "gulp bundle",
     "bundle:watch": "gulp bundle:watch"
