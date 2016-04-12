@@ -1,10 +1,9 @@
 import React from 'react';
-import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
 import Immutable from 'immutable';
 
-import {Activities} from '../../main/js/components/Activity.jsx';
+import {Activity} from '../../main/js/components/Activity.jsx';
 
 const
   data = [
@@ -148,17 +147,12 @@ describe("Activity should render", () => {
   let tree = null;
 
   beforeEach(() => {
-    tree = sd.shallowRender(<Activities
+    tree = sd.shallowRender(<Activity
       data={ Immutable.fromJS(data)}
-      back={() => {}}
       pipeline={ Immutable.fromJS(pipeline)}/>);
   });
 
   it("does renders the Activity with data", () => {
-    // does WeatherIcon renders the value from the pipeline?
-    const weatherIcon = tree.subTree('WeatherIcon').getRenderOutput();
-    assert.isNotNull(weatherIcon);
-    assert.isNotNull(weatherIcon.props.score);
     // does data renders?
     const runs = tree.subTree('Runs').getRenderOutput();
     assert.isNotNull(runs.props.changeset)
@@ -171,7 +165,7 @@ describe("Activity should not render", () => {
 
   beforeEach(() => {
 
-    tree = sd.shallowRender(<Activities/>);
+    tree = sd.shallowRender(<Activity/>);
   });
 
   it("does not renders the Activity without data", () => {

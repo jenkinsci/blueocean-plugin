@@ -44,6 +44,70 @@ public class ProfileApiTest {
             .body("fullName", Matchers.equalTo(system.getFullName()));
     }
 
+    //UX-159
+    @Test
+    public void postCrumbTest() throws Exception {
+        User system = j.jenkins.getUser("SYSTEM");
+
+        RestAssured.given().contentType("application/json").log().all().post("/users/{id}/", system.getId())
+            .then().log().all()
+            .statusCode(200)
+            .body("id", Matchers.equalTo(system.getId()))
+            .body("fullName", Matchers.equalTo(system.getFullName()));
+    }
+
+    //UX-159
+    @Test
+    public void postCrumbFailTest() throws Exception {
+        User system = j.jenkins.getUser("SYSTEM");
+
+        RestAssured.given().log().all().post("/users/{id}/", system.getId())
+            .then().log().all()
+            .statusCode(403);
+    }
+
+    //UX-159
+    @Test
+    public void putMimeTest() throws Exception {
+        User system = j.jenkins.getUser("SYSTEM");
+
+        RestAssured.given().contentType("application/json").log().all().put("/users/{id}/", system.getId())
+            .then().log().all()
+            .statusCode(200)
+            .body("id", Matchers.equalTo(system.getId()))
+            .body("fullName", Matchers.equalTo(system.getFullName()));
+    }
+
+    @Test
+    public void putMimeFailTest() throws Exception {
+        User system = j.jenkins.getUser("SYSTEM");
+
+        RestAssured.given().log().all().put("/users/{id}/", system.getId())
+            .then().log().all()
+            .statusCode(415);
+    }
+
+    //UX-159
+    @Test
+    public void patchMimeTest() throws Exception {
+        User system = j.jenkins.getUser("SYSTEM");
+
+        RestAssured.given().contentType("application/json").log().all().patch("/users/{id}/", system.getId())
+            .then().log().all()
+            .statusCode(200)
+            .body("id", Matchers.equalTo(system.getId()))
+            .body("fullName", Matchers.equalTo(system.getFullName()));
+    }
+
+    @Test
+    public void patchMimeFailTest() throws Exception {
+        User system = j.jenkins.getUser("SYSTEM");
+
+        RestAssured.given().log().all().patch("/users/{id}/", system.getId())
+            .then().log().all()
+            .statusCode(415);
+    }
+
     @Test
     public void getUserDetailsTest() throws Exception {
         hudson.model.User user = j.jenkins.getUser("alice");

@@ -55,16 +55,16 @@ public class JenkinsJSExtensionsTest {
             .body("size()", Matchers.equalTo(1))
             .body("[0].hpiPluginId", Matchers.equalTo("blueocean-admin"))
             .body("[0].extensions[0].component", Matchers.equalTo("AdminNavLink"))
-            .body("[0].extensions[0].extensionPoint", Matchers.equalTo("jenkins.topNavigation.menu"))
+            .body("[0].extensions[0].extensionPoint", Matchers.equalTo("jenkins.logo.top"))
         ;
 
         // Calling JenkinsJSExtensions.getJenkinsJSExtensionData() multiple times should
         // result in the same object instance being returned because the list of plugin
         // has not changed i.e. we have a simple optimization in there where we only scan
         // the classpath if the active plugin lust has changed.
-        Assert.assertSame(
-            JenkinsJSExtensions.getJenkinsJSExtensionData(),
-            JenkinsJSExtensions.getJenkinsJSExtensionData()
+        Assert.assertArrayEquals(
+            JenkinsJSExtensions.INSTANCE.getJenkinsJSExtensionData(),
+            JenkinsJSExtensions.INSTANCE.getJenkinsJSExtensionData()
         );
     }
 }

@@ -1,65 +1,52 @@
 import React, { Component, PropTypes } from 'react';
-import AjaxHoc from '../AjaxHoc';
+import { Link } from 'react-router';
+import ajaxHoc from '../AjaxHoc';
 import Table from './Table';
 import PullRequest from './PullRequest';
-
 import { RunsRecord } from './records';
-
-import { components } from '@jenkins-cd/design-language';
-const { Page, PageHeader, Title, WeatherIcon } = components;
+import { urlPrefix } from '../config';
 
 export class PullRequests extends Component {
     render() {
-        const { pipeline, data, back } = this.props;
+        const { pipeline, data } = this.props;
 
         if (!data || !pipeline) {
             return null;
         }
-        const
-          {
-          name,
-          weatherScore,
-        } = pipeline;
-
         const headers = ['Status', 'Latest Build', 'Summary', 'Author', 'Completed'];
 
-        return (<Page>
-
-            <PageHeader>
-                <Title><WeatherIcon score={weatherScore} /> CloudBees / {name}</Title>
-            </PageHeader>
-
+        return (
             <main>
                 <article>
                     <Table headers={headers}>
                         { data.filter((run) => run.get('pullRequest')).map((run, index) => {
                             const result = new RunsRecord(run.toJS());
                             return (<PullRequest
-                                key={index}
-                                pr={result}
+                              key={index}
+                              pr={result}
                             />);
                         })}
 
                         <tr>
                             <td colSpan={headers.length}>
-                                <button onClick={back}>Dashboard</button>
+                                <Link className="btn" to={urlPrefix}>Dashboard</Link>
                             </td>
                         </tr>
                     </Table>
                 </article>
             </main>
-          </Page>);
+        );
     }
 }
 
 PullRequests.propTypes = {
-    pipeline: PropTypes.object.isRequired,
-    back: PropTypes.func.isRequired,
+    pipeline: PropTypes.object,
     data: PropTypes.object,
 };
 
-const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
-
-export default AjaxHoc(PullRequests, props => ({
-    url: `${baseUrl}${props.pipeline.name}/branches`,
-}));
+// Decorated for ajax as well as getting pipeline from context
+export default ajaxHoc(PullRequests, (props, config) => {
+    if (!props.pipeline) return null;
+    return `${config.getAppURLBase()}/rest/organizations/jenkins` +
+        `/pipelines/${props.pipeline.name}/branches`;
+});

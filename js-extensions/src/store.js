@@ -64,7 +64,6 @@ function loadBundles(extensionPointId, onBundlesLoaded) {
     var loadCountMonitor = new LoadCountMonitor();
 
     function loadPluginBundle(pluginMetadata) {
-        var scriptUrl = 'io/jenkins/' + pluginMetadata.hpiPluginId + '/jenkins-js-extension.js';
         loadCountMonitor.inc();
 
         // The plugin bundle for this plugin may already be in the process of loading (async extension
@@ -75,17 +74,14 @@ function loadBundles(extensionPointId, onBundlesLoaded) {
         if (!pluginMetadata.loadCountMonitors) {
             pluginMetadata.loadCountMonitors = [];
             pluginMetadata.loadCountMonitors.push(loadCountMonitor);
-            jsModules.addScript(scriptUrl, {
-                scriptSrcBase: '@adjunct',
-                hpiPluginId: pluginMetadata.hpiPluginId, // Used for testing
-                success: function () {
+            jsModules.import(pluginMetadata.hpiPluginId + ':jenkins-js-extension')
+                .onFulfilled(function() {
                     pluginMetadata.bundleLoaded = true;
                     for (var i = 0; i < pluginMetadata.loadCountMonitors.length; i++) {
                         pluginMetadata.loadCountMonitors[i].dec();
                     }
                     delete pluginMetadata.loadCountMonitors;
-                }
-            });
+                });
         } else {
             pluginMetadata.loadCountMonitors.push(loadCountMonitor);
         }
@@ -104,8 +100,6 @@ function loadBundles(extensionPointId, onBundlesLoaded) {
 
         var pluginMetadata = extensionPointList[i1];
         var extensions = pluginMetadata.extensions;
-
-        console.log("md", pluginMetadata, "extensions", extensions);
 
         for(var i2 = 0; i2 < extensions.length; i2++) {
             if (extensions[i2].extensionPoint === extensionPointId) {

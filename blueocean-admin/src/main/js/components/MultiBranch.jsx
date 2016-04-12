@@ -1,61 +1,53 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import Table from './Table';
-import AjaxHoc from '../AjaxHoc';
+import ajaxHoc from '../AjaxHoc';
 import Branches from './Branches';
-import { components } from '@jenkins-cd/design-language';
 import { RunsRecord } from './records';
-const { WeatherIcon, Page, PageHeader, Title } = components;
+import { urlPrefix } from '../config';
 
 export class MultiBranch extends Component {
     render() {
-        const { pipeline, data, back } = this.props;
+        const { pipeline, data } = this.props;
         // early out
         if (!data || !pipeline) {
             return null;
         }
-        const {
-            name,
-            weatherScore,
-            } = pipeline;
 
         const headers =
             ['Health', 'Status', 'Branch', 'Last commit', 'Latest message', 'Completed'];
 
         return (
-            <Page>
-                <PageHeader>
-                    <Title><WeatherIcon score={weatherScore} /> CloudBees / {name}</Title>
-                </PageHeader>
-                <main>
-                    <article>
-                        <Table className="multiBranch"
-                          headers={headers}
-                        >
-                            {data.map((run, index) => {
-                                    const result = new RunsRecord(run.toJS());
-                                    return <Branches key={index} data={result} />;
-                                })
-                            }
-                            <tr>
-                                <td colSpan={headers.length}>
-                                    <button className="btn" onClick={back}>Dashboard</button>
-                                </td>
-                            </tr>
-                        </Table>
-                    </article>
-                </main>
-            </Page>);
+            <main>
+                <article>
+                    <Table className="multiBranch"
+                      headers={headers}
+                    >
+                        {data.map((run, index) => {
+                            const result = new RunsRecord(run.toJS());
+                            return <Branches key={index} data={result} />;
+                        })
+                        }
+                        <tr>
+                            <td colSpan={headers.length}>
+                                <Link className="btn" to={urlPrefix}>Dashboard</Link>
+                            </td>
+                        </tr>
+                    </Table>
+                </article>
+            </main>
+        );
     }
 }
 
 MultiBranch.propTypes = {
-    pipeline: PropTypes.object.isRequired,
-    back: PropTypes.func.isRequired,
+    pipeline: PropTypes.object,
     data: PropTypes.object,
 };
 
-const baseUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines/';
-
-export default AjaxHoc(MultiBranch, props => ({
-    url: `${baseUrl}${props.pipeline.name}/branches`,
-}));
+// Decorated for ajax as well as getting pipeline from context
+export default ajaxHoc(MultiBranch, (props, config) => {
+    if (!props.pipeline) return null;
+    return `${config.getAppURLBase()}/rest/organizations/jenkins` +
+        `/pipelines/${props.pipeline.name}/branches`;
+});

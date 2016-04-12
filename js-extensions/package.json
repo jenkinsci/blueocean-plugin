@@ -1,12 +1,12 @@
 {
   "name": "@jenkins-cd/js-extensions",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "Jenkins Extension Store",
   "main": "index.js",
   "files": ["index.js","dist","README.md"],
   "scripts": {
-    "build": "jsx src/ExtensionPoint.jsx > dist/ExtensionPoint.js && cp src/store.js dist/",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && mkdir dist && jsx src/ExtensionPoint.jsx > dist/ExtensionPoint.js && cp src/store.js dist/",
+    "test": "gulp test",
     "prepublish": "npm run build"
   },
   "author": "Tom Fennelly <tom.fennelly@gmail.com> (https://github.com/tfennelly)",
@@ -17,11 +17,11 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
-    "@jenkins-cd/js-builder": "^0.x",
-    "@jenkins-cd/js-test": "^1.x",
+    "@jenkins-cd/js-builder": "0.0.22",
+    "@jenkins-cd/js-test": "1.1.1",
     "react-tools": "^0.13.3"
   },
   "dependencies": {
-    "@jenkins-cd/js-modules": "^0.x"
+    "@jenkins-cd/js-modules": "0.0.2"
   }
 }
