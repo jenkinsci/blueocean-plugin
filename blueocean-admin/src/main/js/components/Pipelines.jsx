@@ -6,6 +6,8 @@ import Table from './Table';
 import { Page, PageHeader, Title } from '@jenkins-cd/design-language';
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
+const { array } = PropTypes;
+
 export default class Pipelines extends Component {
 
     render() {
@@ -45,7 +47,7 @@ export default class Pipelines extends Component {
                                 .map(pipeline => <PipelineRowItem
                                   key={pipeline.name} pipeline={pipeline}
                                 />)
-                                .toArray() }
+                            }
                         </Table>
                     </article>
                 </main>
@@ -54,5 +56,5 @@ export default class Pipelines extends Component {
 }
 
 Pipelines.contextTypes = {
-    pipelines: PropTypes.object,
+    pipelines: array,
 };

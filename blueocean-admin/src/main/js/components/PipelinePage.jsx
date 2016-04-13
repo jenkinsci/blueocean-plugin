@@ -1,7 +1,15 @@
 import React, { Component, PropTypes } from 'react';
-import { Page, PageHeader, Title, PageTabs, TabLink, WeatherIcon }
-    from '@jenkins-cd/design-language';
+import {
+    Page,
+    PageHeader,
+    Title,
+    PageTabs,
+    TabLink,
+    WeatherIcon,
+} from '@jenkins-cd/design-language';
 import { urlPrefix } from '../config';
+
+const { object } = PropTypes;
 
 export default class PipelinePage extends Component {
     render() {
@@ -31,9 +39,9 @@ export default class PipelinePage extends Component {
 }
 
 PipelinePage.propTypes = {
-    children: PropTypes.object,
+    children: object,
 };
 
 PipelinePage.contextTypes = {
-    pipeline: PropTypes.object,
+    pipeline: object,
 };

@@ -6,33 +6,37 @@ import { Link } from 'react-router';
 import { urlPrefix } from '../config';
 import { ActivityRecord, ChangeSetRecord } from './records';
 
+const { object, array } = PropTypes;
+
 export class Activity extends Component {
     render() {
         const { pipeline, data } = this.props;
-
+        // early out
         if (!data || !pipeline) {
             return null;
         }
         const headers = ['Status', 'Build', 'Commit', 'Branch', 'Message', 'Duration', 'Completed'];
 
         let latestRecord = {};
-
         return (<main>
             <article>
                 <Table headers={headers}>
                     { data.map((run, index) => {
                         let
-                            changeset = run.get('changeSet');
-                        if (changeset.size > 0) {
+                        changeset = run.changeSet;
+                        if (changeset && changeset.size > 0) {
                             changeset = changeset.toJS();
-                            latestRecord = new ChangeSetRecord(
-                                changeset[Object.keys(changeset)[0]]);
+                            latestRecord = new ChangeSetRecord(changeset[
+                                Object.keys(changeset)[0]
+                            ]);
                         }
-                        return (<Runs
-                          key={index}
-                          changeset={latestRecord}
-                          data={new ActivityRecord(run)}
-                        />);
+                        const props = {
+                            ...pipeline,
+                            key: index,
+                            changeset: latestRecord,
+                            result: new ActivityRecord(run),
+                        };
+                        return (<Runs {...props} />);
                     })}
 
                     <tr>
@@ -47,13 +51,14 @@ export class Activity extends Component {
 }
 
 Activity.propTypes = {
-    pipeline: PropTypes.object,
-    data: PropTypes.object,
+    pipeline: object,
+    data: array,
 };
 
 // Decorated for ajax as well as getting pipeline from context
-export default ajaxHoc(Activity, (props, config) => {
-    if (!props.pipeline) return null;
-    return `${config.getAppURLBase()}/rest/organizations/jenkins` +
-        `/pipelines/${props.pipeline.name}/runs`;
+export default ajaxHoc(Activity, ({ pipeline }, config) => {
+    if (!pipeline) return null;
+    const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
+        `/pipelines/${pipeline.name}`;
+    return `${baseUrl}/runs`;
 });

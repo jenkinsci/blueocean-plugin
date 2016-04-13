@@ -6,6 +6,8 @@ import Branches from './Branches';
 import { RunsRecord } from './records';
 import { urlPrefix } from '../config';
 
+const { object, array } = PropTypes;
+
 export class MultiBranch extends Component {
     render() {
         const { pipeline, data } = this.props;
@@ -24,8 +26,11 @@ export class MultiBranch extends Component {
                       headers={headers}
                     >
                         {data.map((run, index) => {
-                            const result = new RunsRecord(run.toJS());
-                            return <Branches key={index} data={result} />;
+                            const result = new RunsRecord(run);
+                            return (<Branches
+                              key={index}
+                              data={result}
+                            />);
                         })
                         }
                         <tr>
@@ -41,8 +46,8 @@ export class MultiBranch extends Component {
 }
 
 MultiBranch.propTypes = {
-    pipeline: PropTypes.object,
-    data: PropTypes.object,
+    pipeline: object,
+    data: array,
 };
 
 // Decorated for ajax as well as getting pipeline from context

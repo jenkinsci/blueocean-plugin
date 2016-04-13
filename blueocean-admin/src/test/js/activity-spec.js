@@ -154,8 +154,7 @@ describe("Activity should render", () => {
 
   it("does renders the Activity with data", () => {
     // does data renders?
-    const runs = tree.subTree('Runs').getRenderOutput();
-    assert.isNotNull(runs.props.changeset)
+    assert.isNotNull(tree.getRenderOutput())
   });
 
 });
@@ -164,7 +163,6 @@ describe("Activity should not render", () => {
   let tree = null;
 
   beforeEach(() => {
-
     tree = sd.shallowRender(<Activity/>);
   });
 

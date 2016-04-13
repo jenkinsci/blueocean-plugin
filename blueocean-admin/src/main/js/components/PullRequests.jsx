@@ -6,6 +6,8 @@ import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
 import { urlPrefix } from '../config';
 
+const { object, array } = PropTypes;
+
 export class PullRequests extends Component {
     render() {
         const { pipeline, data } = this.props;
@@ -19,8 +21,8 @@ export class PullRequests extends Component {
             <main>
                 <article>
                     <Table headers={headers}>
-                        { data.filter((run) => run.get('pullRequest')).map((run, index) => {
-                            const result = new RunsRecord(run.toJS());
+                        { data.filter((run) => run.pullRequest).map((run, index) => {
+                            const result = new RunsRecord(run);
                             return (<PullRequest
                               key={index}
                               pr={result}
@@ -40,8 +42,8 @@ export class PullRequests extends Component {
 }
 
 PullRequests.propTypes = {
-    pipeline: PropTypes.object,
-    data: PropTypes.object,
+    pipeline: object,
+    data: array,
 };
 
 // Decorated for ajax as well as getting pipeline from context

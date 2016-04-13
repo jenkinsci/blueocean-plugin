@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
+const { array } = PropTypes;
+
 export default class Table extends Component {
 
     render() {
@@ -18,6 +20,6 @@ export default class Table extends Component {
 }
 
 Table.propTypes = {
-    headers: PropTypes.array,
-    children: PropTypes.array,
+    headers: array,
+    children: array,
 };

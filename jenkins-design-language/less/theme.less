@@ -446,18 +446,55 @@ td:first-child {
 code {
     background-color: @pre-bg;
     color: @pre-color;
+    font-family: @font-family-monospace;
+    width: 100%;
+    min-height: 12px;
+    white-space: normal;
+    border: 1px solid @pre-border-color;
+    border-radius: 4px;
+    position: relative;
+    counter-reset: line-numbering;
+    overflow-x: auto;
     font-size: 1.1rem;
-    -webkit-font-smoothing: antialiased; // Good for the light on dark text
 }
-
+code p:hover{
+    background-color: @pre-color-hover;
+}
+code p {
+  margin: 0;
+}
+code p::nth-line {
+  color: yellow !important;
+}
+code a {
+    margin: 0;
+    padding: 0 15px 0 20px;
+    word-wrap:break-word;
+    display: inline;
+    color: @pre-color;
+}
+code a:hover {
+    color: @pre-color;
+    text-decoration: none;
+}
+code p a::before {
+    content: counter(line-numbering);
+    counter-increment: line-numbering;
+    float: left;
+    width: 0;
+    white-space: nowrap;
+    padding-right: 1em;
+    text-align: right;
+    color: #fff;
+    opacity: 0.33;
+}
 code.block {
     background-color: @pre-bg;
     color: @pre-color;
     display: block;
     padding: 0.5rem;
     white-space: pre;
-    overflow: auto;
-    max-height: @pre-scrollable-max-height;
+    //max-height: @pre-scrollable-max-height;
     border: solid 1px darken(@pre-bg, 20%);;
 }
 
@@ -623,7 +660,7 @@ footer {
     width: 100%;
     display: block;
     height: 100%;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     background-color: #fff;
@@ -634,7 +671,7 @@ footer {
 
 .dialog .header {
     padding: 25px 20px 25px 50px;
-    background-color: #168BB9;
+    background-color: @header-bg;
     color: #ffffff;
     font-size: 18px;
     font-weight: normal;
@@ -644,7 +681,7 @@ footer {
 }
 
 .dialog .content {
-    background-color: #FFF;
+    background-color: @modal-content-bg;
     color: #000;
     overflow-y: auto;
     max-height: 90%;
