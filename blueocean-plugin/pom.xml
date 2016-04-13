@@ -15,7 +15,7 @@
     <name>BlueOcean :: Jenkins Plugin</name>
 
     <properties>
-        <pipeline.plugin>2.0</pipeline.plugin>
+        <pipeline.plugin>1.14</pipeline.plugin>
     </properties>
     <dependencies>
         <dependency>
