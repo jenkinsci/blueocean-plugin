@@ -3,8 +3,9 @@ package io.jenkins.blueocean.service.embedded.rest;
 import com.google.common.base.Predicate;
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
-import org.jenkinsci.plugins.workflow.actions.LogAction;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.jenkinsci.plugins.workflow.actions.ErrorAction;
+import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -13,6 +14,7 @@ import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -28,18 +30,14 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final List<Edge> edges;
     private final WorkflowRun run;
 
-    public PipelineNodeImpl(WorkflowRun run, final FlowNode stage, List<FlowNode> children) {
+    private final List<ErrorAction> errorActions = new ArrayList<>();
+
+    public PipelineNodeImpl(WorkflowRun run, final FlowNode stage, List<FlowNode> children, ErrorAction... errorActions) {
         this.run = run;
         this.node = stage;
         this.children = children;
-        if(children.isEmpty()){
-            this.edges = null;
-            return;
-        }
-        this.edges = new ArrayList<>();
-        for(final FlowNode c : children){
-            this.edges.add(new EdgeImpl(node,c));
-        }
+        Collections.addAll(this.errorActions, errorActions);
+        this.edges = buildEdges();
     }
 
     @Override
@@ -56,7 +54,19 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public BlueRun.BlueRunResult getResult() {
-        return PipelineStageUtil.getStatus(node);
+        if(errorActions.isEmpty()){
+            return PipelineStageUtil.getStatus(node,null);
+        }
+        // Only return the first failure (we could return more if steps are modeled in DAG
+        if(!children.isEmpty() && !errorActions.isEmpty()){
+            return BlueRun.BlueRunResult.UNSTABLE;
+        }
+        return PipelineStageUtil.getStatus(node,errorActions.get(0));
+    }
+
+    @Override
+    public BlueRun.BlueRunState getStateObj() {
+        return PipelineStageUtil.getState(node);
     }
 
     @Override
@@ -144,5 +154,15 @@ public class PipelineNodeImpl extends BluePipelineNode {
             }
             return -1;
         }
+    }
+
+    private List<Edge> buildEdges(){
+        List<Edge> edges  = new ArrayList<>();
+        if(!this.children.isEmpty()) {
+            for (final FlowNode c : children) {
+                edges.add(new EdgeImpl(node, c));
+            }
+        }
+        return edges;
     }
 }
