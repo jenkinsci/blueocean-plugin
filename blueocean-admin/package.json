@@ -28,7 +28,7 @@
     "gulp": "^3.9.0",
     "gulp-mocha": "^2.2.0",
     "mocha": "^2.4.5",
-    "react-addons-test-utils": "15.0.1",
+    "react-addons-test-utils": "^0.14.7",
     "skin-deep": "^0.16.0"
   },
   "dependencies": {
