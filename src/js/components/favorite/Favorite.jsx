@@ -6,7 +6,6 @@ export default class Favorite extends Component {
         this.state = {
             checked: this.props.checked
         };
-        this.toggle = this.toggle.bind(this);
     }
     toggle(e) {
         let checked = e.target.checked;
@@ -28,7 +27,7 @@ export default class Favorite extends Component {
         return (
             <label className={classes}>
                 <input type="checkbox"
-                       onChange={this.toggle}
+                       onChange={this.toggle.bind(this)}
                        checked={this.state.checked} />
                 <span></span>
             </label>
