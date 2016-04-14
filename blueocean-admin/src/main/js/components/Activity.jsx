@@ -15,12 +15,20 @@ export class Activity extends Component {
         if (!data || !pipeline) {
             return null;
         }
-        const headers = ['Status', 'Build', 'Commit', 'Branch', 'Message', 'Duration', 'Completed'];
+        const headers = [
+            'Status',
+            'Build',
+            'Commit',
+            { label: 'Branch', className: 'branch' },
+            { label: 'Message', className: 'message' },
+            { label: 'Duration', className: 'duration' },
+            { label: 'Completed', className: 'completed' },
+        ];
 
         let latestRecord = {};
         return (<main>
             <article>
-                <Table headers={headers}>
+                <Table className="activity-table" headers={headers}>
                     { data.map((run, index) => {
                         let
                         changeset = run.changeSet;
