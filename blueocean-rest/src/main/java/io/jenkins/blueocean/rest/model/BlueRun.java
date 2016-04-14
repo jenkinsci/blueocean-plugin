@@ -156,7 +156,7 @@ public abstract class BlueRun extends Resource {
     public abstract Object getLog();
 
     public enum BlueRunState {
-        NOT_STARTED,
+        QUEUED,
         RUNNING,
         FINISHED
     }
@@ -174,6 +174,9 @@ public abstract class BlueRun extends Resource {
         NOT_BUILT,
 
         /** Unknown status */
-        UNKNOWN;
+        UNKNOWN,
+
+        /** Aborted run*/
+        ABORTED;
     }
 }

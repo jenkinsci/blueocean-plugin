@@ -1,7 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import Immutable from 'immutable';
-
-const requestDone = 4; // Because Zombie is garbage
+import fetchPipelineData from './fetcher';
 
 function placeholder() {
     return null;
@@ -9,7 +7,7 @@ function placeholder() {
 
 // FIXME: We should rename this to something clearer and
 // lose the capital A if we're going to keep it.
-export default function ajaxHoc(ComposedComponent, getURLFromProps = placeholder) {
+export default function ajaxHoc(ComposedComponent, getURLFromProps = placeholder, toJson) {
     class Wrapped extends Component {
         constructor(props) {
             super(props);
@@ -38,12 +36,9 @@ export default function ajaxHoc(ComposedComponent, getURLFromProps = placeholder
             const { url } = this.state;
             if (url && url !== this._lastUrl) {
                 this._lastUrl = url;
-                this.fetchPipelineData(data => {
-                    // eslint-disable-next-line
-                    this.setState({
-                        data: Immutable.fromJS(data),
-                    });
-                });
+                fetchPipelineData(data => {
+                    this.setState({ data });
+                }, this.state.url, toJson);
             }
         }
 
@@ -53,37 +48,6 @@ export default function ajaxHoc(ComposedComponent, getURLFromProps = placeholder
             this.setState({ url }, () => this.maybeLoad());
         }
 
-        /** FIXME: Ghetto ajax loading of pipeline data for an org @store*/
-        fetchPipelineData(onLoad) {
-            const xmlhttp = new XMLHttpRequest();
-            const url = this.state.url;
-
-            if (!url) {
-                onLoad(null);
-                return;
-            }
-
-            xmlhttp.onreadystatechange = () => {
-                if (xmlhttp.readyState === requestDone) {
-                    if (xmlhttp.status === 200) {
-                        let data = null;
-                        try {
-                            data = JSON.parse(xmlhttp.responseText);
-                        } catch (e) {
-                            // eslint-disable-next-line
-                            console.log('Loading', url,
-                                'Expecting JSON, instead got', xmlhttp.responseText);
-                        }
-                        onLoad(data);
-                    } else {
-                        // eslint-disable-next-line
-                        console.log('something else other than 200 was returned');
-                    }
-                }
-            };
-            xmlhttp.open('GET', url, true);
-            xmlhttp.send();
-        }
 
         render() {
             return <ComposedComponent {...this.props} data={ this.state.data } />;

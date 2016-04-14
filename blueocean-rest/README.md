@@ -1,5 +1,10 @@
 # Usage
 
+## Crumbs
+
+Jenkins usually requires a "crumb" with posted reuqests to prevent request forgery and other shenanigans. 
+To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
+
 ## Run BlueOcean plugin
 
     cd bluecoean-plugin
@@ -15,7 +20,6 @@ BlueOcean UI is available at:
 BlueOcean rest API base URL is:
     
     http://localhost:8080/jenkins/blue/rest
-
 
 ## Get a user
 
@@ -392,7 +396,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             ],
             "id": "3",
             "startTime": "2016-03-11T00:32:52.273-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         },
         {
             "displayName": "test",
@@ -412,7 +417,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             ],
             "id": "9",
             "startTime": "2016-03-11T00:32:52.507-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         },
         {
             "displayName": "unit",
@@ -424,14 +430,16 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             ],
             "id": "13",
             "startTime": "2016-03-11T00:32:52.511-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         },
         {
             "displayName": "deploy",
-            "edges": null,
+            "edges": [],
             "id": "35",
             "startTime": "2016-03-11T00:32:52.672-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         },
         {
             "displayName": "integration",
@@ -443,7 +451,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             ],
             "id": "14",
             "startTime": "2016-03-11T00:32:52.513-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         },
         {
             "displayName": "ui",
@@ -455,7 +464,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             ],
             "id": "15",
             "startTime": "2016-03-11T00:32:52.516-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         }
     ]
 
@@ -473,7 +483,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         ],
         "id": "3",
         "startTime": "2016-03-11T00:32:52.273-0800",
-        "status": "SUCCESS"
+        "status": "SUCCESS",
+        "state": "FINISHED"
     }
         
 # Fetching logs

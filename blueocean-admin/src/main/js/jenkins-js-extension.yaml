@@ -2,6 +2,6 @@
 # NB: "component" currently maps to modules, not "symbols" so make sure to "export default"
 extensions:
   - component: AdminNavLink
-    extensionPoint: jenkins.topNavigation.menu
+    extensionPoint: jenkins.logo.top
   - component: PipelineRoutes
     extensionPoint: jenkins.main.routes

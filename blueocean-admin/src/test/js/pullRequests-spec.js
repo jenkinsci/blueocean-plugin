@@ -28,19 +28,15 @@ describe("PullRequests should render", () => {
 
   beforeEach(() => {
     tree = sd.shallowRender(<PullRequests
-      data={ Immutable.fromJS(data)}
+      data={[data]}
       back={() => {}}
       pipeline={ Immutable.fromJS(pipeline)}/>);
   });
 
   it("does renders the PullRequests with data", () => {
-    // does WeatherIcon renders the value from the pipeline?
-    const weatherIcon = tree.subTree('WeatherIcon').getRenderOutput();
-    assert.isNotNull(weatherIcon);
-    assert.isNotNull(weatherIcon.props.score);
     // does data renders?
-    const runs = tree.subTree('PullRequest').getRenderOutput();
-    assert.isNotNull(runs.props.changeset)
+    const td = tree.subTree('td').getRenderOutput();
+    assert.equal(td.props.colSpan, 5)
   });
 
 });

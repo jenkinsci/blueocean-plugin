@@ -48,7 +48,7 @@ describe("pipelines", () => {
 
   it("renders pipelines - check rows number to be as expected", () => {
     const
-      row = tree.everySubTree('Pipeline')
+      row = tree.everySubTree('PipelineRowItem')
       ;
     assert.equal(row.length, 2);
   });

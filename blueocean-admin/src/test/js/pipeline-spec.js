@@ -3,7 +3,7 @@ import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
 
-import Pipeline from '../../main/js/components/Pipeline.jsx';
+import PipelineRowItem from '../../main/js/components/PipelineRowItem.jsx';
 import { PipelineRecord } from '../../main/js/components/records.jsx';
 
 const
@@ -44,17 +44,17 @@ const
     'organization': 'jenkins',
     'weatherScore': 0
   },
-  testElementSimple = (<Pipeline
+  testElementSimple = (<PipelineRowItem
       hack={hack}
       pipeline={pipelineSimple}
       simple={true}/>
   ),
-  testElementMultiSuccess = (<Pipeline
+  testElementMultiSuccess = (<PipelineRowItem
       hack={hack}
       pipeline={pipelineMultiSuccess}
       />
   ),
-  testElementMulti = (<Pipeline
+  testElementMulti = (<PipelineRowItem
       hack={hack}
       pipeline={pipelineMulti}/>
   );
@@ -78,7 +78,7 @@ describe("pipeline component simple rendering", () => {
       children = result.props.children;
 
     assert.equal(result.type, 'tr');
-    assert.equal(children[0].props.children, pipelineSimple.name);
+    assert.equal(children[0].props.children.props.children, pipelineSimple.name);
     // simple element has no children
     assert.equal(children[2].type, 'td');
     assert.isObject(children[2].props);
@@ -98,13 +98,13 @@ describe("pipeline component multiBranch rendering", () => {
       children = result.props.children;
 
     assert.equal(result.type, 'tr');
-    assert.equal(children[0].props.children, pipelineMulti.name);
+    assert.equal(children[0].props.children.props.children, pipelineMulti.name);
     // simple element has no children
     assert.equal(children[2].type, 'td');
     assert.isObject(children[2].props);
     // multiBranch has more information
     assert.isDefined(children[2].props.children);
-    assert.equal(children[2].props.children[0], pipelineMulti.numberOfFailingBranches);
+    assert.equal(children[2].props.children.props.children[0], pipelineMulti.numberOfFailingBranches);
   });
 
 });
@@ -121,13 +121,13 @@ describe("pipeline component multiBranch rendering - success", () => {
       children = result.props.children;
 
     assert.equal(result.type, 'tr');
-    assert.equal(children[0].props.children, pipelineMultiSuccess.name);
+    assert.equal(children[0].props.children.props.children, pipelineMultiSuccess.name);
     // simple element has no children
     assert.equal(children[2].type, 'td');
     assert.isObject(children[2].props);
     // multiBranch has more information
     assert.isDefined(children[2].props.children);
-    assert.equal(children[2].props.children[0], pipelineMultiSuccess.numberOfSuccessfulBranches);
+    assert.equal(children[2].props.children.props.children[0], pipelineMultiSuccess.numberOfSuccessfulBranches);
   });
 
 });

@@ -4,7 +4,7 @@ import { WeatherIcon } from '@jenkins-cd/design-language';
 
 import { urlPrefix } from '../config';
 
-export default class Pipeline extends Component {
+export default class PipelineRowItem extends Component {
 
     calculateResponse(passing, failing) {
         let restponse = '-';
@@ -38,6 +38,7 @@ export default class Pipeline extends Component {
         const multiBranchURL = `${urlPrefix}/${name}/branches`;
         const pullRequestsURL = `${urlPrefix}/${name}/pr`;
         const activitiesURL = `${urlPrefix}/${name}/activity`;
+        const nameLink = <Link to={activitiesURL}>{name}</Link>;
 
         let multiBranchLabel = ' - ';
         let multiPrLabel = ' - ';
@@ -50,31 +51,31 @@ export default class Pipeline extends Component {
             multiPrLabel = this.calculateResponse(
                 numberOfSuccessfulPullRequests, numberOfFailingPullRequests);
 
-            multiBranchLink = <Link className="btn" to={multiBranchURL}>multiBranch</Link>;
+            multiBranchLink = <Link to={multiBranchURL}>{multiBranchLabel}</Link>;
 
             if (hasPullRequests) {
-                pullRequestsLink = <Link className="btn" to={pullRequestsURL}>pr</Link>;
+                pullRequestsLink = <Link to={pullRequestsURL}>{multiPrLabel}</Link>;
             }
+        } else {
+            multiBranchLink = multiBranchLabel;
+            pullRequestsLink = multiPrLabel;
         }
 
         // FIXME: Visual alignment of the last column
         return (
             <tr>
-                <td>{name}</td>
+                <td>{nameLink}</td>
                 <td><WeatherIcon score={weatherScore} /></td>
-                <td>{multiBranchLabel}</td>
-                <td>{multiPrLabel}</td>
+                <td>{multiBranchLink}</td>
+                <td>{pullRequestsLink}</td>
                 <td>
                     <i className="material-icons">&#xE83A;</i>
-                    {multiBranchLink}
-                    {pullRequestsLink}
-                    <Link className="btn" to={activitiesURL}>Activities</Link>
                 </td>
             </tr>
         );
     }
 }
 
-Pipeline.propTypes = {
+PipelineRowItem.propTypes = {
     pipeline: PropTypes.object.isRequired,
 };
