@@ -15,6 +15,8 @@ public abstract class BluePipeline extends Resource {
     public static final String BRANCHES="branches";
     public static final String RUNS="runs";
     public static final String WEATHER_SCORE ="weatherScore";
+    public static final String LATEST_RUN = "latestRun";
+
 
     /**
      * @return name of the organization
@@ -45,13 +47,13 @@ public abstract class BluePipeline extends Resource {
     @JsonProperty(WEATHER_SCORE)
     public abstract int getWeatherScore();
 
-
-    //TODO: collections should serailize as reference to the resource or pagination can't be done
     /**
-     * @return Set of branches available with this pipeline
+     * @return The Latest Run for the branch
      */
-    @JsonProperty(BRANCHES)
-    public abstract BlueBranchContainer getBranches();
+    @Exported(name = LATEST_RUN, inline = true)
+    @JsonProperty(LATEST_RUN)
+    public abstract BlueRun getLatestRun();
+
 
     /**
      * @return Gives Runs in this pipeline

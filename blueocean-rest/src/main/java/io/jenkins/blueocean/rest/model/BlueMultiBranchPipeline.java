@@ -64,9 +64,9 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
     public abstract int getNumberOfSuccessfulPullRequests();
 
     /**
-     * @return Gives {@link BlueBranchContainer}
+     * @return Gives {@link BluePipelineContainer}
      */
-    public abstract BlueBranchContainer getBranches();
+    public abstract BluePipelineContainer getBranches();
 
     /**
      * @return Gives array of branch names
