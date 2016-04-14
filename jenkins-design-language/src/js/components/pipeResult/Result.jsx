@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import SvgDuration from './SvgDuration.jsx';
-import SvgTime from './SvgTime.jsx';
-import SvgError from './SvgError.jsx';
-import SvgSuccess from './SvgSuccess.jsx';
+import SvgDuration from './SvgDuration';
+import SvgTime from './SvgTime';
+import SvgError from './SvgError';
+import SvgSuccess from './SvgSuccess';
 
 import moment from 'moment';
 

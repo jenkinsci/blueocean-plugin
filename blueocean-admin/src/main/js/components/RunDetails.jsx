@@ -4,10 +4,9 @@ import {
     ModalBody,
     ModalHeader,
     LogConsole,
+    PipelineResult,
     fetch,
 } from '@jenkins-cd/design-language';
-
-import { PipelineResult } from './pipeResult/Result.jsx';
 
 const { object, array } = PropTypes;
 
