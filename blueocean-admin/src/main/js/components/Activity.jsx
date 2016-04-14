@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import ajaxHoc from '../AjaxHoc';
+import { fetch } from '@jenkins-cd/design-language';
 import Table from './Table';
 import Runs from './Runs';
 import { Link } from 'react-router';
@@ -56,7 +56,7 @@ Activity.propTypes = {
 };
 
 // Decorated for ajax as well as getting pipeline from context
-export default ajaxHoc(Activity, ({ pipeline }, config) => {
+export default fetch(Activity, ({ pipeline }, config) => {
     if (!pipeline) return null;
     const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
         `/pipelines/${pipeline.name}`;

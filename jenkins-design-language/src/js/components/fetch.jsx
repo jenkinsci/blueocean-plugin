@@ -1,13 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import fetchPipelineData from './fetcher';
+import fetchData from './fetcher';
 
 function placeholder() {
     return null;
 }
 
-// FIXME: We should rename this to something clearer and
-// lose the capital A if we're going to keep it.
-export default function ajaxHoc(ComposedComponent, getURLFromProps = placeholder, toJson) {
+export function fetch(ComposedComponent, getURLFromProps = placeholder, toJson) {
     class Wrapped extends Component {
         constructor(props) {
             super(props);
@@ -36,7 +34,7 @@ export default function ajaxHoc(ComposedComponent, getURLFromProps = placeholder
             const { url } = this.state;
             if (url && url !== this._lastUrl) {
                 this._lastUrl = url;
-                fetchPipelineData(data => {
+                fetchData(data => {
                     this.setState({ data });
                 }, this.state.url, toJson);
             }
@@ -60,4 +58,9 @@ export default function ajaxHoc(ComposedComponent, getURLFromProps = placeholder
     };
 
     return Wrapped;
+}
+
+export {
+    fetch,
+    fetchData,
 }

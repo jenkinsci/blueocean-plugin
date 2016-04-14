@@ -1,4 +1,4 @@
-export default function fetchPipelineData(onLoad, url, toJson = true) {
+export default function fetchData(onLoad, url, toJson = true) {
     const xmlhttp = new XMLHttpRequest();
     const requestDone = 4; // Because Zombie is garbage
 
@@ -30,5 +30,6 @@ export default function fetchPipelineData(onLoad, url, toJson = true) {
         }
     };
     xmlhttp.open('GET', url, true);
+    xmlhttp.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
     xmlhttp.send();
 }

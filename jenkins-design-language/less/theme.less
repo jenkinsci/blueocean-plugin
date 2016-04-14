@@ -669,15 +669,81 @@ footer {
     box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28);
 }
 
+.dialog .closeButton {
+    top: 25px;
+}
+
 .dialog .header {
     padding: 25px 20px 25px 50px;
-    background-color: @header-bg;
     color: #ffffff;
-    font-size: 18px;
     font-weight: normal;
+    line-height: 20px;
     overflow-y: auto;
     max-height: 20%;
     min-height: 5%;
+}
+.dialog section h4 {
+    padding-bottom: 5px;
+}
+
+.dialog section .times {
+    padding-left: 40px;
+}
+
+.dialog section .commons {
+    position: relative;
+    top: -5px;
+}
+
+.dialog section .times span {
+  vertical-align: top;
+}
+
+.dialog section .times svg{
+    padding-right: 25px;
+}
+
+.dialog section.left svg{
+    padding-right: 20px;
+    padding-left: 20px;
+    margin-top: -20px;
+}
+
+.dialog .table {
+    display: table;
+}
+
+.dialog .result {
+    width: 100%;
+    margin: 20px auto;
+    font-family: @font-family-panel;
+    color: #ffffff;
+}
+
+.dialog .result .row {
+    display: table-row;
+}
+
+.dialog .result .row div {
+    display: table-cell;
+}
+
+.dialog .result .row div div {
+    display: block;
+}
+
+.dialog .header.info{
+    background-color: @header-bg;
+}
+
+.dialog .header.success{
+    padding: 0;
+    background-color: @brand-success;
+}
+
+.dialog .header.failure{
+    padding: 0;
+    background-color: @brand-danger;
 }
 
 .dialog .content {
@@ -741,4 +807,10 @@ circle.success {
 }
 circle.failure {
     fill: @brand-danger;
+}
+.left {
+    float: left;
+}
+.right {
+    float: right;
 }

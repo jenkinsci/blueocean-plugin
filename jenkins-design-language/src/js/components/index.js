@@ -15,3 +15,4 @@ export {
     SvgSpinner,
     SvgStatus,
 } from './status/StatusIndicator';
+export {fetch, fetchData} from './fetch'
