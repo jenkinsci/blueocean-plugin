@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -13,10 +12,8 @@ public abstract class BlueOrganization extends Resource {
     public static final String PIPELINES="pipelines";
 
     @Exported(name = NAME)
-    @JsonProperty(NAME)
     public abstract String getName();
 
-    @JsonProperty(PIPELINES)
     public abstract BluePipelineContainer getPipelines();
 
 }

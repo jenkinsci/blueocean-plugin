@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -22,21 +21,18 @@ public abstract class BluePipeline extends Resource {
      * @return name of the organization
      */
     @Exported(name = ORGANIZATION)
-    @JsonProperty(ORGANIZATION)
     public abstract String getOrganization();
 
     /**
      * @return name of the pipeline
      */
     @Exported(name = NAME)
-    @JsonProperty(NAME)
     public abstract String getName();
 
     /**
      * @return human readable name of this pipeline
      */
     @Exported(name = DISPLAY_NAME)
-    @JsonProperty(DISPLAY_NAME)
     public abstract String getDisplayName();
 
 
@@ -44,21 +40,18 @@ public abstract class BluePipeline extends Resource {
      * @return weather health score percentile
      */
     @Exported(name = WEATHER_SCORE)
-    @JsonProperty(WEATHER_SCORE)
     public abstract int getWeatherScore();
 
     /**
      * @return The Latest Run for the branch
      */
     @Exported(name = LATEST_RUN, inline = true)
-    @JsonProperty(LATEST_RUN)
     public abstract BlueRun getLatestRun();
 
 
     /**
      * @return Gives Runs in this pipeline
      */
-    @JsonProperty(RUNS)
     public abstract BlueRunContainer getRuns();
 
 }

@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import hudson.model.Job;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.scm.api.SCMHead;
@@ -19,7 +18,6 @@ public class BranchImpl extends PipelineImpl {
     }
 
     @Exported(name = PULL_REQUEST, inline = true)
-    @JsonProperty(PULL_REQUEST)
     public PullRequest getPullRequest() {
         SCMHead head = SCMHead.HeadByItem.findHead(job);
         if(head != null) {
@@ -53,28 +51,24 @@ public class BranchImpl extends PipelineImpl {
         }
 
         @Exported(name = PULL_REQUEST_NUMBER)
-        @JsonProperty(PULL_REQUEST_NUMBER)
         public String getId() {
             return id;
         }
 
 
         @Exported(name = PULL_REQUEST_URL)
-        @JsonProperty(PULL_REQUEST_URL)
         public String getUrl() {
             return url;
         }
 
 
         @Exported(name = PULL_REQUEST_TITLE)
-        @JsonProperty(PULL_REQUEST_TITLE)
         public String getTitle() {
             return title;
         }
 
 
         @Exported(name = PULL_REQUEST_AUTHOR)
-        @JsonProperty(PULL_REQUEST_AUTHOR)
         public String getAuthor() {
             return author;
         }
