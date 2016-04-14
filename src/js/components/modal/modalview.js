@@ -159,7 +159,7 @@ ModalView.propTypes = {
     beforeClose: PropTypes.func,
     beforeOpen: PropTypes.func,
     body: PropTypes.string,
-    children: PropTypes.object,
+    children: PropTypes.node,
     hideOnOverlayClicked: PropTypes.bool,
     isVisible: PropTypes.bool,
     onOverlayClicked: PropTypes.func,

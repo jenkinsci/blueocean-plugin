@@ -16,3 +16,10 @@ export {
     SvgStatus,
 } from './status/StatusIndicator';
 export {fetch, fetchData} from './fetch'
+export {
+    PipelineResult,
+    SvgDuration,
+    SvgTime,
+    SvgError,
+    SvgSuccess,
+} from './pipeResult/Result'
