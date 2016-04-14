@@ -477,17 +477,19 @@ code a:hover {
     color: @pre-color;
     text-decoration: none;
 }
+
 code p a::before {
+    opacity: 0.4;
     content: counter(line-numbering);
     counter-increment: line-numbering;
     float: left;
-    width: 0;
+    min-width: 20px;
     white-space: nowrap;
     padding-right: 1em;
+    padding-left:10px;
     text-align: right;
-    color: #fff;
-    opacity: 0.33;
 }
+
 code.block {
     background-color: @pre-bg;
     color: @pre-color;
