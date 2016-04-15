@@ -15,7 +15,7 @@
     "bundle:watch": "gulp bundle:watch"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.27",
+    "@jenkins-cd/js-builder": "0.0.29",
     "@jenkins-cd/js-test": "1.1.1",
     "babel-eslint": "^6.0.0",
     "babel-preset-es2015": "^6.5.0",
