@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import ajaxHoc from '../AjaxHoc';
 import moment from 'moment';
-import { CommitHash, ReadableDate, ModalView, ModalBody, StatusIndicator, LogConsole } from '@jenkins-cd/design-language';
+import { CommitHash, ReadableDate, ModalView } from '@jenkins-cd/design-language';
+import { ModalBody, StatusIndicator, LogConsole } from '@jenkins-cd/design-language';
 
 const { object, string, any } = PropTypes;
 
