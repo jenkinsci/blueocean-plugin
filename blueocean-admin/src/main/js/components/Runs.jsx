@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ajaxHoc from '../AjaxHoc';
 import moment from 'moment';
-import { ModalView, ModalBody, StatusIndicator, LogConsole } from '@jenkins-cd/design-language';
+import { ReadableDate, ModalView, ModalBody, StatusIndicator, LogConsole } from '@jenkins-cd/design-language';
 
 const { object, string, any } = PropTypes;
 
@@ -80,7 +80,7 @@ export default class Runs extends Component {
             <td>{name}</td>
             <td>{changeset && changeset.comment || '-'}</td>
             <td>{duration}</td>
-            <td>{moment(result.endTime).fromNow()}</td>
+            <td><ReadableDate date={result.endTime} /></td>
         </tr>);
     }
 }
