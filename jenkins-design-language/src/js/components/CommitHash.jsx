@@ -9,9 +9,9 @@ export default class CommitHash extends Component {
     }
 
     render() {
-        if (this.props.changeset && this.props.changeset.commitId) {
+        if (this.props.commitId) {
             return (
-                <code className="hash">{this.props.changeset.commitId.substring(0, 8)}</code>
+                <code className="hash">{this.props.commitId.substring(0, 8)}</code>
             );
         }
         return (
@@ -21,5 +21,5 @@ export default class CommitHash extends Component {
 }
 
 CommitHash.propTypes = {
-    changeset: PropTypes.object.isRequired,
+    commitId: PropTypes.string,
 };

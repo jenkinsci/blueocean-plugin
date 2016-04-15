@@ -71,7 +71,7 @@ export default class Runs extends Component {
                 </a>
             </td>
             <td>{result.id}</td>
-            <td><CommitHash changeset={changeset} /></td>
+            <td><CommitHash commitId={changeset.commitId} /></td>
             <td>{name}</td>
             <td>{changeset && changeset.comment || '-'}</td>
             <td>{duration}</td>
