@@ -15,6 +15,12 @@ export default class Runs extends Component {
         super(props);
         this.state = { isVisible: false };
     }
+    getCommitHash(changeset) {
+        if (changeset && changeset.commitId) {
+            return (<code className="hash">{changeset.commitId.substring(0, 8)}</code>);
+        }
+        return '-';
+    }
     render() {
         const { result, changeset, data } = this.props;
         // early out
@@ -79,7 +85,7 @@ export default class Runs extends Component {
                 </a>
             </td>
             <td>{result.id}</td>
-            <td>{changeset && changeset.commitId && changeset.commitId.substring(0, 8) || '-'}</td>
+            <td>{this.getCommitHash(changeset)}</td>
             <td>{name}</td>
             <td>{changeset && changeset.comment || '-'}</td>
             <td>
