@@ -14,7 +14,9 @@ export default class CommitHash extends Component {
                 <code className="hash">{this.props.changeset.commitId.substring(0, 8)}</code>
             );
         }
-        return '-';
+        return (
+            <span>-</span>
+        );
     }
 }
 
