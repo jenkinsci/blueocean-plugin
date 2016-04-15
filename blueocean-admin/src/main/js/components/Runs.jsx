@@ -28,17 +28,8 @@ export default class Runs extends Component {
             return null;
         }
 
-        let
-            duration = moment.duration(
-                Number(result.durationInMillis), 'milliseconds').format('hh:mm:ss');
-
-        const durationArray = duration.split(':');
+        const duration = moment.duration(result.durationInMillis).humanize();
         const name = decodeURIComponent(result.pipeline);
-
-        if (durationArray.length === 1) {
-            duration = `00:${duration}`;
-        }
-
         const afterClose = () => this.setState({ isVisible: false });
         const open = () => this.setState({ isVisible: true });
         const resultRun = result.result === 'UNKNOWN' ? result.state : result.result;
@@ -88,9 +79,7 @@ export default class Runs extends Component {
             <td>{this.getCommitHash(changeset)}</td>
             <td>{name}</td>
             <td>{changeset && changeset.comment || '-'}</td>
-            <td>
-                {duration} minutes
-            </td>
+            <td>{duration}</td>
             <td>{moment(result.endTime).fromNow()}</td>
         </tr>);
     }
