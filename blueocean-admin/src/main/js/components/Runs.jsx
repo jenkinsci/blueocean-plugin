@@ -46,27 +46,23 @@ export default class Runs extends Component {
                                     <dt>Build</dt>
                                     <dd>{result.id}</dd>
                                     <dt>Commit</dt>
-                                    <dd>
-                                        {changeset
-                                        && changeset.commitId
-                                        && changeset.commitId.substring(0, 8) || '-'
-                                        }
+                                    <dd><CommitHash commitId={changeset && changeset.commitId} />
                                     </dd>
                                     <dt>Branch</dt>
                                     <dd>{name}</dd>
                                     <dt>Message</dt>
                                     <dd>{changeset && changeset.comment || '-'}</dd>
                                     <dt>Duration</dt>
-                                    <dd>{duration} minutes</dd>
+                                    <dd>{duration}</dd>
                                     <dt>Completed</dt>
-                                    <dd>{moment(result.endTime).fromNow()}</dd>
+                                    <dd><ReadableDate date={result.endTime} /></dd>
                                 </dl>
                                  <LogConsole key={`${result.id}${name}`} result={data} />
                             </div>
                         </ModalBody>
                     </ModalView>
                 }
-                <a onClick={open}>
+                <a className="status-link" onClick={open}>
                     <StatusIndicator result={resultRun} />
                 </a>
             </td>
