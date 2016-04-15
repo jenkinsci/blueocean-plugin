@@ -59,7 +59,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>1.4-beta-1</version>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.coravy.hudson.plugins.github</groupId>
+            <artifactId>github</artifactId>
+            <version>1.18.2</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -67,7 +66,6 @@ public abstract class BluePipelineNode extends Resource{
     public abstract BlueRun.BlueRunResult getResult();
 
     @Exported(name=STATE)
-    @JsonProperty(STATE)
     public abstract BlueRun.BlueRunState getStateObj();
 
     public abstract Date getStartTime();
