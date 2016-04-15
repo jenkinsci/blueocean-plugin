@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ajaxHoc from '../AjaxHoc';
 import moment from 'moment';
-import { ReadableDate, ModalView, ModalBody, StatusIndicator, LogConsole } from '@jenkins-cd/design-language';
+import { CommitHash, ReadableDate, ModalView, ModalBody, StatusIndicator, LogConsole } from '@jenkins-cd/design-language';
 
 const { object, string, any } = PropTypes;
 
@@ -14,12 +14,6 @@ export default class Runs extends Component {
     constructor(props) {
         super(props);
         this.state = { isVisible: false };
-    }
-    getCommitHash(changeset) {
-        if (changeset && changeset.commitId) {
-            return (<code className="hash">{changeset.commitId.substring(0, 8)}</code>);
-        }
-        return '-';
     }
     render() {
         const { result, changeset, data } = this.props;
@@ -76,7 +70,7 @@ export default class Runs extends Component {
                 </a>
             </td>
             <td>{result.id}</td>
-            <td>{this.getCommitHash(changeset)}</td>
+            <td><CommitHash changeset={changeset} /></td>
             <td>{name}</td>
             <td>{changeset && changeset.comment || '-'}</td>
             <td>{duration}</td>
