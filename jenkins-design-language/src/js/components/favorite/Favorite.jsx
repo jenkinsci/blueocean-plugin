@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-export class Favorite extends Component {
+export default class Favorite extends Component {
     constructor(props){
         super(props);
         this.state = {
