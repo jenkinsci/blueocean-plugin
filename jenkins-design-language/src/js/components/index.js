@@ -16,3 +16,4 @@ export {
     SvgStatus,
 } from './status/StatusIndicator';
 export ReadableDate from './ReadableDate';
+export CommitHash from './CommitHash';
