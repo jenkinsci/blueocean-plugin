@@ -15,12 +15,18 @@ export class PullRequests extends Component {
         if (!data || !pipeline) {
             return null;
         }
-        const headers = ['Status', 'Latest Build', 'Summary', 'Author', 'Completed'];
+        const headers = [
+            'Status',
+            { label: 'Latest Build', className: 'build' },
+            { label: 'Summary', className: 'summary' },
+            'Author',
+            { label: 'Completed', className: 'completed' },
+        ];
 
         return (
             <main>
                 <article>
-                    <Table headers={headers}>
+                    <Table className="pr-table" headers={headers}>
                         { data.filter((run) => run.pullRequest).map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
