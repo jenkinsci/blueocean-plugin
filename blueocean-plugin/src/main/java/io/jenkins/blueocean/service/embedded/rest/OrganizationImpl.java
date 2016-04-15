@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -30,7 +29,6 @@ public class OrganizationImpl extends BlueOrganization {
     /**
      * In embedded mode, there's only one organization
      */
-    @JsonProperty
     public String getName() {
         return Jenkins.getInstance().getDisplayName().toLowerCase();
     }

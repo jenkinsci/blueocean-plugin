@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;
@@ -66,12 +65,12 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueRunState getStateObj() {
-        if(!run.hasntStartedYet() && run.isBuilding()) {
+        if(!run.hasntStartedYet() && run.isLogUpdated()) {
             return BlueRunState.RUNNING;
         } else if(!run.isLogUpdated()){
             return BlueRunState.FINISHED;
         } else {
-            return BlueRunState.FINISHED;
+            return BlueRunState.QUEUED;
         }
     }
 
@@ -120,7 +119,6 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Exported(name = "commitId")
-    @JsonProperty("commitId")
     public String getCommitId(){
         BuildData data = run.getAction(BuildData.class);
 

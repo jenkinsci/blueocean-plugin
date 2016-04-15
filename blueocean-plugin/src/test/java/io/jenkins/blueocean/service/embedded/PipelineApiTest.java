@@ -8,6 +8,7 @@ import com.jayway.restassured.response.ValidatableResponse;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Project;
+import hudson.model.Result;
 import hudson.tasks.Shell;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.service.embedded.rest.PipelineNodeFilter;
@@ -23,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -46,6 +48,21 @@ public class PipelineApiTest {
         RestAssured.baseURI = j.jenkins.getRootUrl()+"blue/rest";
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
+
+    @Test
+    public void getFolderPipelineTest() throws IOException {
+        MockFolder folder = j.createFolder("folder1");
+        Project p = folder.createProject(FreeStyleProject.class, "test1");
+
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/test1")
+            .then().log().all()
+            .statusCode(200)
+            .body("organization", Matchers.equalTo("jenkins"))
+            .body("name", Matchers.equalTo("test1"))
+            .body("displayName", Matchers.equalTo("test1"))
+            .body("weatherScore", Matchers.is(p.getBuildHealth().getScore()));
+    }
+
 
     @Test
     public void getPipelineTest() throws IOException {
@@ -229,7 +246,13 @@ public class PipelineApiTest {
             "stage 'deploy'\n" +
             "node{\n" +
             "  echo \"Deploying\"\n" +
-            "}"));
+            "}" +
+            "\n" +
+            "stage 'deployToProd'\n" +
+            "node{\n" +
+            "  echo \"Deploying to production\"\n" +
+            "}"
+        ));
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
@@ -238,7 +261,7 @@ public class PipelineApiTest {
         List<FlowNode> nodes = getStages(nodeGraphTable);
         List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
 
-        Assert.assertEquals(6, nodes.size());
+        Assert.assertEquals(7, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
         ValidatableResponse response = RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/")
             .then().log().all()
@@ -253,6 +276,9 @@ public class PipelineApiTest {
                     Matchers.equalTo(n.getAction(ThreadNameAction.class) != null
                     ? n.getAction(ThreadNameAction.class).getThreadName()
                     : n.getDisplayName()));
+
+            response.body(String.format("[%s].result", i), Matchers.equalTo("SUCCESS"));
+
             if(n.getDisplayName().equals("test")){
                 response.body(String.format("[%s].edges.size()", i), Matchers.is(parallelNodes.size()));
                 response.body(String.format("[%s].edges[0].id", i), Matchers.equalTo(parallelNodes.get(0).getId()))
@@ -262,10 +288,86 @@ public class PipelineApiTest {
                 response.body(String.format("[%s].edges.size()", i), Matchers.is(1));
                 response.body(String.format("[%s].edges[0].id", i), Matchers.equalTo(nodes.get(i+1).getId()));
             }else if(n.getDisplayName().equals("deploy")){
-                response.body(String.format("[%s].edges", i), Matchers.isEmptyOrNullString());
+                response.body(String.format("[%s].edges.size()", i), Matchers.is(1));
+            }else if(n.getDisplayName().equals("deployToProd")){
+                response.body(String.format("[%s].edges.size()", i), Matchers.is(0));
             }else{
                 response.body(String.format("[%s].edges.size()", i), Matchers.is(1));
-                response.body(String.format("[%s].edges[0].id", i), Matchers.equalTo(nodes.get(nodes.size() - 1).getId()));
+                response.body(String.format("[%s].edges[0].id", i), Matchers.equalTo(nodes.get(nodes.size() - 2).getId()));
+            }
+        }
+    }
+
+    @Test
+    public void getPipelineJobRunNodesWithFailureTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+
+        job1.setDefinition(new CpsFlowDefinition("stage 'build'\n" +
+            "node{\n" +
+            "  echo \"Building...\"\n" +
+            "}\n" +
+            "\n" +
+            "stage 'test'\n" +
+            "parallel 'unit':{\n" +
+            "  node{\n" +
+            "    echo \"Unit testing...\"\n" +
+            "    sh \"`fail-the-build`\"\n" + //fail the build intentionally
+            "  }\n" +
+            "},'integration':{\n" +
+            "  node{\n" +
+            "    echo \"Integration testing...\"\n" +
+            "  }\n" +
+            "}, 'ui':{\n" +
+            "  node{\n" +
+            "    echo \"UI testing...\"\n" +
+            "  }\n" +
+            "}\n" +
+            "\n" +
+            "stage 'deploy'\n" +
+            "node{\n" +
+            "  echo \"Deploying\"\n" +
+            "}"
+        ));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+
+        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
+        nodeGraphTable.build();
+        List<FlowNode> nodes = getStages(nodeGraphTable);
+        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+
+        Assert.assertEquals(5, nodes.size());
+        Assert.assertEquals(3, parallelNodes.size());
+        ValidatableResponse response = RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/")
+            .then().log().all()
+            .statusCode(200);
+
+        response.body("size()", Matchers.is(nodes.size()));
+
+        for(int i=0; i< nodes.size();i++){
+            FlowNode n = nodes.get(i);
+            response.body(String.format("[%s].id", i), Matchers.equalTo(n.getId()))
+                .body(String.format("[%s].displayName", i),
+                    Matchers.equalTo(n.getAction(ThreadNameAction.class) != null
+                        ? n.getAction(ThreadNameAction.class).getThreadName()
+                        : n.getDisplayName()));
+            if(n.getDisplayName().equals("test")){
+                response.body(String.format("[%s].edges.size()", i), Matchers.is(parallelNodes.size()));
+                response.body(String.format("[%s].edges[0].id", i), Matchers.equalTo(parallelNodes.get(0).getId()))
+                    .body(String.format("[%s].edges[1].id", i), Matchers.equalTo(parallelNodes.get(1).getId()))
+                    .body(String.format("[%s].edges[2].id", i), Matchers.equalTo(parallelNodes.get(2).getId()))
+                    .body(String.format("[%s].result", i), Matchers.equalTo("UNSTABLE"));
+            }else if(n.getDisplayName().equals("build")){
+                response.body(String.format("[%s].edges.size()", i), Matchers.is(1))
+                        .body(String.format("[%s].edges[0].id", i), Matchers.equalTo(nodes.get(i+1).getId()))
+                        .body(String.format("[%s].result", i), Matchers.equalTo("SUCCESS"));
+            }else if(n.getDisplayName().equals("Branch: unit")){
+                response.body(String.format("[%s].edges.size()", i), Matchers.is(0))
+                    .body(String.format("[%s].result", i), Matchers.equalTo("FAILURE"));
+            } else {
+                response.body(String.format("[%s].edges.size()", i), Matchers.is(0))
+                    .body(String.format("[%s].result", i), Matchers.equalTo("SUCCESS"));
             }
         }
     }
@@ -347,6 +449,41 @@ public class PipelineApiTest {
     }
 
     @Test
+    public void getPipelineJobAbortTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition("" +
+            "node {" +
+            "   stage ('Build1'); " +
+            "   sh('sleep 60') " +
+            "   stage ('Test1'); " +
+            "   echo ('Testing'); " +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
+        for (int i = 0; i < 10; i++) {
+            b1.doStop();
+            if (b1.getResult() != null) {
+                break;
+            }
+            Thread.sleep(1000);
+        }
+        j.assertBuildStatus(Result.ABORTED, b1);
+
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1")
+            .then().log().all()
+            .statusCode(200)
+            .body("id", Matchers.equalTo(b1.getId()))
+            .body("pipeline", Matchers.equalTo(b1.getParent().getName()))
+            .body("organization", Matchers.equalTo("jenkins"))
+            .body("state", Matchers.equalTo("FINISHED"))
+            .body("result", Matchers.equalTo("ABORTED"))
+            .body("startTime", Matchers.equalTo(
+                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b1.getStartTimeInMillis()))));
+    }
+
+
+    @Test
     public void getPipelineJobRunNodeLogTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 
@@ -407,7 +544,6 @@ public class PipelineApiTest {
     @Test
     public void getPipelineJobRunsTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
-//        WorkflowJob job2 = j.jenkins.createProject(WorkflowJob.class, "pipeline2");
 
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
@@ -416,14 +552,6 @@ public class PipelineApiTest {
             "   stage ('Test1'); " +
             "   echo ('Testing'); " +
             "}"));
-
-//        job2.setDefinition(new CpsFlowDefinition("" +
-//            "node {" +
-//            "   stage ('Build1'); " +
-//            "   echo ('Building'); " +
-//            "   stage ('Test1'); " +
-//            "   echo ('Testing'); " +
-//            "}"));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);

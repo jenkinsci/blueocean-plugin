@@ -1,0 +1,6 @@
+{
+  "extends": "@jenkins-cd/jenkins/react",
+  "rules": {
+    "no-unused-vars": [2, {"varsIgnorePattern": "^React$"}]
+  }
+}

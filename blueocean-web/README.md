@@ -48,7 +48,7 @@ If you wish to make changes to blueocean.js, then you will need to install gulp 
 
 ```
 $ cd blueocean-web
-$ gulp rebundle
+$ gulp bundle:watch
 ```
 
 (or run gulp, after each change) in the blueocean-web directory. This will pick up any changes. 

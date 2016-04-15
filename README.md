@@ -1,7 +1,8 @@
-This is BlueOcean repo. It is a multi-module maven project. Each sub-directory at the root of the repo is jenkins extension. 
+This is the BlueOcean repo. It is a multi-module maven project. Each sub-directory at the root of the repo is jenkins extension.
 
 
 Blue Ocean is the new UI project for Jenkins.
+
 
 ![Pirate logo, because it's ocean and stuff](logo-yarrr.png)
 Yarr...

@@ -1,5 +1,10 @@
 # Usage
 
+## Crumbs
+
+Jenkins usually requires a "crumb" with posted reuqests to prevent request forgery and other shenanigans. 
+To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
+
 ## Run BlueOcean plugin
 
     cd bluecoean-plugin
@@ -15,7 +20,6 @@ BlueOcean UI is available at:
 BlueOcean rest API base URL is:
     
     http://localhost:8080/jenkins/blue/rest
-
 
 ## Get a user
 
@@ -48,12 +52,13 @@ BlueOcean rest API base URL is:
 
 ## Get a Pipeline
 
-    curl -v -X GET  "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test1"
+    curl -v -X GET  "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1"
 
     {
       "organization" : "jenkins",
-      "name" : "test1",
-      "branches" : [ ]
+      "name" : "pipeline1",
+      "displayName": "pipeline1",
+      "weatherScore": 100
     }
 
 ## Get Pipelines
@@ -62,81 +67,75 @@ BlueOcean rest API base URL is:
     
     [ 
       {
-        "organization" : "jenkins",
-        "name" : "test1",
-        "branches" : [ ]
+      "organization" : "jenkins",
+      "name" : "pipeline1",
+      "displayName": "pipeline1",
+      "weatherScore": 100
       } 
     ]
     
 ## Get all runs in a pipeline
     
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test1/runs
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs
     
-    [ 
-      {
-        "id" : "2",
-        "pipeline" : "test1",
-        "organization" : "jenkins",
-        "result" : "SUCCESSFUL",
-        "state" : "FINISHED",
-        "startTime" : "2016-02-19T11:14:53.074Z",
-        "enQueueTime" : "2016-02-19T11:14:53.072Z",
-        "endTime" : "2016-02-19T11:14:53.109Z",
-        "durationInMillis" : 35,
-        "runSummary" : "stable",
-        "type" : "FreeStyleBuild"
-      }, {
-        "id" : "1",
-        "pipeline" : "test1",
-        "organization" : "jenkins",
-        "result" : "SUCCESSFUL",
-        "state" : "FINISHED",
-        "startTime" : "2016-02-18T19:39:36.679Z",
-        "enQueueTime" : "2016-02-18T19:39:36.674Z",
-        "endTime" : "2016-02-18T19:39:36.747Z",
-        "durationInMillis" : 68,
-        "runSummary" : "stable",
-        "type" : "FreeStyleBuild"
-      } 
+    [
+        {
+            "changeSet": [],
+            "durationInMillis": 841,
+            "enQueueTime": "2016-03-16T09:02:26.492-0700",
+            "endTime": "2016-03-16T09:02:27.339-0700",
+            "id": "1",
+            "organization": "jenkins",
+            "pipeline": "pipeline1",
+            "result": "SUCCESS",
+            "runSummary": "stable",
+            "startTime": "2016-03-16T09:02:26.498-0700",
+            "state": "FINISHED",
+            "type": "WorkflowRun",
+            "commitId": null
+        }
     ]
     
 
 ## Get a run details
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test2/runs/1    
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1    
     
     {
-        "id" : "1",
-        "pipeline" : "test2",
-        "organization" : "jenkins",
-        "result" : "SUCCESSFUL",
-        "state" : "FINISHED",
-        "startTime" : "2016-02-19T11:14:41.414Z",
-        "enQueueTime" : "2016-02-19T11:14:41.411Z",
-        "endTime" : "2016-02-19T11:14:41.482Z",
-        "durationInMillis" : 68,
-        "runSummary" : "stable",
-        "type" : "FreeStyleBuild"
-      }
-    }      
+        "changeSet": [],
+        "durationInMillis": 841,
+        "enQueueTime": "2016-03-16T09:02:26.492-0700",
+        "endTime": "2016-03-16T09:02:27.339-0700",
+        "id": "1",
+        "organization": "jenkins",
+        "pipeline": "pipeline1",
+        "result": "SUCCESS",
+        "runSummary": "stable",
+        "startTime": "2016-03-16T09:02:26.498-0700",
+        "state": "FINISHED",
+        "type": "WorkflowRun",
+        "commitId": null
+    }
 
 ## Find latest run of a pipeline
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/?q=type:run;organization:jenkins;pipeline:test1;latestOnly:true
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/?q=type:run;organization:jenkins;pipeline:pipeline1;latestOnly:true
     
-    [ {
-        "id" : "2",
-        "pipeline" : "test1",
-        "organization" : "jenkins",
-        "result" : "SUCCESSFUL",
-        "state" : "FINISHED",
-        "startTime" : "2016-02-19T11:14:53.074Z",
-        "enQueueTime" : "2016-02-19T11:14:53.072Z",
-        "endTime" : "2016-02-19T11:14:53.109Z",
-        "durationInMillis" : 35,
-        "runSummary" : "stable",
-        "type" : "FreeStyleBuild"
-        }
+    [ 
+      {
+          "changeSet": [],
+          "durationInMillis": 841,
+          "enQueueTime": "2016-03-16T09:02:26.492-0700",
+          "endTime": "2016-03-16T09:02:27.339-0700",
+          "id": "1",
+          "organization": "jenkins",
+          "pipeline": "pipeline1",
+          "result": "SUCCESS",
+          "runSummary": "stable",
+          "startTime": "2016-03-16T09:02:26.498-0700",
+          "state": "FINISHED",
+          "type": "WorkflowRun",
+          "commitId": null
       } 
     ]
 
@@ -144,32 +143,21 @@ BlueOcean rest API base URL is:
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/?q=type:run;organization:jenkins;latestOnly:true
     
-    [ {
-        "id" : "2",
-        "pipeline" : "test1",
-        "organization" : "jenkins",
-        "result" : "SUCCESSFUL",
-        "state" : "FINISHED",
-        "startTime" : "2016-02-19T11:14:53.074Z",
-        "enQueueTime" : "2016-02-19T11:14:53.072Z",
-        "endTime" : "2016-02-19T11:14:53.109Z",
-        "durationInMillis" : 35,
-        "runSummary" : "stable",
-        "type" : "FreeStyleBuild"
-        }
-      },
+    [ 
       {
-        "id" : "2",
-        "pipeline" : "test2",
-        "organization" : "jenkins",
-        "result" : "SUCCESSFUL",
-        "state" : "FINISHED",
-        "startTime" : "2016-02-19T11:14:53.074Z",
-        "enQueueTime" : "2016-02-19T11:14:53.072Z",
-        "endTime" : "2016-02-19T11:14:53.109Z",
-        "durationInMillis" : 35,
-        "runSummary" : "stable",
-        "type" : "FreeStyleBuild"
+          "changeSet": [],
+          "durationInMillis": 841,
+          "enQueueTime": "2016-03-16T09:02:26.492-0700",
+          "endTime": "2016-03-16T09:02:27.339-0700",
+          "id": "1",
+          "organization": "jenkins",
+          "pipeline": "pipeline1",
+          "result": "SUCCESS",
+          "runSummary": "stable",
+          "startTime": "2016-03-16T09:02:26.498-0700",
+          "state": "FINISHED",
+          "type": "WorkflowRun",
+          "commitId": null
       }       
     ]
 
@@ -180,21 +168,24 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
 
 ## Get MultiBranch pipeline 
 
-    curl -v http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/
+    curl -v http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p/
     
     {
         "displayName": "p",
         "name": "p",
         "organization": "jenkins",
-        "branches": [
-            "master",
+        "weatherScore": 100,
+        "branchNames": [
             "feature1",
+            "master",
             "feature2"
         ],
         "numberOfFailingBranches": 0,
-        "numberOfSuccessfulBranches": 3,
+        "numberOfFailingPullRequests": 0,
+        "numberOfSuccessfulBranches": 0,
+        "numberOfSuccessfulPullRequests": 0,
         "totalNumberOfBranches": 3,
-        "weatherScore":100
+        "totalNumberOfPullRequests": 0
     }
 
     
@@ -274,20 +265,21 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     
 ## Get MultiBranch job's branch run detail
     
-    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/feature2/runs/1
+    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/feature1/runs/1
     
     {
-        "durationInMillis": 1578,
-        "enQueueTime": "2016-02-26T19:07:00.183Z",
-        "endTime": "2016-02-26T19:07:01.765Z",
+        "durationInMillis": 1330,
+        "enQueueTime": "2016-03-16T09:08:15.607-0700",
+        "endTime": "2016-03-16T09:08:16.942-0700",
         "id": "1",
         "organization": "jenkins",
-        "pipeline": "feature2",
-        "runSummary": "stable",
-        "startTime": "2016-02-26T19:07:00.187Z",
+        "pipeline": "feature1",
         "result": "SUCCESS",
-        "state" : "FINISHED",
+        "runSummary": "stable",
+        "startTime": "2016-03-16T09:08:15.612-0700",
+        "state": "FINISHED",
         "type": "WorkflowRun",
+        "commitId": "aad1c51fb29e053d1ccb20dbcdb1fe28fddcfba5",
         "changeSet": []
     }
 
@@ -404,7 +396,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             ],
             "id": "3",
             "startTime": "2016-03-11T00:32:52.273-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         },
         {
             "displayName": "test",
@@ -424,7 +417,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             ],
             "id": "9",
             "startTime": "2016-03-11T00:32:52.507-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         },
         {
             "displayName": "unit",
@@ -436,14 +430,16 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             ],
             "id": "13",
             "startTime": "2016-03-11T00:32:52.511-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         },
         {
             "displayName": "deploy",
-            "edges": null,
+            "edges": [],
             "id": "35",
             "startTime": "2016-03-11T00:32:52.672-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         },
         {
             "displayName": "integration",
@@ -455,7 +451,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             ],
             "id": "14",
             "startTime": "2016-03-11T00:32:52.513-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         },
         {
             "displayName": "ui",
@@ -467,7 +464,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             ],
             "id": "15",
             "startTime": "2016-03-11T00:32:52.516-0800",
-            "status": "SUCCESS"
+            "status": "SUCCESS",
+            "state": "FINISHED"
         }
     ]
 
@@ -485,7 +483,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         ],
         "id": "3",
         "startTime": "2016-03-11T00:32:52.273-0800",
-        "status": "SUCCESS"
+        "status": "SUCCESS",
+        "state": "FINISHED"
     }
         
 # Fetching logs

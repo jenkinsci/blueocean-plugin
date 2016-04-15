@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static io.jenkins.blueocean.rest.model.BlueRun.STATE;
+
 /**
  * Abstraction of Pipeline run node.
  *
@@ -62,6 +64,9 @@ public abstract class BluePipelineNode extends Resource{
 
     @Exported
     public abstract BlueRun.BlueRunResult getResult();
+
+    @Exported(name=STATE)
+    public abstract BlueRun.BlueRunState getStateObj();
 
     public abstract Date getStartTime();
 

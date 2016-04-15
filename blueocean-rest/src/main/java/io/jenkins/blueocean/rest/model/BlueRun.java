@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
 import java.text.SimpleDateFormat;
@@ -37,21 +36,18 @@ public abstract class BlueRun extends Resource {
      * @return name of the organization
      */
     @Exported(name = ORGANIZATION)
-    @JsonProperty(ORGANIZATION)
     public abstract String getOrganization();
 
     /**
      * @return {@link BlueRun} id - unique within a pipeline
      */
     @Exported(name = ID)
-    @JsonProperty(ID)
     public abstract String getId();
 
     /**
      * @return Pipeline name - unique within an organization
      */
     @Exported(name = PIPELINE)
-    @JsonProperty(PIPELINE)
     public abstract String getPipeline();
 
 
@@ -69,7 +65,6 @@ public abstract class BlueRun extends Resource {
     /**
      * @return run start time
      */
-    @JsonProperty(START_TIME)
     @Exported(name=START_TIME)
     public final String getStartTimeString(){
         return new SimpleDateFormat(DATE_FORMAT_STRING).format(getStartTime());
@@ -80,7 +75,6 @@ public abstract class BlueRun extends Resource {
      */
     public abstract Date getEnQueueTime();
 
-     @JsonProperty(ENQUEUE_TIME)
      @Exported(name=ENQUEUE_TIME)
      public final String getEnQueueTimeString() {
         return new SimpleDateFormat(DATE_FORMAT_STRING).format(getEnQueueTime());
@@ -91,7 +85,6 @@ public abstract class BlueRun extends Resource {
      */
     public abstract Date getEndTime();
 
-    @JsonProperty(END_TIME)
     @Exported(name=END_TIME)
     public final String getEndTimeString(){
         Date endTime = getEndTime();
@@ -105,7 +98,6 @@ public abstract class BlueRun extends Resource {
     /**
      * @return Build duration in milli seconds
      */
-    @JsonProperty(DURATION_IN_MILLIS)
     @Exported(name = DURATION_IN_MILLIS)
     public abstract Long getDurationInMillis();
 
@@ -114,7 +106,6 @@ public abstract class BlueRun extends Resource {
      * @return The state of the run
      */
     @Exported(name=STATE)
-    @JsonProperty(STATE)
     public abstract BlueRunState getStateObj();
 
     /**
@@ -122,20 +113,17 @@ public abstract class BlueRun extends Resource {
      * @return The result state of the job (e.g unstable)
      */
     @Exported(name= RESULT)
-    @JsonProperty(RESULT)
     public abstract BlueRunResult getResult();
 
     /**
      * @return Build summary
      */
-    @JsonProperty(RUN_SUMMARY)
     @Exported(name = RUN_SUMMARY)
     public abstract String getRunSummary();
 
     /**
      * @return Type of Run. Type name to be Jenkins Run.getClass().getSimpleName()
      */
-    @JsonProperty(TYPE)
     @Exported(name=TYPE)
     public abstract String getType();
 
@@ -152,7 +140,7 @@ public abstract class BlueRun extends Resource {
     public abstract Object getLog();
 
     public enum BlueRunState {
-        NOT_STARTED,
+        QUEUED,
         RUNNING,
         FINISHED
     }
@@ -170,6 +158,9 @@ public abstract class BlueRun extends Resource {
         NOT_BUILT,
 
         /** Unknown status */
-        UNKNOWN;
+        UNKNOWN,
+
+        /** Aborted run*/
+        ABORTED;
     }
 }
