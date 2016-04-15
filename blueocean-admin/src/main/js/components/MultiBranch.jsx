@@ -16,13 +16,19 @@ export class MultiBranch extends Component {
             return null;
         }
 
-        const headers =
-            ['Health', 'Status', 'Branch', 'Last commit', 'Latest message', 'Completed'];
+        const headers = [
+            'Health',
+            'Status',
+            { label: 'Branch', className: 'branch' },
+            { label: 'Last commit', className: 'lastcommit' },
+            { label: 'Latest message', className: 'message' },
+            { label: 'Completed', className: 'completed' },
+        ];
 
         return (
             <main>
                 <article>
-                    <Table className="multiBranch"
+                    <Table className="multibranch-table"
                       headers={headers}
                     >
                         {data.map((run, index) => {
