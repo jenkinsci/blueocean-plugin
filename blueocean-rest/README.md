@@ -172,13 +172,15 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     
     {
         "displayName": "p",
+        "estimatedDurationInMillis": 280,
+        "latestRun": null,
         "name": "p",
         "organization": "jenkins",
         "weatherScore": 100,
         "branchNames": [
-            "feature1",
+            "feature2",
             "master",
-            "feature2"
+            "feature1"
         ],
         "numberOfFailingBranches": 0,
         "numberOfFailingPullRequests": 0,
@@ -195,69 +197,78 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     
     [
         {
-            "name": "master",
-            "weatherScore":100,
+            "displayName": "feature2",
+            "estimatedDurationInMillis": 1391,
             "latestRun": {
-                  "changeSet": [
-
-                  ],
-                  "durationInMillis": 0,
-                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
-                  "endTime": null,
-                  "id": "1",
-                  "organization": "jenkins",
-                  "pipeline": "feature1",
-                  "result": "UNKNOWN",
-                  "runSummary": "?",
-                  "startTime": "2016-03-10T15:14:08.788+1300",
-                  "state": "RUNNING",
-                  "type": "WorkflowRun",
-                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
-                },
-            "pullRequest": null
-        },
-        {
-            "name": "feature1",
-            "weatherScore":100,
-            "latestRun": {
-                  "changeSet": [
-
-                  ],
-                  "durationInMillis": 0,
-                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
-                  "endTime": null,
-                  "id": "1",
-                  "organization": "jenkins",
-                  "pipeline": "feature1",
-                  "result": "UNKNOWN",
-                  "runSummary": "?",
-                  "startTime": "2016-03-10T15:14:08.788+1300",
-                  "state": "RUNNING",
-                  "type": "WorkflowRun",
-                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
+                "changeSet": [
+                    
+                ],
+                "durationInMillis": 1391,
+                "enQueueTime": "2016-04-15T19:59:28.717-0700",
+                "endTime": "2016-04-15T19:59:30.114-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature2",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.723-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "662766a80af35404c430240e6996598d5397471e"
             },
-            "pullRequest": null
-        },
-        {
             "name": "feature2",
-            "weatherScore":100,
+            "organization": "jenkins",
+            "weatherScore": 100,
+            "pullRequest": null
+        },
+        {
+            "displayName": "master",
+            "estimatedDurationInMillis": 1468,
             "latestRun": {
-                  "changeSet": [
-
-                  ],
-                  "durationInMillis": 0,
-                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
-                  "endTime": null,
-                  "id": "1",
-                  "organization": "jenkins",
-                  "pipeline": "feature1",
-                  "result": "UNKNOWN",
-                  "runSummary": "?",
-                  "startTime": "2016-03-10T15:14:08.788+1300",
-                  "state": "RUNNING",
-                  "type": "WorkflowRun",
-                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
+                "changeSet": [
+                    
+                ],
+                "durationInMillis": 1468,
+                "enQueueTime": "2016-04-15T19:59:28.730-0700",
+                "endTime": "2016-04-15T19:59:30.199-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "master",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.731-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "96e0a0f29d9e5b1381ebb1b7503b0be04ed19a5b"
             },
+            "name": "master",
+            "organization": "jenkins",
+            "weatherScore": 100,
+            "pullRequest": null
+        },
+        {
+            "displayName": "feature1",
+            "estimatedDurationInMillis": 1443,
+            "latestRun": {
+                "changeSet": [
+                    
+                ],
+                "durationInMillis": 1443,
+                "enQueueTime": "2016-04-15T19:59:28.723-0700",
+                "endTime": "2016-04-15T19:59:30.167-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature1",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.724-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "f436952a7de493603f4937ecb9dac3f79fd13c79"
+            },
+            "name": "feature1",
+            "organization": "jenkins",
+            "weatherScore": 100,
             "pullRequest": null
         }
     ]

@@ -48,6 +48,11 @@ public class PipelineImpl extends BluePipeline {
     }
 
     @Override
+    public Long getEstimatedDurationInMillis() {
+        return job.getEstimatedDuration();
+    }
+
+    @Override
     public BlueRunContainer getRuns() {
         return new RunContainerImpl(this, job);
     }

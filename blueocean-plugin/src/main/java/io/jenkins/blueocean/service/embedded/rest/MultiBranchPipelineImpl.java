@@ -123,6 +123,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
+    public Long getEstimatedDurationInMillis() {
+        return mbp.getEstimatedDuration();
+    }
+
+    @Override
     public BluePipelineContainer getBranches() {
         return new BranchContainerImpl(this);
     }
