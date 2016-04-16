@@ -46,6 +46,7 @@ public final class Links extends HashMap<String,Link>{
 
     private static final String SELF = "self";
     public Links() {
+
         getOrCreateSelfRef();
         for(Ancestor ancestor:Stapler.getCurrentRequest().getAncestors()){
             populateReferences(ancestor);
@@ -64,7 +65,7 @@ public final class Links extends HashMap<String,Link>{
         Method m = findMethod(clazz,clazz);
         if(m!=null){
             String p = getPathFromMethodName(m.getName());
-            put(p, createLinkRef(p));
+            put(p, createLinkRef(p, getBasePath(ancestor)));
         }
     }
 
@@ -108,8 +109,9 @@ public final class Links extends HashMap<String,Link>{
      *
      * @return for name doXyz or getXyz, gives xyz. For other than 'get' or 'do' prefix, gives lowercased method name
      */
-    private Link createLinkRef(String name){
-        return new Link(String.format("%s%s/",getOrCreateSelfRef().getHref(), name));
+    private Link createLinkRef(String name, String base){
+        base = ensureTrailingSlash(base);
+        return new Link(String.format("%s%s/",base, name));
     }
 
     private String getPathFromMethodName(String methodName){
@@ -120,6 +122,29 @@ public final class Links extends HashMap<String,Link>{
         }else{
             return "";
         }
+    }
+
+    private String getBasePath(Ancestor ancestor){
+        String path = ancestor.getUrl();
+        String contextPath = Stapler.getCurrentRequest().getContextPath().trim();
+
+        if(!contextPath.isEmpty() || !contextPath.equals("/")){
+            int i = path.indexOf(contextPath);
+            if(i >= 0){
+                if(path.length() > i){
+                    int j = path.indexOf('/', i+1);
+                    return path.substring(j);
+                }
+            }
+        }
+        return path;
+    }
+
+    private String ensureTrailingSlash(String path){
+        if(path.charAt(path.length() - 1) != '/'){
+           return path + "/";
+        }
+        return path;
     }
 }
 
