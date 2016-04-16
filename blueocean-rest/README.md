@@ -58,7 +58,8 @@ BlueOcean rest API base URL is:
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
-      "weatherScore": 100
+      "weatherScore": 100,
+      "lastSuccessfulRun": "http://localhost:64106/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1",
     }
 
 ## Get Pipelines
@@ -197,6 +198,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         {
             "name": "master",
             "weatherScore":100,
+             "lastSuccessfulRun": "http://localhost:63971/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1",
             "latestRun": {
                   "changeSet": [
 
@@ -219,6 +221,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         {
             "name": "feature1",
             "weatherScore":100,
+            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature1/runs/1",            
             "latestRun": {
                   "changeSet": [
 
@@ -241,6 +244,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         {
             "name": "feature2",
             "weatherScore":100,
+            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/runs/1",            
             "latestRun": {
                   "changeSet": [
 
