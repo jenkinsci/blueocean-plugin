@@ -15,4 +15,4 @@ export {
     SvgSpinner,
     SvgStatus,
 } from './status/StatusIndicator';
-export Favorite from './favorite/Favorite';
+export {Favorite} from './favorite/Favorite';
