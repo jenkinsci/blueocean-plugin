@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { WeatherIcon } from '@jenkins-cd/design-language';
+import { Favorite } from '@jenkins-cd/design-language';
 
 import { urlPrefix } from '../config';
 
@@ -68,9 +69,7 @@ export default class PipelineRowItem extends Component {
                 <td><WeatherIcon score={weatherScore} /></td>
                 <td>{multiBranchLink}</td>
                 <td>{pullRequestsLink}</td>
-                <td>
-                    <i className="material-icons">&#xE83A;</i>
-                </td>
+                <td><Favorite /></td>
             </tr>
         );
     }
