@@ -24,8 +24,7 @@ export class Activity extends Component {
                     { data.map((run, index) => {
                         let
                         changeset = run.changeSet;
-                        if (changeset && changeset.size > 0) {
-                            changeset = changeset.toJS();
+                        if (changeset && changeset.length > 0) {
                             latestRecord = new ChangeSetRecord(changeset[
                                 Object.keys(changeset)[0]
                             ]);
