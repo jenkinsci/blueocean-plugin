@@ -3,10 +3,9 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
-import io.jenkins.blueocean.rest.model.BlueBranch;
-import io.jenkins.blueocean.rest.model.BlueBranchContainer;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import jenkins.branch.MultiBranchProject;
@@ -16,6 +15,7 @@ import jenkins.scm.api.actions.ChangeRequestAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -117,7 +117,13 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
-    public BlueBranchContainer getBranches() {
+    public BlueRun getLatestRun() {
+        //For multibranch is a folder that is no run of itself.
+        return null;
+    }
+
+    @Override
+    public BluePipelineContainer getBranches() {
         return new BranchContainerImpl(this);
     }
 
@@ -179,23 +185,21 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             @Override
             public Iterator<BlueRun> iterator() {
                 List<BlueRun> c = new ArrayList<>();
-                for(final BlueBranch b: getBranches()) {
+                for(final BluePipeline b: getBranches()) {
                     for(final BlueRun r: b.getRuns()) {
                         c.add(r);
                     }
                 }
-                c.sort(new Comparator<BlueRun>() {
+                Collections.sort(c, new Comparator<BlueRun>() {
                     @Override
                     public int compare(BlueRun o1, BlueRun o2) {
                         return o1.getStartTime().compareTo(o2.getStartTime());
                     }
                 });
+
                 return c.iterator();
             }
         };
     }
-
-
-
 
 }

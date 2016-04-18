@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.commons.ServiceException;
 import org.kohsuke.stapler.export.Exported;
 
@@ -25,54 +24,47 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
     /**
      * @return total number of branches
      */
-    @JsonProperty(TOTAL_NUMBER_OF_BRANCHES)
     @Exported(name = TOTAL_NUMBER_OF_BRANCHES)
     public abstract int  getTotalNumberOfBranches();
 
     /**
      * @return total number of failing branches
      */
-    @JsonProperty(NUMBER_OF_FAILING_BRANCHES)
     @Exported(name = NUMBER_OF_FAILING_BRANCHES)
     public abstract int getNumberOfFailingBranches();
 
     /**
      * @return total number of successful branches
      */
-    @JsonProperty(NUMBER_OF_SUCCESSFULT_BRANCHES)
     @Exported(name = NUMBER_OF_SUCCESSFULT_BRANCHES)
     public abstract int getNumberOfSuccessfulBranches();
 
     /**
     * @return total number of pull requests
     */
-    @JsonProperty(TOTAL_NUMBER_OF_BRANCHES)
     @Exported(name = TOTAL_NUMBER_OF_PULL_REQUESTS)
     public abstract int  getTotalNumberOfPullRequests();
     /**
      * @return total number of pull requests
      */
-    @JsonProperty(NUMBER_OF_FAILING_BRANCHES)
     @Exported(name = NUMBER_OF_FAILING_PULL_REQUESTS)
     public abstract int getNumberOfFailingPullRequests();
 
     /**
      * @return total number of pull requests
      */
-    @JsonProperty(NUMBER_OF_SUCCESSFULT_BRANCHES)
     @Exported(name = NUMBER_OF_SUCCESSFULT_PULL_REQUESTS)
     public abstract int getNumberOfSuccessfulPullRequests();
 
     /**
-     * @return Gives {@link BlueBranchContainer}
+     * @return Gives {@link BluePipelineContainer}
      */
-    public abstract BlueBranchContainer getBranches();
+    public abstract BluePipelineContainer getBranches();
 
     /**
      * @return Gives array of branch names
      */
     @Exported(name = BRANCH_NAMES)
-    @JsonProperty(BRANCH_NAMES)
     public abstract Collection<String> getBranchNames();
 
     /**

@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -17,14 +16,12 @@ public abstract class BlueUser extends Resource {
      * @return The id of the user
      */
     @Exported(name=ID)
-    @JsonProperty(ID)
     public abstract String getId();
 
     /**
      * @return The name of the user e.g. John Smith
      */
     @Exported(name = FULL_NAME)
-    @JsonProperty(FULL_NAME)
     public abstract String getFullName();
 
     /**
