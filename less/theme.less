@@ -685,15 +685,6 @@ footer {
     padding-bottom: 5px;
 }
 
-.dialog section .times {
-    padding-left: 40px;
-}
-
-.dialog section .commons {
-    position: relative;
-    top: -5px;
-}
-
 .dialog section .times span {
   vertical-align: top;
 }
@@ -708,10 +699,6 @@ footer {
     margin-top: -20px;
 }
 
-.dialog .table {
-    display: table;
-}
-
 .dialog .result {
     width: 100%;
     margin: 20px auto;
@@ -720,15 +707,16 @@ footer {
 }
 
 .dialog .result .row {
-    display: table-row;
+    display: flex;
 }
 
-.dialog .result .row div {
-    display: table-cell;
+.dialog .result .times {
+    margin-left: auto;
+    width: 25%;
 }
 
-.dialog .result .row div div {
-    display: block;
+.dialog .result .value {
+    font-family: @font-family-monospace;
 }
 
 .dialog .header.info{
