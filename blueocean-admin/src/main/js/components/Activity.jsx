@@ -46,12 +46,6 @@ export class Activity extends Component {
                         };
                         return (<Runs {...props} />);
                     })}
-
-                    <tr>
-                        <td colSpan={headers.length}>
-                            <Link className="btn" to={urlPrefix}>Dashboard</Link>
-                        </td>
-                    </tr>
                 </Table>
             </article>
         </main>);

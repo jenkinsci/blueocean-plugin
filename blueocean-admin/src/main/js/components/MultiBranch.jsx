@@ -39,11 +39,6 @@ export class MultiBranch extends Component {
                             />);
                         })
                         }
-                        <tr>
-                            <td colSpan={headers.length}>
-                                <Link className="btn" to={urlPrefix}>Dashboard</Link>
-                            </td>
-                        </tr>
                     </Table>
                 </article>
             </main>
