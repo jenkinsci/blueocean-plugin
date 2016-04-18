@@ -16,17 +16,19 @@ class PipelineResult extends Component {
                 name,
                 organization,
                 pipeline,
+                changeSet,
                 result,
                 durationInMillis,
                 endTime,
                 commitId,
-                changeSet,
+
             },
         } = this.props;
 
         let
             duration = moment.duration(
                 Number(durationInMillis), 'milliseconds').humanize();
+        const authors = [...new Set(changeSet.map(change => change.author.fullName))];
 
         return (<div className="result">
             <section className="left">
@@ -48,8 +50,8 @@ class PipelineResult extends Component {
                         </div>
                         <div>
                            {
-                            changeSet.size > 0 ? `Changes by ${changeSet.map(
-                                change => change.author)}` : 'No changes'
+                               authors.length > 0 ? `Changes by ${authors.map(
+                                 author => ' ' + author)}` : 'No changes'
                             }
                         </div>
                     </div>

@@ -708,11 +708,24 @@ footer {
 
 .dialog .result .row {
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .dialog .result .times {
     margin-left: auto;
     width: 25%;
+}
+
+.dialog .result .commons {
+    min-width: 0;
+    flex-basis: 75%;
+}
+
+.dialog .result .commons div {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .dialog .result .value {
