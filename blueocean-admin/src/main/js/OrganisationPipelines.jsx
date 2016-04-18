@@ -32,7 +32,7 @@ class OrganisationPipelines extends Component {
 }
 
 OrganisationPipelines.contextTypes = {
-  router: React.PropTypes.object.isRequired,
+    router: React.PropTypes.object.isRequired,
 };
 
 OrganisationPipelines.propTypes = {
