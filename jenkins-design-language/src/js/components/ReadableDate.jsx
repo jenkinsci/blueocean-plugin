@@ -6,7 +6,7 @@ import moment from 'moment';
  * Also displays the original date on hover.
  * Expects "date" to be passed in as ISO string (or any parseable by moment)
  */
-export default class ReadableDate extends Component {
+export class ReadableDate extends Component {
     constructor() {
         super();
     }
