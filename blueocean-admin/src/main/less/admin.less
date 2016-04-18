@@ -1,5 +1,3 @@
-// FIXME needs to migrate to blueocean-admin
-
 .activity-table {
   table-layout: fixed;
 
@@ -66,4 +64,11 @@
   .build, .completed {
     width: 100px;
   }
+}
+
+// TODO: duplicated from the JDL; long-term may want to expose mixins to Less in other plugins? (UX-285?)
+.text-overflow() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
