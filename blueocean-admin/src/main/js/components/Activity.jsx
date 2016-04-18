@@ -22,8 +22,7 @@ export class Activity extends Component {
             <article>
                 <Table headers={headers}>
                     { data.map((run, index) => {
-                        let
-                        changeset = run.changeSet;
+                        const changeset = run.changeSet;
                         if (changeset && changeset.length > 0) {
                             latestRecord = new ChangeSetRecord(changeset[
                                 Object.keys(changeset)[0]
