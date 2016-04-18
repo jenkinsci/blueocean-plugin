@@ -21,7 +21,7 @@ class RunDetails extends Component {
 
         const {
             context: {
-                history,
+                router,
                 location,
                 pipeline: {
                     branchNames,
@@ -33,6 +33,7 @@ class RunDetails extends Component {
                 },
             },
         } = this;
+
         const multiBranch = !!branchNames;
         const baseUrl = '/rest/organizations/jenkins' +
             `/pipelines/${name}`;
@@ -47,7 +48,7 @@ class RunDetails extends Component {
         result.name = name;
         const afterClose = () => {
             location.pathname = `/pipelines/${name}/activity/`;
-            history.replace(location);
+            router.replace(location);
         };
 
         return (<ModalView
@@ -69,7 +70,7 @@ class RunDetails extends Component {
 RunDetails.contextTypes = {
     pipeline: object,
     params: object,
-    history: PropTypes.object, // From react-router
+    router: object.isRequired, // From react-router
     location: PropTypes.object, // From react-router
 };
 

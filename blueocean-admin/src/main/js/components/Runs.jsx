@@ -21,7 +21,7 @@ export default class Runs extends Component {
         }
         const {
             context: {
-                history,
+                router,
                 location,
                 pipeline: {
                     name: pipelineName,
@@ -48,7 +48,7 @@ export default class Runs extends Component {
 
         const open = () => {
             location.pathname = url;
-            history.replace(location);
+            router.replace(location);
         };
 
         return (<tr key={result.id}>
@@ -76,6 +76,6 @@ Runs.propTypes = {
 };
 Runs.contextTypes = {
     pipeline: object,
-    history: object,
+    router: object.isRequired, // From react-router
     location: object,
 };

@@ -6,7 +6,6 @@ class OrganisationPipelines extends Component {
     getChildContext() {
         const {
             params,
-            history,
             location,
             data: pipelines,
         } = this.props;
@@ -23,7 +22,6 @@ class OrganisationPipelines extends Component {
             pipelines,
             pipeline,
             params,
-            history,
             location,
         };
     }
@@ -33,18 +31,20 @@ class OrganisationPipelines extends Component {
     }
 }
 
+OrganisationPipelines.contextTypes = {
+  router: React.PropTypes.object.isRequired,
+};
+
 OrganisationPipelines.propTypes = {
     data: PropTypes.array, // From Ajax wrapper
     params: PropTypes.object, // From react-router
     children: PropTypes.node, // From react-router
-    history: PropTypes.object, // From react-router
     location: PropTypes.object, // From react-router
 };
 
 OrganisationPipelines.childContextTypes = {
     pipelines: PropTypes.array,
     pipeline: PropTypes.object,
-    history: PropTypes.object, // From react-router
     params: PropTypes.object, // From react-router
     location: PropTypes.object, // From react-router
 };
