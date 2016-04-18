@@ -3,7 +3,7 @@ import React, {Component, PropTypes} from 'react';
 /**
  * Displays a commit hash in the proper style.
  */
-export default class CommitHash extends Component {
+export class CommitHash extends Component {
     constructor() {
         super();
     }
