@@ -2,8 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { fetch } from '@jenkins-cd/design-language';
 import Table from './Table';
 import Runs from './Runs';
-import { Link } from 'react-router';
-import { urlPrefix } from '../config';
 import { ActivityRecord, ChangeSetRecord } from './records';
 
 const { object, array } = PropTypes;
@@ -15,12 +13,20 @@ export class Activity extends Component {
         if (!data || !pipeline) {
             return null;
         }
-        const headers = ['Status', 'Build', 'Commit', 'Branch', 'Message', 'Duration', 'Completed'];
+        const headers = [
+            'Status',
+            'Build',
+            'Commit',
+            { label: 'Branch', className: 'branch' },
+            { label: 'Message', className: 'message' },
+            { label: 'Duration', className: 'duration' },
+            { label: 'Completed', className: 'completed' },
+        ];
 
         let latestRecord = {};
         return (<main>
             <article>
-                <Table headers={headers}>
+                <Table className="activity-table" headers={headers}>
                     { data.map((run, index) => {
                         const changeset = run.changeSet;
                         if (changeset && changeset.length > 0) {
@@ -36,12 +42,6 @@ export class Activity extends Component {
                         };
                         return (<Runs {...props} />);
                     })}
-
-                    <tr>
-                        <td colSpan={headers.length}>
-                            <Link className="btn" to={urlPrefix}>Dashboard</Link>
-                        </td>
-                    </tr>
                 </Table>
             </article>
         </main>);

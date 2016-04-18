@@ -48,7 +48,8 @@
     "url": "https://github.com/cloudbees/blueocean.git"
   },
   "dependencies": {
-    "moment": "^2.12.0"
+    "moment": "^2.12.0",
+    "moment-duration-format": "^1.3.0"
   },
   "peerDependencies": {
     "react": "^0.14.7"
