@@ -15,6 +15,7 @@ public abstract class BluePipeline extends Resource {
     public static final String RUNS="runs";
     public static final String WEATHER_SCORE ="weatherScore";
     public static final String LATEST_RUN = "latestRun";
+    public static final String LAST_SUCCESSFUL_RUN = "lastSuccessfulRun";
 
 
     /**
@@ -47,6 +48,9 @@ public abstract class BluePipeline extends Resource {
      */
     @Exported(name = LATEST_RUN, inline = true)
     public abstract BlueRun getLatestRun();
+
+    @Exported(name= LAST_SUCCESSFUL_RUN)
+    public abstract String getLastSuccessfulRun();
 
 
     /**
