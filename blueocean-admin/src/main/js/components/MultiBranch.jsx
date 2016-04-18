@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
 import Table from './Table';
 import ajaxHoc from '../AjaxHoc';
 import Branches from './Branches';
 import { RunsRecord } from './records';
-import { urlPrefix } from '../config';
 
 const { object, array } = PropTypes;
 

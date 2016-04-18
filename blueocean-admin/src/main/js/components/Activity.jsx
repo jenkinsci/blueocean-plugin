@@ -2,8 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import ajaxHoc from '../AjaxHoc';
 import Table from './Table';
 import Runs from './Runs';
-import { Link } from 'react-router';
-import { urlPrefix } from '../config';
 import { ActivityRecord, ChangeSetRecord } from './records';
 
 const { object, array } = PropTypes;
