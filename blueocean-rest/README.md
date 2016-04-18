@@ -58,7 +58,24 @@ BlueOcean rest API base URL is:
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
-      "weatherScore": 100
+      "weatherScore": 100,
+      "estimatedDurationInMillis": 20264,
+      "lastSuccessfulRun": "http://localhost:64106/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1",
+      "latestRun": {
+          "changeSet": [],
+          "durationInMillis": 20264,
+          "enQueueTime": "2016-04-11T17:44:28.342+1000",
+          "endTime": "2016-04-11T17:44:48.608+1000",
+          "id": "3",
+          "organization": "jenkins",
+          "pipeline": "mypipe1",
+          "result": "SUCCESS",
+          "runSummary": "stable",
+          "startTime": "2016-04-11T17:44:28.344+1000",
+          "state": "FINISHED",
+          "type": "WorkflowRun",
+          "commitId": null
+        }
     }
 
 ## Get Pipelines
@@ -70,7 +87,8 @@ BlueOcean rest API base URL is:
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
-      "weatherScore": 100
+      "weatherScore": 100,
+      "estimatedDurationInMillis": 280,
       } 
     ]
     
@@ -199,6 +217,9 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         {
             "displayName": "feature2",
             "estimatedDurationInMillis": 1391,
+            "name": "master",
+            "weatherScore":100,
+             "lastSuccessfulRun": "http://localhost:63971/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1",
             "latestRun": {
                 "changeSet": [
                     
@@ -224,6 +245,9 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         {
             "displayName": "master",
             "estimatedDurationInMillis": 1468,
+            "name": "feature1",
+            "weatherScore":100,
+            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature1/runs/1",            
             "latestRun": {
                 "changeSet": [
                     
@@ -249,6 +273,9 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         {
             "displayName": "feature1",
             "estimatedDurationInMillis": 1443,
+            "name": "feature2",
+            "weatherScore":100,
+            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/runs/1",            
             "latestRun": {
                 "changeSet": [
                     

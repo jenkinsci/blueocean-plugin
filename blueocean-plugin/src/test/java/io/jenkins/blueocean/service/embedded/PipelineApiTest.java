@@ -91,9 +91,12 @@ public class PipelineApiTest {
 
 
     @Test
-    public void getFreeStyleJobTest() throws IOException {
+    public void getFreeStyleJobTest() throws Exception {
         Project p1 = j.createFreeStyleProject("pipeline1");
         Project p2 = j.createFreeStyleProject("pipeline2");
+        p1.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
+        FreeStyleBuild b = (FreeStyleBuild) p1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b);
         RestAssured.given().log().all().get("/organizations/jenkins/pipelines/")
             .then().log().all()
             .statusCode(200)
@@ -101,6 +104,8 @@ public class PipelineApiTest {
             .body("[0].name", Matchers.equalTo(p1.getName()))
             .body("[0].displayName", Matchers.equalTo(p1.getDisplayName()))
             .body("[0].weatherScore", Matchers.is(p1.getBuildHealth().getScore()))
+            .body("[0].lastSuccessfulRun", Matchers.equalTo(RestAssured.baseURI+"/organizations/jenkins/pipelines/"
+                +p1.getName()+"/runs/"+b.getId()))
             .body("[1].organization", Matchers.equalTo("jenkins"))
             .body("[1].name", Matchers.equalTo(p2.getName()))
             .body("[1].displayName", Matchers.equalTo(p2.getDisplayName()))
@@ -121,6 +126,22 @@ public class PipelineApiTest {
             .body("[0].name", Matchers.equalTo(p1.getName()))
             .body("[1].organization", Matchers.equalTo("jenkins"))
             .body("[1].name", Matchers.equalTo(p2.getName()));
+    }
+
+    @Test
+    public void getPipelineWithLastSuccessfulRun() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pipeline4");
+        p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
+        FreeStyleBuild b = p.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b);
+        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline4/")
+            .then().log().all()
+            .statusCode(200)
+            .body("name", Matchers.equalTo(p.getName()))
+            .body("organization", Matchers.equalTo("jenkins"))
+            .body("weatherScore", Matchers.is(100))
+            .body("lastSuccessfulRun", Matchers.equalTo(String.format("%s%s%s",RestAssured.baseURI, "/organizations/jenkins/pipelines/pipeline4/runs/", b.getId())))
+        ;
     }
 
     @Test
