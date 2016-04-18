@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import moment from 'moment';
+import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { WeatherIcon, StatusIndicator } from '@jenkins-cd/design-language';
 
 const { object } = PropTypes;
@@ -24,9 +24,9 @@ export default class Branches extends Component {
                 <StatusIndicator result={result === 'UNKNOWN' ? state : result} />
             </td>
             <td>{decodeURIComponent(name)}</td>
-            <td>{commitId || '-'}</td>
+            <td><CommitHash commitId={commitId} /></td>
             <td>{msg || '-'}</td>
-            <td>{moment(endTime).fromNow()}</td>
+            <td><ReadableDate date={endTime} /></td>
         </tr>);
     }
 }

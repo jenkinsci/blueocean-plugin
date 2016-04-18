@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component, PropTypes } from 'react';
 
 function getClassNames(successpc) {
     if (successpc < 21) return "weather-icon weather-storm";
@@ -13,6 +13,18 @@ export class WeatherIcon extends Component {
         let successpc = parseInt(this.props.score) || 0;
         let classNames = getClassNames(successpc);
 
+        if (this.props.size === "large") {
+            classNames += " large-icon";
+        }
+
         return <span className={classNames}/>;
     }
 }
+
+WeatherIcon.propTypes = {
+    size: PropTypes.string,
+};
+
+WeatherIcon.defaultProps = {
+    size: "default",
+};
