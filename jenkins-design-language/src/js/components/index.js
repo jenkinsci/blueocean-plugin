@@ -23,3 +23,4 @@ export {
     SvgError,
     SvgSuccess,
 } from './pipeResult/Result'
+export {Favorite} from './favorite/Favorite';
