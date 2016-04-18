@@ -16,7 +16,7 @@ class PipelineResult extends Component {
                 name,
                 organization,
                 pipeline,
-                result: result,
+                result,
                 durationInMillis,
                 endTime,
                 commitId,
@@ -38,13 +38,19 @@ class PipelineResult extends Component {
 
                 <div className="row">
                     <div className="commons">
-                        <div>Branch {pipeline}</div>
-                        <div>Commit #{commitId}</div>
+                        <div>Branch&nbsp;
+                            <span className="value">{pipeline}</span>
+                        </div>
+                        <div>Commit&nbsp;
+                            <span className="value">
+                                #{commitId && commitId.substring(0, 8) || '-'}
+                            </span>
+                        </div>
                         <div>
-                            Changes by {
-                            changeSet.size > 0 ? changeSet.map(
-                                change => change.author) : '-'
-                        }
+                           {
+                            changeSet.size > 0 ? `Changes by ${changeSet.map(
+                                change => change.author)}` : 'No changes'
+                            }
                         </div>
                     </div>
                     <div className="times">
