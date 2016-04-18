@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Table from './Table';
-import ajaxHoc from '../AjaxHoc';
+import { fetch } from '@jenkins-cd/design-language';
 import Branches from './Branches';
 import { RunsRecord } from './records';
 
@@ -50,7 +50,7 @@ MultiBranch.propTypes = {
 };
 
 // Decorated for ajax as well as getting pipeline from context
-export default ajaxHoc(MultiBranch, (props, config) => {
+export default fetch(MultiBranch, (props, config) => {
     if (!props.pipeline) return null;
     return `${config.getAppURLBase()}/rest/organizations/jenkins` +
         `/pipelines/${props.pipeline.name}/branches`;

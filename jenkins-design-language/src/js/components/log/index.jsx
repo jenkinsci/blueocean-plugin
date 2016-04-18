@@ -1,30 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import LogConsole from './LogConsole';
 
-const {string} = PropTypes;
-
-class LogConsole extends Component {
-    render() {
-        const {result} = this.props;
-        //early out
-        if (!result) {
-            return null;
-        }
-
-        let lines = [];
-        if (result && result.split) {
-            lines = result.split('\n');
-        }
-
-        return (<code
-          className="block"
-        >{lines.map((line, index) => <p key={index}>
-            <a key={index} name={index}>{line}</a>
-        </p>)}</code>)
-    }
+export {
+    LogConsole
 }
-
-LogConsole.propTypes = {
-    result: string.isRequired,
-};
-
-export {LogConsole};

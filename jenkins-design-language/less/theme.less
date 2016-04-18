@@ -477,17 +477,19 @@ code a:hover {
     color: @pre-color;
     text-decoration: none;
 }
+
 code p a::before {
+    opacity: 0.4;
     content: counter(line-numbering);
     counter-increment: line-numbering;
     float: left;
-    width: 0;
+    min-width: 20px;
     white-space: nowrap;
     padding-right: 1em;
+    padding-left:10px;
     text-align: right;
-    color: #fff;
-    opacity: 0.33;
 }
+
 code.block {
     background-color: @pre-bg;
     color: @pre-color;
@@ -677,13 +679,76 @@ footer {
 
 .dialog .header {
     padding: 25px 20px 25px 50px;
-    background-color: @header-bg;
     color: #ffffff;
-    font-size: 18px;
     font-weight: normal;
+    line-height: 20px;
     overflow-y: auto;
     max-height: 20%;
     min-height: 5%;
+}
+.dialog section h4 {
+    padding-bottom: 5px;
+}
+
+.dialog section .times span {
+  vertical-align: top;
+}
+
+.dialog section .times svg{
+    padding-right: 25px;
+}
+
+.dialog section.left svg{
+    padding-right: 20px;
+    padding-left: 20px;
+    margin-top: -20px;
+}
+
+.dialog .result {
+    width: 100%;
+    margin: 20px auto;
+    font-family: @font-family-panel;
+    color: #ffffff;
+}
+
+.dialog .result .row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.dialog .result .times {
+    margin-left: auto;
+    width: 25%;
+}
+
+.dialog .result .commons {
+    min-width: 0;
+    flex-basis: 75%;
+}
+
+.dialog .result .commons div {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.dialog .result .value {
+    font-family: @font-family-monospace;
+}
+
+.dialog .header.info{
+    background-color: @header-bg;
+}
+
+.dialog .header.success{
+    padding: 0;
+    background-color: @brand-success;
+}
+
+.dialog .header.failure{
+    padding: 0;
+    background-color: @brand-danger;
 }
 
 .dialog .content {
@@ -704,8 +769,8 @@ footer {
     position: absolute;
     font-size: 3em;
     color: #ffffff;
-    right: 20px;
-    top: 5px
+    right: 10px;
+    top: 10px
 }
 .spin {
     -webkit-animation-name: spin;
@@ -747,4 +812,10 @@ circle.success {
 }
 circle.failure {
     fill: @brand-danger;
+}
+.left {
+    float: left;
+}
+.right {
+    float: right;
 }
