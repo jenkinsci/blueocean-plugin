@@ -35,8 +35,9 @@ describe("PullRequests should render", () => {
 
   it("does renders the PullRequests with data", () => {
     // does data renders?
-    const td = tree.subTree('td').getRenderOutput();
-    assert.equal(td.props.colSpan, 5)
+    let table = tree.dive(['main', 'article', 'Table']).getRenderOutput();
+    assert.isOk(table);
+    assert.equal(table.props.className, 'pr-table');
   });
 
 });
