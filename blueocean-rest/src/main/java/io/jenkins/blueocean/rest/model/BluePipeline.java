@@ -11,10 +11,9 @@ public abstract class BluePipeline extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String NAME="name";
     public static final String DISPLAY_NAME="displayName";
-    public static final String BRANCHES="branches";
-    public static final String RUNS="runs";
     public static final String WEATHER_SCORE ="weatherScore";
     public static final String LATEST_RUN = "latestRun";
+    public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
     public static final String LAST_SUCCESSFUL_RUN = "lastSuccessfulRun";
 
 
@@ -36,7 +35,6 @@ public abstract class BluePipeline extends Resource {
     @Exported(name = DISPLAY_NAME)
     public abstract String getDisplayName();
 
-
     /**
      * @return weather health score percentile
      */
@@ -52,6 +50,13 @@ public abstract class BluePipeline extends Resource {
     @Exported(name= LAST_SUCCESSFUL_RUN)
     public abstract String getLastSuccessfulRun();
 
+
+    /**
+     * @return Estiamated duration based on last pipeline runs. -1 is returned if there is no estimate available.
+     *
+     */
+    @Exported(name = ESTIMATED_DURATION)
+    public abstract Long getEstimatedDurationInMillis();
 
     /**
      * @return Gives Runs in this pipeline
