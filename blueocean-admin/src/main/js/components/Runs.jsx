@@ -49,7 +49,11 @@ export default class Runs extends Component {
                     <StatusIndicator result={resultRun} />
                 </a>
             </td>
-            <td>{result.id}</td>
+            <td>
+                <a onClick={open} className="linkIndicator">
+                    {result.id}
+                </a>
+            </td>
             <td><CommitHash commitId={changeset.commitId} /></td>
             <td>{name}</td>
             <td>{changeset && changeset.comment || '-'}</td>
