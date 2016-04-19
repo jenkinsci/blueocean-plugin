@@ -175,6 +175,10 @@ code, pre, kbd {
     .btn-styles(@btn-primary-bg, @btn-primary-border, @btn-primary-color);
 }
 
+.btn-inverse {
+    .btn-styles(transparent, white, white);
+}
+
 .btn-success {
     .btn-styles(@btn-success-bg, @btn-success-border, @btn-success-color);
 }
@@ -411,7 +415,12 @@ code, pre, kbd {
 // --------------------------------------------------
 
 table {
+    color: @gray-light;
     width: 100%;
+
+    a {
+        color: @gray-light;
+    }
 }
 
 thead tr:last-child {
@@ -426,7 +435,6 @@ tbody tr:first-child td {
 }
 
 th {
-    color: @gray-light-trans;
     font-family: @font-family-headings;
     font-weight: normal;
 }
@@ -550,7 +558,7 @@ code.hash {
 
 .global-header nav {
     text-align: center;
-    padding: 2rem 0;
+    padding: 1.5rem 0;
 }
 
 .global-header nav a {
@@ -558,7 +566,7 @@ code.hash {
     font-weight: normal;
     text-decoration: none;
     display: inline-block;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 2rem;
     font-family: @font-family-nav;
     letter-spacing: 1.12px;
 }
@@ -575,8 +583,9 @@ code.hash {
 
 .sub-header nav.page-title {
     .content-width;
+    color: white;
     display: flex;
-    height: 8.2rem;
+    height: 6rem;
     align-items: center;
 
     // Put some spacing between children
