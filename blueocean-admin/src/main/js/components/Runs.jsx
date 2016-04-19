@@ -45,12 +45,12 @@ export default class Runs extends Component {
 
         return (<tr key={result.id}>
             <td>
-                <a onClick={open} className="linkIndicator">
+                <a onClick={open} className="clickIndicator">
                     <StatusIndicator result={resultRun} />
                 </a>
             </td>
             <td>
-                <a onClick={open} className="linkIndicator">
+                <a onClick={open} className="clickIndicator">
                     {result.id}
                 </a>
             </td>
