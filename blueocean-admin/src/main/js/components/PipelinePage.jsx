@@ -6,6 +6,7 @@ import {
     PageTabs,
     TabLink,
     WeatherIcon,
+    Favorite,
 } from '@jenkins-cd/design-language';
 import { urlPrefix } from '../config';
 
@@ -25,6 +26,7 @@ export default class PipelinePage extends Component {
                     <Title>
                         <WeatherIcon score={pipeline.weatherScore} size="large" />
                         <h1>CloudBees / {pipeline.name}</h1>
+                        <Favorite darkTheme />
                     </Title>
                     <PageTabs base={`${urlPrefix}/${pipeline.name}`}>
                         <TabLink to="/activity">Activity</TabLink>
