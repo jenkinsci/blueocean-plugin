@@ -5,13 +5,21 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
+
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.model.Result;
+import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.service.embedded.rest.PipelineNodeFilter;
+import jenkins.util.VirtualFile;
+
 import org.hamcrest.Matchers;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
@@ -25,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.TestBuilder;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -700,6 +709,37 @@ public class PipelineApiTest {
             }
         }
         return parallelNodes;
+    }
+
+    @Test
+    public void testArtifactsRunApi() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pipeline1");
+        p.getBuildersList().add(new TestBuilder() {
+            @Override public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+                FilePath ws = build.getWorkspace();
+                if (ws == null) {
+                    return false;
+                }
+                FilePath dir = ws.child("dir");
+                dir.mkdirs();
+                dir.child("fizz").write("contents", null);
+                dir.child("lodge").symlinkTo("fizz", listener);
+                return true;
+            }
+        });
+        ArtifactArchiver aa = new ArtifactArchiver("dir/fizz");
+        aa.setAllowEmptyArchive(true);
+        p.getPublishersList().add(aa);
+        FreeStyleBuild b = j.assertBuildStatusSuccess(p.scheduleBuild2(0));
+
+
+
+        Response response = RestAssured.given().log().all()
+            .accept(ContentType.TEXT)
+            .get("/organizations/jenkins/pipelines/pipeline1/runs/"+b.getId());
+
+        response.then().log().all()
+            .statusCode(200).body("artifacts[0].name",Matchers.equalTo("fizz"));
     }
 
 }
