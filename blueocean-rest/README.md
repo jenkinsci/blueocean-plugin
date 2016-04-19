@@ -59,9 +59,17 @@ BlueOcean rest API base URL is:
       "name" : "pipeline1",
       "displayName": "pipeline1",
       "weatherScore": 100,
+      "estimatedDurationInMillis": 20264,
       "lastSuccessfulRun": "http://localhost:64106/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1",
       "latestRun": {
           "changeSet": [],
+          "artifacts": [
+              {
+                  "name": "fizz",
+                  "size": 8,
+                  "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+              }
+          ],
           "durationInMillis": 20264,
           "enQueueTime": "2016-04-11T17:44:28.342+1000",
           "endTime": "2016-04-11T17:44:48.608+1000",
@@ -86,7 +94,8 @@ BlueOcean rest API base URL is:
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
-      "weatherScore": 100
+      "weatherScore": 100,
+      "estimatedDurationInMillis": 280,
       } 
     ]
     
@@ -97,6 +106,13 @@ BlueOcean rest API base URL is:
     [
         {
             "changeSet": [],
+            "artifacts": [
+              {
+                  "name": "fizz",
+                  "size": 8,
+                  "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+              }
+            ],
             "durationInMillis": 841,
             "enQueueTime": "2016-03-16T09:02:26.492-0700",
             "endTime": "2016-03-16T09:02:27.339-0700",
@@ -119,6 +135,13 @@ BlueOcean rest API base URL is:
     
     {
         "changeSet": [],
+        "artifacts": [
+          {
+              "name": "fizz",
+              "size": 8,
+              "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+          }
+        ],
         "durationInMillis": 841,
         "enQueueTime": "2016-03-16T09:02:26.492-0700",
         "endTime": "2016-03-16T09:02:27.339-0700",
@@ -140,6 +163,13 @@ BlueOcean rest API base URL is:
     [ 
       {
           "changeSet": [],
+          "artifacts": [
+            {
+                "name": "fizz",
+                "size": 8,
+                "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+            }
+          ],
           "durationInMillis": 841,
           "enQueueTime": "2016-03-16T09:02:26.492-0700",
           "endTime": "2016-03-16T09:02:27.339-0700",
@@ -162,6 +192,13 @@ BlueOcean rest API base URL is:
     [ 
       {
           "changeSet": [],
+          "artifacts": [
+            {
+                "name": "fizz",
+                "size": 8,
+                "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+            }
+          ],
           "durationInMillis": 841,
           "enQueueTime": "2016-03-16T09:02:26.492-0700",
           "endTime": "2016-03-16T09:02:27.339-0700",
@@ -188,13 +225,15 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     
     {
         "displayName": "p",
+        "estimatedDurationInMillis": 280,
+        "latestRun": null,
         "name": "p",
         "organization": "jenkins",
         "weatherScore": 100,
         "branchNames": [
-            "feature1",
+            "feature2",
             "master",
-            "feature2"
+            "feature1"
         ],
         "numberOfFailingBranches": 0,
         "numberOfFailingPullRequests": 0,
@@ -211,72 +250,94 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     
     [
         {
+            "displayName": "feature2",
+            "estimatedDurationInMillis": 1391,
             "name": "master",
             "weatherScore":100,
              "lastSuccessfulRun": "http://localhost:63971/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1",
             "latestRun": {
-                  "changeSet": [
-
-                  ],
-                  "durationInMillis": 0,
-                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
-                  "endTime": null,
-                  "id": "1",
-                  "organization": "jenkins",
-                  "pipeline": "feature1",
-                  "result": "UNKNOWN",
-                  "runSummary": "?",
-                  "startTime": "2016-03-10T15:14:08.788+1300",
-                  "state": "RUNNING",
-                  "type": "WorkflowRun",
-                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
-                },
+                "changeSet": [
+                    
+                ],
+                "durationInMillis": 1391,
+                "enQueueTime": "2016-04-15T19:59:28.717-0700",
+                "endTime": "2016-04-15T19:59:30.114-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature2",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.723-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "662766a80af35404c430240e6996598d5397471e"
+            },
+            "name": "feature2",
+            "organization": "jenkins",
+            "weatherScore": 100,
             "pullRequest": null
         },
         {
+            "displayName": "master",
+            "estimatedDurationInMillis": 1468,
             "name": "feature1",
             "weatherScore":100,
             "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature1/runs/1",            
             "latestRun": {
-                  "changeSet": [
-
-                  ],
-                  "durationInMillis": 0,
-                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
-                  "endTime": null,
-                  "id": "1",
-                  "organization": "jenkins",
-                  "pipeline": "feature1",
-                  "result": "UNKNOWN",
-                  "runSummary": "?",
-                  "startTime": "2016-03-10T15:14:08.788+1300",
-                  "state": "RUNNING",
-                  "type": "WorkflowRun",
-                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
+                "changeSet": [
+                    
+                ],
+                "artifacts": [
+                  {
+                      "name": "fizz",
+                      "size": 8,
+                      "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+                  }
+                ],
+                "durationInMillis": 1468,
+                "enQueueTime": "2016-04-15T19:59:28.730-0700",
+                "endTime": "2016-04-15T19:59:30.199-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "master",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.731-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "96e0a0f29d9e5b1381ebb1b7503b0be04ed19a5b"
             },
+            "name": "master",
+            "organization": "jenkins",
+            "weatherScore": 100,
             "pullRequest": null
         },
         {
+            "displayName": "feature1",
+            "estimatedDurationInMillis": 1443,
             "name": "feature2",
             "weatherScore":100,
             "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/runs/1",            
             "latestRun": {
-                  "changeSet": [
-
-                  ],
-                  "durationInMillis": 0,
-                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
-                  "endTime": null,
-                  "id": "1",
-                  "organization": "jenkins",
-                  "pipeline": "feature1",
-                  "result": "UNKNOWN",
-                  "runSummary": "?",
-                  "startTime": "2016-03-10T15:14:08.788+1300",
-                  "state": "RUNNING",
-                  "type": "WorkflowRun",
-                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
+                "changeSet": [
+                    
+                ],
+                "durationInMillis": 1443,
+                "enQueueTime": "2016-04-15T19:59:28.723-0700",
+                "endTime": "2016-04-15T19:59:30.167-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature1",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.724-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "f436952a7de493603f4937ecb9dac3f79fd13c79"
             },
+            "name": "feature1",
+            "organization": "jenkins",
+            "weatherScore": 100,
             "pullRequest": null
         }
     ]
@@ -310,6 +371,13 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         {
             "changeSet": [
 
+            ],
+            "artifacts": [
+              {
+                  "name": "fizz",
+                  "size": 8,
+                  "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+              }
             ],
             "durationInMillis": 1875,
             "enQueueTime": "2016-03-10T15:27:13.687+1300",

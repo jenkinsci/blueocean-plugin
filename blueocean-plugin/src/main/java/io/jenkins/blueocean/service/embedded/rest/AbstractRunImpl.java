@@ -5,10 +5,17 @@ import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Containers;
+import jenkins.model.ArtifactManagerFactory;
+
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -105,6 +112,36 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public Object getLog() {
         return new LogResource(run.getLogText());
+    }
+
+    @Override
+    public Container<BlueArtifact> getArtifacts() {
+        Map<String, BlueArtifact> m = new HashMap<String, BlueArtifact>();
+        List<Run.Artifact> artifacts = run.getArtifacts();
+        for (final Run.Artifact artifact: artifacts) {
+            m.put(artifact.getFileName(), new BlueArtifact() {
+                @Override
+                public String getName() {
+                    return artifact.getFileName();
+                }
+
+                @Override
+                public String getUrl() {
+                    return Stapler.getCurrentRequest().getContextPath() +
+                        "/" + run.getUrl()+"artifact/"+ artifact.getHref();
+                }
+
+                @Override
+                public long getSize() {
+                    try {
+                        return artifact.getFileSize();
+                    } catch (NumberFormatException e) {
+                        return 0;
+                    }
+                }
+            });
+        }
+        return Containers.fromResourceMap(m);
     }
 
     protected static BlueRun getBlueRun(Run r){

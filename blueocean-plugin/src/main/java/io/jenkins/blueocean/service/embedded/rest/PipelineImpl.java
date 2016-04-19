@@ -51,6 +51,11 @@ public class PipelineImpl extends BluePipeline {
     }
 
     @Override
+    public Long getEstimatedDurationInMillis() {
+        return job.getEstimatedDuration();
+    }
+
+    @Override
     public String getLastSuccessfulRun() {
         if(job.getLastSuccessfulBuild() != null){
             String id = job.getLastSuccessfulBuild().getId();

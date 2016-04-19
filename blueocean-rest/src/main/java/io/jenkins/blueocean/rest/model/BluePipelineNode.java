@@ -55,14 +55,20 @@ import static io.jenkins.blueocean.rest.model.BlueRun.STATE;
  * @author Vivek Pandey
  */
 public abstract class BluePipelineNode extends Resource{
+    public static final String NAME="name";
+    public static final String DISPLAY_NAME="displayName";
+    public static final String RESULT = "result";
+    public static final String START_TIME="startTime";
+    public static final String ID = "id";
+    public static final String EDGES = "edges";
 
-    @Exported
+    @Exported(name = ID)
     public abstract String getId();
 
-    @Exported
+    @Exported(name = DISPLAY_NAME)
     public abstract String getDisplayName();
 
-    @Exported
+    @Exported(name = RESULT)
     public abstract BlueRun.BlueRunResult getResult();
 
     @Exported(name=STATE)
@@ -70,10 +76,10 @@ public abstract class BluePipelineNode extends Resource{
 
     public abstract Date getStartTime();
 
-    @Exported(inline = true)
+    @Exported(name = EDGES, inline = true)
     public abstract List<Edge> getEdges();
 
-    @Exported(name = "startTime")
+    @Exported(name = START_TIME)
     public final String getStartTimeString(){
         return new SimpleDateFormat(BlueRun.DATE_FORMAT_STRING).format(getStartTime());
     }

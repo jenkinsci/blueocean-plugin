@@ -2,11 +2,16 @@ package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.HttpResponse;
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.model.Result;
 import hudson.model.Run;
+import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import io.jenkins.blueocean.service.embedded.rest.PipelineNodeFilter;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
@@ -17,6 +22,7 @@ import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.TestBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -608,4 +614,35 @@ public class PipelineApiTest extends BaseTest {
         }
         return parallelNodes;
     }
+
+    @Test
+    public void testArtifactsRunApi() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pipeline1");
+        p.getBuildersList().add(new TestBuilder() {
+            @Override public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+                FilePath ws = build.getWorkspace();
+                if (ws == null) {
+                    return false;
+                }
+                FilePath dir = ws.child("dir");
+                dir.mkdirs();
+                dir.child("fizz").write("contents", null);
+                dir.child("lodge").symlinkTo("fizz", listener);
+                return true;
+            }
+        });
+        ArtifactArchiver aa = new ArtifactArchiver("dir/fizz");
+        aa.setAllowEmptyArchive(true);
+        p.getPublishersList().add(aa);
+        FreeStyleBuild b = j.assertBuildStatusSuccess(p.scheduleBuild2(0));
+
+
+        Map run = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b.getId());
+
+        validateRun(b, run);
+        List<Map> artifacts = (List<Map>) run.get("artifacts");
+        Assert.assertEquals(1, artifacts.size());
+        Assert.assertEquals("fizz", artifacts.get(0).get("name"));
+    }
+
 }
