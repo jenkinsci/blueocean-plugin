@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import {fetch} from '../fetch';
 
-const {string, array} = PropTypes;
+const {string} = PropTypes;
+let rawUrl;
 
 class LogConsole extends Component {
     render() {
@@ -17,10 +18,20 @@ class LogConsole extends Component {
          }
 
         return (<code
-          className="block"
-        >{lines.map((line, index) => <p key={index}>
-            <a key={index} name={index}>{line}</a>
-        </p>)}</code>)
+              className="block"
+            >
+                <div className="log-header">
+                    <a
+                      className="download-log-button right"
+                      title="Display the log in plaintext"
+                      target="_blank"
+                      href={rawUrl}
+                    >
+                        <span className="icon-download-log" aria-hiden="true"></span>Raw log</a>
+                </div>
+                {lines.map((line, index) => <p key={index}>
+                <a key={index} name={index}>{line}</a>
+            </p>)}</code>)
     }
 }
 
@@ -30,5 +41,6 @@ LogConsole.propTypes = {
 };
 
 export default fetch(LogConsole, ({url}, config) => {
-    return config.getAppURLBase() + url;
+    rawUrl = config.getAppURLBase() + url;
+    return rawUrl;
 }, false) ;
