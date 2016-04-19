@@ -1,21 +1,29 @@
 import React, { Component, PropTypes } from 'react';
-import AjaxHoc from './AjaxHoc';
+import { fetch } from '@jenkins-cd/design-language';
 
 class OrganisationPipelines extends Component {
 
     getChildContext() {
-        // All the pipelines we're interested in
-        const pipelines = this.props.data;
+        const {
+            params,
+            location,
+            data: pipelines,
+        } = this.props;
 
         // The specific pipeline we may be focused on
         let pipeline;
 
-        if (pipelines && this.props.params && this.props.params.pipeline) {
-            const name = this.props.params.pipeline;
+        if (pipelines && params && params.pipeline) {
+            const name = params.pipeline;
             pipeline = pipelines.find(aPipeLine => aPipeLine.name === name);
         }
 
-        return { pipelines, pipeline };
+        return {
+            pipelines,
+            pipeline,
+            params,
+            location,
+        };
     }
 
     render() {
@@ -23,18 +31,25 @@ class OrganisationPipelines extends Component {
     }
 }
 
+OrganisationPipelines.contextTypes = {
+    router: React.PropTypes.object.isRequired,
+};
+
 OrganisationPipelines.propTypes = {
     data: PropTypes.array, // From Ajax wrapper
     params: PropTypes.object, // From react-router
     children: PropTypes.node, // From react-router
+    location: PropTypes.object, // From react-router
 };
 
 OrganisationPipelines.childContextTypes = {
     pipelines: PropTypes.array,
     pipeline: PropTypes.object,
+    params: PropTypes.object, // From react-router
+    location: PropTypes.object, // From react-router
 };
 
 // eslint-disable-next-line
-export default AjaxHoc(OrganisationPipelines, (props, config) =>
+export default fetch(OrganisationPipelines, (props, config) =>
      `${config.getAppURLBase()}/rest/organizations/jenkins/pipelines/`);
 

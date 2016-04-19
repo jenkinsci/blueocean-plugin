@@ -109,6 +109,7 @@ class ModalView extends Component {
         const {
             props: {
                 children,
+                result = 'info',
                 ...rest,
                 },
             } = this;
@@ -125,10 +126,11 @@ class ModalView extends Component {
             </div>);
         }
 
+
         return ( <section className="modalview">
                 {overlay}
                 <div className="dialog" style={dialogStyles}>
-                    <div className="header" style={headerStyle}>
+                    <div className={`header ${result.toLowerCase()}`} style={headerStyle}>
                         <a onClick={() => this.hide()}
                            role="button"
                            className="closeButton"
@@ -157,7 +159,7 @@ ModalView.propTypes = {
     beforeClose: PropTypes.func,
     beforeOpen: PropTypes.func,
     body: PropTypes.string,
-    children: PropTypes.object,
+    children: PropTypes.node,
     hideOnOverlayClicked: PropTypes.bool,
     isVisible: PropTypes.bool,
     onOverlayClicked: PropTypes.func,
@@ -171,6 +173,7 @@ ModalView.propTypes = {
         }),
         PropTypes.bool,
     ]),
+    result: PropTypes.string,
     title: PropTypes.string,
 
 };
