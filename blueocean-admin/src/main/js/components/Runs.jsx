@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import { StatusIndicator } from '@jenkins-cd/design-language';
+import { StatusIndicator, CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 
 const { object, string, any } = PropTypes;
 
@@ -32,18 +32,10 @@ export default class Runs extends Component {
                 changeset,
             },
         } = this;
+
+        const duration = moment.duration(result.durationInMillis).humanize();
         const name = decodeURIComponent(result.pipeline);
         const url = `/pipelines/${pipelineName}/detail/${name}/${result.id}`;
-        let
-            duration = moment.duration(
-                Number(result.durationInMillis), 'milliseconds').format('hh:mm:ss');
-
-        const durationArray = duration.split(':');
-
-        if (durationArray.length === 1) {
-            duration = `00:${duration}`;
-        }
-
         const resultRun = result.result === 'UNKNOWN' ? result.state : result.result;
 
         const open = () => {
@@ -58,13 +50,11 @@ export default class Runs extends Component {
                 </a>
             </td>
             <td>{result.id}</td>
-            <td>{changeset && changeset.commitId && changeset.commitId.substring(0, 8) || '-'}</td>
+            <td><CommitHash commitId={changeset.commitId} /></td>
             <td>{name}</td>
             <td>{changeset && changeset.comment || '-'}</td>
-            <td>
-                {duration} minutes
-            </td>
-            <td>{moment(result.endTime).fromNow()}</td>
+            <td>{duration}</td>
+            <td><ReadableDate date={result.endTime} /></td>
         </tr>);
     }
 }

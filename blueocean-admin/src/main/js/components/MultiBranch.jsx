@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
 import Table from './Table';
 import { fetch } from '@jenkins-cd/design-language';
 import Branches from './Branches';
 import { RunsRecord } from './records';
-import { urlPrefix } from '../config';
 
 const { object, array } = PropTypes;
 
@@ -16,13 +14,19 @@ export class MultiBranch extends Component {
             return null;
         }
 
-        const headers =
-            ['Health', 'Status', 'Branch', 'Last commit', 'Latest message', 'Completed'];
+        const headers = [
+            'Health',
+            'Status',
+            { label: 'Branch', className: 'branch' },
+            { label: 'Last commit', className: 'lastcommit' },
+            { label: 'Latest message', className: 'message' },
+            { label: 'Completed', className: 'completed' },
+        ];
 
         return (
             <main>
                 <article>
-                    <Table className="multiBranch"
+                    <Table className="multibranch-table"
                       headers={headers}
                     >
                         {data.map((run, index) => {
@@ -33,11 +37,6 @@ export class MultiBranch extends Component {
                             />);
                         })
                         }
-                        <tr>
-                            <td colSpan={headers.length}>
-                                <Link className="btn" to={urlPrefix}>Dashboard</Link>
-                            </td>
-                        </tr>
                     </Table>
                 </article>
             </main>

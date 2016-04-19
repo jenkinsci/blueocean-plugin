@@ -426,7 +426,8 @@ tbody tr:first-child td {
 }
 
 th {
-    font-family: @font-family-table-head;
+    color: @gray-light-trans;
+    font-family: @font-family-headings;
     font-weight: normal;
 }
 
@@ -445,8 +446,6 @@ td:first-child {
 // --------------------------------------------------
 
 code {
-    background-color: @pre-bg;
-    color: @pre-color;
     font-family: @font-family-monospace;
     width: 100%;
     min-height: 12px;
@@ -505,6 +504,10 @@ code.inline {
     display: inline-block;
     padding: inherit;
     white-space: pre-wrap;
+}
+
+code.hash {
+    border: none;
 }
 
 //
@@ -593,9 +596,11 @@ code.inline {
 .page-tabs a {
     color: @text-color;
     display: inline-block;
+    min-width: 133px;
     padding: 0.6rem 1rem 0;
     height: 33px;
     font-family: @font-family-nav;
+    text-align: center;
     text-decoration: none;
 
     // For transforming underline

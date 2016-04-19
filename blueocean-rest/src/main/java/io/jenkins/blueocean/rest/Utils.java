@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import io.jenkins.blueocean.commons.ServiceException;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -46,5 +47,9 @@ public class Utils {
             throw new ServiceException.BadRequestExpception(
                 String.format("Value %s can't be converted to type: %s", value, type));
         }
+    }
+
+    public static String ensureTrailingSlash(@Nonnull String path){
+        return path.charAt(path.length()-1) == '/' ? path : path+"/";
     }
 }

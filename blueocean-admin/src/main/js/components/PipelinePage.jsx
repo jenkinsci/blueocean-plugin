@@ -23,7 +23,7 @@ export default class PipelinePage extends Component {
             <Page>
                 <PageHeader>
                     <Title>
-                        <WeatherIcon score={pipeline.weatherScore} />
+                        <WeatherIcon score={pipeline.weatherScore} size="large" />
                         <h1>CloudBees / {pipeline.name}</h1>
                     </Title>
                     <PageTabs base={`${urlPrefix}/${pipeline.name}`}>
