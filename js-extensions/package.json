@@ -28,6 +28,6 @@
   },
   "dependencies": {
     "js-yaml": "^3.6.0",
-    "@jenkins-cd/js-modules": "0.0.2"
+    "@jenkins-cd/js-modules": "0.0.4"
   }
 }
