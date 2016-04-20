@@ -125,17 +125,28 @@ public class PipelineApiTest extends BaseTest {
 
     @Test
     public void getPipelineRunStopTest() throws Exception {
-        FreeStyleProject p = j.createFreeStyleProject("pipeline4");
-        p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
-        FreeStyleBuild b = p.scheduleBuild2(0).get();
-        j.assertBuildStatusSuccess(b);
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 
-        ValidatableResponse resp = RestAssured.given().log().all().contentType("Content-Type: application/json").put("/organizations/jenkins/pipelines/pipeline4/runs/1/stop")
-            .then().log().all()
-            .statusCode(200);
-         System.out.println(resp.toString());
-            System.out.println(resp.extract().response().getBody().print());
-            resp.body("ss", Matchers.equalTo("aa"));
+        job1.setDefinition(new CpsFlowDefinition("" +
+            "node {" +
+            "   stage ('Build1'); " +
+            "   sh('sleep 60') " +
+            "   stage ('Test1'); " +
+            "   echo ('Testing'); " +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
+        String finished = "";
+        for (int i = 0; i < 10; i++) {
+            Map r = put("/organizations/jenkins/pipelines/pipeline1/runs/1/stop",null);
+            finished = (String)r.get("state");
+            if(finished.equalsIgnoreCase("finished"))
+                continue;
+            Thread.sleep(1000);
+        }
+        Assert.assertEquals(finished, "FINISHED");
+        j.assertBuildStatus(Result.ABORTED, b1);
+
     }
 
 
