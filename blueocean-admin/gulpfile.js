@@ -1,7 +1,8 @@
 //
 // See https://github.com/jenkinsci/js-builder
 //
-var builder = require('@jenkins-cd/js-builder');
+var builder = require('@jenkins-cd/js-builder')
+    .withExternalModuleMapping('react-router', 'react:react-router');
 
 builder.bundle('src/main/less/admin.less');
 

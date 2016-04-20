@@ -34,7 +34,7 @@
     "normalize.css": "^4.1.1",
     "octicons": "^3.5.0",
     "react": "^15.0.1",
-    "react-morph-material-icons": "^0.6.0",
+    "react-morph-material-icons-clone": "^0.6.2",
     "react-router": "^2.3.0",
     "run-sequence": "^1.1.5"
   },

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import { StatusIndicator, CommitHash, ReadableDate } from '@jenkins-cd/design-language';
-
+import SampleIcon from './stories/SampleIcon.jsx';
 const { object, string, any } = PropTypes;
 
 require('moment-duration-format');
@@ -13,6 +13,9 @@ export default class Runs extends Component {
     constructor(props) {
         super(props);
         this.state = { isVisible: false };
+    }
+    componentDidMount() {
+        console.log(this.refs)
     }
     render() {
         // early out
@@ -42,12 +45,18 @@ export default class Runs extends Component {
             location.pathname = url;
             router.replace(location);
         };
-
+    var attrs = {
+        ref: "svgBox",
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+    };
         return (<tr key={result.id}>
             <td>
-                <a onClick={open}>
+                <a onClick={open} ref="xxx">
                     <StatusIndicator result={resultRun} />
                 </a>
+                <SampleIcon />
+                <svg {...attrs}></svg>
             </td>
             <td>{result.id}</td>
             <td><CommitHash commitId={changeset.commitId} /></td>
