@@ -1,14 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.model.FreeStyleBuild;
-import hudson.model.Run;
-import hudson.plugins.git.util.BuildData;
-import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Containers;
-import jenkins.model.ArtifactManagerFactory;
-
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
@@ -18,6 +9,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import hudson.model.FreeStyleBuild;
+import hudson.model.Run;
+import hudson.plugins.git.util.BuildData;
+import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Containers;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -171,7 +170,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @PUT
     @Override
-    public BlueRunState stop() {
+    public BlueRunStateResponse stop() {
         throw new ServiceException.NotImplementedException("dtop should be implemented on a subclass");
     }
 }

@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.json.JsonResponse;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
@@ -44,10 +45,10 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
 
     @PUT
     @Override
-    public BlueRunState stop() {
+    public BlueRunStateResponse stop() {
         try {
             run.doStop();
-            return getStateObj();
+            return new BlueRunStateResponse(this.getStateObj());
         } catch (Exception e) {
            throw new ServiceException.UnexpectedErrorExpcetion("Error while trying to stop run", e);
         }

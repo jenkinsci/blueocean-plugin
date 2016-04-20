@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -49,8 +50,8 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @PUT
     @Override
-    public BlueRunState stop() {
+    public BlueRunStateResponse stop() {
         run.doStop();
-        return getStateObj();
+        return new BlueRunStateResponse(this.getStateObj());
     }
 }

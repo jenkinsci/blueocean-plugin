@@ -130,10 +130,12 @@ public class PipelineApiTest extends BaseTest {
         FreeStyleBuild b = p.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b);
 
-        RestAssured.given().log().all().post("/organizations/jenkins/pipelines/pipeline4/runs/1/stop")
+        ValidatableResponse resp = RestAssured.given().log().all().contentType("Content-Type: application/json").put("/organizations/jenkins/pipelines/pipeline4/runs/1/stop")
             .then().log().all()
-            .statusCode(200)
-            .body("ss", Matchers.equalTo("aa"));
+            .statusCode(200);
+         System.out.println(resp.toString());
+            System.out.println(resp.extract().response().getBody().print());
+            resp.body("ss", Matchers.equalTo("aa"));
     }
 
 
