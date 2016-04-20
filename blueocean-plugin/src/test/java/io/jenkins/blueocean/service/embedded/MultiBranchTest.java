@@ -300,6 +300,8 @@ public class MultiBranchTest extends BaseTest{
         assertEquals(1, b1.getNumber());
         assertEquals(3, mp.getItems().size());
 
+        j.waitForCompletion(b1);
+
         List<Map> nodes = get("/organizations/jenkins/pipelines/p/branches/master/runs/1/nodes", List.class);
 
         Assert.assertEquals(3, nodes.size());
