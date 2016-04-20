@@ -24,11 +24,11 @@
   </properties>
 
   <modules>
-    <module>blueocean-web</module>
     <module>blueocean-commons</module>
     <module>blueocean-rest</module>
-    <module>blueocean-plugin</module>
+    <module>blueocean-web</module>
     <module>blueocean-admin</module>
+    <module>blueocean-plugin</module>
   </modules>
 
   <repositories>
