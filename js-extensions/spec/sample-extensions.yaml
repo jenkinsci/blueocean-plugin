@@ -1,0 +1,21 @@
+id: com.example.my.plugin
+version: 3.14.15
+artefacts:
+  page:
+    id: about-my-plugin
+    url: /some/page/route
+    main: index.html
+  components:
+    - id: MyNeatButton
+      main: neat-button/index.jsx
+    - id: SuperList
+      main: super-list/index.jsx
+integrations:
+  - type: menuitem
+    location: blueocean.nav.footer
+    url: http://example.com/myPlugin/
+    link-text: More about FooPlugin
+  - type: menuitem
+    location: blueocean.nav.footer
+    url: route://some/page/route
+    link-text: Foo Plugin Report
