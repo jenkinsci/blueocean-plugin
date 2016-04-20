@@ -26,4 +26,5 @@ export {
 export {Favorite} from './favorite/Favorite';
 export {ReadableDate} from './ReadableDate';
 export {CommitHash} from './CommitHash';
+export {EmptyStateView} from './EmptyStateView';
 export {EmptyStateIcon} from './EmptyStateIcon';
