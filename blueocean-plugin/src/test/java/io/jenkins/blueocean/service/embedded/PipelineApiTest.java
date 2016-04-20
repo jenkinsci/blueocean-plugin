@@ -1,35 +1,31 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.response.ValidatableResponse;
+import com.mashape.unirest.http.HttpResponse;
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.model.Result;
+import hudson.model.Run;
+import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
-import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.service.embedded.rest.PipelineNodeFilter;
-import org.hamcrest.Matchers;
-import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.TestBuilder;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -38,29 +34,15 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author Vivek Pandey
  */
-public class PipelineApiTest {
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
-
-    @Before
-    public void before() {
-        RestAssured.baseURI = j.jenkins.getRootUrl()+"blue/rest";
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
+public class PipelineApiTest extends BaseTest {
 
     @Test
     public void getFolderPipelineTest() throws IOException {
         MockFolder folder = j.createFolder("folder1");
         Project p = folder.createProject(FreeStyleProject.class, "test1");
 
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/test1")
-            .then().log().all()
-            .statusCode(200)
-            .body("organization", Matchers.equalTo("jenkins"))
-            .body("name", Matchers.equalTo("test1"))
-            .body("displayName", Matchers.equalTo("test1"))
-            .body("weatherScore", Matchers.is(p.getBuildHealth().getScore()));
+        Map response = get("/organizations/jenkins/pipelines/test1");
+        validatePipeline(p, response);
     }
 
 
@@ -68,13 +50,8 @@ public class PipelineApiTest {
     public void getPipelineTest() throws IOException {
         Project p = j.createFreeStyleProject("pipeline1");
 
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1")
-            .then().log().all()
-            .statusCode(200)
-            .body("organization", Matchers.equalTo("jenkins"))
-            .body("name", Matchers.equalTo("pipeline1"))
-            .body("displayName", Matchers.equalTo("pipeline1"))
-            .body("weatherScore", Matchers.is(p.getBuildHealth().getScore()));
+        Map<String,Object> response = get("/organizations/jenkins/pipelines/pipeline1");
+        validatePipeline(p, response);
     }
 
     /** TODO: latest stapler change broke delete, disabled for now */
@@ -82,9 +59,7 @@ public class PipelineApiTest {
     public void deletePipelineTest() throws IOException {
         Project p = j.createFreeStyleProject("pipeline1");
 
-        RestAssured.given().log().all().delete("/organizations/jenkins/pipelines/pipeline1/")
-            .then().log().all()
-            .statusCode(200);
+        delete("/organizations/jenkins/pipelines/pipeline1/");
 
         Assert.assertNull(j.jenkins.getItem(p.getName()));
     }
@@ -97,19 +72,16 @@ public class PipelineApiTest {
         p1.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
         FreeStyleBuild b = (FreeStyleBuild) p1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b);
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/")
-            .then().log().all()
-            .statusCode(200)
-            .body("[0].organization", Matchers.equalTo("jenkins"))
-            .body("[0].name", Matchers.equalTo(p1.getName()))
-            .body("[0].displayName", Matchers.equalTo(p1.getDisplayName()))
-            .body("[0].weatherScore", Matchers.is(p1.getBuildHealth().getScore()))
-            .body("[0].lastSuccessfulRun", Matchers.equalTo(RestAssured.baseURI+"/organizations/jenkins/pipelines/"
-                +p1.getName()+"/runs/"+b.getId()))
-            .body("[1].organization", Matchers.equalTo("jenkins"))
-            .body("[1].name", Matchers.equalTo(p2.getName()))
-            .body("[1].displayName", Matchers.equalTo(p2.getDisplayName()))
-            .body("[1].weatherScore", Matchers.is(p1.getBuildHealth().getScore()));
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/", List.class);
+        Project[] projects = {p1,p2};
+
+        Assert.assertEquals(projects.length, resp.size());
+
+        for(int i=0; i<projects.length; i++){
+            Map p = resp.get(i);
+            validatePipeline(projects[i], p);
+        }
     }
 
 
@@ -119,13 +91,15 @@ public class PipelineApiTest {
         FreeStyleProject p1 = j.createFreeStyleProject("pipeline2");
         FreeStyleProject p2 = j.createFreeStyleProject("pipeline3");
 
-        RestAssured.given().log().all().get("/search?q=type:pipeline;organization:jenkins")
-            .then().log().all()
-            .statusCode(200)
-            .body("[0].organization", Matchers.equalTo("jenkins"))
-            .body("[0].name", Matchers.equalTo(p1.getName()))
-            .body("[1].organization", Matchers.equalTo("jenkins"))
-            .body("[1].name", Matchers.equalTo(p2.getName()));
+        List<Map> resp = get("/search?q=type:pipeline;organization:jenkins", List.class);
+        Project[] projects = {p1,p2};
+
+        Assert.assertEquals(projects.length, resp.size());
+
+        for(int i=0; i<projects.length; i++){
+            Map p = resp.get(i);
+            validatePipeline(projects[i], p);
+        }
     }
 
     @Test
@@ -134,14 +108,9 @@ public class PipelineApiTest {
         p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
         FreeStyleBuild b = p.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b);
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline4/")
-            .then().log().all()
-            .statusCode(200)
-            .body("name", Matchers.equalTo(p.getName()))
-            .body("organization", Matchers.equalTo("jenkins"))
-            .body("weatherScore", Matchers.is(100))
-            .body("lastSuccessfulRun", Matchers.equalTo(String.format("%s%s%s",RestAssured.baseURI, "/organizations/jenkins/pipelines/pipeline4/runs/", b.getId())))
-        ;
+        Map resp = get("/organizations/jenkins/pipelines/pipeline4/");
+
+        validatePipeline(p, resp);
     }
 
     @Test
@@ -150,15 +119,8 @@ public class PipelineApiTest {
         p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
         FreeStyleBuild b = p.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b);
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId())
-            .then().log().all()
-            .statusCode(200)
-            .body("id", Matchers.equalTo(b.getId()))
-            .body("pipeline", Matchers.equalTo(p.getName()))
-            .body("pipeline", Matchers.equalTo(p.getName()))
-            .body("organization", Matchers.equalTo("jenkins"))
-            .body("startTime", Matchers.equalTo(
-                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
+        Map resp = get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId());
+        validateRun(b,resp);
     }
 
     @Test
@@ -168,14 +130,15 @@ public class PipelineApiTest {
         FreeStyleBuild b = p.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b);
 
-        RestAssured.given().log().all().get("/search?q=type:run;organization:jenkins;pipeline:pipeline5;latestOnly:true")
-            .then().log().all()
-            .statusCode(200)
-            .body("[0].id", Matchers.equalTo(b.getId()))
-            .body("[0].pipeline", Matchers.equalTo(p.getName()))
-            .body("[0].organization", Matchers.equalTo("jenkins"))
-            .body("[0].startTime", Matchers.equalTo(
-                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
+        List<Map> resp = get("/search?q=type:run;organization:jenkins;pipeline:pipeline5;latestOnly:true", List.class);
+        Run[] run = {b};
+
+        Assert.assertEquals(run.length, resp.size());
+
+        for(int i=0; i<run.length; i++){
+            Map lr = resp.get(i);
+            validateRun(run[i], lr);
+        }
     }
 
     @Test
@@ -184,15 +147,12 @@ public class PipelineApiTest {
         p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
         FreeStyleBuild b = p.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b);
-        System.out.println(new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis())));
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline6/runs")
-            .then().log().all()
-            .statusCode(200)
-            .body("[0].id", Matchers.equalTo(b.getId()))
-            .body("[0].pipeline", Matchers.equalTo(p.getName()))
-            .body("[0].organization", Matchers.equalTo("jenkins"))
-            .body("[0].startTime", Matchers.equalTo(
-                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline6/runs", List.class);
+        Assert.assertEquals(1, resp.size());
+
+        Map lr = resp.get(0);
+        validateRun(b, lr);
     }
 
 
@@ -200,15 +160,17 @@ public class PipelineApiTest {
     public void getPipelineJobsTest() throws IOException {
         WorkflowJob p1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         WorkflowJob p2 = j.jenkins.createProject(WorkflowJob.class, "pipeline2");
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/")
-            .then().log().all()
-            .statusCode(200)
-            .body("[0].organization", Matchers.equalTo("jenkins"))
-            .body("[0].name", Matchers.equalTo(p1.getName()))
-            .body("[0].displayName", Matchers.equalTo(p1.getDisplayName()))
-            .body("[1].organization", Matchers.equalTo("jenkins"))
-            .body("[1].name", Matchers.equalTo(p2.getName()))
-            .body("[1].displayName", Matchers.equalTo(p2.getDisplayName()));
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/", List.class);
+
+        WorkflowJob[] projects = {p1,p2};
+
+        Assert.assertEquals(projects.length, resp.size());
+
+        for(int i=0; i<projects.length; i++){
+            Map lr = resp.get(i);
+            validatePipeline(projects[i], lr);
+        }
     }
 
     @Test
@@ -226,16 +188,8 @@ public class PipelineApiTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1")
-            .then().log().all()
-            .statusCode(200)
-            .body("id", Matchers.equalTo(b1.getId()))
-            .body("pipeline", Matchers.equalTo(b1.getParent().getName()))
-            .body("organization", Matchers.equalTo("jenkins"))
-            .body("state", Matchers.equalTo("FINISHED"))
-            .body("result", Matchers.equalTo("SUCCESS"))
-            .body("startTime", Matchers.equalTo(
-                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b1.getStartTimeInMillis()))));
+        Map resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1");
+        validateRun(b1, resp);
     }
 
 
@@ -284,37 +238,32 @@ public class PipelineApiTest {
 
         Assert.assertEquals(7, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
-        ValidatableResponse response = RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/")
-            .then().log().all()
-            .statusCode(200);
 
-        response.body("size()", Matchers.is(nodes.size()));
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
 
+        Assert.assertEquals(nodes.size(), resp.size());
         for(int i=0; i< nodes.size();i++){
             FlowNode n = nodes.get(i);
-            response.body(String.format("[%s].id", i), Matchers.equalTo(n.getId()))
-                .body(String.format("[%s].displayName", i),
-                    Matchers.equalTo(n.getAction(ThreadNameAction.class) != null
-                    ? n.getAction(ThreadNameAction.class).getThreadName()
-                    : n.getDisplayName()));
+            Map rn = resp.get(i);
+            Assert.assertEquals(n.getId(), rn.get("id"));
+            Assert.assertEquals(getNodeName(n), rn.get("displayName"));
+            Assert.assertEquals("SUCCESS", rn.get("result"));
+            List<Map> edges = (List<Map>) rn.get("edges");
 
-            response.body(String.format("[%s].result", i), Matchers.equalTo("SUCCESS"));
 
             if(n.getDisplayName().equals("test")){
-                response.body(String.format("[%s].edges.size()", i), Matchers.is(parallelNodes.size()));
-                response.body(String.format("[%s].edges[0].id", i), Matchers.equalTo(parallelNodes.get(0).getId()))
-                .body(String.format("[%s].edges[1].id", i), Matchers.equalTo(parallelNodes.get(1).getId()))
-                .body(String.format("[%s].edges[2].id", i), Matchers.equalTo(parallelNodes.get(2).getId()));
+                Assert.assertEquals(parallelNodes.size(), edges.size());
+                Assert.assertEquals(edges.get(i).get("id"), parallelNodes.get(i).getId());
             }else if(n.getDisplayName().equals("build")){
-                response.body(String.format("[%s].edges.size()", i), Matchers.is(1));
-                response.body(String.format("[%s].edges[0].id", i), Matchers.equalTo(nodes.get(i+1).getId()));
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(edges.get(i).get("id"), nodes.get(i+1).getId());
             }else if(n.getDisplayName().equals("deploy")){
-                response.body(String.format("[%s].edges.size()", i), Matchers.is(1));
+                Assert.assertEquals(1, edges.size());
             }else if(n.getDisplayName().equals("deployToProd")){
-                response.body(String.format("[%s].edges.size()", i), Matchers.is(0));
+                Assert.assertEquals(0, edges.size());
             }else{
-                response.body(String.format("[%s].edges.size()", i), Matchers.is(1));
-                response.body(String.format("[%s].edges[0].id", i), Matchers.equalTo(nodes.get(nodes.size() - 2).getId()));
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(edges.get(0).get("id"), nodes.get(nodes.size() - 2).getId());
             }
         }
     }
@@ -360,35 +309,33 @@ public class PipelineApiTest {
 
         Assert.assertEquals(5, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
-        ValidatableResponse response = RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/")
-            .then().log().all()
-            .statusCode(200);
 
-        response.body("size()", Matchers.is(nodes.size()));
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
 
+        Assert.assertEquals(nodes.size(), resp.size());
         for(int i=0; i< nodes.size();i++){
             FlowNode n = nodes.get(i);
-            response.body(String.format("[%s].id", i), Matchers.equalTo(n.getId()))
-                .body(String.format("[%s].displayName", i),
-                    Matchers.equalTo(n.getAction(ThreadNameAction.class) != null
-                        ? n.getAction(ThreadNameAction.class).getThreadName()
-                        : n.getDisplayName()));
+            Map rn = resp.get(i);
+            Assert.assertEquals(n.getId(), rn.get("id"));
+            Assert.assertEquals(getNodeName(n), rn.get("displayName"));
+
+            List<Map> edges = (List<Map>) rn.get("edges");
+
+
             if(n.getDisplayName().equals("test")){
-                response.body(String.format("[%s].edges.size()", i), Matchers.is(parallelNodes.size()));
-                response.body(String.format("[%s].edges[0].id", i), Matchers.equalTo(parallelNodes.get(0).getId()))
-                    .body(String.format("[%s].edges[1].id", i), Matchers.equalTo(parallelNodes.get(1).getId()))
-                    .body(String.format("[%s].edges[2].id", i), Matchers.equalTo(parallelNodes.get(2).getId()))
-                    .body(String.format("[%s].result", i), Matchers.equalTo("UNSTABLE"));
+                Assert.assertEquals(parallelNodes.size(), edges.size());
+                Assert.assertEquals(edges.get(i).get("id"), parallelNodes.get(i).getId());
+                Assert.assertEquals("UNSTABLE", rn.get("result"));
             }else if(n.getDisplayName().equals("build")){
-                response.body(String.format("[%s].edges.size()", i), Matchers.is(1))
-                        .body(String.format("[%s].edges[0].id", i), Matchers.equalTo(nodes.get(i+1).getId()))
-                        .body(String.format("[%s].result", i), Matchers.equalTo("SUCCESS"));
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(edges.get(i).get("id"), nodes.get(i+1).getId());
+                Assert.assertEquals("SUCCESS", rn.get("result"));
             }else if(n.getDisplayName().equals("Branch: unit")){
-                response.body(String.format("[%s].edges.size()", i), Matchers.is(0))
-                    .body(String.format("[%s].result", i), Matchers.equalTo("FAILURE"));
-            } else {
-                response.body(String.format("[%s].edges.size()", i), Matchers.is(0))
-                    .body(String.format("[%s].result", i), Matchers.equalTo("SUCCESS"));
+                Assert.assertEquals(0, edges.size());
+                Assert.assertEquals("FAILURE", rn.get("result"));
+            }else{
+                Assert.assertEquals(0, edges.size());
+                Assert.assertEquals("SUCCESS", rn.get("result"));
             }
         }
     }
@@ -433,40 +380,35 @@ public class PipelineApiTest {
         Assert.assertEquals(6, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
 
+        // get all nodes for pipeline1
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(nodes.size(), resp.size());
 
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/")
-            .then().log().all()
-            .statusCode(200);
-
-
+        //Get a node detail
         FlowNode n = nodes.get(0);
 
-        RestAssured.given().log().all()
-            .get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+nodes.get(0).getId())
-            .then().log().all()
-            .statusCode(200)
-            .body("id", Matchers.equalTo(n.getId()))
-            .body("displayName",
-                Matchers.equalTo(n.getAction(ThreadNameAction.class) != null
-                    ? n.getAction(ThreadNameAction.class).getThreadName()
-                    : n.getDisplayName()))
-            .body("edges.size()", Matchers.is(1))
-            .body("edges[0].id", Matchers.equalTo(nodes.get(1).getId()));
+        Map node = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+n.getId());
 
+        List<Map> edges = (List<Map>) node.get("edges");
+
+        Assert.assertEquals(n.getId(), node.get("id"));
+        Assert.assertEquals(getNodeName(n), node.get("displayName"));
+        Assert.assertEquals("SUCCESS", node.get("result"));
+        Assert.assertEquals(1, edges.size());
+        Assert.assertEquals(nodes.get(1).getId(), edges.get(0).get("id"));
+
+
+        //Get a parllel node detail
+        node = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+parallelNodes.get(0).getId());
 
         n = parallelNodes.get(0);
-        RestAssured.given().log().all()
-            .get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+parallelNodes.get(0).getId())
-            .then().log().all()
-            .statusCode(200)
-            .body("id", Matchers.equalTo(n.getId()))
-            .body("displayName",
-                Matchers.equalTo(n.getAction(ThreadNameAction.class) != null
-                    ? n.getAction(ThreadNameAction.class).getThreadName()
-                    : n.getDisplayName()))
-            .body("edges.size()", Matchers.is(1))
-            .body("edges[0].id", Matchers.equalTo(nodes.get(nodes.size()-1).getId()));
+        edges = (List<Map>) node.get("edges");
 
+        Assert.assertEquals(n.getId(), node.get("id"));
+        Assert.assertEquals(getNodeName(n), node.get("displayName"));
+        Assert.assertEquals("SUCCESS", node.get("result"));
+        Assert.assertEquals(1, edges.size());
+        Assert.assertEquals(nodes.get(nodes.size()-1).getId(), edges.get(0).get("id"));
     }
 
     @Test
@@ -491,18 +433,10 @@ public class PipelineApiTest {
         }
         j.assertBuildStatus(Result.ABORTED, b1);
 
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs/1")
-            .then().log().all()
-            .statusCode(200)
-            .body("id", Matchers.equalTo(b1.getId()))
-            .body("pipeline", Matchers.equalTo(b1.getParent().getName()))
-            .body("organization", Matchers.equalTo("jenkins"))
-            .body("state", Matchers.equalTo("FINISHED"))
-            .body("result", Matchers.equalTo("ABORTED"))
-            .body("startTime", Matchers.equalTo(
-                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b1.getStartTimeInMillis()))));
-    }
+        Map r = get("/organizations/jenkins/pipelines/pipeline1/runs/1");
 
+        validateRun(b1, r);
+    }
 
     @Test
     public void getPipelineJobRunNodeLogTest() throws Exception {
@@ -544,21 +478,18 @@ public class PipelineApiTest {
         Assert.assertEquals(6, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
 
-        RestAssured.given().log().all()
-            .get("/organizations/jenkins/pipelines/pipeline1/runs/1/log")
-            .then().log().all()
-            .statusCode(200);
+        String output = get("/organizations/jenkins/pipelines/pipeline1/runs/1/log", String.class);
+        Assert.assertNotNull(output);
+        System.out.println(output);
 
+        output = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+nodes.get(0).getId()+"/log", String.class);
+        Assert.assertNotNull(output);
+        System.out.println(output);
 
-        RestAssured.given().log().all()
-            .get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+nodes.get(0).getId()+"/log")
-            .then().log().all()
-            .statusCode(200);
+        output = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+parallelNodes.get(0).getId()+"/log", String.class);
+        Assert.assertNotNull(output);
+        System.out.println(output);
 
-        RestAssured.given().log().all()
-            .get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+parallelNodes.get(0).getId()+"/log")
-            .then().log().all()
-            .statusCode(200);
     }
 
 
@@ -580,19 +511,13 @@ public class PipelineApiTest {
         WorkflowRun b2 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b2);
 
-        RestAssured.given().log().all().get("/organizations/jenkins/pipelines/pipeline1/runs")
-            .then().log().all()
-            .statusCode(200)
-            .body("[0].id", Matchers.equalTo(b2.getId()))
-            .body("[0].pipeline", Matchers.equalTo(b2.getParent().getName()))
-            .body("[0].organization", Matchers.equalTo("jenkins"))
-            .body("[0].startTime", Matchers.equalTo(
-                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b2.getStartTimeInMillis()))))
-            .body("[1].id", Matchers.equalTo(b1.getId()))
-            .body("[1].pipeline", Matchers.equalTo(b1.getParent().getName()))
-            .body("[1].organization", Matchers.equalTo("jenkins"))
-            .body("[1].startTime", Matchers.equalTo(
-                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b1.getStartTimeInMillis()))));
+        Run[] runs = {b2,b1};
+
+        List<Map> runResponses = get("/organizations/jenkins/pipelines/pipeline1/runs", List.class);
+
+        for(int i=0; i < runs.length; i++){
+            validateRun(runs[i], runResponses.get(i));
+        }
     }
 
     @Test
@@ -609,13 +534,10 @@ public class PipelineApiTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        Response response = RestAssured.given().log().all()
-            .accept(ContentType.TEXT)
-            .get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0");
+        HttpResponse<String> response = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0", 200,"plain/text",HttpResponse.class);
 
-            response.then().log().all()
-            .statusCode(200);
-        int size = Integer.parseInt(response.getHeader("X-Text-Size"));
+        int size = Integer.parseInt(response.getHeaders().getFirst("X-Text-Size"));
+        System.out.println(response.getBody());
         Assert.assertTrue(size > 0);
     }
 
@@ -634,17 +556,13 @@ public class PipelineApiTest {
         j.assertBuildStatusSuccess(b11);
         j.assertBuildStatusSuccess(b12);
 
-        ValidatableResponse response = RestAssured.given().log().all().get("/search?q=type:run;organization:jenkins;pipeline:pipeline1")
-            .then().log().all()
-            .statusCode(200);
+        List<Map> resp = get("/search?q=type:run;organization:jenkins;pipeline:pipeline1", List.class);
 
-        for (int i = 0; i < builds.size(); i++) {
+        Assert.assertEquals(builds.size(), resp.size());
+        for(int i=0; i< builds.size(); i++){
+            Map p = resp.get(i);
             FreeStyleBuild b = builds.pop();
-            response.body(String.format("[%s].id",i), Matchers.equalTo(b.getId()))
-                .body(String.format("[%s].pipeline",i), Matchers.equalTo(b.getParent().getName()))
-                .body(String.format("[%s].organization",i), Matchers.equalTo("jenkins"))
-                .body(String.format("[%s].startTime",i), Matchers.equalTo(
-                    new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
+            validateRun(b, p);
         }
     }
 
@@ -664,19 +582,14 @@ public class PipelineApiTest {
 
         Map<String, Stack<FreeStyleBuild>> buildMap = ImmutableMap.of(p1.getName(), p1builds, p2.getName(), p2builds);
 
-        Response r = RestAssured.given().log().all().get("/search?q=type:run;organization:jenkins");
-        ValidatableResponse response = r
-            .then().log().all()
-            .statusCode(200);
+        List<Map> resp = get("/search?q=type:run;organization:jenkins", List.class);
 
-        for (int i = 0; i < 4; i++) {
-            String pipeline = r.path(String.format("[%s].pipeline",i));
-            FreeStyleBuild b = buildMap.get(pipeline).pop();
-            response.body(String.format("[%s].id",i), Matchers.equalTo(b.getId()))
-                .body(String.format("[%s].pipeline",i), Matchers.equalTo(pipeline))
-                .body(String.format("[%s].organization",i), Matchers.equalTo("jenkins"))
-                .body(String.format("[%s].startTime",i), Matchers.equalTo(
-                    new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
+        Assert.assertEquals(4, resp.size());
+        for(int i=0; i< 4; i++){
+            Map p = resp.get(i);
+            String pipeline = (String) p.get("pipeline");
+            Assert.assertNotNull(pipeline);
+            validateRun(buildMap.get(pipeline).pop(), p);
         }
     }
 
@@ -700,6 +613,36 @@ public class PipelineApiTest {
             }
         }
         return parallelNodes;
+    }
+
+    @Test
+    public void testArtifactsRunApi() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pipeline1");
+        p.getBuildersList().add(new TestBuilder() {
+            @Override public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+                FilePath ws = build.getWorkspace();
+                if (ws == null) {
+                    return false;
+                }
+                FilePath dir = ws.child("dir");
+                dir.mkdirs();
+                dir.child("fizz").write("contents", null);
+                dir.child("lodge").symlinkTo("fizz", listener);
+                return true;
+            }
+        });
+        ArtifactArchiver aa = new ArtifactArchiver("dir/fizz");
+        aa.setAllowEmptyArchive(true);
+        p.getPublishersList().add(aa);
+        FreeStyleBuild b = j.assertBuildStatusSuccess(p.scheduleBuild2(0));
+
+
+        Map run = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b.getId());
+
+        validateRun(b, run);
+        List<Map> artifacts = (List<Map>) run.get("artifacts");
+        Assert.assertEquals(1, artifacts.size());
+        Assert.assertEquals("fizz", artifacts.get(0).get("name"));
     }
 
 }
