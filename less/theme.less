@@ -450,8 +450,8 @@ td:first-child {
 
 .download-log-button {
   display: inline-block;
-  height: 28px;
-  padding: 0 .8em;
+  height: 30px;
+  padding: 0 5px;
   border: 1px solid #f1f1f1;
   color: #f1f1f1;
   border-radius: 2px;
@@ -462,9 +462,14 @@ td:first-child {
   cursor: pointer;
 }
 
-code {
-  background-color: @pre-bg;
+code .download-log-button a {
+  vertical-align: top;
+  padding: 0;
   color: @pre-color;
+  padding-right: 5px;
+}
+
+code {
   font-family: @font-family-monospace;
   width: 100%;
   min-height: 12px;
@@ -489,7 +494,7 @@ code p::nth-line {
   color: yellow !important;
 }
 
-code a {
+code p a {
   margin: 0;
   padding: 0 15px 0 20px;
   word-wrap: break-word;
@@ -713,8 +718,13 @@ footer {
   vertical-align: top;
 }
 
+.dialog section .times div {
+  padding-bottom: 10px;
+}
+
 .dialog section .times svg {
-  padding-right: 25px;
+  padding-right: 30px;
+  overflow: visible;
 }
 
 .dialog section.left svg {
