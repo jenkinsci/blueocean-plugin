@@ -1,6 +1,12 @@
 package io.jenkins.blueocean.rest.model;
 
+import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.json.JsonBody;
+import org.kohsuke.stapler.json.JsonResponse;
+import org.kohsuke.stapler.verb.PUT;
+
+import javax.xml.ws.WebFault;
 
 /**
  * Defines pipeline state and its routing
@@ -63,4 +69,19 @@ public abstract class BluePipeline extends Resource {
      */
     public abstract BlueRunContainer getRuns();
 
+    @PUT
+    @WebMethod(name="favorite")
+    public abstract void favorite(@JsonBody FavoriteAction favoriteAction);
+
+    public static class FavoriteAction {
+        private boolean favorite;
+
+        public void setFavorite(boolean favorite) {
+            this.favorite = favorite;
+        }
+
+        public boolean isFavorite() {
+            return favorite;
+        }
+    }
 }

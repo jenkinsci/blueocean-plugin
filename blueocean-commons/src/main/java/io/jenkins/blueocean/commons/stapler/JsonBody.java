@@ -1,23 +1,20 @@
 package io.jenkins.blueocean.commons.stapler;
 
 import io.jenkins.blueocean.commons.JsonConverter;
-import io.jenkins.blueocean.commons.ServiceException;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.AnnotationHandler;
 import org.kohsuke.stapler.InjectedParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
-import static javax.servlet.http.HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Binds the body payload into POJO via json-lib.
@@ -72,7 +69,7 @@ public @interface JsonBody {
              */
 
             String ct = request.getContentType();
-            if ((ct == null) || !ct.equals("application/json"))
+            if ((ct == null) || !ct.startsWith("application/json"))
                 throw new ServletException("Expected application/json but got "+ct);
 
             try {

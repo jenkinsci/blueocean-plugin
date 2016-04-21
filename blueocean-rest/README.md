@@ -634,3 +634,30 @@ start query parameter tells API to send log starting from this offset in the log
     Proceeding
     Running on master in /var/folders/5q/51y3qf0x5t39d4c4c_c2l1s40000gn/T/hudson8758973583122932916test/workspace/pipeline1
     Building...
+
+## Favorite a pipeline
+Returns 200 on success. Must be authenticated.
+
+    curl -u bob:bob -H"Content-Type:application/json" -XPUT -d '{"favorite":true} ttp://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
+
+## Favorite a multibranch pipeline
+Must be authenticated.
+
+This favorites the master branch. Returns 200 on success. 500 if master does not exist
+
+    curl -u bob:bob  -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
+
+## Favorite a multibranch pipeline branch
+Returns 200 on success. Must be authenticated.
+
+    curl -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/favorite
+
+
+## Fetch user favorites
+Must be authenticated.
+
+    curl -u bob:bob  http://localhost:8080/jenkins/blue/rest/users/bob/favorites/
+
+    [{
+        "pipeline":"/organizations/jenkins/pipelines/pipeline1"
+    }]
