@@ -31,7 +31,7 @@ const config = {
     },
     copy: {
         icons: {
-            sources: "icons/*",
+            sources: "icons/**/*",
             dest: "dist/assets/"
         },
         octicons: {
