@@ -20,8 +20,10 @@ export class EmptyStateView extends Component {
     render() {
         return (
             <div className="empty-state">
-                { this.props.iconName ? <EmptyStateIcon name={this.props.iconName} /> : null }
-                <div className="empty-state-content">{this.props.children}</div>
+                <div className="empty-state-container">
+                    { this.props.iconName ? <EmptyStateIcon name={this.props.iconName} /> : null }
+                    <div className="empty-state-content">{this.props.children}</div>
+                </div>
             </div>
         );
     }
