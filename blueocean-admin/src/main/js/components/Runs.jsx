@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import { StatusIndicator, CommitHash, ReadableDate } from '@jenkins-cd/design-language';
-import SampleIcon from './stories/SampleIcon.jsx';
 const { object, string, any } = PropTypes;
 
 require('moment-duration-format');
@@ -47,7 +46,6 @@ export default class Runs extends Component {
                 <a onClick={open} ref="xxx">
                     <StatusIndicator result={resultRun} />
                 </a>
-                <SampleIcon />
             </td>
             <td>{result.id}</td>
             <td><CommitHash commitId={changeset.commitId} /></td>
