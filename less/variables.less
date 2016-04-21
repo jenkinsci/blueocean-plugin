@@ -52,7 +52,7 @@
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-@font-family-sans-serif:  "LatoLatinWebMediumRegular", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-sans-serif:  "LatoLatinWeb", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
 @font-family-serif:       Georgia, "Times New Roman", Times, serif;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
 @font-family-monospace:   "Source Code Pro", Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -62,9 +62,14 @@
 @font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
 @font-size-small:         ceil((@font-size-base * 0.85)); // ~12px
 
-@font-family-headings:    "LatoLatinWebMedium", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
-@font-family-nav:         "LatoLatinWebLight", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
-@font-family-btn:         "LatoLatinWebSemibold", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-ss-light:    "LatoLatinWebLight", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-ss-regular:  @font-family-sans-serif;
+@font-family-ss-medium:   "LatoLatinWebMedium", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-ss-semibold: "LatoLatinWebSemibold", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+@font-family-headings:    @font-family-ss-medium;
+@font-family-nav:         @font-family-ss-light;
+@font-family-btn:         @font-family-ss-semibold;
 @font-family-panel:       "Lato-Semibold", "Lato";
 
 @font-size-h1:            floor((@font-size-base * 2.6)); // ~36px
