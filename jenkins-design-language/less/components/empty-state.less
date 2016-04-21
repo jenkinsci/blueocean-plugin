@@ -8,9 +8,16 @@
   .empty-state-icon {
     margin-right: 3rem;
 
-    svg {
+    img {
+      display: block;
+      width: 150px;
       height: 150px;
+      padding-left: 150px;
     }
+
+    .noun-icon(branch, "branch.svg");
+    .noun-icon(goat, "goat.svg");
+    .noun-icon(shoes, "shoes.svg");
   }
 
   .empty-state-content {
@@ -24,5 +31,12 @@
     button {
       .btn-styles(transparent, white, white);
     }
+  }
+}
+
+.noun-icon(@className, @file) {
+  @escapedFilename: escape(@file);
+  .@{className} {
+    background: url("../icons/nounproject/@{escapedFilename}") no-repeat right center;
   }
 }
