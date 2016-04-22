@@ -44,17 +44,19 @@ export default class Runs extends Component {
         const url = `/pipelines/${pipelineName}/detail/${pipeline}/${id}`;
         const resultRun = result === 'UNKNOWN' ? state : result;
 
+        const url = `/pipelines/${pipelineName}/detail/${name}/${result.id}`;
         const open = () => {
             location.pathname = url;
-            router.replace(location);
+            router.push(location);
         };
-        return (<tr key={id}>
+
+        return (<tr key={id} onClick={open} >
             <td>
-                <a onClick={open} ref="xxx">
-                    <StatusIndicator result={resultRun} />
-                </a>
+                <StatusIndicator result={resultRun} />
             </td>
-            <td>{id}</td>
+            <td>
+                {id}
+            </td>
             <td><CommitHash commitId={changeset.commitId} /></td>
             <td>{name}</td>
             <td>{changeset && changeset.comment || '-'}</td>

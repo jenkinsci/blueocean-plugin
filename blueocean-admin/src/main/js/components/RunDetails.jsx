@@ -28,7 +28,6 @@ class RunDetails extends Component {
         const {
             context: {
                 router,
-                location,
                 pipeline: {
                     branchNames,
                     name,
@@ -59,8 +58,7 @@ class RunDetails extends Component {
         result.name = name;
 
         const afterClose = () => {
-            location.pathname = `/pipelines/${name}/activity/`;
-            router.replace(location);
+            router.goBack();
         };
 
         return (<ModalView
@@ -85,7 +83,6 @@ RunDetails.contextTypes = {
     pipeline: object,
     params: object,
     router: object.isRequired, // From react-router
-    location: PropTypes.object, // From react-router
 };
 
 RunDetails.propTypes = {
