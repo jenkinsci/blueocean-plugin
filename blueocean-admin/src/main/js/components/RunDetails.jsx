@@ -12,6 +12,10 @@ import LogToolbar from './LogToolbar';
 
 const { object, array } = PropTypes;
 
+function uriString(input) {
+    return encodeURIComponent(input).replace(/%2F/g, '%252F')
+}
+
 class RunDetails extends Component {
     render() {
         // early out
@@ -39,18 +43,19 @@ class RunDetails extends Component {
         // multibranch special treatment - get url of the log
         const multiBranch = !!branchNames;
         const baseUrl = '/rest/organizations/jenkins' +
-            `/pipelines/${name}`;
+            `/pipelines/${uriString(name)}`;
         let url;
         let fileName = name;
         if (multiBranch) {
-            url = `${baseUrl}/branches/${branch}/runs/${runId}/log`;
+            url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log`;
             fileName = `${branch}-${runId}.txt`;
         } else {
             url = `${baseUrl}/runs/${runId}/log`;
             fileName = `${runId}.txt`;
         }
+        console.log(url);
         const result = this.props.data.filter(
-            (run) => run.id === runId && run.pipeline === branch)[0];
+            (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
 
         result.name = name;
 
