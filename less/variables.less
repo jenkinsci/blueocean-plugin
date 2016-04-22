@@ -12,11 +12,10 @@
 @gray-dark:              lighten(@gray-base, 20%);   // #333
 @gray:                   lighten(@gray-base, 33.5%); // #555
 @gray-light:             lighten(@gray-base, 46.7%); // #777
-@gray-light-trans:       rgba(144, 143, 143, 0.55);
 @gray-lighter:           lighten(@gray-base, 93.5%); // #eee
 
 //## Brand colors
-@brand-primary:         #168BB9;
+@brand-primary:         #4A90E2;
 @brand-success:         #4A9900;
 @brand-success-lite:    #8CC04F;
 @brand-info:            #3A70B0;
@@ -34,10 +33,10 @@
 //## Settings for some of the most global styles.
 
 @header-bg:             @brand-primary;
-@sub-header-bg:         mix(#EBEBEB, @header-bg, 82%);
+@sub-header-bg:         @brand-primary;
 
 //** Background color for `<body>`.
-@body-bg:               mix(#EBEBEB, @sub-header-bg, 82%);
+@body-bg:               #FFF;
 //** Global text color on `<body>`.
 @text-color:            #4a4a4a;
 
@@ -53,7 +52,7 @@
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-@font-family-sans-serif:  "LatoLatinWebMediumRegular", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-sans-serif:  "LatoLatinWeb", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
 @font-family-serif:       Georgia, "Times New Roman", Times, serif;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
 @font-family-monospace:   "Source Code Pro", Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -63,9 +62,14 @@
 @font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
 @font-size-small:         ceil((@font-size-base * 0.85)); // ~12px
 
-@font-family-headings:    "LatoLatinWebMedium", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
-@font-family-nav:         "LatoLatinWebLight", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
-@font-family-btn:         "LatoLatinWebSemibold", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-ss-light:    "LatoLatinWebLight", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-ss-regular:  @font-family-sans-serif;
+@font-family-ss-medium:   "LatoLatinWebMedium", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-ss-semibold: "LatoLatinWebSemibold", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+@font-family-headings:    @font-family-ss-semibold;
+@font-family-nav:         @font-family-ss-light;
+@font-family-btn:         @font-family-ss-semibold;
 @font-family-panel:       "Lato-Semibold", "Lato";
 
 @font-size-h1:            floor((@font-size-base * 2.6)); // ~36px
