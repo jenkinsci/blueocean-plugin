@@ -36,10 +36,9 @@ class LogConsole extends Component {
                   href={rawUrl}
                 >
                     <Icons
-                      icon="link"// Icons in the field transformation
+                      icon="launch"// Icons in the field transformation
                       style={{ fill: "#fff" }} // Styles prop for icon (svg)
                     />
-                    Open
                 </a>
             </div>
             {lines.map((line, index) => <p key={index}>
