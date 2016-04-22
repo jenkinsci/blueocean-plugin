@@ -41,7 +41,6 @@ export default class Runs extends Component {
 
         const duration = moment.duration(durationInMillis).humanize();
         const name = decodeURIComponent(pipeline);
-        const url = `/pipelines/${pipelineName}/detail/${pipeline}/${id}`;
         const resultRun = result === 'UNKNOWN' ? state : result;
 
         const url = `/pipelines/${pipelineName}/detail/${name}/${result.id}`;
