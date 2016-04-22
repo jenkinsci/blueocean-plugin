@@ -155,17 +155,25 @@ public abstract class BlueRun extends Resource {
     }
 
     @ExportedBean
-    public class BlueRunStateResponse {
+    public class BlueRunStopResponse {
         private BlueRunState state;
+        private BlueRunResult result;
 
-        public BlueRunStateResponse(BlueRunState state) {
+        public BlueRunStopResponse(BlueRunState state, BlueRunResult result) {
             this.state = state;
+            this.result = result;
         }
 
-        @Exported(name="state")
+        @Exported(name=BlueRun.STATE)
         public BlueRunState getState() {
             return state;
         }
+
+        @Exported(name=BlueRun.RESULT)
+        public BlueRunResult getResult() {
+            return result;
+        }
+
     }
 
     public enum BlueRunResult {
@@ -205,5 +213,5 @@ public abstract class BlueRun extends Resource {
 
     @PUT @JsonResponse
     @WebMethod(name="stop")
-    public abstract BlueRunStateResponse stop();
+    public abstract BlueRunStopResponse stop();
 }

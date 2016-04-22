@@ -13,6 +13,7 @@ import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.PipelineNodeFilter;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -136,16 +137,33 @@ public class PipelineApiTest extends BaseTest {
             "}"));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
-        String finished = "";
+        Map r=null;
+
         for (int i = 0; i < 10; i++) {
-            Map r = put("/organizations/jenkins/pipelines/pipeline1/runs/1/stop",null);
-            finished = (String)r.get("state");
-            if(finished.equalsIgnoreCase("finished"))
+             r = request().put("/organizations/jenkins/pipelines/pipeline1/runs/1/stop")
+                .build(Map.class);
+             if(((String) r.get("state")).equalsIgnoreCase("FINISHED"))
                 continue;
             Thread.sleep(1000);
         }
-        Assert.assertEquals(finished, "FINISHED");
+        Assert.assertEquals(r.get("state"), "FINISHED");
+        Assert.assertEquals(r.get("result"), "ABORTED");
+
         j.assertBuildStatus(Result.ABORTED, b1);
+
+        FreeStyleProject p = j.createFreeStyleProject("pipeline5");
+        p.getBuildersList().add(new Shell("echo hello!\nsleep 69"));
+        FreeStyleBuild b2 = p.scheduleBuild2(0).waitForStart();
+
+        for (int i = 0; i < 10; i++) {
+            r = put("/organizations/jenkins/pipelines/pipeline5/runs/1/stop",null);
+            if(((String) r.get("state")).equalsIgnoreCase("finished"))
+                continue;
+            Thread.sleep(1000);
+        }
+        Assert.assertEquals(r.get("state"), "FINISHED");
+        Assert.assertEquals(r.get("result"), "ABORTED");
+        j.assertBuildStatus(Result.ABORTED, b2);
 
     }
 

@@ -170,7 +170,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @PUT
     @Override
-    public BlueRunStateResponse stop() {
+    public BlueRunStopResponse stop() {
         throw new ServiceException.NotImplementedException("dtop should be implemented on a subclass");
     }
 }

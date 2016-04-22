@@ -283,6 +283,9 @@ public abstract class BaseTest {
         return baseUrl + path;
     }
 
+    public RequestBuilder request() {
+        return new RequestBuilder(baseUrl);
+    }
     public static class RequestBuilder {
         private String url;
         private String username;
@@ -377,6 +380,7 @@ public abstract class BaseTest {
                         throw new RuntimeException("No default options");
 
                 }
+                request.header("Accept-Encoding","");
 
                 request.header("Content-Type", contentType);
                 if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
@@ -386,9 +390,9 @@ public abstract class BaseTest {
                 if(request instanceof HttpRequestWithBody && data != null) {
                     ((HttpRequestWithBody)request).body(data);
                 }
-                HttpResponse<T> response = request.asObject(clzzz);
+                HttpResponse<String> response = request.asString();
                 Assert.assertEquals(expectedStatus, response.getStatus());
-                return response.getBody();
+                return JsonConverter.toJava(response.getBody(), clzzz);
             } catch (UnirestException e) {
                 throw new RuntimeException(e);
             }

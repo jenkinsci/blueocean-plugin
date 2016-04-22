@@ -1,23 +1,15 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.json.JsonResponse;
-import org.kohsuke.stapler.verb.DELETE;
-import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
 import hudson.model.FreeStyleBuild;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.ServletException;
 
 /**
  * FreeStyleRunImpl can add it's own element here
@@ -45,10 +37,10 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
 
     @PUT
     @Override
-    public BlueRunStateResponse stop() {
+    public BlueRunStopResponse stop() {
         try {
             run.doStop();
-            return new BlueRunStateResponse(this.getStateObj());
+            return new BlueRunStopResponse(getStateObj(), getResult());
         } catch (Exception e) {
            throw new ServiceException.UnexpectedErrorExpcetion("Error while trying to stop run", e);
         }
