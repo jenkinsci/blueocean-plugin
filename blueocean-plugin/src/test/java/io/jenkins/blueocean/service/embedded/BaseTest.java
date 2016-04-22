@@ -284,7 +284,7 @@ public abstract class BaseTest {
     }
 
     public RequestBuilder request() {
-        return new RequestBuilder(baseUrl);
+
     }
     public static class RequestBuilder {
         private String url;
@@ -390,9 +390,9 @@ public abstract class BaseTest {
                 if(request instanceof HttpRequestWithBody && data != null) {
                     ((HttpRequestWithBody)request).body(data);
                 }
-                HttpResponse<String> response = request.asString();
+                HttpResponse<T> response = request.asObject(clzzz);
                 Assert.assertEquals(expectedStatus, response.getStatus());
-                return JsonConverter.toJava(response.getBody(), clzzz);
+                return response.getBody();
             } catch (UnirestException e) {
                 throw new RuntimeException(e);
             }
