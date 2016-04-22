@@ -13,7 +13,7 @@ import LogToolbar from './LogToolbar';
 const { object, array } = PropTypes;
 
 function uriString(input) {
-    return encodeURIComponent(input).replace(/%2F/g, '%252F')
+    return encodeURIComponent(input).replace(/%2F/g, '%252F');
 }
 
 class RunDetails extends Component {
@@ -53,7 +53,6 @@ class RunDetails extends Component {
             url = `${baseUrl}/runs/${runId}/log`;
             fileName = `${runId}.txt`;
         }
-        console.log(url);
         const result = this.props.data.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
 
