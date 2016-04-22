@@ -63,7 +63,7 @@ class RunDetails extends Component {
             </ModalHeader>
             <ModalBody>
                 <LogConsole
-                    {...{url}}
+                  {...{ url }}
                 />
             </ModalBody>
         </ModalView>);

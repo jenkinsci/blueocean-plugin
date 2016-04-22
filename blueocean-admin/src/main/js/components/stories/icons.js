@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 
-import {Icons, shapes} from 'react-material-icons-blue';
+import { Icons, shapes } from 'react-material-icons-blue';
 
 const custom = `<path
      d="m 19,12.473273 -4,0 L 15,3 9,3 l 0,9.473273 -4,0 7,11.052151 7,-11.052151 z"
@@ -12,45 +12,45 @@ const custom = `<path
   <path
      d="m 5.036611,2.8603396 0,2.0000001 13.999999,0 0,-2.0000001 -13.999999,0 z"
      id="path3543-9" />
-`
+`;
 
 storiesOf('Blue Icons', module)
     .add('icon link', () => (
     <a
-        title="Display the log in new window"
+      title="Display the log in new window"
     >
         <Icons
-            icon="link"// Icons in the field transformation
-            style={{ fill: "red" }} // Styles prop for icon (svg)
+          icon="link"// Icons in the field transformation
+          style={{ fill: 'red' }} // Styles prop for icon (svg)
         />
         Link
     </a>
     ))
     .add('icon custom', () => (
         <Icons
-            custom={custom}
-            size={500}
-            style={{ fill: "red" }} // Styles prop for icon (svg)
+          custom={custom}
+          size={500}
+          style={{ fill: 'red' }} // Styles prop for icon (svg)
         />
     ))
-    .add('all', ()  => (
+    .add('all', () => (
     <div>
         {
-            Object.keys(shapes).map((shape, index) => {
-                return <div
-                  key={index}
-                  style={{
-                    display: 'inline',
-                    float: 'left',
-                    padding: '5px',
-                }}>
-                    <Icons
-                        icon={shape}
-                    />
-                    <div>{shape}</div>
-                </div>
-            })
+            Object.keys(shapes).map((shape, index) => <div
+              key={index}
+              style={
+                  {
+                      display: 'inline',
+                      float: 'left',
+                      padding: '5px',
+                  }
+              }
+            >
+                <Icons
+                  icon={shape}
+                />
+                <div>{shape}</div>
+            </div>)
         }
     </div>
-))
-;
+));
