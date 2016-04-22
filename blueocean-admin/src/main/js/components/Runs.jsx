@@ -40,10 +40,9 @@ export default class Runs extends Component {
         } = this;
 
         const duration = moment.duration(durationInMillis).humanize();
-        const name = decodeURIComponent(pipeline);
         const resultRun = result === 'UNKNOWN' ? state : result;
 
-        const url = `/pipelines/${pipelineName}/detail/${name}/${result.id}`;
+        const url = `/pipelines/${pipelineName}/detail/${pipeline}/${id}`;
         const open = () => {
             location.pathname = url;
             router.push(location);
@@ -57,7 +56,7 @@ export default class Runs extends Component {
                 {id}
             </td>
             <td><CommitHash commitId={changeset.commitId} /></td>
-            <td>{name}</td>
+            <td>{decodeURIComponent(pipeline)}</td>
             <td>{changeset && changeset.comment || '-'}</td>
             <td>{duration}</td>
             <td><ReadableDate date={endTime} /></td>
