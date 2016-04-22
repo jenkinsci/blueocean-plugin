@@ -175,6 +175,10 @@ code, pre, kbd {
     .btn-styles(@btn-primary-bg, @btn-primary-border, @btn-primary-color);
 }
 
+.btn-inverse {
+    .btn-styles(transparent, white, white);
+}
+
 .btn-success {
     .btn-styles(@btn-success-bg, @btn-success-border, @btn-success-color);
 }
@@ -411,7 +415,12 @@ code, pre, kbd {
 // --------------------------------------------------
 
 table {
+    color: @gray-light;
     width: 100%;
+
+    a {
+        color: @gray-light;
+    }
 }
 
 thead tr:last-child {
@@ -426,7 +435,6 @@ tbody tr:first-child td {
 }
 
 th {
-    color: @gray-light-trans;
     font-family: @font-family-headings;
     font-weight: normal;
 }
@@ -540,6 +548,7 @@ code.hash {
 
 .global-header {
     font-size: 1.8rem;
+    letter-spacing: 1.1px;
     background-color: @header-bg;
     color: white;
 }
@@ -550,7 +559,7 @@ code.hash {
 
 .global-header nav {
     text-align: center;
-    padding: 2rem 0;
+    padding: 1.5rem 0;
 }
 
 .global-header nav a {
@@ -558,9 +567,8 @@ code.hash {
     font-weight: normal;
     text-decoration: none;
     display: inline-block;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 2rem;
     font-family: @font-family-nav;
-    letter-spacing: 1.12px;
 }
 
 .global-header a:hover {
@@ -571,12 +579,14 @@ code.hash {
     background-color: @sub-header-bg;
     color: @text-color;
     padding: 0;
+    letter-spacing: 1.1px;
 }
 
 .sub-header nav.page-title {
     .content-width;
+    color: white;
     display: flex;
-    height: 8.2rem;
+    height: 6rem;
     align-items: center;
 
     // Put some spacing between children
@@ -587,6 +597,10 @@ code.hash {
             margin-right: 0;
         }
     }
+
+    .weather-icon {
+        margin-top: 1rem;
+    }
 }
 
 .sub-header nav.page-tabs {
@@ -594,11 +608,11 @@ code.hash {
 }
 
 .page-tabs a {
-    color: @text-color;
+    color: white;
     display: inline-block;
     min-width: 133px;
-    padding: 0.6rem 1rem 0;
-    height: 33px;
+    padding: 1rem 1rem 0;
+    height: 40px;
     font-family: @font-family-nav;
     text-align: center;
     text-decoration: none;
@@ -618,7 +632,7 @@ code.hash {
     left: 0;
     right: 0;
     bottom: 0;
-    background: @brand-primary;
+    background: white;
     height: 3px;
     transition-timing-function: ease-out;
     transition-duration: 0.2s;
@@ -640,7 +654,7 @@ code.hash {
 
 main article {
     .content-width;
-    padding: 1rem 0;
+    padding: 4rem 0 1rem 0;
 }
 
 .container-fluid {
