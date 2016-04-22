@@ -661,3 +661,12 @@ Must be authenticated.
     [{
         "pipeline":"/organizations/jenkins/pipelines/pipeline1"
     }]
+
+## Stop a build
+Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
+
+    curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop
+    {
+      "result" : "ABORTED",
+      "state" : "FINISHED"
+    }
