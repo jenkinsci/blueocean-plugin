@@ -175,6 +175,10 @@ code, pre, kbd {
   .btn-styles(@btn-primary-bg, @btn-primary-border, @btn-primary-color);
 }
 
+.btn-inverse {
+    .btn-styles(transparent, white, white);
+}
+
 .btn-success {
   .btn-styles(@btn-success-bg, @btn-success-border, @btn-success-color);
 }
@@ -411,7 +415,12 @@ code, pre, kbd {
 // --------------------------------------------------
 
 table {
-  width: 100%;
+    color: @gray-light;
+    width: 100%;
+
+    a {
+        color: @gray-light;
+    }
 }
 
 thead tr:last-child {
@@ -426,8 +435,8 @@ tbody tr:first-child td {
 }
 
 th {
-  font-family: @font-family-headings;
-  font-weight: normal;
+    font-family: @font-family-headings;
+    font-weight: normal;
 }
 
 td, th {
@@ -562,9 +571,10 @@ code.inline {
 }
 
 .global-header {
-  font-size: 1.8rem;
-  background-color: @header-bg;
-  color: white;
+    font-size: 1.8rem;
+    letter-spacing: 1.1px;
+    background-color: @header-bg;
+    color: white;
 }
 
 .global-header a {
@@ -572,18 +582,17 @@ code.inline {
 }
 
 .global-header nav {
-  text-align: center;
-  padding: 2rem 0;
+    text-align: center;
+    padding: 1.5rem 0;
 }
 
 .global-header nav a {
-  color: white;
-  font-weight: normal;
-  text-decoration: none;
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  font-family: @font-family-nav;
-  letter-spacing: 1.12px;
+    color: white;
+    font-weight: normal;
+    text-decoration: none;
+    display: inline-block;
+    padding: 0.5rem 2rem;
+    font-family: @font-family-nav;
 }
 
 .global-header a:hover {
@@ -591,25 +600,31 @@ code.inline {
 }
 
 .sub-header {
-  background-color: @sub-header-bg;
-  color: @text-color;
-  padding: 0;
+    background-color: @sub-header-bg;
+    color: @text-color;
+    padding: 0;
+    letter-spacing: 1.1px;
 }
 
 .sub-header nav.page-title {
-  .content-width;
-  display: flex;
-  height: 8.2rem;
-  align-items: center;
+    .content-width;
+    color: white;
+    display: flex;
+    height: 6rem;
+    align-items: center;
 
-  // Put some spacing between children
-  > * {
-    margin-right: 1rem;
+    // Put some spacing between children
+    > * {
+        margin-right: 1rem;
 
-    &:last-child {
-      margin-right: 0;
+        &:last-child {
+            margin-right: 0;
+        }
     }
-  }
+
+    .weather-icon {
+        margin-top: 1rem;
+    }
 }
 
 .sub-header nav.page-tabs {
@@ -617,12 +632,14 @@ code.inline {
 }
 
 .page-tabs a {
-  color: @text-color;
-  display: inline-block;
-  padding: 0.6rem 1rem 0;
-  height: 33px;
-  font-family: @font-family-nav;
-  text-decoration: none;
+    color: white;
+    display: inline-block;
+    min-width: 133px;
+    padding: 1rem 1rem 0;
+    height: 40px;
+    font-family: @font-family-nav;
+    text-align: center;
+    text-decoration: none;
 
   // For transforming underline
   position: relative;
@@ -632,19 +649,19 @@ code.inline {
 }
 
 .page-tabs a:before {
-  // For transforming underline
-  content: "";
-  position: absolute;
-  z-index: -1;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: @brand-primary;
-  height: 3px;
-  transition-timing-function: ease-out;
-  transition-duration: 0.2s;
-  transform: translateY(3px);
-  transition-property: transform;
+    // For transforming underline
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    height: 3px;
+    transition-timing-function: ease-out;
+    transition-duration: 0.2s;
+    transform: translateY(3px);
+    transition-property: transform;
 }
 
 .page-tabs a.selected:before,
@@ -660,8 +677,8 @@ code.inline {
 }
 
 main article {
-  .content-width;
-  padding: 1rem 0;
+    .content-width;
+    padding: 4rem 0 1rem 0;
 }
 
 .container-fluid {
