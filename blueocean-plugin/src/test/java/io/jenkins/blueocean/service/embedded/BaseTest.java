@@ -284,7 +284,7 @@ public abstract class BaseTest {
     }
 
     public RequestBuilder request() {
-
+        return new RequestBuilder(baseUrl);
     }
     public static class RequestBuilder {
         private String url;
