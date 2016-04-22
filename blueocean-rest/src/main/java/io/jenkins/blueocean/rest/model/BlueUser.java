@@ -12,6 +12,8 @@ public abstract class BlueUser extends Resource {
     public static final String ID="id";
     public static final String FULL_NAME="fullName";
     public static final String EMAIL="email";
+    public static final String FAVORITES = "favorites";
+
     /**
      * @return The id of the user
      */
@@ -30,5 +32,7 @@ public abstract class BlueUser extends Resource {
     @Exported(name = EMAIL)
     // restricted to authorized users only
     public abstract String getEmail();
+
+    public abstract BlueFavoriteContainer getFavorites();
 
 }

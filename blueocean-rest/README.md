@@ -63,6 +63,13 @@ BlueOcean rest API base URL is:
       "lastSuccessfulRun": "http://localhost:64106/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1",
       "latestRun": {
           "changeSet": [],
+          "artifacts": [
+              {
+                  "name": "fizz",
+                  "size": 8,
+                  "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+              }
+          ],
           "durationInMillis": 20264,
           "enQueueTime": "2016-04-11T17:44:28.342+1000",
           "endTime": "2016-04-11T17:44:48.608+1000",
@@ -99,6 +106,13 @@ BlueOcean rest API base URL is:
     [
         {
             "changeSet": [],
+            "artifacts": [
+              {
+                  "name": "fizz",
+                  "size": 8,
+                  "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+              }
+            ],
             "durationInMillis": 841,
             "enQueueTime": "2016-03-16T09:02:26.492-0700",
             "endTime": "2016-03-16T09:02:27.339-0700",
@@ -121,6 +135,13 @@ BlueOcean rest API base URL is:
     
     {
         "changeSet": [],
+        "artifacts": [
+          {
+              "name": "fizz",
+              "size": 8,
+              "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+          }
+        ],
         "durationInMillis": 841,
         "enQueueTime": "2016-03-16T09:02:26.492-0700",
         "endTime": "2016-03-16T09:02:27.339-0700",
@@ -142,6 +163,13 @@ BlueOcean rest API base URL is:
     [ 
       {
           "changeSet": [],
+          "artifacts": [
+            {
+                "name": "fizz",
+                "size": 8,
+                "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+            }
+          ],
           "durationInMillis": 841,
           "enQueueTime": "2016-03-16T09:02:26.492-0700",
           "endTime": "2016-03-16T09:02:27.339-0700",
@@ -164,6 +192,13 @@ BlueOcean rest API base URL is:
     [ 
       {
           "changeSet": [],
+          "artifacts": [
+            {
+                "name": "fizz",
+                "size": 8,
+                "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+            }
+          ],
           "durationInMillis": 841,
           "enQueueTime": "2016-03-16T09:02:26.492-0700",
           "endTime": "2016-03-16T09:02:27.339-0700",
@@ -252,6 +287,13 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
                 "changeSet": [
                     
                 ],
+                "artifacts": [
+                  {
+                      "name": "fizz",
+                      "size": 8,
+                      "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+                  }
+                ],
                 "durationInMillis": 1468,
                 "enQueueTime": "2016-04-15T19:59:28.730-0700",
                 "endTime": "2016-04-15T19:59:30.199-0700",
@@ -329,6 +371,13 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         {
             "changeSet": [
 
+            ],
+            "artifacts": [
+              {
+                  "name": "fizz",
+                  "size": 8,
+                  "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+              }
             ],
             "durationInMillis": 1875,
             "enQueueTime": "2016-03-10T15:27:13.687+1300",
@@ -585,3 +634,30 @@ start query parameter tells API to send log starting from this offset in the log
     Proceeding
     Running on master in /var/folders/5q/51y3qf0x5t39d4c4c_c2l1s40000gn/T/hudson8758973583122932916test/workspace/pipeline1
     Building...
+
+## Favorite a pipeline
+Returns 200 on success. Must be authenticated.
+
+    curl -u bob:bob -H"Content-Type:application/json" -XPUT -d '{"favorite":true} ttp://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
+
+## Favorite a multibranch pipeline
+Must be authenticated.
+
+This favorites the master branch. Returns 200 on success. 500 if master does not exist
+
+    curl -u bob:bob  -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
+
+## Favorite a multibranch pipeline branch
+Returns 200 on success. Must be authenticated.
+
+    curl -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/favorite
+
+
+## Fetch user favorites
+Must be authenticated.
+
+    curl -u bob:bob  http://localhost:8080/jenkins/blue/rest/users/bob/favorites/
+
+    [{
+        "pipeline":"/organizations/jenkins/pipelines/pipeline1"
+    }]

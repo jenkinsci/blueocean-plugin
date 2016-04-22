@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import moment from 'moment';
-import { StatusIndicator } from '@jenkins-cd/design-language';
+import { ReadableDate, StatusIndicator } from '@jenkins-cd/design-language';
 
 const { object } = PropTypes;
 
@@ -20,7 +19,7 @@ export default class PullRequest extends Component {
             <td>{latestRun.id}</td>
             <td>{pullRequest.title || '-'}</td>
             <td>{pullRequest.author || '-'}</td>
-            <td>{moment(latestRun.endTime).fromNow()}</td>
+            <td><ReadableDate date={latestRun.endTime} /></td>
         </tr>);
     }
 }

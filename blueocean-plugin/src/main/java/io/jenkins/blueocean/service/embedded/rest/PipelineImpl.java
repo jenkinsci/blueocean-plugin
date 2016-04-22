@@ -1,12 +1,18 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Job;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
+
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.json.JsonBody;
+import org.kohsuke.stapler.json.JsonResponse;
 import org.kohsuke.stapler.verb.DELETE;
+import org.kohsuke.stapler.verb.PUT;
 
 import java.io.IOException;
 
@@ -82,5 +88,15 @@ public class PipelineImpl extends BluePipeline {
             return String.format("%s%s/", ensureTrailingSlash(path), getName());
         }
         return ensureTrailingSlash(path);
+    }
+
+    @WebMethod(name="favorite") @PUT
+    @Override
+    public void favorite(@JsonBody FavoriteAction favoriteAction) {
+        if(favoriteAction == null) {
+            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
+        }
+
+        FavoriteUtil.favoriteJob(job, favoriteAction.isFavorite());
     }
 }

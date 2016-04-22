@@ -1,57 +1,54 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.response.ValidatableResponse;
+import com.google.common.collect.ImmutableMap;
+
 import hudson.model.FreeStyleProject;
+import hudson.model.Project;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
-import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
-import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsArrayContainingInAnyOrder;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.BuildWatcher;
-import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import static com.jayway.restassured.RestAssured.*;
-import static com.jayway.restassured.path.json.JsonPath.with;
 import static org.junit.Assert.*;
 
 /**
  * @author Vivek Pandey
  */
-public class MultiBranchTest {
+public class MultiBranchTest extends BaseTest{
 
     @ClassRule
     public static BuildWatcher buildWatcher = new BuildWatcher();
-    @Rule public JenkinsRule j = new JenkinsRule();
+
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
+
 
     private final String[] branches={"master", "feature1", "feature2"};
 
     @Before
-    public void setup() throws Exception {
-        baseURI = j.jenkins.getRootUrl()+"blue/rest";
-        enableLoggingOfRequestAndResponseIfValidationFails();
+    public void setup() throws Exception{
+        super.setup();
         setupScm();
     }
 
@@ -67,19 +64,11 @@ public class MultiBranchTest {
 
         mp.scheduleBuild2(0).getFuture().get();
 
-        given().log().all().get("/organizations/jenkins/pipelines/").then().log().all().statusCode(200)
-            .body("size()", Matchers.is(2))
-            .body("[0].organization", Matchers.equalTo("jenkins"))
-            .body("[0].name", Matchers.equalTo(f.getName()))
-            .body("[0].displayName", Matchers.equalTo(f.getDisplayName()))
-            .body("[0].weatherScore", Matchers.is(f.getBuildHealth().getScore()))
-            .body("[1].organization", Matchers.equalTo("jenkins"))
-            .body("[1].name", Matchers.equalTo(mp.getName()))
-            .body("[1].displayName", Matchers.equalTo(mp.getDisplayName()))
-            .body("[1].numberOfFailingBranches", Matchers.equalTo(0))
-            .body("[1].numberOfSuccessfulBranches", Matchers.equalTo(0))
-            .body("[1].totalNumberOfBranches", Matchers.equalTo(3))
-            .body("[1].weatherScore", Matchers.is(mp.getBranch("master").getBuildHealth().getScore()));
+        List<Map> resp = get("/organizations/jenkins/pipelines/", List.class);
+        Assert.assertEquals(2, resp.size());
+        validatePipeline(f, resp.get(0));
+        validateMultiBranchPipeline(mp, resp.get(1), 3, 0, 0);
+        Assert.assertEquals(mp.getBranch("master").getBuildHealth().getScore(), resp.get(0).get("weatherScore"));
     }
 
 
@@ -96,10 +85,11 @@ public class MultiBranchTest {
 
         mp.scheduleBuild2(0).getFuture().get();
 
-        given().log().all().get("/organizations/jenkins/pipelines/").then().log().all().statusCode(200);
+        List<Map> resp = get("/organizations/jenkins/pipelines/", List.class);
+        Assert.assertEquals(1, resp.size());
+        validateMultiBranchPipeline(mp, resp.get(0), 2, 0, 0);
+        Assert.assertNull(mp.getBranch("master"));
     }
-
-
 
     @Test
     public void getMultiBranchPipeline() throws IOException, ExecutionException, InterruptedException {
@@ -112,25 +102,23 @@ public class MultiBranchTest {
 
         mp.scheduleBuild2(0).getFuture().get();
 
-        Response response = given().log().all().get("/organizations/jenkins/pipelines/p/");
-        ValidatableResponse validatableResponse = response.then().log().all().statusCode(200);
-            validatableResponse.body("organization", Matchers.equalTo("jenkins"))
-            .body("name", Matchers.equalTo(mp.getName()))
-            .body("displayName", Matchers.equalTo(mp.getDisplayName()))
-            .body("numberOfFailingBranches", Matchers.equalTo(0))
-            .body("numberOfSuccessfulBranches", Matchers.equalTo(0))
-            .body("totalNumberOfBranches", Matchers.equalTo(3));
 
-        List<String> names = with(response.asString()).get("branchNames");
+        Map resp = get("/organizations/jenkins/pipelines/p/");
+        validateMultiBranchPipeline(mp,resp,3,0,0);
+
+        List<String> names = (List<String>) resp.get("branchNames");
+
         IsArrayContainingInAnyOrder.arrayContainingInAnyOrder(names, branches);
 
+        List<Map> br = get("/organizations/jenkins/pipelines/p/branches", List.class);
 
-        Response r = given().log().all().get("/organizations/jenkins/pipelines/p/branches");
-        r.then().log().all().statusCode(200);
+        List<String> branchNames = new ArrayList<>();
+        List<Integer> weather = new ArrayList<>();
+        for(Map b: br){
+            branchNames.add((String) b.get("name"));
+            weather.add((int) b.get("weatherScore"));
+        }
 
-        String body = r.asString();
-        List<String> branchNames = with(body).get("name");
-        List<Integer> weather = with(body).get("weatherScore");
         for(String n:branches){
             assertTrue(branchNames.contains(n));
         }
@@ -168,13 +156,16 @@ public class MultiBranchTest {
         WorkflowRun b3 = p.getLastBuild();
         assertEquals(1, b3.getNumber());
 
-        Response r = given().log().all().get("/organizations/jenkins/pipelines/p/branches");
-        r.then().log().all().statusCode(200)
-            .body("latestRun[0].pipeline", Matchers.anyOf(Matchers.equalTo("feature1"),
-                Matchers.equalTo("feature2"), Matchers.equalTo("master")));
+        List<Map> br = get("/organizations/jenkins/pipelines/p/branches", List.class);
 
-        String body = r.asString();
-        List<String> branchNames = with(body).get("name");
+        List<String> branchNames = new ArrayList<>();
+        List<Integer> weather = new ArrayList<>();
+        for(Map b: br){
+            branchNames.add((String) b.get("name"));
+            weather.add((int) b.get("weatherScore"));
+        }
+        Assert.assertTrue(branchNames.contains(((Map)(br.get(0).get("latestRun"))).get("pipeline")));
+
         for(String n:branches){
             assertTrue(branchNames.contains(n));
         }
@@ -184,26 +175,14 @@ public class MultiBranchTest {
         int i = 0;
         for(String n:branches){
             WorkflowRun b = runs[i];
-            Response run = given().log().all().get("/organizations/jenkins/pipelines/p/branches/"+n+"/runs/"+b.getId());
-            run.then().log().all().statusCode(200)
-                .statusCode(200)
-                .body("id", Matchers.equalTo(b.getId()))
-                .body("pipeline", Matchers.equalTo(b.getParent().getName()))
-                .body("organization", Matchers.equalTo("jenkins"))
-                .body("pullRequest", Matchers.nullValue())
-                .body("startTime", Matchers.equalTo(
-                    new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b.getStartTimeInMillis()))));
+
+            Map run = get("/organizations/jenkins/pipelines/p/branches/"+n+"/runs/"+b.getId());
+            validateRun(b,run);
             i++;
         }
 
-        given().log().all().get("/organizations/jenkins/pipelines/p/").then().log().all().statusCode(200)
-            .body("organization", Matchers.equalTo("jenkins"))
-            .body("name", Matchers.equalTo(mp.getName()))
-            .body("displayName", Matchers.equalTo(mp.getDisplayName()))
-            .body("numberOfFailingBranches", Matchers.equalTo(0))
-            .body("numberOfSuccessfulBranches", Matchers.equalTo(3))
-            .body("totalNumberOfBranches", Matchers.equalTo(3));
-
+        Map pr = get("/organizations/jenkins/pipelines/p/");
+        validateMultiBranchPipeline(mp, pr, 3,3,0);
 
         sampleRepo.git("checkout","master");
         sampleRepo.write("file", "subsequent content11");
@@ -214,16 +193,8 @@ public class MultiBranchTest {
         WorkflowRun b4 = p.getLastBuild();
         assertEquals(2, b4.getNumber());
 
-        Response run = given().log().all().get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId());
-        run.then().log().all().statusCode(200)
-            .statusCode(200)
-            .body("id", Matchers.equalTo(b4.getId()))
-            .body("pipeline", Matchers.equalTo(b4.getParent().getName()))
-            .body("organization", Matchers.equalTo("jenkins"))
-            .body("startTime", Matchers.equalTo(
-                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b4.getStartTimeInMillis()))));;
-
-
+        Map run = get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId());
+        validateRun(b4, run);
     }
 
     @Test
@@ -269,14 +240,12 @@ public class MultiBranchTest {
         if(d != null) {
             commitId = d.getLastBuiltRevision().getSha1String();
         }
-        Response r = given().log().all().get("/organizations/jenkins/pipelines/p/runs");
-        r.then().log().all().statusCode(200)
-            .body("size()",Matchers.is(3))
-            .body("pipeline[0]",Matchers.equalTo(firstStart.getParent().getName()))
-            .body("id[0]", Matchers.equalTo(firstStart.getNumber()+""))
-            .body("commitId[0]", Matchers.equalTo(commitId));
 
+        List<Map> resp = get("/organizations/jenkins/pipelines/p/runs", List.class);
+        Assert.assertEquals(3, resp.size());
 
+        validateRun(firstStart,resp.get(0));
+        Assert.assertEquals(commitId, resp.get(0).get("commitId"));
     }
 
     @Test
@@ -305,21 +274,124 @@ public class MultiBranchTest {
 
         ChangeLogSet.Entry changeLog = b4.getChangeSets().get(0).iterator().next();
 
-        Response run = given().log().all().get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId()+"/");
-        run.then().log().all().statusCode(200)
-            .statusCode(200)
-            .body("id", Matchers.equalTo(b4.getId()))
-            .body("pipeline", Matchers.equalTo(b4.getParent().getName()))
-            .body("organization", Matchers.equalTo("jenkins"))
-            .body("startTime", Matchers.equalTo(
-                new SimpleDateFormat(JsonConverter.DATE_FORMAT_STRING).format(new Date(b4.getStartTimeInMillis()))))
-            .body("changeSet[0].author.id", Matchers.equalTo(changeLog.getAuthor().getId()))
-            .body("changeSet[0].author.fullName", Matchers.equalTo(changeLog.getAuthor().getFullName()))
-            .body("changeSet[0].commitId", Matchers.equalTo(changeLog.getCommitId()));
+
+        Map run = get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId()+"/");
+        validateRun(b4, run);
+        List<Map> changetSet = (List<Map>) run.get("changeSet");
+        Map c = changetSet.get(0);
+
+        Assert.assertEquals(changeLog.getCommitId(), c.get("commitId"));
+        Map a = (Map) c.get("author");
+        Assert.assertEquals(changeLog.getAuthor().getId(), a.get("id"));
+        Assert.assertEquals(changeLog.getAuthor().getFullName(), a.get("fullName"));
+    }
+
+    @Test
+    public void createUserFavouriteMultibranchTopLevelTest() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+
+        new RequestBuilder(baseUrl)
+            .put("/organizations/jenkins/pipelines/p/favorite")
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", true))
+            .build(String.class);
+
+        List l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(l.size(), 1);
+        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/master");
+
+        new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("bob","bob")
+            .status(403)
+            .build(String.class);
+
     }
 
 
+    @Test
+    public void createUserFavouriteMultibranchBranchTest() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
 
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+
+        new RequestBuilder(baseUrl)
+            .put("/organizations/jenkins/pipelines/p/branches/feature1/favorite")
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", true))
+            .build(String.class);
+
+        List l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(l.size(), 1);
+        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/feature1");
+
+        new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("bob","bob")
+            .status(403)
+            .build(String.class);
+
+    }
+
+    /*
+     * FIXME: @vivek, @ivan. This test is flaking out on ci often.
+     *
+     * We don't think it is timing, but we do see errors like: java.io.IOException: cannot find current thread
+     *  May be a workflow bug. This was introduced around the revision: 9df08944af1af260ef5f3ea902b7ca69aa53366a
+     * ERROR in output.txt for surefire for this suite:
+     * WARNING: failed to print message to dead CpsStepContext[3]:Owner[p/master/1:p/master #1]
+java.io.IOException: cannot find current thread
+	at org.jenkinsci.plugins.workflow.cps.CpsStepContext.doGet(CpsStepContext.java:287)
+	at org.jenkinsci.plugins.workflow.support.DefaultStepContext.get(DefaultStepContext.java:71)
+	at org.jenkinsci.plugins.workflow.support.steps.StageStepExecution.println(StageStepExecution.java:230)
+	at org.jenkinsci.plugins.workflow.support.steps.StageStepExecution.access$100(StageStepExecution.java:36)
+	at org.jenkinsci.plugins.workflow.support.steps.StageStepExecution$Stage.unblock(StageStepExecution.java:296)
+	at org.jenkinsci.plugins.workflow.support.steps.StageStepExecution.exit(StageStepExecution.java:188)
+	at org.jenkinsci.plugins.workflow.support.steps.StageStepExecution.access$200(StageStepExecution.java:36)
+	at org.jenkinsci.plugins.workflow.support.steps.StageStepExecution$Listener.onCompleted(StageStepExecution.java:310)
+	at hudson.model.listeners.RunListener.fireCompleted(RunListener.java:201)
+	at org.jenkinsci.plugins.workflow.job.WorkflowRun.finish(WorkflowRun.java:521)
+	at org.jenkinsci.plugins.workflow.job.WorkflowRun.access$1100(WorkflowRun.java:111)
+	at org.jenkinsci.plugins.workflow.job.WorkflowRun$GraphL.onNewHead(WorkflowRun.java:777)
+	at org.jenkinsci.plugins.workflow.cps.CpsFlowExecution.notifyListeners(CpsFlowExecution.java:843)
+	at org.jenkinsci.plugins.workflow.cps.CpsThreadGroup$4.run(CpsThreadGroup.java:340)
+	at org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService$1.run(CpsVmExecutorService.java:32)
+	at hudson.remoting.SingleLaneExecutorService$1.run(SingleLaneExecutorService.java:112)
+	at jenkins.util.ContextResettingExecutorService$1.run(ContextResettingExecutorService.java:28)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+     *
     @Test
     public void getMultiBranchPipelineRunStages() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
@@ -335,12 +407,13 @@ public class MultiBranchTest {
         assertEquals(1, b1.getNumber());
         assertEquals(3, mp.getItems().size());
 
+        j.waitForCompletion(b1);
 
-        Response r = given().log().all().get("/organizations/jenkins/pipelines/p/branches/master/runs/1/nodes");
-        r.then().log().all().statusCode(200);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/p/branches/master/runs/1/nodes", List.class);
 
-
+        Assert.assertEquals(3, nodes.size());
     }
+    */
 
 
     private void setupScm() throws Exception {
