@@ -46,7 +46,7 @@ class PipelineResult extends Component {
                 <div className="row">
                     <div className="commons">
                         <div>Branch&nbsp;
-                            <span className="value">{pipeline}</span>
+                            <span className="value">{decodeURIComponent(pipeline)}</span>
                         </div>
                         <div>Commit&nbsp;
                             <span className="value">
