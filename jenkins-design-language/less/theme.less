@@ -445,28 +445,26 @@ td:first-child {
 // --------------------------------------------------
 
 .log-header {
-  background-color: @pre-color-hover;
+  font-family: @font-family-panel;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid @text-color;
+  margin-bottom: 20px;
+}
+
+.log-header__section {
+  display: flex;
+  align-items: center;
+}
+
+.log-header__section a {
+  padding-left: 10px;
 }
 
 .download-log-button {
-  display: inline-block;
-  height: 30px;
-  padding: 0 5px;
-  border: 1px solid #f1f1f1;
-  color: #f1f1f1;
-  border-radius: 2px;
-  text-align: center;
-  line-height: 1.8;
-  font-size: 14px;
-  font-weight: 300;
   cursor: pointer;
-}
-
-code .download-log-button a {
-  vertical-align: top;
-  padding: 0;
-  color: @pre-color;
-  padding-right: 5px;
+  opacity:0.87000002;
 }
 
 code {
@@ -782,7 +780,6 @@ footer {
 
 .dialog .content {
   background-color: @modal-content-bg;
-  color: #000;
   overflow-y: auto;
   max-height: 90%;
   min-height: 75%;
