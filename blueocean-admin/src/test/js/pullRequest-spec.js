@@ -14,7 +14,11 @@ describe('PullRequest should render', () => {
     let tree = null;
     beforeEach(() => {
         const immData = new RunsRecord(pr[0]);
-        tree = sd.shallowRender(<PullRequest pr={immData} />);
+        tree = sd.shallowRender(<PullRequest pr={immData} />,{
+            router: {},
+            pipeline: {},
+            location: {},
+        });
     });
 
     it('does renders the PullRequest with data', () => {

@@ -15,7 +15,11 @@ describe("Branches should render", () => {
 
   beforeEach(() => {
     const branch = new RunsRecord(data[0]);
-    tree = sd.shallowRender(<Branches data={branch} />);
+    tree = sd.shallowRender(<Branches data={branch} />, {
+        router: {},
+        pipeline: {},
+        location: {},
+    });
   });
 
   it("renders the Branches", () => {
