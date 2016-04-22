@@ -8,6 +8,8 @@ import {
     fetch,
 } from '@jenkins-cd/design-language';
 
+import LogToolbar from './LogToolbar';
+
 const { object, array } = PropTypes;
 
 class RunDetails extends Component {
@@ -34,18 +36,24 @@ class RunDetails extends Component {
             },
         } = this;
 
+        // multibranch special treatment - get url of the log
         const multiBranch = !!branchNames;
         const baseUrl = '/rest/organizations/jenkins' +
             `/pipelines/${name}`;
         let url;
+        let fileName = name;
         if (multiBranch) {
             url = `${baseUrl}/branches/${branch}/runs/${runId}/log`;
+            fileName = `${branch}-${runId}.txt`;
         } else {
             url = `${baseUrl}/runs/${runId}/log`;
+            fileName = `${runId}.txt`;
         }
         const result = this.props.data.filter(
             (run) => run.id === runId && run.pipeline === branch)[0];
+
         result.name = name;
+
         const afterClose = () => {
             location.pathname = `/pipelines/${name}/activity/`;
             router.replace(location);
@@ -53,22 +61,22 @@ class RunDetails extends Component {
 
         return (<ModalView
           isVisible
-          afterClose={afterClose}
           result={result.result}
+          {...{ afterClose }}
         >
             <ModalHeader>
-                <PipelineResult
-                  data={result}
-                />
+                <PipelineResult data={result} />
             </ModalHeader>
             <ModalBody>
-                <LogConsole
-                  {...{ url }}
-                />
+                <div>
+                    <LogToolbar {...{ fileName, url }} />
+                    <LogConsole {...{ url }} />
+                </div>
             </ModalBody>
         </ModalView>);
     }
 }
+
 RunDetails.contextTypes = {
     pipeline: object,
     params: object,
