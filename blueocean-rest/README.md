@@ -556,6 +556,87 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         }
     ]
 
+> In case if the pipeline is in progress or failed in the middle, the response may include future nodes if there was 
+  last successful pipeline build. The returned future nodes will have startTime, result and state as null. 
+  Also the last node's edges will be patched to point to the future node. 
+
+From the above example, if build failed at parallel node *unit* then the response will be
+
+    [ {
+      "displayName" : "build",
+      "edges" : [ {
+        "durationInMillis" : 54,
+        "id" : "9"
+      } ],
+      "id" : "3",
+      "result" : "SUCCESS",
+      "startTime" : "2016-04-22T17:45:18.499-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "test",
+      "edges" : [ {
+        "durationInMillis" : 2,
+        "id" : "13"
+      }, {
+        "durationInMillis" : 3,
+        "id" : "14"
+      }, {
+        "durationInMillis" : 4,
+        "id" : "15"
+      } ],
+      "id" : "9",
+      "result" : "UNSTABLE",
+      "startTime" : "2016-04-22T17:45:18.553-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "unit",
+      "edges" : [ {
+        "durationInMillis" : -1,
+        "id" : "35"
+      } ],
+      "id" : "13",
+      "result" : "FAILURE",
+      "startTime" : "2016-04-22T17:45:18.555-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "integration",
+      "edges" : [ {
+        "durationInMillis" : -1,
+        "id" : "35"
+      } ],
+      "id" : "14",
+      "result" : "SUCCESS",
+      "startTime" : "2016-04-22T17:45:18.556-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "ui",
+      "edges" : [ {
+        "durationInMillis" : -1,
+        "id" : "35"
+      } ],
+      "id" : "15",
+      "result" : "SUCCESS",
+      "startTime" : "2016-04-22T17:45:18.557-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "deploy",
+      "edges" : [ {
+        "durationInMillis" : -1,
+        "id" : "41"
+      } ],
+      "id" : "35",
+      "result" : null,
+      "startTime" : null,
+      "state" : null
+    }, {
+      "displayName" : "deployToProd",
+      "edges" : [ ],
+      "id" : "41",
+      "result" : null,
+      "startTime" : null,
+      "state" : null
+    } ]
+  
 # Get a Pipeline run node's detail
 
     curl -v  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/3

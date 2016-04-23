@@ -14,6 +14,7 @@ import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import io.jenkins.blueocean.service.embedded.rest.PipelineNodeFilter;
+import io.jenkins.blueocean.service.embedded.rest.PipelineNodeUtil;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -266,6 +267,161 @@ public class PipelineApiTest extends BaseTest {
                 Assert.assertEquals(edges.get(0).get("id"), nodes.get(nodes.size() - 2).getId());
             }
         }
+    }
+
+    @Test
+    public void getPipelineJobRunNodesTestWithFuture() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+
+        job1.setDefinition(new CpsFlowDefinition("stage 'build'\n" +
+            "node{\n" +
+            "  echo \"Building...\"\n" +
+            "}\n" +
+            "\n" +
+            "stage 'test'\n" +
+            "parallel 'unit':{\n" +
+            "  node{\n" +
+            "    echo \"Unit testing...\"\n" +
+            "  }\n" +
+            "},'integration':{\n" +
+            "  node{\n" +
+            "    echo \"Integration testing...\"\n" +
+            "  }\n" +
+            "}, 'ui':{\n" +
+            "  node{\n" +
+            "    echo \"UI testing...\"\n" +
+            "  }\n" +
+            "}\n" +
+            "\n" +
+            "stage 'deploy'\n" +
+            "node{\n" +
+            "  echo \"Deploying\"\n" +
+            "}" +
+            "\n" +
+            "stage 'deployToProd'\n" +
+            "node{\n" +
+            "  echo \"Deploying to production\"\n" +
+            "}"
+        ));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
+        nodeGraphTable.build();
+        List<FlowNode> nodes = getStages(nodeGraphTable);
+        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+
+        Assert.assertEquals(7, nodes.size());
+        Assert.assertEquals(3, parallelNodes.size());
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+        Assert.assertEquals(nodes.size(), resp.size());
+        for(int i=0; i< nodes.size();i++){
+            FlowNode n = nodes.get(i);
+            Map rn = resp.get(i);
+            Assert.assertEquals(n.getId(), rn.get("id"));
+            Assert.assertEquals(getNodeName(n), rn.get("displayName"));
+            Assert.assertEquals("SUCCESS", rn.get("result"));
+            List<Map> edges = (List<Map>) rn.get("edges");
+
+            if(n.getDisplayName().equals("test")){
+                Assert.assertEquals(parallelNodes.size(), edges.size());
+                Assert.assertEquals(edges.get(i).get("id"), parallelNodes.get(i).getId());
+            }else if(n.getDisplayName().equals("build")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(edges.get(i).get("id"), nodes.get(i+1).getId());
+            }else if(n.getDisplayName().equals("deploy")){
+                Assert.assertEquals(1, edges.size());
+            }else if(n.getDisplayName().equals("deployToProd")){
+                Assert.assertEquals(0, edges.size());
+            }else{
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(edges.get(0).get("id"), nodes.get(nodes.size() - 2).getId());
+            }
+        }
+
+        job1.setDefinition(new CpsFlowDefinition("stage 'build'\n" +
+            "node{\n" +
+            "  echo \"Building...\"\n" +
+            "}\n" +
+            "\n" +
+            "stage 'test'\n" +
+            "parallel 'unit':{\n" +
+            "  node{\n" +
+            "    echo \"Unit testing...\"\n" +
+            "    sh \"`fail-the-build`\"\n" + //fail the build intentionally
+            "  }\n" +
+            "},'integration':{\n" +
+            "  node{\n" +
+            "    echo \"Integration testing...\"\n" +
+            "  }\n" +
+            "}, 'ui':{\n" +
+            "  node{\n" +
+            "    echo \"UI testing...\"\n" +
+            "  }\n" +
+            "}\n" +
+            "\n" +
+            "stage 'deploy'\n" +
+            "node{\n" +
+            "  echo \"Deploying\"\n" +
+            "}" +
+            "\n" +
+            "stage 'deployToProd'\n" +
+            "node{\n" +
+            "  echo \"Deploying to production\"\n" +
+            "}"
+        ));
+        b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE,b1);
+        resp = get(String.format("/organizations/jenkins/pipelines/pipeline1/runs/%s/nodes/",b1.getId()), List.class);
+        Assert.assertEquals(nodes.size(), resp.size());
+        for(int i=0; i< nodes.size();i++){
+            FlowNode n = nodes.get(i);
+            Map rn = resp.get(i);
+            Assert.assertEquals(n.getId(), rn.get("id"));
+            Assert.assertEquals(getNodeName(n), rn.get("displayName"));
+            List<Map> edges = (List<Map>) rn.get("edges");
+            if(n.getDisplayName().equals("build")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(edges.get(i).get("id"), nodes.get(i+1).getId());
+                Assert.assertEquals("SUCCESS", rn.get("result"));
+                Assert.assertEquals("FINISHED", rn.get("state"));
+            }else if (n.getDisplayName().equals("test")){
+                Assert.assertEquals(parallelNodes.size(), edges.size());
+                Assert.assertEquals(edges.get(i).get("id"), parallelNodes.get(i).getId());
+                Assert.assertEquals("UNSTABLE", rn.get("result"));
+                Assert.assertEquals("FINISHED", rn.get("state"));
+            }else if(PipelineNodeUtil.getDisplayName(n).equals("unit")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(edges.get(0).get("id"), nodes.get(nodes.size() - 2).getId());
+                Assert.assertEquals(edges.get(0).get("durationInMillis"), -1);
+                Assert.assertEquals("FAILURE", rn.get("result"));
+                Assert.assertEquals("FINISHED", rn.get("state"));
+            }else if(n.getDisplayName().equals("deploy")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+                Assert.assertNull(rn.get("startTime"));
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(edges.get(0).get("id"), nodes.get(nodes.size() - 1).getId());
+                Assert.assertEquals(edges.get(0).get("durationInMillis"), -1);
+            }else if(n.getDisplayName().equals("deployToProd")){
+                Assert.assertEquals(0, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+                Assert.assertNull(rn.get("startTime"));
+                Assert.assertEquals(0, edges.size());
+            }else{
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(edges.get(0).get("id"), nodes.get(nodes.size() - 2).getId());
+                Assert.assertEquals(edges.get(0).get("durationInMillis"), -1);
+                Assert.assertEquals("SUCCESS", rn.get("result"));
+                Assert.assertEquals("FINISHED", rn.get("state"));
+            }
+        }
+
     }
 
     @Test
