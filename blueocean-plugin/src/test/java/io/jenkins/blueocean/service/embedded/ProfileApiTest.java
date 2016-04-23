@@ -1,6 +1,9 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import hudson.model.Project;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import org.junit.Assert;
@@ -81,6 +84,36 @@ public class ProfileApiTest extends BaseTest{
         Assert.assertEquals(user.getFullName(), response.get("fullName"));
         Assert.assertEquals("alice@jenkins-ci.org", response.get("email"));
     }
+
+    @Test
+    public void createUserFavouriteTest() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+        Project p = j.createFreeStyleProject("pipeline1");
+
+        new RequestBuilder(baseUrl)
+            .put("/organizations/jenkins/pipelines/pipeline1/favorite")
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", true))
+            .build(String.class);
+
+        List l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(l.size(), 1);
+        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/pipeline1");
+
+        new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("bob","bob")
+            .status(403)
+            .build(String.class);
+
+    }
+
 
     @Test
     public void getOrganizationTest(){

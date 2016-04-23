@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.pageable;
 
 import com.google.common.collect.Iterators;
 import hudson.model.Api;
+import org.kohsuke.stapler.CancelRequestHandlingException;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -29,23 +30,27 @@ public @interface PagedResponse {
     class Processor extends Interceptor {
         @Override
         public Object invoke(StaplerRequest request, StaplerResponse response, Object instance, Object[] arguments)
-                throws IllegalAccessException, InvocationTargetException, ServletException {
+            throws IllegalAccessException, InvocationTargetException, ServletException {
 
-            final Pageable<?> resp = (Pageable<?>)target.invoke(request, response, instance, arguments);
+            String method = request.getMethod();
+            if(!method.equalsIgnoreCase("GET")){
+                throw new CancelRequestHandlingException();
+            }
+            final Pageable<?> resp = (Pageable<?>) target.invoke(request, response, instance, arguments);
 
             return new HttpResponse() {
                 @Override
                 public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                    int start = (req.getParameter("start") != null)?Integer.parseInt(req.getParameter("start")):-1;
-                    int limit = (req.getParameter("limit") != null) ? Integer.parseInt(req.getParameter("limit")):-1;
+                    int start = (req.getParameter("start") != null) ? Integer.parseInt(req.getParameter("start")) : -1;
+                    int limit = (req.getParameter("limit") != null) ? Integer.parseInt(req.getParameter("limit")) : -1;
 
                     Object[] page;
-                    if(start >= 0 && limit>=0 ){
-                        page = Iterators.toArray(resp.iterator(start, limit),Object.class);
+                    if (start >= 0 && limit >= 0) {
+                        page = Iterators.toArray(resp.iterator(start, limit), Object.class);
                         // TODO: this is still a toy just to show the concept
-                        rsp.setHeader("Link","<"+req.getRequestURI()+"&start="+(start+limit)+">; rel=\"next\"");
-                    }else{
-                        page = Iterators.toArray(resp.iterator(),Object.class);
+                        rsp.setHeader("Link", "<" + req.getRequestURI() + "&start=" + (start + limit) + ">; rel=\"next\"");
+                    } else {
+                        page = Iterators.toArray(resp.iterator(), Object.class);
                     }
                     new Api(page).doJson(req, rsp);
                 }

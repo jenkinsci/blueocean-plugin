@@ -8,9 +8,9 @@ const { object, array } = PropTypes;
 
 export class MultiBranch extends Component {
     render() {
-        const { pipeline, data } = this.props;
+        const { data } = this.props;
         // early out
-        if (!data || !pipeline) {
+        if (!data) {
             return null;
         }
 

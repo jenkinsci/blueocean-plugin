@@ -1,30 +1,58 @@
 import React, { Component, PropTypes } from 'react';
-import moment from 'moment';
-import { StatusIndicator } from '@jenkins-cd/design-language';
+import { ReadableDate, StatusIndicator } from '@jenkins-cd/design-language';
 
 const { object } = PropTypes;
 
 export default class PullRequest extends Component {
     render() {
         const { pr } = this.props;
-        if (!pr) {
+        if (!pr || !pr.pullRequest || !pr.latestRun || !this.context.pipeline) {
             return null;
         }
-        const { latestRun, pullRequest } = pr;
-        if (!latestRun || !pullRequest) {
-            return null;
-        }
-        const result = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
-        return (<tr key={latestRun.id}>
+        const {
+            latestRun: {
+                result: resultString,
+                id,
+                endTime,
+                state,
+            },
+            pullRequest: {
+                title,
+                author,
+            },
+            name,
+        } = pr;
+        const result = resultString === 'UNKNOWN' ? state : resultString;
+        const {
+            context: {
+                router,
+                location,
+                pipeline: {
+                    name: pipelineName,
+            },
+                },
+        } = this;
+        const url = `/pipelines/${pipelineName}/detail/${name}/${id}`;
+        const open = () => {
+            location.pathname = url;
+            router.push(location);
+        };
+        return (<tr key={id} onClick={open} >
             <td><StatusIndicator result={result} /></td>
-            <td>{latestRun.id}</td>
-            <td>{pullRequest.title || '-'}</td>
-            <td>{pullRequest.author || '-'}</td>
-            <td>{moment(latestRun.endTime).fromNow()}</td>
+            <td>{id}</td>
+            <td>{title || '-'}</td>
+            <td>{author || '-'}</td>
+            <td><ReadableDate date={endTime} /></td>
         </tr>);
     }
 }
 
 PullRequest.propTypes = {
     pr: object,
+};
+
+PullRequest.contextTypes = {
+    pipeline: object,
+    router: object.isRequired, // From react-router
+    location: object,
 };
