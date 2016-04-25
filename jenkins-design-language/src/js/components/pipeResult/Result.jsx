@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import {Icons} from 'react-material-icons-blue';
+import {Icon} from 'react-material-icons-blue';
 
 import moment from 'moment';
 
@@ -29,16 +29,16 @@ class PipelineResult extends Component {
 
         return (<div className="result">
             <section className="left">
-                { result === 'SUCCESS' && <Icons
-                  size={125}
-                  icon="done"// Icons in the field transformation
-                  style={{ fill: "#fff" }} // Styles prop for icon (svg)
-                />}
-                { result === 'FAILURE' &&  <Icons
-                  size={125}
-                  icon="close"// Icons in the field transformation
-                  style={{ fill: "#fff" }} // Styles prop for icon (svg)
-                />}
+                { result === 'SUCCESS' && <Icon {...{
+                    size: 125,
+                    icon: 'done',
+                    style: { fill: "#fff" },
+                }} />}
+                { result === 'FAILURE' &&  <Icon {...{
+                    size: 125,
+                    icon: 'close',
+                    style: { fill: "#fff" },
+                }} />}
             </section>
             <section className="table">
                 <h4>{organization} / {name} #{id}</h4>
@@ -62,19 +62,19 @@ class PipelineResult extends Component {
                     </div>
                     <div className="times">
                         <div>
-                            <Icons
-                              size={15}
-                              icon="timelapse"// Icons in the field transformation
-                              style={{ fill: "#fff" }} // Styles prop for icon (svg)
-                            />
+                            <Icon {...{
+                                size: 15,
+                                icon: 'timelapse',
+                                style: { fill: "#fff" },
+                            }} />
                             <span>{duration}</span>
                         </div>
                         <div>
-                            <Icons
-                              size={15}
-                              icon="access_time"// Icons in the field transformation
-                              style={{ fill: "#fff" }} // Styles prop for icon (svg)
-                            />
+                            <Icon {...{
+                                size: 15,
+                                icon: 'access_timeq',
+                                style: { fill: "#fff" },
+                            }} />
                             {moment(endTime).fromNow()}
                         </div>
                     </div>
