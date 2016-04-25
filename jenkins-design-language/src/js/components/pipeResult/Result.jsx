@@ -72,7 +72,7 @@ class PipelineResult extends Component {
                         <div>
                             <Icon {...{
                                 size: 15,
-                                icon: 'access_timeq',
+                                icon: 'access_time',
                                 style: { fill: "#fff" },
                             }} />
                             {moment(endTime).fromNow()}
