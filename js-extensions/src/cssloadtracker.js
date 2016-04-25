@@ -9,14 +9,14 @@
 // Extension point.
 // Key:     Extension point name.
 // Value:   An array of CSS adjunct URLs that need to be activated when the extension point is rendered.
-const pointCSSs = {};
+var pointCSSs = {};
 
 // Active CSS.
 // Key:     CSS URL.
 // Value:   Counter of the number of mounted Extension Points that need the CSS to be active.
 //          The onMount and onUnmount functions increment and decrement the counter. When the
 //          counter gets back to zero, the CSS can be removed from the page.
-const activeCSSs = {};
+var activeCSSs = {};
 
 const jsModules = require('@jenkins-cd/js-modules');
 
@@ -27,6 +27,10 @@ const jsModules = require('@jenkins-cd/js-modules');
  * of the /jenkins-js-extension.json files found on the server classpath.
  */
 exports.setExtensionPointMetadata = function(extensionPointList) {
+    // Reset - for testing.
+    pointCSSs = {};
+    activeCSSs = {};
+
     // Iterate through each plugin /jenkins-js-extension.json
     for(var i1 = 0; i1 < extensionPointList.length; i1++) {
         var pluginMetadata = extensionPointList[i1];
