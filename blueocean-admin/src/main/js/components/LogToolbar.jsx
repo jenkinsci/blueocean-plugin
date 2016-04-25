@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { DownloadLink, fetch } from '@jenkins-cd/design-language';
 
-import { Icons } from 'react-material-icons-blue';
+import { Icon } from 'react-material-icons-blue';
 
 const { string } = PropTypes;
 
@@ -33,7 +33,7 @@ class LogToolbar extends Component {
                     href: rawUrl,
                 }}
                 >
-                    <Icons {...{ style, icon: 'launch' }} />
+                    <Icon {...{ style, icon: 'launch' }} />
                 </a>
             </div>
         </div>);

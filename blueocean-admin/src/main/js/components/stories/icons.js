@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 
-import { Icons, shapes } from 'react-material-icons-blue';
+import { Icon, shapes } from 'react-material-icons-blue';
 
 const custom = `<path
      d="m 19,12.473273 -4,0 L 15,3 9,3 l 0,9.473273 -4,0 7,11.052151 7,-11.052151 z"
@@ -14,20 +14,20 @@ const custom = `<path
      id="path3543-9" />
 `;
 
-storiesOf('Blue Icons', module)
+storiesOf('Blue Icon', module)
     .add('icon link', () => (
     <a
       title="Display the log in new window"
     >
-        <Icons
-          icon="link"// Icons in the field transformation
+        <Icon
+          icon="link"// Icon in the field transformation
           style={{ fill: 'red' }} // Styles prop for icon (svg)
         />
         Link
     </a>
     ))
     .add('icon custom', () => (
-        <Icons
+        <Icon
           custom={custom}
           size={500}
           style={{ fill: 'red' }} // Styles prop for icon (svg)
@@ -46,7 +46,7 @@ storiesOf('Blue Icons', module)
                   }
               }
             >
-                <Icons
+                <Icon
                   icon={shape}
                 />
                 <div>{shape}</div>
