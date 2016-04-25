@@ -5,8 +5,7 @@
  * mounted and unmounted.
  */
 
-// The CSS resources (and array) to be added for each
-// Extension point.
+// The CSS resources to be added for each Extension point.
 // Key:     Extension point name.
 // Value:   An array of CSS adjunct URLs that need to be activated when the extension point is rendered.
 var pointCSSs = {};
@@ -21,7 +20,7 @@ var activeCSSs = {};
 const jsModules = require('@jenkins-cd/js-modules');
 
 /**
- * Initialize the loader witht he extension point information.
+ * Initialize the loader with the extension point information.
  * @param extensionPointList The Extension point list. An array containing ExtensionPoint
  * metadata for all plugins that define such. It's an aggregation of
  * of the /jenkins-js-extension.json files found on the server classpath.
@@ -56,7 +55,7 @@ exports.setExtensionPointMetadata = function(extensionPointList) {
 };
 
 /**
- * Called when a Jenskins ExtensionPoint is mounted.
+ * Called when a Jenkins ExtensionPoint is mounted.
  * <p/>
  * If the extension point implementations use CSS (comes from plugins that define CSS)
  * then this method will use requireCSS, and then addCSS, for each CSS. addCSS only
@@ -74,7 +73,7 @@ exports.onMount = function(extensionPointName) {
 };
 
 /**
- * Called when a Jenskins ExtensionPoint is unmounted.
+ * Called when a Jenkins ExtensionPoint is unmounted.
  * <p/>
  * If the extension point implementations use CSS (comes from plugins that define CSS)
  * then this method will use unrequireCSS, and then removeCSS, for each CSS. removeCSS only
