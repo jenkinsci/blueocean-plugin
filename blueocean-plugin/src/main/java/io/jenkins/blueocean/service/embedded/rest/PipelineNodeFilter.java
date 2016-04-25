@@ -67,7 +67,7 @@ public class PipelineNodeFilter {
         return stages;
     }
 
-    private @Nullable FlowNode getFirstParents(FlowNode child){
+    private @Nullable FlowNode getFirstParent(FlowNode child){
         List<FlowNode> parents = parentNodeMap.get(child);
         return parents.size() > 0 ? parents.get(0) : null;
     }
@@ -210,7 +210,7 @@ public class PipelineNodeFilter {
                          * edge (if not already present)
                          */
                         //parallel node has at most one paraent
-                        FlowNode parent = getFirstParents(latestNode);
+                        FlowNode parent = getFirstParent(latestNode);
                         if(parent != null){
                             List<FlowNode> children = getChildren(parent);
                             for(FlowNode c: children){
