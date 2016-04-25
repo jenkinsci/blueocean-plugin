@@ -13,7 +13,7 @@ var ExtensionPoint = React.createClass({
     },
 
     componentDidMount: function() {
-        cssloadtracker.onMount(this);
+        cssloadtracker.onMount(this.props.name);
         var thisEp = this;
         ExtensionPoint.registerExtensionPoint(this.props.name, function(extensions) {
             thisEp.setState({
@@ -28,7 +28,7 @@ var ExtensionPoint = React.createClass({
 
     componentWillUnmount: function() {
         this._unmountAllExtensions();
-        cssloadtracker.onUnmount(this);
+        cssloadtracker.onUnmount(this.props.name);
     },
 
     /**
