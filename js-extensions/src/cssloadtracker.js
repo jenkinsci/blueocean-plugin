@@ -20,11 +20,13 @@ const activeCSSs = {};
 
 const jsModules = require('@jenkins-cd/js-modules');
 
+/**
+ * Initialize the loader witht he extension point information.
+ * @param extensionPointList The Extension point list. An array containing ExtensionPoint
+ * metadata for all plugins that define such. It's an aggregation of
+ * of the /jenkins-js-extension.json files found on the server classpath.
+ */
 exports.setExtensionPointMetadata = function(extensionPointList) {
-    // extensionPointList should be an array containing ExtensionPoint
-    // metadata for all plugins that define such. It's an aggregation of
-    // of the /jenkins-js-extension.json files found on the server classpath.
-
     // Iterate through each plugin /jenkins-js-extension.json
     for(var i1 = 0; i1 < extensionPointList.length; i1++) {
         var pluginMetadata = extensionPointList[i1];
@@ -49,8 +51,17 @@ exports.setExtensionPointMetadata = function(extensionPointList) {
     }
 };
 
-exports.onMount = function(component) {
-    const pointCSS = pointCSSs[component.props.name];
+/**
+ * Called when a Jenskins ExtensionPoint is mounted.
+ * <p/>
+ * If the extension point implementations use CSS (comes from plugins that define CSS)
+ * then this method will use requireCSS, and then addCSS, for each CSS. addCSS only
+ * gets called for a CSS by the first extension point to "require" that CSS.
+ *
+ * @param extensionPointName The extension point name.
+ */
+exports.onMount = function(extensionPointName) {
+    const pointCSS = pointCSSs[extensionPointName];
     if (pointCSS) {
         for (var i = 0; i < pointCSS.length; i++) {
             requireCSS(pointCSS[i]);
@@ -58,8 +69,17 @@ exports.onMount = function(component) {
     }
 };
 
-exports.onUnmount = function(component) {
-    const pointCSS = pointCSSs[component.props.name];
+/**
+ * Called when a Jenskins ExtensionPoint is unmounted.
+ * <p/>
+ * If the extension point implementations use CSS (comes from plugins that define CSS)
+ * then this method will use unrequireCSS, and then removeCSS, for each CSS. removeCSS only
+ * gets called for a CSS by the last extension point to "unrequire" that CSS.
+ *
+ * @param extensionPointName The extension point name.
+ */
+exports.onUnmount = function(extensionPointName) {
+    const pointCSS = pointCSSs[extensionPointName];
     if (pointCSS) {
         for (var i = 0; i < pointCSS.length; i++) {
             unrequireCSS(pointCSS[i]);
@@ -83,7 +103,7 @@ function unrequireCSS(url) {
 
     if (!activeCount) {
         // Huh?
-        console.warn('Unexpected call to deactivate inactive Jenkins Extension Point CSS: ' + url);
+        console.warn('Unexpected call to deactivate an inactive Jenkins Extension Point CSS: ' + url);
         // Does this mean that react calls unmount multiple times for a given component instance?
         // That would sound like a bug, no?
     } else {
