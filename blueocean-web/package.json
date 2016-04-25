@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "@jenkins-cd/design-language": "0.0.12",
-    "@jenkins-cd/js-extensions": "0.0.11",
-    "@jenkins-cd/js-modules": "0.0.4",
+    "@jenkins-cd/js-extensions": "0.0.12-beta1",
+    "@jenkins-cd/js-modules": "0.0.5",
     "history": "2.0.1",
     "react": "0.14.7",
     "react-dom": "0.14.7",
