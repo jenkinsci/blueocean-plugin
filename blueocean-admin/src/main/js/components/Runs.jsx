@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import { StatusIndicator, CommitHash, ReadableDate } from '@jenkins-cd/design-language';
-
 const { object, string, any } = PropTypes;
 
 require('moment-duration-format');
@@ -28,33 +27,39 @@ export default class Runs extends Component {
                 },
             },
             props: {
-                result,
+                result: {
+                    durationInMillis,
+                    pipeline,
+                    id,
+                    result,
+                    state,
+                    endTime,
+                },
                 changeset,
             },
         } = this;
 
-        const duration = moment.duration(result.durationInMillis).humanize();
-        const name = decodeURIComponent(result.pipeline);
-        const resultRun = result.result === 'UNKNOWN' ? result.state : result.result;
+        const duration = moment.duration(durationInMillis).humanize();
+        const resultRun = result === 'UNKNOWN' ? state : result;
 
-        const url = `/pipelines/${pipelineName}/detail/${name}/${result.id}`;
+        const url = `/pipelines/${pipelineName}/detail/${pipeline}/${id}`;
         const open = () => {
             location.pathname = url;
             router.push(location);
         };
 
-        return (<tr key={result.id} onClick={open} >
+        return (<tr key={id} onClick={open} >
             <td>
                 <StatusIndicator result={resultRun} />
             </td>
             <td>
-                {result.id}
+                {id}
             </td>
             <td><CommitHash commitId={changeset.commitId} /></td>
-            <td>{name}</td>
+            <td>{decodeURIComponent(pipeline)}</td>
             <td>{changeset && changeset.comment || '-'}</td>
             <td>{duration}</td>
-            <td><ReadableDate date={result.endTime} /></td>
+            <td><ReadableDate date={endTime} /></td>
         </tr>);
     }
 }
