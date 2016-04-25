@@ -391,7 +391,7 @@ java.io.IOException: cannot find current thread
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
 	at java.lang.Thread.run(Thread.java:745)
-     *
+     */
     @Test
     public void getMultiBranchPipelineRunStages() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
@@ -413,7 +413,7 @@ java.io.IOException: cannot find current thread
 
         Assert.assertEquals(3, nodes.size());
     }
-    */
+
 
 
     private void setupScm() throws Exception {
