@@ -1,7 +1,10 @@
+import { createSelector } from 'reselect';
 import { actionHandlers } from './actions';
 import { State } from './reduxState';
 
-// FIXME: we need something that gets all reducer definitions from the extensions
+export const adminStore = state => state.adminStore;
+export const pipelines = createSelector([adminStore], adminStore => adminStore.pipelines);
+
 // reducer
 export function reducer(state = new State(), action:Object):State {
     const { type } = action;

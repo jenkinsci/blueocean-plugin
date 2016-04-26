@@ -1,7 +1,5 @@
-import React, { Component } from 'react';
+import { reducer } from './redux';
 
-export class PipelineStore extends Component {
-    render() {
-        return (<span>Store</span>);
-    }
+export default {
+    adminStore: reducer,
 }

@@ -118,7 +118,7 @@ function transformToJSX() {
 
             extension.importAs = 'component_' + i1;
             jsxFileContent += "import " + extension.importAs + " from '" + relPath + "/" + extension.component + ".jsx';\n";
-            jsxFileContent += "if(" + extension.importAs + ") throw new Error('" + sanityCheckMessage + "');\n";
+            jsxFileContent += "if(!" + extension.importAs + ") throw new Error('" + sanityCheckMessage + "');\n";
         }
 
         // Add the js-modules import of the extensions and add the code to register all

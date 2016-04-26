@@ -2,15 +2,13 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, IndexRoute, browserHistory, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory, useBasename } from 'history';
-import { Provider } from 'react-redux';
-import { createAppStore } from './redux';
+import { Provider, createAppStore, combineReducers} from './redux';
 
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
 import Config from './config';
 
 let config; // Holder for various app-wide state
-const store = createAppStore();
 
 /**
  * Root Blue Ocean UI component
@@ -22,7 +20,8 @@ class App extends Component {
     }
 
     render() {
-        debugger;
+        const stores = ExtensionPoint.getExtensions("jenkins.main.stores");
+        const store = createAppStore(combineReducers(Object.assign(...stores)));
         return (
             <Provider store={store}>
                 <div id="outer">
@@ -60,8 +59,6 @@ class NotFound extends Component {
 }
 
 function makeRoutes() {
-    const stores = ExtensionPoint.getExtensions("jenkins.main.stores")
-    debugger
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
     const appRoutes = [
         ...ExtensionPoint.getExtensions("jenkins.main.routes"),
@@ -112,12 +109,6 @@ function startApp() {
     // Start React
     render(<Router history={history}>{ makeRoutes() }</Router>, rootElement);
 }
-
-ExtensionPoint.registerExtensionPoint("jenkins.main.stores", (extensions) => {
-
-    debugger
-    console.log(extensions)
-});
 
 ExtensionPoint.registerExtensionPoint("jenkins.main.routes", (extensions) => {
     startApp();
