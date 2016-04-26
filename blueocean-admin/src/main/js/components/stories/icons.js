@@ -46,8 +46,7 @@ storiesOf('Blue Icon', module)
                   }
               }
             >
-                <Icon
-                  icon={shape}
+                <Icon icon={shape}
                 />
                 <div>{shape}</div>
             </div>)
