@@ -112,9 +112,13 @@ function transformToJSX() {
         // Add all the top level imports...
         for (var i1 = 0; i1 < extensions.length; i1++) {
             var extension = extensions[i1];
+            var sanityCheckMessage = "The component " +
+                extension.component + " does not define a default export. Imported from " +
+                jsExtensionsYAMLFile + " in " + maven.getArtifactId();
 
             extension.importAs = 'component_' + i1;
             jsxFileContent += "import " + extension.importAs + " from '" + relPath + "/" + extension.component + ".jsx';\n";
+            jsxFileContent += "if(" + extension.importAs + ") throw new Error('" + sanityCheckMessage + "');\n";
         }
 
         // Add the js-modules import of the extensions and add the code to register all
