@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
@@ -15,7 +16,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +29,13 @@ public class PipelineNodeFilter {
 
     private final List<FlowGraphTable.Row> rows;
     private final WorkflowRun run;
-    private FlowNode lastNode;
 
-    List<BluePipelineNode> stages = new ArrayList<>();
+    /* one to many relation of parent to children nodes */
+    private final Map<FlowNode, List<FlowNode>> childNodeMap = new LinkedHashMap<>();
+
+    /* one to many relation of child to parent nodes */
+    private final Map<FlowNode, List<FlowNode>> parentNodeMap = new LinkedHashMap<>();
+    private final Map<FlowNode, List<ErrorAction>> errorNodes = new LinkedHashMap<>();
 
 
     public PipelineNodeFilter(WorkflowRun run) {
@@ -40,24 +44,36 @@ public class PipelineNodeFilter {
         nodeGraphTable.build();
 
         this.rows = nodeGraphTable.getRows();
+        filter();
+    }
+
+    public Map<FlowNode, List<FlowNode>> getchildNodeMap(){
+        return childNodeMap;
     }
 
     public List<BluePipelineNode> getPipelineNodes(){
-        filter();
-        if(nodeMap.isEmpty()){
+        if(childNodeMap.isEmpty()){
             return Collections.emptyList();
         }
         List<BluePipelineNode> stages = new ArrayList<>();
-        for(FlowNode node: nodeMap.keySet()){
+        for(FlowNode node: childNodeMap.keySet()){
             if(errorNodes.get(node) != null){
                 ErrorAction[] errorActions = Iterables.toArray(errorNodes.get(node), ErrorAction.class);
-                stages.add(new PipelineNodeImpl(run, node, nodeMap.get(node), errorActions));
+                stages.add(new PipelineNodeImpl(run, node, this, errorActions));
             }else{
-                stages.add(new PipelineNodeImpl(run, node, nodeMap.get(node)));
+                stages.add(new PipelineNodeImpl(run, node, this));
             }
-
         }
         return stages;
+    }
+
+    private @Nullable FlowNode getFirstParent(FlowNode child){
+        List<FlowNode> parents = parentNodeMap.get(child);
+        return parents.size() > 0 ? parents.get(0) : null;
+    }
+
+    public List<FlowNode> getChildren(FlowNode parent){
+        return childNodeMap.get(parent);
     }
 
     public final Predicate<FlowNode> acceptable = new Predicate<FlowNode>() {
@@ -82,8 +98,6 @@ public class PipelineNodeFilter {
         }
     };
 
-    private final Map<FlowNode, List<FlowNode>> nodeMap = new LinkedHashMap<>();
-    private final Map<FlowNode, List<ErrorAction>> errorNodes = new HashMap<>();
     /**
      * Identifies Pipeline nodes and parallel branches, identifies the edges connecting them
      *
@@ -99,7 +113,7 @@ public class PipelineNodeFilter {
                 putErrorAction(previous,action);
             }
             if (acceptable.apply(flowNode)) {
-                getOrCreate(flowNode);
+                getOrCreateChildNodeMap(flowNode);
                 if(isStage.apply(flowNode)) {
                     if(previous == null){
                         previous = flowNode;
@@ -107,7 +121,8 @@ public class PipelineNodeFilter {
                             putErrorAction(previous,action);
                         }
                     }else {
-                        nodeMap.get(previous).add(flowNode);
+                        getOrCreateChildNodeMap(previous).add(flowNode);
+                        getOrCreateParentNodeMap(flowNode).add(previous);
                         previous = flowNode;
                     }
                 }else if(isParallel.apply(flowNode)){
@@ -137,18 +152,20 @@ public class PipelineNodeFilter {
                     }
 
                     for(FlowNode f: parallels){
-                        List<FlowNode> cn = getOrCreate(f);
+                        List<FlowNode> cn = getOrCreateChildNodeMap(f);
                         if(nextStage != null) {
                             cn.add(nextStage);
+                            getOrCreateParentNodeMap(nextStage).add(f);
                         }
                         if(previous != null) {
-                            getOrCreate(previous).add(f);
+                            getOrCreateChildNodeMap(previous).add(f);
+                            getOrCreateParentNodeMap(f).add(previous);
                         }
                     }
 
                     if(nextStage != null){
-                        if(nodeMap.get(nextStage) == null){
-                            nodeMap.put(nextStage, new ArrayList<FlowNode>());
+                        if(childNodeMap.get(nextStage) == null){
+                            childNodeMap.put(nextStage, new ArrayList<FlowNode>());
                         }
                     }
 
@@ -158,11 +175,73 @@ public class PipelineNodeFilter {
         }
     }
 
-    private List<FlowNode> getOrCreate(@Nonnull FlowNode p){
-        List<FlowNode> nodes = nodeMap.get(p);
+    /**
+     * Create a union of current pipeline nodes with the one from future. Term future indicates that
+     * this list of nodes are either in the middle of processing or failed somewhere in middle and we are
+     * projecting future nodes in the pipeline.
+     *
+     * Last element of this node is patched to point to the first node of given list. First node of given
+     * list is indexed at thisNodeList.size().
+     *
+     * @param futureNodes list of FlowNodes from lastSuccessfulNodes
+     * @return list of FlowNode that is union of current set of nodes and the given list of nodes. If futureNodes
+     * are not bigger than this pipeline nodes then no union is performed.
+     * @see PipelineNodeContainerImpl#PipelineNodeContainerImpl(WorkflowRun)
+     */
+    public List<BluePipelineNode> union(Map<FlowNode, List<FlowNode>> futureNodes){
+        if(childNodeMap.size() < futureNodes.size()){
+
+            // XXX: If the pipeline was modified since last successful run then
+            // the union might represent invalid future nodes.
+            List<FlowNode> nodes = ImmutableList.copyOf(childNodeMap.keySet());
+            List<FlowNode> thatNodes = ImmutableList.copyOf(futureNodes.keySet());
+            int currentNodeSize = nodes.size();
+            for(int i = nodes.size();  i < futureNodes.size(); i++){
+                InactiveFlowNodeWrapper n = new InactiveFlowNodeWrapper(thatNodes.get(i));
+
+                // Add the last successful pipeline's first node to the edge of current node's last node
+                if(i == currentNodeSize) {
+                    FlowNode latestNode = nodes.get(currentNodeSize-1);
+                    if(PipelineNodeFilter.isStage.apply(latestNode)){
+                        getOrCreateChildNodeMap(latestNode).add(n);
+                    }else if(isParallel.apply(latestNode)){
+                        /**
+                         * If its a parallel node, find all its siblings and add the next node as
+                         * edge (if not already present)
+                         */
+                        //parallel node has at most one paraent
+                        FlowNode parent = getFirstParent(latestNode);
+                        if(parent != null){
+                            List<FlowNode> children = getChildren(parent);
+                            for(FlowNode c: children){
+                                // Add next node to the parallel node's edge
+                                if(PipelineNodeFilter.isParallel.apply(c)){
+                                    getOrCreateChildNodeMap(c).add(n);
+                                }
+                            }
+                        }
+                    }
+                }
+                childNodeMap.put(n, futureNodes.get(n.inactiveNode));
+            }
+        }
+        return getPipelineNodes();
+    }
+
+    private List<FlowNode> getOrCreateChildNodeMap(@Nonnull FlowNode p){
+        List<FlowNode> nodes = childNodeMap.get(p);
         if(nodes == null){
             nodes = new ArrayList<>();
-            nodeMap.put(p, nodes);
+            childNodeMap.put(p, nodes);
+        }
+        return nodes;
+    }
+
+    private List<FlowNode> getOrCreateParentNodeMap(@Nonnull FlowNode c){
+        List<FlowNode> nodes = parentNodeMap.get(c);
+        if(nodes == null){
+            nodes = new ArrayList<>();
+            parentNodeMap.put(c, nodes);
         }
         return nodes;
     }
@@ -175,5 +254,20 @@ public class PipelineNodeFilter {
             errorNodes.put(node, actions);
         }
         actions.add(action);
+    }
+
+    public static class InactiveFlowNodeWrapper extends FlowNode{
+
+        private final FlowNode inactiveNode;
+
+        public InactiveFlowNodeWrapper(FlowNode node){
+            super(node.getExecution(),node.getId());
+            this.inactiveNode = node;
+        }
+
+        @Override
+        protected String getTypeDisplayName() {
+            return PipelineNodeUtil.getDisplayName(inactiveNode);
+        }
     }
 }

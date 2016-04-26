@@ -2,13 +2,14 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
+import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 
 /**
  * @author Vivek Pandey
  */
-public class PipelineStageUtil {
+public class PipelineNodeUtil {
 
     public static BlueRun.BlueRunResult getStatus(FlowNode node, ErrorAction errorAction){
         if(errorAction == null || errorAction.getError() == null){
@@ -33,7 +34,10 @@ public class PipelineStageUtil {
         }else{
             return BlueRun.BlueRunState.QUEUED;
         }
-
-
+    }
+    public static String getDisplayName(FlowNode node) {
+        return node.getAction(ThreadNameAction.class) != null
+            ? node.getAction(ThreadNameAction.class).getThreadName()
+            : node.getDisplayName();
     }
 }

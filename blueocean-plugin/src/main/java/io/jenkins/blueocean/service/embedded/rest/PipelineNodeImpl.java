@@ -6,7 +6,6 @@ import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
-import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -25,17 +24,17 @@ import java.util.List;
  * @see FlowNode
  */
 public class PipelineNodeImpl extends BluePipelineNode {
-    private final FlowNode node;
+    /*package*/ final FlowNode node;
     private final List<FlowNode> children;
     private final List<Edge> edges;
     private final WorkflowRun run;
 
     private final List<ErrorAction> errorActions = new ArrayList<>();
 
-    public PipelineNodeImpl(WorkflowRun run, final FlowNode stage, List<FlowNode> children, ErrorAction... errorActions) {
+    public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeFilter filter, ErrorAction... errorActions) {
         this.run = run;
-        this.node = stage;
-        this.children = children;
+        this.node = node;
+        this.children = filter.getChildren(node);
         Collections.addAll(this.errorActions, errorActions);
         this.edges = buildEdges();
     }
@@ -47,30 +46,37 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public String getDisplayName() {
-        return node.getAction(ThreadNameAction.class) != null
-            ? node.getAction(ThreadNameAction.class).getThreadName()
-            : node.getDisplayName();
+        return PipelineNodeUtil.getDisplayName(node);
     }
 
     @Override
     public BlueRun.BlueRunResult getResult() {
+        if(isInactiveNode()){
+            return null;
+        }
         if(errorActions.isEmpty()){
-            return PipelineStageUtil.getStatus(node,null);
+            return PipelineNodeUtil.getStatus(node,null);
         }
         // Only return the first failure (we could return more if steps are modeled in DAG
-        if(!children.isEmpty() && !errorActions.isEmpty()){
+        if(!children.isEmpty() && !errorActions.isEmpty() && PipelineNodeFilter.isStage.apply(node)){
             return BlueRun.BlueRunResult.UNSTABLE;
         }
-        return PipelineStageUtil.getStatus(node,errorActions.get(0));
+        return PipelineNodeUtil.getStatus(node,errorActions.get(0));
     }
 
     @Override
     public BlueRun.BlueRunState getStateObj() {
-        return PipelineStageUtil.getState(node);
+        if(isInactiveNode()){
+            return null;
+        }
+        return PipelineNodeUtil.getState(node);
     }
 
     @Override
     public Date getStartTime() {
+        if(isInactiveNode()){
+            return null;
+        }
         long nodeTime = TimingAction.getStartTime(node);
         return new Date(nodeTime);
     }
@@ -129,7 +135,8 @@ public class PipelineNodeImpl extends BluePipelineNode {
             return input.getAction(LogAction.class) != null;
         }
     };
-    private static class EdgeImpl extends Edge{
+
+    public static class EdgeImpl extends Edge{
         private final FlowNode node;
         private final FlowNode edge;
 
@@ -145,6 +152,9 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
         @Override
         public long getDurationInMillis() {
+            if(node instanceof PipelineNodeFilter.InactiveFlowNodeWrapper){
+                return -1;
+            }
             TimingAction t = node.getAction(TimingAction.class);
             TimingAction c = edge.getAction(TimingAction.class);
             if(t!= null){
@@ -164,5 +174,9 @@ public class PipelineNodeImpl extends BluePipelineNode {
             }
         }
         return edges;
+    }
+
+    private boolean isInactiveNode(){
+        return node instanceof PipelineNodeFilter.InactiveFlowNodeWrapper;
     }
 }

@@ -57,6 +57,7 @@ public abstract class BaseTest {
                     System.out.println("Response:\n"+JsonConverter.om.writeValueAsString(r));
                     return r;
                 } catch (IOException e) {
+                    System.out.println("Failed to parse JSON: "+value);
                     throw new RuntimeException(e);
                 }
             }
