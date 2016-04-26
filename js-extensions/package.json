@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/js-extensions",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Jenkins Extension Store",
   "main": "index.js",
   "files": [
@@ -10,7 +10,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && jsx src/ExtensionPoint.jsx > dist/ExtensionPoint.js && cp src/store.js dist/",
+    "build": "rm -rf dist && mkdir dist && jsx src/ExtensionPoint.jsx > dist/ExtensionPoint.js && cp src/*.js dist/",
     "test": "gulp test",
     "prepublish": "npm run build"
   },
@@ -28,6 +28,6 @@
   },
   "dependencies": {
     "js-yaml": "^3.6.0",
-    "@jenkins-cd/js-modules": "0.0.2"
+    "@jenkins-cd/js-modules": "0.0.5"
   }
 }

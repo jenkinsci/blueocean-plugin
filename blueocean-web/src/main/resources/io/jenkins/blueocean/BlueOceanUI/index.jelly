@@ -38,8 +38,6 @@
             as the blueocean CSS. See gulpfile.js.
             -->
             <st:adjunct includes="io.jenkins.blueocean.blueocean"/>
-            <!-- TODO: remove this once we have a better way of adding styles via extension points (UX-285) -->
-            <st:adjunct includes="org.jenkins.ui.jsmodules.less.admin"/>
         </body>
 
     </html>
