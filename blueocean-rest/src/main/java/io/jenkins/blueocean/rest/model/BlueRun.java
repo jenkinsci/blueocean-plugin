@@ -1,7 +1,10 @@
 package io.jenkins.blueocean.rest.model;
 
+import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import org.kohsuke.stapler.json.JsonResponse;
+import org.kohsuke.stapler.verb.PUT;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -151,6 +154,28 @@ public abstract class BlueRun extends Resource {
         FINISHED
     }
 
+    @ExportedBean
+    public class BlueRunStopResponse {
+        private BlueRunState state;
+        private BlueRunResult result;
+
+        public BlueRunStopResponse(BlueRunState state, BlueRunResult result) {
+            this.state = state;
+            this.result = result;
+        }
+
+        @Exported(name=BlueRun.STATE)
+        public BlueRunState getState() {
+            return state;
+        }
+
+        @Exported(name=BlueRun.RESULT)
+        public BlueRunResult getResult() {
+            return result;
+        }
+
+    }
+
     public enum BlueRunResult {
         /** Build completed successfully */
         SUCCESS,
@@ -185,4 +210,8 @@ public abstract class BlueRun extends Resource {
         @Exported(name=SIZE)
         public abstract long getSize();
     }
+
+    @PUT @JsonResponse
+    @WebMethod(name="stop")
+    public abstract BlueRunStopResponse stop();
 }

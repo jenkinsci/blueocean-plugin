@@ -40,7 +40,7 @@ public class Utils {
                 }
                 return (T) ImmutableSet.of(set);
             }else{
-                throw new ServiceException.UnexpectedErrorExpcetion(
+                throw new ServiceException.UnexpectedErrorException(
                     String.format("Unknown type %s", type));
             }
         }catch (NumberFormatException e){

@@ -1,28 +1,6 @@
 import React, { Component, PropTypes } from 'react';
+import {describeArcAsPath, polarToCartesian} from '../SVG.jsx';
 const { string, object, number } = PropTypes;
-
-function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-    const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
-
-    return {
-        x: centerX + (radius * Math.cos(angleInRadians)),
-        y: centerY + (radius * Math.sin(angleInRadians)),
-    };
-}
-
-function describeArc(x, y, radius, startAngle, endAngle) {
-    const start = polarToCartesian(x, y, radius, endAngle);
-    const end = polarToCartesian(x, y, radius, startAngle);
-
-    const arcSweep = endAngle - startAngle <= 180 ? '0' : '1';
-
-    const d = [
-        'M', start.x, start.y,
-        'A', radius, radius, 0, arcSweep, 0, end.x, end.y,
-    ].join(' ');
-
-    return d;
-}
 
 export default class SvgSpinner extends Component {
     render() {
@@ -46,7 +24,7 @@ export default class SvgSpinner extends Component {
         } = this.props;
 
         const rotate = percentage / 100 * 360;
-        const d = describeArc(50, 50, 40, 0, rotate);
+        const d = describeArcAsPath(50, 50, 40, 0, rotate);
 
         return (<svg xmlns="http://www.w3.org/2000/svg"
           className={result === 'queued' ? 'spin' : ''}

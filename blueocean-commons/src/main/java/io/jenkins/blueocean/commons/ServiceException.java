@@ -243,20 +243,20 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
     }
 
-    public static class UnexpectedErrorExpcetion extends ServiceException{
+    public static class UnexpectedErrorException extends ServiceException{
 
-        public UnexpectedErrorExpcetion(String message) {
+        public UnexpectedErrorException(String message) {
             super(INTERNAL_SERVER_ERROR, message);
         }
 
-        public UnexpectedErrorExpcetion(String message, Throwable throwable ) {
+        public UnexpectedErrorException(String message, Throwable throwable ) {
             super(INTERNAL_SERVER_ERROR, message, throwable);
         }
 
-        public UnexpectedErrorExpcetion(ErrorMessage errorMessage) {
+        public UnexpectedErrorException(ErrorMessage errorMessage) {
             super(INTERNAL_SERVER_ERROR, errorMessage.message);
         }
-        public UnexpectedErrorExpcetion(ErrorMessage errorMessage, Throwable throwable ) {
+        public UnexpectedErrorException(ErrorMessage errorMessage, Throwable throwable ) {
             super(INTERNAL_SERVER_ERROR, errorMessage.message, throwable);
         }
     }
