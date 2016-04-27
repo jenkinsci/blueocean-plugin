@@ -42,7 +42,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
             run.doStop();
             return new BlueRunStopResponse(getStateObj(), getResult());
         } catch (Exception e) {
-           throw new ServiceException.UnexpectedErrorExpcetion("Error while trying to stop run", e);
+           throw new ServiceException.UnexpectedErrorException("Error while trying to stop run", e);
         }
     }
 }

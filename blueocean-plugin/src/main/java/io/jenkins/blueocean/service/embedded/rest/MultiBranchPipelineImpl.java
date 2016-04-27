@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.json.JsonResponse;
 import org.kohsuke.stapler.verb.PUT;
 
 import hudson.model.Job;
@@ -51,7 +50,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
         Job job = mbp.getBranch("master");
         if(job == null) {
-            throw new ServiceException.UnexpectedErrorExpcetion("no master branch to favorite");
+            throw new ServiceException.UnexpectedErrorException("no master branch to favorite");
         }
 
         FavoriteUtil.favoriteJob(job, favoriteAction.isFavorite());
