@@ -104,25 +104,16 @@ export default class PipelineGraph extends Component {
     }
 
     addConnectionDetails(connections, previousNodes, columnNodes) {
+        // Connect to top of previous/next column. Curves added when creating SVG
 
-        if (false && previousNodes.length == 1 && columnNodes.length == 1) {
-            // Just a simple single connection
-            connections.push([previousNodes[0], columnNodes[0]]);
+        // Collapse from previous node(s) to top column node
+        for (let previousNode of previousNodes) {
+            connections.push([previousNode, columnNodes[0]]);
+        }
 
-        } else {
-
-            // Connect to top of previous/next column. Curves added when creating SVG
-
-            // Collapse from previous node(s) to top column node
-            for (let previousNode of previousNodes) {
-                connections.push([previousNode, columnNodes[0]]);
-            }
-
-            // Expand from top previous node to column node(s) - first one done already above
-            for (let columnNode of columnNodes.slice(1)) {
-                connections.push([previousNodes[0], columnNode]);
-            }
-
+        // Expand from top previous node to column node(s) - first one done already above
+        for (let columnNode of columnNodes.slice(1)) {
+            connections.push([previousNodes[0], columnNode]);
         }
     }
 
