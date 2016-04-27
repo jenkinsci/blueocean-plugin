@@ -97,7 +97,9 @@ public abstract class BaseTest {
         assert path.startsWith("/");
         try {
             if(HttpResponse.class.isAssignableFrom(type)){
-                HttpResponse<String> response = Unirest.get(getBaseUrl(path)).header("Accept", accept).asString();
+                HttpResponse<String> response = Unirest.get(getBaseUrl(path)).header("Accept", accept)
+                    .header("Accept-Encoding","")
+                    .asString();
                 Assert.assertEquals(expectedStatus, response.getStatus());
                 return (T) response;
             }
@@ -145,6 +147,7 @@ public abstract class BaseTest {
         try {
             HttpResponse<String> response = Unirest.post(getBaseUrl(path))
                 .header("Content-Type",contentType)
+                .header("Accept-Encoding","")
                 .body(body).asObject(String.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -164,6 +167,12 @@ public abstract class BaseTest {
         try {
             HttpResponse<Map> response = Unirest.put(getBaseUrl(path))
                 .header("Content-Type","application/json")
+                .header("Accept","application/json")
+                //Unirest by default sets accept-encoding to gzip but stapler is sending malformed gzip value if
+                // the response length is small (in this case its 20 chars).
+                // Needs investigation in stapler to see whats going on there.
+                // For time being gzip compression is disabled
+                .header("Accept-Encoding","")
                 .body(body).asObject(Map.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -275,6 +284,9 @@ public abstract class BaseTest {
         return baseUrl + path;
     }
 
+    public RequestBuilder request() {
+        return new RequestBuilder(baseUrl);
+    }
     public static class RequestBuilder {
         private String url;
         private String username;
@@ -369,6 +381,7 @@ public abstract class BaseTest {
                         throw new RuntimeException("No default options");
 
                 }
+                request.header("Accept-Encoding","");
 
                 request.header("Content-Type", contentType);
                 if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){

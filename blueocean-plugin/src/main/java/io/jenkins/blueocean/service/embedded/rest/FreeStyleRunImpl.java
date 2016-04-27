@@ -1,7 +1,10 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import org.kohsuke.stapler.verb.PUT;
+
 import hudson.model.FreeStyleBuild;
 import hudson.scm.ChangeLogSet;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 
@@ -20,6 +23,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
 
     @Override
     public Container<ChangeSetResource> getChangeSet() {
+
         Map<String,ChangeSetResource> m = new HashMap<>();
         int cnt=0;
         for (ChangeLogSet.Entry e : run.getChangeSet()) {
@@ -29,5 +33,16 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
             m.put(id,new ChangeSetResource(e));
         }
         return Containers.fromResourceMap(m);
+    }
+
+    @PUT
+    @Override
+    public BlueRunStopResponse stop() {
+        try {
+            run.doStop();
+            return new BlueRunStopResponse(getStateObj(), getResult());
+        } catch (Exception e) {
+           throw new ServiceException.UnexpectedErrorExpcetion("Error while trying to stop run", e);
+        }
     }
 }
