@@ -5,7 +5,7 @@
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
-    "storybook": "start-storybook -p 9001 --static-dir dist/assets/",
+    "storybook": "npm run gulp && start-storybook -p 9001 --static-dir dist/assets/",
     "gulp": "gulp",
     "test": "gulp test"
   },
