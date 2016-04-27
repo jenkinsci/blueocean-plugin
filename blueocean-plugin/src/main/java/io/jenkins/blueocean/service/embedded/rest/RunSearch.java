@@ -16,6 +16,7 @@ import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -73,6 +74,14 @@ public class RunSearch extends OmniSearch<BlueRun> {
                 runs.add(AbstractRunImpl.getBlueRun(r));
             }
         }
+
+        Collections.sort(runs, new Comparator<BlueRun>() {
+            @Override
+            public int compare(BlueRun o1, BlueRun o2) {
+                return o2.getStartTime().compareTo(o1.getStartTime());
+            }
+        });
+
         return runs;
     }
 
