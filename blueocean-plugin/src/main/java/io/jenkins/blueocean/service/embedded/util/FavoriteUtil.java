@@ -32,13 +32,13 @@ public class FavoriteUtil {
         //TODO: FavoritePlugin is null
         FavoritePlugin plugin = Jenkins.getInstance().getPlugin(FavoritePlugin.class);
         if(plugin == null) {
-            throw new ServiceException.UnexpectedErrorExpcetion("Can not find instance of favorites plugin");
+            throw new ServiceException.UnexpectedErrorException("Can not find instance of favorites plugin");
         }
         if(favorite != set) {
             try {
                 plugin.doToggleFavorite(Stapler.getCurrentRequest(), Stapler.getCurrentResponse(), job.getFullName(), Jenkins.getAuthentication().getName(), false);
             } catch (IOException e) {
-                throw new ServiceException.UnexpectedErrorExpcetion("Something went wrong setting the favorite", e);
+                throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
             }
         }
     }

@@ -41,7 +41,7 @@ public class LogResource{
             }
             writeLogs(req, rsp);
         } catch (IOException e) {
-            throw new ServiceException.UnexpectedErrorExpcetion("Failed to get log: " + e.getMessage(), e);
+            throw new ServiceException.UnexpectedErrorException("Failed to get log: " + e.getMessage(), e);
         }
     }
 
