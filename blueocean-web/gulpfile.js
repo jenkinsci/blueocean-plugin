@@ -7,8 +7,8 @@ var builder = require('@jenkins-cd/js-builder');
 // Or Array of Strings
 gi(['name', 'branch', 'sha', 'author' ], function(err, result) {
   result.timestamp = new Date().toISOString();
-  const revisionInfo = '/* eslint-disable */\n// Do not edit, is generate\nexport default ' + JSON.stringify(result);
-  fs.writeFile('src/main/js/revisionInfo.js', revisionInfo, err => {
+  const revisionInfo = '/* eslint-disable */\n// Do not edit, it is generated and will be on each build.\nexport default ' + JSON.stringify(result);
+  fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', revisionInfo, err => {
     if(err) {
         return console.log(err);
     }
