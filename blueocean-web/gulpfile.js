@@ -11,7 +11,7 @@ fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', revisionInfo
   if (err) throw err;
 });
 gi(function (err, result) {
-    if (err) throw err;
+    if (err) return console.log(err);
     result.timestamp = new Date().toISOString();
     const revisionInfo = '/* eslint-disable */\n// Do not edit, it is generated and will be on each build.\nexport default ' + JSON.stringify(result);
     fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', revisionInfo, err => {
