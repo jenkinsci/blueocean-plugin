@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import {describeArcAsPath, polarToCartesian} from './SVG.jsx';
+import {describeArcAsPath, polarToCartesian} from './SVG';
 
 export const pipelineStageState = {
     // See: io.jenkins.blueocean.rest.model.BlueRun.BlueRunState

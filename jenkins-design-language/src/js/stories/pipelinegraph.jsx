@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import { storiesOf } from '@kadira/storybook';
-import PipelineGraph, {pipelineStageState, defaultLayout} from '../components/PipelineGraph.jsx';
+import PipelineGraph, {pipelineStageState, defaultLayout} from '../components/PipelineGraph';
 
 storiesOf('PipelineGraph', module)
     .add('Mixed', renderMultiParallelPipeline)
