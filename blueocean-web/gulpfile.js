@@ -5,16 +5,21 @@ var gi = require('giti');
 var fs = require('fs');
 var builder = require('@jenkins-cd/js-builder');
 // Or Array of Strings
-gi(['name', 'branch', 'sha', 'author' ], function(err, result) {
-  result.timestamp = new Date().toISOString();
-  const revisionInfo = '/* eslint-disable */\n// Do not edit, it is generated and will be on each build.\nexport default ' + JSON.stringify(result);
-  fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', revisionInfo, err => {
-    if(err) {
-        return console.log(err);
-    }
+  fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', {}, err => {
+  if (err) {
+     throw err;
+  }
+});
+gi(['name', 'branch', 'sha', 'author'], function (err, result) {
+    result.timestamp = new Date().toISOString();
+    const revisionInfo = '/* eslint-disable */\n// Do not edit, it is generated and will be on each build.\nexport default ' + JSON.stringify(result);
+    fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', revisionInfo, err => {
+        if (err) {
+          return console.log(err);
+        }
 
-    console.log("The file was saved!\n" + revisionInfo);
-  })
+        console.log("The file was saved!\n" + revisionInfo);
+    })
 });
 // Explicitly setting the src paths in order to allow the rebundle task to
 // watch for changes in the JDL (js, css, icons etc).
