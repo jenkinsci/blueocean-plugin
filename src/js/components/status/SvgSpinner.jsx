@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import {describeArcAsPath, polarToCartesian} from '../SVG.jsx';
+import {describeArcAsPath, polarToCartesian} from '../SVG';
 const { string, object, number } = PropTypes;
 
 export default class SvgSpinner extends Component {
