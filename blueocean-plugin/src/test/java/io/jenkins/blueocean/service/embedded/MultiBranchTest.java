@@ -156,6 +156,8 @@ public class MultiBranchTest extends BaseTest{
         WorkflowRun b3 = p.getLastBuild();
         assertEquals(1, b3.getNumber());
 
+
+
         List<Map> br = get("/organizations/jenkins/pipelines/p/branches", List.class);
 
         List<String> branchNames = new ArrayList<>();
@@ -193,9 +195,9 @@ public class MultiBranchTest extends BaseTest{
         WorkflowRun b4 = p.getLastBuild();
         assertEquals(2, b4.getNumber());
 
-        Map run = get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId());
-        validateRun(b4, run);
-    }
+        List<Map> run = get("/organizations/jenkins/pipelines/p/branches/master/runs/", List.class);
+        validateRun(b4, run.get(0));
+}
 
     @Test
     public void getMultiBranchPipelineActivityRuns() throws Exception {
@@ -225,16 +227,8 @@ public class MultiBranchTest extends BaseTest{
         WorkflowRun b3 = p.getLastBuild();
         assertEquals(1, b3.getNumber());
 
-        WorkflowRun firstStart = b1;
 
-        if(b2.getStartTimeInMillis() < firstStart.getStartTimeInMillis()) {
-            firstStart = b2;
-        }
-        if(b3.getStartTimeInMillis() < firstStart.getStartTimeInMillis()) {
-            firstStart = b3;
-        }
-
-        BuildData d = firstStart.getAction(BuildData.class);
+        BuildData d = b3.getAction(BuildData.class);
 
         String commitId = "";
         if(d != null) {
@@ -244,7 +238,7 @@ public class MultiBranchTest extends BaseTest{
         List<Map> resp = get("/organizations/jenkins/pipelines/p/runs", List.class);
         Assert.assertEquals(3, resp.size());
 
-        validateRun(firstStart,resp.get(0));
+        validateRun(b3,resp.get(0));
         Assert.assertEquals(commitId, resp.get(0).get("commitId"));
     }
 
