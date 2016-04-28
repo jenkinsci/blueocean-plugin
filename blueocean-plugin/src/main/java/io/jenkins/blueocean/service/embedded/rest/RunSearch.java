@@ -75,13 +75,6 @@ public class RunSearch extends OmniSearch<BlueRun> {
             }
         }
 
-        Collections.sort(runs, new Comparator<BlueRun>() {
-            @Override
-            public int compare(BlueRun o1, BlueRun o2) {
-                return o2.getStartTime().compareTo(o1.getStartTime());
-            }
-        });
-
         return runs;
     }
 
