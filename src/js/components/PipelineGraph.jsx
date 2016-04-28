@@ -12,72 +12,24 @@ export const pipelineStageState = {
 };
 
 // Dimensions used for layout, px
-const nodeSpacingH = 120;
-const nodeSpacingV = 70;
-const nodeRadius = 12;
-const curveRadius = 12;
-const connectorStrokeWidth = 4;
-
-const labelWidth = nodeSpacingH;
-const labelOffsetH = Math.floor(labelWidth * -0.5);
-const labelOffsetV = 25;
-
-const smallLabelWidth = nodeSpacingH - (2 * curveRadius); // Fit between lines
-const smallLabelOffsetH = Math.floor(smallLabelWidth * -0.5);
-const smallLabelOffsetV = 20;
-
-const outlineNodeRadius = nodeRadius - (connectorStrokeWidth / 2);
-
-const mouseTargetRadius = nodeRadius + (2 * connectorStrokeWidth); // Slightly bigger than visual nodes
+export const defaultLayout = {
+    nodeSpacingH: 120,
+    nodeSpacingV: 70,
+    nodeRadius: 12,
+    curveRadius: 12,
+    connectorStrokeWidth: 4,
+    labelOffsetV: 25,
+    smallLabelOffsetV: 20
+};
 
 // Colours. FIXME: Probably want to migrate these to stylesheets somehow
 const connectorColor = "#979797";
-
 const nodeColorSuccess = "#5BA504";
 const nodeColorFailure = "#D54C53";
 const nodeColorRunningTrack = "#a9c6e6";
 const nodeColorRunningProgress = "#4a90e2";
 const nodeColorNotBuilt = connectorColor;
 const nodeColorUnexpected = "#ff00ff";
-
-// These are about layout more than appearance, so they should probably remain inline
-const bigLabelStyle = {
-    position: "absolute",
-    width: labelWidth,
-    textAlign: "center",
-    marginLeft: labelOffsetH,
-    marginBottom: labelOffsetV
-};
-
-const smallLabelStyle = {
-    position: "absolute",
-    width: smallLabelWidth,
-    textAlign: "center",
-    fontSize: "80%",
-    marginLeft: smallLabelOffsetH,
-    marginTop: smallLabelOffsetV
-};
-
-const outerDivStyle = {
-    position: "relative",
-    overflow: "visible"
-};
-
-// Get the outgoing/rhs connection point from a node
-function nodeConnectorFrom(fromNode) {
-    return {
-        x: fromNode.x + nodeRadius - (connectorStrokeWidth / 2),
-        y: fromNode.y
-    };
-}
-
-// Get the incoming/lhs connection point from a node
-function nodeConnectorTo(toNode) {
-    return {
-        x: toNode.x - nodeRadius + (connectorStrokeWidth / 2),
-        y: toNode.y
-    };
-}
 
 export default class PipelineGraph extends Component {
 
@@ -89,7 +41,8 @@ export default class PipelineGraph extends Component {
             bigLabels: [],
             smallLabels: [],
             measuredWidth: 0,
-            measuredHeight: 0
+            measuredHeight: 0,
+            layout: Object.assign({}, defaultLayout, props.layout)
         };
     }
 
@@ -98,7 +51,21 @@ export default class PipelineGraph extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.stages !== this.props.stages) {
+
+        if (nextProps.layout != this.props.layout) {
+
+            // If layout props changed, we need to update the layout state
+            // and then re-do layout (it relies on the new state)
+
+            let layout = Object.assign({}, defaultLayout, this.props.layout);
+            this.setState({layout}, () => {
+                this.stagesUpdated(nextProps.stages);
+            });
+
+        } else if (nextProps.stages !== this.props.stages) {
+
+            // Stages have changed, but not layout props, so we can re-do layout immediately
+
             this.stagesUpdated(nextProps.stages);
         }
     }
@@ -118,13 +85,15 @@ export default class PipelineGraph extends Component {
     }
 
     stagesUpdated(newStages = []) {
+        // FIXME: Should we calculate based on expected text size guesstimate?
+        const ypStart = 50;
+
+        const { nodeSpacingH, nodeSpacingV } = this.state.layout;
+
         var nodes = [];
         var connections = [];
         var bigLabels = [];
         var smallLabels = [];
-
-        // FIXME: Should we calculate based on expected text size guesstimate?
-        const ypStart = 50;
 
         // next node position
         var xp = nodeSpacingH / 2;
@@ -200,6 +169,20 @@ export default class PipelineGraph extends Component {
 
     createBigLabel(details) {
 
+        const { nodeSpacingH, labelOffsetV } = this.state.layout;
+
+        const labelWidth = nodeSpacingH;
+        const labelOffsetH = Math.floor(labelWidth * -0.5); // TODO: Inline these below
+
+        // These are about layout more than appearance, so they should probably remain inline
+        const bigLabelStyle = {
+            position: "absolute",
+            width: labelWidth,
+            textAlign: "center",
+            marginLeft: labelOffsetH,
+            marginBottom: labelOffsetV
+        };
+
         const x = details.x;
         const bottom = this.state.measuredHeight - details.y;
 
@@ -213,6 +196,24 @@ export default class PipelineGraph extends Component {
 
     createSmallLabel(details) {
 
+        const {
+            nodeSpacingH,
+            curveRadius,
+            smallLabelOffsetV } = this.state.layout;
+
+        const smallLabelWidth = nodeSpacingH - (2 * curveRadius); // Fit between lines
+        const smallLabelOffsetH = Math.floor(smallLabelWidth * -0.5); // TODO: Inline these below
+
+        // These are about layout more than appearance, so they should probably remain inline
+        const smallLabelStyle = {
+            position: "absolute",
+            width: smallLabelWidth,
+            textAlign: "center",
+            fontSize: "80%",
+            marginLeft: smallLabelOffsetH,
+            marginTop: smallLabelOffsetV
+        };
+
         const x = details.x;
         const top = details.y;
 
@@ -225,10 +226,21 @@ export default class PipelineGraph extends Component {
     }
 
     renderConnection(connection) {
-        const [leftNode,rightNode] = connection;
-        const leftPos = nodeConnectorFrom(leftNode);
-        const rightPos = nodeConnectorTo(rightNode);
+
+        const { nodeRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
+
+        const [leftNode, rightNode] = connection;
         const key = leftNode.name + "_con_" + rightNode.name;
+
+        const leftPos = {
+            x: leftNode.x + nodeRadius - (connectorStrokeWidth / 2),
+            y: leftNode.y
+        };
+
+        const rightPos = {
+            x: rightNode.x - nodeRadius + (connectorStrokeWidth / 2),
+            y: rightNode.y
+        };
 
         // Stroke settings
         const connectorStroke = {
@@ -263,6 +275,14 @@ export default class PipelineGraph extends Component {
     }
 
     renderNode(node) {
+
+        const { nodeRadius, connectorStrokeWidth } = this.state.layout;
+
+        // Use a smaller radius when stroking nodes (for hollow / outline nodes)
+        const outlineNodeRadius = nodeRadius - (connectorStrokeWidth / 2);
+
+        // Use a bigger radius for invisible click/touch target
+        const mouseTargetRadius = nodeRadius + (2 * connectorStrokeWidth);
 
         const state = node.state ? node.state.toLowerCase() : undefined;
         const key = "n_" + node.name;
@@ -333,6 +353,12 @@ export default class PipelineGraph extends Component {
             measuredWidth,
             measuredHeight } = this.state;
 
+        // These are about layout more than appearance, so they should probably remain inline
+        const outerDivStyle = {
+            position: "relative", // So we can put the labels where we need them
+            overflow: "visible" // So long labels can escape this component in layout
+        };
+
         return (
             <div style={outerDivStyle}>
                 <svg width={measuredWidth} height={measuredHeight}>
@@ -348,5 +374,6 @@ export default class PipelineGraph extends Component {
 
 PipelineGraph.propTypes = {
     stages: PropTypes.array,
+    layout: PropTypes.object,
     onNodeClick: PropTypes.func
 };
