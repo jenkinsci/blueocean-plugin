@@ -25,7 +25,7 @@ export default class Branches extends Component {
                 },
             } = this;
         const {
-            latestRun: { id, result, endTime, changeSet, state },
+            latestRun: { id, result, endTime, changeSet, state, commitId },
             weatherScore,
             name,
         } = data;
@@ -34,7 +34,7 @@ export default class Branches extends Component {
             location.pathname = url;
             router.push(location);
         };
-        const { commitId, msg } = changeSet[0] || {};
+        const { msg } = changeSet[0] || {};
         return (<tr key={name} onClick={open} >
             <td><WeatherIcon score={weatherScore} /></td>
             <td>
@@ -43,7 +43,7 @@ export default class Branches extends Component {
             <td>{decodeURIComponent(name)}</td>
             <td><CommitHash commitId={commitId} /></td>
             <td>{msg || '-'}</td>
-            <td><ReadableDate date={endTime} /></td>
+            <td><ReadableDate date={endTime || ''} /></td>
         </tr>);
     }
 }
