@@ -9,10 +9,9 @@ export class EmptyStateIcon extends Component {
     }
 
     render() {
+        const classNames = `empty-state-icon ${this.props.name}`;
         return (
-            <div className="empty-state-icon">
-                <img className={this.props.name} />
-            </div>
+            <div className={classNames}></div>
         );
     }
 }
