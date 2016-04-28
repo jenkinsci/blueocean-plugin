@@ -8,7 +8,13 @@ import {
     fetch,
 } from '@jenkins-cd/design-language';
 
+import LogToolbar from './LogToolbar';
+
 const { object, array } = PropTypes;
+
+function uriString(input) {
+    return encodeURIComponent(input).replace(/%2F/g, '%252F');
+}
 
 class RunDetails extends Component {
     render() {
@@ -22,7 +28,6 @@ class RunDetails extends Component {
         const {
             context: {
                 router,
-                location,
                 pipeline: {
                     branchNames,
                     name,
@@ -34,44 +39,50 @@ class RunDetails extends Component {
             },
         } = this;
 
+        // multibranch special treatment - get url of the log
         const multiBranch = !!branchNames;
         const baseUrl = '/rest/organizations/jenkins' +
-            `/pipelines/${name}`;
+            `/pipelines/${uriString(name)}`;
         let url;
+        let fileName = name;
         if (multiBranch) {
-            url = `${baseUrl}/branches/${branch}/runs/${runId}/log`;
+            url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log`;
+            fileName = `${branch}-${runId}.txt`;
         } else {
             url = `${baseUrl}/runs/${runId}/log`;
+            fileName = `${runId}.txt`;
         }
         const result = this.props.data.filter(
-            (run) => run.id === runId && run.pipeline === branch)[0];
+            (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
+
         result.name = name;
+
         const afterClose = () => {
-            location.pathname = `/pipelines/${name}/activity/`;
-            router.replace(location);
+            router.goBack();
         };
 
         return (<ModalView
           isVisible
-          afterClose={afterClose}
           result={result.result}
+          {...{ afterClose }}
         >
             <ModalHeader>
-                <PipelineResult
-                  data={result}
-                />
+                <PipelineResult data={result} />
             </ModalHeader>
             <ModalBody>
-                <LogConsole url={url} />
+                <div>
+                    <LogToolbar {...{ fileName, url }} />
+                    <LogConsole {...{ url }} />
+                </div>
             </ModalBody>
         </ModalView>);
     }
 }
+
 RunDetails.contextTypes = {
     pipeline: object,
     params: object,
     router: object.isRequired, // From react-router
-    location: PropTypes.object, // From react-router
 };
 
 RunDetails.propTypes = {

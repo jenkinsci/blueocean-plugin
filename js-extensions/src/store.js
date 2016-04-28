@@ -12,6 +12,8 @@ exports.setExtensionPointMetadata = function(data) {
     if (data) {
         // We clone the data because we add to it.
         extensionPointList = JSON.parse(JSON.stringify(data));
+        var cssloadtracker = require('./cssloadtracker');
+        cssloadtracker.setExtensionPointMetadata(extensionPointList);
     }
 };
 

@@ -1,6 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var store = require('./store.js');
+var cssloadtracker = require('./cssloadtracker');
 
 // TODO: Move this package to babel, and update this to ES6
 
@@ -12,6 +13,7 @@ var ExtensionPoint = React.createClass({
     },
 
     componentDidMount: function() {
+        cssloadtracker.onMount(this.props.name);
         var thisEp = this;
         ExtensionPoint.registerExtensionPoint(this.props.name, function(extensions) {
             thisEp.setState({
@@ -26,6 +28,7 @@ var ExtensionPoint = React.createClass({
 
     componentWillUnmount: function() {
         this._unmountAllExtensions();
+        cssloadtracker.onUnmount(this.props.name);
     },
 
     /**

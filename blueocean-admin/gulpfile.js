@@ -1,9 +1,8 @@
 //
 // See https://github.com/jenkinsci/js-builder
 //
-var builder = require('@jenkins-cd/js-builder');
-
-builder.bundle('src/main/less/admin.less');
+var builder = require('@jenkins-cd/js-builder')
+    .withExternalModuleMapping('react-router', 'react:react-router');
 
 //
 // Redefine the "test" task to use mocha and support es6.

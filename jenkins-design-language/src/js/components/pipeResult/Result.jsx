@@ -1,8 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import SvgDuration from './SvgDuration';
-import SvgTime from './SvgTime';
-import SvgError from './SvgError';
-import SvgSuccess from './SvgSuccess';
+import {Icon} from 'react-material-icons-blue';
 
 import moment from 'moment';
 
@@ -32,8 +29,16 @@ class PipelineResult extends Component {
 
         return (<div className="result">
             <section className="left">
-                { result === 'SUCCESS' && <SvgSuccess />}
-                { result === 'FAILURE' && <SvgError />}
+                { result === 'SUCCESS' && <Icon {...{
+                    size: 125,
+                    icon: 'done',
+                    style: { fill: "#fff" },
+                }} />}
+                { result === 'FAILURE' &&  <Icon {...{
+                    size: 125,
+                    icon: 'close',
+                    style: { fill: "#fff" },
+                }} />}
             </section>
             <section className="table">
                 <h4>{organization} / {name} #{id}</h4>
@@ -41,7 +46,7 @@ class PipelineResult extends Component {
                 <div className="row">
                     <div className="commons">
                         <div>Branch&nbsp;
-                            <span className="value">{pipeline}</span>
+                            <span className="value">{decodeURIComponent(pipeline)}</span>
                         </div>
                         <div>Commit&nbsp;
                             <span className="value">
@@ -57,11 +62,19 @@ class PipelineResult extends Component {
                     </div>
                     <div className="times">
                         <div>
-                            <SvgDuration />
+                            <Icon {...{
+                                size: 15,
+                                icon: 'timelapse',
+                                style: { fill: "#fff" },
+                            }} />
                             <span>{duration}</span>
                         </div>
                         <div>
-                            <SvgTime />
+                            <Icon {...{
+                                size: 15,
+                                icon: 'access_time',
+                                style: { fill: "#fff" },
+                            }} />
                             {moment(endTime).fromNow()}
                         </div>
                     </div>
@@ -76,10 +89,4 @@ PipelineResult.propTypes = {
     colors: object,
 };
 
-export {
-    PipelineResult,
-    SvgDuration,
-    SvgTime,
-    SvgError,
-    SvgSuccess,
-};
+export { PipelineResult };

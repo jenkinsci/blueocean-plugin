@@ -1,6 +1,9 @@
 package io.jenkins.blueocean.service.embedded;
 
+import com.google.common.collect.ImmutableMap;
+
 import hudson.model.FreeStyleProject;
+import hudson.model.Project;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
@@ -283,13 +286,87 @@ public class MultiBranchTest extends BaseTest{
         Assert.assertEquals(changeLog.getAuthor().getFullName(), a.get("fullName"));
     }
 
+    @Test
+    public void createUserFavouriteMultibranchTopLevelTest() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+
+        new RequestBuilder(baseUrl)
+            .put("/organizations/jenkins/pipelines/p/favorite")
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", true))
+            .build(String.class);
+
+        List l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(l.size(), 1);
+        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/master");
+
+        new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("bob","bob")
+            .status(403)
+            .build(String.class);
+
+    }
+
+
+    @Test
+    public void createUserFavouriteMultibranchBranchTest() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+
+        new RequestBuilder(baseUrl)
+            .put("/organizations/jenkins/pipelines/p/branches/feature1/favorite")
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", true))
+            .build(String.class);
+
+        List l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(l.size(), 1);
+        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/feature1");
+
+        new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("bob","bob")
+            .status(403)
+            .build(String.class);
+
+    }
 
     /*
      * FIXME: @vivek, @ivan. This test is flaking out on ci often.
      *
      * We don't think it is timing, but we do see errors like: java.io.IOException: cannot find current thread
      *  May be a workflow bug. This was introduced around the revision: 9df08944af1af260ef5f3ea902b7ca69aa53366a
-     * ERROR in output.txt for surefire for this suite: 
+     * ERROR in output.txt for surefire for this suite:
      * WARNING: failed to print message to dead CpsStepContext[3]:Owner[p/master/1:p/master #1]
 java.io.IOException: cannot find current thread
 	at org.jenkinsci.plugins.workflow.cps.CpsStepContext.doGet(CpsStepContext.java:287)
@@ -313,8 +390,8 @@ java.io.IOException: cannot find current thread
 	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
-	at java.lang.Thread.run(Thread.java:745)     
-     *
+	at java.lang.Thread.run(Thread.java:745)
+     */
     @Test
     public void getMultiBranchPipelineRunStages() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
@@ -336,7 +413,7 @@ java.io.IOException: cannot find current thread
 
         Assert.assertEquals(3, nodes.size());
     }
-    */
+
 
 
     private void setupScm() throws Exception {

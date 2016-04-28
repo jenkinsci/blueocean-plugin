@@ -1,10 +1,15 @@
 package io.jenkins.blueocean.service.embedded;
 
+import com.google.common.base.Strings;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.HttpRequest;
+import com.mashape.unirest.request.HttpRequestWithBody;
+
 import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.JsonConverter;
@@ -52,6 +57,7 @@ public abstract class BaseTest {
                     System.out.println("Response:\n"+JsonConverter.om.writeValueAsString(r));
                     return r;
                 } catch (IOException e) {
+                    System.out.println("Failed to parse JSON: "+value);
                     throw new RuntimeException(e);
                 }
             }
@@ -91,7 +97,9 @@ public abstract class BaseTest {
         assert path.startsWith("/");
         try {
             if(HttpResponse.class.isAssignableFrom(type)){
-                HttpResponse<String> response = Unirest.get(getBaseUrl(path)).header("Accept", accept).asString();
+                HttpResponse<String> response = Unirest.get(getBaseUrl(path)).header("Accept", accept)
+                    .header("Accept-Encoding","")
+                    .asString();
                 Assert.assertEquals(expectedStatus, response.getStatus());
                 return (T) response;
             }
@@ -139,6 +147,7 @@ public abstract class BaseTest {
         try {
             HttpResponse<String> response = Unirest.post(getBaseUrl(path))
                 .header("Content-Type",contentType)
+                .header("Accept-Encoding","")
                 .body(body).asObject(String.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -158,6 +167,12 @@ public abstract class BaseTest {
         try {
             HttpResponse<Map> response = Unirest.put(getBaseUrl(path))
                 .header("Content-Type","application/json")
+                .header("Accept","application/json")
+                //Unirest by default sets accept-encoding to gzip but stapler is sending malformed gzip value if
+                // the response length is small (in this case its 20 chars).
+                // Needs investigation in stapler to see whats going on there.
+                // For time being gzip compression is disabled
+                .header("Accept-Encoding","")
                 .body(body).asObject(Map.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -165,6 +180,7 @@ public abstract class BaseTest {
             throw new RuntimeException(e);
         }
     }
+
 
     protected String put(String path, String body, String contentType, int expectedStatus){
         assert path.startsWith("/");
@@ -266,5 +282,121 @@ public abstract class BaseTest {
 
     private String getBaseUrl(String path){
         return baseUrl + path;
+    }
+
+    public RequestBuilder request() {
+        return new RequestBuilder(baseUrl);
+    }
+    public static class RequestBuilder {
+        private String url;
+        private String username;
+        private String method;
+        private String password;
+        private Map data;
+        private String contentType = "application/json";
+        private String baseUrl;
+        private int expectedStatus = 200;
+
+
+        private String getBaseUrl(String path){
+            return baseUrl + path;
+        }
+
+        public RequestBuilder status(int status) {
+            this.expectedStatus = status;
+            return this;
+        }
+
+        public RequestBuilder(String baseUrl) {
+            this.baseUrl = baseUrl;
+        }
+
+        public RequestBuilder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public RequestBuilder auth(String username, String password) {
+            this.username = username;
+            this.password = password;
+            return this;
+        }
+
+
+        public RequestBuilder data(Map data) {
+            this.data = data;
+            return this;
+        }
+
+        public RequestBuilder contentType(String contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
+        public RequestBuilder put(String url) {
+            this.url = url;
+            this.method = "PUT";
+            return this;
+        }
+
+
+        public RequestBuilder get(String url) {
+            this.url = url;
+            this.method = "GET";
+            return this;
+        }
+
+        public RequestBuilder post(String url) {
+            this.url = url;
+            this.method = "POST";
+            return this;
+        }
+
+
+        public RequestBuilder delete(String url) {
+            this.url = url;
+            this.method = "DELETE";
+            return this;
+        }
+
+        public <T> T build(Class<T> clzzz) {
+            assert url != null;
+            assert url.startsWith("/");
+            try {
+                HttpRequest request;
+                switch (method) {
+                    case "PUT":
+                        request = Unirest.put(getBaseUrl(url));
+                        break;
+                    case "POST":
+                        request = Unirest.post(getBaseUrl(url));
+                        break;
+                    case "GET":
+                        request = Unirest.get(getBaseUrl(url));
+                        break;
+                    case "DELETE":
+                        request = Unirest.delete(getBaseUrl(url));
+                        break;
+                    default:
+                        throw new RuntimeException("No default options");
+
+                }
+                request.header("Accept-Encoding","");
+
+                request.header("Content-Type", contentType);
+                if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
+                    request.basicAuth(username, password);
+                }
+
+                if(request instanceof HttpRequestWithBody && data != null) {
+                    ((HttpRequestWithBody)request).body(data);
+                }
+                HttpResponse<T> response = request.asObject(clzzz);
+                Assert.assertEquals(expectedStatus, response.getStatus());
+                return response.getBody();
+            } catch (UnirestException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

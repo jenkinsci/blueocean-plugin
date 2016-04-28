@@ -1,13 +1,19 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.json.JsonBody;
+import org.kohsuke.stapler.verb.PUT;
+
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
@@ -33,6 +39,21 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public String getOrganization() {
         return OrganizationImpl.INSTANCE.getName();
+    }
+
+    @WebMethod(name="favorite") @PUT
+    @Override
+    public void favorite(@JsonBody FavoriteAction favoriteAction) {
+        if(favoriteAction == null) {
+            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
+        }
+
+        Job job = mbp.getBranch("master");
+        if(job == null) {
+            throw new ServiceException.UnexpectedErrorException("no master branch to favorite");
+        }
+
+        FavoriteUtil.favoriteJob(job, favoriteAction.isFavorite());
     }
 
     @Override
