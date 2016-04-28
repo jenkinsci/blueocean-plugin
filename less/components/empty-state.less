@@ -20,9 +20,9 @@
         padding-left: 150px;
       }
 
-      .noun-icon(branch, "branch.svg");
-      .noun-icon(goat, "goat.svg");
-      .noun-icon(shoes, "shoes.svg");
+      .noun-icon(branch);
+      .noun-icon(goat);
+      .noun-icon(shoes);
     }
 
     .empty-state-content {
@@ -41,9 +41,9 @@
   }
 }
 
-.noun-icon(@className, @file) {
-  @escapedFilename: escape(@file);
+.noun-icon(@className) {
+  @escapedFilename: escape(@className);
   .@{className} {
-    background: url("../icons/nounproject/@{escapedFilename}") no-repeat right center;
+    background: url("../icons/nounproject/@{escapedFilename}.svg") no-repeat right center;
   }
 }
