@@ -71,6 +71,7 @@ BlueOcean rest API base URL is:
               }
           ],
           "durationInMillis": 20264,
+          "estimatedDurationInMillis" : 567,
           "enQueueTime": "2016-04-11T17:44:28.342+1000",
           "endTime": "2016-04-11T17:44:48.608+1000",
           "id": "3",
@@ -114,6 +115,7 @@ BlueOcean rest API base URL is:
               }
             ],
             "durationInMillis": 841,
+            "estimatedDurationInMillis" : 567,
             "enQueueTime": "2016-03-16T09:02:26.492-0700",
             "endTime": "2016-03-16T09:02:27.339-0700",
             "id": "1",
@@ -143,6 +145,7 @@ BlueOcean rest API base URL is:
           }
         ],
         "durationInMillis": 841,
+        "estimatedDurationInMillis" : 567,
         "enQueueTime": "2016-03-16T09:02:26.492-0700",
         "endTime": "2016-03-16T09:02:27.339-0700",
         "id": "1",
@@ -171,6 +174,7 @@ BlueOcean rest API base URL is:
             }
           ],
           "durationInMillis": 841,
+          "estimatedDurationInMillis" : 567,
           "enQueueTime": "2016-03-16T09:02:26.492-0700",
           "endTime": "2016-03-16T09:02:27.339-0700",
           "id": "1",
@@ -200,6 +204,7 @@ BlueOcean rest API base URL is:
             }
           ],
           "durationInMillis": 841,
+          "estimatedDurationInMillis" : 567,
           "enQueueTime": "2016-03-16T09:02:26.492-0700",
           "endTime": "2016-03-16T09:02:27.339-0700",
           "id": "1",
@@ -260,6 +265,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
                     
                 ],
                 "durationInMillis": 1391,
+                "estimatedDurationInMillis" : 567,
                 "enQueueTime": "2016-04-15T19:59:28.717-0700",
                 "endTime": "2016-04-15T19:59:30.114-0700",
                 "id": "1",
@@ -295,6 +301,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
                   }
                 ],
                 "durationInMillis": 1468,
+                "estimatedDurationInMillis" : 567,
                 "enQueueTime": "2016-04-15T19:59:28.730-0700",
                 "endTime": "2016-04-15T19:59:30.199-0700",
                 "id": "1",
@@ -323,6 +330,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
                     
                 ],
                 "durationInMillis": 1443,
+                "estimatedDurationInMillis" : 567,
                 "enQueueTime": "2016-04-15T19:59:28.723-0700",
                 "endTime": "2016-04-15T19:59:30.167-0700",
                 "id": "1",
@@ -349,6 +357,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     
     {
         "durationInMillis": 1330,
+        "estimatedDurationInMillis" : 567,
         "enQueueTime": "2016-03-16T09:08:15.607-0700",
         "endTime": "2016-03-16T09:08:16.942-0700",
         "id": "1",
@@ -380,6 +389,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
               }
             ],
             "durationInMillis": 1875,
+            "estimatedDurationInMillis" : 567,
             "enQueueTime": "2016-03-10T15:27:13.687+1300",
             "endTime": "2016-03-10T15:27:15.567+1300",
             "id": "1",
@@ -397,6 +407,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
 
             ],
             "durationInMillis": 1716,
+            "estimatedDurationInMillis" : 567,
             "enQueueTime": "2016-03-10T15:27:13.692+1300",
             "endTime": "2016-03-10T15:27:15.409+1300",
             "id": "1",
@@ -414,6 +425,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
 
             ],
             "durationInMillis": 1714,
+            "estimatedDurationInMillis" : 567,
             "enQueueTime": "2016-03-10T15:27:13.700+1300",
             "endTime": "2016-03-10T15:27:15.415+1300",
             "id": "1",
@@ -458,6 +470,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             }
         ],
         "durationInMillis": 348,
+        "estimatedDurationInMillis" : 567,
         "enQueueTime": "2016-03-02T16:49:26.548-0800",
         "endTime": "2016-03-02T16:49:26.898-0800",
         "id": "2",
