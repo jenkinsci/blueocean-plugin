@@ -5,6 +5,8 @@ import {
     ModalHeader,
     LogConsole,
     PipelineResult,
+    PageTabs,
+    TabLink,
     fetch,
 } from '@jenkins-cd/design-language';
 
@@ -39,17 +41,20 @@ class RunDetails extends Component {
             },
         } = this;
 
+        // TODO: need the correct way to establish the base url
+        const baseUrl = this.props.location.pathname;
+
         // multibranch special treatment - get url of the log
         const multiBranch = !!branchNames;
-        const baseUrl = '/rest/organizations/jenkins' +
+        const restBaseUrl = '/rest/organizations/jenkins' +
             `/pipelines/${uriString(name)}`;
         let url;
         let fileName = name;
         if (multiBranch) {
-            url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log`;
+            url = `${restBaseUrl}/branches/${uriString(branch)}/runs/${runId}/log`;
             fileName = `${branch}-${runId}.txt`;
         } else {
-            url = `${baseUrl}/runs/${runId}/log`;
+            url = `${restBaseUrl}/runs/${runId}/log`;
             fileName = `${runId}.txt`;
         }
         const result = this.props.data.filter(
@@ -67,7 +72,15 @@ class RunDetails extends Component {
           {...{ afterClose }}
         >
             <ModalHeader>
-                <PipelineResult data={result} />
+                <div>
+                    <PipelineResult data={result} />
+                    <PageTabs base={baseUrl}>
+                        <TabLink to="/">Pipeline</TabLink>
+                        <TabLink to="changes">Changes</TabLink>
+                        <TabLink to="tests">Tests</TabLink>
+                        <TabLink to="artifacts">Artifacts</TabLink>
+                    </PageTabs>
+                    </div>
             </ModalHeader>
             <ModalBody>
                 <div>
