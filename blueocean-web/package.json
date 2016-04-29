@@ -22,14 +22,16 @@
     "babel-preset-react": "^6.5.0",
     "eslint": "2.8.0",
     "eslint-plugin-react": "^5.0.1",
+    "giti": "^1.0.6",
     "gulp": "^3.9.1",
     "zombie": "^4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.14",
+    "@jenkins-cd/design-language": "0.0.16",
     "@jenkins-cd/js-extensions": "0.0.12",
     "@jenkins-cd/js-modules": "0.0.5",
     "history": "^2.0.2",
+    "moment": "^2.13.0",
     "react": "15.0.1",
     "react-dom": "15.0.1",
     "react-router": "^2.3.0",
