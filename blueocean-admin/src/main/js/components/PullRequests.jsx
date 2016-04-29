@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { fetch } from '@jenkins-cd/design-language';
+import { EmptyStateView, fetch } from '@jenkins-cd/design-language';
 import Table from './Table';
 import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
@@ -7,12 +7,35 @@ import { RunsRecord } from './records';
 const { object, array } = PropTypes;
 
 export class PullRequests extends Component {
+
+    renderEmptyState(repoName) {
+        return (
+            <EmptyStateView iconName="goat">
+                <h1>Push me, pull you</h1>
+
+                <p>
+                    When a Pull Request is opened on the repository <em>{repoName}</em>,
+                    Jenkins will test it and report the status of
+                    your changes back to the pull request on Github.
+                </p>
+
+                <button>Enable</button>
+            </EmptyStateView>
+        );
+    }
+
     render() {
         const { pipeline, data } = this.props;
 
-        if (!data || !pipeline) {
+        // render empty view while data loads
+        if (!pipeline || !data) {
             return null;
         }
+
+        if (!data.length) {
+            return this.renderEmptyState(pipeline.name);
+        }
+
         const headers = [
             'Status',
             { label: 'Latest Build', className: 'build' },

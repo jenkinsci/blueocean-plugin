@@ -1,17 +1,42 @@
 import React, { Component, PropTypes } from 'react';
 import Table from './Table';
-import { fetch } from '@jenkins-cd/design-language';
+import { EmptyStateView, fetch } from '@jenkins-cd/design-language';
 import Branches from './Branches';
 import { RunsRecord } from './records';
 
 const { object, array } = PropTypes;
 
 export class MultiBranch extends Component {
+
+    renderEmptyState(repoName) {
+        return (
+            <EmptyStateView iconName="shoes">
+                <h1>Branch out</h1>
+
+                <p>
+                    Create a branch in the repository <em>{repoName}</em> and
+                    Jenkins will start testing your changes.
+                </p>
+
+                <p>
+                    Give it a try and become a hero to your team.
+                </p>
+
+                <button>Enable</button>
+            </EmptyStateView>
+        );
+    }
+
     render() {
-        const { data } = this.props;
-        // early out
-        if (!data) {
+        const { pipeline, data } = this.props;
+
+        // render empty view while data loads
+        if (!pipeline || !data) {
             return null;
+        }
+
+        if (!data.length) {
+            return this.renderEmptyState(pipeline.name);
         }
 
         const headers = [
