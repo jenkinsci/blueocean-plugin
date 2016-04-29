@@ -16,6 +16,7 @@ import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -73,6 +74,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
                 runs.add(AbstractRunImpl.getBlueRun(r));
             }
         }
+
         return runs;
     }
 

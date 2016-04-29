@@ -718,7 +718,7 @@ public class PipelineApiTest extends BaseTest {
 
         for(int i=0; i < runs.length; i++){
             validateRun(runs[i], runResponses.get(i));
-        }
+        };
     }
 
     @Test
