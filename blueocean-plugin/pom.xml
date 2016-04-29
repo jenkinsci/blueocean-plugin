@@ -66,6 +66,13 @@
             <version>1.1</version>
         </dependency>
 
+        <!-- Not needed by blueocean runtime but adds to blueocean experience -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>github-branch-source</artifactId>
+            <version>1.6</version>
+        </dependency>
+        
         <!-- Test plugins -->
         <!-- Random test failing bug due to an assertion in pipeline plugin. See https://github.com/jenkinsci/pipeline-stage-step-plugin/pull/1  -->
         <dependency>
@@ -132,6 +139,15 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <!-- Do not retry failing test -->
+                    <rerunFailingTestsCount>0</rerunFailingTestsCount>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>groovy-maven-plugin</artifactId>
