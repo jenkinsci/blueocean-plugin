@@ -10,19 +10,21 @@ export class Activity extends Component {
 
     renderEmptyState(repoName) {
         return (
-            <EmptyStateView iconName="shoes">
-                <h1>Ready, get set...</h1>
+            <main>
+                <EmptyStateView iconName="shoes">
+                    <h1>Ready, get set...</h1>
 
-                <p>
-                    Hmm, looks like there are no runs in this pipeline’s history.
-                </p>
+                    <p>
+                        Hmm, looks like there are no runs in this pipeline’s history.
+                    </p>
 
-                <p>
-                    Commit to the repository <em>{repoName}</em> or run the pipeline manually.
-                </p>
+                    <p>
+                        Commit to the repository <em>{repoName}</em> or run the pipeline manually.
+                    </p>
 
-                <button>Run Now</button>
-            </EmptyStateView>
+                    <button>Run Now</button>
+                </EmptyStateView>
+            </main>
         );
     }
 

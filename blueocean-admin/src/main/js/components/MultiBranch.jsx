@@ -10,20 +10,22 @@ export class MultiBranch extends Component {
 
     renderEmptyState(repoName) {
         return (
-            <EmptyStateView iconName="shoes">
-                <h1>Branch out</h1>
+            <main>
+                <EmptyStateView iconName="shoes">
+                    <h1>Branch out</h1>
 
-                <p>
-                    Create a branch in the repository <em>{repoName}</em> and
-                    Jenkins will start testing your changes.
-                </p>
+                    <p>
+                        Create a branch in the repository <em>{repoName}</em> and
+                        Jenkins will start testing your changes.
+                    </p>
 
-                <p>
-                    Give it a try and become a hero to your team.
-                </p>
+                    <p>
+                        Give it a try and become a hero to your team.
+                    </p>
 
-                <button>Enable</button>
-            </EmptyStateView>
+                    <button>Enable</button>
+                </EmptyStateView>
+            </main>
         );
     }
 

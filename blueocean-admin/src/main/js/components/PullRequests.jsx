@@ -10,17 +10,19 @@ export class PullRequests extends Component {
 
     renderEmptyState(repoName) {
         return (
-            <EmptyStateView iconName="goat">
-                <h1>Push me, pull you</h1>
+            <main>
+                <EmptyStateView iconName="goat">
+                    <h1>Push me, pull you</h1>
 
-                <p>
-                    When a Pull Request is opened on the repository <em>{repoName}</em>,
-                    Jenkins will test it and report the status of
-                    your changes back to the pull request on Github.
-                </p>
+                    <p>
+                        When a Pull Request is opened on the repository <em>{repoName}</em>,
+                        Jenkins will test it and report the status of
+                        your changes back to the pull request on Github.
+                    </p>
 
-                <button>Enable</button>
-            </EmptyStateView>
+                    <button>Enable</button>
+                </EmptyStateView>
+            </main>
         );
     }
 
