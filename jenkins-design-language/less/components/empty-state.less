@@ -1,0 +1,46 @@
+.empty-state {
+  display: flex;
+  justify-content: center;
+
+  .empty-state-container {
+    display: flex;
+    justify-content: center;
+    width: 700px;
+    padding: 4rem 14rem;
+    margin: 2rem 16rem;
+    background-color: @brand-success-lite;
+
+    .empty-state-icon {
+      margin-right: 3rem;
+      display: block;
+      width: 150px;
+      height: 150px;
+      padding-left: 150px;
+
+      .noun-icon(branch);
+      .noun-icon(goat);
+      .noun-icon(shoes);
+    }
+
+    .empty-state-content {
+      color: white;
+      font-family: @font-family-nav;
+      max-width: 40rem;
+
+      h1 {
+        font-size: 2.4rem;
+      }
+
+      button {
+        .btn-styles(transparent, white, white);
+      }
+    }
+  }
+}
+
+.noun-icon(@className) {
+  @escapedFilename: escape(@className);
+  &.@{className} {
+    background: url("../icons/nounproject/@{escapedFilename}.svg") no-repeat right center;
+  }
+}
