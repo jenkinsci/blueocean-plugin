@@ -224,7 +224,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 Collections.sort(c, new Comparator<BlueRun>() {
                     @Override
                     public int compare(BlueRun o1, BlueRun o2) {
-                        return o1.getStartTime().compareTo(o2.getStartTime());
+                        return o2.getStartTime().compareTo(o1.getStartTime());
                     }
                 });
 

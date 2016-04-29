@@ -25,6 +25,7 @@ public abstract class BlueRun extends Resource {
     public static final String END_TIME="endTime";
     public static final String ENQUEUE_TIME="enQueueTime";
     public static final String DURATION_IN_MILLIS="durationInMillis";
+    public static final String ESTIMATED_DURATION_IN_MILLIS="estimatedDurationInMillis";
     public static final String BRANCH = "branch";
     public static final String COMMIT_ID = "commitId";
     public static final String TYPE = "type";
@@ -107,6 +108,12 @@ public abstract class BlueRun extends Resource {
      */
     @Exported(name = DURATION_IN_MILLIS)
     public abstract Long getDurationInMillis();
+
+    /**
+     * @return Estimated Build duration in milli seconds
+     */
+    @Exported(name = ESTIMATED_DURATION_IN_MILLIS)
+    public abstract Long getEstimatedDurtionInMillis();
 
     /**
      *
