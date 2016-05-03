@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { fetch } from '@jenkins-cd/design-language';
+import { EmptyStateView, fetch } from '@jenkins-cd/design-language';
 import Table from './Table';
 import Runs from './Runs';
 import { ActivityRecord, ChangeSetRecord } from './records';
@@ -7,12 +7,39 @@ import { ActivityRecord, ChangeSetRecord } from './records';
 const { object, array } = PropTypes;
 
 export class Activity extends Component {
+
+    renderEmptyState(repoName) {
+        return (
+            <main>
+                <EmptyStateView iconName="shoes">
+                    <h1>Ready, get set...</h1>
+
+                    <p>
+                        Hmm, looks like there are no runs in this pipeline’s history.
+                    </p>
+
+                    <p>
+                        Commit to the repository <em>{repoName}</em> or run the pipeline manually.
+                    </p>
+
+                    <button>Run Now</button>
+                </EmptyStateView>
+            </main>
+        );
+    }
+
     render() {
         const { pipeline, data } = this.props;
-        // early out
+
+        // render empty view while data loads
         if (!data || !pipeline) {
             return null;
         }
+
+        if (!data.length) {
+            return this.renderEmptyState(pipeline.name);
+        }
+
         const headers = [
             'Status',
             'Build',
