@@ -15,15 +15,17 @@ export {
     SvgSpinner,
     SvgStatus,
 } from './status/StatusIndicator';
-export {fetch, fetchData} from './fetch'
+export {fetch, fetchData} from './fetch';
 export {
     PipelineResult,
     SvgDuration,
     SvgTime,
     SvgError,
     SvgSuccess,
-} from './pipeResult/Result'
+} from './pipeResult/Result';
 export {Favorite} from './favorite/Favorite';
 export {ReadableDate} from './ReadableDate';
 export {CommitHash} from './CommitHash';
-export {DownloadLink} from './DownloadLink'
+export {DownloadLink} from './DownloadLink';
+export {EmptyStateView} from './EmptyStateView';
+export {EmptyStateIcon} from './EmptyStateIcon';

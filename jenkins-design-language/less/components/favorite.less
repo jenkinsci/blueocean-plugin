@@ -15,6 +15,7 @@
   span {
     display: block;
     cursor: pointer;
+    height: 24px;
 
     &:before {
       content: '';
@@ -29,7 +30,7 @@
 
   input[type="checkbox"]:checked + span:before {
     background-position: -264px 0;
-    transition: background 0.4s steps(11);
+    transition: background 0.3s steps(11);
   }
 
   &.dark span:before {

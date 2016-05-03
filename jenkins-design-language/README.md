@@ -51,7 +51,7 @@ In the `jenkins-design-language` folder, run `npm link`.
 
 ### Step 2: `watch` for JDL code changes
 
-In the `jenkins-design-language` folder, run `npm run grunt watch`.
+In the `jenkins-design-language` folder, run `gulp watch`.
 
 ### Step 3: `npm link` the JDL code into `blueocean-web`
 
@@ -69,7 +69,7 @@ changes in the `@jenkins-cd/design-language` as you are working on it.
 
 ### Step 4: `watch` for `blueocean-web` changes (and rebundle)
 
-In the `blueocean-web` folder, run `gulp rebundle`.
+In the `blueocean-web` folder, run `gulp bundle:watch`.
 
 This will watch for changes not only in `blueocean-web` code, but also in the linked `@jenkins-cd/design-language`
 code, triggering a rebundle of `blueocean-web` code, making it available to the browser.
@@ -78,7 +78,7 @@ code, triggering a rebundle of `blueocean-web` code, making it available to the 
 > `@jenkins-cd/design-language` are watched for and rebundled (Step 2), which triggers the `blueocean-web`
 > watch and rebundle (Step 4).
 
-### Steps 5 + 6: `npm link` the JDL code into other HPI plugin projects + `watch` and `rebundle` there too
+### Steps 5 + 6: `npm link` the JDL code into other HPI plugin projects + `bundle:watch` there too
 
 Basically ... repeating Steps 3 and 4 in other HPI plugins that you are working on.
 

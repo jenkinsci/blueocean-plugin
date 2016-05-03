@@ -1,21 +1,11 @@
 node {
-   env.JAVA_HOME="${tool 'jdk8'}"
-   env.PATH="${env.JAVA_HOME}/bin:${env.PATH}"
-   sh 'java -version'
-   // Mark the code checkout 'stage'....
-   stage 'Checkout'
-
-   // Get some code from a GitHub repository
-   checkout scm
-   // Get the maven tool.
-   // ** NOTE: This 'M3' maven tool must be configured
-   // **       in the global configuration.           
-   def mvnHome = tool 'M3'
-
-   // Mark the code build 'stage'....
-   stage 'Build'
-   // Run the maven build
-   sh "${mvnHome}/bin/mvn clean install"
-
-   step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
+  checkout scm
+  docker.image('cloudbees/java-build-tools').inside {
+    withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
+      writeFile file: 'settings.xml', text: "<settings><localRepository>${pwd()}/.m2repo</localRepository></settings>"
+      sh "mvn clean install -s settings.xml -B -DcleanNode -Dmaven.test.failure.ignore"
+      step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+      step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
+    }
+  }
 }

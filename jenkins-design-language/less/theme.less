@@ -542,6 +542,10 @@ code.inline {
   white-space: pre-wrap;
 }
 
+code.hash {
+  border: 0;
+}
+
 //
 // Mono Icons
 // --------------------------------------------------
@@ -620,10 +624,6 @@ code.inline {
         &:last-child {
             margin-right: 0;
         }
-    }
-
-    .weather-icon {
-        margin-top: 1rem;
     }
 }
 
@@ -900,4 +900,22 @@ table {
 .pr-table tbody tr:hover {
     cursor:pointer;
     background-color: rgba(148, 147, 147, 0.1);
+}
+.Site {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+#outer {
+    flex: 1;
+}
+
+.development-footer {
+    padding-bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgb(119, 119, 119);
 }

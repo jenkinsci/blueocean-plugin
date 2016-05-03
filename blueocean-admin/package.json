@@ -32,8 +32,8 @@
     "skin-deep": "^0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.14-thor",
     "@jenkins-cd/js-extensions": "0.0.12-thor-final1",
+    "@jenkins-cd/design-language": "0.0.19",
     "@jenkins-cd/js-modules": "0.0.5",
     "immutable": "^3.8.1",
     "keymirror": "^0.1.1",

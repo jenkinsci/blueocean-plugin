@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import { Router, Route, IndexRoute, browserHistory, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory, useBasename } from 'history';
 import { Provider, createAppStore, combineReducers} from './redux';
+import { DevelopmentFooter } from './DevelopmentFooter';
 
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
@@ -24,19 +25,22 @@ class App extends Component {
         const store = createAppStore(combineReducers(Object.assign(...stores)));
         return (
             <Provider store={store}>
-                <div id="outer">
-                    <header className="global-header">
-                        <ExtensionPoint name="jenkins.logo.top"/>
-                        <nav>
-                            <Link to="/pipelines">Pipelines</Link>
-                             <a href="#">Applications</a>
-                             <a href="#">Reports</a>
-                             <a href="#">Administration</a>
-                        </nav>
-                    </header>
-                    <main>
-                        {this.props.children /* Set by react-router */ }
-                    </main>
+                <div className="Site">
+                    <div id="outer">
+                        <header className="global-header">
+                            <ExtensionPoint name="jenkins.logo.top"/>
+                            <nav>
+                                <Link to="/pipelines">Pipelines</Link>
+                                <a href="#">Applications</a>
+                                <a href="#">Reports</a>
+                                <a href="#">Administration</a>
+                            </nav>
+                        </header>
+                        <main>
+                            {this.props.children /* Set by react-router */ }
+                        </main>
+                    </div>
+                    <DevelopmentFooter />
                 </div>
             </Provider>
         );
