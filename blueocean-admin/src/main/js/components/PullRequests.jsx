@@ -34,7 +34,9 @@ export class PullRequests extends Component {
             return null;
         }
 
-        if (!data.length) {
+        const pullRequests = data.filter((run) => run.pullRequest);
+
+        if (!pullRequests.length) {
             return this.renderEmptyState(pipeline.name);
         }
 
@@ -50,7 +52,7 @@ export class PullRequests extends Component {
             <main>
                 <article>
                     <Table className="pr-table" headers={headers}>
-                        { data.filter((run) => run.pullRequest).map((run, index) => {
+                        { pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
                               key={index}
