@@ -68,7 +68,7 @@ public class MultiBranchTest extends BaseTest{
         List<Map> resp = get("/organizations/jenkins/pipelines/", List.class);
         Assert.assertEquals(2, resp.size());
         validatePipeline(f, resp.get(0));
-        validateMultiBranchPipeline(mp, resp.get(1), 3, 0, 0);
+        validateMultiBranchPipeline(mp, resp.get(1), 3);
         Assert.assertEquals(mp.getBranch("master").getBuildHealth().getScore(), resp.get(0).get("weatherScore"));
     }
 
@@ -88,7 +88,7 @@ public class MultiBranchTest extends BaseTest{
 
         List<Map> resp = get("/organizations/jenkins/pipelines/", List.class);
         Assert.assertEquals(1, resp.size());
-        validateMultiBranchPipeline(mp, resp.get(0), 2, 0, 0);
+        validateMultiBranchPipeline(mp, resp.get(0), 2);
         Assert.assertNull(mp.getBranch("master"));
     }
 
@@ -105,7 +105,7 @@ public class MultiBranchTest extends BaseTest{
 
 
         Map resp = get("/organizations/jenkins/pipelines/p/");
-        validateMultiBranchPipeline(mp,resp,3,0,0);
+        validateMultiBranchPipeline(mp,resp,3);
 
         List<String> names = (List<String>) resp.get("branchNames");
 
@@ -178,7 +178,7 @@ public class MultiBranchTest extends BaseTest{
         int i = 0;
         for(String n:branches){
             WorkflowRun b = runs[i];
-
+            j.waitForCompletion(b);
             Map run = get("/organizations/jenkins/pipelines/p/branches/"+n+"/runs/"+b.getId());
             validateRun(b,run);
             i++;

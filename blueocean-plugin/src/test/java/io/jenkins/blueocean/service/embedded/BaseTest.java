@@ -226,15 +226,21 @@ public abstract class BaseTest {
         }
     }
 
-
+    protected void validateMultiBranchPipeline(WorkflowMultiBranchProject p, Map resp, int numBranches){
+        validateMultiBranchPipeline(p, resp, numBranches, -1, -1);
+    }
     protected void validateMultiBranchPipeline(WorkflowMultiBranchProject p, Map resp, int numBranches, int numSuccBranches, int numOfFailingBranches){
         Assert.assertEquals("jenkins", resp.get("organization"));
         Assert.assertEquals(p.getName(), resp.get("name"));
         Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
         Assert.assertNull(resp.get("lastSuccessfulRun"));
         Assert.assertEquals(numBranches, resp.get("totalNumberOfBranches"));
-        Assert.assertEquals(numOfFailingBranches, resp.get("numberOfFailingBranches"));
-        Assert.assertEquals(numSuccBranches, resp.get("numberOfSuccessfulBranches"));
+        if(numOfFailingBranches >= 0) {
+            Assert.assertEquals(numOfFailingBranches, resp.get("numberOfFailingBranches"));
+        }
+        if(numSuccBranches >= 0) {
+            Assert.assertEquals(numSuccBranches, resp.get("numberOfSuccessfulBranches"));
+        }
         Assert.assertEquals(p.getBuildHealth().getScore(), resp.get("weatherScore"));
     }
 
