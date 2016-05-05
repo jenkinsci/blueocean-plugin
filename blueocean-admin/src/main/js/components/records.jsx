@@ -63,6 +63,12 @@ export const RunsRecord = Record({
     name: null,
     weatherScore: 0,
     pullRequest: PullRequestRecord,
-}
-);
+});
 
+export const State = Record({
+    pipelines: null,
+    pipeline: PipelineRecord,
+    runs: null,
+    currentRuns: null,
+    isFetching: false,
+});
