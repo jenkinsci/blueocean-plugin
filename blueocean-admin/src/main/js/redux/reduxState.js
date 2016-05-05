@@ -4,5 +4,6 @@ export const State = Record({
     pipelines: null,
     pipeline: PipelineRecord,
     runs: null,
+    currentRuns: null,
     isFetching: false,
 });

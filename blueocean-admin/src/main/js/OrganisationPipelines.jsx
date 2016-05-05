@@ -59,9 +59,6 @@ OrganisationPipelines.childContextTypes = {
     location: PropTypes.object, // From react-router
 };
 
-const selectors = createSelector([pipelinesSelector], (pipelines) => ({
-    pipelines
-})
-);
+const selectors = createSelector([pipelinesSelector], (pipelines) => ({ pipelines }));
 
 export default connect(selectors, actions)(OrganisationPipelines);

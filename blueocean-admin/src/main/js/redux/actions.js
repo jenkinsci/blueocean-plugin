@@ -9,6 +9,8 @@ export const ACTION_TYPES = keymirror({
     SET_PIPELINES_DATA: null,
     SET_RUNS_DATA: null,
     GET_PIPELINE: null,
+    SET_CURRENT_RUN_DATA: null,
+    CLEAR_CURRENT_RUN_DATA: null,
 });
 
 export const actionHandlers = {
@@ -18,18 +20,20 @@ export const actionHandlers = {
     [ACTION_TYPES.SET_PIPELINES_DATA](state, { payload }): State {
         return state.set('pipelines', payload);
     },
-    [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
-        console.log('xxxxxx', payload, id);
-        const runs = state.get('runs');
-        runs[id] = payload;
-        return state.set('runs', runs);
+    [ACTION_TYPES.GET_PIPELINE](state, { id }): State {
+        const pipeline = state.get('pipelines').filter(item => item.name === id);
+        return state.set('pipeline', pipeline[0] ? pipeline[0] : null);
+    },
+    [ACTION_TYPES.CLEAR_CURRENT_RUN_DATA](state) {
+        return state.set('currentRuns', null);
     },
     [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
         return state.set('currentRuns', payload);
     },
-    [ACTION_TYPES.GET_PIPELINE](state, { id }): State {
-        const pipeline = state.get('pipelines').filter(item => item.name === id);
-        return state.set('pipeline', pipeline[0] ? pipeline[0] : null);
+    [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
+        const runs = state.get('runs') || {};
+        runs[id] = payload;
+        return state.set('runs', runs);
     },
 };
 
@@ -54,9 +58,28 @@ export const actions = {
         return (dispatch, getState) => {
             // FIXME: Ignoring isFetching for now
             const runs = getState().adminStore.runs;
-            if (!runs) {
-                return dispatch(actions.generateData(
-                    url, ACTION_TYPES.SET_RUNS_DATA));
+            dispatch({ type: ACTION_TYPES.CLEAR_CURRENT_RUN_DATA });
+            if (!runs || !runs[id]) {
+                return fetch(url)
+                    .then(response => response.json())
+                    .then(json => {
+                        dispatch({
+                            id,
+                            payload: json,
+                            type: ACTION_TYPES.SET_CURRENT_RUN_DATA,
+                        });
+                        return dispatch({
+                            id,
+                            payload: json,
+                            type: ACTION_TYPES.SET_RUNS_DATA,
+                        });
+                    });
+            } else if (runs && runs[id]) {
+                dispatch({
+                    id,
+                    payload: runs[id],
+                    type: ACTION_TYPES.SET_CURRENT_RUN_DATA,
+                });
             }
             return null;
         };
@@ -70,19 +93,12 @@ export const actions = {
     },
 
     generateData(url, actionType, optional) {
-        return (dispatch, getState) => {
-            console.log(url, actionType, getState().adminStore.pipelines, {
-                optional,
+        return (dispatch) => fetch(url)
+            .then(response => response.json())
+            .then(json => dispatch({
+                ...optional,
                 type: actionType,
-            });
-
-            return fetch(url)
-                    .then(response => response.json())
-                    .then(json => dispatch({
-                        ...optional,
-                        type: actionType,
-                        payload: json,
-                    }));
-        };
+                payload: json,
+            }));
     },
 };
