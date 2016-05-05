@@ -28,7 +28,7 @@ describe("PullRequests should render", () => {
 
   beforeEach(() => {
     tree = sd.shallowRender(<PullRequests
-      data={[data]}
+      data={data}
       back={() => {}}
       pipeline={ Immutable.fromJS(pipeline)}/>);
   });
