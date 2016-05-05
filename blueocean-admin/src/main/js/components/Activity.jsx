@@ -1,16 +1,25 @@
 import React, { Component, PropTypes } from 'react';
-import { fetch } from '@jenkins-cd/design-language';
 import Table from './Table';
 import Runs from './Runs';
 import { ActivityRecord, ChangeSetRecord } from './records';
+import { actions, currentRuns as runsSelector, ACTION_TYPES, createSelector, connect } from '../redux';
 
-const { object, array } = PropTypes;
+const { object, array, func } = PropTypes;
 
 export class Activity extends Component {
+    componentWillMount() {
+        if (this.context.params) {
+            const pipeId = this.context.params.pipeline;
+            const baseUrl = `${this.context.config.getAppURLBase()}/rest/organizations/jenkins` +
+            `/pipelines/${this.context.params.pipeline}/runs`;
+            this.props.generateData(baseUrl, ACTION_TYPES.SET_RUNS_DATA, { id: pipeId });
+        }
+    }
     render() {
-        const { pipeline, data } = this.props;
+        const { runs } = this.props;
+        console.log(runs)
         // early out
-        if (!data || !pipeline) {
+        if (!runs) {
             return null;
         }
         const headers = [
@@ -27,7 +36,7 @@ export class Activity extends Component {
         return (<main>
             <article>
                 <Table className="activity-table" headers={headers}>
-                    { data.map((run, index) => {
+                    { runs.map((run, index) => {
                         const changeset = run.changeSet;
                         if (changeset && changeset.length > 0) {
                             latestRecord = new ChangeSetRecord(changeset[
@@ -35,7 +44,6 @@ export class Activity extends Component {
                             ]);
                         }
                         const props = {
-                            ...pipeline,
                             key: index,
                             changeset: latestRecord,
                             result: new ActivityRecord(run),
@@ -48,15 +56,28 @@ export class Activity extends Component {
     }
 }
 
-Activity.propTypes = {
-    pipeline: object,
-    data: array,
+Activity.contextTypes = {
+    params: object.isRequired,
+    config: object.isRequired,
 };
 
+Activity.propTypes = {
+    runs: array,
+    generateData: func,
+};
+/*
+const selectors = createSelector([runsSelector], (runs) => ({ runs }));
+
+export default connect(selectors, actions)(Activity);
+*/
+export default Activity;
+
 // Decorated for ajax as well as getting pipeline from context
+/*
 export default fetch(Activity, ({ pipeline }, config) => {
     if (!pipeline) return null;
     const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
         `/pipelines/${pipeline.name}`;
     return `${baseUrl}/runs`;
 });
+*/

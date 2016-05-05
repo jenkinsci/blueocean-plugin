@@ -1,7 +1,8 @@
-import Immutable from 'immutable';
-
-// FIXME: we need something that gets sub-state definitions from the extensions
-export const State = Immutable.Record({
-    pipelines: Immutable.OrderedMap(),
+import { Record } from 'immutable';
+import { PipelineRecord } from '../components/records';
+export const State = Record({
+    pipelines: null,
+    pipeline: PipelineRecord,
+    runs: null,
     isFetching: false,
 });

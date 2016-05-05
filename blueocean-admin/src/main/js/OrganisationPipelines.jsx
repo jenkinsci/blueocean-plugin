@@ -1,19 +1,13 @@
 import React, { Component, PropTypes } from 'react';
-import { fetch } from '@jenkins-cd/design-language';
-import { actions, pipelines } from './redux';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { rootRoutePath, urlPrefix } from  './config';
+import { actions, pipelines as pipelinesSelector, connect, createSelector } from './redux';
 
 class OrganisationPipelines extends Component {
-    componentWillMount() {
-      this.props.generatePipelineData();
-    }
+
     getChildContext() {
         const {
             params,
             location,
-            data: pipelines,
+            pipelines,
         } = this.props;
 
         // The specific pipeline we may be focused on
@@ -32,21 +26,30 @@ class OrganisationPipelines extends Component {
         };
     }
 
+    componentWillMount() {
+        if (this.context.config) {
+            const url = `${this.context.config.getAppURLBase()}` +
+                '/rest/organizations/jenkins/pipelines/';
+            this.props.fetchPipelinesIfNeeded(url);
+        }
+    }
+
     render() {
         return this.props.children; // Set by router
     }
 }
 
 OrganisationPipelines.contextTypes = {
-    router: React.PropTypes.object.isRequired,
+    router: PropTypes.object.isRequired,
+    config: PropTypes.object.isRequired,
 };
 
 OrganisationPipelines.propTypes = {
-    generatePipelineData: PropTypes.func.isRequired,
-    data: PropTypes.array, // From Ajax wrapper
+    fetchPipelinesIfNeeded: PropTypes.func.isRequired,
     params: PropTypes.object, // From react-router
     children: PropTypes.node, // From react-router
     location: PropTypes.object, // From react-router
+    pipelines: PropTypes.array,
 };
 
 OrganisationPipelines.childContextTypes = {
@@ -55,13 +58,10 @@ OrganisationPipelines.childContextTypes = {
     params: PropTypes.object, // From react-router
     location: PropTypes.object, // From react-router
 };
-const selectors = createSelector([pipelines], (pipelines) => ({
-        pipelines
-    })
+
+const selectors = createSelector([pipelinesSelector], (pipelines) => ({
+    pipelines
+})
 );
 
 export default connect(selectors, actions)(OrganisationPipelines);
-// eslint-disable-next-line
-//export default fetch(OrganisationPipelines, (props, config) =>
-//     `${config.getAppURLBase()}/rest/organizations/jenkins/pipelines/`);
-
