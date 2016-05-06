@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { EmptyStateView} from '@jenkins-cd/design-language';
 import Table from './Table';
 import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
@@ -24,11 +25,35 @@ export class PullRequests extends Component {
             this.props.fetchBranchesIfNeeded(config);
         }
     }
+
+    renderEmptyState(repoName) {
+        return (
+            <main>
+                <EmptyStateView iconName="goat">
+                    <h1>Push me, pull you</h1>
+
+                    <p>
+                        When a Pull Request is opened on the repository <em>{repoName}</em>,
+                        Jenkins will test it and report the status of
+                        your changes back to the pull request on Github.
+                    </p>
+
+                    <button>Enable</button>
+                </EmptyStateView>
+            </main>
+        );
+    }
     render() {
         const { branches } = this.props;
         // early out
         if (!branches) {
             return null;
+        }
+
+        const pullRequests = branches.filter((run) => run.pullRequest);
+
+        if (!pullRequests.length) {
+            return this.renderEmptyState(this.context.params.pipeline);
         }
 
         const headers = [
@@ -43,7 +68,7 @@ export class PullRequests extends Component {
             <main>
                 <article>
                     <Table className="pr-table" headers={headers}>
-                        { branches.filter((run) => run.pullRequest).map((run, index) => {
+                        { pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
                               key={index}
