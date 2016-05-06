@@ -74,10 +74,7 @@ class RunDetails extends Component {
 
         result.name = name;
 
-        const clearPipelineData = this.props.clearPipelineData;
-
         const afterClose = () => {
-            clearPipelineData();
             router.goBack();
         };
 
@@ -109,7 +106,9 @@ RunDetails.propTypes = {
     runs: array,
     isMultiBranch: any,
     fetchIfNeeded: func,
-    clearPipelineData: func,
+    fetchRunsIfNeeded: func,
+    setPipeline: func,
+    pipeline: object,
     getPipeline: func,
 };
 

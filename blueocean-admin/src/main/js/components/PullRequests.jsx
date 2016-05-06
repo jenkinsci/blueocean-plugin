@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView} from '@jenkins-cd/design-language';
+import { EmptyStateView } from '@jenkins-cd/design-language';
 import Table from './Table';
 import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
@@ -43,6 +43,7 @@ export class PullRequests extends Component {
             </main>
         );
     }
+
     render() {
         const { branches } = this.props;
         // early out

@@ -27,7 +27,7 @@ export const actionHandlers = {
         return state.set('pipeline', null);
     },
     [ACTION_TYPES.SET_PIPELINE](state, { id }): State {
-        var pipelines = state.get('pipelines');
+        const pipelines = state.get('pipelines');
         if (!pipelines) {
             return state.set('pipeline', null);
         }
@@ -62,9 +62,7 @@ export const actionHandlers = {
 export const actions = {
     clearPipelinesData: () => ({ type: ACTION_TYPES.CLEAR_PIPELINES_DATA }),
     clearPipelineData() {
-     return (dispatch) => {
-         return dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
-     }
+        return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
     },
 
     fetchPipelinesIfNeeded(config) {
@@ -84,13 +82,14 @@ export const actions = {
 
     setPipeline(config) {
         return (dispatch, getState) => {
+            dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
             const pipelines = getState().adminStore.pipelines;
+
             if (!pipelines) {
                 return dispatch(actions.fetchPipelinesIfNeeded(config))
-                    .then(() => dispatch({id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE}));
-            } else {
-                return dispatch({id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE});
+                    .then(() => dispatch({ id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE }));
             }
+            return dispatch({ id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE });
         };
     },
 
@@ -107,7 +106,7 @@ export const actions = {
                 general: ACTION_TYPES.SET_RUNS_DATA,
                 clear: ACTION_TYPES.CLEAR_CURRENT_RUN_DATA,
             }));
-        }
+        };
     },
 
     fetchBranchesIfNeeded(config) {
@@ -123,7 +122,7 @@ export const actions = {
                 general: ACTION_TYPES.SET_BRANCHES_DATA,
                 clear: ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA,
             }));
-        }
+        };
     },
 
     fetchIfNeeded(general, types) {
@@ -148,13 +147,12 @@ export const actions = {
                             type: types.general,
                         });
                     })
-                    .catch(function(error) {
-                        return dispatch({
-                            id,
-                            payload: [],
-                            type: types.current,
-                        });
-                    });;
+                    .catch(() => dispatch({
+                        id,
+                        payload: [],
+                        type: types.current,
+                    })
+                    );
             } else if (data && data[id]) {
                 dispatch({
                     id,
