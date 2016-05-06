@@ -107,7 +107,12 @@ function startApp() {
     });
 
     const stores = ExtensionPoint.getExtensions("jenkins.main.stores");
-    const store = configureStore(combineReducers(Object.assign(...stores)));
+    let store;
+    if (stores.length === 0) {
+        store = configureStore(()=>null); // No store, dummy functions
+    } else {
+        store = configureStore(combineReducers(Object.assign(...stores)));
+    }
 
     // Start React
     render(
