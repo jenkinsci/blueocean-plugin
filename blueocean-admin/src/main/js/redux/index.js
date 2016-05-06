@@ -6,6 +6,7 @@ export {
     runs,
     currentRuns,
     branches,
+    isMultiBranch,
     currentBranches,
 } from './reducer';
 export { ACTION_TYPES, actionHandlers, actions } from './actions';

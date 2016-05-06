@@ -28,9 +28,7 @@ class OrganisationPipelines extends Component {
 
     componentWillMount() {
         if (this.context.config) {
-            const url = `${this.context.config.getAppURLBase()}` +
-                '/rest/organizations/jenkins/pipelines/';
-            this.props.fetchPipelinesIfNeeded(url);
+            this.props.fetchPipelinesIfNeeded(this.context.config);
         }
     }
 

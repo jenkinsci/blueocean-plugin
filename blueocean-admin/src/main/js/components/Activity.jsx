@@ -2,17 +2,26 @@ import React, { Component, PropTypes } from 'react';
 import Table from './Table';
 import Runs from './Runs';
 import { ActivityRecord, ChangeSetRecord } from './records';
-import { actions, currentRuns as runsSelector, createSelector, connect } from '../redux';
+import {
+    actions,
+    currentRuns as runsSelector,
+    createSelector,
+    connect,
+} from '../redux';
 
 const { object, array, func } = PropTypes;
 
 export class Activity extends Component {
     componentWillMount() {
-        if (this.context.params) {
-            const pipeId = this.context.params.pipeline;
-            const baseUrl = `${this.context.config.getAppURLBase()}/rest/organizations/jenkins` +
-            `/pipelines/${this.context.params.pipeline}/runs`;
-            this.props.fetchRunsIfNeeded(baseUrl, pipeId);
+        if (this.context.config && this.context.params) {
+            const {
+                params: {
+                    pipeline,
+                },
+                config = {},
+            } = this.context;
+            config.pipeline = pipeline;
+            this.props.fetchRunsIfNeeded(config);
         }
     }
     render() {

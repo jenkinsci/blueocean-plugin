@@ -5,59 +5,79 @@ import {
     ModalHeader,
     LogConsole,
     PipelineResult,
-    fetch,
 } from '@jenkins-cd/design-language';
 
 import LogToolbar from './LogToolbar';
+import {
+    actions,
+    pipeline as pipelineSelector,
+    currentRuns as runsSelector,
+    isMultiBranch as isMultiBranchSelector,
+    createSelector,
+    connect,
+} from '../redux';
 
-const { object, array } = PropTypes;
+const { func, object, array, any } = PropTypes;
 
 function uriString(input) {
     return encodeURIComponent(input).replace(/%2F/g, '%252F');
 }
 
 class RunDetails extends Component {
+    componentWillMount() {
+        if (this.context.config && this.context.params) {
+            const {
+                params: {
+                    pipeline,
+                },
+                config = {},
+            } = this.context;
+            config.pipeline = pipeline;
+            this.props.fetchRunsIfNeeded(config);
+            this.props.setPipeline(config);
+        }
+    }
     render() {
         // early out
-        if (!this.context.pipeline
-            || !this.context.params
-            || !this.props.data) {
+        if (!this.context.params
+            || !this.props.runs
+            || !this.props.pipeline
+        ) {
             return null;
         }
 
         const {
             context: {
                 router,
-                pipeline: {
-                    branchNames,
-                    name,
-                },
                 params: {
                     branch,
                     runId,
+                    pipeline: name,
                 },
             },
         } = this;
 
         // multibranch special treatment - get url of the log
-        const multiBranch = !!branchNames;
         const baseUrl = '/rest/organizations/jenkins' +
-            `/pipelines/${uriString(name)}`;
+            `/pipelines/${name}`;
         let url;
         let fileName = name;
-        if (multiBranch) {
+        if (this.props.isMultiBranch) {
             url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log`;
             fileName = `${branch}-${runId}.txt`;
         } else {
             url = `${baseUrl}/runs/${runId}/log`;
             fileName = `${runId}.txt`;
         }
-        const result = this.props.data.filter(
+        const result = this.props.runs.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
 
         result.name = name;
 
+        const clearPipelineData = this.props.clearPipelineData;
+
         const afterClose = () => {
+            clearPipelineData();
             router.goBack();
         };
 
@@ -80,19 +100,21 @@ class RunDetails extends Component {
 }
 
 RunDetails.contextTypes = {
-    pipeline: object,
+    config: object.isRequired,
     params: object,
     router: object.isRequired, // From react-router
 };
 
 RunDetails.propTypes = {
-    data: array,
+    runs: array,
+    isMultiBranch: any,
+    fetchIfNeeded: func,
+    clearPipelineData: func,
+    getPipeline: func,
 };
 
-// Decorated for ajax as well as getting pipeline from context
-export default fetch(RunDetails, ({ params: { pipeline } }, config) => {
-    if (!pipeline) return null;
-    const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-        `/pipelines/${pipeline}`;
-    return `${baseUrl}/runs`;
-});
+const selectors = createSelector(
+    [runsSelector, isMultiBranchSelector, pipelineSelector],
+    (runs, isMultiBranch, pipeline) => ({ runs, isMultiBranch, pipeline }));
+
+export default connect(selectors, actions)(RunDetails);
