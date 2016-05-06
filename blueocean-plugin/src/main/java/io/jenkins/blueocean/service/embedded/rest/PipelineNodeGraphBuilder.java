@@ -1,19 +1,24 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
+import org.jenkinsci.plugins.workflow.graph.FlowGraphWalker;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Filters {@link FlowGraphTable} to BlueOcean specific model representing DAG like graph objects
@@ -32,15 +37,27 @@ public class PipelineNodeGraphBuilder {
     public PipelineNodeGraphBuilder(WorkflowRun run) {
         this.run = run;
 
-        FlowGraphTable nodeGraphTable = new FlowGraphTable(run.getExecution());
-        nodeGraphTable.build();
-        List<FlowNode> nodes = new ArrayList<>();
-        for (FlowGraphTable.Row r : nodeGraphTable.getRows()) {
-            nodes.add(r.getNode());
-        }
-        this.sortedNodes = Collections.unmodifiableList(nodes);
+        TreeSet<FlowNode> nodeTreeSet = new TreeSet<>(new Comparator<FlowNode>() {
+            @Override
+            public int compare(FlowNode node1, FlowNode node2) {
+                return Integer.compare(parseIota(node1), parseIota(node2));
+            }
+
+            private int parseIota(FlowNode node) {
+                try {
+                    return Integer.parseInt(node.getId());
+                } catch (NumberFormatException e) {
+                    return 0;
+                }
+            }
+        });
+
+        Iterables.addAll(nodeTreeSet, new FlowGraphWalker(run.getExecution()));
+
+        this.sortedNodes = Collections.unmodifiableList(new ArrayList<>(nodeTreeSet));
+//        dumpNodes();
         build();
-        //dumpNodes();
+
     }
 
     private void build(){
@@ -60,8 +77,6 @@ public class PipelineNodeGraphBuilder {
                     for (FlowNode n : branches) {
                         addChild(n, node);
                     }
-                    nodeStatusMap.put(previousBranch,
-                        new PipelineNodeGraphBuilder.NodeRunStatus(sortedNodes.get(count - 1)));
                     previousBranch = null;
                 } else if (previousStage != null) {
                     //node before this stage is the last node before previousStage stage
@@ -76,8 +91,9 @@ public class PipelineNodeGraphBuilder {
             } else if (PipelineNodeUtil.isParallelBranch(node)) { //branch
                 addChild(node, null);
                 addChild(previousStage, node);
-                if (previousBranch != null) {
-                    nodeStatusMap.put(previousBranch, new PipelineNodeGraphBuilder.NodeRunStatus(sortedNodes.get(count - 1)));
+                FlowNode endNode = getEndParallelNode(node);
+                if (endNode != null) {
+                    nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));
                 }
                 previousBranch = node;
             }
@@ -85,10 +101,22 @@ public class PipelineNodeGraphBuilder {
         }
         int size = parentToChildrenMap.keySet().size();
         if (size > 0) {
-            PipelineNodeGraphBuilder.NodeRunStatus runStatus = new PipelineNodeGraphBuilder.NodeRunStatus(sortedNodes.get(sortedNodes.size() - 1));
-            FlowNode lastNode = getLastNode();
+            PipelineNodeGraphBuilder.NodeRunStatus runStatus = PipelineNodeUtil.getStatus(run);
+            FlowNode lastNode = getLastStageNode();
             nodeStatusMap.put(lastNode, runStatus);
         }
+    }
+
+    private FlowNode getEndParallelNode(FlowNode startNode){
+        for(int i = sortedNodes.size() - 1; i >=0; i--){
+            FlowNode n = sortedNodes.get(i);
+            if(isEnd(n)){
+                StepEndNode endNode = (StepEndNode) n;
+                if(endNode.getStartNode().equals(startNode))
+                    return endNode;
+            }
+        }
+        return null;
     }
 
     /**
@@ -155,11 +183,60 @@ public class PipelineNodeGraphBuilder {
             } else if (status == null) {
                 status = getEffectiveBranchStatus(n);
             }
-            nodes.add(new PipelineNodeImpl(run, n, status, parentToChildrenMap.get(n)));
+            nodes.add(new PipelineNodeImpl(run, n, status, this));
         }
         return nodes;
     }
 
+    public List<FlowNode> getChildren(FlowNode parent){
+        return parentToChildrenMap.get(parent);
+    }
+
+    public Long getDurationInMillis(FlowNode node){
+        long startTime = TimingAction.getStartTime(node);
+        if( startTime == 0){
+            return null;
+        }
+        /**
+         * For Stage node:
+         *
+         * Find next stage node
+         * duration = nextStageNodeStartTime - thisStageNode.startTime
+         *
+         * For Parallel node:
+         *
+         * Find the endNode of the parallel branch
+         * duration = endNode.startTime - thisNode.startTime
+         *
+         * If this happens to be the last stage or parallel node in the pipeline
+         * duration = pipelineEndTime - thisStageNode.startTime
+         *
+         */
+        if(PipelineNodeUtil.isStage(node)){
+            boolean lookForNextStage = false;
+            for(FlowNode n: parentToChildrenMap.keySet()){
+                if(n.equals(node)){
+                    lookForNextStage = true;
+                    continue;
+                }
+                if(lookForNextStage && PipelineNodeUtil.isStage(n)){ //we got the next stage
+                    return TimingAction.getStartTime(n) - startTime;
+                }
+            }
+        }else if(PipelineNodeUtil.isParallelBranch(node)){
+            FlowNode endNode = getEndParallelNode(node);
+            if(endNode != null){
+                return TimingAction.getStartTime(endNode) - startTime;
+            }
+        }
+        return run.getExecution().isComplete()
+            ? (run.getDuration() + run.getStartTimeInMillis()) - startTime
+            : System.currentTimeMillis() - startTime;
+    }
+
+    private boolean isEnd(FlowNode n){
+        return n instanceof StepEndNode;
+    }
     private FlowNode getLastNode() {
         if (parentToChildrenMap.keySet().isEmpty()) {
             return null;
@@ -262,7 +339,7 @@ public class PipelineNodeGraphBuilder {
 
     public void dumpNodes() {
         for (FlowNode n : sortedNodes) {
-            System.out.println(String.format("id: %s, name: %s, startTime: %s", n.getId(), n.getDisplayName(), TimingAction.getStartTime(n)));
+            System.out.println(String.format("id: %s, name: %s, startTime: %s, type: %s", n.getId(), n.getDisplayName(), TimingAction.getStartTime(n), n.getClass()));
         }
     }
 
