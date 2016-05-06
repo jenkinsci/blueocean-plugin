@@ -32,7 +32,7 @@
     "skin-deep": "^0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.20",
+    "@jenkins-cd/design-language": "0.0.21",
     "@jenkins-cd/js-extensions": "0.0.12",
     "@jenkins-cd/js-modules": "0.0.5",
     "immutable": "^3.8.1",
