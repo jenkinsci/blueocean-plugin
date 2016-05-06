@@ -147,7 +147,14 @@ export const actions = {
                             payload: json,
                             type: types.general,
                         });
-                    });
+                    })
+                    .catch(function(error) {
+                        return dispatch({
+                            id,
+                            payload: [],
+                            type: types.current,
+                        });
+                    });;
             } else if (data && data[id]) {
                 dispatch({
                     id,
