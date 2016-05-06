@@ -36,6 +36,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         return Containers.fromResourceMap(m);
     }
 
+    @Override
     public BluePipelineNodeContainer getNodes() {
         if (run != null) {
             return new PipelineNodeContainerImpl(run);
