@@ -4,7 +4,6 @@ import com.google.common.base.Predicate;
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -13,7 +12,6 @@ import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -29,14 +27,14 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final List<Edge> edges;
     private final WorkflowRun run;
 
-    private final List<ErrorAction> errorActions = new ArrayList<>();
+    private final PipelineNodeGraphBuilder.NodeRunStatus status;
 
-    public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeFilter filter, ErrorAction... errorActions) {
+    public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeGraphBuilder.NodeRunStatus status, List<FlowNode> children) {
         this.run = run;
         this.node = node;
-        this.children = filter.getChildren(node);
-        Collections.addAll(this.errorActions, errorActions);
+        this.children = children;
         this.edges = buildEdges();
+        this.status = status;
     }
 
     @Override
@@ -54,14 +52,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
         if(isInactiveNode()){
             return null;
         }
-        if(errorActions.isEmpty()){
-            return PipelineNodeUtil.getStatus(node,null);
-        }
-        // Only return the first failure (we could return more if steps are modeled in DAG
-        if(!children.isEmpty() && !errorActions.isEmpty() && PipelineNodeFilter.isStage.apply(node)){
-            return BlueRun.BlueRunResult.UNSTABLE;
-        }
-        return PipelineNodeUtil.getStatus(node,errorActions.get(0));
+        return status.getResult();
     }
 
     @Override
@@ -69,7 +60,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
         if(isInactiveNode()){
             return null;
         }
-        return PipelineNodeUtil.getState(node);
+        return status.getState();
     }
 
     @Override
@@ -106,11 +97,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
                     FlowGraphTable.Row subStepRow = rows.get(j);
                     // if it's stage collect all nodes till next stage is encountered
                     // Or if it's parallel, then wait till next parallel branch is encountered
-                    if(PipelineNodeFilter.isStage.apply(node) &&
-                        PipelineNodeFilter.isStage.apply(subStepRow.getNode())
+                    if(PipelineNodeUtil.isStage(node) &&
+                        PipelineNodeUtil.isStage(subStepRow.getNode())
                         ||
-                        PipelineNodeFilter.isParallel.apply(node) &&
-                            PipelineNodeFilter.isParallel.apply(subStepRow.getNode())
+                        PipelineNodeUtil.isParallelBranch(node) &&
+                            PipelineNodeUtil.isParallelBranch(subStepRow.getNode())
                         ){
                         break;
                     }else{
@@ -152,7 +143,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
         @Override
         public long getDurationInMillis() {
-            if(node instanceof PipelineNodeFilter.InactiveFlowNodeWrapper){
+            if(node instanceof PipelineNodeGraphBuilder.InactiveFlowNodeWrapper){
                 return -1;
             }
             TimingAction t = node.getAction(TimingAction.class);
@@ -177,6 +168,6 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     private boolean isInactiveNode(){
-        return node instanceof PipelineNodeFilter.InactiveFlowNodeWrapper;
+        return node instanceof PipelineNodeGraphBuilder.InactiveFlowNodeWrapper;
     }
 }
