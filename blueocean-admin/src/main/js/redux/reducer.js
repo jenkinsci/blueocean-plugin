@@ -11,7 +11,7 @@ export const branches = createSelector([adminStore], store => store.branches);
 export const currentBranches = createSelector([adminStore], store => store.currentBranches);
 export const isMultiBranch = createSelector(
     [pipeline], (pipe) => {
-        if (pipe) {
+        if (pipe && pipe.organization) {
             return !!pipe.branchNames;
         }
         return null;

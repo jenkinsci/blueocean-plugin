@@ -10,7 +10,6 @@ import {
 import LogToolbar from './LogToolbar';
 import {
     actions,
-    pipeline as pipelineSelector,
     currentRuns as runsSelector,
     isMultiBranch as isMultiBranchSelector,
     createSelector,
@@ -41,11 +40,10 @@ class RunDetails extends Component {
         // early out
         if (!this.context.params
             || !this.props.runs
-            || !this.props.pipeline
+            || this.props.isMultiBranch === null
         ) {
             return null;
         }
-
         const {
             context: {
                 router,
@@ -108,12 +106,11 @@ RunDetails.propTypes = {
     fetchIfNeeded: func,
     fetchRunsIfNeeded: func,
     setPipeline: func,
-    pipeline: object,
     getPipeline: func,
 };
 
 const selectors = createSelector(
-    [runsSelector, isMultiBranchSelector, pipelineSelector],
-    (runs, isMultiBranch, pipeline) => ({ runs, isMultiBranch, pipeline }));
+    [runsSelector, isMultiBranchSelector],
+    (runs, isMultiBranch) => ({ runs, isMultiBranch }));
 
 export default connect(selectors, actions)(RunDetails);
