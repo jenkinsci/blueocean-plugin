@@ -62,7 +62,6 @@ const
 describe("PipelineRecord can be created ", () => {
     it("without error", () => {
         const pipeRecord = new PipelineRecord(pipelineMultiSuccess);
-        console.log(pipeRecord)
     })
 });
 

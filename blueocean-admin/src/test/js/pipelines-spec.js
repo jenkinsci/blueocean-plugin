@@ -14,7 +14,6 @@ describe("pipelines", () => {
   let tree;
 
   beforeEach(() => {
-      console.log(pipelines)
       tree = sd.shallowRender(
           ()=>React.createElement(Pipelines), // For some reason using a fn turns on context
           {pipelines: Immutable.fromJS(pipelines)}
