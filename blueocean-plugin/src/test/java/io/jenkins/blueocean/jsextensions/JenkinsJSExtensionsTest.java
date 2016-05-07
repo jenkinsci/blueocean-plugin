@@ -46,7 +46,7 @@ public class JenkinsJSExtensionsTest extends BaseTest{
 
         List<Map> ext = (List<Map>) extensions.get(0).get("extensions");
 
-        Assert.assertEquals(2, ext.size());
+        Assert.assertEquals(3, ext.size());
         Assert.assertEquals("AdminNavLink", ext.get(0).get("component"));
         Assert.assertEquals("jenkins.logo.top", ext.get(0).get("extensionPoint"));
 
