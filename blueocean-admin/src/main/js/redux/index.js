@@ -1,6 +1,5 @@
 export {
     reducer,
-    adminStore,
     pipelines,
     pipeline,
     runs,

@@ -1,7 +1,6 @@
 import React from 'react';
 import { assert} from 'chai';
-import sd from 'skin-deep';
-import Immutable from 'immutable';
+import { shallow } from 'enzyme';
 
 import {Activity} from '../../main/js/components/Activity.jsx';
 
@@ -128,46 +127,23 @@ const
       "type": "WorkflowRun",
       "commitId": "a2f0801fec8bad98663f0df5e9110261820e8c4e"
     }
-  ],
-  pipeline = {
-    'displayName': 'moreBeers',
-    'name': 'morebeers',
-    'organization': 'jenkins',
-    'weatherScore': 0,
-    'branchNames': ['master'],
-    'numberOfFailingBranches': 1,
-    'numberOfFailingPullRequests': 0,
-    'numberOfSuccessfulBranches': 0,
-    'numberOfSuccessfulPullRequests': 0,
-    'totalNumberOfBranches': 1,
-    'totalNumberOfPullRequests': 0
-  };
+  ];
 
 describe("Activity should render", () => {
-  let tree = null;
-
-  beforeEach(() => {
-    tree = sd.shallowRender(<Activity
-      data={ Immutable.fromJS(data)}
-      pipeline={ Immutable.fromJS(pipeline)}/>);
-  });
 
   it("does renders the Activity with data", () => {
+    const wrapper =  shallow(<Activity runs={data} />);
     // does data renders?
-    assert.isNotNull(tree.getRenderOutput())
+    assert.isNotNull(wrapper)
+    assert.equal(wrapper.find('Runs').length, data.length)
   });
 
 });
 
 describe("Activity should not render", () => {
-  let tree = null;
-
-  beforeEach(() => {
-    tree = sd.shallowRender(<Activity/>);
-  });
-
   it("does not renders the Activity without data", () => {
-    assert.isNull(tree.getRenderOutput());
+    const wrapper =  shallow(<Activity />).node;
+    assert.isNull(wrapper);
   });
 
 });
