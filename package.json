@@ -1,7 +1,7 @@
 {
   "name": "@jenkins-cd/design-language",
   "jdlName": "jenkins-design-language",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
@@ -46,7 +46,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/cloudbees/blueocean.git"
+    "url": "https://github.com/cloudbees/jenkins-design-language.git"
   },
   "dependencies": {
     "moment": "^2.13.0",

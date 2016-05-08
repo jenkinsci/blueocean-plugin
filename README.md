@@ -94,3 +94,8 @@ someone else can publish a new version of the package for you.
 [js-builder]: https://github.com/jenkinsci/js-builder
 [js-samples]: https://github.com/jenkinsci/js-samples
 [js-modules]: https://github.com/jenkinsci/js-modules
+
+# Repo
+
+This current repository was filtered from https://github.com/cloudbees/blueocean.git at 99f14895c448eb7303d2eaa29f369ce50f4fb674
+on 2016-05-09.
