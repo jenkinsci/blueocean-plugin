@@ -9,7 +9,6 @@ import {
     TabLink,
 } from '@jenkins-cd/design-language';
 
-import LogToolbar from './LogToolbar';
 import {
     actions,
     currentRuns as runsSelector,
@@ -20,8 +19,15 @@ import {
 
 const { func, object, array, any } = PropTypes;
 
-function uriString(input) {
-    return encodeURIComponent(input).replace(/%2F/g, '%252F');
+/**
+ * Trim the last path element off a URL. Handles trailing slashes nicely.
+ * @param url
+ * @returns {string}
+ */
+function cleanBaseUrl(url) {
+    const paths = url.split('/').filter(path => (path.length > 0));
+    paths.pop();
+    return paths.join('/');
 }
 
 class RunDetails extends Component {
@@ -57,21 +63,8 @@ class RunDetails extends Component {
             },
         } = this;
 
-        // TODO: need the correct way to establish the base url
-        const baseUrl = this.props.location.pathname;
+       const baseUrl = cleanBaseUrl(this.context.location.pathname);
 
-        // multibranch special treatment - get url of the log
-        const restBaseUrl = '/rest/organizations/jenkins' +
-            `/pipelines/${name}`;
-        let url;
-        let fileName = name;
-        if (this.props.isMultiBranch) {
-            url = `${restBaseUrl}/branches/${uriString(branch)}/runs/${runId}/log`;
-            fileName = `${branch}-${runId}.txt`;
-        } else {
-            url = `${restBaseUrl}/runs/${runId}/log`;
-            fileName = `${runId}.txt`;
-        }
         const result = this.props.runs.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
 
@@ -90,7 +83,7 @@ class RunDetails extends Component {
                 <div>
                     <PipelineResult data={result} />
                     <PageTabs base={baseUrl}>
-                        <TabLink to="/">Pipeline</TabLink>
+                        <TabLink to="/logs">Pipeline</TabLink>
                         <TabLink to="/changes">Changes</TabLink>
                         <TabLink to="/tests">Tests</TabLink>
                         <TabLink to="/artifacts">Artifacts</TabLink>
@@ -99,8 +92,7 @@ class RunDetails extends Component {
             </ModalHeader>
             <ModalBody>
                 <div>
-                    <LogToolbar {...{ fileName, url }} />
-                    <LogConsole {...{ url }} />
+                    {this.props.children}
                 </div>
             </ModalBody>
         </ModalView>);
@@ -110,6 +102,7 @@ class RunDetails extends Component {
 RunDetails.contextTypes = {
     config: object.isRequired,
     params: object,
+    location: object,
     router: object.isRequired, // From react-router
 };
 
