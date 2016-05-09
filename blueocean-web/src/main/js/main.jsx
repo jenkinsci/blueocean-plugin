@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
-import { Router, Route, IndexRoute, browserHistory, Link, useRouterHistory, IndexRedirect } from 'react-router';
-import { createHistory, useBasename } from 'history';
+import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
+import { createHistory } from 'history';
 import { Provider, configureStore, combineReducers} from './redux';
 import { DevelopmentFooter } from './DevelopmentFooter';
 
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
+import rootReducer, { ACTION_TYPES } from './redux/router';
 
 import Config from './config';
 
@@ -106,13 +107,30 @@ function startApp() {
         basename: appURLBase
     });
 
+
     const stores = ExtensionPoint.getExtensions("jenkins.main.stores");
     let store;
     if (stores.length === 0) {
-        store = configureStore(()=>null); // No store, dummy functions
+        store = configureStore(combineReducers(Object.assign(...rootReducer)));
     } else {
-        store = configureStore(combineReducers(Object.assign(...stores)));
+        store = configureStore(combineReducers(Object.assign(...stores, rootReducer)));
     }
+    const { dispatch, getState } = store;
+
+    history.listen(newLocation => {
+        const { current } = getState().location;
+
+        if (current) {
+            dispatch({
+                type: ACTION_TYPES.SET_LOCATION_PREVIOUS,
+                payload: current,
+            });
+        }
+        dispatch({
+            type: ACTION_TYPES.SET_LOCATION_CURRENT,
+            payload: newLocation.pathname,
+        });
+    });
 
     // Start React
     render(
@@ -122,7 +140,8 @@ function startApp() {
       , rootElement);
 }
 
-ExtensionPoint.registerExtensionPoint("jenkins.main.routes", (extensions) => {
+ExtensionPoint.registerExtensionPoint("jenkins.main.routes", () => {
     startApp();
 });
 
+pac

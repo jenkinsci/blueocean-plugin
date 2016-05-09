@@ -12,11 +12,12 @@ import {
     actions,
     currentRuns as runsSelector,
     isMultiBranch as isMultiBranchSelector,
+    previous as previousSelector,
     createSelector,
     connect,
 } from '../redux';
 
-const { func, object, array, any } = PropTypes;
+const { func, object, array, any, string} = PropTypes;
 
 function uriString(input) {
     return encodeURIComponent(input).replace(/%2F/g, '%252F');
@@ -47,11 +48,15 @@ class RunDetails extends Component {
         const {
             context: {
                 router,
+                location,
                 params: {
                     branch,
                     runId,
                     pipeline: name,
                 },
+            },
+            props: {
+                previous,
             },
         } = this;
 
@@ -73,7 +78,12 @@ class RunDetails extends Component {
         result.name = name;
 
         const afterClose = () => {
-            router.goBack();
+            if(previous) {
+                router.goBack();
+            } else {
+                location.pathname =  `/pipelines/${name}/activity/`;
+                router.push(location);
+            }
         };
 
         return (<ModalView
@@ -98,6 +108,7 @@ RunDetails.contextTypes = {
     config: object.isRequired,
     params: object,
     router: object.isRequired, // From react-router
+    location: object.isRequired, // From react-router
 };
 
 RunDetails.propTypes = {
@@ -107,10 +118,11 @@ RunDetails.propTypes = {
     fetchRunsIfNeeded: func,
     setPipeline: func,
     getPipeline: func,
+    previous: string,
 };
 
 const selectors = createSelector(
-    [runsSelector, isMultiBranchSelector],
-    (runs, isMultiBranch) => ({ runs, isMultiBranch }));
+    [runsSelector, isMultiBranchSelector, previousSelector],
+    (runs, isMultiBranch, previous) => ({ runs, isMultiBranch, previous }));
 
 export default connect(selectors, actions)(RunDetails);

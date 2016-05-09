@@ -52,7 +52,7 @@ export default class Runs extends Component {
         return (<tr key={id} onClick={open} >
             <td>
                 <StatusIndicator result={resultRun} />
-            </td>
+            </td>q
             <td>
                 {id}
             </td>
