@@ -29,3 +29,4 @@ export {CommitHash} from './CommitHash';
 export {DownloadLink} from './DownloadLink';
 export {EmptyStateView} from './EmptyStateView';
 export {EmptyStateIcon} from './EmptyStateIcon';
+export {PipelineGraph} from './PipelineGraph';

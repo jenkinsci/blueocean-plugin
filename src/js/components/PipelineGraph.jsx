@@ -31,7 +31,7 @@ const nodeColorRunningProgress = "#4a90e2";
 const nodeColorNotBuilt = connectorColor;
 const nodeColorUnexpected = "#ff00ff";
 
-export default class PipelineGraph extends Component {
+export class PipelineGraph extends Component {
 
     constructor(props) {
         super(props);
