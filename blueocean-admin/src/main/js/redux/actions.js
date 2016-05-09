@@ -58,6 +58,22 @@ export const actionHandlers = {
     },
 };
 
+// fetch helper
+const fetchOptions = { credentials: 'same-origin' };
+function checkStatus(response) {
+    if (response.status >= 300 || response.status < 200) {
+        const error = new Error(response.statusText);
+        error.response = response;
+        throw error;
+    }
+    return response;
+}
+
+function parseJSON(response) {
+    return response.json();
+}
+
+
 // FIXME: Ignoring isFetching for now
 export const actions = {
     clearPipelinesData: () => ({ type: ACTION_TYPES.CLEAR_PIPELINES_DATA }),
@@ -133,8 +149,9 @@ export const actions = {
             const id = general.id;
 
             if (!data || !data[id]) {
-                return fetch(general.url)
-                    .then(response => response.json())
+                return fetch(general.url, fetchOptions)
+                    .then(checkStatus)
+                    .then(parseJSON)
                     .then(json => {
                         dispatch({
                             id,
@@ -165,12 +182,18 @@ export const actions = {
     },
 
     generateData(url, actionType, optional) {
-        return (dispatch) => fetch(url)
-            .then(response => response.json())
+        return (dispatch) => fetch(url, fetchOptions)
+            .then(checkStatus)
+            .then(parseJSON)
             .then(json => dispatch({
                 ...optional,
                 type: actionType,
                 payload: json,
+            }))
+            .catch(() => dispatch({
+                ...optional,
+                payload: null,
+                type: actionType,
             }));
     },
 };
