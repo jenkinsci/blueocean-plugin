@@ -17,7 +17,7 @@ import {
     connect,
 } from '../redux';
 
-const { func, object, array, any, string} = PropTypes;
+const { func, object, array, any, string } = PropTypes;
 
 function uriString(input) {
     return encodeURIComponent(input).replace(/%2F/g, '%252F');
@@ -78,10 +78,10 @@ class RunDetails extends Component {
         result.name = name;
 
         const afterClose = () => {
-            if(previous) {
+            if (previous) {
                 router.goBack();
             } else {
-                location.pathname =  `/pipelines/${name}/activity/`;
+                location.pathname = `/pipelines/${name}/activity/`;
                 router.push(location);
             }
         };
