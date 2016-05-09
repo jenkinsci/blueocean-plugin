@@ -7,6 +7,7 @@ import {
     PipelineResult,
     fetch,
 } from '@jenkins-cd/design-language';
+import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
 import LogToolbar from './LogToolbar';
 
@@ -26,30 +27,25 @@ class RunDetails extends Component {
         }
 
         const {
-            context: {
-                router,
-                pipeline: {
-                    branchNames,
-                    name,
-                },
-                params: {
-                    branch,
-                    runId,
-                },
-            },
-        } = this;
+            router,
+            pipeline,
+            params,
+            } = this.context;
+
+        const name = pipeline.name;
+        const { branch, runId } = params; // From route
 
         // multibranch special treatment - get url of the log
-        const multiBranch = !!branchNames;
+        const multiBranch = !!pipeline.branchNames;
         const baseUrl = '/rest/organizations/jenkins' +
-            `/pipelines/${uriString(name)}`;
+            `/pipelines/${uriString(name)}/`;
         let url;
         let fileName = name;
         if (multiBranch) {
-            url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log`;
+            url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
             fileName = `${branch}-${runId}.txt`;
         } else {
-            url = `${baseUrl}/runs/${runId}/log`;
+            url = `${baseUrl}/runs/${runId}/log/`;
             fileName = `${runId}.txt`;
         }
         const result = this.props.data.filter(
@@ -71,6 +67,11 @@ class RunDetails extends Component {
             </ModalHeader>
             <ModalBody>
                 <div>
+                    <ExtensionPoint name="jenkins.pipeline.run.result"
+                      pipelineName={name}
+                      branchName={multiBranch ? branch : undefined}
+                      runId={runId}
+        />
                     <LogToolbar {...{ fileName, url }} />
                     <LogConsole {...{ url }} />
                 </div>

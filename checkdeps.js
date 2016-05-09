@@ -39,7 +39,6 @@ var packageFiles = [];
 
 packageFiles.push(require("./blueocean-admin/package.json"));
 packageFiles.push(require("./blueocean-web/package.json"));
-packageFiles.push(require("./jenkins-design-language/package.json"));
 
 packageFiles.forEach(packageFile => {
 

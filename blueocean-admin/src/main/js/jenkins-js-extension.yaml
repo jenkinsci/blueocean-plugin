@@ -5,3 +5,5 @@ extensions:
     extensionPoint: jenkins.logo.top
   - component: PipelineRoutes
     extensionPoint: jenkins.main.routes
+  - component: components/PipelineRunGraph
+    extensionPoint: jenkins.pipeline.run.result
