@@ -29,24 +29,24 @@ class RunDetails extends Component {
             const {
                 params: {
                     pipeline,
-                },
+                    },
                 config = {},
-            } = this.context;
+                } = this.context;
             config.pipeline = pipeline;
             this.props.fetchRunsIfNeeded(config);
             this.props.setPipeline(config);
         }
     }
+
     render() {
         // early out
         if (!this.context.params
             || !this.props.runs
-            || this.props.isMultiBranch === null
-        ) {
+            || this.props.isMultiBranch === null) {
             return null;
         }
         const {
-                router,
+            router,
             pipeline,
             params,
             } = this.context;
@@ -76,26 +76,28 @@ class RunDetails extends Component {
             router.goBack();
         };
 
-        return (<ModalView
-          isVisible
-          result={result.result}
-          {...{ afterClose }}
-        >
-            <ModalHeader>
-                <PipelineResult data={result} />
-            </ModalHeader>
-            <ModalBody>
-                <div>
-                    <ExtensionPoint name="jenkins.pipeline.run.result"
-                      pipelineName={name}
-                      branchName={multiBranch ? branch : undefined}
-                      runId={runId}
-        />
-                    <LogToolbar {...{ fileName, url }} />
-                    <LogConsole {...{ url }} />
-                </div>
-            </ModalBody>
-        </ModalView>);
+        return (
+            <ModalView
+              isVisible
+              result={result.result}
+              {...{ afterClose }}
+            >
+                <ModalHeader>
+                    <PipelineResult data={result} />
+                </ModalHeader>
+                <ModalBody>
+                    <div>
+                        <ExtensionPoint name="jenkins.pipeline.run.result"
+                          pipelineName={name}
+                          branchName={multiBranch ? branch : undefined}
+                          runId={runId}
+                        />
+                        <LogToolbar {...{ fileName, url }} />
+                        <LogConsole {...{ url }} />
+                    </div>
+                </ModalBody>
+            </ModalView>
+        );
     }
 }
 

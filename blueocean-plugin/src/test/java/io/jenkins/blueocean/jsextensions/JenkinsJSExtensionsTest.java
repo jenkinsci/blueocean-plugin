@@ -37,6 +37,7 @@ public class JenkinsJSExtensionsTest extends BaseTest{
 
     @Test
     public void test() {
+        // FIXME: This test relies on configuration in a separate project
         // Simple test of the rest endpoint. It should find the "blueocean-admin"
         // plugin ExtensionPoint contributions.
         List<Map> extensions = get("/javaScriptExtensionInfo", List.class);
@@ -46,7 +47,7 @@ public class JenkinsJSExtensionsTest extends BaseTest{
 
         List<Map> ext = (List<Map>) extensions.get(0).get("extensions");
 
-        Assert.assertEquals(3, ext.size());
+        Assert.assertEquals(4, ext.size());
         Assert.assertEquals("AdminNavLink", ext.get(0).get("component"));
         Assert.assertEquals("jenkins.logo.top", ext.get(0).get("extensionPoint"));
 
