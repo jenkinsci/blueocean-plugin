@@ -19,6 +19,7 @@ def sendhipchat() {
 
 node {
   deleteDir()
+  sh 'ln -s /home/ubuntu/.m2/repository/ ${pwd()}/.m2repo'
   checkout scm
   
   docker.image('cloudbees/java-build-tools').inside {
