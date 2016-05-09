@@ -66,6 +66,29 @@
   }
 }
 
+.changeset-table {
+  table-layout: fixed;
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  th {
+    width: 100px;
+  }
+
+  .author {
+    width: 150px;
+  }
+
+  .message {
+    width: 100%;
+  }
+
+
+}
+
 // TODO: duplicated from the JDL; long-term may want to expose mixins to Less in other plugins? (UX-285?)
 .text-overflow() {
   overflow: hidden;

@@ -5,6 +5,7 @@ import PullRequests from './PullRequests';
 import PipelinePage from './PipelinePage';
 import RunDetails from './RunDetails';
 import RunDetailsLogs from './RunDetailsLogs';
+import RunDetailsChanges from './RunDetailsChanges';
 
 export {
     Pipelines,
@@ -14,4 +15,5 @@ export {
     PipelinePage,
     RunDetails,
     RunDetailsLogs,
+    RunDetailsChanges,
 };

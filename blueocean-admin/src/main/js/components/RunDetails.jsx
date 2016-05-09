@@ -3,7 +3,6 @@ import {
     ModalView,
     ModalBody,
     ModalHeader,
-    LogConsole,
     PipelineResult,
     PageTabs,
     TabLink,
@@ -63,7 +62,7 @@ class RunDetails extends Component {
             },
         } = this;
 
-       const baseUrl = cleanBaseUrl(this.context.location.pathname);
+        const baseUrl = cleanBaseUrl(this.context.location.pathname);
 
         const result = this.props.runs.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
@@ -92,7 +91,7 @@ class RunDetails extends Component {
             </ModalHeader>
             <ModalBody>
                 <div>
-                    {this.props.children}
+                    {React.cloneElement(this.props.children, { ...this.props })}
                 </div>
             </ModalBody>
         </ModalView>);
@@ -107,6 +106,7 @@ RunDetails.contextTypes = {
 };
 
 RunDetails.propTypes = {
+    children: PropTypes.node,
     runs: array,
     isMultiBranch: any,
     fetchIfNeeded: func,

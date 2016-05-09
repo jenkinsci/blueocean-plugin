@@ -9,6 +9,7 @@ import {
     PipelinePage,
     RunDetails,
     RunDetailsLogs,
+    RunDetailsChanges,
 } from './components';
 
 // Config has some globals in it for path / routes
@@ -25,6 +26,7 @@ export default (
         <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
             <IndexRedirect to="logs" />
             <Route path="logs" component={RunDetailsLogs} />
+            <Route path="changes" component={RunDetailsChanges} />
         </Route>
     </Route>
 );
