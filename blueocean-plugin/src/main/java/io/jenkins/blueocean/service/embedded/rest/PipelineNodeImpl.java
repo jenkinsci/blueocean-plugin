@@ -22,19 +22,26 @@ import java.util.List;
  * @see FlowNode
  */
 public class PipelineNodeImpl extends BluePipelineNode {
-    /*package*/ final FlowNode node;
+    private final FlowNode node;
     private final List<FlowNode> children;
     private final List<Edge> edges;
     private final WorkflowRun run;
-
+    private final Long durationInMillis;
     private final PipelineNodeGraphBuilder.NodeRunStatus status;
 
-    public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeGraphBuilder.NodeRunStatus status, List<FlowNode> children) {
+    public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeGraphBuilder.NodeRunStatus status, PipelineNodeGraphBuilder nodeGraphBuilder) {
         this.run = run;
         this.node = node;
-        this.children = children;
+        this.children = nodeGraphBuilder.getChildren(node);
         this.edges = buildEdges();
         this.status = status;
+        if(getStateObj() == BlueRun.BlueRunState.FINISHED){
+            this.durationInMillis = nodeGraphBuilder.getDurationInMillis(node);
+        }else if(getStateObj() == BlueRun.BlueRunState.RUNNING){
+            this.durationInMillis = System.currentTimeMillis()-TimingAction.getStartTime(node);
+        }else{
+            this.durationInMillis = null;
+        }
     }
 
     @Override
@@ -75,6 +82,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
     @Override
     public List<Edge> getEdges() {
         return edges;
+    }
+
+    @Override
+    public Long getDurationInMillis() {
+        return durationInMillis;
     }
 
     @Override
@@ -139,21 +151,6 @@ public class PipelineNodeImpl extends BluePipelineNode {
         @Override
         public String getId() {
             return edge.getId();
-        }
-
-        @Override
-        public long getDurationInMillis() {
-            if(node instanceof PipelineNodeGraphBuilder.InactiveFlowNodeWrapper){
-                return -1;
-            }
-            TimingAction t = node.getAction(TimingAction.class);
-            TimingAction c = edge.getAction(TimingAction.class);
-            if(t!= null){
-                if(c != null){
-                    return c.getStartTime() - t.getStartTime();
-                }
-            }
-            return -1;
         }
     }
 
