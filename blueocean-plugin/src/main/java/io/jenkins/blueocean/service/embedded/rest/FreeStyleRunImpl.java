@@ -5,7 +5,6 @@ import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
-import org.kohsuke.stapler.verb.PUT;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +33,6 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
         return Containers.fromResourceMap(m);
     }
 
-    @PUT
     @Override
     public BlueRunStopResponse stop() {
         try {
