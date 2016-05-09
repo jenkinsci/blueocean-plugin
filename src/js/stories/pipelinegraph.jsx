@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import { storiesOf } from '@kadira/storybook';
-import PipelineGraph, {pipelineStageState, defaultLayout} from '../components/PipelineGraph';
+import {PipelineGraph, pipelineStageState, defaultLayout} from '../components/PipelineGraph';
 
 storiesOf('PipelineGraph', module)
     .add('Mixed', renderMultiParallelPipeline)
@@ -225,8 +225,8 @@ class PipelineGraphConstructionKit extends Component {
         };
 
         const controlDivStyle = {
-            display:"flex",
-            justifyContent:"center"
+            display: "flex",
+            justifyContent: "center"
         };
 
         return (
