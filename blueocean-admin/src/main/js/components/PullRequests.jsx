@@ -1,12 +1,30 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, fetch } from '@jenkins-cd/design-language';
+import { EmptyStateView } from '@jenkins-cd/design-language';
 import Table from './Table';
 import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
+import {
+    actions,
+    currentBranches as branchSelector,
+    createSelector,
+    connect,
+} from '../redux';
 
-const { object, array } = PropTypes;
+const { func, object, array } = PropTypes;
 
 export class PullRequests extends Component {
+    componentWillMount() {
+        if (this.context.config && this.context.params) {
+            const {
+                params: {
+                    pipeline,
+                },
+                config = {},
+            } = this.context;
+            config.pipeline = pipeline;
+            this.props.fetchBranchesIfNeeded(config);
+        }
+    }
 
     renderEmptyState(repoName) {
         return (
@@ -27,17 +45,16 @@ export class PullRequests extends Component {
     }
 
     render() {
-        const { pipeline, data } = this.props;
-
-        // render empty view while data loads
-        if (!pipeline || !data) {
+        const { branches } = this.props;
+        // early out
+        if (!branches) {
             return null;
         }
 
-        const pullRequests = data.filter((run) => run.pullRequest);
+        const pullRequests = branches.filter((run) => run.pullRequest);
 
         if (!pullRequests.length) {
-            return this.renderEmptyState(pipeline.name);
+            return this.renderEmptyState(this.context.params.pipeline);
         }
 
         const headers = [
@@ -66,14 +83,16 @@ export class PullRequests extends Component {
     }
 }
 
-PullRequests.propTypes = {
-    pipeline: object,
-    data: array,
+PullRequests.contextTypes = {
+    params: object.isRequired,
+    config: object.isRequired,
 };
 
-// Decorated for ajax as well as getting pipeline from context
-export default fetch(PullRequests, (props, config) => {
-    if (!props.pipeline) return null;
-    return `${config.getAppURLBase()}/rest/organizations/jenkins` +
-        `/pipelines/${props.pipeline.name}/branches`;
-});
+PullRequests.propTypes = {
+    branches: array,
+    fetchBranchesIfNeeded: func,
+};
+
+const selectors = createSelector([branchSelector], (branches) => ({ branches }));
+
+export default connect(selectors, actions)(PullRequests);

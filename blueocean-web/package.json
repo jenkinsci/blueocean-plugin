@@ -28,13 +28,16 @@
   },
   "dependencies": {
     "@jenkins-cd/design-language": "0.0.23",
-    "@jenkins-cd/js-extensions": "0.0.13",
+    "@jenkins-cd/js-extensions": "0.0.14",
     "@jenkins-cd/js-modules": "0.0.5",
     "history": "^2.0.2",
     "moment": "^2.13.0",
     "react": "15.0.1",
     "react-dom": "15.0.1",
+    "react-redux": "^4.4.5",
     "react-router": "^2.3.0",
+    "redux": "^3.5.2",
+    "redux-thunk": "^2.0.1",
     "window-handle": "^1.0.0"
   }
 }

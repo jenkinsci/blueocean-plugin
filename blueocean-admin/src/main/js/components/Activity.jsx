@@ -1,12 +1,30 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, fetch } from '@jenkins-cd/design-language';
+import { EmptyStateView } from '@jenkins-cd/design-language';
 import Table from './Table';
 import Runs from './Runs';
 import { ActivityRecord, ChangeSetRecord } from './records';
+import {
+    actions,
+    currentRuns as runsSelector,
+    createSelector,
+    connect,
+} from '../redux';
 
-const { object, array } = PropTypes;
+const { object, array, func } = PropTypes;
 
 export class Activity extends Component {
+    componentWillMount() {
+        if (this.context.config && this.context.params) {
+            const {
+                params: {
+                    pipeline,
+                },
+                config = {},
+            } = this.context;
+            config.pipeline = pipeline;
+            this.props.fetchRunsIfNeeded(config);
+        }
+    }
 
     renderEmptyState(repoName) {
         return (
@@ -29,15 +47,14 @@ export class Activity extends Component {
     }
 
     render() {
-        const { pipeline, data } = this.props;
-
-        // render empty view while data loads
-        if (!data || !pipeline) {
+        const { runs } = this.props;
+        // early out
+        if (!runs) {
             return null;
         }
 
-        if (!data.length) {
-            return this.renderEmptyState(pipeline.name);
+        if (!runs.length) {
+            return this.renderEmptyState(this.context.params.pipeline);
         }
 
         const headers = [
@@ -54,7 +71,7 @@ export class Activity extends Component {
         return (<main>
             <article>
                 <Table className="activity-table" headers={headers}>
-                    { data.map((run, index) => {
+                    { runs.map((run, index) => {
                         const changeset = run.changeSet;
                         if (changeset && changeset.length > 0) {
                             latestRecord = new ChangeSetRecord(changeset[
@@ -62,7 +79,6 @@ export class Activity extends Component {
                             ]);
                         }
                         const props = {
-                            ...pipeline,
                             key: index,
                             changeset: latestRecord,
                             result: new ActivityRecord(run),
@@ -75,15 +91,16 @@ export class Activity extends Component {
     }
 }
 
-Activity.propTypes = {
-    pipeline: object,
-    data: array,
+Activity.contextTypes = {
+    params: object.isRequired,
+    config: object.isRequired,
 };
 
-// Decorated for ajax as well as getting pipeline from context
-export default fetch(Activity, ({ pipeline }, config) => {
-    if (!pipeline) return null;
-    const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-        `/pipelines/${pipeline.name}`;
-    return `${baseUrl}/runs`;
-});
+Activity.propTypes = {
+    runs: array,
+    fetchRunsIfNeeded: func,
+};
+
+const selectors = createSelector([runsSelector], (runs) => ({ runs }));
+
+export default connect(selectors, actions)(Activity);

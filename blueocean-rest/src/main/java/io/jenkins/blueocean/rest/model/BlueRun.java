@@ -141,8 +141,24 @@ public abstract class BlueRun extends Resource {
     @Exported(name=TYPE)
     public abstract String getType();
 
+    @PUT
+    @JsonResponse
+    @WebMethod(name="stop")
+    public abstract BlueRunStopResponse stop();
+
+    /**
+     *
+     * @return Run artifacts
+     */
     @Exported(name=ARTIFACTS, inline = true)
     public abstract Container<BlueArtifact> getArtifacts();
+
+    /**
+     * @return Serves .../runs/{rundId}/nodes/ and provides pipeline execution nodes
+     * @see BluePipelineNode
+     */
+    public abstract BluePipelineNodeContainer getNodes();
+
     /**
      * @return Instance of stapler aware instance that can do the following:
      * <p></p><ul>
@@ -218,7 +234,4 @@ public abstract class BlueRun extends Resource {
         public abstract long getSize();
     }
 
-    @PUT @JsonResponse
-    @WebMethod(name="stop")
-    public abstract BlueRunStopResponse stop();
 }

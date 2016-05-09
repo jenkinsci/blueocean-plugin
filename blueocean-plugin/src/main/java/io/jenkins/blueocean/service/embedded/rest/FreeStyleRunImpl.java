@@ -1,12 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import org.kohsuke.stapler.verb.PUT;
-
 import hudson.model.FreeStyleBuild;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
+import org.kohsuke.stapler.verb.PUT;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -61,6 +61,7 @@ public abstract class BluePipelineNode extends Resource{
     public static final String START_TIME="startTime";
     public static final String ID = "id";
     public static final String EDGES = "edges";
+    public static final String DURATION_IN_MILLIS="durationInMillis";
 
     @Exported(name = ID)
     public abstract String getId();
@@ -87,6 +88,9 @@ public abstract class BluePipelineNode extends Resource{
         return new SimpleDateFormat(BlueRun.DATE_FORMAT_STRING).format(getStartTime());
     }
 
+    @Exported(name= DURATION_IN_MILLIS)
+    public abstract Long getDurationInMillis();
+
     /**
      * @return Gives logs associated with this node
      */
@@ -96,9 +100,6 @@ public abstract class BluePipelineNode extends Resource{
     public abstract static class Edge{
         @Exported
         public abstract String getId();
-
-        @Exported
-        public abstract long getDurationInMillis();
     }
 
 }

@@ -67,6 +67,10 @@ export default class PipelineRowItem extends Component {
             <tr>
                 <td>{nameLink}</td>
                 <td><WeatherIcon score={weatherScore} /></td>
+                {
+                    // fixme refactor the next 2 lines and the prior logic
+                    // to create a react component out of it
+                }
                 <td>{multiBranchLink}</td>
                 <td>{pullRequestsLink}</td>
                 <td><Favorite /></td>
