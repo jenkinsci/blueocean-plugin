@@ -18,7 +18,9 @@ def sendhipchat() {
 }
 
 node {
+  deleteDir()
   checkout scm
+  
   docker.image('cloudbees/java-build-tools').inside {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
@@ -30,6 +32,7 @@ node {
         currentBuild.result = "FAILURE"
       } finally {
         sendhipchat()
+        deleteDir()
       }
     }
   }
