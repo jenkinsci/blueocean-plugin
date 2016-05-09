@@ -1,17 +1,61 @@
 import React, { Component, PropTypes } from 'react';
 import Table from './Table';
-import { fetch } from '@jenkins-cd/design-language';
+import { EmptyStateView } from '@jenkins-cd/design-language';
 import Branches from './Branches';
 import { RunsRecord } from './records';
+import {
+    actions,
+    currentBranches as branchSelector,
+    createSelector,
+    connect,
+} from '../redux';
 
-const { object, array } = PropTypes;
+const { object, array, func } = PropTypes;
 
 export class MultiBranch extends Component {
+    componentWillMount() {
+        if (this.context.config && this.context.params) {
+            const {
+                params: {
+                    pipeline,
+                },
+                config = {},
+            } = this.context;
+            config.pipeline = pipeline;
+            this.props.fetchBranchesIfNeeded(config);
+        }
+    }
+
+    renderEmptyState(repoName) {
+        return (
+            <main>
+                <EmptyStateView iconName="shoes">
+                    <h1>Branch out</h1>
+
+                    <p>
+                        Create a branch in the repository <em>{repoName}</em> and
+                        Jenkins will start testing your changes.
+                    </p>
+
+                    <p>
+                        Give it a try and become a hero to your team.
+                    </p>
+
+                    <button>Enable</button>
+                </EmptyStateView>
+            </main>
+        );
+    }
+
     render() {
-        const { data } = this.props;
+        const { branches } = this.props;
         // early out
-        if (!data) {
+        if (!branches) {
             return null;
+        }
+
+        if (!branches.length) {
+            return this.renderEmptyState(this.context.params.pipeline);
         }
 
         const headers = [
@@ -29,7 +73,7 @@ export class MultiBranch extends Component {
                     <Table className="multibranch-table"
                       headers={headers}
                     >
-                        {data.map((run, index) => {
+                        {branches.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<Branches
                               key={index}
@@ -44,14 +88,16 @@ export class MultiBranch extends Component {
     }
 }
 
-MultiBranch.propTypes = {
-    pipeline: object,
-    data: array,
+MultiBranch.contextTypes = {
+    params: object.isRequired,
+    config: object.isRequired,
 };
 
-// Decorated for ajax as well as getting pipeline from context
-export default fetch(MultiBranch, (props, config) => {
-    if (!props.pipeline) return null;
-    return `${config.getAppURLBase()}/rest/organizations/jenkins` +
-        `/pipelines/${props.pipeline.name}/branches`;
-});
+MultiBranch.propTypes = {
+    branches: array,
+    fetchBranchesIfNeeded: func,
+};
+
+const selectors = createSelector([branchSelector], (branches) => ({ branches }));
+
+export default connect(selectors, actions)(MultiBranch);

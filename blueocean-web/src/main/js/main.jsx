@@ -2,12 +2,14 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, IndexRoute, browserHistory, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory, useBasename } from 'history';
+import { Provider, configureStore, combineReducers} from './redux';
+import { DevelopmentFooter } from './DevelopmentFooter';
 
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
 import Config from './config';
 
-var config; // Holder for various app-wide state
+let config; // Holder for various app-wide state
 
 /**
  * Root Blue Ocean UI component
@@ -20,19 +22,22 @@ class App extends Component {
 
     render() {
         return (
-            <div id="outer">
-                <header className="global-header">
-                    <ExtensionPoint name="jenkins.logo.top"/>
-                    <nav>
-                        <Link to="/pipelines">Pipelines</Link>
-                         <a href="#">Applications</a>
-                         <a href="#">Reports</a>
-                         <a href="#">Administration</a>
-                    </nav>
-                </header>
-                <main>
-                    {this.props.children /* Set by react-router */ }
-                </main>
+            <div className="Site">
+                <div id="outer">
+                    <header className="global-header">
+                        <ExtensionPoint name="jenkins.logo.top"/>
+                        <nav>
+                            <Link to="/pipelines">Pipelines</Link>
+                            <a href="#">Applications</a>
+                            <a href="#">Reports</a>
+                            <a href="#">Administration</a>
+                        </nav>
+                    </header>
+                    <main>
+                        {this.props.children /* Set by react-router */ }
+                    </main>
+                </div>
+                <DevelopmentFooter />
             </div>
         );
     }
@@ -77,7 +82,7 @@ function startApp() {
     const headElement = document.getElementsByTagName("head")[0];
 
     // Look up where the Blue Ocean app is hosted
-    var appURLBase = headElement.getAttribute("data-appurl");
+    let appURLBase = headElement.getAttribute("data-appurl");
 
     if (typeof appURLBase !== "string") {
         appURLBase = "/";
@@ -101,10 +106,23 @@ function startApp() {
         basename: appURLBase
     });
 
+    const stores = ExtensionPoint.getExtensions("jenkins.main.stores");
+    let store;
+    if (stores.length === 0) {
+        store = configureStore(()=>null); // No store, dummy functions
+    } else {
+        store = configureStore(combineReducers(Object.assign(...stores)));
+    }
+
     // Start React
-    render(<Router history={history}>{ makeRoutes() }</Router>, rootElement);
+    render(
+        <Provider store={store}>
+            <Router history={history}>{ makeRoutes() }</Router>
+        </Provider>
+      , rootElement);
 }
 
 ExtensionPoint.registerExtensionPoint("jenkins.main.routes", (extensions) => {
     startApp();
 });
+

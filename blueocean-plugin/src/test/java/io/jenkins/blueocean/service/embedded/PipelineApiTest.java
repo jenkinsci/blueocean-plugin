@@ -13,8 +13,6 @@ import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
-import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.service.embedded.rest.PipelineNodeFilter;
 import io.jenkins.blueocean.service.embedded.rest.PipelineNodeUtil;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -240,6 +238,143 @@ public class PipelineApiTest extends BaseTest {
 
 
     @Test
+    public void nodesTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
+            "    node {\n" +
+            "       sh \"echo here\"\n" +
+            "    }\n" +
+            "\n" +
+            "stage \"Test\"\n" +
+            "    parallel (\n" +
+            "        \"Firefox\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo ffox\"\n" +
+            "            }\n" +
+            "        },\n" +
+            "        \"Chrome\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo chrome\"\n" +
+            "            }\n" +
+            "        }\n" +
+            "    )\n" +
+            "\n" +
+            "stage \"CrashyMcgee\"\n" +
+            "  parallel (\n" +
+            "    \"SlowButSuccess\" : {\n" +
+            "        node {\n" +
+            "            echo 'This is time well spent.'\n" +
+            "        }\n" +
+            "    },\n" +
+            "    \"DelayThenFail\" : {\n" +
+            "        node {\n" +
+            "            echo 'Not yet.'\n" +
+            "        }\n" +
+            "    },\n" +
+            "  )\n" +
+            "\n" +
+            "\n" +
+            "stage \"Deploy\"\n" +
+            "    node {\n" +
+            "        sh \"echo deploying\"\n" +
+            "    }"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+        job1.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
+            "    node {\n" +
+            "       sh \"echo here\"\n" +
+            "    }\n" +
+            "\n" +
+            "stage \"Test\"\n" +
+            "    parallel (\n" +
+            "        \"Firefox\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo ffox\"\n" +
+            "            }\n" +
+            "        },\n" +
+            "        \"Chrome\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo chrome\"\n" +
+            "            }\n" +
+            "        }\n" +
+            "    )\n" +
+            "\n" +
+            "stage \"CrashyMcgee\"\n" +
+            "  parallel (\n" +
+            "    \"SlowButSuccess\" : {\n" +
+            "        node {\n" +
+            "            echo 'This is time well spent.'\n" +
+            "            sh 'sleep 3;'\n" +
+            "        }\n" +
+            "    },\n" +
+            "    \"DelayThenFail\" : {\n" +
+            "        node {\n" +
+            "            echo 'Fail soon.'\n" +
+            "            echo 'KABOOM!'\n" +
+            "            sh '11exit 1'\n" +
+            "        }\n" +
+            "    },\n" +
+            "  )\n" +
+            "\n" +
+            "\n" +
+            "stage \"Deploy\"\n" +
+            "    node {\n" +
+            "        sh \"echo deploying\"\n" +
+            "    }"));
+
+
+
+        WorkflowRun b2 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE,b2);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/", List.class);
+        Assert.assertEquals(resp.size(), 8);
+        for(int i=0; i< resp.size();i++){
+            Map rn = resp.get(i);
+            List<Map> edges = (List<Map>) rn.get("edges");
+
+            if(rn.get("displayName").equals("Test")){
+                Assert.assertEquals(2, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("Firefox")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("Chrome")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("CrashyMcgee")){
+                Assert.assertEquals(2, edges.size());
+                Assert.assertEquals(rn.get("result"), "FAILURE");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("SlowButSuccess")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("DelayThenFail")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "FAILURE");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("build")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("Deploy")){
+                Assert.assertEquals(0, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }
+
+        }
+
+    }
+    @Test
     public void getPipelineJobRunNodesTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 
@@ -436,7 +571,7 @@ public class PipelineApiTest extends BaseTest {
             }else if (n.getDisplayName().equals("test")){
                 Assert.assertEquals(parallelNodes.size(), edges.size());
                 Assert.assertEquals(edges.get(i).get("id"), parallelNodes.get(i).getId());
-                Assert.assertEquals("UNSTABLE", rn.get("result"));
+                Assert.assertEquals("FAILURE", rn.get("result"));
                 Assert.assertEquals("FINISHED", rn.get("state"));
             }else if(PipelineNodeUtil.getDisplayName(n).equals("unit")){
                 Assert.assertEquals(1, edges.size());
@@ -526,7 +661,7 @@ public class PipelineApiTest extends BaseTest {
             if(n.getDisplayName().equals("test")){
                 Assert.assertEquals(parallelNodes.size(), edges.size());
                 Assert.assertEquals(edges.get(i).get("id"), parallelNodes.get(i).getId());
-                Assert.assertEquals("UNSTABLE", rn.get("result"));
+                Assert.assertEquals("FAILURE", rn.get("result"));
             }else if(n.getDisplayName().equals("build")){
                 Assert.assertEquals(1, edges.size());
                 Assert.assertEquals(edges.get(i).get("id"), nodes.get(i+1).getId());
@@ -718,7 +853,7 @@ public class PipelineApiTest extends BaseTest {
 
         for(int i=0; i < runs.length; i++){
             validateRun(runs[i], runResponses.get(i));
-        }
+        };
     }
 
     @Test
@@ -797,8 +932,8 @@ public class PipelineApiTest extends BaseTest {
     private List<FlowNode> getStages(FlowGraphTable nodeGraphTable){
         List<FlowNode> nodes = new ArrayList<>();
         for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-            if(PipelineNodeFilter.isStage.apply(row.getNode()) ||
-                PipelineNodeFilter.isParallel.apply(row.getNode())){
+            if(PipelineNodeUtil.isStage(row.getNode()) ||
+                PipelineNodeUtil.isParallelBranch(row.getNode())){
                 nodes.add(row.getNode());
             }
         }
@@ -809,7 +944,7 @@ public class PipelineApiTest extends BaseTest {
         List<FlowNode> parallelNodes = new ArrayList<>();
 
         for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-            if(PipelineNodeFilter.isParallel.apply(row.getNode())){
+            if(PipelineNodeUtil.isParallelBranch(row.getNode())){
                 parallelNodes.add(row.getNode());
             }
         }

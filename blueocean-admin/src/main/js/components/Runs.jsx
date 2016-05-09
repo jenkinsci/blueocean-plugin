@@ -34,6 +34,7 @@ export default class Runs extends Component {
                     result,
                     state,
                     endTime,
+                    commitId,
                 },
                 changeset,
             },
@@ -55,7 +56,7 @@ export default class Runs extends Component {
             <td>
                 {id}
             </td>
-            <td><CommitHash commitId={changeset.commitId} /></td>
+            <td><CommitHash commitId={commitId} /></td>
             <td>{decodeURIComponent(pipeline)}</td>
             <td>{changeset && changeset.comment || '-'}</td>
             <td>{duration}</td>

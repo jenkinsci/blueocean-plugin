@@ -102,6 +102,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
+    public Long getEstimatedDurtionInMillis() {
+        return run.getEstimatedDuration();
+    }
+
+    @Override
     public String getRunSummary() {
         return run.getBuildStatusSummary().message;
     }
