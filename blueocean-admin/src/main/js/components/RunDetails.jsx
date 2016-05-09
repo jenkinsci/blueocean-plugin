@@ -47,20 +47,18 @@ class RunDetails extends Component {
         }
         const {
             router,
-            pipeline,
             params,
             } = this.context;
 
-        const name = pipeline.name;
-        const { branch, runId } = params; // From route
+        const { pipeline: name, branch, runId } = params; // From route
 
         // multibranch special treatment - get url of the log
-        const multiBranch = !!pipeline.branchNames;
+        const isMultiBranch = this.props.isMultiBranch;
         const baseUrl = '/rest/organizations/jenkins' +
             `/pipelines/${uriString(name)}/`;
         let url;
-        let fileName = name;
-        if (this.props.isMultiBranch) {
+        let fileName;
+        if (isMultiBranch) {
             url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
             fileName = `${branch}-${runId}.txt`;
         } else {
@@ -89,7 +87,7 @@ class RunDetails extends Component {
                     <div>
                         <ExtensionPoint name="jenkins.pipeline.run.result"
                           pipelineName={name}
-                          branchName={multiBranch ? branch : undefined}
+                          branchName={isMultiBranch ? branch : undefined}
                           runId={runId}
                         />
                         <LogToolbar {...{ fileName, url }} />

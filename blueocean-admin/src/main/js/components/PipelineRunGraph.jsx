@@ -152,7 +152,7 @@ PipelineRunGraph.propTypes = {
     pipelineName: PropTypes.string,
     branchName: PropTypes.string,
     runId: PropTypes.string,
-    data: PropTypes.object,
+    data: PropTypes.array,
 };
 
 export default fetch(PipelineRunGraph, (props, config) => {
