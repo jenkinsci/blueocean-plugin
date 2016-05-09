@@ -150,7 +150,7 @@ public abstract class BlueRun extends Resource {
      *
      * @return Run artifacts
      */
-    @Exported(name=ARTIFACTS, inline = true)
+    @Exported(name=ARTIFACTS)
     public abstract Container<BlueArtifact> getArtifacts();
 
     /**
@@ -218,6 +218,7 @@ public abstract class BlueRun extends Resource {
         ABORTED;
     }
 
+    @ExportedBean(defaultVisibility = 2)
     public abstract class BlueArtifact extends Resource{
         public static final String NAME = "name";
         public static final String URL = "url";
