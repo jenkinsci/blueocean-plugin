@@ -872,13 +872,32 @@ footer {
   }
 }
 
-circle.success {
-  fill: @brand-success;
+.svgResultStatus circle.success {
+  stroke: @brand-success;
+  fill: @brand-success-lite;
 }
 
-circle.failure {
-  fill: @brand-danger;
+.svgResultStatus circle.failure {
+  stroke: @brand-danger;
+  fill: @brand-danger-lite;
 }
+
+.svgResultStatus circle.unstable {
+  stroke: @brand-warning;
+  fill: @brand-warning-lite;
+
+}
+
+.svgResultStatus circle.aborted, .svgResultStatus circle.not_built {
+  stroke: @brand-grey;
+  fill: @brand-grey-lite;
+}
+
+.svgResultStatus circle.unknown {
+  stroke: @brand-unknown;
+  fill: @brand-unknown-lite;
+}
+
 
 .left {
   float: left;

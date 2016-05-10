@@ -31,11 +31,12 @@ export default class SvgStatus extends Component {
             },
         } = this.props;
 
-        return (<svg xmlns="http://www.w3.org/2000/svg"
-          width={width}
-          height={height}
-          viewBox="0 0 100 100"
-          preserveAspectRatio="xMidYMid"
+        return (<svg xmlns="http://www.w3.org/2000/svg" 
+                     width={width} 
+                     height={height} 
+                     viewBox="0 0 100 100"
+                     preserveAspectRatio="xMidYMid" 
+                     className="svgResultStatus"
         >
             <title>{title}</title>
             <rect
@@ -54,7 +55,7 @@ export default class SvgStatus extends Component {
               r="40"
               stroke={colors.strokes.inner}
               fill={colors.backgrounds.inner}
-              strokeWidth="2"
+              strokeWidth="0.5"
               strokeLinecap="round"
             />
 
