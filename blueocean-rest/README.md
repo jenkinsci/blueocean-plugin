@@ -485,156 +485,136 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
 # Get Pipeline run nodes
     curl -v  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/
     
-    [
-        {
-            "displayName": "build",
-            "edges": [
-                {
-                    "durationInMillis": 234,
-                    "id": "9"
-                }
-            ],
-            "id": "3",
-            "startTime": "2016-03-11T00:32:52.273-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        },
-        {
-            "displayName": "test",
-            "edges": [
-                {
-                    "durationInMillis": 4,
-                    "id": "13"
-                },
-                {
-                    "durationInMillis": 6,
-                    "id": "14"
-                },
-                {
-                    "durationInMillis": 9,
-                    "id": "15"
-                }
-            ],
-            "id": "9",
-            "startTime": "2016-03-11T00:32:52.507-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        },
-        {
-            "displayName": "unit",
-            "edges": [
-                {
-                    "durationInMillis": 161,
-                    "id": "35"
-                }
-            ],
-            "id": "13",
-            "startTime": "2016-03-11T00:32:52.511-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        },
-        {
-            "displayName": "deploy",
-            "edges": [],
-            "id": "35",
-            "startTime": "2016-03-11T00:32:52.672-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        },
-        {
-            "displayName": "integration",
-            "edges": [
-                {
-                    "durationInMillis": 159,
-                    "id": "35"
-                }
-            ],
-            "id": "14",
-            "startTime": "2016-03-11T00:32:52.513-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        },
-        {
-            "displayName": "ui",
-            "edges": [
-                {
-                    "durationInMillis": 156,
-                    "id": "35"
-                }
-            ],
-            "id": "15",
-            "startTime": "2016-03-11T00:32:52.516-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        }
-    ]
+    [ {
+      "displayName" : "build",
+      "durationInMillis" : 219,
+      "edges" : [ {
+        "id" : "9"
+      } ],
+      "id" : "3",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:08.719-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "test",
+      "durationInMillis" : 158,
+      "edges" : [ {
+        "id" : "13"
+      }, {
+        "id" : "14"
+      }, {
+        "id" : "15"
+      } ],
+      "id" : "9",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:08.938-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "unit",
+      "durationInMillis" : 127,
+      "edges" : [ {
+        "id" : "35"
+      } ],
+      "id" : "13",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:08.942-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "integration",
+      "durationInMillis" : 126,
+      "edges" : [ {
+        "id" : "35"
+      } ],
+      "id" : "14",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:08.944-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "ui",
+      "durationInMillis" : 137,
+      "edges" : [ {
+        "id" : "35"
+      } ],
+      "id" : "15",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:08.945-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "deploy",
+      "durationInMillis" : 47,
+      "edges" : [ ],
+      "id" : "35",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:09.096-0700",
+      "state" : "FINISHED"
+    } ]
+
+> In case pipeline run fails in one of the parallel branch, enclosing stage node will appear failed as well.
 
 > In case if the pipeline is in progress or failed in the middle, the response may include future nodes if there was 
   last successful pipeline build. The returned future nodes will have startTime, result and state as null. 
   Also the last node's edges will be patched to point to the future node. 
 
-From the above example, if build failed at parallel node *unit* then the response will be
+From the above example, if build failed at parallel node *unit* then the response will be:
 
     [ {
       "displayName" : "build",
+      "durationInMillis" : 51,
       "edges" : [ {
-        "durationInMillis" : 54,
         "id" : "9"
       } ],
       "id" : "3",
       "result" : "SUCCESS",
-      "startTime" : "2016-04-22T17:45:18.499-0700",
+      "startTime" : "2016-05-06T15:39:18.569-0700",
       "state" : "FINISHED"
     }, {
       "displayName" : "test",
+      "durationInMillis" : 344,
       "edges" : [ {
-        "durationInMillis" : 2,
         "id" : "13"
       }, {
-        "durationInMillis" : 3,
         "id" : "14"
       }, {
-        "durationInMillis" : 4,
         "id" : "15"
       } ],
       "id" : "9",
-      "result" : "UNSTABLE",
-      "startTime" : "2016-04-22T17:45:18.553-0700",
+      "result" : "FAILURE",
+      "startTime" : "2016-05-06T15:39:18.620-0700",
       "state" : "FINISHED"
     }, {
       "displayName" : "unit",
+      "durationInMillis" : 329,
       "edges" : [ {
-        "durationInMillis" : -1,
         "id" : "35"
       } ],
       "id" : "13",
       "result" : "FAILURE",
-      "startTime" : "2016-04-22T17:45:18.555-0700",
+      "startTime" : "2016-05-06T15:39:18.622-0700",
       "state" : "FINISHED"
     }, {
       "displayName" : "integration",
+      "durationInMillis" : 97,
       "edges" : [ {
-        "durationInMillis" : -1,
         "id" : "35"
       } ],
       "id" : "14",
       "result" : "SUCCESS",
-      "startTime" : "2016-04-22T17:45:18.556-0700",
+      "startTime" : "2016-05-06T15:39:18.623-0700",
       "state" : "FINISHED"
     }, {
       "displayName" : "ui",
+      "durationInMillis" : 107,
       "edges" : [ {
-        "durationInMillis" : -1,
         "id" : "35"
       } ],
       "id" : "15",
       "result" : "SUCCESS",
-      "startTime" : "2016-04-22T17:45:18.557-0700",
+      "startTime" : "2016-05-06T15:39:18.623-0700",
       "state" : "FINISHED"
     }, {
       "displayName" : "deploy",
+      "durationInMillis" : null,
       "edges" : [ {
-        "durationInMillis" : -1,
         "id" : "41"
       } ],
       "id" : "35",
@@ -643,13 +623,14 @@ From the above example, if build failed at parallel node *unit* then the respons
       "state" : null
     }, {
       "displayName" : "deployToProd",
+      "durationInMillis" : null,
       "edges" : [ ],
       "id" : "41",
       "result" : null,
       "startTime" : null,
       "state" : null
     } ]
-  
+
 # Get a Pipeline run node's detail
 
     curl -v  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/3
@@ -658,7 +639,6 @@ From the above example, if build failed at parallel node *unit* then the respons
         "displayName": "build",
         "edges": [
             {
-                "durationInMillis": 234,
                 "id": "9"
             }
         ],

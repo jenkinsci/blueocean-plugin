@@ -6,13 +6,10 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
-
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.json.JsonResponse;
 import org.kohsuke.stapler.verb.DELETE;
-import org.kohsuke.stapler.verb.PUT;
 
 import java.io.IOException;
 
@@ -90,7 +87,6 @@ public class PipelineImpl extends BluePipeline {
         return ensureTrailingSlash(path);
     }
 
-    @WebMethod(name="favorite") @PUT
     @Override
     public void favorite(@JsonBody FavoriteAction favoriteAction) {
         if(favoriteAction == null) {
