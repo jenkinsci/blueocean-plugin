@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { CommitHash, EmptyStateView } from '@jenkins-cd/design-language';
 import Table from './Table';
 
-const { array } = PropTypes;
+const { object } = PropTypes;
 
 export default class RunDetailsChanges extends Component {
     renderEmptyState() {
@@ -22,13 +22,13 @@ export default class RunDetailsChanges extends Component {
     }
 
     render() {
-        const { runs } = this.props;
+        const { result } = this.props;
 
-        if (!runs || !runs.length) {
+        if (!result) {
             return null;
         }
 
-        const { changeSet } = runs[0];
+        const { changeSet } = result;
 
         if (!changeSet || !changeSet.length) {
             return this.renderEmptyState();
@@ -55,5 +55,5 @@ export default class RunDetailsChanges extends Component {
 }
 
 RunDetailsChanges.propTypes = {
-    runs: array,
+    result: object,
 };

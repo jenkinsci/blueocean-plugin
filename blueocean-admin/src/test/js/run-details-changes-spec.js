@@ -14,7 +14,7 @@ describe('RunDetailsChanges', () => {
     describe('empty runs / bad data', () => {
         before(() => {
             component = (
-                <RunDetailsChanges runs={[]} />
+                <RunDetailsChanges />
             );
             tree = sd.shallowRender(component);
             output = tree.getRenderOutput();
@@ -29,7 +29,7 @@ describe('RunDetailsChanges', () => {
         before(() => {
             component = (
                 <RunDetailsChanges
-                  runs={[{ changeSet: [] }]}
+                  result={{ changeSet: [] }}
                 />
             );
             tree = sd.shallowRender(component);
@@ -46,7 +46,7 @@ describe('RunDetailsChanges', () => {
             const runs = latestRuns.map(run => (run.latestRun));
             component = (
                 <RunDetailsChanges
-                  runs={runs}
+                  result={runs[0]}
                 />
             );
             tree = sd.shallowRender(component);

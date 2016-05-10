@@ -97,7 +97,7 @@ class RunDetails extends Component {
             </ModalHeader>
             <ModalBody>
                 <div>
-                    {React.cloneElement(this.props.children, { ...this.props })}
+                    {React.cloneElement(this.props.children, { result, ...this.props })}
                 </div>
             </ModalBody>
         </ModalView>);
