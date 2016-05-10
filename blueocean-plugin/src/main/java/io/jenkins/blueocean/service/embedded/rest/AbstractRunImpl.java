@@ -11,7 +11,6 @@ import io.jenkins.blueocean.rest.model.Containers;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.verb.PUT;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -178,7 +177,6 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         }
     }
 
-    @PUT
     @Override
     public BlueRunStopResponse stop() {
         throw new ServiceException.NotImplementedException("Stop should be implemented on a subclass");

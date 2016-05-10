@@ -6,7 +6,6 @@ import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.kohsuke.stapler.verb.PUT;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +43,6 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         return null;
     }
 
-    @PUT
     @Override
     public BlueRunStopResponse stop() {
         run.doStop();
