@@ -8,7 +8,7 @@ import {
     PullRequests,
     PipelinePage,
     RunDetails,
-    RunDetailsLogs,
+    RunDetailsPipeline,
     RunDetailsChanges,
 } from './components';
 
@@ -24,8 +24,8 @@ export default (
             <Route path=":pipeline/pr" component={PullRequests} />
         </Route>
         <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
-            <IndexRedirect to="logs" />
-            <Route path="logs" component={RunDetailsLogs} />
+            <IndexRedirect to="pipeline" />
+            <Route path="pipeline" component={RunDetailsPipeline} />
             <Route path="changes" component={RunDetailsChanges} />
         </Route>
     </Route>

@@ -10,7 +10,7 @@ function uriString(input) {
     return encodeURIComponent(input).replace(/%2F/g, '%252F');
 }
 
-export default class RunDetailsLogs extends Component {
+export default class RunDetailsPipeline extends Component {
     render() {
         const { pipeline: name, branch, runId } = this.context.params;
 
@@ -42,14 +42,14 @@ export default class RunDetailsLogs extends Component {
     }
 }
 
-RunDetailsLogs.propTypes = {
+RunDetailsPipeline.propTypes = {
     pipeline: object,
     isMultiBranch: any,
     fileName: string,
     url: string,
 };
 
-RunDetailsLogs.contextTypes = {
+RunDetailsPipeline.contextTypes = {
     config: object.isRequired,
     params: object,
     pipeline: object,

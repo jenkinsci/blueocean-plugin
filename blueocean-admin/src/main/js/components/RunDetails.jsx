@@ -88,7 +88,7 @@ class RunDetails extends Component {
                       onAuthorsClick={this.navigateToChanges}
                     />
                     <PageTabs base={baseUrl}>
-                        <TabLink to="/logs">Pipeline</TabLink>
+                        <TabLink to="/pipeline">Pipeline</TabLink>
                         <TabLink to="/changes">Changes</TabLink>
                         <TabLink to="/tests">Tests</TabLink>
                         <TabLink to="/artifacts">Artifacts</TabLink>
