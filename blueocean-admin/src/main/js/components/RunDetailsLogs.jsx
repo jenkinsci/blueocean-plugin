@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    ExtensionPoint,
-    LogConsole,
-} from '@jenkins-cd/design-language';
+import { LogConsole } from '@jenkins-cd/design-language';
+import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
 import LogToolbar from './LogToolbar';
 
