@@ -17,9 +17,9 @@ export default (
     <Route path={rootRoutePath} component={OrganisationPipelines}>
         <IndexRoute component={Pipelines} />
         <Route component={PipelinePage}>
-            <Route path=":pipeline/branches*" component={MultiBranch} />
-            <Route path=":pipeline/activity*" component={Activity} />
-            <Route path=":pipeline/pr*" component={PullRequests} />
+            <Route path=":pipeline/branches/" component={MultiBranch} />
+            <Route path=":pipeline/activity/" component={Activity} />
+            <Route path=":pipeline/pr/" component={PullRequests} />
         </Route>
         <Route
           path=":pipeline/detail/:branch/:runId"
