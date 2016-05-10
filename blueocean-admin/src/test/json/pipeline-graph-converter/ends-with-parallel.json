@@ -1,0 +1,48 @@
+[
+    {
+        "displayName": "Build",
+        "edges": [
+            {
+                "durationInMillis": 694,
+                "id": "9"
+            }
+        ],
+        "id": "3",
+        "result": "SUCCESS",
+        "startTime": "2016-05-02T16:06:28.639+1000",
+        "state": "FINISHED"
+    },
+    {
+        "displayName": "Test",
+        "edges": [
+            {
+                "durationInMillis": 2,
+                "id": "12"
+            },
+            {
+                "durationInMillis": 3,
+                "id": "13"
+            }
+        ],
+        "id": "9",
+        "result": "SUCCESS",
+        "startTime": "2016-05-02T16:06:29.333+1000",
+        "state": "FINISHED"
+    },
+    {
+        "displayName": "Firefox",
+        "edges": [],
+        "id": "12",
+        "result": "SUCCESS",
+        "startTime": "2016-05-02T16:06:29.335+1000",
+        "state": "FINISHED"
+    },
+    {
+        "displayName": "Chrome",
+        "edges": [],
+        "id": "13",
+        "result": "SUCCESS",
+        "startTime": "2016-05-02T16:06:29.336+1000",
+        "state": "FINISHED"
+    }
+]
