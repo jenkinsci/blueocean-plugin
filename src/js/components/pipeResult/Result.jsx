@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {Icon} from 'react-material-icons-blue';
+import { ReadableDate } from '../ReadableDate';
 
 import moment from 'moment';
 
@@ -45,11 +46,13 @@ class PipelineResult extends Component {
 
                 <div className="row">
                     <div className="commons">
-                        <div>Branch&nbsp;
-                            <span className="value">{decodeURIComponent(pipeline)}</span>
+                        <div>
+                            <label>Branch</label>
+                            <span>{decodeURIComponent(pipeline)}</span>
                         </div>
-                        <div>Commit&nbsp;
-                            <span className="value">
+                        <div>
+                            <label>Commit</label>
+                            <span className="commit">
                                 #{commitId && commitId.substring(0, 8) || '-'}
                             </span>
                         </div>
@@ -75,7 +78,7 @@ class PipelineResult extends Component {
                                 icon: 'access_time',
                                 style: { fill: "#fff" },
                             }} />
-                            {moment(endTime).fromNow()}
+                            <ReadableDate date={endTime} />
                         </div>
                     </div>
                 </div>

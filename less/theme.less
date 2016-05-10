@@ -723,9 +723,11 @@ footer {
   overflow-y: auto;
   max-height: 20%;
   min-height: 5%;
+  font-size: 1.6rem;
 }
 
 .dialog section h4 {
+  font-size: 1.8rem;
   padding-bottom: 5px;
 }
 
@@ -777,7 +779,12 @@ footer {
   white-space: nowrap;
 }
 
-.dialog .result .value {
+.dialog .result .commons label {
+  display: inline-block;
+  width: 100px;
+}
+
+.dialog .result .commit {
   font-family: @font-family-monospace;
 }
 
@@ -809,11 +816,12 @@ footer {
 
 .header .closeButton {
   cursor: pointer;
+  text-decoration: none;
   position: absolute;
   font-size: 3em;
   color: #ffffff;
   right: 10px;
-  top: 10px
+  top: 10px;
 }
 
 .spin {
