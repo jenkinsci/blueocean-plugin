@@ -6,6 +6,7 @@ import {
     LogConsole,
     PipelineResult,
 } from '@jenkins-cd/design-language';
+import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
 import LogToolbar from './LogToolbar';
 import {
@@ -28,43 +29,40 @@ class RunDetails extends Component {
             const {
                 params: {
                     pipeline,
-                },
+                    },
                 config = {},
-            } = this.context;
+                } = this.context;
             config.pipeline = pipeline;
             this.props.fetchRunsIfNeeded(config);
             this.props.setPipeline(config);
         }
     }
+
     render() {
         // early out
         if (!this.context.params
             || !this.props.runs
-            || this.props.isMultiBranch === null
-        ) {
+            || this.props.isMultiBranch === null) {
             return null;
         }
         const {
-            context: {
-                router,
-                params: {
-                    branch,
-                    runId,
-                    pipeline: name,
-                },
-            },
-        } = this;
+            router,
+            params,
+            } = this.context;
+
+        const { pipeline: name, branch, runId } = params; // From route
 
         // multibranch special treatment - get url of the log
+        const isMultiBranch = this.props.isMultiBranch;
         const baseUrl = '/rest/organizations/jenkins' +
-            `/pipelines/${name}`;
+            `/pipelines/${uriString(name)}/`;
         let url;
-        let fileName = name;
-        if (this.props.isMultiBranch) {
-            url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log`;
+        let fileName;
+        if (isMultiBranch) {
+            url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
             fileName = `${branch}-${runId}.txt`;
         } else {
-            url = `${baseUrl}/runs/${runId}/log`;
+            url = `${baseUrl}/runs/${runId}/log/`;
             fileName = `${runId}.txt`;
         }
         const result = this.props.runs.filter(
@@ -76,21 +74,28 @@ class RunDetails extends Component {
             router.goBack();
         };
 
-        return (<ModalView
-          isVisible
-          result={result.result}
-          {...{ afterClose }}
-        >
-            <ModalHeader>
-                <PipelineResult data={result} />
-            </ModalHeader>
-            <ModalBody>
-                <div>
-                    <LogToolbar {...{ fileName, url }} />
-                    <LogConsole {...{ url }} />
-                </div>
-            </ModalBody>
-        </ModalView>);
+        return (
+            <ModalView
+              isVisible
+              result={result.result}
+              {...{ afterClose }}
+            >
+                <ModalHeader>
+                    <PipelineResult data={result} />
+                </ModalHeader>
+                <ModalBody>
+                    <div>
+                        <ExtensionPoint name="jenkins.pipeline.run.result"
+                          pipelineName={name}
+                          branchName={isMultiBranch ? branch : undefined}
+                          runId={runId}
+                        />
+                        <LogToolbar {...{ fileName, url }} />
+                        <LogConsole {...{ url }} />
+                    </div>
+                </ModalBody>
+            </ModalView>
+        );
     }
 }
 

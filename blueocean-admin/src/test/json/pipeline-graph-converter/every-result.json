@@ -1,0 +1,70 @@
+[
+    {
+        "displayName": "First",
+        "edges": [
+            {
+                "id": "13"
+            }
+        ],
+        "id": "3",
+        "result": "SUCCESS",
+        "startTime": "2016-05-02T16:06:28.639+1000",
+        "state": "FINISHED"
+    },
+    {
+        "displayName": "Second",
+        "edges": [
+            {
+                "id": "27"
+            }
+        ],
+        "id": "13",
+        "result": "UNKNOWN",
+        "startTime": "2016-05-02T16:06:29.336+1000",
+        "state": "RUNNING"
+    },
+    {
+        "displayName": "Third",
+        "edges": [
+            {
+                "id": "28"
+            }
+        ],
+        "id": "27",
+        "result": "UNKNOWN",
+        "startTime": "2016-05-02T16:06:29.942+1000",
+        "state": "QUEUED"
+    },
+    {
+        "displayName": "Fourth",
+        "edges": [
+            {
+                "id": "29"
+            }
+        ],
+        "id": "28",
+        "result": "FAILURE",
+        "startTime": "2016-05-02T16:06:29.942+1000",
+        "state": "FINISHED"
+    },
+    {
+        "displayName": "Steve",
+        "edges": [
+            {
+                "id": "33"
+            }
+        ],
+        "id": "29",
+        "result": "UNKNOWN",
+        "startTime": "2016-05-02T16:06:29.942+1000",
+        "state": "NOT_BUILT"
+    },
+    {
+        "displayName": "Unknown-Null",
+        "edges": [],
+        "id": "33",
+        "result": null,
+        "startTime": "2016-05-02T16:06:29.942+1000",
+        "state": null
+    }
+]
