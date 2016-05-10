@@ -1,22 +1,3 @@
-def sendhipchat() {
-    res = currentBuild.result
-    if(currentBuild.result == null) {
-      res = "SUCCESS"
-    }
-    message = "${env.JOB_NAME} #${env.BUILD_NUMBER}, status: ${res} (<a href='${currentBuild.absoluteUrl}'>Open</a>)"
-    color = null
-    if(currentBuild.result == "UNSTABLE") {
-        color = "YELLOW"
-    } else if(currentBuild.result == "SUCCESS" || currentBuild.result == null){
-        color = "GREEN"
-    } else if(currentBuild.result == "FAILURE") {
-        color = "RED"
-    }
-    if(color != null) {
-        hipchatSend message: message, color: color
-    }
-}
-
 node {
   deleteDir()
   checkout scm
@@ -36,3 +17,23 @@ node {
     }
   }
 }
+
+def sendhipchat() {
+    res = currentBuild.result
+    if(currentBuild.result == null) {
+      res = "SUCCESS"
+    }
+    message = "${env.JOB_NAME} #${env.BUILD_NUMBER}, status: ${res} (<a href='${currentBuild.absoluteUrl}'>Open</a>)"
+    color = null
+    if(currentBuild.result == "UNSTABLE") {
+        color = "YELLOW"
+    } else if(currentBuild.result == "SUCCESS" || currentBuild.result == null){
+        color = "GREEN"
+    } else if(currentBuild.result == "FAILURE") {
+        color = "RED"
+    }
+    if(color != null) {
+        hipchatSend message: message, color: color
+    }
+}
+
