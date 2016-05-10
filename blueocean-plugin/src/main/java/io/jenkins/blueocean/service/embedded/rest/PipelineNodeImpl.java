@@ -102,7 +102,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
             FlowGraphTable.Row row = rows.get(i);
             if(row.getNode().equals(node)){
                 if(isLoggable.apply(row.getNode())){
-                      logs.add(row.getNode().getAction(LogAction.class).getLogText());
+                    logs.add(row.getNode().getAction(LogAction.class).getLogText());
                 }
 
                 for(int j=i+1; j < rows.size(); j++){
@@ -113,7 +113,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
                         PipelineNodeUtil.isStage(subStepRow.getNode())
                         ||
                         PipelineNodeUtil.isParallelBranch(node) &&
-                            PipelineNodeUtil.isParallelBranch(subStepRow.getNode())
+                            (PipelineNodeUtil.isParallelBranch(subStepRow.getNode()) || PipelineNodeUtil.isStage(subStepRow.getNode()))
                         ){
                         break;
                     }else{
