@@ -56,20 +56,15 @@ class RunDetails extends Component {
         // early out
         if (!this.context.params
             || !this.props.runs
-            || this.props.isMultiBranch === null
-        ) {
+            || this.props.isMultiBranch === null) {
             return null;
         }
         const {
-            context: {
-                router,
-                params: {
-                    branch,
-                    runId,
-                    pipeline: name,
-                },
-            },
-        } = this;
+            router,
+            params,
+        } = this.context;
+
+        const { pipeline: name, branch, runId } = params; // From route
 
         const baseUrl = cleanBaseUrl(this.context.location.pathname);
 

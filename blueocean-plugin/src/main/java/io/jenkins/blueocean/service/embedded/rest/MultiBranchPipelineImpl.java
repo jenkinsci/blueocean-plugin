@@ -1,9 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.verb.PUT;
-
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -17,6 +13,7 @@ import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
+import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +38,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         return OrganizationImpl.INSTANCE.getName();
     }
 
-    @WebMethod(name="favorite") @PUT
+
     @Override
     public void favorite(@JsonBody FavoriteAction favoriteAction) {
         if(favoriteAction == null) {

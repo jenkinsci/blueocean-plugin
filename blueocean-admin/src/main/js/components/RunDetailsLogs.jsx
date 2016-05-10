@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import {
+    ExtensionPoint,
     LogConsole,
 } from '@jenkins-cd/design-language';
 
 import LogToolbar from './LogToolbar';
 
-const { string, object } = PropTypes;
+const { string, object, any } = PropTypes;
 
 function uriString(input) {
     return encodeURIComponent(input).replace(/%2F/g, '%252F');
@@ -13,35 +14,31 @@ function uriString(input) {
 
 export default class RunDetailsLogs extends Component {
     render() {
-        const {
-            context: {
-                pipeline: {
-                    branchNames,
-                    name,
-                },
-                params: {
-                    branch,
-                    runId,
-                },
-            },
-        } = this;
+        const { pipeline: name, branch, runId } = this.context.params;
 
         // multibranch special treatment - get url of the log
-        const multiBranch = !!branchNames;
-        const restBaseUrl = '/rest/organizations/jenkins' +
-            `/pipelines/${uriString(name)}`;
+        const isMultiBranch = this.props.isMultiBranch;
+        const baseUrl = '/rest/organizations/jenkins' +
+            `/pipelines/${uriString(name)}/`;
         let url;
-        let fileName = name;
-        if (multiBranch) {
-            url = `${restBaseUrl}/branches/${uriString(branch)}/runs/${runId}/log`;
+        let fileName;
+        if (isMultiBranch) {
+            url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
             fileName = `${branch}-${runId}.txt`;
         } else {
-            url = `${restBaseUrl}/runs/${runId}/log`;
+            url = `${baseUrl}/runs/${runId}/log/`;
             fileName = `${runId}.txt`;
         }
 
+        debugger;
+
         return (
             <div>
+                <ExtensionPoint name="jenkins.pipeline.run.result"
+                  pipelineName={name}
+                  branchName={isMultiBranch ? branch : undefined}
+                  runId={runId}
+                />
                 <LogToolbar {...{ fileName, url }} />
                 <LogConsole {...{ url }} />
             </div>
@@ -51,6 +48,7 @@ export default class RunDetailsLogs extends Component {
 
 RunDetailsLogs.propTypes = {
     pipeline: object,
+    isMultiBranch: any,
     fileName: string,
     url: string,
 };
@@ -58,6 +56,5 @@ RunDetailsLogs.propTypes = {
 RunDetailsLogs.contextTypes = {
     config: object.isRequired,
     params: object,
-    router: object.isRequired, // From react-router
     pipeline: object,
 };

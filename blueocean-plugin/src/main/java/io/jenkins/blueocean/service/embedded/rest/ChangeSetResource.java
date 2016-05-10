@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 import java.text.SimpleDateFormat;
 
@@ -18,6 +19,7 @@ import java.text.SimpleDateFormat;
  *
  * @author Vivek Pandey
  */
+@ExportedBean
 public class ChangeSetResource extends Resource {
     private final ChangeLogSet.Entry changeSet;
 

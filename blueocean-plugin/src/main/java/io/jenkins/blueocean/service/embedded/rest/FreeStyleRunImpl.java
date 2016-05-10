@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import org.kohsuke.stapler.verb.PUT;
-
 import hudson.model.FreeStyleBuild;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -35,7 +33,6 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
         return Containers.fromResourceMap(m);
     }
 
-    @PUT
     @Override
     public BlueRunStopResponse stop() {
         try {

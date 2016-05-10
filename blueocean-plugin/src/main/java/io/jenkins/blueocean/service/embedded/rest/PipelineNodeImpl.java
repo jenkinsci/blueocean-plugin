@@ -22,19 +22,26 @@ import java.util.List;
  * @see FlowNode
  */
 public class PipelineNodeImpl extends BluePipelineNode {
-    /*package*/ final FlowNode node;
+    private final FlowNode node;
     private final List<FlowNode> children;
     private final List<Edge> edges;
     private final WorkflowRun run;
-
+    private final Long durationInMillis;
     private final PipelineNodeGraphBuilder.NodeRunStatus status;
 
-    public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeGraphBuilder.NodeRunStatus status, List<FlowNode> children) {
+    public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeGraphBuilder.NodeRunStatus status, PipelineNodeGraphBuilder nodeGraphBuilder) {
         this.run = run;
         this.node = node;
-        this.children = children;
+        this.children = nodeGraphBuilder.getChildren(node);
         this.edges = buildEdges();
         this.status = status;
+        if(getStateObj() == BlueRun.BlueRunState.FINISHED){
+            this.durationInMillis = nodeGraphBuilder.getDurationInMillis(node);
+        }else if(getStateObj() == BlueRun.BlueRunState.RUNNING){
+            this.durationInMillis = System.currentTimeMillis()-TimingAction.getStartTime(node);
+        }else{
+            this.durationInMillis = null;
+        }
     }
 
     @Override
@@ -78,6 +85,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
+    public Long getDurationInMillis() {
+        return durationInMillis;
+    }
+
+    @Override
     public Object getLog() {
         FlowGraphTable nodeGraphTable = new FlowGraphTable(run.getExecution());
         nodeGraphTable.build();
@@ -90,7 +102,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
             FlowGraphTable.Row row = rows.get(i);
             if(row.getNode().equals(node)){
                 if(isLoggable.apply(row.getNode())){
-                      logs.add(row.getNode().getAction(LogAction.class).getLogText());
+                    logs.add(row.getNode().getAction(LogAction.class).getLogText());
                 }
 
                 for(int j=i+1; j < rows.size(); j++){
@@ -101,7 +113,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
                         PipelineNodeUtil.isStage(subStepRow.getNode())
                         ||
                         PipelineNodeUtil.isParallelBranch(node) &&
-                            PipelineNodeUtil.isParallelBranch(subStepRow.getNode())
+                            (PipelineNodeUtil.isParallelBranch(subStepRow.getNode()) || PipelineNodeUtil.isStage(subStepRow.getNode()))
                         ){
                         break;
                     }else{
@@ -139,21 +151,6 @@ public class PipelineNodeImpl extends BluePipelineNode {
         @Override
         public String getId() {
             return edge.getId();
-        }
-
-        @Override
-        public long getDurationInMillis() {
-            if(node instanceof PipelineNodeGraphBuilder.InactiveFlowNodeWrapper){
-                return -1;
-            }
-            TimingAction t = node.getAction(TimingAction.class);
-            TimingAction c = edge.getAction(TimingAction.class);
-            if(t!= null){
-                if(c != null){
-                    return c.getStartTime() - t.getStartTime();
-                }
-            }
-            return -1;
         }
     }
 
