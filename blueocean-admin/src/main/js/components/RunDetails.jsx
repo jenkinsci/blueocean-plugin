@@ -30,6 +30,11 @@ function cleanBaseUrl(url) {
 }
 
 class RunDetails extends Component {
+    constructor(props) {
+        super(props);
+
+        this.navigateToChanges = this.navigateToChanges.bind(this);
+    }
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const {
@@ -42,6 +47,10 @@ class RunDetails extends Component {
             this.props.fetchRunsIfNeeded(config);
             this.props.setPipeline(config);
         }
+    }
+    navigateToChanges() {
+        const changesUrl = `${cleanBaseUrl(this.context.location.pathname)}/changes`;
+        this.context.router.push(changesUrl);
     }
     render() {
         // early out
@@ -80,7 +89,9 @@ class RunDetails extends Component {
         >
             <ModalHeader>
                 <div>
-                    <PipelineResult data={result} />
+                    <PipelineResult data={result}
+                      onAuthorsClick={this.navigateToChanges}
+                    />
                     <PageTabs base={baseUrl}>
                         <TabLink to="/logs">Pipeline</TabLink>
                         <TabLink to="/changes">Changes</TabLink>
