@@ -37,7 +37,7 @@ export default class PullRequest extends Component {
             location.pathname = url;
             router.push(location);
         };
-        return (<tr key={id} onClick={open} >
+        return (<tr key={id} onClick={open} id={`${name}-${id}`} >
             <td><StatusIndicator result={result} /></td>
             <td>{id}</td>
             <td>{title || '-'}</td>

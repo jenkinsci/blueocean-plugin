@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import Table from './Table';
 import PullRequest from './PullRequest';
+import { scrollToHash } from './ScrollToHash';
 import { RunsRecord } from './records';
 import {
     actions,
@@ -10,7 +11,27 @@ import {
     connect,
 } from '../redux';
 
-const { func, object, array } = PropTypes;
+const { func, object, array, string } = PropTypes;
+
+const EmptyState = ({ repoName }) => (
+    <main>
+        <EmptyStateView iconName="goat">
+            <h1>Push me, pull you</h1>
+
+            <p>
+                When a Pull Request is opened on the repository <em>{repoName}</em>,
+                Jenkins will test it and report the status of
+                your changes back to the pull request on Github.
+            </p>
+
+            <button>Enable</button>
+        </EmptyStateView>
+    </main>
+);
+
+EmptyState.propTypes = {
+    repoName: string,
+};
 
 export class PullRequests extends Component {
     componentWillMount() {
@@ -26,23 +47,6 @@ export class PullRequests extends Component {
         }
     }
 
-    renderEmptyState(repoName) {
-        return (
-            <main>
-                <EmptyStateView iconName="goat">
-                    <h1>Push me, pull you</h1>
-
-                    <p>
-                        When a Pull Request is opened on the repository <em>{repoName}</em>,
-                        Jenkins will test it and report the status of
-                        your changes back to the pull request on Github.
-                    </p>
-
-                    <button>Enable</button>
-                </EmptyStateView>
-            </main>
-        );
-    }
 
     render() {
         const { branches } = this.props;
@@ -54,7 +58,7 @@ export class PullRequests extends Component {
         const pullRequests = branches.filter((run) => run.pullRequest);
 
         if (!pullRequests.length) {
-            return this.renderEmptyState(this.context.params.pipeline);
+            return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
         const headers = [
@@ -95,4 +99,4 @@ PullRequests.propTypes = {
 
 const selectors = createSelector([branchSelector], (branches) => ({ branches }));
 
-export default connect(selectors, actions)(PullRequests);
+export default connect(selectors, actions)(scrollToHash(PullRequests));

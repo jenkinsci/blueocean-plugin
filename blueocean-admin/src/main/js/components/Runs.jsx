@@ -49,10 +49,10 @@ export default class Runs extends Component {
             router.push(location);
         };
 
-        return (<tr key={id} onClick={open} >
+        return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
             <td>
                 <StatusIndicator result={resultRun} />
-            </td>q
+            </td>
             <td>
                 {id}
             </td>

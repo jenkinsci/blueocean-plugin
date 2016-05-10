@@ -35,7 +35,7 @@ export default class Branches extends Component {
             router.push(location);
         };
         const { msg } = changeSet[0] || {};
-        return (<tr key={name} onClick={open} >
+        return (<tr key={name} onClick={open} id={`${name}-${id}`} >
             <td><WeatherIcon score={weatherScore} /></td>
             <td>
                 <StatusIndicator result={result === 'UNKNOWN' ? state : result} />

@@ -78,12 +78,13 @@ class RunDetails extends Component {
         result.name = name;
 
         const afterClose = () => {
+            location.hash = `#${branch}-${runId}`;
             if (previous) {
-                router.goBack();
+                location.pathname = previous;
             } else {
                 location.pathname = `/pipelines/${name}/activity/`;
-                router.push(location);
             }
+            router.push(location);
         };
 
         return (<ModalView

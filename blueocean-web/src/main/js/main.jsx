@@ -143,5 +143,3 @@ function startApp() {
 ExtensionPoint.registerExtensionPoint("jenkins.main.routes", () => {
     startApp();
 });
-
-pac

@@ -3,6 +3,7 @@ import Table from './Table';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import Branches from './Branches';
 import { RunsRecord } from './records';
+import { scrollToHash } from './ScrollToHash';
 import {
     actions,
     currentBranches as branchSelector,
@@ -10,7 +11,30 @@ import {
     connect,
 } from '../redux';
 
-const { object, array, func } = PropTypes;
+const { object, array, func, string } = PropTypes;
+
+const EmptyState = ({ repoName }) => (
+    <main>
+        <EmptyStateView iconName="shoes">
+            <h1>Branch out</h1>
+
+            <p>
+                Create a branch in the repository <em>{repoName}</em> and
+                Jenkins will start testing your changes.
+            </p>
+
+            <p>
+                Give it a try and become a hero to your team.
+            </p>
+
+            <button>Enable</button>
+        </EmptyStateView>
+    </main>
+);
+
+EmptyState.propTypes = {
+    repoName: string,
+};
 
 export class MultiBranch extends Component {
     componentWillMount() {
@@ -26,27 +50,6 @@ export class MultiBranch extends Component {
         }
     }
 
-    renderEmptyState(repoName) {
-        return (
-            <main>
-                <EmptyStateView iconName="shoes">
-                    <h1>Branch out</h1>
-
-                    <p>
-                        Create a branch in the repository <em>{repoName}</em> and
-                        Jenkins will start testing your changes.
-                    </p>
-
-                    <p>
-                        Give it a try and become a hero to your team.
-                    </p>
-
-                    <button>Enable</button>
-                </EmptyStateView>
-            </main>
-        );
-    }
-
     render() {
         const { branches } = this.props;
         // early out
@@ -55,7 +58,7 @@ export class MultiBranch extends Component {
         }
 
         if (!branches.length) {
-            return this.renderEmptyState(this.context.params.pipeline);
+            return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
         const headers = [
@@ -100,4 +103,4 @@ MultiBranch.propTypes = {
 
 const selectors = createSelector([branchSelector], (branches) => ({ branches }));
 
-export default connect(selectors, actions)(MultiBranch);
+export default connect(selectors, actions)(scrollToHash(MultiBranch));

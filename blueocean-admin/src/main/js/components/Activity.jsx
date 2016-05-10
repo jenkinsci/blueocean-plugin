@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import Table from './Table';
 import Runs from './Runs';
+import { scrollToHash } from './ScrollToHash';
 import { ActivityRecord, ChangeSetRecord } from './records';
 import {
     actions,
@@ -10,7 +11,29 @@ import {
     connect,
 } from '../redux';
 
-const { object, array, func } = PropTypes;
+const { object, array, func, string } = PropTypes;
+
+const EmptyState = ({ repoName }) => (
+    <main>
+        <EmptyStateView iconName="shoes">
+            <h1>Ready, get set...</h1>
+
+            <p>
+                Hmm, looks like there are no runs in this pipeline’s history.
+            </p>
+
+            <p>
+                Commit to the repository <em>{repoName}</em> or run the pipeline manually.
+            </p>
+
+            <button>Run Now</button>
+        </EmptyStateView>
+    </main>
+);
+
+EmptyState.propTypes = {
+    repoName: string,
+};
 
 export class Activity extends Component {
     componentWillMount() {
@@ -26,26 +49,6 @@ export class Activity extends Component {
         }
     }
 
-    renderEmptyState(repoName) {
-        return (
-            <main>
-                <EmptyStateView iconName="shoes">
-                    <h1>Ready, get set...</h1>
-
-                    <p>
-                        Hmm, looks like there are no runs in this pipeline’s history.
-                    </p>
-
-                    <p>
-                        Commit to the repository <em>{repoName}</em> or run the pipeline manually.
-                    </p>
-
-                    <button>Run Now</button>
-                </EmptyStateView>
-            </main>
-        );
-    }
-
     render() {
         const { runs } = this.props;
         // early out
@@ -54,7 +57,7 @@ export class Activity extends Component {
         }
 
         if (!runs.length) {
-            return this.renderEmptyState(this.context.params.pipeline);
+            return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
         const headers = [
@@ -93,6 +96,7 @@ export class Activity extends Component {
 
 Activity.contextTypes = {
     params: object.isRequired,
+    location: object.isRequired,
     config: object.isRequired,
 };
 
@@ -103,4 +107,4 @@ Activity.propTypes = {
 
 const selectors = createSelector([runsSelector], (runs) => ({ runs }));
 
-export default connect(selectors, actions)(Activity);
+export default connect(selectors, actions)(scrollToHash(Activity));
