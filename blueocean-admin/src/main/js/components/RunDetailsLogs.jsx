@@ -30,8 +30,6 @@ export default class RunDetailsLogs extends Component {
             fileName = `${runId}.txt`;
         }
 
-        debugger;
-
         return (
             <div>
                 <ExtensionPoint name="jenkins.pipeline.run.result"
