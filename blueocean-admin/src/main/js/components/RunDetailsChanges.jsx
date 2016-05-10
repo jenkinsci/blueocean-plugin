@@ -23,6 +23,11 @@ export default class RunDetailsChanges extends Component {
 
     render() {
         const { runs } = this.props;
+
+        if (!runs || !runs.length) {
+            return null;
+        }
+
         const { changeSet } = runs[0];
 
         if (!changeSet || !changeSet.length) {
