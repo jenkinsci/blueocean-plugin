@@ -50,12 +50,14 @@ class PipelineResult extends Component {
                             <label>Branch</label>
                             <span>{decodeURIComponent(pipeline)}</span>
                         </div>
+                        { commitId ?
                         <div>
                             <label>Commit</label>
                             <span className="commit">
-                                #{commitId && commitId.substring(0, 8) || '-'}
+                                #{commitId.substring(0, 8)}
                             </span>
                         </div>
+                        : '' }
                         <div>
                            {
                                authors.length > 0 ? `Changes by ${authors.map(
