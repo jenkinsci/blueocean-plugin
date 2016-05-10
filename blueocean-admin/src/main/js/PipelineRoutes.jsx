@@ -10,6 +10,7 @@ import {
     RunDetails,
     RunDetailsPipeline,
     RunDetailsChanges,
+    RunDetailsArtifacts,
 } from './components';
 
 // Config has some globals in it for path / routes
@@ -27,6 +28,7 @@ export default (
             <IndexRedirect to="pipeline" />
             <Route path="pipeline" component={RunDetailsPipeline} />
             <Route path="changes" component={RunDetailsChanges} />
+            <Route path="artifacts" component={RunDetailsArtifacts} />
         </Route>
     </Route>
 );

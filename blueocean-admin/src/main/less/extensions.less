@@ -85,8 +85,27 @@
   .message {
     width: 100%;
   }
+}
 
+.artifacts-table {
+  table-layout: fixed;
 
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  th {
+    width: 100px;
+  }
+
+  .name {
+    width: 100%;
+  }
+
+  .download {
+    text-align: right;
+  }
 }
 
 // TODO: duplicated from the JDL; long-term may want to expose mixins to Less in other plugins? (UX-285?)
