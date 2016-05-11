@@ -1,14 +1,20 @@
-docker.image("node").inside {
-    
-    /* 
-     * - set the HOME so that npm doesn't try to write to root... which is a bit odd of the image.
-     */
+node {
 
-    stage "Checkout and build"
-        checkout scm
-	sh "HOME=. && npm install"
+     stage "Prepare environment"
+       checkout scm
+       def environment  = docker.build 'cloudbees-node'
 
-    stage "Test and validate"	
-        sh "HOME=. && npm run gulp"
+       environment.inside {
+        stage "Checkout and build"
+          sh "npm install"
+
+         stage "Test and validate"	
+          sh "npm install gulp-cli && ./node_modules/.bin/gulp"
+       }
+
+     stage "Cleanup"
+     	deleteDir()
+
 }
+
 
