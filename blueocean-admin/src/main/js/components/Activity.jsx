@@ -9,6 +9,7 @@ import {
     createSelector,
     connect,
 } from '../redux';
+import * as sse from '@jenkins-cd/sse-gateway';
 
 const { object, array, func } = PropTypes;
 
@@ -23,6 +24,18 @@ export class Activity extends Component {
             } = this.context;
             config.pipeline = pipeline;
             this.props.fetchRunsIfNeeded(config);
+            this.sseEventListener = sse.subscribe('job', function () {
+                this.props.fetchRunsIfNeeded(config);
+            }, {
+                job_name: pipeline, // we're only interested in events relating to this pipeline.
+            });
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.sseEventListener) {
+            sse.unsubscribe(this.sseEventListener);
+            delete this.sseEventListener;
         }
     }
 
