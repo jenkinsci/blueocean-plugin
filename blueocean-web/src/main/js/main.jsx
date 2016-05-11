@@ -107,39 +107,36 @@ function startApp() {
         basename: appURLBase
     });
 
+    // get all ExtensionPoints related to redux-stores
     const stores = ExtensionPoint.getExtensions("jenkins.main.stores");
     let store;
-    // FIX for zombie tests
-    try {
-        if (stores.length === 0) {
-            store = configureStore(combineReducers(Object.assign(...rootReducer)));
-        } else {
-            store = configureStore(combineReducers(Object.assign(...stores, rootReducer)));
-        }
-    } catch (e) {
-        store = configureStore(()=>null);
+    if (stores.length === 0) {
+        // if we do not have any stores we only add the location store
+        store = configureStore(combineReducers(rootReducer));
+    } else {
+        // some plugins provide they own store so combining with loction store
+        store = configureStore(combineReducers(
+          Object.assign({}, ...stores, rootReducer))
+        );
     }
-    const { dispatch, getState } = store;
 
-    // FIX for zombie tests
-    try {
-        history.listen(newLocation => {
-            const { current } = getState().location;
+    // on each change of the url we need to update the location object
+    history.listen(newLocation => {
+        const { dispatch, getState } = store;
+        const { current } = getState().location;
 
-            if (current) {
-                dispatch({
-                    type: ACTION_TYPES.SET_LOCATION_PREVIOUS,
-                    payload: current,
-                });
-            }
+        // no current happens on the first request
+        if (current) {
             dispatch({
-                type: ACTION_TYPES.SET_LOCATION_CURRENT,
-                payload: newLocation.pathname,
+                type: ACTION_TYPES.SET_LOCATION_PREVIOUS,
+                payload: current,
             });
+        }
+        dispatch({
+            type: ACTION_TYPES.SET_LOCATION_CURRENT,
+            payload: newLocation.pathname,
         });
-    } catch (e) {
-        // do nothing for now
-    }
+    });
 
     // Start React
     render(
