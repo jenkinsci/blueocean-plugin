@@ -38,12 +38,12 @@ class PipelineResult extends Component {
         <div className="pipeline-result">
             <section className="left">
                 { result === 'SUCCESS' && <Icon {...{
-                    size: 125,
+                    size: 100,
                     icon: 'done',
                     style: { fill: "#fff" },
                 }} />}
                 { result === 'FAILURE' &&  <Icon {...{
-                    size: 125,
+                    size: 100,
                     icon: 'close',
                     style: { fill: "#fff" },
                 }} />}
