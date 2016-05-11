@@ -3,9 +3,15 @@ import {Icon} from 'react-material-icons-blue';
 
 import moment from 'moment';
 
-const { object } = PropTypes;
+const { object, func } = PropTypes;
 
 class PipelineResult extends Component {
+    handleAuthorsClick() {
+        if (this.props.onAuthorsClick) {
+            this.props.onAuthorsClick();
+        }
+    }
+
     render() {
         const {
             data: {
@@ -55,8 +61,12 @@ class PipelineResult extends Component {
                         </div>
                         <div>
                            {
-                               authors.length > 0 ? `Changes by ${authors.map(
-                                 author => ' ' + author)}` : 'No changes'
+                               authors.length > 0 ?
+                                   <a className="authors" onClick={() => this.handleAuthorsClick()}>
+                                        Changes by {authors.map(
+                                        author => ' ' + author)}
+                                   </a>
+                                   : 'No changes'
                             }
                         </div>
                     </div>
@@ -87,6 +97,7 @@ class PipelineResult extends Component {
 PipelineResult.propTypes = {
     data: object.isRequired,
     colors: object,
+    onAuthorsClick: func,
 };
 
 export { PipelineResult };
