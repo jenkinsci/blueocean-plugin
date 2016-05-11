@@ -57,7 +57,7 @@ class PipelineResult extends Component {
                                 #{commitId.substring(0, 8)}
                             </span>
                         </div>
-                        : '' }
+                        : null }
                         <div>
                            {
                                authors.length > 0 ? `Changes by ${authors.map(
