@@ -15,7 +15,7 @@ export class FileSize extends Component {
         if (!isNaN(bytes)) {
             // calculate the unit (e.g. 'MB') to display
             // but ensure it doesn't go over the max we support
-            let power = Math.floor(Math.log10(bytes) / Math.log10(1024));
+            let power = Math.floor(Math.log10(Math.abs(bytes)) / Math.log10(1024));
             power = Math.min(power, units.length - 1);
 
             // round displayed value to one decimal place

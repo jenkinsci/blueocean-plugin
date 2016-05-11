@@ -9,7 +9,8 @@ storiesOf('FileSize', module)
     .add('102.5 megs', scenario4)
     .add('5500 string', scenario5)
     .add('bogus', scenario6)
-    .add('large', scenario7);
+    .add('large', scenario7)
+    .add('negative', scenario8);
 
 function scenario1() {
     return (
@@ -53,3 +54,8 @@ function scenario7() {
     );
 }
 
+function scenario8() {
+    return (
+        <FileSize bytes={-1024 * 1024 * 5.5} />
+    );
+}
