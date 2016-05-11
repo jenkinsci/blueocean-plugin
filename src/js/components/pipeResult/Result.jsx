@@ -1,11 +1,18 @@
 import React, { Component, PropTypes } from 'react';
 import {Icon} from 'react-material-icons-blue';
+import { ReadableDate } from '../ReadableDate';
 
 import moment from 'moment';
 
-const { object } = PropTypes;
+const { object, func } = PropTypes;
 
 class PipelineResult extends Component {
+    handleAuthorsClick() {
+        if (this.props.onAuthorsClick) {
+            this.props.onAuthorsClick();
+        }
+    }
+
     render() {
         const {
             data: {
@@ -45,18 +52,26 @@ class PipelineResult extends Component {
 
                 <div className="row">
                     <div className="commons">
-                        <div>Branch&nbsp;
-                            <span className="value">{decodeURIComponent(pipeline)}</span>
+                        <div>
+                            <label>Branch</label>
+                            <span>{decodeURIComponent(pipeline)}</span>
                         </div>
-                        <div>Commit&nbsp;
-                            <span className="value">
-                                #{commitId && commitId.substring(0, 8) || '-'}
+                        { commitId ?
+                        <div>
+                            <label>Commit</label>
+                            <span className="commit">
+                                #{commitId.substring(0, 8)}
                             </span>
                         </div>
+                        : null }
                         <div>
                            {
-                               authors.length > 0 ? `Changes by ${authors.map(
-                                 author => ' ' + author)}` : 'No changes'
+                               authors.length > 0 ?
+                                   <a className="authors" onClick={() => this.handleAuthorsClick()}>
+                                        Changes by {authors.map(
+                                        author => ' ' + author)}
+                                   </a>
+                                   : 'No changes'
                             }
                         </div>
                     </div>
@@ -75,7 +90,7 @@ class PipelineResult extends Component {
                                 icon: 'access_time',
                                 style: { fill: "#fff" },
                             }} />
-                            {moment(endTime).fromNow()}
+                            <ReadableDate date={endTime} />
                         </div>
                     </div>
                 </div>
@@ -87,6 +102,7 @@ class PipelineResult extends Component {
 PipelineResult.propTypes = {
     data: object.isRequired,
     colors: object,
+    onAuthorsClick: func,
 };
 
 export { PipelineResult };

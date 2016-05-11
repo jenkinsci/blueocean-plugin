@@ -723,9 +723,22 @@ footer {
   overflow-y: auto;
   max-height: 20%;
   min-height: 5%;
+  font-size: 1.6rem;
+}
+
+.dialog .page-tabs {
+  clear: both;
+  font-size: 1.5rem;
+  padding-left: 50px;
+
+  a {
+    letter-spacing: 1.1px;
+    margin-bottom: -4px;
+  }
 }
 
 .dialog section h4 {
+  font-size: 1.8rem;
   padding-bottom: 5px;
 }
 
@@ -777,8 +790,19 @@ footer {
   white-space: nowrap;
 }
 
-.dialog .result .value {
+.dialog .result .commons label {
+  display: inline-block;
+  width: 100px;
+}
+
+.dialog .result .commit {
   font-family: @font-family-monospace;
+}
+
+.dialog .result .authors {
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .dialog .header.info {
@@ -809,11 +833,12 @@ footer {
 
 .header .closeButton {
   cursor: pointer;
+  text-decoration: none;
   position: absolute;
   font-size: 3em;
   color: #ffffff;
   right: 10px;
-  top: 10px
+  top: 10px;
 }
 
 .spin {
@@ -872,13 +897,32 @@ footer {
   }
 }
 
-circle.success {
-  fill: @brand-success;
+.svgResultStatus circle.success {
+  stroke: @brand-success;
+  fill: @brand-success-lite;
 }
 
-circle.failure {
-  fill: @brand-danger;
+.svgResultStatus circle.failure {
+  stroke: @brand-danger;
+  fill: @brand-danger-lite;
 }
+
+.svgResultStatus circle.unstable {
+  stroke: @brand-warning;
+  fill: @brand-warning-lite;
+
+}
+
+.svgResultStatus circle.aborted, .svgResultStatus circle.not_built {
+  stroke: @brand-grey;
+  fill: @brand-grey-lite;
+}
+
+.svgResultStatus circle.unknown {
+  stroke: @brand-unknown;
+  fill: @brand-unknown-lite;
+}
+
 
 .left {
   float: left;
