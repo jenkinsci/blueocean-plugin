@@ -6,11 +6,6 @@ import moment from 'moment';
 const { object, func } = PropTypes;
 
 class PipelineResult extends Component {
-    constructor(props) {
-        super(props);
-
-        this.handleAuthorsClick = this.handleAuthorsClick.bind(this);
-    }
     handleAuthorsClick() {
         if (this.props.onAuthorsClick) {
             this.props.onAuthorsClick();
@@ -66,8 +61,12 @@ class PipelineResult extends Component {
                         </div>
                         <div>
                            {
-                               authors.length > 0 ? <a className="authors" onClick={this.handleAuthorsClick}>Changes by {authors.map(
-                                 author => ' ' + author)}</a> : 'No changes'
+                               authors.length > 0 ?
+                                   <a className="authors" onClick={() => this.handleAuthorsClick()}>
+                                        Changes by {authors.map(
+                                        author => ' ' + author)}
+                                   </a>
+                                   : 'No changes'
                             }
                         </div>
                     </div>
