@@ -1,0 +1,67 @@
+.pipeline-result {
+  width: 100%;
+  margin: 20px auto;
+  font-family: @font-family-panel;
+  color: #ffffff;
+
+  h4 {
+    font-size: 1.8rem;
+    padding-bottom: 5px;
+  }
+
+  .left svg {
+    padding-right: 20px;
+    padding-left: 20px;
+    margin-top: -20px;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .commons {
+    min-width: 0;
+    flex-basis: 75%;
+  }
+
+  .commons div {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .commons label {
+    display: inline-block;
+    width: 100px;
+  }
+
+  .commit {
+    font-family: @font-family-monospace;
+  }
+
+  .authors {
+    color: #fff;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .times {
+    margin-left: auto;
+    width: 25%;
+
+    svg {
+      padding-right: 30px;
+      overflow: visible;
+    }
+
+    span {
+      vertical-align: top;
+    }
+
+    div {
+      padding-bottom: 10px;
+    }
+  }
+}

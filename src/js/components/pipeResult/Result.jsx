@@ -35,7 +35,7 @@ class PipelineResult extends Component {
         const authors = [...new Set(changeSet.map(change => change.author.fullName))];
 
         return (
-        <div className="result">
+        <div className="pipeline-result">
             <section className="left">
                 { result === 'SUCCESS' && <Icon {...{
                     size: 125,
