@@ -22,10 +22,12 @@ export class Activity extends Component {
                 },
                 config = {},
             } = this.context;
+            const activity = this;
+
             config.pipeline = pipeline;
-            this.props.fetchRunsIfNeeded(config);
-            this.sseEventListener = sse.subscribe('job', function () {
-                this.props.fetchRunsIfNeeded(config);
+            activity.props.fetchRunsIfNeeded(config);
+            activity.sseEventListener = sse.subscribe('job', (event) => {
+                console.log(event);
             }, {
                 job_name: pipeline, // we're only interested in events relating to this pipeline.
             });
