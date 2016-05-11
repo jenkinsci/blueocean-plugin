@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView } from '@jenkins-cd/design-language';
+import { EmptyStateView, FileSize } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
 import Table from './Table';
 
-const { number, object } = PropTypes;
+const { object } = PropTypes;
 
 export default class RunDetailsArtifacts extends Component {
     renderEmptyState() {
@@ -20,8 +20,6 @@ export default class RunDetailsArtifacts extends Component {
 
     render() {
         const { result } = this.props;
-
-        debugger;
 
         if (!result) {
             return null;
@@ -47,7 +45,7 @@ export default class RunDetailsArtifacts extends Component {
                     <tr key={artifact.url}>
                         <td>{artifact.name}</td>
                         <td>
-                            {artifact.size}
+                            <FileSize bytes={artifact.size} />
                         </td>
                         <td className="download">
                             <a target="_blank" title="Download the artifact" href={artifact.url}>
