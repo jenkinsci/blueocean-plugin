@@ -1,4 +1,4 @@
-import { Route, IndexRoute } from 'react-router';
+import { Route, IndexRoute, IndexRedirect } from 'react-router';
 import React from 'react';
 import OrganisationPipelines from './OrganisationPipelines';
 import {
@@ -8,6 +8,8 @@ import {
     PullRequests,
     PipelinePage,
     RunDetails,
+    RunDetailsPipeline,
+    RunDetailsChanges,
 } from './components';
 
 // Config has some globals in it for path / routes
@@ -21,9 +23,10 @@ export default (
             <Route path=":pipeline/activity" component={Activity} />
             <Route path=":pipeline/pr" component={PullRequests} />
         </Route>
-        <Route
-          path=":pipeline/detail/:branch/:runId"
-          component={RunDetails}
-        />
+        <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
+            <IndexRedirect to="pipeline" />
+            <Route path="pipeline" component={RunDetailsPipeline} />
+            <Route path="changes" component={RunDetailsChanges} />
+        </Route>
     </Route>
 );

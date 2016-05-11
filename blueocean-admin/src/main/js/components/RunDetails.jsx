@@ -3,12 +3,11 @@ import {
     ModalView,
     ModalBody,
     ModalHeader,
-    LogConsole,
     PipelineResult,
+    PageTabs,
+    TabLink,
 } from '@jenkins-cd/design-language';
-import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
-import LogToolbar from './LogToolbar';
 import {
     actions,
     currentRuns as runsSelector,
@@ -19,25 +18,40 @@ import {
 
 const { func, object, array, any } = PropTypes;
 
-function uriString(input) {
-    return encodeURIComponent(input).replace(/%2F/g, '%252F');
+/**
+ * Trim the last path element off a URL. Handles trailing slashes nicely.
+ * @param url
+ * @returns {string}
+ */
+function cleanBaseUrl(url) {
+    const paths = url.split('/').filter(path => (path.length > 0));
+    paths.pop();
+    return paths.join('/');
 }
 
 class RunDetails extends Component {
+    constructor(props) {
+        super(props);
+
+        this.navigateToChanges = this.navigateToChanges.bind(this);
+    }
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const {
                 params: {
                     pipeline,
-                    },
+                },
                 config = {},
-                } = this.context;
+            } = this.context;
             config.pipeline = pipeline;
             this.props.fetchRunsIfNeeded(config);
             this.props.setPipeline(config);
         }
     }
-
+    navigateToChanges() {
+        const changesUrl = `${cleanBaseUrl(this.context.location.pathname)}/changes`;
+        this.context.router.push(changesUrl);
+    }
     render() {
         // early out
         if (!this.context.params
@@ -48,23 +62,12 @@ class RunDetails extends Component {
         const {
             router,
             params,
-            } = this.context;
+        } = this.context;
 
         const { pipeline: name, branch, runId } = params; // From route
 
-        // multibranch special treatment - get url of the log
-        const isMultiBranch = this.props.isMultiBranch;
-        const baseUrl = '/rest/organizations/jenkins' +
-            `/pipelines/${uriString(name)}/`;
-        let url;
-        let fileName;
-        if (isMultiBranch) {
-            url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
-            fileName = `${branch}-${runId}.txt`;
-        } else {
-            url = `${baseUrl}/runs/${runId}/log/`;
-            fileName = `${runId}.txt`;
-        }
+        const baseUrl = cleanBaseUrl(this.context.location.pathname);
+
         const result = this.props.runs.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
 
@@ -74,38 +77,42 @@ class RunDetails extends Component {
             router.goBack();
         };
 
-        return (
-            <ModalView
-              isVisible
-              result={result.result}
-              {...{ afterClose }}
-            >
-                <ModalHeader>
-                    <PipelineResult data={result} />
-                </ModalHeader>
-                <ModalBody>
-                    <div>
-                        <ExtensionPoint name="jenkins.pipeline.run.result"
-                          pipelineName={name}
-                          branchName={isMultiBranch ? branch : undefined}
-                          runId={runId}
-                        />
-                        <LogToolbar {...{ fileName, url }} />
-                        <LogConsole {...{ url }} />
+        return (<ModalView
+          isVisible
+          result={result.result}
+          {...{ afterClose }}
+        >
+            <ModalHeader>
+                <div>
+                    <PipelineResult data={result}
+                      onAuthorsClick={this.navigateToChanges}
+                    />
+                    <PageTabs base={baseUrl}>
+                        <TabLink to="/pipeline">Pipeline</TabLink>
+                        <TabLink to="/changes">Changes</TabLink>
+                        <TabLink to="/tests">Tests</TabLink>
+                        <TabLink to="/artifacts">Artifacts</TabLink>
+                    </PageTabs>
                     </div>
-                </ModalBody>
-            </ModalView>
-        );
+            </ModalHeader>
+            <ModalBody>
+                <div>
+                    {React.cloneElement(this.props.children, { result, ...this.props })}
+                </div>
+            </ModalBody>
+        </ModalView>);
     }
 }
 
 RunDetails.contextTypes = {
     config: object.isRequired,
     params: object,
+    location: object,
     router: object.isRequired, // From react-router
 };
 
 RunDetails.propTypes = {
+    children: PropTypes.node,
     runs: array,
     isMultiBranch: any,
     fetchIfNeeded: func,
