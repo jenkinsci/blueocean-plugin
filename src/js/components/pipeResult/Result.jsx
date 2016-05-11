@@ -34,7 +34,8 @@ class PipelineResult extends Component {
                 Number(durationInMillis), 'milliseconds').humanize();
         const authors = [...new Set(changeSet.map(change => change.author.fullName))];
 
-        return (<div className="result">
+        return (
+        <div className="result">
             <section className="left">
                 { result === 'SUCCESS' && <Icon {...{
                     size: 125,
@@ -65,14 +66,12 @@ class PipelineResult extends Component {
                         </div>
                         : null }
                         <div>
-                           {
-                               authors.length > 0 ?
-                                   <a className="authors" onClick={() => this.handleAuthorsClick()}>
-                                        Changes by {authors.map(
-                                        author => ' ' + author)}
-                                   </a>
-                                   : 'No changes'
-                            }
+                       { authors.length > 0 ?
+                           <a className="authors" onClick={() => this.handleAuthorsClick()}>
+                                Changes by {authors.map(
+                                author => ' ' + author)}
+                           </a>
+                       : 'No changes' }
                         </div>
                     </div>
                     <div className="times">
