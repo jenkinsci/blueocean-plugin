@@ -648,6 +648,15 @@ code.hash {
   margin-bottom: -3px;
 }
 
+// Applies this style to safari 9.0+
+@supports (overflow:-webkit-marquee) and (justify-content:inherit)
+{
+  .page-tabs a {
+    margin-bottom: -0px !important;
+  }
+}
+
+
 .page-tabs a:before {
     // For transforming underline
     content: "";
