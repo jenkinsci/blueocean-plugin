@@ -36,12 +36,18 @@ class PipelineResult extends Component {
 
         return (<div className="result">
             <section className="left">
-                { result === 'SUCCESS' && <Icon {...{
+                { (result === 'SUCCESS' || result === 'UNSTABLE') && <Icon {...{
                     size: 125,
                     icon: 'done',
                     style: { fill: "#fff" },
                 }} />}
-                { result === 'FAILURE' &&  <Icon {...{
+                { (result === 'FAILURE' || result === 'ABORTED' || result === 'NOT_BUILT') &&  <Icon {...{
+                    size: 125,
+                    icon: 'close',
+                    style: { fill: "#fff" },
+                }} />}
+                //TODO: use better icon
+                { result === 'UNKNOWN' &&  <Icon {...{
                     size: 125,
                     icon: 'close',
                     style: { fill: "#fff" },
