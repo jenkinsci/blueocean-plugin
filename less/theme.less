@@ -715,6 +715,15 @@ footer {
   box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
 }
 
+.dialog.slideup {
+  .transition(top ease-out 0.3s);
+  top: 500px;
+
+  &.ready {
+    top: 0;
+  }
+}
+
 .dialog .header {
   padding: 25px 20px 25px 50px;
   color: #ffffff;
