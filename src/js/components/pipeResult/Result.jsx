@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 import {Icon} from 'react-material-icons-blue';
 import { ReadableDate } from '../ReadableDate';
@@ -32,7 +34,7 @@ class PipelineResult extends Component {
         let
             duration = moment.duration(
                 Number(durationInMillis), 'milliseconds').humanize();
-        const authors = [...new Set(changeSet.map(change => change.author.fullName))];
+        const authors = [...(changeSet.map(change => change.author.fullName))];
 
         return (<div className="result">
             <section className="left">

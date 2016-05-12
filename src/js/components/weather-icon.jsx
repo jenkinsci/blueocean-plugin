@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 
 function getClassNames(successpc) {
@@ -19,12 +21,12 @@ export class WeatherIcon extends Component {
 
         return <span className={classNames}/>;
     }
+
+    static defaultProps = {
+        size: "default"
+    };
+
+    static propTypes = {
+        size: PropTypes.string
+    };
 }
-
-WeatherIcon.propTypes = {
-    size: PropTypes.string,
-};
-
-WeatherIcon.defaultProps = {
-    size: "default",
-};

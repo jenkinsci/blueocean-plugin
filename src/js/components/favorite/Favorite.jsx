@@ -1,22 +1,44 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 
+type Props = {
+    darkTheme: boolean,
+    checked: boolean,
+    onToggle: (checked: boolean) => void
+}
+
 export class Favorite extends Component {
-    constructor(props){
+
+    state: {
+        checked: boolean
+    };
+
+    static defaultProps = {
+        darkTheme: false,
+        checked: false
+    };
+
+    constructor(props: Props){
         super(props);
         this.state = {
             checked: this.props.checked
         };
     }
-    toggle(e) {
-        let checked = e.target.checked;
-        this.setState({
-            checked: checked
-        });
 
-        if (this.props.onToggle != null){
-            this.props.onToggle(checked);
+    toggle(e: Event) {
+        if (e.target instanceof HTMLInputElement) {
+            let checked = e.target.checked;
+            this.setState({
+                checked: checked
+            });
+
+            if (this.props.onToggle != null){
+                this.props.onToggle(checked);
+            }
         }
     }
+
     render() {
         let classes = "checkbox";
 
@@ -39,9 +61,4 @@ Favorite.propTypes = {
     darkTheme: PropTypes.bool,
     checked: PropTypes.bool,
     onToggle: PropTypes.func
-};
-
-Favorite.defaultProps = {
-    darkTheme: false,
-    checked: false
 };

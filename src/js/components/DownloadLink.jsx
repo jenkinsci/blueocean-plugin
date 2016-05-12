@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
 

@@ -1,0 +1,17 @@
+[ignore]
+
+# FBJS seems to be bad
+.*/node_modules/fbjs/.*
+
+.*/node_modules/react/.*
+
+# Yay for dependencies that are bloated with tests, and .json files that aren't JSON
+.*/node_modules/cjson/test.*
+
+[options]
+
+# Flow currently requires defaultProps on ES6 class components to be a static field, so
+# we need to turn this on, even though it's not standardised yet.
+esproposal.class_static_fields=enable
+# FIXME: Maybe revisit this ^^ if Flow is enhanced to understand use of
+# MyComponent.defaultProps the way it does propTypes.

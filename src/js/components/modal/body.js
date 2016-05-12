@@ -1,3 +1,5 @@
+// @flow
+
 /*eslint-disable no-unused-vars*/
 import React, { Component, PropTypes } from 'react';
 /*eslint-enable no-unused-vars*/
