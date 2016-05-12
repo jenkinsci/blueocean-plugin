@@ -77,7 +77,7 @@ class PipelineResult extends Component {
                     <div className="times">
                         <div>
                             <Icon {...{
-                                size: 15,
+                                size: 25,
                                 icon: 'timelapse',
                                 style: { fill: "#fff" },
                             }} />
@@ -85,7 +85,7 @@ class PipelineResult extends Component {
                         </div>
                         <div>
                             <Icon {...{
-                                size: 15,
+                                size: 25,
                                 icon: 'access_time',
                                 style: { fill: "#fff" },
                             }} />
