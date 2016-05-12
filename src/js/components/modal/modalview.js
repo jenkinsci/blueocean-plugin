@@ -7,7 +7,21 @@ class ModalView extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {isVisible: props.isVisible || false};
+        this.state = {
+            isVisible: props.isVisible || false,
+            isAnimationReady: false
+        };
+    }
+
+    componentDidMount() {
+        if (this.props.animationClass) {
+            // trigger a re-render so the css animation will play
+            setTimeout(() => {
+                this.setState({
+                    isAnimationReady: true
+                });
+            }, 0);
+        }
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -44,6 +58,21 @@ class ModalView extends Component {
 
     hide() {
         this.setState({isVisible: false});
+    }
+
+    buildDialogClasses() {
+        const { animationClass } = this.props;
+        const dialogClasses = ['dialog'];
+
+        if (animationClass) {
+            dialogClasses.push(animationClass);
+        }
+
+        if (this.state.isAnimationReady) {
+            dialogClasses.push('ready');
+        }
+
+        return dialogClasses.join(' ');
     }
 
     onOverlayClicked() {
@@ -116,6 +145,7 @@ class ModalView extends Component {
 
         const head = this.getParts(children, 'Header');
         const body = this.getParts(children, 'Body');
+        const dialogClasses = this.buildDialogClasses();
 
         if (rest.showOverlay) {
             overlay = (<div
@@ -129,7 +159,7 @@ class ModalView extends Component {
 
         return ( <section className="modalview">
                 {overlay}
-                <div className="dialog" style={dialogStyles}>
+                <div className={dialogClasses} style={dialogStyles}>
                     <div className={`header ${result.toLowerCase()}`} style={headerStyle}>
                         <a onClick={() => this.hide()}
                            role="button"
@@ -173,6 +203,7 @@ ModalView.propTypes = {
         }),
         PropTypes.bool,
     ]),
+    animationClass: PropTypes.string,
     result: PropTypes.string,
     title: PropTypes.string,
 
