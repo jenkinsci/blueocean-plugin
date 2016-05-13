@@ -1,14 +1,18 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Predicate;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
+import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
+
+import javax.annotation.Nullable;
 
 /**
  * @author Vivek Pandey
@@ -67,5 +71,15 @@ public class PipelineNodeUtil {
         return node !=null && node.getAction(LabelAction.class) != null &&
             node.getAction(ThreadNameAction.class) != null;
     }
+
+    public static Predicate<FlowNode> isLoggable = new Predicate<FlowNode>() {
+        @Override
+        public boolean apply(@Nullable FlowNode input) {
+            if(input == null)
+                return false;
+            return input.getAction(LogAction.class) != null;
+        }
+    };
+
 
 }

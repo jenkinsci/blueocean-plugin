@@ -55,7 +55,6 @@ import static io.jenkins.blueocean.rest.model.BlueRun.STATE;
  * @author Vivek Pandey
  */
 public abstract class BluePipelineNode extends Resource{
-    public static final String NAME="name";
     public static final String DISPLAY_NAME="displayName";
     public static final String RESULT = "result";
     public static final String START_TIME="startTime";
@@ -102,4 +101,8 @@ public abstract class BluePipelineNode extends Resource{
         public abstract String getId();
     }
 
+    /**
+     * @return Steps inside a Pipeline Stage or Parallel branch
+     */
+    public abstract BluePipelineStepContainer getSteps();
 }

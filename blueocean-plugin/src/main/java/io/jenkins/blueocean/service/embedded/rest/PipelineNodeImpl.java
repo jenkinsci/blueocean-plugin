@@ -1,8 +1,8 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Predicate;
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
+import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
@@ -10,7 +10,6 @@ import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +27,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final WorkflowRun run;
     private final Long durationInMillis;
     private final PipelineNodeGraphBuilder.NodeRunStatus status;
+    private final PipelineNodeGraphBuilder nodeGraphBuilder;
 
     public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeGraphBuilder.NodeRunStatus status, PipelineNodeGraphBuilder nodeGraphBuilder) {
         this.run = run;
@@ -42,6 +42,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
         }else{
             this.durationInMillis = null;
         }
+        this.nodeGraphBuilder = nodeGraphBuilder;
     }
 
     @Override
@@ -101,7 +102,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
         for(int i=0; i<rows.size(); i++){
             FlowGraphTable.Row row = rows.get(i);
             if(row.getNode().equals(node)){
-                if(isLoggable.apply(row.getNode())){
+                if(PipelineNodeUtil.isLoggable.apply(row.getNode())){
                     logs.add(row.getNode().getAction(LogAction.class).getLogText());
                 }
 
@@ -117,7 +118,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
                         ){
                         break;
                     }else{
-                        if(isLoggable.apply(subStepRow.getNode())){
+                        if(PipelineNodeUtil.isLoggable.apply(subStepRow.getNode())){
                             logs.add(subStepRow.getNode().getAction(LogAction.class).getLogText());
                         }
 
@@ -130,14 +131,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
         return new LogResource(logs.toArray(new AnnotatedLargeText[logs.size()]));
     }
 
-    private Predicate<FlowNode> isLoggable = new Predicate<FlowNode>() {
-        @Override
-        public boolean apply(@Nullable FlowNode input) {
-            if(input == null)
-                return false;
-            return input.getAction(LogAction.class) != null;
-        }
-    };
+    @Override
+    public BluePipelineStepContainer getSteps() {
+        return new PipelineStepContainerImpl(node, nodeGraphBuilder);
+    }
+
 
     public static class EdgeImpl extends Edge{
         private final FlowNode node;
