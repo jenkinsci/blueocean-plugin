@@ -13,6 +13,7 @@ const clean = require('gulp-clean');
 const runSequence = require('run-sequence');
 const rename = require('gulp-rename');
 const copy = require('gulp-copy');
+const svgmin = require('gulp-svgmin');
 
 // Options, src/dest folders, etc
 
@@ -28,6 +29,10 @@ const config = {
         sources: "less/theme.less",
         watch: "less/**/*.less", // Watch includes as well as main
         dest: "dist/assets/css"
+    },
+    svgmin: {
+        sources: "icons/**/*",
+        dest: "icons/"
     },
     copy: {
         icons: {
@@ -102,6 +107,12 @@ gulp.task("less", () =>
         .pipe(rename("jenkins-design-language.css"))
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(config.less.dest)));
+
+// Optimize SVG
+gulp.task("svgmin", () =>
+    gulp.src(config.svgmin.sources)
+        .pipe(svgmin())
+        .pipe(gulp.dest(config.svgmin.dest)));
 
 // Copy things
 
