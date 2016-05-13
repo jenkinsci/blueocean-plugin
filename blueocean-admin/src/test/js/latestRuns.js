@@ -1,6 +1,13 @@
 export const latestRuns = [{
     'latestRun': {
-        'changeSet': [{
+        'artifacts':[
+            {
+                'name':'hey',
+                'size':4,
+                'url':'/jenkins/job/jenkinsfile-experiments/branch/master/1/artifact/hey'
+            }
+        ],
+        'changeSet':[{
             'author': {
                 'email': 'tscherler@cloudbees.com',
                 'fullName': 'tscherler',
