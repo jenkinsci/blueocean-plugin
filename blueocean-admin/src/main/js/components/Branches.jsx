@@ -29,7 +29,7 @@ export default class Branches extends Component {
             weatherScore,
             name,
         } = data;
-        const url = `/pipelines/${pipelineName}/detail/${name}/${id}`;
+        const url = `/pipelines/${pipelineName}/detail/${name}/${id}/pipeline`;
         const open = () => {
             location.pathname = url;
             router.push(location);

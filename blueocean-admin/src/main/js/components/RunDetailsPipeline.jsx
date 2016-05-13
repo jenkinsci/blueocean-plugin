@@ -15,7 +15,7 @@ export default class RunDetailsPipeline extends Component {
         const { pipeline: name, branch, runId } = this.context.params;
 
         // multibranch special treatment - get url of the log
-        const isMultiBranch = this.props.isMultiBranch;
+        const { isMultiBranch } = this.props;
         const baseUrl = '/rest/organizations/jenkins' +
             `/pipelines/${uriString(name)}/`;
         let url;

@@ -11,12 +11,13 @@ import {
 import {
     actions,
     currentRuns as runsSelector,
+    isMultiBranch as isMultiBranchSelector,
     previous as previousSelector,
     createSelector,
     connect,
 } from '../redux';
 
-const { func, object, array, string } = PropTypes;
+const { func, object, array, any, string } = PropTypes;
 
 /**
  * Trim the last path element off a URL. Handles trailing slashes nicely.
@@ -55,7 +56,8 @@ class RunDetails extends Component {
     render() {
         // early out
         if (!this.context.params
-            || !this.props.runs) {
+            || !this.props.runs
+            || this.props.isMultiBranch === null) {
             return null;
         }
         const {
@@ -110,7 +112,7 @@ class RunDetails extends Component {
             </ModalHeader>
             <ModalBody>
                 <div>
-                    {React.cloneElement(this.props.children, { result, ...this.props })}
+                    {React.cloneElement(this.props.children, { baseUrl, result, ...this.props })}
                 </div>
             </ModalBody>
         </ModalView>);
@@ -127,6 +129,7 @@ RunDetails.contextTypes = {
 RunDetails.propTypes = {
     children: PropTypes.node,
     runs: array,
+    isMultiBranch: any,
     fetchIfNeeded: func,
     fetchRunsIfNeeded: func,
     setPipeline: func,
@@ -135,7 +138,7 @@ RunDetails.propTypes = {
 };
 
 const selectors = createSelector(
-    [runsSelector, previousSelector],
-    (runs, previous) => ({ runs, previous }));
+    [runsSelector, isMultiBranchSelector, previousSelector],
+    (runs, isMultiBranch, previous) => ({ runs, isMultiBranch, previous }));
 
 export default connect(selectors, actions)(RunDetails);
