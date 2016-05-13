@@ -5,6 +5,9 @@ import Table from './Table';
 
 const { object } = PropTypes;
 
+/**
+ * Displays a list of artifacts from the supplied build run property.
+ */
 export default class RunDetailsArtifacts extends Component {
     renderEmptyState() {
         return (
