@@ -34,24 +34,27 @@ class PipelineResult extends Component {
                 Number(durationInMillis), 'milliseconds').humanize();
         const authors = [...new Set(changeSet.map(change => change.author.fullName))];
 
+        const resultIcon = (() => {
+            switch(result) {
+                case "SUCCESS":
+                case "UNSTABLE":
+                    return "done";
+                case "FAILURE":
+                case "ABORTED":
+                case "NOT_BUILT":
+                    return "close";
+                default:
+                    return "close";
+            }
+        })();
+
         return (<div className="result">
             <section className="left">
-                { (result === 'SUCCESS' || result === 'UNSTABLE') && <Icon {...{
+                <Icon {...{
                     size: 125,
-                    icon: 'done',
-                    style: { fill: "#fff" },
-                }} />}
-                { (result === 'FAILURE' || result === 'ABORTED' || result === 'NOT_BUILT') &&  <Icon {...{
-                    size: 125,
-                    icon: 'close',
-                    style: { fill: "#fff" },
-                }} />}
-                //TODO: use better icon
-                { result === 'UNKNOWN' &&  <Icon {...{
-                    size: 125,
-                    icon: 'close',
-                    style: { fill: "#fff" },
-                }} />}
+                    icon: resultIcon,
+                    style: { fill: "#fff" }
+                }} />
             </section>
             <section className="table">
                 <h4>{organization} / {name} #{id}</h4>
