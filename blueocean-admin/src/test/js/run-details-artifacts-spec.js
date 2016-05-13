@@ -3,17 +3,17 @@ import React from 'react';
 import sd from 'skin-deep';
 
 import { latestRuns } from './latestRuns';
-import RunDetailsChanges from '../../main/js/components/RunDetailsChanges';
+import RunDetailsArtifacts from '../../main/js/components/RunDetailsArtifacts';
 
-describe('RunDetailsChanges', () => {
+describe('RunDetailsArtifacts', () => {
     let component;
     let tree;
     let output;
 
-    describe('empty runs / bad data', () => {
+    describe('bad data', () => {
         before(() => {
             component = (
-                <RunDetailsChanges />
+                <RunDetailsArtifacts />
             );
             tree = sd.shallowRender(component);
             output = tree.getRenderOutput();
@@ -24,11 +24,11 @@ describe('RunDetailsChanges', () => {
         });
     });
 
-    describe('empty changeSet', () => {
+    describe('empty artifacts', () => {
         before(() => {
             component = (
-                <RunDetailsChanges
-                  result={{ changeSet: [] }}
+                <RunDetailsArtifacts
+                  result={{ artifacts: [] }}
                 />
             );
             tree = sd.shallowRender(component);
@@ -40,11 +40,11 @@ describe('RunDetailsChanges', () => {
         });
     });
 
-    describe('valid changeSet', () => {
+    describe('valid artifacts', () => {
         before(() => {
             const runs = latestRuns.map(run => (run.latestRun));
             component = (
-                <RunDetailsChanges
+                <RunDetailsArtifacts
                   result={runs[0]}
                 />
             );
@@ -54,12 +54,12 @@ describe('RunDetailsChanges', () => {
 
         it('renders a Table with expected data', () => {
             assert.equal(output.type.name, 'Table');
-            assert.equal(tree.everySubTree('tr').length, 2);
+            assert.equal(tree.everySubTree('tr').length, 1);
 
             const cols = tree.subTree('tr').everySubTree('td');
-            assert.equal(cols[0].text(), '<CommitHash />');
-            assert.equal(cols[1].text(), 'tscherler');
-            assert.equal(cols[2].text(), 'Update Jenkinsfile');
+            assert.equal(cols[0].text(), 'hey');
+            assert.equal(cols[1].text(), '<FileSize />');
+            assert.equal(cols[2].text(), '<Icon />');
         });
     });
 });
