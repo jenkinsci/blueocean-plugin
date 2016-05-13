@@ -34,25 +34,13 @@ class PipelineResult extends Component {
                 Number(durationInMillis), 'milliseconds').humanize();
         const authors = [...new Set(changeSet.map(change => change.author.fullName))];
 
-        const resultIcon = (() => {
-            switch(result) {
-                case "SUCCESS":
-                case "UNSTABLE":
-                    return "done";
-                case "FAILURE":
-                case "ABORTED":
-                case "NOT_BUILT":
-                    return "close";
-                default:
-                    return "close";
-            }
-        })();
+
 
         return (<div className="result">
             <section className="left">
                 <Icon {...{
                     size: 125,
-                    icon: resultIcon,
+                    icon: iconFromResult(result),
                     style: { fill: "#fff" }
                 }} />
             </section>
@@ -113,5 +101,19 @@ PipelineResult.propTypes = {
     colors: object,
     onAuthorsClick: func,
 };
+
+function iconFromResult(result) {
+    switch(result) {
+        case "SUCCESS":
+        case "UNSTABLE":
+            return "done";
+        case "FAILURE":
+        case "ABORTED":
+        case "NOT_BUILT":
+            return "close";
+        default:
+            return "close";
+    }
+}
 
 export { PipelineResult };
