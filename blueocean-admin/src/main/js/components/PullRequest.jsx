@@ -32,12 +32,12 @@ export default class PullRequest extends Component {
             },
                 },
         } = this;
-        const url = `/pipelines/${pipelineName}/detail/${name}/${id}`;
+        const url = `/pipelines/${pipelineName}/detail/${name}/${id}/pipeline`;
         const open = () => {
             location.pathname = url;
             router.push(location);
         };
-        return (<tr key={id} onClick={open} >
+        return (<tr key={id} onClick={open} id={`${name}-${id}`} >
             <td><StatusIndicator result={result} /></td>
             <td>{id}</td>
             <td>{title || '-'}</td>

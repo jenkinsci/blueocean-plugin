@@ -1,8 +1,11 @@
 import { createSelector } from 'reselect';
 import { actionHandlers } from './actions';
 import { State } from '../components/records';
-// we do not expose the root store
+// we do not expose the root stores
 const adminStore = state => state.adminStore;
+const location = (state) => state.location;
+export const previous = createSelector([location], store => store.previous);
+export const current = createSelector([location], store => store.current);
 export const pipelines = createSelector([adminStore], store => store.pipelines);
 export const pipeline = createSelector([adminStore], store => store.pipeline);
 export const runs = createSelector([adminStore], store => store.runs);

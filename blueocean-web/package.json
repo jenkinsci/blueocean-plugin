@@ -31,6 +31,8 @@
     "@jenkins-cd/js-extensions": "0.0.14",
     "@jenkins-cd/js-modules": "0.0.5",
     "history": "^2.0.2",
+    "immutable": "^3.8.1",
+    "keymirror": "^0.1.1",
     "moment": "^2.13.0",
     "react": "15.0.1",
     "react-dom": "15.0.1",

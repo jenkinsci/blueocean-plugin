@@ -1,5 +1,7 @@
 export {
     reducer,
+    previous,
+    current,
     pipelines,
     pipeline,
     runs,

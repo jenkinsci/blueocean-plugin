@@ -29,13 +29,13 @@ export default class Branches extends Component {
             weatherScore,
             name,
         } = data;
-        const url = `/pipelines/${pipelineName}/detail/${name}/${id}`;
+        const url = `/pipelines/${pipelineName}/detail/${name}/${id}/pipeline`;
         const open = () => {
             location.pathname = url;
             router.push(location);
         };
         const { msg } = changeSet[0] || {};
-        return (<tr key={name} onClick={open} >
+        return (<tr key={name} onClick={open} id={`${name}-${id}`} >
             <td><WeatherIcon score={weatherScore} /></td>
             <td>
                 <StatusIndicator result={result === 'UNKNOWN' ? state : result} />

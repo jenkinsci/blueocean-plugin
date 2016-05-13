@@ -43,13 +43,13 @@ export default class Runs extends Component {
         const duration = moment.duration(durationInMillis).humanize();
         const resultRun = result === 'UNKNOWN' ? state : result;
 
-        const url = `/pipelines/${pipelineName}/detail/${pipeline}/${id}`;
+        const url = `/pipelines/${pipelineName}/detail/${pipeline}/${id}/pipeline`;
         const open = () => {
             location.pathname = url;
             router.push(location);
         };
 
-        return (<tr key={id} onClick={open} >
+        return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
             <td>
                 <StatusIndicator result={resultRun} />
             </td>

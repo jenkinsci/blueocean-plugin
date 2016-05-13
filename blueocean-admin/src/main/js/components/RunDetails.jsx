@@ -12,11 +12,12 @@ import {
     actions,
     currentRuns as runsSelector,
     isMultiBranch as isMultiBranchSelector,
+    previous as previousSelector,
     createSelector,
     connect,
 } from '../redux';
 
-const { func, object, array, any } = PropTypes;
+const { func, object, array, any, string } = PropTypes;
 
 /**
  * Trim the last path element off a URL. Handles trailing slashes nicely.
@@ -60,11 +61,19 @@ class RunDetails extends Component {
             return null;
         }
         const {
-            router,
-            params,
-        } = this.context;
-
-        const { pipeline: name, branch, runId } = params; // From route
+            context: {
+                router,
+                location,
+                params: {
+                    branch,
+                    runId,
+                    pipeline: name,
+                },
+            },
+            props: {
+                previous,
+            },
+        } = this;
 
         const baseUrl = cleanBaseUrl(this.context.location.pathname);
 
@@ -74,7 +83,13 @@ class RunDetails extends Component {
         result.name = name;
 
         const afterClose = () => {
-            router.goBack();
+            location.hash = `#${branch}-${runId}`;
+            if (previous) {
+                location.pathname = previous;
+            } else {
+                location.pathname = `/pipelines/${name}/activity/`;
+            }
+            router.push(location);
         };
 
         return (<ModalView
@@ -97,7 +112,7 @@ class RunDetails extends Component {
             </ModalHeader>
             <ModalBody>
                 <div>
-                    {React.cloneElement(this.props.children, { result, ...this.props })}
+                    {React.cloneElement(this.props.children, { baseUrl, result, ...this.props })}
                 </div>
             </ModalBody>
         </ModalView>);
@@ -107,8 +122,8 @@ class RunDetails extends Component {
 RunDetails.contextTypes = {
     config: object.isRequired,
     params: object,
-    location: object,
     router: object.isRequired, // From react-router
+    location: object.isRequired, // From react-router
 };
 
 RunDetails.propTypes = {
@@ -119,10 +134,11 @@ RunDetails.propTypes = {
     fetchRunsIfNeeded: func,
     setPipeline: func,
     getPipeline: func,
+    previous: string,
 };
 
 const selectors = createSelector(
-    [runsSelector, isMultiBranchSelector],
-    (runs, isMultiBranch) => ({ runs, isMultiBranch }));
+    [runsSelector, isMultiBranchSelector, previousSelector],
+    (runs, isMultiBranch, previous) => ({ runs, isMultiBranch, previous }));
 
 export default connect(selectors, actions)(RunDetails);

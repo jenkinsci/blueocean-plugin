@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
-import { Router, Route, IndexRoute, browserHistory, Link, useRouterHistory, IndexRedirect } from 'react-router';
-import { createHistory, useBasename } from 'history';
+import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
+import { createHistory } from 'history';
 import { Provider, configureStore, combineReducers} from './redux';
 import { DevelopmentFooter } from './DevelopmentFooter';
 
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
+import rootReducer, { ACTION_TYPES } from './redux/router';
 
 import Config from './config';
 
@@ -106,13 +107,36 @@ function startApp() {
         basename: appURLBase
     });
 
+    // get all ExtensionPoints related to redux-stores
     const stores = ExtensionPoint.getExtensions("jenkins.main.stores");
     let store;
     if (stores.length === 0) {
-        store = configureStore(()=>null); // No store, dummy functions
+        // if we do not have any stores we only add the location store
+        store = configureStore(combineReducers(rootReducer));
     } else {
-        store = configureStore(combineReducers(Object.assign(...stores)));
+        // some plugins provide they own store so combining with loction store
+        store = configureStore(combineReducers(
+          Object.assign({}, ...stores, rootReducer))
+        );
     }
+
+    // on each change of the url we need to update the location object
+    history.listen(newLocation => {
+        const { dispatch, getState } = store;
+        const { current } = getState().location;
+
+        // no current happens on the first request
+        if (current) {
+            dispatch({
+                type: ACTION_TYPES.SET_LOCATION_PREVIOUS,
+                payload: current,
+            });
+        }
+        dispatch({
+            type: ACTION_TYPES.SET_LOCATION_CURRENT,
+            payload: newLocation.pathname,
+        });
+    });
 
     // Start React
     render(
@@ -122,7 +146,6 @@ function startApp() {
       , rootElement);
 }
 
-ExtensionPoint.registerExtensionPoint("jenkins.main.routes", (extensions) => {
+ExtensionPoint.registerExtensionPoint("jenkins.main.routes", () => {
     startApp();
 });
-
