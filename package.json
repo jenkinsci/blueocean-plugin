@@ -31,6 +31,7 @@
     "gulp-less": "^3.0.5",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.6.0",
+    "gulp-svgmin": "^1.2.2",
     "normalize.css": "^4.1.1",
     "octicons": "^3.5.0",
     "react": "15.0.1",
