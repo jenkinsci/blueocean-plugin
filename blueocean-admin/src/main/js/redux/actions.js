@@ -112,7 +112,7 @@ export const actions = {
     fetchRunsIfNeeded(config) {
         return (dispatch) => {
             const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-            `/pipelines/${config.pipeline}/runs`;
+            `/pipelines/${config.pipeline}/runs/`;
             return dispatch(actions.fetchIfNeeded({
                 url: baseUrl,
                 id: config.pipeline,
