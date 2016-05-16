@@ -1,15 +1,13 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.google.common.base.Strings;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Strings;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
-
 import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.JsonConverter;
@@ -20,6 +18,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +32,8 @@ import java.util.logging.LogManager;
  * @author Vivek Pandey
  */
 public abstract class BaseTest {
+    private static  final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
+
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
@@ -43,8 +45,10 @@ public abstract class BaseTest {
 
     @Before
     public void setup() throws Exception {
-        InputStream is = this.getClass().getResourceAsStream("/logging.properties");
-        LogManager.getLogManager().readConfiguration(is);
+        if(System.getProperty("DISABLE_HTTP_HEADER_TRACE") == null) {
+            InputStream is = this.getClass().getResourceAsStream("/logging.properties");
+            LogManager.getLogManager().readConfiguration(is);
+        }
         this.baseUrl = j.jenkins.getRootUrl() + getContextPath();
         Unirest.setObjectMapper(new ObjectMapper() {
             public <T> T readValue(String value, Class<T> valueType) {
@@ -54,10 +58,10 @@ public abstract class BaseTest {
                     }
 
                     T r =  JsonConverter.om.readValue(value, valueType);
-                    System.out.println("Response:\n"+JsonConverter.om.writeValueAsString(r));
+                    LOGGER.info("Response:\n"+JsonConverter.om.writeValueAsString(r));
                     return r;
                 } catch (IOException e) {
-                    System.out.println("Failed to parse JSON: "+value);
+                    LOGGER.info("Failed to parse JSON: "+value+". "+e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
@@ -65,7 +69,7 @@ public abstract class BaseTest {
             public String writeValue(Object value) {
                 try {
                     String str = JsonConverter.om.writeValueAsString(value);
-                    System.out.println("Request:\n"+str);
+                    LOGGER.info("Request:\n"+str);
                     return str;
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
@@ -108,6 +112,7 @@ public abstract class BaseTest {
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
         } catch (UnirestException e) {
+            LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

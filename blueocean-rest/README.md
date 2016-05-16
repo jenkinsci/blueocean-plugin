@@ -647,7 +647,107 @@ From the above example, if build failed at parallel node *unit* then the respons
         "status": "SUCCESS",
         "state": "FINISHED"
     }
+
+# Get Pipeline node's steps
+
+This API gives steps inside a pipeline node. For Stage, the steps will include all the steps defined inside Parallels as well as Nodes.
+
         
+### Get steps for a Pipeline node
+
+Given this pipeline script:
+
+    stage 'build'
+    node{
+      echo "Building..."
+    }
+    
+    stage 'test'
+    parallel 'unit':{
+      node{
+        echo "Unit testing..."
+      }
+    },'integration':{
+      node{
+        echo "Integration testing..."
+      }
+    }, 'ui':{
+      node{
+        echo "UI testing..."
+      }
+    }
+    
+    stage 'deploy'
+    node{
+      echo "Deploying"
+    }
+    
+    stage 'deployToProd'
+    node{
+      echo "Deploying to production"
+    }        
+
+
+Get steps of 'test' stage node:
+
+    GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/9/steps/
+
+    [ {
+      "displayName" : "Print Message",
+      "durationInMillis" : 1,
+      "id" : "21",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.230-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "Shell Script",
+      "durationInMillis" : 2,
+      "id" : "22",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.231-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "Print Message",
+      "durationInMillis" : 1,
+      "id" : "23",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.233-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "Print Message",
+      "durationInMillis" : 1,
+      "id" : "28",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.266-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "Shell Script",
+      "durationInMillis" : 272,
+      "id" : "32",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.474-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "Print Message",
+      "durationInMillis" : 2,
+      "id" : "39",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.784-0700",
+      "state" : "FINISHED"
+    } ]
+                
+### Get a Pipeline step details
+
+    GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/13/steps/21/
+    {
+      "displayName" : "Print Message",
+      "durationInMillis" : 1,
+      "id" : "21",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.230-0700",
+      "state" : "FINISHED"
+    }
+                       
 # Fetching logs
 
 Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response. 
@@ -666,7 +766,7 @@ X-TEXT-SIZE is the byte offset of the raw log file client should use in the next
 start query parameter tells API to send log starting from this offset in the log file.
 
     
-## Get Log for a Pipeline run
+## Get log for a Pipeline run
 
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0
     
@@ -695,7 +795,7 @@ start query parameter tells API to send log starting from this offset in the log
 
 > Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essetnailly a folder hence no logs.
 
-## Get Log for a pipeline node
+## Get log for a Pipeline node
 
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/3/log
     
@@ -708,6 +808,13 @@ start query parameter tells API to send log starting from this offset in the log
     Proceeding
     Running on master in /var/folders/5q/51y3qf0x5t39d4c4c_c2l1s40000gn/T/hudson8758973583122932916test/workspace/pipeline1
     Building...
+
+### Get log for a Pipeline step
+
+    GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/13/steps/21/log/
+    
+    Unit testing...
+
 
 ## Favorite a pipeline
 Returns 200 on success. Must be authenticated.

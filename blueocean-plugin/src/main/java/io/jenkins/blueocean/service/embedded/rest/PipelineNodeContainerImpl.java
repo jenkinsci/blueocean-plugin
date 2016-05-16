@@ -28,12 +28,14 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
 
         PipelineNodeGraphBuilder graphBuilder = new PipelineNodeGraphBuilder(run);
         //If build either failed or is in progress then return union with last successful pipeline run
-        if(job.getLastBuild() != null && job.getLastBuild().getResult() != Result.SUCCESS
-            && job.getLastSuccessfulBuild() != null){
+        if(job.getLastBuild() != null
+            && job.getLastBuild().getResult() != Result.SUCCESS
+            && job.getLastSuccessfulBuild() != null
+            && !job.getLastSuccessfulBuild().getId().equals(job.getLastBuild().getId())){
             PipelineNodeGraphBuilder pastBuild = new PipelineNodeGraphBuilder(job.getLastSuccessfulBuild());
             this.nodes = graphBuilder.union(pastBuild);
         }else{
-            this.nodes = new PipelineNodeGraphBuilder(run).getPipelineNodes();
+            this.nodes = graphBuilder.getPipelineNodes();
         }
         for(BluePipelineNode node: nodes){
             nodeMap.put(node.getId(), node);
