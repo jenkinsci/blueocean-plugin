@@ -33,3 +33,21 @@
     color: white;
   }
 }
+
+.toast-enter, .toast-appear {
+  opacity: 0.01;
+}
+
+.toast-enter.toast-enter-active, .toast-appear.toast-appear-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.toast-leave {
+  opacity: 1;
+}
+
+.toast-leave.toast-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}

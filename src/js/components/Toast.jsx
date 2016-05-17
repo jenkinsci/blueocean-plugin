@@ -1,23 +1,83 @@
 import React, {Component, PropTypes} from 'react';
+import ReactDOM from 'react-dom';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 const { func, string } = PropTypes;
 
 export class Toast extends Component {
+    constructor() {
+        super();
+        this._dismissing = false;
+        this._dismissingTimeoutID = 0;
+        this._destroyingTImeoutID = 0;
+    }
+
+    componentDidMount() {
+        // automatically remove the component after 5s
+        this._dismissingTimeoutID = setTimeout(() => {
+            this.callDismissListener();
+            this.hideComponent();
+        }, 5000);
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this._dismissingTimeoutID);
+        clearTimeout(this._destroyingTImeoutID);
+    }
+
     onActionClick() {
         console.log('action');
+
+        if (this.props.onActionClick) {
+            this.props.onActionClick();
+        }
+
+        this.hideComponent();
     }
 
     onDismissClick() {
         console.log('dismiss');
-    }
-    render() {
 
+        this.callDismissListener();
+        this.hideComponent();
+    }
+
+    callDismissListener() {
+        if (this.props.onDismiss) {
+            this.props.onDismiss();
+        }
+    }
+
+    hideComponent() {
+        console.log('hiding Toast');
+
+        this._dismissing = true;
+        this.forceUpdate();
+
+        clearTimeout(this._dismissingTimeoutID);
+        this._destroyingTImeoutID = setTimeout(() => this.destroyComponent(), 300);
+    }
+
+    destroyComponent() {
+        console.log('unmounting Toast');
+
+        const element = ReactDOM.findDOMNode(this);
+        ReactDOM.unmountComponentAtNode(element.parentNode);
+    }
+
+    render() {
         return (
-            <div className="toast">
-                <span className="text">{this.props.text}</span>
-                <a className="action" onClick={() => this.onActionClick()}>{this.props.action}</a>
-                <a className="dismiss" onClick={() => this.onDismissClick()}>X</a>
-            </div>
+            <ReactCSSTransitionGroup transitionName="toast" transitionAppear={true}
+                transitionAppearTimeout={300} transitionEnterTimeout={300} transitionLeaveTimeout={300}
+            >
+                { !this._dismissing ?
+                <div className="toast">
+                    <span className="text">{this.props.text}</span>
+                    <a className="action" onClick={() => this.onActionClick()}>{this.props.action}</a>
+                    <a className="dismiss" onClick={() => this.onDismissClick()}>X</a>
+                </div>
+                : null }
+            </ReactCSSTransitionGroup>
         );
     }
 }
