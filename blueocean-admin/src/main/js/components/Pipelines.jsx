@@ -22,6 +22,14 @@ export default class Pipelines extends Component {
             .map(data => new PipelineRecord(data))
             .sort(pipeline => !!pipeline.branchNames);
 
+        const headers = [
+            { label: 'Name', className: 'name' },
+            'Health',
+            'Branches',
+            'Pull Requests',
+            '',
+        ];
+
         return (
             <Page>
                 <PageHeader>
@@ -41,7 +49,7 @@ export default class Pipelines extends Component {
                         <ExtensionPoint name="jenkins.pipeline.list.top" />
                         <Table
                           className="pipelines-table"
-                          headers={[{label: 'Name', className: 'name'}, 'Health', 'Branches', 'Pull Requests', '']}
+                          headers={headers}
                         >
                             { pipelineRecords
                                 .map(pipeline => <PipelineRowItem
