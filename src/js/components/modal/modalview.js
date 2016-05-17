@@ -20,11 +20,13 @@ class ModalView extends Component {
     }
 
     _handleKeys(event){
-        if (event.keyCode == 27) {
+        const {closeOnEscapeKey} = this.props;
+
+        if (closeOnEscapeKey && event.keyCode == 27) {
             this.hide();
         }
     }
-    
+
     componentWillUpdate(nextProps, nextState) {
 
         const {isVisible} = this.state;
@@ -190,13 +192,15 @@ ModalView.propTypes = {
     ]),
     result: PropTypes.string,
     title: PropTypes.string,
+    closeOnEscapeKey: PropTypes.bool
 
 };
 
 ModalView.defaultProps = {
     styles: false,
     showOverlay: true,
-    hideOnOverlayClicked: false
+    hideOnOverlayClicked: false,
+    closeOnEscapeKey: true
 };
 
 export {
