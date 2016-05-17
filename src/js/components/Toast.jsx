@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
-const { func, string } = PropTypes;
+const { func, number, string } = PropTypes;
 
 export class Toast extends Component {
     constructor() {
@@ -13,11 +13,13 @@ export class Toast extends Component {
     }
 
     componentDidMount() {
-        // automatically remove the component after 5s
+        const delay = this.props.dismissDelay || 5000;
+
+        // automatically remove the component after specified delay
         this._dismissingTimeoutID = setTimeout(() => {
             this.callDismissListener();
             this.hideComponent();
-        }, 5000);
+        }, delay);
     }
 
     componentWillUnmount() {
@@ -87,4 +89,5 @@ Toast.propTypes = {
     action: string,
     onActionClick: func,
     onDismiss: func,
+    dismissDelay: number,
 };
