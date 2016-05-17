@@ -4,6 +4,17 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 const { func, number, string } = PropTypes;
 
+/**
+ * Toast displays a small confirmation message with an optional action link and dismiss link.
+ * Toast will auto-dismiss itself after 5s.
+ *
+ * Supported props:
+ * text - Confirmation message text, e.g. "Run Started"
+ * action - Optional action link, e.g. "Open"
+ * onActionClick - function to invoke when action link is clicked
+ * onDismiss - function to invoke when dismiss link is clicked, or Toast auto-dismisses.
+ * dismissDelay - Duration in millis before dialog dismisses itself. default is 5000
+ */
 export class Toast extends Component {
     constructor() {
         super();
