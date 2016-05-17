@@ -44,6 +44,7 @@ export class Activity extends Component {
                 },
                 config = {},
             } = this.context;
+
             config.pipeline = pipeline;
             this.props.fetchRunsIfNeeded(config);
         }
