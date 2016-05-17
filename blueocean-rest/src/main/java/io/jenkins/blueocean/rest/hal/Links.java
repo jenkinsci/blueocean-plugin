@@ -5,7 +5,6 @@ import io.jenkins.blueocean.rest.model.Container;
 import org.jvnet.tiger_types.Types;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.export.ExportedBean;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -41,7 +40,6 @@ import java.util.HashMap;
  * @see Link
  * @see io.jenkins.blueocean.rest.model.Resource
  **/
-@ExportedBean
 public final class Links extends HashMap<String,Link>{
 
     private static final String SELF = "self";

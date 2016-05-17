@@ -31,7 +31,7 @@ public abstract class Resource {
      *
      * @return {@link Links} object
      */
-    @Exported(name = "_links", inline = true)
+    @Exported(name = "_links")
     public Links getLinks(){
         return links;
     }

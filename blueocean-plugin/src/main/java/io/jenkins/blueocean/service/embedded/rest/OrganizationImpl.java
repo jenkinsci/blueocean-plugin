@@ -4,11 +4,13 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BlueUserContainer;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.PUT;
 
+import javax.inject.Inject;
 import java.io.IOException;
 
 /**
@@ -18,6 +20,10 @@ import java.io.IOException;
  * @author Kohsuke Kawaguchi
  */
 public class OrganizationImpl extends BlueOrganization {
+
+    @Inject
+    UserContainerImpl users;
+
     /**
      * In embedded mode, there's only one organization
      */
@@ -53,5 +59,14 @@ public class OrganizationImpl extends BlueOrganization {
     private void validate() {
 //        if (name.length()<2)
 //            throw new IllegalArgumentException("Invalid name: "+name);
+    }
+
+    /**
+     * In the embedded case, there's only one organization and everyone belongs there,
+     * so we can just return that singleton.
+     */
+    @Override
+    public BlueUserContainer getUsers() {
+        return users;
     }
 }

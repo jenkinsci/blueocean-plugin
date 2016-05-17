@@ -4,7 +4,6 @@ import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationContainer;
-import io.jenkins.blueocean.rest.model.BlueUserContainer;
 import jenkins.model.Jenkins;
 
 import javax.inject.Inject;
@@ -19,8 +18,6 @@ import java.util.Iterator;
  */
 @Extension
 public class OrganizationContainerImpl extends BlueOrganizationContainer {
-    @Inject
-    UserContainerImpl users;
 
     @Override
     public BlueOrganization get(String name) {
@@ -38,14 +35,5 @@ public class OrganizationContainerImpl extends BlueOrganizationContainer {
             throw new ServiceException.UnprocessableEntityException(String.format("Organization %s not found",
                 organization));
         }
-    }
-
-    /**
-     * In the embedded case, there's only one organization and everyone belongs there,
-     * so we can just return that singleton.
-     */
-    @Override
-    public BlueUserContainer getUsers() {
-        return users;
     }
 }
