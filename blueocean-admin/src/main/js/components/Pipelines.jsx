@@ -40,8 +40,8 @@ export default class Pipelines extends Component {
                     <article>
                         <ExtensionPoint name="jenkins.pipeline.list.top" />
                         <Table
-                          className="multiBranch"
-                          headers={['Name', 'Health', 'Branches', 'Pull Requests', '']}
+                          className="pipelines-table"
+                          headers={[{label: 'Name', className: 'name'}, 'Health', 'Branches', 'Pull Requests', '']}
                         >
                             { pipelineRecords
                                 .map(pipeline => <PipelineRowItem

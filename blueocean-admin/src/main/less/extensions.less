@@ -24,6 +24,23 @@
   .status-link {
     cursor: pointer;
   }
+}
+
+.pipelines-table {
+  table-layout: fixed;
+
+  th {
+    width: 100px;
+  }
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  .name {
+    width: auto;
+  }
 
 }
 
@@ -113,6 +130,7 @@
     text-align: right;
   }
 }
+
 
 // TODO: duplicated from the JDL; long-term may want to expose mixins to Less in other plugins? (UX-285?)
 .text-overflow() {
