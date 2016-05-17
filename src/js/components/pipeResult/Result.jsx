@@ -34,9 +34,8 @@ class PipelineResult extends Component {
                 Number(durationInMillis), 'milliseconds').humanize();
         const authors = [...new Set(changeSet.map(change => change.author.fullName))];
 
-
-
-        return (<div className="result">
+        return (
+        <div className="pipeline-result">
             <section className="left">
                 <Icon {...{
                     size: 125,
@@ -62,20 +61,18 @@ class PipelineResult extends Component {
                         </div>
                         : null }
                         <div>
-                           {
-                               authors.length > 0 ?
-                                   <a className="authors" onClick={() => this.handleAuthorsClick()}>
-                                        Changes by {authors.map(
-                                        author => ' ' + author)}
-                                   </a>
-                                   : 'No changes'
-                            }
+                       { authors.length > 0 ?
+                           <a className="authors" onClick={() => this.handleAuthorsClick()}>
+                                Changes by {authors.map(
+                                author => ' ' + author)}
+                           </a>
+                       : 'No changes' }
                         </div>
                     </div>
                     <div className="times">
                         <div>
                             <Icon {...{
-                                size: 15,
+                                size: 25,
                                 icon: 'timelapse',
                                 style: { fill: "#fff" },
                             }} />
@@ -83,7 +80,7 @@ class PipelineResult extends Component {
                         </div>
                         <div>
                             <Icon {...{
-                                size: 15,
+                                size: 25,
                                 icon: 'access_time',
                                 style: { fill: "#fff" },
                             }} />
