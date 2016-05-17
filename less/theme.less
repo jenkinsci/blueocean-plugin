@@ -575,7 +575,7 @@ code.hash {
 }
 
 .global-header {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     letter-spacing: 1.1px;
     background-color: @header-bg;
     color: white;
@@ -587,7 +587,7 @@ code.hash {
 
 .global-header nav {
     text-align: center;
-    padding: 1.5rem 0;
+    padding: 1rem 0;
 }
 
 .global-header nav a {
@@ -647,6 +647,15 @@ code.hash {
   transform: translateZ(0);
   margin-bottom: -3px;
 }
+
+// Applies this style to safari 9.0+
+@supports (overflow:-webkit-marquee) and (justify-content:inherit)
+{
+  .page-tabs a {
+    margin-bottom: 0px;
+  }
+}
+
 
 .page-tabs a:before {
     // For transforming underline
@@ -743,6 +752,22 @@ footer {
 
 .dialog .header.failure {
   background-color: @brand-danger;
+}
+
+.dialog .header.unstable {
+  padding: 0;
+  background-color: @brand-warning;
+}
+
+.dialog .header.unknown {
+  padding: 0;
+  background-color: @brand-unknown;
+}
+
+.dialog .header.aborted,
+.dialog .header.not_built {
+  padding: 0;
+  background-color: @brand-grey;
 }
 
 .dialog .content {

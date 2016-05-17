@@ -37,16 +37,11 @@ class PipelineResult extends Component {
         return (
         <div className="pipeline-result">
             <section className="left">
-                { result === 'SUCCESS' && <Icon {...{
-                    size: 100,
-                    icon: 'done',
-                    style: { fill: "#fff" },
-                }} />}
-                { result === 'FAILURE' &&  <Icon {...{
-                    size: 100,
-                    icon: 'close',
-                    style: { fill: "#fff" },
-                }} />}
+                <Icon {...{
+                    size: 125,
+                    icon: iconFromResult(result),
+                    style: { fill: "#fff" }
+                }} />
             </section>
             <section className="table">
                 <h4>{organization} / {name} #{id}</h4>
@@ -103,5 +98,19 @@ PipelineResult.propTypes = {
     colors: object,
     onAuthorsClick: func,
 };
+
+function iconFromResult(result) {
+    switch(result) {
+        case "SUCCESS":
+        case "UNSTABLE":
+            return "done";
+        case "FAILURE":
+        case "ABORTED":
+        case "NOT_BUILT":
+            return "close";
+        default:
+            return "close";
+    }
+}
 
 export { PipelineResult };
