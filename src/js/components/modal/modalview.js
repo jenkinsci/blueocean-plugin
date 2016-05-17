@@ -8,8 +8,23 @@ class ModalView extends Component {
     constructor(props) {
         super(props);
         this.state = {isVisible: props.isVisible || false};
+        this._handleKeys = this._handleKeys.bind(this);
     }
 
+    componentWillMount() {
+        document.addEventListener("keydown", this._handleKeys, false);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this._handleKeys, false);
+    }
+
+    _handleKeys(event){
+        if (event.keyCode == 27) {
+            this.hide();
+        }
+    }
+    
     componentWillUpdate(nextProps, nextState) {
 
         const {isVisible} = this.state;
