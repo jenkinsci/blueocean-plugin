@@ -1,56 +1,28 @@
 import React from 'react';
-import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
-import sd from 'skin-deep';
-import Immutable from 'immutable';
-import { latestRuns as data } from './latestRuns';
-
-const pr = data.filter((run) => run.pullRequest);
+import { shallow } from 'enzyme';
+import { latestRuns as branches } from './latestRuns';
 
 import {PullRequests} from '../../main/js/components/PullRequests.jsx';
 
-const pipeline = {
-    'displayName': 'moreBeers',
-    'name': 'morebeers',
-    'organization': 'jenkins',
-    'weatherScore': 0,
-    'branchNames': ['master'],
-    'numberOfFailingBranches': 1,
-    'numberOfFailingPullRequests': 0,
-    'numberOfSuccessfulBranches': 0,
-    'numberOfSuccessfulPullRequests': 0,
-    'totalNumberOfBranches': 1,
-    'totalNumberOfPullRequests': 0
-};
+const pr = branches.filter((run) => run.pullRequest);
 
 describe("PullRequests should render", () => {
-  let tree = null;
-
-  beforeEach(() => {
-    tree = sd.shallowRender(<PullRequests
-      data={[data]}
-      back={() => {}}
-      pipeline={ Immutable.fromJS(pipeline)}/>);
-  });
-
   it("does renders the PullRequests with data", () => {
+    const wrapper =  shallow(<PullRequests branches={branches} />);
     // does data renders?
-    const td = tree.subTree('td').getRenderOutput();
-    assert.equal(td.props.colSpan, 5)
+    assert.equal(wrapper.find('PullRequest').length, pr.length);
+    const table = wrapper.find('Table').node;
+    assert.isOk(table);
+    assert.equal(table.props.className, 'pr-table');
   });
 
 });
 
 describe("PullRequests should not render", () => {
-  let tree = null;
-
-  beforeEach(() => {
-
-    tree = sd.shallowRender(<PullRequests/>);
-  });
-
   it("does not renders the PullRequests without data", () => {
-    assert.isNull(tree.getRenderOutput());
+    const wrapper =  shallow(<PullRequests />);
+    assert.isNull(wrapper.node);
   });
 
 });

@@ -26,10 +26,10 @@ export default class Pipelines extends Component {
             <Page>
                 <PageHeader>
                     <Title>
-                        <h1>CloudBees</h1>
+                        <h1>Dashboard</h1>
                         <a
                           target="_blank"
-                          className="btn-primary"
+                          className="btn-inverse"
                           href="/jenkins/view/All/newJob"
                         >
                             New Pipeline
@@ -41,7 +41,7 @@ export default class Pipelines extends Component {
                         <ExtensionPoint name="jenkins.pipeline.list.top" />
                         <Table
                           className="multiBranch"
-                          headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}
+                          headers={['Name', 'Health', 'Branches', 'Pull Requests', '']}
                         >
                             { pipelineRecords
                                 .map(pipeline => <PipelineRowItem

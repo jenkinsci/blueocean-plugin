@@ -58,7 +58,32 @@ BlueOcean rest API base URL is:
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
-      "weatherScore": 100
+      "weatherScore": 100,
+      "estimatedDurationInMillis": 20264,
+      "lastSuccessfulRun": "http://localhost:64106/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1",
+      "latestRun": {
+          "changeSet": [],
+          "artifacts": [
+              {
+                  "name": "fizz",
+                  "size": 8,
+                  "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+              }
+          ],
+          "durationInMillis": 20264,
+          "estimatedDurationInMillis" : 567,
+          "enQueueTime": "2016-04-11T17:44:28.342+1000",
+          "endTime": "2016-04-11T17:44:48.608+1000",
+          "id": "3",
+          "organization": "jenkins",
+          "pipeline": "mypipe1",
+          "result": "SUCCESS",
+          "runSummary": "stable",
+          "startTime": "2016-04-11T17:44:28.344+1000",
+          "state": "FINISHED",
+          "type": "WorkflowRun",
+          "commitId": null
+        }
     }
 
 ## Get Pipelines
@@ -70,7 +95,8 @@ BlueOcean rest API base URL is:
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
-      "weatherScore": 100
+      "weatherScore": 100,
+      "estimatedDurationInMillis": 280,
       } 
     ]
     
@@ -81,7 +107,15 @@ BlueOcean rest API base URL is:
     [
         {
             "changeSet": [],
+            "artifacts": [
+              {
+                  "name": "fizz",
+                  "size": 8,
+                  "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+              }
+            ],
             "durationInMillis": 841,
+            "estimatedDurationInMillis" : 567,
             "enQueueTime": "2016-03-16T09:02:26.492-0700",
             "endTime": "2016-03-16T09:02:27.339-0700",
             "id": "1",
@@ -103,7 +137,15 @@ BlueOcean rest API base URL is:
     
     {
         "changeSet": [],
+        "artifacts": [
+          {
+              "name": "fizz",
+              "size": 8,
+              "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+          }
+        ],
         "durationInMillis": 841,
+        "estimatedDurationInMillis" : 567,
         "enQueueTime": "2016-03-16T09:02:26.492-0700",
         "endTime": "2016-03-16T09:02:27.339-0700",
         "id": "1",
@@ -124,7 +166,15 @@ BlueOcean rest API base URL is:
     [ 
       {
           "changeSet": [],
+          "artifacts": [
+            {
+                "name": "fizz",
+                "size": 8,
+                "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+            }
+          ],
           "durationInMillis": 841,
+          "estimatedDurationInMillis" : 567,
           "enQueueTime": "2016-03-16T09:02:26.492-0700",
           "endTime": "2016-03-16T09:02:27.339-0700",
           "id": "1",
@@ -146,7 +196,15 @@ BlueOcean rest API base URL is:
     [ 
       {
           "changeSet": [],
+          "artifacts": [
+            {
+                "name": "fizz",
+                "size": 8,
+                "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+            }
+          ],
           "durationInMillis": 841,
+          "estimatedDurationInMillis" : 567,
           "enQueueTime": "2016-03-16T09:02:26.492-0700",
           "endTime": "2016-03-16T09:02:27.339-0700",
           "id": "1",
@@ -172,13 +230,15 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     
     {
         "displayName": "p",
+        "estimatedDurationInMillis": 280,
+        "latestRun": null,
         "name": "p",
         "organization": "jenkins",
         "weatherScore": 100,
         "branchNames": [
-            "feature1",
+            "feature2",
             "master",
-            "feature2"
+            "feature1"
         ],
         "numberOfFailingBranches": 0,
         "numberOfFailingPullRequests": 0,
@@ -195,69 +255,97 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     
     [
         {
+            "displayName": "feature2",
+            "estimatedDurationInMillis": 1391,
             "name": "master",
             "weatherScore":100,
+             "lastSuccessfulRun": "http://localhost:63971/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1",
             "latestRun": {
-                  "changeSet": [
-
-                  ],
-                  "durationInMillis": 0,
-                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
-                  "endTime": null,
-                  "id": "1",
-                  "organization": "jenkins",
-                  "pipeline": "feature1",
-                  "result": "UNKNOWN",
-                  "runSummary": "?",
-                  "startTime": "2016-03-10T15:14:08.788+1300",
-                  "state": "RUNNING",
-                  "type": "WorkflowRun",
-                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
-                },
+                "changeSet": [
+                    
+                ],
+                "durationInMillis": 1391,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-04-15T19:59:28.717-0700",
+                "endTime": "2016-04-15T19:59:30.114-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature2",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.723-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "662766a80af35404c430240e6996598d5397471e"
+            },
+            "name": "feature2",
+            "organization": "jenkins",
+            "weatherScore": 100,
             "pullRequest": null
         },
         {
+            "displayName": "master",
+            "estimatedDurationInMillis": 1468,
             "name": "feature1",
             "weatherScore":100,
+            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature1/runs/1",            
             "latestRun": {
-                  "changeSet": [
-
-                  ],
-                  "durationInMillis": 0,
-                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
-                  "endTime": null,
-                  "id": "1",
-                  "organization": "jenkins",
-                  "pipeline": "feature1",
-                  "result": "UNKNOWN",
-                  "runSummary": "?",
-                  "startTime": "2016-03-10T15:14:08.788+1300",
-                  "state": "RUNNING",
-                  "type": "WorkflowRun",
-                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
+                "changeSet": [
+                    
+                ],
+                "artifacts": [
+                  {
+                      "name": "fizz",
+                      "size": 8,
+                      "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+                  }
+                ],
+                "durationInMillis": 1468,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-04-15T19:59:28.730-0700",
+                "endTime": "2016-04-15T19:59:30.199-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "master",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.731-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "96e0a0f29d9e5b1381ebb1b7503b0be04ed19a5b"
             },
+            "name": "master",
+            "organization": "jenkins",
+            "weatherScore": 100,
             "pullRequest": null
         },
         {
+            "displayName": "feature1",
+            "estimatedDurationInMillis": 1443,
             "name": "feature2",
             "weatherScore":100,
+            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/runs/1",            
             "latestRun": {
-                  "changeSet": [
-
-                  ],
-                  "durationInMillis": 0,
-                  "enQueueTime": "2016-03-10T15:14:08.787+1300",
-                  "endTime": null,
-                  "id": "1",
-                  "organization": "jenkins",
-                  "pipeline": "feature1",
-                  "result": "UNKNOWN",
-                  "runSummary": "?",
-                  "startTime": "2016-03-10T15:14:08.788+1300",
-                  "state": "RUNNING",
-                  "type": "WorkflowRun",
-                  "commitId": "431a0359f3e6d0559853439c3a9ffd36c47ca5d3"
+                "changeSet": [
+                    
+                ],
+                "durationInMillis": 1443,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-04-15T19:59:28.723-0700",
+                "endTime": "2016-04-15T19:59:30.167-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature1",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.724-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "f436952a7de493603f4937ecb9dac3f79fd13c79"
             },
+            "name": "feature1",
+            "organization": "jenkins",
+            "weatherScore": 100,
             "pullRequest": null
         }
     ]
@@ -269,6 +357,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     
     {
         "durationInMillis": 1330,
+        "estimatedDurationInMillis" : 567,
         "enQueueTime": "2016-03-16T09:08:15.607-0700",
         "endTime": "2016-03-16T09:08:16.942-0700",
         "id": "1",
@@ -292,7 +381,15 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "changeSet": [
 
             ],
+            "artifacts": [
+              {
+                  "name": "fizz",
+                  "size": 8,
+                  "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+              }
+            ],
             "durationInMillis": 1875,
+            "estimatedDurationInMillis" : 567,
             "enQueueTime": "2016-03-10T15:27:13.687+1300",
             "endTime": "2016-03-10T15:27:15.567+1300",
             "id": "1",
@@ -310,6 +407,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
 
             ],
             "durationInMillis": 1716,
+            "estimatedDurationInMillis" : 567,
             "enQueueTime": "2016-03-10T15:27:13.692+1300",
             "endTime": "2016-03-10T15:27:15.409+1300",
             "id": "1",
@@ -327,6 +425,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
 
             ],
             "durationInMillis": 1714,
+            "estimatedDurationInMillis" : 567,
             "enQueueTime": "2016-03-10T15:27:13.700+1300",
             "endTime": "2016-03-10T15:27:15.415+1300",
             "id": "1",
@@ -371,6 +470,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             }
         ],
         "durationInMillis": 348,
+        "estimatedDurationInMillis" : 567,
         "enQueueTime": "2016-03-02T16:49:26.548-0800",
         "endTime": "2016-03-02T16:49:26.898-0800",
         "id": "2",
@@ -385,89 +485,151 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
 # Get Pipeline run nodes
     curl -v  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/
     
-    [
-        {
-            "displayName": "build",
-            "edges": [
-                {
-                    "durationInMillis": 234,
-                    "id": "9"
-                }
-            ],
-            "id": "3",
-            "startTime": "2016-03-11T00:32:52.273-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        },
-        {
-            "displayName": "test",
-            "edges": [
-                {
-                    "durationInMillis": 4,
-                    "id": "13"
-                },
-                {
-                    "durationInMillis": 6,
-                    "id": "14"
-                },
-                {
-                    "durationInMillis": 9,
-                    "id": "15"
-                }
-            ],
-            "id": "9",
-            "startTime": "2016-03-11T00:32:52.507-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        },
-        {
-            "displayName": "unit",
-            "edges": [
-                {
-                    "durationInMillis": 161,
-                    "id": "35"
-                }
-            ],
-            "id": "13",
-            "startTime": "2016-03-11T00:32:52.511-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        },
-        {
-            "displayName": "deploy",
-            "edges": [],
-            "id": "35",
-            "startTime": "2016-03-11T00:32:52.672-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        },
-        {
-            "displayName": "integration",
-            "edges": [
-                {
-                    "durationInMillis": 159,
-                    "id": "35"
-                }
-            ],
-            "id": "14",
-            "startTime": "2016-03-11T00:32:52.513-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        },
-        {
-            "displayName": "ui",
-            "edges": [
-                {
-                    "durationInMillis": 156,
-                    "id": "35"
-                }
-            ],
-            "id": "15",
-            "startTime": "2016-03-11T00:32:52.516-0800",
-            "status": "SUCCESS",
-            "state": "FINISHED"
-        }
-    ]
+    [ {
+      "displayName" : "build",
+      "durationInMillis" : 219,
+      "edges" : [ {
+        "id" : "9"
+      } ],
+      "id" : "3",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:08.719-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "test",
+      "durationInMillis" : 158,
+      "edges" : [ {
+        "id" : "13"
+      }, {
+        "id" : "14"
+      }, {
+        "id" : "15"
+      } ],
+      "id" : "9",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:08.938-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "unit",
+      "durationInMillis" : 127,
+      "edges" : [ {
+        "id" : "35"
+      } ],
+      "id" : "13",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:08.942-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "integration",
+      "durationInMillis" : 126,
+      "edges" : [ {
+        "id" : "35"
+      } ],
+      "id" : "14",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:08.944-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "ui",
+      "durationInMillis" : 137,
+      "edges" : [ {
+        "id" : "35"
+      } ],
+      "id" : "15",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:08.945-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "deploy",
+      "durationInMillis" : 47,
+      "edges" : [ ],
+      "id" : "35",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:15:09.096-0700",
+      "state" : "FINISHED"
+    } ]
+
+> In case pipeline run fails in one of the parallel branch, enclosing stage node will appear failed as well.
+
+> In case if the pipeline is in progress or failed in the middle, the response may include future nodes if there was 
+  last successful pipeline build. The returned future nodes will have startTime, result and state as null. 
+  Also the last node's edges will be patched to point to the future node. 
+
+From the above example, if build failed at parallel node *unit* then the response will be:
+
+    [ {
+      "displayName" : "build",
+      "durationInMillis" : 51,
+      "edges" : [ {
+        "id" : "9"
+      } ],
+      "id" : "3",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:39:18.569-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "test",
+      "durationInMillis" : 344,
+      "edges" : [ {
+        "id" : "13"
+      }, {
+        "id" : "14"
+      }, {
+        "id" : "15"
+      } ],
+      "id" : "9",
+      "result" : "FAILURE",
+      "startTime" : "2016-05-06T15:39:18.620-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "unit",
+      "durationInMillis" : 329,
+      "edges" : [ {
+        "id" : "35"
+      } ],
+      "id" : "13",
+      "result" : "FAILURE",
+      "startTime" : "2016-05-06T15:39:18.622-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "integration",
+      "durationInMillis" : 97,
+      "edges" : [ {
+        "id" : "35"
+      } ],
+      "id" : "14",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:39:18.623-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "ui",
+      "durationInMillis" : 107,
+      "edges" : [ {
+        "id" : "35"
+      } ],
+      "id" : "15",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-06T15:39:18.623-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "deploy",
+      "durationInMillis" : null,
+      "edges" : [ {
+        "id" : "41"
+      } ],
+      "id" : "35",
+      "result" : null,
+      "startTime" : null,
+      "state" : null
+    }, {
+      "displayName" : "deployToProd",
+      "durationInMillis" : null,
+      "edges" : [ ],
+      "id" : "41",
+      "result" : null,
+      "startTime" : null,
+      "state" : null
+    } ]
 
 # Get a Pipeline run node's detail
 
@@ -477,7 +639,6 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "displayName": "build",
         "edges": [
             {
-                "durationInMillis": 234,
                 "id": "9"
             }
         ],
@@ -486,7 +647,107 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "status": "SUCCESS",
         "state": "FINISHED"
     }
+
+# Get Pipeline node's steps
+
+This API gives steps inside a pipeline node. For Stage, the steps will include all the steps defined inside Parallels as well as Nodes.
+
         
+### Get steps for a Pipeline node
+
+Given this pipeline script:
+
+    stage 'build'
+    node{
+      echo "Building..."
+    }
+    
+    stage 'test'
+    parallel 'unit':{
+      node{
+        echo "Unit testing..."
+      }
+    },'integration':{
+      node{
+        echo "Integration testing..."
+      }
+    }, 'ui':{
+      node{
+        echo "UI testing..."
+      }
+    }
+    
+    stage 'deploy'
+    node{
+      echo "Deploying"
+    }
+    
+    stage 'deployToProd'
+    node{
+      echo "Deploying to production"
+    }        
+
+
+Get steps of 'test' stage node:
+
+    GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/9/steps/
+
+    [ {
+      "displayName" : "Print Message",
+      "durationInMillis" : 1,
+      "id" : "21",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.230-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "Shell Script",
+      "durationInMillis" : 2,
+      "id" : "22",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.231-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "Print Message",
+      "durationInMillis" : 1,
+      "id" : "23",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.233-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "Print Message",
+      "durationInMillis" : 1,
+      "id" : "28",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.266-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "Shell Script",
+      "durationInMillis" : 272,
+      "id" : "32",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.474-0700",
+      "state" : "FINISHED"
+    }, {
+      "displayName" : "Print Message",
+      "durationInMillis" : 2,
+      "id" : "39",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.784-0700",
+      "state" : "FINISHED"
+    } ]
+                
+### Get a Pipeline step details
+
+    GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/13/steps/21/
+    {
+      "displayName" : "Print Message",
+      "durationInMillis" : 1,
+      "id" : "21",
+      "result" : "SUCCESS",
+      "startTime" : "2016-05-13T09:37:01.230-0700",
+      "state" : "FINISHED"
+    }
+                       
 # Fetching logs
 
 Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response. 
@@ -505,7 +766,7 @@ X-TEXT-SIZE is the byte offset of the raw log file client should use in the next
 start query parameter tells API to send log starting from this offset in the log file.
 
     
-## Get Log for a Pipeline run
+## Get log for a Pipeline run
 
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0
     
@@ -534,7 +795,7 @@ start query parameter tells API to send log starting from this offset in the log
 
 > Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essetnailly a folder hence no logs.
 
-## Get Log for a pipeline node
+## Get log for a Pipeline node
 
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/3/log
     
@@ -547,3 +808,46 @@ start query parameter tells API to send log starting from this offset in the log
     Proceeding
     Running on master in /var/folders/5q/51y3qf0x5t39d4c4c_c2l1s40000gn/T/hudson8758973583122932916test/workspace/pipeline1
     Building...
+
+### Get log for a Pipeline step
+
+    GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/13/steps/21/log/
+    
+    Unit testing...
+
+
+## Favorite a pipeline
+Returns 200 on success. Must be authenticated.
+
+    curl -u bob:bob -H"Content-Type:application/json" -XPUT -d '{"favorite":true} ttp://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
+
+## Favorite a multibranch pipeline
+Must be authenticated.
+
+This favorites the master branch. Returns 200 on success. 500 if master does not exist
+
+    curl -u bob:bob  -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
+
+## Favorite a multibranch pipeline branch
+Returns 200 on success. Must be authenticated.
+
+    curl -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/favorite
+
+
+## Fetch user favorites
+Must be authenticated.
+
+    curl -u bob:bob  http://localhost:8080/jenkins/blue/rest/users/bob/favorites/
+
+    [{
+        "pipeline":"/organizations/jenkins/pipelines/pipeline1"
+    }]
+
+## Stop a build
+Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
+
+    curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop
+    {
+      "result" : "ABORTED",
+      "state" : "FINISHED"
+    }

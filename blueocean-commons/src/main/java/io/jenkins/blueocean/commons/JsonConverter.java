@@ -38,11 +38,11 @@ public class JsonConverter{
         } catch (JsonMappingException e){
             String msg = String.format("Failed to map Json to java type : %s. %s ", type, e.getMessage());
             LOGGER.error(msg, e);
-            throw new ServiceException.UnexpectedErrorExpcetion(msg);
+            throw new ServiceException.UnexpectedErrorException(msg);
         } catch (IOException e) {
             String msg = String.format("Failed to convert %s to type %s", data, type);
             LOGGER.error(msg, e);
-            throw new ServiceException.UnexpectedErrorExpcetion(msg);
+            throw new ServiceException.UnexpectedErrorException(msg);
         }
     }
 

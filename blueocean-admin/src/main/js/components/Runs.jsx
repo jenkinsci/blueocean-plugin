@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import ajaxHoc from '../AjaxHoc';
 import moment from 'moment';
-import { ModalView, ModalBody, StatusIndicator, LogConsole } from '@jenkins-cd/design-language';
-
+import { StatusIndicator, CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 const { object, string, any } = PropTypes;
 
 require('moment-duration-format');
@@ -16,76 +14,53 @@ export default class Runs extends Component {
         this.state = { isVisible: false };
     }
     render() {
-        const { result, changeset, data } = this.props;
         // early out
-        if (!result && !data) {
+        if (!this.props.result || !this.context.pipeline) {
             return null;
         }
+        const {
+            context: {
+                router,
+                location,
+                pipeline: {
+                    name: pipelineName,
+                },
+            },
+            props: {
+                result: {
+                    durationInMillis,
+                    pipeline,
+                    id,
+                    result,
+                    state,
+                    endTime,
+                    commitId,
+                },
+                changeset,
+            },
+        } = this;
 
-        let
-            duration = moment.duration(
-                Number(result.durationInMillis), 'milliseconds').format('hh:mm:ss');
+        const duration = moment.duration(durationInMillis).humanize();
+        const resultRun = result === 'UNKNOWN' ? state : result;
 
-        const durationArray = duration.split(':');
-        const name = decodeURIComponent(result.pipeline);
+        const url = `/pipelines/${pipelineName}/detail/${pipeline}/${id}/pipeline`;
+        const open = () => {
+            location.pathname = url;
+            router.push(location);
+        };
 
-        if (durationArray.length === 1) {
-            duration = `00:${duration}`;
-        }
-
-        const afterClose = () => this.setState({ isVisible: false });
-        const open = () => this.setState({ isVisible: true });
-        const resultRun = result.result === 'UNKNOWN' ? result.state : result.result;
-        return (<tr key={result.id}>
+        return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
             <td>
-                {
-                    this.state.isVisible && <ModalView hideOnOverlayClicked
-                      title={`Branch ${name}`}
-                      isVisible={this.state.isVisible}
-                      afterClose={afterClose}
-                    >
-                        <ModalBody>
-                            <div>
-                                <dl>
-                                    <dt>Status</dt>
-                                    <dd>
-                                        <StatusIndicator result={resultRun} />
-                                    </dd>
-                                    <dt>Build</dt>
-                                    <dd>{result.id}</dd>
-                                    <dt>Commit</dt>
-                                    <dd>
-                                        {changeset
-                                        && changeset.commitId
-                                        && changeset.commitId.substring(0, 8) || '-'
-                                        }
-                                    </dd>
-                                    <dt>Branch</dt>
-                                    <dd>{name}</dd>
-                                    <dt>Message</dt>
-                                    <dd>{changeset && changeset.comment || '-'}</dd>
-                                    <dt>Duration</dt>
-                                    <dd>{duration} minutes</dd>
-                                    <dt>Completed</dt>
-                                    <dd>{moment(result.endTime).fromNow()}</dd>
-                                </dl>
-                                 <LogConsole key={`${result.id}${name}`} result={data} />
-                            </div>
-                        </ModalBody>
-                    </ModalView>
-                }
-                <a onClick={open}>
-                    <StatusIndicator result={resultRun} />
-                </a>
+                <StatusIndicator result={resultRun} />
             </td>
-            <td>{result.id}</td>
-            <td>{changeset && changeset.commitId && changeset.commitId.substring(0, 8) || '-'}</td>
-            <td>{name}</td>
+            <td>
+                {id}
+            </td>
+            <td><CommitHash commitId={commitId} /></td>
+            <td>{decodeURIComponent(pipeline)}</td>
             <td>{changeset && changeset.comment || '-'}</td>
-            <td>
-                {duration} minutes
-            </td>
-            <td>{moment(result.endTime).fromNow()}</td>
+            <td>{duration}</td>
+            <td><ReadableDate date={endTime} /></td>
         </tr>);
     }
 }
@@ -94,18 +69,9 @@ Runs.propTypes = {
     result: any.isRequired, // FIXME: create a shape
     data: string,
     changeset: object.isRequired,
-    pipeline: object,
 };
-// Decorated for ajax
-export default ajaxHoc(Runs, ({ branchNames, name, result }, config) => {
-    const multiBranch = !!branchNames;
-    const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-        `/pipelines/${name}`;
-    let url;
-    if (multiBranch) {
-        url = `${baseUrl}/branches/${encodeURI(result.pipeline)}/runs/${result.id}/log/`;
-    } else {
-        url = `${baseUrl}/runs/${result.id}/log/`;
-    }
-    return url;
-}, false);
+Runs.contextTypes = {
+    pipeline: object,
+    router: object.isRequired, // From react-router
+    location: object,
+};

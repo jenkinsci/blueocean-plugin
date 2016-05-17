@@ -1,59 +1,37 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableList;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.response.Response;
+import com.google.common.collect.ImmutableMap;
+
+import hudson.model.Project;
 import hudson.model.User;
 import hudson.tasks.Mailer;
-import io.jenkins.blueocean.service.embedded.rest.OrganizationContainerImpl;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
 
-import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
  */
-public class ProfileApiTest {
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
-
-    @Inject
-    public OrganizationContainerImpl orgContainer;
-
-    @Before
-    public void before() {
-        RestAssured.baseURI = j.jenkins.getRootUrl()+"blue/rest";
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        j.jenkins.getInjector().injectMembers(this);
-    }
-
+public class ProfileApiTest extends BaseTest{
     @Test
     public void getUserTest() throws Exception {
         User system = j.jenkins.getUser("SYSTEM");
-
-        RestAssured.given().log().all().get("/users/{id}/", system.getId())
-            .then().log().all()
-            .statusCode(200)
-            .body("id", Matchers.equalTo(system.getId()))
-            .body("fullName", Matchers.equalTo(system.getFullName()));
+        Map response = get("/users/"+system.getId());
+        Assert.assertEquals(system.getId(), response.get("id"));
+        Assert.assertEquals(system.getFullName(), response.get("fullName"));
     }
 
     //UX-159
     @Test
     public void postCrumbTest() throws Exception {
         User system = j.jenkins.getUser("SYSTEM");
-
-        RestAssured.given().contentType("application/json").log().all().post("/users/{id}/", system.getId())
-            .then().log().all()
-            .statusCode(200)
-            .body("id", Matchers.equalTo(system.getId()))
-            .body("fullName", Matchers.equalTo(system.getFullName()));
+        Map response = post("/users/"+system.getId()+"/", Collections.emptyMap());
+        Assert.assertEquals(system.getId(), response.get("id"));
+        Assert.assertEquals(system.getFullName(), response.get("fullName"));
     }
 
     //UX-159
@@ -61,30 +39,22 @@ public class ProfileApiTest {
     public void postCrumbFailTest() throws Exception {
         User system = j.jenkins.getUser("SYSTEM");
 
-        RestAssured.given().log().all().post("/users/{id}/", system.getId())
-            .then().log().all()
-            .statusCode(403);
+        post("/users/"+system.getId()+"/", "", "text/plain", 403);
     }
 
     //UX-159
     @Test
     public void putMimeTest() throws Exception {
         User system = j.jenkins.getUser("SYSTEM");
-
-        RestAssured.given().contentType("application/json").log().all().put("/users/{id}/", system.getId())
-            .then().log().all()
-            .statusCode(200)
-            .body("id", Matchers.equalTo(system.getId()))
-            .body("fullName", Matchers.equalTo(system.getFullName()));
+        Map response = put("/users/"+system.getId()+"/", Collections.emptyMap());
+        Assert.assertEquals(system.getId(), response.get("id"));
+        Assert.assertEquals(system.getFullName(), response.get("fullName"));
     }
 
     @Test
     public void putMimeFailTest() throws Exception {
         User system = j.jenkins.getUser("SYSTEM");
-
-        RestAssured.given().log().all().put("/users/{id}/", system.getId())
-            .then().log().all()
-            .statusCode(415);
+        put("/users/"+system.getId(), "","text/plain", 415);
     }
 
     //UX-159
@@ -92,20 +62,15 @@ public class ProfileApiTest {
     public void patchMimeTest() throws Exception {
         User system = j.jenkins.getUser("SYSTEM");
 
-        RestAssured.given().contentType("application/json").log().all().patch("/users/{id}/", system.getId())
-            .then().log().all()
-            .statusCode(200)
-            .body("id", Matchers.equalTo(system.getId()))
-            .body("fullName", Matchers.equalTo(system.getFullName()));
+        Map response = patch("/users/"+system.getId()+"/", Collections.emptyMap());
+        Assert.assertEquals(system.getId(), response.get("id"));
+        Assert.assertEquals(system.getFullName(), response.get("fullName"));
     }
 
     @Test
     public void patchMimeFailTest() throws Exception {
         User system = j.jenkins.getUser("SYSTEM");
-
-        RestAssured.given().log().all().patch("/users/{id}/", system.getId())
-            .then().log().all()
-            .statusCode(415);
+        patch("/users/"+system.getId(), "","text/plain", 415);
     }
 
     @Test
@@ -114,20 +79,46 @@ public class ProfileApiTest {
         user.setFullName("Alice Cooper");
         user.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
-        RestAssured.given().log().all().get("/users/{id}/",user.getId())
-            .then().log().all()
-            .statusCode(200)
-            .body("id", Matchers.equalTo(user.getId()))
-            .body("fullName", Matchers.equalTo(user.getFullName()))
-            .body("email", Matchers.equalTo("alice@jenkins-ci.org"));
+        Map response = get("/users/"+user.getId());
+        Assert.assertEquals(user.getId(), response.get("id"));
+        Assert.assertEquals(user.getFullName(), response.get("fullName"));
+        Assert.assertEquals("alice@jenkins-ci.org", response.get("email"));
     }
 
     @Test
+    public void createUserFavouriteTest() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+        Project p = j.createFreeStyleProject("pipeline1");
+
+        new RequestBuilder(baseUrl)
+            .put("/organizations/jenkins/pipelines/pipeline1/favorite")
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", true))
+            .build(String.class);
+
+        List l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(l.size(), 1);
+        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/pipeline1");
+
+        new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("bob","bob")
+            .status(403)
+            .build(String.class);
+
+    }
+
+
+    @Test
     public void getOrganizationTest(){
-        RestAssured.given().log().all().get("/organizations/jenkins")
-            .then().log().all()
-            .statusCode(200)
-            .body("name", Matchers.equalTo("jenkins"));
+        Map response = get("/organizations/jenkins");
+        Assert.assertEquals("jenkins", response.get("name"));
     }
 
     @Test
@@ -136,16 +127,14 @@ public class ProfileApiTest {
         j.jenkins.getUser(names.get(0));
         j.jenkins.getUser(names.get(1));
 
-        Response response = RestAssured.given().log().all().get("/search?q=type:user;organization:jenkins");
+        List response = get("/search?q=type:user;organization:jenkins", List.class);
 
-        response.then().log().all().statusCode(200);
+        for(Object r: response){
+            Map org = (Map) r;
+            Assert.assertTrue(names.contains((String)org.get("id")));
+            Assert.assertTrue(names.contains((String)org.get("fullName")));
+        }
 
-        Assert.assertTrue(names.contains(response.path("[0].id")));
-        Assert.assertTrue(names.contains(response.path("[0].fullName")));
-        Assert.assertTrue(names.contains(response.path("[1].id")));
-        Assert.assertTrue(names.contains(response.path("[1].fullName")));
     }
-
-
 
 }

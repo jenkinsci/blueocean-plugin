@@ -18,15 +18,17 @@
   <properties>
     <java.level>7</java.level>
     <jackson.version>2.2.3</jackson.version>
-    <jenkins.version>1.652</jenkins.version>
+    <jenkins.version>2.2</jenkins.version>
+    <node.version>5.8.0</node.version>
+    <npm.version>3.7.3</npm.version>
   </properties>
 
   <modules>
-    <module>blueocean-web</module>
     <module>blueocean-commons</module>
     <module>blueocean-rest</module>
-    <module>blueocean-plugin</module>
+    <module>blueocean-web</module>
     <module>blueocean-admin</module>
+    <module>blueocean-plugin</module>
   </modules>
 
   <repositories>
@@ -153,6 +155,14 @@
           <skip>true</skip>
         </configuration>
       </plugin>
+        <!-- Disable InjectedTest -->
+        <plugin>
+            <groupId>org.jenkins-ci.tools</groupId>
+            <artifactId>maven-hpi-plugin</artifactId>
+            <configuration>
+                <disabledTestInjection>true</disabledTestInjection>
+            </configuration>
+        </plugin>
     </plugins>
   </build>
 </project>

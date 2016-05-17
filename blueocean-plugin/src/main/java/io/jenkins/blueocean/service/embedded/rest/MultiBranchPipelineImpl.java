@@ -3,14 +3,17 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
+import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +36,21 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public String getOrganization() {
         return OrganizationImpl.INSTANCE.getName();
+    }
+
+
+    @Override
+    public void favorite(@JsonBody FavoriteAction favoriteAction) {
+        if(favoriteAction == null) {
+            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
+        }
+
+        Job job = mbp.getBranch("master");
+        if(job == null) {
+            throw new ServiceException.UnexpectedErrorException("no master branch to favorite");
+        }
+
+        FavoriteUtil.favoriteJob(job, favoriteAction.isFavorite());
     }
 
     @Override
@@ -123,6 +141,16 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
+    public Long getEstimatedDurationInMillis() {
+        return mbp.getEstimatedDuration();
+    }
+
+    @Override
+    public String getLastSuccessfulRun() {
+        return null;
+    }
+
+    @Override
     public BluePipelineContainer getBranches() {
         return new BranchContainerImpl(this);
     }
@@ -193,7 +221,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 Collections.sort(c, new Comparator<BlueRun>() {
                     @Override
                     public int compare(BlueRun o1, BlueRun o2) {
-                        return o1.getStartTime().compareTo(o2.getStartTime());
+                        return o2.getStartTime().compareTo(o1.getStartTime());
                     }
                 });
 

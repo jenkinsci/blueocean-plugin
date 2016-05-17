@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
 import hudson.util.AdaptedIterator;
-import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.Map;
  * @author Kohsuke Kawaguchi
  */
 public class Containers {
-    @ExportedBean
+
     public abstract static class AbstractContainer<T extends Resource> extends Container<T> {
     }
 

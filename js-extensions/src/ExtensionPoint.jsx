@@ -1,9 +1,42 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var store = require('./store.js');
+var cssloadtracker = require('./cssloadtracker');
 
 // TODO: Move this package to babel, and update this to ES6
 
+/**
+ * An internal component that inserts things into the (separate) context of mounted extensions. We need this for our
+ * configuration object, which helps resolve URLs for media, REST endpoints, etc, and we also need to bridge the
+ * "router" context property in order for extensions to be able to use &lt;Link&gt; from react-router.
+ */
+var ContextBridge = React.createClass({
+
+    getChildContext: function() {
+        return {
+            router: this.props.router,
+            config: this.props.config
+        };
+    },
+
+    render: function() {
+        return this.props.children;
+    }
+});
+
+ContextBridge.childContextTypes = {
+    router: React.PropTypes.object,
+    config: React.PropTypes.object
+};
+
+ContextBridge.propTypes = {
+    router: React.PropTypes.object,
+    config: React.PropTypes.object
+};
+
+/**
+ * Implement an ExtensionPoint for which other plugins can provide an implementing Component.
+ */
 var ExtensionPoint = React.createClass({
 
     getInitialState: function () {
@@ -12,6 +45,7 @@ var ExtensionPoint = React.createClass({
     },
 
     componentDidMount: function() {
+        cssloadtracker.onMount(this.props.name);
         var thisEp = this;
         ExtensionPoint.registerExtensionPoint(this.props.name, function(extensions) {
             thisEp.setState({
@@ -26,6 +60,7 @@ var ExtensionPoint = React.createClass({
 
     componentWillUnmount: function() {
         this._unmountAllExtensions();
+        cssloadtracker.onUnmount(this.props.name);
     },
 
     /**
@@ -87,7 +122,12 @@ var ExtensionPoint = React.createClass({
     _renderExtension: function(element, extension) {
         var component = React.createElement(extension, this.props);
         try {
-            ReactDOM.render(component, element);
+            var contextValuesAsProps = {
+                config: this.context.config,
+                router: this.context.router
+            };
+            var bridgedComponent = React.createElement(ContextBridge, contextValuesAsProps, component);
+            ReactDOM.render(bridgedComponent, element);
         } catch (e) {
             console.log("error rendering", extension.name, e);
 
@@ -127,6 +167,11 @@ ExtensionPoint.defaultProps = {
 ExtensionPoint.propTypes = {
     name: React.PropTypes.string.isRequired,
     wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element])
+};
+
+ExtensionPoint.contextTypes = {
+    router: React.PropTypes.object,
+    config: React.PropTypes.object
 };
 
 /**

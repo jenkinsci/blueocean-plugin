@@ -3,6 +3,10 @@ import MultiBranch from './MultiBranch';
 import Activity from './Activity';
 import PullRequests from './PullRequests';
 import PipelinePage from './PipelinePage';
+import RunDetails from './RunDetails';
+import RunDetailsPipeline from './RunDetailsPipeline';
+import RunDetailsChanges from './RunDetailsChanges';
+import RunDetailsArtifacts from './RunDetailsArtifacts';
 
 export {
     Pipelines,
@@ -10,4 +14,8 @@ export {
     Activity,
     PullRequests,
     PipelinePage,
+    RunDetails,
+    RunDetailsPipeline,
+    RunDetailsChanges,
+    RunDetailsArtifacts,
 };

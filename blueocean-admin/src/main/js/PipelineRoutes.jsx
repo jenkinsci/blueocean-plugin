@@ -1,7 +1,17 @@
-import { Route, IndexRoute } from 'react-router';
+import { Route, IndexRoute, IndexRedirect } from 'react-router';
 import React from 'react';
 import OrganisationPipelines from './OrganisationPipelines';
-import { Pipelines, MultiBranch, Activity, PullRequests, PipelinePage } from './components';
+import {
+    Pipelines,
+    MultiBranch,
+    Activity,
+    PullRequests,
+    PipelinePage,
+    RunDetails,
+    RunDetailsPipeline,
+    RunDetailsChanges,
+    RunDetailsArtifacts,
+} from './components';
 
 // Config has some globals in it for path / routes
 import { rootRoutePath } from './config';
@@ -13,6 +23,12 @@ export default (
             <Route path=":pipeline/branches" component={MultiBranch} />
             <Route path=":pipeline/activity" component={Activity} />
             <Route path=":pipeline/pr" component={PullRequests} />
+        </Route>
+        <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
+            <IndexRedirect to="pipeline" />
+            <Route path="pipeline" component={RunDetailsPipeline} />
+            <Route path="changes" component={RunDetailsChanges} />
+            <Route path="artifacts" component={RunDetailsArtifacts} />
         </Route>
     </Route>
 );

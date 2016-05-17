@@ -4,29 +4,9 @@ import sd from 'skin-deep';
 import Immutable from 'immutable';
 
 import Pipelines from '../../main/js/components/Pipelines.jsx';
+import { pipelines } from './pipelines';
 
 const
-  hack={bla:()=>{}} ,
-  link = <a target='_blank' href="/jenkins/view/All/newJob">New Pipeline</a>,
-  pipelines = [{
-    'displayName': 'moreBeers',
-    'name': 'morebeers',
-    'organization': 'jenkins',
-    'weatherScore': 0,
-    'branchNames': ['master'],
-    'numberOfFailingBranches': 1,
-    'numberOfFailingPullRequests': 0,
-    'numberOfSuccessfulBranches': 0,
-    'numberOfSuccessfulPullRequests': 0,
-    'totalNumberOfBranches': 1,
-    'totalNumberOfPullRequests': 0
-  },
-    {
-      'displayName': 'beers',
-      'name': 'beers',
-      'organization': 'jenkins',
-      'weatherScore': 0
-    }],
   resultArrayHeaders = ['Name', 'Status', 'Branches', 'Pull Requests', '']
   ;
 

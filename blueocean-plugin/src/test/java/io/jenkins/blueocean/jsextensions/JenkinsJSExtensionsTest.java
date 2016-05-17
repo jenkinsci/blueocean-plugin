@@ -23,40 +23,33 @@
  */
 package io.jenkins.blueocean.jsextensions;
 
-import com.jayway.restassured.RestAssured;
-import org.hamcrest.Matchers;
+import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class JenkinsJSExtensionsTest {
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
-
-    @Before
-    public void before() {
-        RestAssured.baseURI = j.jenkins.getRootUrl()+"blue";
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
+public class JenkinsJSExtensionsTest extends BaseTest{
 
     @Test
     public void test() {
+        // FIXME: This test relies on configuration in a separate project
         // Simple test of the rest endpoint. It should find the "blueocean-admin"
         // plugin ExtensionPoint contributions.
-        RestAssured.given().log().all().get("/javaScriptExtensionInfo")
-            .then().log().all()
-            .statusCode(200)
-            .body("size()", Matchers.equalTo(1))
-            .body("[0].hpiPluginId", Matchers.equalTo("blueocean-admin"))
-            .body("[0].extensions[0].component", Matchers.equalTo("AdminNavLink"))
-            .body("[0].extensions[0].extensionPoint", Matchers.equalTo("jenkins.logo.top"))
-        ;
+        List<Map> extensions = get("/javaScriptExtensionInfo", List.class);
+
+        Assert.assertEquals(1, extensions.size());
+        Assert.assertEquals("blueocean-admin", extensions.get(0).get("hpiPluginId"));
+
+        List<Map> ext = (List<Map>) extensions.get(0).get("extensions");
+
+        Assert.assertEquals(4, ext.size());
+        Assert.assertEquals("AdminNavLink", ext.get(0).get("component"));
+        Assert.assertEquals("jenkins.logo.top", ext.get(0).get("extensionPoint"));
 
         // Calling JenkinsJSExtensions.getJenkinsJSExtensionData() multiple times should
         // result in the same object instance being returned because the list of plugin
@@ -66,5 +59,10 @@ public class JenkinsJSExtensionsTest {
             JenkinsJSExtensions.INSTANCE.getJenkinsJSExtensionData(),
             JenkinsJSExtensions.INSTANCE.getJenkinsJSExtensionData()
         );
+    }
+
+    @Override
+    protected String getContextPath() {
+        return "blue";
     }
 }

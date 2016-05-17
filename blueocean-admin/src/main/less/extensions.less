@@ -1,0 +1,116 @@
+.activity-table {
+  table-layout: fixed;
+
+  th {
+    width: 75px;
+  }
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  .branch, .message {
+    width: 50%;
+  }
+
+  .duration, .completed {
+    width: 100px;
+  }
+
+  .status-link {
+    cursor: pointer;
+  }
+
+}
+
+.multibranch-table {
+  table-layout: fixed;
+
+  th {
+    width: 75px;
+  }
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  .branch, .message {
+    width: 50%;
+  }
+
+  .lastcommit, .completed {
+    width: 100px;
+  }
+}
+
+.pr-table {
+  table-layout: fixed;
+
+  th {
+    width: 75px;
+  }
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  .summary {
+    width: 100%;
+  }
+
+  .build, .completed {
+    width: 100px;
+  }
+}
+
+.changeset-table {
+  table-layout: fixed;
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  th {
+    width: 100px;
+  }
+
+  .author {
+    width: 150px;
+  }
+
+  .message {
+    width: 100%;
+  }
+}
+
+.artifacts-table {
+  table-layout: fixed;
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  th {
+    width: 100px;
+  }
+
+  .name {
+    width: 100%;
+  }
+
+  .download {
+    text-align: right;
+  }
+}
+
+// TODO: duplicated from the JDL; long-term may want to expose mixins to Less in other plugins? (UX-285?)
+.text-overflow() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

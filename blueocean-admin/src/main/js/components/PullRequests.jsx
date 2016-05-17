@@ -1,39 +1,85 @@
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
-import ajaxHoc from '../AjaxHoc';
+import { EmptyStateView } from '@jenkins-cd/design-language';
 import Table from './Table';
 import PullRequest from './PullRequest';
+import { scrollToHash } from './ScrollToHash';
 import { RunsRecord } from './records';
-import { urlPrefix } from '../config';
+import {
+    actions,
+    currentBranches as branchSelector,
+    createSelector,
+    connect,
+} from '../redux';
 
-const { object, array } = PropTypes;
+const { func, object, array, string } = PropTypes;
+
+const EmptyState = ({ repoName }) => (
+    <main>
+        <EmptyStateView iconName="goat">
+            <h1>Push me, pull you</h1>
+
+            <p>
+                When a Pull Request is opened on the repository <em>{repoName}</em>,
+                Jenkins will test it and report the status of
+                your changes back to the pull request on Github.
+            </p>
+
+            <button>Enable</button>
+        </EmptyStateView>
+    </main>
+);
+
+EmptyState.propTypes = {
+    repoName: string,
+};
 
 export class PullRequests extends Component {
-    render() {
-        const { pipeline, data } = this.props;
+    componentWillMount() {
+        if (this.context.config && this.context.params) {
+            const {
+                params: {
+                    pipeline,
+                },
+                config = {},
+            } = this.context;
+            config.pipeline = pipeline;
+            this.props.fetchBranchesIfNeeded(config);
+        }
+    }
 
-        if (!data || !pipeline) {
+
+    render() {
+        const { branches } = this.props;
+        // early out
+        if (!branches) {
             return null;
         }
-        const headers = ['Status', 'Latest Build', 'Summary', 'Author', 'Completed'];
+
+        const pullRequests = branches.filter((run) => run.pullRequest);
+
+        if (!pullRequests.length) {
+            return (<EmptyState repoName={this.context.params.pipeline} />);
+        }
+
+        const headers = [
+            'Status',
+            { label: 'Latest Build', className: 'build' },
+            { label: 'Summary', className: 'summary' },
+            'Author',
+            { label: 'Completed', className: 'completed' },
+        ];
 
         return (
             <main>
                 <article>
-                    <Table headers={headers}>
-                        { data.filter((run) => run.pullRequest).map((run, index) => {
+                    <Table className="pr-table" headers={headers}>
+                        { pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
                               key={index}
                               pr={result}
                             />);
                         })}
-
-                        <tr>
-                            <td colSpan={headers.length}>
-                                <Link className="btn" to={urlPrefix}>Dashboard</Link>
-                            </td>
-                        </tr>
                     </Table>
                 </article>
             </main>
@@ -41,14 +87,16 @@ export class PullRequests extends Component {
     }
 }
 
-PullRequests.propTypes = {
-    pipeline: object,
-    data: array,
+PullRequests.contextTypes = {
+    params: object.isRequired,
+    config: object.isRequired,
 };
 
-// Decorated for ajax as well as getting pipeline from context
-export default ajaxHoc(PullRequests, (props, config) => {
-    if (!props.pipeline) return null;
-    return `${config.getAppURLBase()}/rest/organizations/jenkins` +
-        `/pipelines/${props.pipeline.name}/branches`;
-});
+PullRequests.propTypes = {
+    branches: array,
+    fetchBranchesIfNeeded: func,
+};
+
+const selectors = createSelector([branchSelector], (branches) => ({ branches }));
+
+export default connect(selectors, actions)(scrollToHash(PullRequests));

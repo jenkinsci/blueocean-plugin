@@ -14,9 +14,6 @@
 
     <name>BlueOcean :: Jenkins Plugin</name>
 
-    <properties>
-        <pipeline.plugin>2.0</pipeline.plugin>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -35,36 +32,41 @@
             <artifactId>mailer</artifactId>
         </dependency>
         <dependency>
+            <!-- Deadlock bug fix in WorkflowRun.doStop(). See https://github.com/jenkinsci/workflow-job-plugin/pull/2  -->
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
-            <version>${pipeline.plugin}</version>
+            <version>2.2-beta-1</version>
         </dependency>
+
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-aggregator</artifactId>
-            <version>${pipeline.plugin}</version>
-            <scope>test</scope>
+            <artifactId>workflow-cps</artifactId>
+            <version>2.1</version>
         </dependency>
+
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>structs</artifactId>
-            <version>1.1</version>
-            <scope>test</scope>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-api</artifactId>
+            <version>2.0</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-step-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-support</artifactId>
+            <version>2.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-multibranch</artifactId>
-            <version>${pipeline.plugin}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>github-branch-source</artifactId>
-            <version>1.5</version>
-        </dependency>
-        <dependency>
-            <groupId>com.coravy.hudson.plugins.github</groupId>
-            <artifactId>github</artifactId>
-            <version>1.18.2</version>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -76,13 +78,63 @@
             <artifactId>scm-api</artifactId>
             <version>1.1</version>
         </dependency>
+
+        <!-- Not needed by blueocean runtime but adds to blueocean experience -->
         <dependency>
-            <groupId>com.jayway.restassured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>2.8.0</version>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>github-branch-source</artifactId>
+            <version>1.6</version>
         </dependency>
 
         <!-- Test plugins -->
+        <!-- Random test failing bug due to an assertion in pipeline plugin. See https://github.com/jenkinsci/pipeline-stage-step-plugin/pull/1  -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pipeline-stage-step</artifactId>
+            <version>2.1-beta-1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-durable-task-step</artifactId>
+            <version>2.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-basic-steps</artifactId>
+            <version>2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-scm-step</artifactId>
+            <version>2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>structs</artifactId>
+            <version>1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>1.4.9</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.hudson.plugins</groupId>
+            <artifactId>favorite</artifactId>
+            <version>1.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>token-macro</artifactId>
+            <version>1.12.1</version>
+        </dependency>
 
         <!-- Just a test plugin for testing js extension reg etc -->
         <dependency>
@@ -94,6 +146,15 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <!-- Do not retry failing test -->
+                    <rerunFailingTestsCount>0</rerunFailingTestsCount>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>groovy-maven-plugin</artifactId>
