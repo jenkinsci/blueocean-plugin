@@ -15,7 +15,7 @@ const { object, array, func, string } = PropTypes;
 
 const EmptyState = ({ repoName }) => (
     <main>
-        <EmptyStateView iconName="shoes">
+        <EmptyStateView iconName="branch">
             <h1>Branch out</h1>
 
             <p>
