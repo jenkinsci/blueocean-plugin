@@ -1,0 +1,35 @@
+.toast {
+  display: inline-flex;
+  max-width: 350px;
+  background-color: @text-color;
+  padding: 20px;
+  border-radius: @border-radius-base;
+  /* TODO: get proper values from updated sketch file */
+  .box-shadow(1px 2px 2px rgba(0, 0, 0, .5));
+
+  .text, .action, .dismiss {
+    align-self: center;
+  }
+
+  .text {
+    font-family: @font-family-ss-light;
+    color: white;
+  }
+
+  .action, .dismiss {
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  .action {
+    margin: 0 20px;
+    text-transform: uppercase;
+  }
+
+  .dismiss {
+    color: white;
+  }
+}
