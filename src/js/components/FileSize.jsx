@@ -1,3 +1,5 @@
+// @flow
+
 import React, {Component, PropTypes} from 'react';
 
 const { oneOfType, number, string } = PropTypes;
