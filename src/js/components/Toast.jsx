@@ -75,7 +75,7 @@ export class Toast extends Component {
 
     destroyComponent() {
         const element = ReactDOM.findDOMNode(this);
-        ReactDOM.unmountComponentAtNode(element.parentNode);
+        ReactDOM.unmountComponentAtNode(element);
     }
 
     render() {

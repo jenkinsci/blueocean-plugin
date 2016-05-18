@@ -7,7 +7,8 @@ storiesOf('Toast', module)
     .add('long text', scenario2)
     .add('no action', scenario3)
     .add('delay of 30s', scenario4)
-    .add('handlers', scenario5);
+    .add('handlers', scenario5)
+    .add('within layout', scenario6);
 
 function scenario1() {
     return (
@@ -40,5 +41,19 @@ function scenario5() {
     return (
         <Toast text="Run Started" action="Open" dismissDelay={0}
                onActionClick={action('action')} onDismiss={action('dismiss')} />
+    );
+}
+
+function scenario6() {
+    const styles = {
+        display: 'flex',
+        alignItems: 'center'
+    };
+    return (
+        <div style={styles}>
+            <span>Element A</span>
+            <Toast text="Run Started" action="Open" />
+            <span>Element B</span>
+        </div>
     );
 }
