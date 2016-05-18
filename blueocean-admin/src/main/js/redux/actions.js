@@ -178,6 +178,12 @@ export const actions = {
         return (dispatch, getState) => {
             let storeData;
 
+            // Go to the redux store and get a fresh copy of the run data associated
+            // with the event. We need to be able to do this because we do an async
+            // fetch and so need to be able refresh the data used when processing
+            // the event i.e. we need to get from the store more than once - before
+            // and after the fetch. Need to get it after the fetch because things
+            // may have changed state.
             function getFromStore() {
                 const runsByJobName = getState().adminStore.runs || {};
                 const eventJobRuns = runsByJobName[event.blueocean_job_name];
@@ -280,7 +286,7 @@ export const actions = {
                 }
 
                 // The event tells us that the run state has changed, but does not give all
-                // run related date (times, commit Ids etc). So, lets go get that data from
+                // run related data (times, commit Ids etc). So, lets go get that data from
                 // REST API and present a consistent picture of the run state to the user.
                 fetch(runUrl, fetchOptions)
                     .then(checkStatus)
