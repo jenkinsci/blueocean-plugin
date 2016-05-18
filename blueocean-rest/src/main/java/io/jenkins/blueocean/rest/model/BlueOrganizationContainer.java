@@ -14,11 +14,4 @@ public abstract class BlueOrganizationContainer extends Container<BlueOrganizati
     public final String getUrlName() {
         return "organizations";
     }
-
-    /**
-     * A set of users who belong to this organization.
-     *
-     * @return {@link BlueUserContainer}
-     */
-    public abstract BlueUserContainer getUsers();
 }
