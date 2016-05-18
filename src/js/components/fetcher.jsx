@@ -1,4 +1,6 @@
-export default function fetchData(onLoad, url, toJson = true) {
+// @flow
+
+export default function fetchData(onLoad: (data: any) => void, url: string, toJson: boolean = true) {
     const xmlhttp = new XMLHttpRequest();
     const requestDone = 4; // Because Zombie is garbage
 

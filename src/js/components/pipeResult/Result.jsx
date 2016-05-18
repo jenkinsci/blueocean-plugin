@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 import {Icon} from 'react-material-icons-blue';
 import { ReadableDate } from '../ReadableDate';
@@ -32,6 +34,8 @@ class PipelineResult extends Component {
         let
             duration = moment.duration(
                 Number(durationInMillis), 'milliseconds').humanize();
+
+        // Grab author from each change, run through a set for uniqueness
         const authors = [...new Set(changeSet.map(change => change.author.fullName))];
 
         return (
@@ -62,10 +66,10 @@ class PipelineResult extends Component {
                         : null }
                         <div>
                        { authors.length > 0 ?
-                           <a className="authors" onClick={() => this.handleAuthorsClick()}>
-                                Changes by {authors.map(
-                                author => ' ' + author)}
-                           </a>
+                                   <a className="authors" onClick={() => this.handleAuthorsClick()}>
+                                        Changes by {authors.map(
+                                        author => ' ' + author)}
+                                   </a>
                        : 'No changes' }
                         </div>
                     </div>
