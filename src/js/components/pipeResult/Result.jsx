@@ -34,9 +34,9 @@ class PipelineResult extends Component {
         let
             duration = moment.duration(
                 Number(durationInMillis), 'milliseconds').humanize();
-        const authors = [...(changeSet.map(change => change.author.fullName))];
 
-
+        // Grab author from each change, run through a set for uniqueness
+        const authors = [...new Set(changeSet.map(change => change.author.fullName))];
 
         return (<div className="result">
             <section className="left">
