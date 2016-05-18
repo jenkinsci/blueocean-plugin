@@ -16,5 +16,12 @@ public abstract class BlueOrganization extends Resource {
 
     public abstract BluePipelineContainer getPipelines();
 
+    /**
+     * A set of users who belong to this organization.
+     *
+     * @return {@link BlueUserContainer}
+     */
+    public abstract BlueUserContainer getUsers();
+
 }
 
