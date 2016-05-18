@@ -8,7 +8,9 @@ import org.kohsuke.stapler.Stapler;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Implementation of
@@ -41,15 +43,13 @@ import java.util.HashMap;
  * @see io.jenkins.blueocean.rest.model.Resource
  **/
 public final class Links extends HashMap<String,Link>{
+    private final Object self;
 
     private static final String SELF = "self";
-    public Links() {
-
+    public Links(Object self) {
+        this.self = self;
         getOrCreateSelfRef();
-        for(Ancestor ancestor:Stapler.getCurrentRequest().getAncestors()){
-            populateReferences(ancestor);
-        }
-
+        populateReferences();
     }
 
     public Links add(String ref, Link link){
@@ -57,39 +57,32 @@ public final class Links extends HashMap<String,Link>{
         return this;
     }
 
-    private void populateReferences(Ancestor ancestor){
-        Class clazz = ancestor.getObject().getClass();
+    private void populateReferences(){
+        Class clazz = self.getClass();
         /** Find if there is method returning a {@link Container}, add this as link */
-        Method m = findMethod(clazz,clazz);
-        if(m!=null){
+        for (Method m : findMethods(clazz,clazz,new ArrayList<Method>())) {
             String p = getPathFromMethodName(m.getName());
-            put(p, createLinkRef(p, getBasePath(ancestor)));
+            put(p, createLinkRef(p, getBasePath()));
         }
     }
 
-    private Method  findMethod(Class c, Type logical){
+    private List<Method> findMethods(Class c, Type logical, List<Method> r){
         Method m;
         for (Class i : c.getInterfaces()) {
-            m=findMethod(i, Types.getBaseClass(logical,i));
-            if(m!=null){
-                return m;
-            }
+            findMethods(i, Types.getBaseClass(logical, i), r);
         }
 
         Class sc = c.getSuperclass();
         if (sc!=null) {
-            m = findMethod(sc, Types.getBaseClass(logical, sc));
-            if(m != null){
-                return m;
-            }
+            findMethods(sc, Types.getBaseClass(logical, sc), r);
         }
 
         for (Method method : c.getDeclaredMethods()) {
             if(method.getAnnotation(Navigable.class) != null){
-                return method;
+                r.add(method);
             }
         }
-        return null;
+        return r;
     }
 
     private Link getOrCreateSelfRef(){
@@ -122,7 +115,8 @@ public final class Links extends HashMap<String,Link>{
         }
     }
 
-    private String getBasePath(Ancestor ancestor){
+    private String getBasePath(){
+        Ancestor ancestor = Stapler.getCurrentRequest().findAncestor(self);
         String path = ancestor.getUrl();
         String contextPath = Stapler.getCurrentRequest().getContextPath().trim();
 

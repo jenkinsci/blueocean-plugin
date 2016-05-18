@@ -14,7 +14,6 @@ import org.kohsuke.stapler.verb.GET;
  */
 @ExportedBean
 public abstract class Resource {
-    private final Links links = new Links();
     /**
      * Returns the DTO object that gets databound to Json/XML etc. for state transfer
      *
@@ -33,6 +32,6 @@ public abstract class Resource {
      */
     @Exported(name = "_links")
     public Links getLinks(){
-        return links;
+        return new Links(this);
     }
 }
