@@ -40,12 +40,39 @@ class OrganisationPipelines extends Component {
                 // before passing it on to be processed.
 
                 const eventCopy = Object.assign({}, event);
-                // The job name in the event will be the fully qualified
-                // Jenkins job name i.e. including folders etc e.g. "a/b/jobx".
-                // In blueocean, this needs to be split out. The last token is
-                // "pipeline" name, while the tokens before are not relevant.
-                // See https://cloudbees.atlassian.net/browse/UX-456
-                eventCopy.blueocean_pipeline_name = event.job_name.split('/').pop();
+
+                // For blueocean, we split apart the Job name and URL to get the
+                // parts needed for looking up the correct pipeline, branch
+                // and run etc.
+                // TODO: what about nested folders ?
+                const jobURLTokens = event.jenkins_object_url.split('/');
+                const jobNameTokens = event.job_name.split('/');
+                if (jobURLTokens[jobURLTokens.length - 1] === '') {
+                    // last token can be an empty string if the url has a trailing slash
+                    jobURLTokens.pop();
+                }
+                if (!isNaN(jobURLTokens[jobURLTokens.length - 1])) {
+                    // last/next-last token is a number (a build/run number)
+                    jobURLTokens.pop();
+                }
+                if (jobURLTokens.length > 3
+                    && jobURLTokens[jobURLTokens.length - 2] === 'branch') {
+                    // So it's a multibranch. The URL looks something like
+                    // "job/CloudBeers/job/PR-demo/branch/quicker/".
+                    // But we extract the job and branch name from event.job_name.
+                    eventCopy.blueocean_branch_name = jobNameTokens.pop();
+                    eventCopy.blueocean_is_multi_branch = true;
+                    eventCopy.blueocean_job_name = jobNameTokens.pop();
+                } else {
+                    // It's not multibranch ... 1st token is the pipeline (job) name.
+                    // But we extract the job name from event.job_name.
+                    eventCopy.blueocean_job_name = jobNameTokens.pop();
+                    eventCopy.blueocean_is_multi_branch = false;
+                }
+
+                // Is this even associated with the currently active pipeline job?
+                eventCopy.blueocean_is_for_current_job =
+                    (eventCopy.blueocean_job_name === _this.props.params.pipeline);
 
                 // See http://tfennelly.github.io/jenkins-pubsub-light-module/org/jenkins/pubsub/Events.JobChannel.html
                 switch (eventCopy.jenkins_event) {
