@@ -1,5 +1,5 @@
 import React from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { action, storiesOf } from '@kadira/storybook';
 import { Toast } from '../components/Toast';
 
 storiesOf('Toast', module)
@@ -37,16 +37,8 @@ function scenario4() {
 }
 
 function scenario5() {
-    const actionHandler = () => {
-        alert('action!');
-    };
-
-    const dismissHandler = () => {
-        alert('dismiss');
-    };
-
     return (
-        <Toast text="Run Started" action="Open" dismissDelay={30000}
-               onActionClick={actionHandler} onDismiss={dismissHandler} />
+        <Toast text="Run Started" action="Open" dismissDelay={0}
+               onActionClick={action('action')} onDismiss={action('dismiss')} />
     );
 }
