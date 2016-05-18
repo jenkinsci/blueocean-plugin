@@ -24,9 +24,14 @@ export class Toast extends Component {
     }
 
     componentDidMount() {
+        // disable the auto-dismiss when delay set explicitly to zero
+        if (this.props.dismissDelay === 0) {
+            return;
+        }
+
         const delay = this.props.dismissDelay || 5000;
 
-        // automatically remove the component after specified delay
+        // automatically dismiss the component after specified delay
         this._dismissingTimeoutID = setTimeout(() => {
             this.callDismissListener();
             this.hideComponent();
