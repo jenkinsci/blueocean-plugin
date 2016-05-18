@@ -44,8 +44,6 @@ export class Toast extends Component {
     }
 
     onActionClick() {
-        console.log('action');
-
         if (this.props.onActionClick) {
             this.props.onActionClick();
         }
@@ -54,8 +52,6 @@ export class Toast extends Component {
     }
 
     onDismissClick() {
-        console.log('dismiss');
-
         this.callDismissListener();
         this.hideComponent();
     }
@@ -67,8 +63,6 @@ export class Toast extends Component {
     }
 
     hideComponent() {
-        console.log('hiding Toast');
-
         this._dismissing = true;
         this.forceUpdate();
 
@@ -77,8 +71,6 @@ export class Toast extends Component {
     }
 
     destroyComponent() {
-        console.log('unmounting Toast');
-
         const element = ReactDOM.findDOMNode(this);
         ReactDOM.unmountComponentAtNode(element.parentNode);
     }
