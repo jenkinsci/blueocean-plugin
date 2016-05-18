@@ -18,7 +18,9 @@ const { func, number, string } = PropTypes;
 export class Toast extends Component {
     constructor() {
         super();
-        this._dismissing = false;
+        this.state = {
+            dismissing: false
+        };
         this._dismissingTimeoutID = 0;
         this._destroyingTImeoutID = 0;
     }
@@ -63,8 +65,9 @@ export class Toast extends Component {
     }
 
     hideComponent() {
-        this._dismissing = true;
-        this.forceUpdate();
+        this.setState({
+            dismissing: true
+        });
 
         clearTimeout(this._dismissingTimeoutID);
         this._destroyingTImeoutID = setTimeout(() => this.destroyComponent(), 300);
@@ -80,7 +83,7 @@ export class Toast extends Component {
             <ReactCSSTransitionGroup transitionName="toast" transitionAppear={true}
                 transitionAppearTimeout={300} transitionEnterTimeout={300} transitionLeaveTimeout={300}
             >
-                { !this._dismissing ?
+                { !this.state.dismissing ?
                 <div className="toast">
                     <span className="text">{this.props.text}</span>
                     <a className="action" onClick={() => this.onActionClick()}>{this.props.action}</a>
