@@ -167,11 +167,10 @@ export const actions = {
                     // set current runs since we are ATM looking at it
                     dispatch({ payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA });
                 }
-                return dispatch({ payload: newRuns,
+                dispatch({ payload: newRuns,
                     id: event.blueocean_job_name,
                     type: ACTION_TYPES.SET_RUNS_DATA });
             }
-            return null;
         };
     },
 
@@ -180,14 +179,14 @@ export const actions = {
             let storeData;
 
             function getFromStore() {
-                let runsByJobName = getState().adminStore.runs || {};
-                let eventJobRuns = runsByJobName[event.blueocean_job_name];
-                let storeData = undefined;
+                const runsByJobName = getState().adminStore.runs || {};
+                const eventJobRuns = runsByJobName[event.blueocean_job_name];
+                let newStoreData = undefined;
 
                 // Only interested in the event if we have already loaded the runs for that job.
                 if (eventJobRuns) {
-                    storeData = {};
-                    storeData.eventJobRuns = eventJobRuns;
+                    newStoreData = {};
+                    newStoreData.eventJobRuns = eventJobRuns;
 
                     for (let i = 0; i < eventJobRuns.length; i++) {
                         const run = eventJobRuns[i];
@@ -202,19 +201,19 @@ export const actions = {
                             // needs updating. The "dummy" run entry was created in
                             // processJobQueuedEvent().
                             if (run.job_run_queueId === event.job_run_queueId) {
-                                storeData.runIndex = i;
+                                newStoreData.runIndex = i;
                                 break;
                             }
                         } else {
                             if (run.id === event.jenkins_object_id) {
-                                storeData.runIndex = i;
+                                newStoreData.runIndex = i;
                                 break;
                             }
                         }
                     }
                 }
 
-                return storeData;
+                return newStoreData;
             }
 
             // Get the event related data from the
@@ -225,7 +224,8 @@ export const actions = {
             if (storeData) {
                 let runUrl;
 
-                function updateRunData(newRunData, skipStoreDataRefresh) {
+                const updateRunData = function (runData, skipStoreDataRefresh) {
+                    const newRunData = Object.assign({}, runData);
                     let newRuns;
 
                     // Only need to update the storeData if something async
@@ -266,10 +266,11 @@ export const actions = {
                     dispatch({ payload: newRuns,
                         id: event.blueocean_job_name,
                         type: ACTION_TYPES.SET_RUNS_DATA });
-                }
+                };
 
                 if (event.blueocean_is_multi_branch) {
-                    // TODO: find out how to get a 'master' branch run. Doesn't work using 'master'??
+                    // TODO: find out how to get a 'master' branch run.
+                    // Doesn't work using 'master'??
                     runUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
                         `/pipelines/${event.blueocean_job_name}` +
                         `/branches/${event.blueocean_branch_name}/runs/${event.jenkins_object_id}`;
