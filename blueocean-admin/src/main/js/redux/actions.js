@@ -177,50 +177,63 @@ export const actions = {
 
     updateRunState(event, config, updateByQueueId) {
         return (dispatch, getState) => {
-            const runsByJobName = getState().adminStore.runs || {};
-            const eventJobRuns = runsByJobName[event.blueocean_job_name];
+            let storeData;
+
+            function getFromStore() {
+                let runsByJobName = getState().adminStore.runs || {};
+                let eventJobRuns = runsByJobName[event.blueocean_job_name];
+                let storeData = undefined;
+
+                // Only interested in the event if we have already loaded the runs for that job.
+                if (eventJobRuns) {
+                    storeData = {};
+                    storeData.eventJobRuns = eventJobRuns;
+
+                    for (let i = 0; i < eventJobRuns.length; i++) {
+                        const run = eventJobRuns[i];
+                        if (event.blueocean_is_multi_branch
+                            && event.blueocean_branch_name !== run.pipeline) {
+                            // Not the same branch. Yes, run.pipeline actually contains
+                            // the branch name.
+                            continue;
+                        }
+                        if (updateByQueueId) {
+                            // We use the queueId to locate the right "dummy" run entry that
+                            // needs updating. The "dummy" run entry was created in
+                            // processJobQueuedEvent().
+                            if (run.job_run_queueId === event.job_run_queueId) {
+                                storeData.runIndex = i;
+                                break;
+                            }
+                        } else {
+                            if (run.id === event.jenkins_object_id) {
+                                storeData.runIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                return storeData;
+            }
+
+            // Get the event related data from the
+            // redux store.
+            storeData = getFromStore();
 
             // Only interested in the event if we have already loaded the runs for that job.
-            if (eventJobRuns) {
+            if (storeData) {
                 let runUrl;
-                let runIndex;
 
-                if (event.blueocean_is_multi_branch) {
-                    // TODO: find out how to get a 'master' branch run. Doesn't work using 'master'??
-                    runUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                        `/pipelines/${event.blueocean_job_name}` +
-                        `/branches/${event.blueocean_branch_name}/runs/${event.jenkins_object_id}`;
-                } else {
-                    runUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                        `/pipelines/${event.blueocean_job_name}/runs/${event.jenkins_object_id}`;
-                }
-
-                for (let i = 0; i < eventJobRuns.length; i++) {
-                    const run = eventJobRuns[i];
-                    if (event.blueocean_is_multi_branch
-                        && event.blueocean_branch_name !== run.pipeline) {
-                        // Not the same branch. Yes, run.pipeline actually contains
-                        // the branch name.
-                        continue;
-                    }
-                    if (updateByQueueId) {
-                        // We use the queueId to locate the right "dummy" run entry that
-                        // needs updating. The "dummy" run entry was created in
-                        // processJobQueuedEvent().
-                        if (run.job_run_queueId === event.job_run_queueId) {
-                            runIndex = i;
-                            break;
-                        }
-                    } else {
-                        if (run.id === event.jenkins_object_id) {
-                            runIndex = i;
-                            break;
-                        }
-                    }
-                }
-
-                function updateRunData(newRunData) {
+                function updateRunData(newRunData, skipStoreDataRefresh) {
                     let newRuns;
+
+                    // Only need to update the storeData if something async
+                    // happened i.e. giving an opportunity for the current
+                    // copy of the start data to become "stale".
+                    if (!skipStoreDataRefresh) {
+                        storeData = getFromStore();
+                    }
 
                     // In theory, the following code should not be needed as the
                     // call to the REST API should return run data with a state
@@ -239,11 +252,11 @@ export const actions = {
                         newRunData.state = 'RUNNING';
                     }
 
-                    if (runIndex !== undefined) {
-                        newRuns = clone(eventJobRuns);
-                        newRuns[runIndex] = newRunData;
+                    if (storeData.runIndex !== undefined) {
+                        newRuns = clone(storeData.eventJobRuns);
+                        newRuns[storeData.runIndex] = newRunData;
                     } else {
-                        newRuns = clone([newRunData, ...eventJobRuns]);
+                        newRuns = clone([newRunData, ...storeData.eventJobRuns]);
                     }
 
                     if (event.blueocean_is_for_current_job) {
@@ -253,6 +266,16 @@ export const actions = {
                     dispatch({ payload: newRuns,
                         id: event.blueocean_job_name,
                         type: ACTION_TYPES.SET_RUNS_DATA });
+                }
+
+                if (event.blueocean_is_multi_branch) {
+                    // TODO: find out how to get a 'master' branch run. Doesn't work using 'master'??
+                    runUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
+                        `/pipelines/${event.blueocean_job_name}` +
+                        `/branches/${event.blueocean_branch_name}/runs/${event.jenkins_object_id}`;
+                } else {
+                    runUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
+                        `/pipelines/${event.blueocean_job_name}/runs/${event.jenkins_object_id}`;
                 }
 
                 // The event tells us that the run state has changed, but does not give all
@@ -271,8 +294,14 @@ export const actions = {
                         console.warn(`Error getting run data from REST endpoint: ${runUrl}`);
                         console.warn(error);
 
-                        if (runIndex !== undefined) {
-                            runData = eventJobRuns[runIndex];
+                        // We're after coming out of an async operation (the fetch).
+                        // In that case, we better refresh the copy of the storeData
+                        // that we have in case things changed while we were doing the
+                        // fetch.
+                        storeData = getFromStore();
+
+                        if (storeData.runIndex !== undefined) {
+                            runData = storeData.eventJobRuns[storeData.runIndex];
                         } else {
                             runData = {};
                             runData.job_run_queueId = event.job_run_queueId;
@@ -291,7 +320,10 @@ export const actions = {
                         runData.id = event.jenkins_object_id;
                         runData.result = event.job_run_status;
 
-                        updateRunData(runData);
+                        // Update the run data. We do not need updateRunData to refresh the
+                        // storeData again because we already just did it at the start of
+                        // this function call.
+                        updateRunData(runData, false);
                     });
             }
         };
