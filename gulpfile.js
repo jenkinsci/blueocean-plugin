@@ -20,10 +20,7 @@ const svgmin = require('gulp-svgmin');
 const config = {
     react: {
         sources: "src/**/*.{js,jsx}",
-        dest: "dist",
-        babel: {
-            presets: ["es2015", "react", "stage-0"]
-        }
+        dest: "dist"
     },
     less: {
         sources: "less/theme.less",
@@ -146,13 +143,3 @@ gulp.task("copy-licenses-octicons", () =>
 gulp.task("copy-licenses-ofl", () =>
     gulp.src(config.copy.licenses_ofl.sources)
         .pipe(copy(config.copy.licenses_ofl.dest, {prefix: 1})));
-
-
-
-
-
-
-
-
-
-
