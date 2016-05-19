@@ -74,6 +74,27 @@ function parseJSON(response) {
 }
 
 /**
+ * Fetch JSON data.
+ * <p>
+ * Utility function that can be mocked for testing.
+ *
+ * @param url The URL to fetch from.
+ * @param onSuccess o
+ * @param onError
+ */
+export function fetchJson(url, onSuccess, onError) {
+    fetch(url, fetchOptions)
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(onSuccess)
+        .catch((error) => {
+            if (onError) {
+                onError(error);
+            }
+        });
+}
+
+/**
  * Clone a JSON object/array instance.
  * <p>
  * This needs to be done for redux. See
@@ -288,50 +309,46 @@ export const actions = {
                 // The event tells us that the run state has changed, but does not give all
                 // run related data (times, commit Ids etc). So, lets go get that data from
                 // REST API and present a consistent picture of the run state to the user.
-                fetch(runUrl, fetchOptions)
-                    .then(checkStatus)
-                    .then(parseJSON)
-                    .then(updateRunData)
-                    .catch((error) => {
-                        let runData;
+                fetchJson(runUrl, updateRunData, (error) => {
+                    let runData;
 
-                        // Getting the actual state of the run failed. Lets log
-                        // the failure and update the state manually as best we can.
+                    // Getting the actual state of the run failed. Lets log
+                    // the failure and update the state manually as best we can.
 
-                        console.warn(`Error getting run data from REST endpoint: ${runUrl}`);
-                        console.warn(error);
+                    console.warn(`Error getting run data from REST endpoint: ${runUrl}`);
+                    console.warn(error);
 
-                        // We're after coming out of an async operation (the fetch).
-                        // In that case, we better refresh the copy of the storeData
-                        // that we have in case things changed while we were doing the
-                        // fetch.
-                        storeData = getFromStore();
+                    // We're after coming out of an async operation (the fetch).
+                    // In that case, we better refresh the copy of the storeData
+                    // that we have in case things changed while we were doing the
+                    // fetch.
+                    storeData = getFromStore();
 
-                        if (storeData.runIndex !== undefined) {
-                            runData = storeData.eventJobRuns[storeData.runIndex];
+                    if (storeData.runIndex !== undefined) {
+                        runData = storeData.eventJobRuns[storeData.runIndex];
+                    } else {
+                        runData = {};
+                        runData.job_run_queueId = event.job_run_queueId;
+                        if (event.blueocean_is_multi_branch) {
+                            runData.pipeline = event.blueocean_branch_name;
                         } else {
-                            runData = {};
-                            runData.job_run_queueId = event.job_run_queueId;
-                            if (event.blueocean_is_multi_branch) {
-                                runData.pipeline = event.blueocean_branch_name;
-                            } else {
-                                runData.pipeline = event.blueocean_job_name;
-                            }
+                            runData.pipeline = event.blueocean_job_name;
                         }
+                    }
 
-                        if (event.jenkins_event === 'job_run_ended') {
-                            runData.state = 'FINISHED';
-                        } else {
-                            runData.state = 'RUNNING';
-                        }
-                        runData.id = event.jenkins_object_id;
-                        runData.result = event.job_run_status;
+                    if (event.jenkins_event === 'job_run_ended') {
+                        runData.state = 'FINISHED';
+                    } else {
+                        runData.state = 'RUNNING';
+                    }
+                    runData.id = event.jenkins_object_id;
+                    runData.result = event.job_run_status;
 
-                        // Update the run data. We do not need updateRunData to refresh the
-                        // storeData again because we already just did it at the start of
-                        // this function call.
-                        updateRunData(runData, false);
-                    });
+                    // Update the run data. We do not need updateRunData to refresh the
+                    // storeData again because we already just did it at the start of
+                    // this function call.
+                    updateRunData(runData, false);
+                });
             }
         };
     },
