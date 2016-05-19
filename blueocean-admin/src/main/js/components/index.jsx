@@ -7,6 +7,7 @@ import RunDetails from './RunDetails';
 import RunDetailsPipeline from './RunDetailsPipeline';
 import RunDetailsChanges from './RunDetailsChanges';
 import RunDetailsArtifacts from './RunDetailsArtifacts';
+import RunDetailsTests from './RunDetailsTests';
 
 export {
     Pipelines,
@@ -17,5 +18,6 @@ export {
     RunDetails,
     RunDetailsPipeline,
     RunDetailsChanges,
+    RunDetailsTests,
     RunDetailsArtifacts,
 };
