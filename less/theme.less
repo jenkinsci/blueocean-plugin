@@ -733,6 +733,15 @@ footer {
   }
 }
 
+.fadein-appear {
+  .transition(opacity ease-out 1s);
+  opacity: 0.01;
+
+  &.fadein-appear-active {
+    opacity: 1;
+  }
+}
+
 .dialog .header {
   padding: 25px 50px 0 50px;
   color: #ffffff;
