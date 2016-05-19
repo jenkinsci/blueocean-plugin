@@ -18,7 +18,8 @@ import java.util.Map;
 
 /**
  * Entrypoint for blueocean REST apis. $CONTEXT_PATH/rest being root. e.g. /jenkins/rest
- *
+ * /rest/dsds
+ * /rest/events -->
  *
  * @author Vivek Pandey
  */

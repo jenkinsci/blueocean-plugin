@@ -3,8 +3,8 @@ package io.jenkins.blueocean.rest.hal;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.model.Container;
 import org.jvnet.tiger_types.Types;
-import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.export.Exported;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -61,8 +61,8 @@ public final class Links extends HashMap<String,Link>{
         Class clazz = self.getClass();
         /** Find if there is method returning a {@link Container}, add this as link */
         for (Method m : findMethods(clazz,clazz,new ArrayList<Method>())) {
-            String p = getPathFromMethodName(m.getName());
-            put(p, createLinkRef(p, getBasePath()));
+            String p = getPathFromMethodName(m);
+            put(p, createLinkRef(p, Stapler.getCurrentRequest().getPathInfo()));
         }
     }
 
@@ -105,7 +105,11 @@ public final class Links extends HashMap<String,Link>{
         return new Link(String.format("%s%s/",base, name));
     }
 
-    private String getPathFromMethodName(String methodName){
+    private String getPathFromMethodName(Method m){
+        String methodName = m.getName();
+        Exported exportedAnn = m.getAnnotation(Exported.class);
+        if(exportedAnn != null && !exportedAnn.name().trim().isEmpty())
+            return exportedAnn.name();
         if(methodName.startsWith("get")){
             return methodName.substring(3).toLowerCase();
         }else if(methodName.startsWith("do")){
@@ -116,8 +120,7 @@ public final class Links extends HashMap<String,Link>{
     }
 
     private String getBasePath(){
-        Ancestor ancestor = Stapler.getCurrentRequest().findAncestor(self);
-        String path = ancestor.getUrl();
+        String path = Stapler.getCurrentRequest().getPathInfo();
         String contextPath = Stapler.getCurrentRequest().getContextPath().trim();
 
         if(!contextPath.isEmpty() || !contextPath.equals("/")){

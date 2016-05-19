@@ -13,6 +13,8 @@ import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
+import hudson.tasks.junit.JUnitResultArchiver;
+import hudson.tasks.junit.TestResultAction;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -107,6 +109,33 @@ public class PipelineApiTest extends BaseTest {
         Map resp = get("/organizations/jenkins/pipelines/pipeline4/");
 
         validatePipeline(p, resp);
+    }
+
+    @Test
+    public void getPipelineRunWithTestResult() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pipeline4");
+        p.getBuildersList().add(new Shell("echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<testsuite xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd\" name=\"io.jenkins.blueocean.jsextensions.JenkinsJSExtensionsTest\" time=\"35.7\" tests=\"1\" errors=\"0\" skipped=\"0\" failures=\"0\">\n" +
+            "  <properties>\n" +
+            "  </properties>\n" +
+            "  <testcase name=\"test\" classname=\"io.jenkins.blueocean.jsextensions.JenkinsJSExtensionsTest\" time=\"34.09\"/>\n" +
+            "</testsuite>' > test-result.xml"));
+
+        p.getPublishersList().add(new JUnitResultArchiver("*.xml"));
+        FreeStyleBuild b = p.scheduleBuild2(0).get();
+        TestResultAction resultAction = b.getAction(TestResultAction.class);
+        Assert.assertEquals("io.jenkins.blueocean.jsextensions.JenkinsJSExtensionsTest",resultAction.getResult().getSuites().iterator().next().getName());
+        j.assertBuildStatusSuccess(b);
+        Map resp = get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId()+"/test/");
+
+        Assert.assertNotNull(resp.get("_links"));
+
+        Map l = (Map) resp.get("_links");
+        Assert.assertNotNull(l.get("result"));
+        Map r = (Map) l.get("result");
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline4/runs/1/test/result/", r.get("href"));
+        Map s = (Map) l.get("self");
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline4/runs/1/test/", s.get("href"));
     }
 
     @Test

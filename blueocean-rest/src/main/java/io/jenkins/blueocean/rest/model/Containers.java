@@ -14,6 +14,28 @@ public class Containers {
     public abstract static class AbstractContainer<T extends Resource> extends Container<T> {
     }
 
+
+    public static <T extends Resource> Container<T> fromResource(final List<T> base) {
+        return new AbstractContainer<T>() {
+            @Override
+            public T get(String name) {
+                int idx = Integer.parseInt(name);   // TODO: more graceful error check
+                return base.get(idx);
+            }
+
+            @Override
+            public Iterator<T> iterator() {
+                return iterator(0,base.size());
+            }
+
+            @Override
+            public Iterator<T> iterator(int start, int limit) {
+                return base.subList(start,start+limit).iterator();
+            }
+        };
+    }
+
+
     public static <T> Container<Resource> from(final List<T> base) {
         return new AbstractContainer<Resource>() {
             @Override
