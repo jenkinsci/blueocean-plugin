@@ -1,6 +1,7 @@
 // @flow
 
 import React, {Component, PropTypes} from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import defaultStyles from './styles';
 import Header from './header';
 import Body from './body';
@@ -9,6 +10,8 @@ import Body from './body';
 type Props = {
     afterClose?: () => void,
     afterOpen?: () => void,
+    transitionClass?: string,
+    transitionDuration?: number,
     beforeClose?: () => void,
     beforeOpen?: () => void,
     body?: string,
@@ -45,20 +48,8 @@ class ModalView extends Component {
     constructor(props: Props) {
         super(props);
         this.state = {
-            isVisible: props.isVisible || false,
-            isAnimationReady: false
+            isVisible: props.isVisible || false
         };
-    }
-
-    componentDidMount() {
-        if (this.props.animationClass) {
-            // trigger a re-render so the css animation will play
-            setTimeout(() => {
-                this.setState({
-                    isAnimationReady: true
-                });
-            }, 0);
-        }
     }
 
     componentWillUpdate(nextProps: Props, nextState: State) {
@@ -95,21 +86,6 @@ class ModalView extends Component {
 
     hide() {
         this.setState({isVisible: false});
-    }
-
-    buildDialogClasses() {
-        const { animationClass } = this.props;
-        const dialogClasses = ['dialog'];
-
-        if (animationClass) {
-            dialogClasses.push(animationClass);
-        }
-
-        if (this.state.isAnimationReady) {
-            dialogClasses.push('ready');
-        }
-
-        return dialogClasses.join(' ');
     }
 
     onOverlayClicked() {
@@ -154,6 +130,44 @@ class ModalView extends Component {
         });
     }
 
+    renderDialog() {
+        const {
+            dialogStyles,
+            closeButtonStyle,
+            titleStyle,
+            contentStyle,
+            headerStyle,
+        } =  this.getStyles();
+
+        const {
+            children,
+            result = 'info',
+            ...rest
+        } = this.props;
+
+        const head = this.getParts(children, 'Header');
+        const body = this.getParts(children, 'Body');
+
+        return (
+            <div className="dialog" style={dialogStyles}>
+                <div className={`header ${result.toLowerCase()}`} style={headerStyle}>
+                    <a onClick={() => this.hide()}
+                       role="button"
+                       className="closeButton"
+                       style={closeButtonStyle}>&times;</a>
+                    {
+                        head && head[0] ? head : <Header {...titleStyle} {...rest}/>
+                    }
+                </div>
+                <div className="content" style={contentStyle}>
+                    {
+                        body ? body[0] : <Body {...rest}>{children}</Body>
+                    }
+                </div>
+            </div>
+        );
+    }
+
     render() {
         const {isVisible} = this.state;
         //early out
@@ -162,27 +176,17 @@ class ModalView extends Component {
         }
 
         let overlay;
+        let { transitionDuration } = this.props;
 
+        const { overlayStyles } =  this.getStyles();
         const {
-            dialogStyles,
-            overlayStyles,
-            closeButtonStyle,
-            titleStyle,
-            contentStyle,
-            headerStyle,
-            } =  this.getStyles();
+            transitionClass,
+            ...rest
+        } = this.props;
 
-        const {
-            props: {
-                children,
-                result = 'info',
-                ...rest,
-                },
-            } = this;
-
-        const head = this.getParts(children, 'Header');
-        const body = this.getParts(children, 'Body');
-        const dialogClasses = this.buildDialogClasses();
+        if (isNaN(transitionDuration)) {
+            transitionDuration = 300;
+        }
 
         if (rest.showOverlay) {
             overlay = (<div
@@ -193,26 +197,24 @@ class ModalView extends Component {
             </div>);
         }
 
-
-        return ( <section className="modalview">
+        return (
+            <section className="modalview">
                 {overlay}
-                <div className={dialogClasses} style={dialogStyles}>
-                    <div className={`header ${result.toLowerCase()}`} style={headerStyle}>
-                        <a onClick={() => this.hide()}
-                           role="button"
-                           className="closeButton"
-                           style={closeButtonStyle}>&times;</a>
-                        {
-                            head && head[0] ? head : <Header {...titleStyle} {...rest}/>
-                        }
-                    </div>
-                    <div className="content" style={contentStyle}>
-                        {
-                            body ? body[0] : <Body {...rest}>{children}</Body>
-                        }
-                    </div>
 
-                </div>
+                { transitionClass ?
+                    <ReactCSSTransitionGroup
+                        transitionName={transitionClass}
+                        transitionAppear={true}
+                        transitionLeave={false}
+                        transitionAppearTimeout={transitionDuration}
+                        transitionEnterTimeout={transitionDuration}
+                    >
+                        { this.renderDialog() }
+                    </ReactCSSTransitionGroup>
+                :
+                    this.renderDialog()
+                }
+
             </section>
         );
     }
@@ -240,7 +242,8 @@ ModalView.propTypes = {
         }),
         PropTypes.bool,
     ]),
-    animationClass: PropTypes.string,
+    transitionClass: PropTypes.string,
+    transitionDuration: PropTypes.number,
     result: PropTypes.string,
     title: PropTypes.string,
 };
