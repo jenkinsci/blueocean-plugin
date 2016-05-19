@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 import {describeArcAsPath, polarToCartesian} from '../SVG';
 const { string, object, number } = PropTypes;

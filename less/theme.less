@@ -575,7 +575,7 @@ code.hash {
 }
 
 .global-header {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     letter-spacing: 1.1px;
     background-color: @header-bg;
     color: white;
@@ -587,7 +587,7 @@ code.hash {
 
 .global-header nav {
     text-align: center;
-    padding: 1.5rem 0;
+    padding: 1rem 0;
 }
 
 .global-header nav a {
@@ -647,6 +647,15 @@ code.hash {
   transform: translateZ(0);
   margin-bottom: -3px;
 }
+
+// Applies this style to safari 9.0+
+@supports (overflow:-webkit-marquee) and (justify-content:inherit)
+{
+  .page-tabs a {
+    margin-bottom: 0px;
+  }
+}
+
 
 .page-tabs a:before {
     // For transforming underline
@@ -725,20 +734,16 @@ footer {
 }
 
 .dialog .header {
-  padding: 25px 20px 25px 50px;
+  padding: 25px 50px 0 50px;
   color: #ffffff;
   font-weight: normal;
   line-height: 20px;
-  overflow-y: auto;
-  max-height: 20%;
-  min-height: 5%;
   font-size: 1.6rem;
 }
 
-.dialog .page-tabs {
+.dialog .header .page-tabs {
   clear: both;
   font-size: 1.5rem;
-  padding-left: 50px;
 
   a {
     letter-spacing: 1.1px;
@@ -746,94 +751,38 @@ footer {
   }
 }
 
-.dialog section h4 {
-  font-size: 1.8rem;
-  padding-bottom: 5px;
-}
-
-.dialog section .times span {
-  vertical-align: top;
-}
-
-.dialog section .times div {
-  padding-bottom: 10px;
-}
-
-.dialog section .times svg {
-  padding-right: 30px;
-  overflow: visible;
-}
-
-.dialog section.left svg {
-  padding-right: 20px;
-  padding-left: 20px;
-  margin-top: -20px;
-}
-
-.dialog .result {
-  width: 100%;
-  margin: 20px auto;
-  font-family: @font-family-panel;
-  color: #ffffff;
-}
-
-.dialog .result .row {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.dialog .result .times {
-  margin-left: auto;
-  width: 25%;
-}
-
-.dialog .result .commons {
-  min-width: 0;
-  flex-basis: 75%;
-}
-
-.dialog .result .commons div {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.dialog .result .commons label {
-  display: inline-block;
-  width: 100px;
-}
-
-.dialog .result .commit {
-  font-family: @font-family-monospace;
-}
-
-.dialog .result .authors {
-  color: #fff;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 .dialog .header.info {
   background-color: @header-bg;
 }
 
 .dialog .header.success {
-  padding: 0;
   background-color: @brand-success;
 }
 
 .dialog .header.failure {
-  padding: 0;
   background-color: @brand-danger;
+}
+
+.dialog .header.unstable {
+  padding: 0;
+  background-color: @brand-warning;
+}
+
+.dialog .header.unknown {
+  padding: 0;
+  background-color: @brand-unknown;
+}
+
+.dialog .header.aborted,
+.dialog .header.not_built {
+  padding: 0;
+  background-color: @brand-grey;
 }
 
 .dialog .content {
   background-color: @modal-content-bg;
   overflow-y: auto;
-  max-height: 90%;
-  min-height: 75%;
-  padding: 25px 20px 25px 50px;
+  padding: 25px 50px 25px 50px;
 }
 
 .header .title {

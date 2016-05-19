@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 import {Icon} from 'react-material-icons-blue';
 import { ReadableDate } from '../ReadableDate';
@@ -32,20 +34,19 @@ class PipelineResult extends Component {
         let
             duration = moment.duration(
                 Number(durationInMillis), 'milliseconds').humanize();
-        const authors = [...new Set(changeSet.map(change => change.author.fullName))];
 
-        return (<div className="result">
+        // Grab author from each change, run through a set for uniqueness
+        // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059 
+        const authors = [...(new Set(changeSet.map(change => change.author.fullName)):any)];
+
+        return (
+        <div className="pipeline-result">
             <section className="left">
-                { result === 'SUCCESS' && <Icon {...{
+                <Icon {...{
                     size: 125,
-                    icon: 'done',
-                    style: { fill: "#fff" },
-                }} />}
-                { result === 'FAILURE' &&  <Icon {...{
-                    size: 125,
-                    icon: 'close',
-                    style: { fill: "#fff" },
-                }} />}
+                    icon: iconFromResult(result),
+                    style: { fill: "#fff" }
+                }} />
             </section>
             <section className="table">
                 <h4>{organization} / {name} #{id}</h4>
@@ -65,20 +66,18 @@ class PipelineResult extends Component {
                         </div>
                         : null }
                         <div>
-                           {
-                               authors.length > 0 ?
+                       { authors.length > 0 ?
                                    <a className="authors" onClick={() => this.handleAuthorsClick()}>
                                         Changes by {authors.map(
                                         author => ' ' + author)}
                                    </a>
-                                   : 'No changes'
-                            }
+                       : 'No changes' }
                         </div>
                     </div>
                     <div className="times">
                         <div>
                             <Icon {...{
-                                size: 15,
+                                size: 25,
                                 icon: 'timelapse',
                                 style: { fill: "#fff" },
                             }} />
@@ -86,7 +85,7 @@ class PipelineResult extends Component {
                         </div>
                         <div>
                             <Icon {...{
-                                size: 15,
+                                size: 25,
                                 icon: 'access_time',
                                 style: { fill: "#fff" },
                             }} />
@@ -104,5 +103,19 @@ PipelineResult.propTypes = {
     colors: object,
     onAuthorsClick: func,
 };
+
+function iconFromResult(result) {
+    switch(result) {
+        case "SUCCESS":
+        case "UNSTABLE":
+            return "done";
+        case "FAILURE":
+        case "ABORTED":
+        case "NOT_BUILT":
+            return "close";
+        default:
+            return "close";
+    }
+}
 
 export { PipelineResult };

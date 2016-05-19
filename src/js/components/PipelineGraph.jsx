@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 import {describeArcAsPath, polarToCartesian} from './SVG';
 
@@ -31,9 +33,62 @@ const nodeColorRunningProgress = "#4a90e2";
 const nodeColorNotBuilt = connectorColor;
 const nodeColorUnexpected = "#ff00ff";
 
+// Typedefs
+
+// FIXME: Find a way to unify pipelineStageState export with StateState union
+type StageState =
+    | "queued"
+    | "running"
+    | "success"
+    | "failure"
+    | "not_built";
+
+type StageInfo = {
+    name: string,
+    state: StageState,
+    completePercent: number
+};
+
+type NodeInfo = {
+    x: number,
+    y: number,
+    name: string,
+    state: StageState,
+    completePercent: number
+};
+
+type ConnectionInfo = [NodeInfo, NodeInfo];
+
+type LabelInfo = {
+    x: number,
+    y: number,
+    text: string
+};
+
+type LayoutInfo = typeof defaultLayout;
+
+// FIXME: Currently need to duplicate react's propTypes obj in Flow.
+// See: https://github.com/facebook/flow/issues/1770
+type Props = {
+    stages: Array<StageInfo>,
+    layout: LayoutInfo,
+    onNodeClick: (nodeName: string) => void
+};
+
 export class PipelineGraph extends Component {
 
-    constructor(props) {
+    // Flow typedefs
+    state: {
+        nodes: Array<NodeInfo>,
+        connections: Array<ConnectionInfo>,
+        bigLabels: Array<LabelInfo>,
+        smallLabels: Array<LabelInfo>,
+        measuredWidth: number,
+        measuredHeight: number,
+        layout: LayoutInfo
+    };
+
+    constructor(props: Props) {
         super(props);
         this.state = {
             nodes: [],
@@ -50,7 +105,7 @@ export class PipelineGraph extends Component {
         this.stagesUpdated(this.props.stages);
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: Props) {
 
         if (nextProps.layout != this.props.layout) {
 
@@ -70,7 +125,7 @@ export class PipelineGraph extends Component {
         }
     }
 
-    addConnectionDetails(connections, previousNodes, columnNodes) {
+    addConnectionDetails(connections: Array<ConnectionInfo>, previousNodes: Array<NodeInfo>, columnNodes: Array<NodeInfo>) {
         // Connect to top of previous/next column. Curves added when creating SVG
 
         // Collapse from previous node(s) to top column node
@@ -84,22 +139,22 @@ export class PipelineGraph extends Component {
         }
     }
 
-    stagesUpdated(newStages = []) {
+    stagesUpdated(newStages: Array<StageInfo> = []) {
         // FIXME: Should we calculate based on expected text size guesstimate?
         const ypStart = 50;
 
         const { nodeSpacingH, nodeSpacingV } = this.state.layout;
 
-        var nodes = [];
-        var connections = [];
-        var bigLabels = [];
-        var smallLabels = [];
+        var nodes: Array<NodeInfo> = [];
+        var connections: Array<ConnectionInfo> = [];
+        var bigLabels: Array<LabelInfo> = [];
+        var smallLabels: Array<LabelInfo> = [];
 
         // next node position
         var xp = nodeSpacingH / 2;
-        var yp;
+        var yp = 0;
 
-        var previousNodes = [];
+        var previousNodes: Array<NodeInfo> = [];
         var mostColumnNodes = 0;
 
         // For reach top-level stage we have a column of node(s)
@@ -118,7 +173,7 @@ export class PipelineGraph extends Component {
             let nodeStages = topStage.children && topStage.children.length ?
                 topStage.children : [topStage];
 
-            let columnNodes = [];
+            let columnNodes: Array<NodeInfo> = [];
 
             for (let nodeStage of nodeStages) {
                 let node = {
@@ -167,7 +222,7 @@ export class PipelineGraph extends Component {
         });
     }
 
-    createBigLabel(details) {
+    createBigLabel(details: LabelInfo) {
 
         const { nodeSpacingH, labelOffsetV } = this.state.layout;
 
@@ -194,7 +249,7 @@ export class PipelineGraph extends Component {
         return <div className="pipeline-big-label" style={style} key={details.text}>{details.text}</div>;
     }
 
-    createSmallLabel(details) {
+    createSmallLabel(details: LabelInfo) {
 
         const {
             nodeSpacingH,
@@ -225,7 +280,7 @@ export class PipelineGraph extends Component {
         return <div className="pipeline-small-label" style={style} key={details.text}>{details.text}</div>;
     }
 
-    renderConnection(connection) {
+    renderConnection(connection: ConnectionInfo) {
 
         const { nodeRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
 
@@ -274,7 +329,7 @@ export class PipelineGraph extends Component {
         return <path {...connectorStroke} key={key} d={pathData} fill="none"/>;
     }
 
-    renderNode(node) {
+    renderNode(node: NodeInfo) {
 
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
 

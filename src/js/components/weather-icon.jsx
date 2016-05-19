@@ -1,30 +1,33 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 
-function getClassNames(successpc) {
-    if (successpc < 21) return "weather-icon weather-storm";
-    if (successpc < 41) return "weather-icon weather-raining";
-    if (successpc < 61) return "weather-icon weather-cloudy";
-    if (successpc < 81) return "weather-icon weather-partially-sunny";
-    return "weather-icon weather-sunny";
+function getStatusClassName(successpc) {
+    if (successpc < 21) return 'weather-storm';
+    if (successpc < 41) return 'weather-raining';
+    if (successpc < 61) return 'weather-cloudy';
+    if (successpc < 81) return 'weather-partially-sunny';
+    return 'weather-sunny';
 }
 
 export class WeatherIcon extends Component {
     render() {
-        let successpc = parseInt(this.props.score) || 0;
-        let classNames = getClassNames(successpc);
+        const successpc = parseInt(this.props.score) || 0;
+        const status = getStatusClassName(successpc);
+        let classNames = `weather-icon ${status}`;
 
         if (this.props.size === "large") {
             classNames += " large-icon";
         }
 
-        return <span className={classNames}/>;
+        return <svg title={status} className={classNames}></svg>;
     }
+
+    static defaultProps = {
+        size: "default"
+    };
+
+    static propTypes = {
+        size: PropTypes.string
+    };
 }
-
-WeatherIcon.propTypes = {
-    size: PropTypes.string,
-};
-
-WeatherIcon.defaultProps = {
-    size: "default",
-};

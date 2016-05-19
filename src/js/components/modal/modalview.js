@@ -1,11 +1,48 @@
+// @flow
+
 import React, {Component, PropTypes} from 'react';
 import defaultStyles from './styles';
 import Header from './header';
 import Body from './body';
 
+// Typedefs
+type Props = {
+    afterClose?: () => void,
+    afterOpen?: () => void,
+    beforeClose?: () => void,
+    beforeOpen?: () => void,
+    body?: string,
+    children?: any, // We can refine this once the Flow team does :)
+    hideOnOverlayClicked?: boolean,
+    isVisible?: boolean,
+    onOverlayClicked?: () => void,
+    showOverlay?: boolean,
+    styles?:
+        {
+            closeButtonStyle: Object,
+            dialogStyles: Object,
+            overlayStyles: Object,
+            titleStyle: Object
+        } | boolean,
+    result?: string,
+    title?: string
+};
+
+type State = {
+    isVisible: boolean
+}
+
 class ModalView extends Component {
 
-    constructor(props) {
+    state: State;
+
+    static defaultProps: Props = {
+        styles: false,
+        showOverlay: true,
+        hideOnOverlayClicked: false
+    };
+
+    constructor(props: Props) {
         super(props);
         this.state = {
             isVisible: props.isVisible || false,
@@ -24,7 +61,7 @@ class ModalView extends Component {
         }
     }
 
-    componentWillUpdate(nextProps, nextState) {
+    componentWillUpdate(nextProps: Props, nextState: State) {
 
         const {isVisible} = this.state;
         const {beforeOpen, beforeClose} = this.props;
@@ -38,7 +75,7 @@ class ModalView extends Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps: Props, prevState: State) {
 
         const {isVisible} = this.state;
         const {afterOpen, afterClose} = this.props;
@@ -109,7 +146,7 @@ class ModalView extends Component {
 
     }
 
-    getParts(children, part) {
+    getParts(children: Array<any>, part: string) {
         return React.Children.map(children, (child) => {
             if (child.type instanceof Function && child.type.name === part) {
                 return child;
@@ -206,13 +243,6 @@ ModalView.propTypes = {
     animationClass: PropTypes.string,
     result: PropTypes.string,
     title: PropTypes.string,
-
-};
-
-ModalView.defaultProps = {
-    styles: false,
-    showOverlay: true,
-    hideOnOverlayClicked: false
 };
 
 export {
