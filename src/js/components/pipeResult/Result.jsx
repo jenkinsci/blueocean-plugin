@@ -36,7 +36,8 @@ class PipelineResult extends Component {
                 Number(durationInMillis), 'milliseconds').humanize();
 
         // Grab author from each change, run through a set for uniqueness
-        const authors = [...new Set(changeSet.map(change => change.author.fullName))];
+        // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059 
+        const authors = [...(new Set(changeSet.map(change => change.author.fullName)):any)];
 
         return (
         <div className="pipeline-result">
