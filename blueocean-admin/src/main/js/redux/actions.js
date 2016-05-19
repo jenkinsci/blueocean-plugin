@@ -82,7 +82,7 @@ function parseJSON(response) {
  * @param onSuccess o
  * @param onError
  */
-export function fetchJson(url, onSuccess, onError) {
+exports.fetchJson = function (url, onSuccess, onError) {
     fetch(url, fetchOptions)
         .then(checkStatus)
         .then(parseJSON)
@@ -92,7 +92,7 @@ export function fetchJson(url, onSuccess, onError) {
                 onError(error);
             }
         });
-}
+};
 
 /**
  * Clone a JSON object/array instance.
@@ -157,7 +157,7 @@ export const actions = {
                     if (event.blueocean_is_multi_branch
                         && event.blueocean_branch_name !== run.pipeline) {
                         // Not the same branch. Yes, run.pipeline actually contains
-                        // the branch name.
+                        // the branch name i.e. naming seems a bit confusing.
                         continue;
                     }
                     if (run.job_run_queueId === event.job_run_queueId) {
@@ -309,7 +309,7 @@ export const actions = {
                 // The event tells us that the run state has changed, but does not give all
                 // run related data (times, commit Ids etc). So, lets go get that data from
                 // REST API and present a consistent picture of the run state to the user.
-                fetchJson(runUrl, updateRunData, (error) => {
+                exports.fetchJson(runUrl, updateRunData, (error) => {
                     let runData;
 
                     // Getting the actual state of the run failed. Lets log
