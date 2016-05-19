@@ -27,3 +27,4 @@ export {EmptyStateView} from './EmptyStateView';
 export {EmptyStateIcon} from './EmptyStateIcon';
 export {PipelineGraph} from './PipelineGraph';
 export {FileSize} from './FileSize';
+export {Toast} from './Toast';
