@@ -31,6 +31,7 @@ function scenario2() {
         <ModalView
             isVisible
             transitionClass="slideup"
+            transitionDuration={300}
         >
             <ModalHeader>
                 <div>

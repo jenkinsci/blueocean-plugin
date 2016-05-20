@@ -32,8 +32,9 @@ type Props = {
 };
 
 type State = {
+    dismissing: boolean,
     isVisible: boolean
-}
+};
 
 class ModalView extends Component {
 
@@ -48,6 +49,7 @@ class ModalView extends Component {
     constructor(props: Props) {
         super(props);
         this.state = {
+            dismissing: false,
             isVisible: props.isVisible || false
         };
     }
@@ -85,7 +87,13 @@ class ModalView extends Component {
     }
 
     hide() {
-        this.setState({isVisible: false});
+        if (this.props.transitionClass) {
+            this.setState({dismissing: true});
+            // after transition finishes, "destroy" the component
+            setTimeout(() => this.setState({isVisible: false}), this.props.transitionDuration);
+        } else {
+            this.setState({isVisible: false});
+        }
     }
 
     onOverlayClicked() {
@@ -205,16 +213,17 @@ class ModalView extends Component {
                     <ReactCSSTransitionGroup
                         transitionName={transitionClass}
                         transitionAppear={true}
-                        transitionLeave={false}
                         transitionAppearTimeout={transitionDuration}
                         transitionEnterTimeout={transitionDuration}
+                        transitionLeaveTimeout={transitionDuration}
                     >
-                        { this.renderDialog() }
+                        { !this.state.dismissing ?
+                            this.renderDialog()
+                        : null }
                     </ReactCSSTransitionGroup>
                 :
                     this.renderDialog()
                 }
-
             </section>
         );
     }

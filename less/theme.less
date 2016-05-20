@@ -734,6 +734,15 @@ footer {
     opacity: 1;
   }
 }
+
+.slideup-leave {
+  .transition(all ease-out 0.3s);
+    top: 0;
+  opacity: 1;
+
+  &.slideup-leave-active {
+    top: 75%;
+    opacity: 0.01;
   }
 }
 
