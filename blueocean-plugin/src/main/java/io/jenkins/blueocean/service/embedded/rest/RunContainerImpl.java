@@ -29,7 +29,7 @@ public class RunContainerImpl extends BlueRunContainer {
     public BlueRun get(String name) {
         List<Job> projects = Jenkins.getActiveInstance().getAllItems(Job.class);
         for (Job p : projects) {
-            if (!p.getName().equals(job.getName())) {
+            if (!p.getFullName().equals(job.getFullName())) {
                 continue;
             }
             RunList<? extends hudson.model.Run> runList = p.getBuilds();
