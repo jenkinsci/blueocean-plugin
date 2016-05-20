@@ -3,10 +3,19 @@ import { storiesOf } from '@kadira/storybook';
 import { EmptyStateView } from '../components/EmptyStateView';
 
 storiesOf('EmptyStateView', module)
+    .add('One-Liner', oneLiner)
     .add('Content & Wide Image', contentWithWideImage)
     .add('Content & Narrow Image', contentWithNarrowImage)
     .add('Content Only', contentOnly)
     .add('Image Only', imageOnly);
+
+function oneLiner() {
+    return (
+        <EmptyStateView tightSpacing={true}>
+            <p>There are no artifacts for this pipeline run.</p>
+        </EmptyStateView>
+    );
+}
 
 function contentWithWideImage() {
     return (
