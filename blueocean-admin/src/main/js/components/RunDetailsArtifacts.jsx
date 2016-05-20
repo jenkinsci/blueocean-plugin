@@ -11,7 +11,7 @@ const { object } = PropTypes;
 export default class RunDetailsArtifacts extends Component {
     renderEmptyState() {
         return (
-            <EmptyStateView tightSpacing={true}>
+            <EmptyStateView tightSpacing>
                 <p>There are no artifacts for this pipeline run.</p>
             </EmptyStateView>
         );

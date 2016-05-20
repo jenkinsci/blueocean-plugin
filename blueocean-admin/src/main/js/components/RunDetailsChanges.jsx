@@ -7,7 +7,7 @@ const { object } = PropTypes;
 export default class RunDetailsChanges extends Component {
     renderEmptyState() {
         return (
-            <EmptyStateView tightSpacing={true}>
+            <EmptyStateView tightSpacing>
                 <p>There are no changes for this pipeline run.</p>
             </EmptyStateView>
         );

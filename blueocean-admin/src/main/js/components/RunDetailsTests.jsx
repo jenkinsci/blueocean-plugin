@@ -9,7 +9,7 @@ const { object } = PropTypes;
 export default class RunDetailsTests extends Component {
     renderEmptyState() {
         return (
-            <EmptyStateView tightSpacing={true}>
+            <EmptyStateView tightSpacing>
                 <p>There are no tests for this pipeline run.</p>
             </EmptyStateView>
         );
