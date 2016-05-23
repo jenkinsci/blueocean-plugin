@@ -6,7 +6,6 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationContainer;
 import jenkins.model.Jenkins;
 
-import javax.inject.Inject;
 import java.util.Collections;
 import java.util.Iterator;
 

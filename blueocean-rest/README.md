@@ -33,7 +33,7 @@ BlueOcean rest API base URL is:
 
 ## Find users in an organization
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/search\?q\=type:user\;organization:jenkins
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/users/
     
     [ 
       {
@@ -42,6 +42,7 @@ BlueOcean rest API base URL is:
       } 
     ]
 
+$$
 ## Get organization details
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins

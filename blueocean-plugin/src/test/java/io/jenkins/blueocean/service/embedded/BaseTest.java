@@ -333,6 +333,12 @@ public abstract class BaseTest {
             return this;
         }
 
+        public RequestBuilder authAlice() {
+            this.username = "alice";
+            this.password = "alice";
+            return this;
+        }
+
 
         public RequestBuilder data(Map data) {
             this.data = data;
