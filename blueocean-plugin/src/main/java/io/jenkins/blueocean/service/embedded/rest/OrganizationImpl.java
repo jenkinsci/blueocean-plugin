@@ -1,17 +1,17 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
+import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.queue.BlueTask;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.PUT;
 
-import javax.inject.Inject;
 import java.io.IOException;
 
 /**
@@ -68,4 +68,5 @@ public class OrganizationImpl extends BlueOrganization {
     public BlueUserContainer getUsers() {
         return users;
     }
+
 }

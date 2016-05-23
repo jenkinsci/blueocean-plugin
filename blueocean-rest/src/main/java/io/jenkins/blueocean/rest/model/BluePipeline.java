@@ -1,12 +1,10 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.model.queue.BlueTask;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.json.JsonResponse;
 import org.kohsuke.stapler.verb.PUT;
-
-import javax.xml.ws.WebFault;
 
 /**
  * Defines pipeline state and its routing
