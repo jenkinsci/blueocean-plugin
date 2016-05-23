@@ -27,7 +27,7 @@ export default class Pipelines extends Component {
             'Health',
             'Branches',
             'Pull Requests',
-            '',
+            { label: '', className: 'favorite' },
         ];
 
         return (
