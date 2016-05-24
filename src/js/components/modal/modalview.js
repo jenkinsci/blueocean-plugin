@@ -25,7 +25,8 @@ type Props = {
             titleStyle: Object
         } | boolean,
     result?: string,
-    title?: string
+    title?: string,
+    ignoreEscapeKey?: boolean
 };
 
 type State = {
@@ -40,13 +41,12 @@ class ModalView extends Component {
         styles: false,
         showOverlay: true,
         hideOnOverlayClicked: false,
-        closeOnEscapeKey: true
+        ignoreEscapeKey: false
     };
 
     constructor(props: Props) {
         super(props);
         this.state = {isVisible: props.isVisible || false};
-        this._handleKeys = this._handleKeys.bind(this);
     }
 
     componentWillMount() {
@@ -57,10 +57,10 @@ class ModalView extends Component {
         document.removeEventListener("keydown", this._handleKeys, false);
     }
 
-    _handleKeys(event){
-        const {closeOnEscapeKey} = this.props;
+    _handleKeys = (event) => {
+        const { ignoreEscapeKey } = this.props;
 
-        if (closeOnEscapeKey && event.keyCode == 27) {
+        if (!ignoreEscapeKey && event.keyCode == 27) {
             this.hide();
         }
     }
