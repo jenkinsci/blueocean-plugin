@@ -42,7 +42,7 @@ class OrganisationPipelines extends Component {
 
                 const eventCopy = pushEventUtil.enrichJobEvent(event, _this.props.params.pipeline);
 
-                // See http://tfennelly.github.io/jenkins-pubsub-light-module/org/jenkins/pubsub/Events.JobChannel.html
+                // See http://jenkinsci.github.io/pubsub-light-module/org/jenkins/pubsub/Events.JobChannel.html
                 switch (eventCopy.jenkins_event) {
                 case 'job_run_queue_buildable':
                 case 'job_run_queue_enter':
