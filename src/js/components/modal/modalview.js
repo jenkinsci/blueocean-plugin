@@ -230,7 +230,7 @@ ModalView.propTypes = {
     ]),
     result: PropTypes.string,
     title: PropTypes.string,
-    closeOnEscapeKey: PropTypes.bool
+    ignoreEscapeKey: PropTypes.bool
 };
 
 export {
