@@ -1,3 +1,5 @@
+// @flow
+
 export {
     ModalView,
     ModalBody,
@@ -16,13 +18,7 @@ export {
     SvgStatus,
 } from './status/StatusIndicator';
 export {fetch, fetchData} from './fetch';
-export {
-    PipelineResult,
-    SvgDuration,
-    SvgTime,
-    SvgError,
-    SvgSuccess,
-} from './pipeResult/Result';
+export {PipelineResult} from './pipeResult/Result';
 export {Favorite} from './favorite/Favorite';
 export {ReadableDate} from './ReadableDate';
 export {CommitHash} from './CommitHash';
@@ -31,3 +27,4 @@ export {EmptyStateView} from './EmptyStateView';
 export {EmptyStateIcon} from './EmptyStateIcon';
 export {PipelineGraph} from './PipelineGraph';
 export {FileSize} from './FileSize';
+export {Toast} from './Toast';

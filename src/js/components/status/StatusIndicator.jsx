@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 import SvgSpinner from './SvgSpinner';
 import SvgStatus from './SvgStatus';

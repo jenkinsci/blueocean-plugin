@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component, PropTypes } from 'react';
 
 function getStatusClassName(successpc) {
@@ -20,12 +22,12 @@ export class WeatherIcon extends Component {
 
         return <svg title={status} className={classNames}></svg>;
     }
+
+    static defaultProps = {
+        size: "default"
+    };
+
+    static propTypes = {
+        size: PropTypes.string
+    };
 }
-
-WeatherIcon.propTypes = {
-    size: PropTypes.string,
-};
-
-WeatherIcon.defaultProps = {
-    size: "default",
-};
