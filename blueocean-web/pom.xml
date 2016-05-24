@@ -13,7 +13,7 @@
     <packaging>hpi</packaging>
 
     <name>BlueOcean :: Web module</name>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -24,11 +24,6 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>variant</artifactId>
             <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.ui</groupId>
-            <artifactId>jquery-detached</artifactId>
-            <version>1.2.1</version>
         </dependency>
     </dependencies>
 

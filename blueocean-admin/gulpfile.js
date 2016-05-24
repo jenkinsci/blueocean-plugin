@@ -13,7 +13,12 @@ builder.defineTask('test', function() {
     var mocha = require('gulp-mocha');
     var babel = require('babel-core/register');
 
-    builder.gulp.src('src/test/js/*-spec.js')
+    // Allow running of a specific test
+    // e.g.  gulp test --test pipelines
+    // will run the pipelines-spec.js
+    var filter = builder.args.argvValue('--test', '*');
+
+    builder.gulp.src('src/test/js/' + filter + '-spec.js')
         .pipe(mocha({
             compilers: {js: babel}
         })).on('error', function(e) {
