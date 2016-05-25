@@ -28,7 +28,8 @@ type Props = {
             titleStyle: Object
         } | boolean,
     result?: string,
-    title?: string
+    title?: string,
+    ignoreEscapeKey?: boolean
 };
 
 type State = {
@@ -43,7 +44,8 @@ class ModalView extends Component {
     static defaultProps: Props = {
         styles: false,
         showOverlay: true,
-        hideOnOverlayClicked: false
+        hideOnOverlayClicked: false,
+        ignoreEscapeKey: false
     };
 
     constructor(props: Props) {
@@ -52,6 +54,22 @@ class ModalView extends Component {
             dismissing: false,
             isVisible: props.isVisible || false
         };
+    }
+
+    componentWillMount() {
+        document.addEventListener("keydown", this._handleKeys, false);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this._handleKeys, false);
+    }
+
+    _handleKeys = (event) => {
+        const { ignoreEscapeKey } = this.props;
+
+        if (!ignoreEscapeKey && event.keyCode == 27) {
+            this.hide();
+        }
     }
 
     componentWillUpdate(nextProps: Props, nextState: State) {
@@ -163,9 +181,11 @@ class ModalView extends Component {
                        role="button"
                        className="closeButton"
                        style={closeButtonStyle}>&times;</a>
+                    <div className="header-content">
                     {
                         head && head[0] ? head : <Header {...titleStyle} {...rest}/>
                     }
+                    </div>
                 </div>
                 <div className="content" style={contentStyle}>
                     {
@@ -255,6 +275,7 @@ ModalView.propTypes = {
     transitionDuration: PropTypes.number,
     result: PropTypes.string,
     title: PropTypes.string,
+    ignoreEscapeKey: PropTypes.bool
 };
 
 export {
