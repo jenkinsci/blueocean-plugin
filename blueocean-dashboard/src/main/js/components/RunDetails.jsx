@@ -92,30 +92,35 @@ class RunDetails extends Component {
             router.push(location);
         };
 
-        return (<ModalView
-          isVisible
-          result={result.result}
-          {...{ afterClose }}
-        >
-            <ModalHeader>
-                <div>
-                    <PipelineResult data={result}
-                      onAuthorsClick={this.navigateToChanges}
-                    />
-                    <PageTabs base={baseUrl}>
-                        <TabLink to="/pipeline">Pipeline</TabLink>
-                        <TabLink to="/changes">Changes</TabLink>
-                        <TabLink to="/tests">Tests</TabLink>
-                        <TabLink to="/artifacts">Artifacts</TabLink>
-                    </PageTabs>
+        return (
+            <ModalView
+              isVisible
+              result={result.result}
+              {...{ afterClose }}
+            >
+                <ModalHeader>
+                    <div>
+                        <PipelineResult data={result}
+                          onAuthorsClick={this.navigateToChanges}
+                        />
+                        <PageTabs base={baseUrl}>
+                            <TabLink to="/pipeline">Pipeline</TabLink>
+                            <TabLink to="/changes">Changes</TabLink>
+                            <TabLink to="/tests">Tests</TabLink>
+                            <TabLink to="/artifacts">Artifacts</TabLink>
+                        </PageTabs>
+                        </div>
+                </ModalHeader>
+                <ModalBody>
+                    <div>
+                        {React.cloneElement(
+                            this.props.children,
+                            { baseUrl, result, ...this.props }
+                        )}
                     </div>
-            </ModalHeader>
-            <ModalBody>
-                <div>
-                    {React.cloneElement(this.props.children, { baseUrl, result, ...this.props })}
-                </div>
-            </ModalBody>
-        </ModalView>);
+                </ModalBody>
+            </ModalView>
+        );
     }
 }
 
