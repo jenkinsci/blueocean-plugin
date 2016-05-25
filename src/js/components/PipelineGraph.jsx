@@ -2,14 +2,21 @@
 
 import React, { Component, PropTypes } from 'react';
 import {describeArcAsPath, polarToCartesian} from './SVG';
+import {getGroupForResult, decodeResultValue} from './status/StatusIndicator';
+import {strokeWidth as nodeStrokeWidth} from './status/SvgSpinner';
 
-export const pipelineStageState = {
-    // See: io.jenkins.blueocean.rest.model.BlueRun.BlueRunState
+import type {Result} from './status/StatusIndicator';
+
+// See: io.jenkins.blueocean.rest.model.BlueRun.BlueRunState
+// See: io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult
+export const pipelineStageState:{ [key: string]: Result } = {
+    // TODO: Replace use of this exported const with StatusIndicator.validResultValues in BO tests
     queued: "queued", // May run in future
     running: "running",
-    // See: io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult
     success: "success",
     failure: "failure",
+    aborted: "aborted",
+    unstable: "unstable",
     notBuilt: "not_built" // Not run, and will not be
 };
 
@@ -19,42 +26,27 @@ export const defaultLayout = {
     nodeSpacingV: 70,
     nodeRadius: 12,
     curveRadius: 12,
-    connectorStrokeWidth: 4,
+    connectorStrokeWidth: 3.5,
     labelOffsetV: 25,
     smallLabelOffsetV: 20
 };
 
-// Colours. FIXME: Probably want to migrate these to stylesheets somehow
-const connectorColor = "#979797";
-const nodeColorSuccess = "#5BA504";
-const nodeColorFailure = "#D54C53";
-const nodeColorRunningTrack = "#a9c6e6";
-const nodeColorRunningProgress = "#4a90e2";
-const nodeColorNotBuilt = connectorColor;
-const nodeColorUnexpected = "#ff00ff";
-
 // Typedefs
-
-// FIXME: Find a way to unify pipelineStageState export with StateState union
-type StageState =
-    | "queued"
-    | "running"
-    | "success"
-    | "failure"
-    | "not_built";
 
 type StageInfo = {
     name: string,
-    state: StageState,
-    completePercent: number
+    state: Result,
+    completePercent: number,
+    id: number
 };
 
 type NodeInfo = {
     x: number,
     y: number,
     name: string,
-    state: StageState,
-    completePercent: number
+    state: Result,
+    completePercent: number,
+    id: number
 };
 
 type ConnectionInfo = [NodeInfo, NodeInfo];
@@ -67,7 +59,7 @@ type LabelInfo = {
 
 type LayoutInfo = typeof defaultLayout;
 
-// FIXME: Currently need to duplicate react's propTypes obj in Flow.
+// FIXME-FLOW: Currently need to duplicate react's propTypes obj in Flow.
 // See: https://github.com/facebook/flow/issues/1770
 type Props = {
     stages: Array<StageInfo>,
@@ -181,7 +173,8 @@ export class PipelineGraph extends Component {
                     y: yp,
                     name: nodeStage.name,
                     state: nodeStage.state,
-                    completePercent: nodeStage.completePercent
+                    completePercent: nodeStage.completePercent,
+                    id: nodeStage.id
                 };
 
                 columnNodes.push(node);
@@ -227,7 +220,7 @@ export class PipelineGraph extends Component {
         const { nodeSpacingH, labelOffsetV } = this.state.layout;
 
         const labelWidth = nodeSpacingH;
-        const labelOffsetH = Math.floor(labelWidth * -0.5); // TODO: Inline these below
+        const labelOffsetH = Math.floor(labelWidth * -0.5);
 
         // These are about layout more than appearance, so they should probably remain inline
         const bigLabelStyle = {
@@ -257,7 +250,7 @@ export class PipelineGraph extends Component {
             smallLabelOffsetV } = this.state.layout;
 
         const smallLabelWidth = nodeSpacingH - (2 * curveRadius); // Fit between lines
-        const smallLabelOffsetH = Math.floor(smallLabelWidth * -0.5); // TODO: Inline these below
+        const smallLabelOffsetH = Math.floor(smallLabelWidth * -0.5);
 
         // These are about layout more than appearance, so they should probably remain inline
         const smallLabelStyle = {
@@ -285,28 +278,32 @@ export class PipelineGraph extends Component {
         const { nodeRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
 
         const [leftNode, rightNode] = connection;
-        const key = leftNode.name + "_con_" + rightNode.name;
+        const key = leftNode.name + leftNode.id + "_con_" + rightNode.name + rightNode.id;
 
         const leftPos = {
-            x: leftNode.x + nodeRadius - (connectorStrokeWidth / 2),
+            x: leftNode.x + nodeRadius - (nodeStrokeWidth / 2),
             y: leftNode.y
         };
 
         const rightPos = {
-            x: rightNode.x - nodeRadius + (connectorStrokeWidth / 2),
+            x: rightNode.x - nodeRadius + (nodeStrokeWidth / 2),
             y: rightNode.y
         };
 
-        // Stroke settings
+        // Stroke props common to straight / curved connections
         const connectorStroke = {
-            stroke: connectorColor,
+            className: "pipeline-connector",
             strokeWidth: connectorStrokeWidth
         };
 
         if (leftPos.y == rightPos.y) {
             // Nice horizontal line
-            return <line {...connectorStroke} key={key} x1={leftPos.x} y1={leftPos.y}
-                                              x2={rightPos.x} y2={rightPos.y}/>;
+            return <line {...connectorStroke}
+                         key={key}
+                         x1={leftPos.x}
+                         y1={leftPos.y}
+                         x2={rightPos.x}
+                         y2={rightPos.y}/>;
         }
 
         // Otherwise, we'd like a curve
@@ -334,63 +331,31 @@ export class PipelineGraph extends Component {
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
 
         // Use a smaller radius when stroking nodes (for hollow / outline nodes)
-        const outlineNodeRadius = nodeRadius - (connectorStrokeWidth / 2);
+        const outlineNodeRadius = nodeRadius - (nodeStrokeWidth / 2);
 
         // Use a bigger radius for invisible click/touch target
         const mouseTargetRadius = nodeRadius + (2 * connectorStrokeWidth);
 
-        const state = node.state ? node.state.toLowerCase() : undefined;
-        const key = "n_" + node.name;
+        const resultClean = decodeResultValue(node.state);
+        const key = "n_" + node.name + node.id;
 
-        let arcDegrees = 90; // Default to a quarter-circle when spinning
+        let completePercent = node.completePercent || 0;
+        let groupChildren = [getGroupForResult(resultClean, completePercent, nodeRadius)];
 
-        if (state == pipelineStageState.running) {
-            arcDegrees = (3.6 * node.completePercent) || 0;
-        }
-
-        // Ugly node that looks like it doesn't belong, to highlight bad data :D
-        let groupChildren = [<circle r={nodeRadius} fill={nodeColorUnexpected}/>];
-
-        if (state == pipelineStageState.success) {
-            // Solid green
-            groupChildren = [<circle r={nodeRadius} fill={nodeColorSuccess}/>];
-        }
-        else if (state == pipelineStageState.failure) {
-            // Solid red
-            groupChildren = [<circle r={nodeRadius} fill={nodeColorFailure}/>];
-        }
-        else if (state == pipelineStageState.notBuilt) {
-            // Grey outline
-            groupChildren = [
-                <circle r={outlineNodeRadius} fill="none" stroke={nodeColorNotBuilt} strokeWidth={connectorStrokeWidth}/>
-            ];
-        }
-        else if (state == pipelineStageState.queued || state == pipelineStageState.running) {
-            // Circular progress bar, spinning when "queued"
-            let progressClassName = state == pipelineStageState.queued ? "spin" : undefined;
-
-            groupChildren = [
-                <circle r={outlineNodeRadius} fill="none" stroke={nodeColorRunningTrack} strokeWidth={connectorStrokeWidth}/>,
-                <path className={progressClassName} fill="none" stroke={nodeColorRunningProgress} strokeWidth={connectorStrokeWidth}
-                      d={describeArcAsPath(0, 0, outlineNodeRadius, 0, arcDegrees)}/>
-
-            ];
-        }
-
-        // If somebody is listening for clicks, we'll add an invisible click/touch target
-        // Because the nodes are small, and (more importantly) many are hollow.
+        // If somebody is listening for clicks, we'll add an invisible click/touch target, coz
+        // the nodes are small and (more importantly) many are hollow.
         if (this.props.onNodeClick) {
             groupChildren.push(
                 <circle r={mouseTargetRadius}
                         cursor="pointer"
+                        className="pipeline-node-hittarget"
                         fillOpacity="0"
                         stroke="none"
                         onClick={() => this.props.onNodeClick(node.name)}/>
             );
         }
 
-        // NB: We draw all the nodes at 0,0 and transform within a <g> for consistency, but it's only strictly required
-        // to make the spinning animations work.
+        // All the nodes are in shared code, so they're rendered at 0,0 so we transform within a <g>
         const groupProps = {
             key,
             transform: `translate(${node.x},${node.y})`

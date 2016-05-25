@@ -71,6 +71,11 @@ gulp.task("watch", ["default"], () => {
    gulp.watch(config.less.watch, ["less"]);
 });
 
+// Watch styles only, when you're using Storybook
+gulp.task("watch-styles", ["default"], () => {
+   gulp.watch(config.less.watch, ["less"]);
+});
+
 // Default to clean and build
 
 gulp.task("default", () =>

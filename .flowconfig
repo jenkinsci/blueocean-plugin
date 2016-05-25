@@ -10,8 +10,7 @@
 
 [options]
 
-# Flow currently requires defaultProps on ES6 class components to be a static field, so
-# we need to turn this on, even though it's not standardised yet.
+# Static fields for React stuff
+# Instance fields for this-bound listeners via arrow funs
 esproposal.class_static_fields=enable
-# FIXME: Maybe revisit this ^^ if Flow is enhanced to understand use of
-# MyComponent.defaultProps the way it does propTypes.
+esproposal.class_instance_fields=enable
