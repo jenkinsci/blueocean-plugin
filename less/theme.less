@@ -726,6 +726,37 @@ footer {
   box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
 }
 
+.slideup-appear {
+  .transition(all ease-out 0.3s);
+  top: 75%;
+  opacity: 0.01;
+
+  &.slideup-appear-active {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+.slideup-leave {
+  .transition(all ease-out 0.3s);
+    top: 0;
+  opacity: 1;
+
+  &.slideup-leave-active {
+    top: 75%;
+    opacity: 0.01;
+  }
+}
+
+.fadein-appear {
+  .transition(opacity ease-out 1s);
+  opacity: 0.01;
+
+  &.fadein-appear-active {
+    opacity: 1;
+  }
+}
+
 .dialog .header {
   color: #ffffff;
   font-weight: normal;
