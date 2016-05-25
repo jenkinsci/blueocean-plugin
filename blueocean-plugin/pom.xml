@@ -89,6 +89,11 @@
             <artifactId>github-branch-source</artifactId>
             <version>1.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>sse-gateway</artifactId>
+            <version>1.0</version>
+        </dependency>
 
         <!-- Test plugins -->
         <!-- Random test failing bug due to an assertion in pipeline plugin. See https://github.com/jenkinsci/pipeline-stage-step-plugin/pull/1  -->
