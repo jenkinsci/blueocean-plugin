@@ -190,9 +190,11 @@ class ModalView extends Component {
                            role="button"
                            className="closeButton"
                            style={closeButtonStyle}>&times;</a>
+                        <div className="header-content">
                         {
                             head && head[0] ? head : <Header {...titleStyle} {...rest}/>
                         }
+                        </div>
                     </div>
                     <div className="content" style={contentStyle}>
                         {
