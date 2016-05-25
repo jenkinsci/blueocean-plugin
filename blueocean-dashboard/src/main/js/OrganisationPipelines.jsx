@@ -5,6 +5,11 @@ import * as pushEventUtil from './util/push-event-util';
 
 const { object, array, func, node } = PropTypes;
 
+// Connect to the SSE Gateway and allocate a
+// dispatcher for blueocean.
+// TODO: We might want to move this code to a local SSE util module.
+sse.connect('jenkins_blueocean');
+
 class OrganisationPipelines extends Component {
 
     getChildContext() {
