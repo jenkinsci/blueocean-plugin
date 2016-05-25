@@ -9,8 +9,16 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>BlueOcean :: Administration</name>
-    <artifactId>blueocean-admin</artifactId>
+    <name>BlueOcean :: Dashboard</name>
+    <artifactId>blueocean-dashboard</artifactId>
     <packaging>hpi</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>sse-gateway</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
 
 </project>

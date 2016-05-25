@@ -1,5 +1,5 @@
 {
-  "name": "blueocean-admin",
+  "name": "blueocean-dashboard",
   "version": "0.0.1",
   "scripts": {
     "storybook": "start-storybook -p 9001 --static-dir node_modules/@jenkins-cd/design-language/dist/assets/",
@@ -35,9 +35,10 @@
     "skin-deep": "^0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.31",
+    "@jenkins-cd/design-language": "0.0.35",
     "@jenkins-cd/js-extensions": "0.0.14",
     "@jenkins-cd/js-modules": "0.0.5",
+    "@jenkins-cd/sse-gateway": "0.0.2",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "keymirror": "^0.1.1",

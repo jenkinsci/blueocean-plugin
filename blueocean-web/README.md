@@ -5,7 +5,7 @@ Look for blueocean.js for excitement.
 
 # Running Blue Ocean in development
 
-If you want to add to some extension points, take a look at the blueocean-admin module (actually a plugin) for an example.
+If you want to add to some extension points, take a look at the `blueocean-dashboard` module (actually a plugin) for an example.
 
 ## Firstly build all modules from root
 
@@ -16,7 +16,7 @@ If you want to add to some extension points, take a look at the blueocean-admin 
 ## Run it in plugin dev mode
 
 To hack on blue ocean UI, you will want to run it embedded in a Jenkins you can add jobs to and so on. 
-To do this, use the blueocean-plugin module: 
+To do this, use the `blueocean-plugin` module: 
 
     cd blueocean-plugin
     mvn hpi:run
@@ -51,7 +51,7 @@ $ cd blueocean-web
 $ gulp bundle:watch
 ```
 
-(or run gulp, after each change) in the blueocean-web directory. This will pick up any changes. 
+(or run gulp, after each change) in the `blueocean-web` directory. This will pick up any changes. 
 If you are editing any other UI modules, run the same in their respective directories. 
 
 

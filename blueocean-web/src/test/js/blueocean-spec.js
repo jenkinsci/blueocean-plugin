@@ -26,7 +26,7 @@ describe('blueocean.js', () => {
             expect(loads[1]).toBe('http://localhost:18999/target/classes/io/jenkins/blueocean/no_imports/blueocean.js');
 
             expect(loads[2]).toBe('http://localhost:18999/src/test/resources/blue/javaScriptExtensionInfo');
-            //expect(loads[3]).toBe('http://localhost:18999/src/test/resources/mock-adjuncts/io/jenkins/blueocean-admin/jenkins-js-extension.js');
+            //expect(loads[3]).toBe('http://localhost:18999/src/test/resources/mock-adjuncts/io/jenkins/blueocean-dashboard/jenkins-js-extension.js');
 
             // Check for some of the elements. We know that the following should
             // be rendered by the React components.

@@ -38,12 +38,12 @@ public class JenkinsJSExtensionsTest extends BaseTest{
     @Test
     public void test() {
         // FIXME: This test relies on configuration in a separate project
-        // Simple test of the rest endpoint. It should find the "blueocean-admin"
+        // Simple test of the rest endpoint. It should find the "blueocean-dashboard"
         // plugin ExtensionPoint contributions.
         List<Map> extensions = get("/javaScriptExtensionInfo", List.class);
 
         Assert.assertEquals(1, extensions.size());
-        Assert.assertEquals("blueocean-admin", extensions.get(0).get("hpiPluginId"));
+        Assert.assertEquals("blueocean-dashboard", extensions.get(0).get("hpiPluginId"));
 
         List<Map> ext = (List<Map>) extensions.get(0).get("extensions");
 

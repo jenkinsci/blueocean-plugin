@@ -37,7 +37,7 @@ function initEntry(dependency, version) {
 
 var packageFiles = [];
 
-packageFiles.push(require("./blueocean-admin/package.json"));
+packageFiles.push(require("./blueocean-dashboard/package.json"));
 packageFiles.push(require("./blueocean-web/package.json"));
 
 packageFiles.forEach(packageFile => {

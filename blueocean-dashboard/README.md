@@ -1,9 +1,6 @@
-# Admin plugin
+# Dashboard plugin
 
-This plugin has started as an example of a few extensions.
-The extension points are defined in `blueocean-web`.
-
-However it had become the main app for all client side screens.
+This plugin provides the main Dashboard user interface for Blue Ocean.
 
 ## Running this
 
@@ -158,7 +155,7 @@ I implemented our single source of truth in `blueocean-web/src/main/js/main.jsx`
 
 #### 2. State is read-only - The only way to mutate the state is to emit an action, an object describing what happened.
 
-In `blueocean-admin/src/main/js/redux/actions.js` we have defined all admin related actions. We call some of this actions  e.g. `fetchRunsIfNeeded` from the view e.g. `Activity.jsx`
+In `blueocean-dashboard/src/main/js/redux/actions.js` we have defined all admin related actions. We call some of this actions  e.g. `fetchRunsIfNeeded` from the view e.g. `Activity.jsx`
 
 ```
     componentWillMount() {
@@ -180,7 +177,7 @@ In `blueocean-admin/src/main/js/redux/actions.js` we have defined all admin rela
 
 > Reducers are just pure functions that take the previous state and an action, and return the next state. Remember to return new state objects, instead of mutating the previous state.
 
-`blueocean-admin/src/main/js/redux/reducer.js` here we define all the reducer we are currently using in the admin app and expose them. To follow along the above code snippet from `Activity.jsx` the `fetchRunsIfNeeded` looks like:
+`blueocean-dashboard/src/main/js/redux/reducer.js` here we define all the reducer we are currently using in the admin app and expose them. To follow along the above code snippet from `Activity.jsx` the `fetchRunsIfNeeded` looks like:
 
 ```
     fetchRunsIfNeeded(config) {

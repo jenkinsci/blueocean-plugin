@@ -10,17 +10,13 @@ Yarr...
 # Modules of note
 (check the readme in each of them!)
 
-## blueocean-admin
-
-Example plugin - a starting point. Take a look at it if you want to extend blue ocean. 
-
 ## blueocean-web
 
 BlueOcean Web module, core web module with layout and extention points. You probably want to look at the README for this for how to play with it. This should mostly be infrastructure and core components.
 
-## blueocean-plugin
+## blueocean-dashboard
 
-Wraps up blueocean into a Jenkins plugin to run with an embedded Jenkins, provides implementation of REST interfaces needed for embedded mode. 
+BlueOcean Dashboard plugin. Currently contains the bulk of the Blue Ocean user interface.  
 
 ## blueocean-commons
 
@@ -30,6 +26,14 @@ Common libraries for various modules
 
 Utilities and interfaces for the HTTP api that the Blue Ocean front end needs. 
 
+## blueocean-plugin
+
+This plugin currently fulfills two purposes (and so is likely to be separated out into two plugins - TBD): 
+
+1. Provides the default implementation of the REST Api defined in the `blueocean-rest` plugin.
+1. Acts as an aggregator plugin, making it an easy place from which to run Blue Ocean via `hpi:run`. 
+
+__NOTE__: As already stated, this plugin is likely to be refactored in the near future.
     
 # Building
 

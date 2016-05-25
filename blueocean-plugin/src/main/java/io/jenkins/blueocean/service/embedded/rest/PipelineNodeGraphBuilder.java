@@ -91,7 +91,9 @@ public class PipelineNodeGraphBuilder {
                 previousStage = node;
             } else if (PipelineNodeUtil.isParallelBranch(node)) { //branch
                 addChild(node, null);
-                addChild(previousStage, node);
+                if(previousStage != null) {
+                    addChild(previousStage, node);
+                }
                 FlowNode endNode = getStepEndNode(node);
                 if (endNode != null) {
                     nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));

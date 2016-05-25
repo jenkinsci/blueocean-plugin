@@ -10,7 +10,7 @@ export class DevelopmentFooter extends Component {
         }
         return (
           <div className="development-footer">
-              <span>Built at {moment(revisionInfo.timeStamp).format('Do MMMM YYYY hh:mm A')}&nbsp;</span>
+              <span>Built at {moment(revisionInfo.timestamp).format('Do MMMM YYYY hh:mm A')}&nbsp;</span>
               <span> &#183; {revisionInfo.branch}&nbsp;</span>
               <span> &#183; {revisionInfo.sha.substring(0,7)} </span>
           </div>

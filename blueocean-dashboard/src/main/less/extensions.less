@@ -10,16 +10,40 @@
     padding-right: 0.5em;
   }
 
-  .branch, .message {
+  .branch {
+    width: 175px;
+  }
+  .message {
     width: 50%;
   }
 
   .duration, .completed {
-    width: 100px;
+    width: 125px;
   }
 
   .status-link {
     cursor: pointer;
+  }
+}
+
+.pipelines-table {
+  table-layout: fixed;
+
+  th {
+    width: 100px;
+  }
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  .name {
+    width: auto;
+  }
+
+  .favorite {
+    width: 30px;
   }
 
 }
@@ -36,12 +60,15 @@
     padding-right: 0.5em;
   }
 
-  .branch, .message {
+  .branch {
+    width: 200px;
+  }
+  .message {
     width: 50%;
   }
 
   .lastcommit, .completed {
-    width: 100px;
+    width: 125px;
   }
 }
 
@@ -62,7 +89,7 @@
   }
 
   .build, .completed {
-    width: 100px;
+    width: 125px;
   }
 }
 
@@ -107,6 +134,7 @@
     text-align: right;
   }
 }
+
 
 // TODO: duplicated from the JDL; long-term may want to expose mixins to Less in other plugins? (UX-285?)
 .text-overflow() {

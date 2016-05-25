@@ -17,6 +17,10 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-dashboard</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-web</artifactId>
         </dependency>
         <dependency>
@@ -135,13 +139,6 @@
             <artifactId>token-macro</artifactId>
             <version>1.12.1</version>
         </dependency>
-
-        <!-- Just a test plugin for testing js extension reg etc -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-admin</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -194,7 +191,7 @@
                         // Link in other sub-modules. Add as needed.
                         //
                         linkHPI('blueocean-web');
-                        linkHPI('blueocean-admin'); // Test plugin
+                        linkHPI('blueocean-dashboard');
                         linkHPI('blueocean-rest');
                         linkHPI('blueocean-commons');
                     </source>
