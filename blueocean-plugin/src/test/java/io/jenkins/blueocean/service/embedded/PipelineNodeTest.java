@@ -521,6 +521,44 @@ public class PipelineNodeTest extends BaseTest {
     }
 
     @Test
+    public void getPipelineJobRunNodeNoStageTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+
+        job1.setDefinition(new CpsFlowDefinition("node{\n" +
+            "  parallel 'unit':{\n" +
+            "    node{\n" +
+            "      echo \"Unit testing...\"\n" +
+            "    }\n" +
+            "  },'integration':{\n" +
+            "    node{\n" +
+            "      echo \"Integration testing...\"\n" +
+            "    }\n" +
+            "  }, 'ui':{\n" +
+            "    node{\n" +
+            "      echo \"UI testing...\"\n" +
+            "    }\n" +
+            "  }\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
+        nodeGraphTable.build();
+        List<FlowNode> nodes = getStages(nodeGraphTable);
+        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+
+        Assert.assertEquals(3, nodes.size());
+        Assert.assertEquals(3, parallelNodes.size());
+
+        // get all nodes for pipeline1
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(nodes.size(), resp.size());
+
+    }
+
+
+    @Test
     public void getPipelineJobRunNodeTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 
@@ -590,6 +628,7 @@ public class PipelineNodeTest extends BaseTest {
         Assert.assertEquals(1, edges.size());
         Assert.assertEquals(nodes.get(nodes.size()-1).getId(), edges.get(0).get("id"));
     }
+
 
     @Test
     public void getPipelineJobRunNodeLogTest() throws Exception {
