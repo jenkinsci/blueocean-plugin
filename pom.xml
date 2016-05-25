@@ -25,9 +25,9 @@
 
   <modules>
     <module>blueocean-commons</module>
-    <module>blueocean-rest</module>
     <module>blueocean-web</module>
-    <module>blueocean-admin</module>
+    <module>blueocean-rest</module>
+    <module>blueocean-dashboard</module>
     <module>blueocean-plugin</module>
   </modules>
 
@@ -75,7 +75,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-admin</artifactId>
+            <artifactId>blueocean-dashboard</artifactId>
             <version>${project.version}</version>
         </dependency>
 
