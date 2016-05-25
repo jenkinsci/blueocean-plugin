@@ -33,7 +33,7 @@ This plugin currently fulfills two purposes (and so is likely to be separated ou
 1. Provides the default implementation of the REST Api defined in the `blueocean-rest` plugin.
 1. Acts as an aggregator plugin, making it an easy place from which to run Blue Ocean via `hpi:run`. 
 
-__NOTE__: As already stated, this plugin is likey to be refactored in the near future.
+__NOTE__: As already stated, this plugin is likely to be refactored in the near future.
     
 # Building
 
