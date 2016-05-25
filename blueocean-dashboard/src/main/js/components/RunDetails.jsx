@@ -95,6 +95,8 @@ class RunDetails extends Component {
         return (
             <ModalView
               isVisible
+              transitionClass="slideup"
+              transitionDuration={300}
               result={result.result}
               {...{ afterClose }}
             >
