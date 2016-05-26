@@ -713,27 +713,62 @@ footer {
 
 .dialog {
   width: 100%;
-  display: block;
   height: 100%;
+  min-width: 640px; // avoid flow issues when resizing dialogs very small
   position: fixed;
   top: 0;
   left: 0;
+  display: flex;
+  flex-direction: column;
   background-color: #fff;
   border-radius: 2px;
   z-index: 100;
   box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
 }
 
+.slideup-appear {
+  .transition(all ease-out 0.3s);
+  top: 75%;
+  opacity: 0.01;
+
+  &.slideup-appear-active {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+.slideup-leave {
+  .transition(all ease-out 0.3s);
+    top: 0;
+  opacity: 1;
+
+  &.slideup-leave-active {
+    top: 75%;
+    opacity: 0.01;
+  }
+}
+
+.fadein-appear {
+  .transition(opacity ease-out 1s);
+  opacity: 0.01;
+
+  &.fadein-appear-active {
+    opacity: 1;
+  }
+}
+
 .dialog .header {
-  padding: 25px 50px 0 50px;
   color: #ffffff;
   font-weight: normal;
   line-height: 20px;
   font-size: 1.6rem;
 }
 
+.dialog .header-content {
+  padding: 25px 50px 0 50px;
+}
+
 .dialog .header .page-tabs {
-  clear: both;
   font-size: 1.5rem;
 
   a {

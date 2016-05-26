@@ -41,7 +41,7 @@ class PipelineResult extends Component {
 
         return (
         <div className="pipeline-result">
-            <section className="left">
+            <section className="status">
                 <Icon {...{
                     size: 125,
                     icon: iconFromResult(result),
