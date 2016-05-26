@@ -1,75 +1,50 @@
 // @flow
 
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 import {describeArcAsPath, polarToCartesian} from '../SVG';
-const { string, object, number } = PropTypes;
+
+export const strokeWidth = 3.5; // px. Maybe we can fetch this from CSS at runtime in the future
 
 export default class SvgSpinner extends Component {
     render() {
-        const {
-            result = 'failure',
-            percentage = 12.5,
-            title = 'No title',
-            width = '32px',
-            height = '32px',
-            colors = {
-                backgrounds: {
-                    box: 'none',
-                    outer: 'none',
-                },
-                strokes: {
-                    outer: '#a9c6e6',
-                    path: '#4a90e2',
 
-                },
-            },
-        } = this.props;
+        const {result} = this.props;
+        const radius = (this.props.radius || 12) - (0.5 * strokeWidth); // No "inside" stroking in SVG`
+
+        let percentage = this.props.percentage;
+        let groupClasses = ['progress-spinner', result];
+
+        if (result === 'queued') {
+            percentage = 0;
+        }
+        else if (result === 'not_built') {
+            percentage = 0;
+        }
+        else if (typeof percentage !== 'number' || isNaN(percentage) || percentage < 0) {
+            percentage = 0;
+        }
+        else if (percentage === 100) {
+            groupClasses.push('pc-over-100')
+            percentage = 0;
+        }
+        else if (percentage > 100) {
+            groupClasses.push('spin');
+            percentage = 25;
+        }
 
         const rotate = percentage / 100 * 360;
-        const d = describeArcAsPath(50, 50, 40, 0, rotate);
+        const d = describeArcAsPath(0, 0, radius, 0, rotate);
 
-        return (<svg xmlns="http://www.w3.org/2000/svg"
-          className={result === 'queued' ? 'spin' : ''}
-          width={width}
-          height={height}
-          viewBox="0 0 100 100"
-          preserveAspectRatio="xMidYMid"
-        >
-            <title>{title}</title>
-            <rect
-              x="0"
-              y="0"
-              width="100"
-              height="100"
-              fill={colors.backgrounds.box}
-              className="bk"
-            />
-            <circle
-              cx="50"
-              cy="50"
-              r="40"
-              stroke={rotate === 360 ? colors.strokes.path : colors.strokes.outer}
-              fill={colors.backgrounds.outer}
-              strokeWidth="10"
-              strokeLinecap="round"
-            />
-            <path
-              className={result}
-              fill="none"
-              stroke={colors.strokes.path}
-              strokeWidth="10"
-              d={d}
-
-            />
-        </svg>);
+        return (
+            <g className={groupClasses.join(' ')}>
+                <circle cx="0" cy="0" r={radius} strokeWidth={strokeWidth}/>
+                { percentage ? <path className={result} fill="none" strokeWidth={strokeWidth} d={d}/> : null}
+            </g>
+        );
     }
 }
 
 SvgSpinner.propTypes = {
-    title: string,
-    width: string,
-    result: string,
-    height: string,
-    percentage: number,
-    colors: object,
+    percentage: PropTypes.number,
+    radius: PropTypes.number,
 };

@@ -4,3 +4,4 @@ require('./modalview.jsx');
 require('./pipelinegraph.jsx');
 require('./pipelineresult.jsx');
 require('./toast.jsx');
+require('./statusIndicatorStories.jsx');

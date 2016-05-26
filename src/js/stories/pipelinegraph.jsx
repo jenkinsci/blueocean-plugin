@@ -1,6 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import { storiesOf } from '@kadira/storybook';
-import {PipelineGraph, pipelineStageState, defaultLayout} from '../components/PipelineGraph';
+import {PipelineGraph, defaultLayout} from '../components/PipelineGraph';
+
+import { StatusIndicator } from '../components';
+const pipelineStageState = StatusIndicator.validResultValues;
 
 storiesOf('PipelineGraph', module)
     .add('Mixed', renderMultiParallelPipeline)
@@ -17,12 +20,19 @@ function renderFlatPipeline() {
         makeNode("Success", [], pipelineStageState.success),
         makeNode("Failure", [], pipelineStageState.failure),
         makeNode("Running", [], pipelineStageState.running),
+        makeNode("Slow", [], pipelineStageState.running, 150),
         makeNode("Queued", [], pipelineStageState.queued),
-        makeNode("Not Built", [], pipelineStageState.notBuilt),
+        makeNode("Unstable", [], pipelineStageState.unstable),
+        makeNode("Aborted", [], pipelineStageState.aborted),
+        makeNode("Not Built", [], pipelineStageState.not_built),
         makeNode("Bad data", [], "this is not my office")
+
     ];
 
-    return <div><PipelineGraph stages={stages}/></div>;
+    // Reduce spacing just to make this graph smaller
+    const layout = {nodeSpacingH:90}
+
+    return <div><PipelineGraph stages={stages} layout={layout}/></div>;
 }
 
 function renderFlatPipelineFat() {
@@ -42,7 +52,7 @@ function renderFlatPipelineFat() {
             makeNode("Job 7", [], pipelineStageState.queued),
             makeNode("Job 8", [], pipelineStageState.queued)
         ]),
-        makeNode("Not Built", [], pipelineStageState.notBuilt),
+        makeNode("Not Built", [], pipelineStageState.not_built),
         makeNode("Bad data", [], "this is not my office")
     ];
 
@@ -81,7 +91,7 @@ function renderConstructomatic() {
             makeNode("Job 7", [], pipelineStageState.queued),
             makeNode("Job 8", [], pipelineStageState.queued)
         ]),
-        makeNode("Not Built", [], pipelineStageState.notBuilt),
+        makeNode("Not Built", [], pipelineStageState.not_built),
         makeNode("Bad data", [], "this is not my office")
     ];
 
@@ -143,8 +153,8 @@ function renderMultiParallelPipeline() {
         makeNode("Browser Tests", [
             makeNode("Firefox", [], pipelineStageState.success),
             makeNode("Edge", [], pipelineStageState.failure),
-            makeNode("Safari", [], pipelineStageState.running),
-            makeNode("Chrome", [], pipelineStageState.queued)
+            makeNode("Safari", [], pipelineStageState.running, 60),
+            makeNode("Chrome", [], pipelineStageState.running, 120)
         ]),
         makeNode("Dev"),
         makeNode("Staging"),
@@ -167,18 +177,21 @@ function renderParallelPipelineDeep() {
             makeNode("LOLpera", [], pipelineStageState.queued),
             makeNode("Chrome", [], pipelineStageState.queued)
         ]),
-        makeNode("Dev", [], pipelineStageState.notBuilt),
-        makeNode("Staging", [], pipelineStageState.notBuilt),
-        makeNode("Production", [], pipelineStageState.notBuilt)
+        makeNode("Dev", [], pipelineStageState.not_built),
+        makeNode("Staging", [], pipelineStageState.not_built),
+        makeNode("Production", [], pipelineStageState.not_built)
     ];
 
     return <div><PipelineGraph stages={stages}/></div>;
 }
 
+let __id = 1;
+
 /// Simple helper for data generation
-function makeNode(name, children = [], state = pipelineStageState.notBuilt) {
-    const completePercent = (state == pipelineStageState.running) ? Math.floor(Math.random() * 60 + 20) : 50;
-    return {name, children, state, completePercent};
+function makeNode(name, children = [], state = pipelineStageState.not_built, completePercent) {
+    completePercent = completePercent || ((state == pipelineStageState.running) ? Math.floor(Math.random() * 60 + 20) : 50);
+    const id = __id++;
+    return {name, children, state, completePercent, id};
 }
 
 /// Wrap a PipelineGraph with some controls to tweak the layout properties

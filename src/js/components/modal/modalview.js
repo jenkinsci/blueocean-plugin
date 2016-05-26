@@ -64,13 +64,13 @@ class ModalView extends Component {
         document.removeEventListener("keydown", this._handleKeys, false);
     }
 
-    _handleKeys = (event) => {
+    _handleKeys:Function = (event) => {
         const { ignoreEscapeKey } = this.props;
 
         if (!ignoreEscapeKey && event.keyCode == 27) {
             this.hide();
         }
-    }
+    };
 
     componentWillUpdate(nextProps: Props, nextState: State) {
 
