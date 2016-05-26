@@ -1,20 +1,24 @@
+# REST api for Blue Ocean components
+
+This defines the http/REST like interface that Blue Ocean components use. 
+
 # Usage
 
 ## Crumbs
 
-Jenkins usually requires a "crumb" with posted reuqests to prevent request forgery and other shenanigans. 
+Jenkins usually requires a "crumb" with posted requests to prevent request forgery and other shenanigans. 
 To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
 
-## Run BlueOcean plugin
+## Run Blue Ocean plugin
 
     cd bluecoean-plugin
     mvn hpi:run
     
-This will launch jenkins with BlueOcean plugin. 
+This will launch a development Jenkins instance with the Blue Ocean plugin and this plugin ready to go. 
 
 BlueOcean UI is available at:
     
-    http://localhost:8080/jenkins/bo
+    http://localhost:8080/jenkins/blue
     
 
 BlueOcean rest API base URL is:
