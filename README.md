@@ -1,6 +1,6 @@
 Blue Ocean is the next generation user experience for Jenkins.
 
-It is a multi-module maven project with a few Jenkins plugin. 
+It is a multi-module maven project with a few Jenkins plugins. 
 
 Read it: 
 https://jenkins.io//blog/2016/05/26/introducing-blue-ocean/
@@ -34,9 +34,6 @@ Java interfaces and classes that specify the definition of the REST API. See the
 
 Web infrastructure that glues Jenkins and Blue Ocean plugin together on the /blue endpoint. 
 
-## blueocean-commons
-
-Common libraries for various modules.
     
 # Building and running
 
@@ -96,3 +93,7 @@ Automatically deploys changes to an instance of blueocean that is run with hpi:r
 Need help? 
 
 You can chat to folks on #jenkins-ux on freenode (IRC). You can also email the jenkins-dev email list (google group: https://groups.google.com/forum/#!forum/jenkinsci-dev) - but ensure you use the prefix [Blue Ocean] in your subject line when posting.
+
+# Presentations
+
+Advanced front end development with react, redux and stuff by @scherler: https://docs.google.com/presentation/d/1dbaYTIGjGT9xX1JnWnaqjMumq94M9nGwljfMQaVtUFc/edit?usp=sharing
