@@ -1,11 +1,12 @@
 # Dashboard plugin
 
 This plugin provides the main Dashboard user interface for Blue Ocean.
+It has a bunch of GUI components and extension points for other plugins to extend. 
+This is where the fun happens. 
 
-## Running this
+## Running and modifying this plugin
 
 ### With mvn
-
 
 1. Go into `blueocean-plugin` and run `mvn hpi:run` in a terminal. (mvn clean install from the root of the project is always a good idea regularly!)
 2. From this directory, run `gulp bundle:watch` to watch for JS changes and reload them.
