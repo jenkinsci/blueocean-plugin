@@ -117,6 +117,26 @@ export const actions = {
         return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
     },
 
+    /**
+     * Unconditionally fetch and update the pipelines list.
+     * @param config Application configuration.
+     */
+    fetchPipelines(config) {
+        return (dispatch) => {
+            const url = `${config.getAppURLBase()}` +
+                '/rest/organizations/jenkins/pipelines/';
+            return dispatch(actions.generateData(
+                url,
+                ACTION_TYPES.SET_PIPELINES_DATA
+            ));
+        };
+    },
+
+    /**
+     * Fetch and update the pipelines list if the store doesn't already have
+     * a list of the pipelines.
+     * @param config Application configuration.
+     */
     fetchPipelinesIfNeeded(config) {
         return (dispatch, getState) => {
             const pipelines = getState().adminStore.pipelines;
