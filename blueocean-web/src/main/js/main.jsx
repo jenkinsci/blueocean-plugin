@@ -29,8 +29,6 @@ class App extends Component {
                         <ExtensionPoint name="jenkins.logo.top"/>
                         <nav>
                             <Link to="/pipelines">Pipelines</Link>
-                            <a href="#">Applications</a>
-                            <a href="#">Reports</a>
                             <a href="#">Administration</a>
                         </nav>
                     </header>
