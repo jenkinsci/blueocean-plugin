@@ -95,30 +95,37 @@ class RunDetails extends Component {
             router.push(location);
         };
 
-        return (<ModalView
-          isVisible
-          result={result.result}
-          {...{ afterClose }}
-        >
-      <ModalHeader>
-        <div>
-          <PipelineResult data={result}
-            onAuthorsClick={this.navigateToChanges}
-          />
-          <PageTabs base={baseUrl}>
-            <TabLink to="/pipeline">Pipeline</TabLink>
-            <TabLink to="/changes">Changes</TabLink>
-            <TabLink to="/tests">Tests</TabLink>
-            <TabLink to="/artifacts">Artifacts</TabLink>
-          </PageTabs>
-        </div>
-      </ModalHeader>
-      <ModalBody>
-        <div>
-          {React.cloneElement(this.props.children, { baseUrl, result, ...this.props })}
-        </div>
-      </ModalBody>
-    </ModalView>);
+        return (
+            <ModalView
+              isVisible
+              transitionClass="slideup"
+              transitionDuration={300}
+              result={result.result}
+              {...{ afterClose }}
+            >
+                <ModalHeader>
+                    <div>
+                        <PipelineResult data={result}
+                          onAuthorsClick={this.navigateToChanges}
+                        />
+                        <PageTabs base={baseUrl}>
+                            <TabLink to="/pipeline">Pipeline</TabLink>
+                            <TabLink to="/changes">Changes</TabLink>
+                            <TabLink to="/tests">Tests</TabLink>
+                            <TabLink to="/artifacts">Artifacts</TabLink>
+                        </PageTabs>
+                        </div>
+                </ModalHeader>
+                <ModalBody>
+                    <div>
+                        {React.cloneElement(
+                            this.props.children,
+                            { baseUrl, result, ...this.props }
+                        )}
+                    </div>
+                </ModalBody>
+            </ModalView>
+        );
     }
 }
 

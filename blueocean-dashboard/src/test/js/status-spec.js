@@ -30,9 +30,11 @@ describe("StatusIndicator should render", () => {
 
   it("does render success", () => {
     const statusindicator = tree.getRenderOutput();
-    assert.isNotNull(statusindicator);
-    assert.equal(statusindicator.props.result, 'success');
-    assert.equal(statusindicator.props.width, props.width);
+    assert.isNotNull(statusindicator, 'tree.getRenderOutput()');
+    assert.equal(statusindicator.props.width, props.width, 'width prop');
+
+    assert.isOk(tree.subTree('title'), 'contains a <title> element');
+    assert.isOk(tree.subTree('g'), 'contains a <g> element');
   });
 
 });
@@ -49,8 +51,6 @@ describe("SvgStatus should render", () => {
   it("does render FAILURE", () => {
     const circle = tree.subTree('circle').getRenderOutput();
     assert.isNotNull(circle);
-    assert.equal(circle.props.fill, results.failure.fill);
-    assert.equal(circle.props.stroke, results.failure.stroke);
   });
 
 });
@@ -60,15 +60,14 @@ describe("SvgSpinner should render", () => {
 
   beforeEach(() => {
     tree = sd.shallowRender(<SvgSpinner
-         result="QUEUED"
+         result="RUNNING"
+         percentage={40}
     />);
   });
 
-  it("does render FAILURE", () => {
-    const path = tree.subTree('path').getRenderOutput();
-    assert.isNotNull(path);
-    assert.equal(path.props.fill, 'none');
-    assert.equal(path.props.stroke, '#4a90e2');
+  it("does render RUNNING", () => {
+    assert.isOk(tree.subTree('circle'), 'contains a <circle> element');
+    assert.isOk(tree.subTree('path'), 'contains a <path> element');
   });
 
 });

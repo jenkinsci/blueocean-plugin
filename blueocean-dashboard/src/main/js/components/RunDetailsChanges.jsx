@@ -7,16 +7,8 @@ const { object } = PropTypes;
 export default class RunDetailsChanges extends Component {
     renderEmptyState() {
         return (
-            <EmptyStateView iconName="shoes">
-                <h1>Ready, get set...</h1>
-
-                <p>
-                    Hmm, looks like there were no changesets associated with this run.
-                </p>
-
-                <p>
-                    This should happen only for the first push of a branch.
-                </p>
+            <EmptyStateView tightSpacing>
+                <p>There are no changes for this pipeline run.</p>
             </EmptyStateView>
         );
     }
