@@ -1,6 +1,5 @@
 import React from 'react';
 import { assert} from 'chai';
-import { shallow } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import nock from 'nock';

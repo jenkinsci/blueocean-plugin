@@ -3,6 +3,51 @@ import keymirror from 'keymirror';
 import fetch from 'isomorphic-fetch';
 import { State } from '../components/records';
 
+import { getStagesInformation } from '../util/logDisplayHelper';
+
+// helper functions
+
+// helper to clean the path
+function uriString(input) {
+    return encodeURIComponent(input).replace(/%2F/g, '%252F');
+}
+// helper calculate url
+export function calculateLogUrl(config) {
+    const { nodesBaseUrl, node } = config;
+    return `${nodesBaseUrl}/${node.id}/log`;
+}
+
+export function calculateNodeBaseUrl(config) {
+    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
+    const baseUrl =
+      `${_appURLBase}/rest/organizations/jenkins/` +
+      `pipelines/${uriString(name)}`;
+    if (isMultiBranch) {
+        return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/`;
+    }
+    return `${baseUrl}/runs/${runId}/nodes/`;
+}
+
+export function calculateRunLogURLObject(config) {
+    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
+    const baseUrl = `${_appURLBase}/rest/organizations/jenkins` +
+    `/pipelines/${uriString(name)}`;
+    let url;
+    let fileName;
+    if (isMultiBranch) {
+        url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
+        fileName = `${branch}-${runId}.txt`;
+    } else {
+        url = `${baseUrl}/runs/${runId}/log/`;
+        fileName = `${runId}.txt`;
+    }
+    return {
+        url,
+        fileName,
+    };
+}
+
+// main actin logic
 export const ACTION_TYPES = keymirror({
     CLEAR_PIPELINES_DATA: null,
     SET_PIPELINES_DATA: null,
@@ -14,6 +59,8 @@ export const ACTION_TYPES = keymirror({
     SET_BRANCHES_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
+    SET_NODES: null,
+    SET_LOGS: null,
 });
 
 export const actionHandlers = {
@@ -27,7 +74,7 @@ export const actionHandlers = {
         return state.set('pipeline', null);
     },
     [ACTION_TYPES.SET_PIPELINE](state, { id }): State {
-        const pipelines = state.get('pipelines');
+        const pipelines = state.pipelines;
         if (!pipelines) {
             return state.set('pipeline', null);
         }
@@ -41,7 +88,7 @@ export const actionHandlers = {
         return state.set('currentRuns', payload);
     },
     [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
-        const runs = state.get('runs') || {};
+        const runs = { ...state.runs } || {};
         runs[id] = payload;
         return state.set('runs', runs);
     },
@@ -52,10 +99,21 @@ export const actionHandlers = {
         return state.set('currentBranches', payload);
     },
     [ACTION_TYPES.SET_BRANCHES_DATA](state, { payload, id }): State {
-        const branches = state.get('branches') || {};
+        const branches = { ...state.branches } || {};
         branches[id] = payload;
         return state.set('branches', branches);
     },
+    [ACTION_TYPES.SET_NODES](state, { payload }): State {
+        const nodes = { ...state.nodes } || {};
+        nodes[payload.nodesBaseUrl] = payload;
+        return state.set('nodes', nodes);
+    },
+    [ACTION_TYPES.SET_LOGS](state, { payload }): State {
+        const logs = { ...state.logs } || {};
+        logs[payload.logUrl] = payload;
+        return state.set('logs', logs);
+    },
+
 };
 
 // fetch helper
@@ -73,6 +131,9 @@ function parseJSON(response) {
     return response.json();
 }
 
+function parseText(response) {
+    return response.text();
+}
 /**
  * Fetch JSON data.
  * <p>
@@ -446,5 +507,55 @@ export const actions = {
                 payload: null,
                 type: actionType,
             }));
+    },
+    /*
+      For the detail view we need to fetch the different nodes of a run.
+      We later store them with the key: nodesBaseUrl
+      so we only fetch them once.
+    */
+    fetchNodes(config) {
+        return (dispatch, getState) => {
+            const data = getState().adminStore.nodes;
+            const nodesBaseUrl = calculateNodeBaseUrl(config);
+            if (!data || !data[nodesBaseUrl]) {
+                return exports.fetchJson(
+                  nodesBaseUrl,
+                  (json) => {
+                      const information = getStagesInformation(json);
+                      information.nodesBaseUrl = nodesBaseUrl;
+                      return dispatch({
+                          type: ACTION_TYPES.SET_NODES,
+                          payload: information,
+                      });
+                  },
+                  (error) => console.error('error', error)
+                );
+            }
+            return null;
+        };
+    },
+    /*
+      Get a specific log for a node, fetch it only if needed.
+      key for cache: nodesBaseUrl + nodeId
+     */
+    fetchLog(config) {
+        return (dispatch, getState) => {
+            const data = getState().adminStore.logs;
+            const logUrl = calculateLogUrl(config);
+            if (!data || !data[logUrl]) {
+                return fetch(logUrl, fetchOptions)
+            .then(checkStatus)
+            .then(parseText)
+            .then(text => dispatch({
+                type: ACTION_TYPES.SET_LOGS,
+                payload: {
+                    text,
+                    logUrl,
+                },
+            }))
+            .catch((error) => console.error('error', error));
+            }
+            return null;
+        };
     },
 };

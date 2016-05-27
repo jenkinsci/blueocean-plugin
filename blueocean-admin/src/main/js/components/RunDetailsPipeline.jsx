@@ -1,44 +1,62 @@
 import React, { Component, PropTypes } from 'react';
-import { LogConsole } from '@jenkins-cd/design-language';
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
+import Nodes from './Nodes';
+import {
+    nodes as nodeSelector,
+    logs as logSelector,
+    actions,
+    calculateRunLogURLObject,
+    calculateNodeBaseUrl,
+    connect,
+    createSelector,
+} from '../redux';
 
 import LogToolbar from './LogToolbar';
 
-const { string, object, any } = PropTypes;
+const { string, object, any, func } = PropTypes;
 
-function uriString(input) {
-    return encodeURIComponent(input).replace(/%2F/g, '%252F');
-}
+export class RunDetailsPipeline extends Component {
+    componentWillMount() {
+        if (this.context.config && this.context.params) {
+            if (this.props.fetchNodes) {
+                this.props.fetchNodes(this.generateConfig());
+            }
+        }
+    }
 
-export default class RunDetailsPipeline extends Component {
+    generateConfig() {
+        const {
+      params: {
+        pipeline: name, branch, runId,
+        },
+      config = {},
+      } = this.context;
+        const { isMultiBranch } = this.props;
+        const mergedConfig = { ...config, name, branch, runId, isMultiBranch };
+        return mergedConfig;
+    }
+  
     render() {
         const { pipeline: name, branch, runId } = this.context.params;
+        const { isMultiBranch, nodes } = this.props;
 
-        // multibranch special treatment - get url of the log
-        const { isMultiBranch } = this.props;
-        const baseUrl = '/rest/organizations/jenkins' +
-            `/pipelines/${uriString(name)}/`;
-        let url;
-        let fileName;
-        if (isMultiBranch) {
-            url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
-            fileName = `${branch}-${runId}.txt`;
-        } else {
-            url = `${baseUrl}/runs/${runId}/log/`;
-            fileName = `${runId}.txt`;
-        }
-
+        const mergedConfig = this.generateConfig();
+        const key = calculateNodeBaseUrl(mergedConfig);
+        const logGeneral = calculateRunLogURLObject(mergedConfig);
         return (
-            <div>
-                <ExtensionPoint name="jenkins.pipeline.run.result"
-                  pipelineName={name}
-                  branchName={isMultiBranch ? branch : undefined}
-                  runId={runId}
-                />
-                <LogToolbar {...{ fileName, url }} />
-                <LogConsole {...{ url }} />
-            </div>
-        );
+      <div>
+        <ExtensionPoint name="jenkins.pipeline.run.result"
+          pipelineName={name}
+          branchName={isMultiBranch ? branch : undefined}
+          runId={runId}
+        />
+        <LogToolbar fileName={logGeneral.fileName} url={logGeneral.url} />
+        { nodes && <Nodes
+          nodeInformation={nodes[key]}
+        />
+        }
+      </div>
+    );
     }
 }
 
@@ -47,6 +65,8 @@ RunDetailsPipeline.propTypes = {
     isMultiBranch: any,
     fileName: string,
     url: string,
+    fetchNodes: func,
+    nodes: any,
 };
 
 RunDetailsPipeline.contextTypes = {
@@ -54,3 +74,7 @@ RunDetailsPipeline.contextTypes = {
     params: object,
     pipeline: object,
 };
+
+const selectors = createSelector([nodeSelector, logSelector], (nodes, logs) => ({ nodes, logs }));
+
+export default connect(selectors, actions)(RunDetailsPipeline);
