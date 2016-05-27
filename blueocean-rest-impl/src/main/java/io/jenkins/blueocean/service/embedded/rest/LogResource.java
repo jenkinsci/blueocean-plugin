@@ -2,6 +2,8 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.commons.ServiceException;
+import org.kohsuke.stapler.AcceptHeader;
+import org.kohsuke.stapler.Header;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.framework.io.CharSpool;
@@ -10,63 +12,62 @@ import org.kohsuke.stapler.framework.io.LineEndNormalizingWriter;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Vivek Pandey
  */
 public class LogResource{
-    private final AnnotatedLargeText[] logs;
+    public static final long DEFAULT_LOG_THREASHOLD = 150;
 
-    public LogResource(AnnotatedLargeText... logs) {
-        this.logs = logs;
+    private final AnnotatedLargeText logText;
+    public LogResource(AnnotatedLargeText log) {
+        this.logText = log;
     }
 
-    public void doIndex(StaplerRequest req, StaplerResponse rsp){
-        writeLog(req,rsp);
+    public void doIndex(StaplerRequest req, StaplerResponse rsp, @Header("Accept") AcceptHeader accept){
+        writeLog(req,rsp,accept);
     }
 
-    private void writeLog(StaplerRequest req, StaplerResponse rsp) {
+    private void writeLog(StaplerRequest req, StaplerResponse rsp, AcceptHeader accept) {
         try {
-            //TODO: Do better handling of accept header when stapler with AcceptHeader functionality is available
-            String accept = req.getHeader("Accept");
-            if (accept != null && accept.startsWith("text/html")) {
-                rsp.setContentType("text/html;charset=UTF-8");
-                rsp.setStatus(HttpServletResponse.SC_OK);
-                req.setAttribute("html", Boolean.valueOf(true));
-            } else {
-                rsp.setContentType("text/plain;charset=UTF-8");
-                rsp.setStatus(HttpServletResponse.SC_OK);
+            switch (accept.select("text/html","text/plain")) {
+                case "text/html":
+                    rsp.setContentType("text/html;charset=UTF-8");
+                    rsp.setStatus(HttpServletResponse.SC_OK);
+                    req.setAttribute("html", Boolean.valueOf(true));
+                case "text/plain":
+                    rsp.setContentType("text/plain;charset=UTF-8");
+                    rsp.setStatus(HttpServletResponse.SC_OK);
             }
             writeLogs(req, rsp);
         } catch (IOException e) {
-            throw new ServiceException.UnexpectedErrorException("Failed to get log: " + e.getMessage(), e);
+            throw new ServiceException.UnexpectedErrorException("Failed to get logText: " + e.getMessage(), e);
         }
     }
 
     private void writeLogs(StaplerRequest req, StaplerResponse rsp) throws IOException {
-        List<CharSpool> charSpools = new ArrayList<>();
-        long start = 0;
-        String s = req.getParameter("start");
-        if(s!=null)
-            start = Long.parseLong(s);
-        long r = 0;
-        //allCompleted to be true if all logs are complete
-        boolean allCompleted = false;
-        for(AnnotatedLargeText logText: logs){
-            CharSpool spool = new CharSpool();
-            r += logText.writeLogTo(start,spool);
-            charSpools.add(spool);
-            allCompleted = logText.isComplete();
+        long threshold = DEFAULT_LOG_THREASHOLD * 1024;
+
+        String s = req.getParameter("thresholdInKB");
+        if(s!=null) {
+            threshold = Long.parseLong(s) * 1024;
+        }
+        long offset;
+        if(req.getParameter("start") != null){
+            offset = Long.parseLong(req.getParameter("start"));
+        }else if(logText.length() > threshold){
+            offset = logText.length()-threshold;
+        } else{
+            offset = 0;
         }
 
-        Writer w = createWriter(req, rsp, r - start);
-        for(CharSpool spool:charSpools){
-            spool.writeTo(new LineEndNormalizingWriter(w));
-        }
+        CharSpool spool = new CharSpool();
+        
+        long r = logText.writeLogTo(offset,spool);
+        Writer w = createWriter(req, rsp, r - offset);
+        spool.writeTo(new LineEndNormalizingWriter(w));
         rsp.addHeader("X-Text-Size",String.valueOf(r));
-        if(!allCompleted) {
+        if(!logText.isComplete()) {
             rsp.addHeader("X-More-Data", "true");
         }
         w.close();

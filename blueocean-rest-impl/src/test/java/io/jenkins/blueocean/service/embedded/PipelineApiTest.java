@@ -300,7 +300,7 @@ public class PipelineApiTest extends BaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        HttpResponse<String> response = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0", 200,"plain/text",HttpResponse.class);
+        HttpResponse<String> response = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0", 200,"text/plain",HttpResponse.class);
 
         int size = Integer.parseInt(response.getHeaders().getFirst("X-Text-Size"));
         System.out.println(response.getBody());

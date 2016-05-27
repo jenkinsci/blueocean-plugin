@@ -673,15 +673,6 @@ public class PipelineNodeTest extends BaseTest {
         String output = get("/organizations/jenkins/pipelines/pipeline1/runs/1/log", String.class);
         Assert.assertNotNull(output);
         System.out.println(output);
-
-        output = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+nodes.get(0).getId()+"/log", String.class);
-        Assert.assertNotNull(output);
-        System.out.println(output);
-
-        output = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+parallelNodes.get(0).getId()+"/log", String.class);
-        Assert.assertNotNull(output);
-        System.out.println(output);
-
     }
 
     private List<FlowNode> getStages(FlowGraphTable nodeGraphTable){
