@@ -78,7 +78,8 @@ export const actionHandlers = {
         if (!pipelines) {
             return state.set('pipeline', null);
         }
-        const pipeline = pipelines.filter(item => item.name === id);
+        // [].slice(0) returns a clone, we do need it for uniqueness
+        const pipeline = pipelines.slice(0).filter(item => item.name === id);
         return state.set('pipeline', pipeline[0] ? pipeline[0] : null);
     },
     [ACTION_TYPES.CLEAR_CURRENT_RUN_DATA](state) {
@@ -197,6 +198,7 @@ export const actions = {
         return (dispatch, getState) => {
             dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
             const pipelines = getState().adminStore.pipelines;
+
 
             if (!pipelines) {
                 return dispatch(actions.fetchPipelinesIfNeeded(config))
@@ -536,7 +538,7 @@ export const actions = {
     },
     /*
       Get a specific log for a node, fetch it only if needed.
-      key for cache: nodesBaseUrl + nodeId
+      key for cache: logUrl = calculateLogUrl
      */
     fetchLog(config) {
         return (dispatch, getState) => {

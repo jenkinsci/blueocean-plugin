@@ -26,36 +26,38 @@ export class RunDetailsPipeline extends Component {
 
     generateConfig() {
         const {
-      params: {
-        pipeline: name, branch, runId,
-        },
-      config = {},
-      } = this.context;
+              params: { pipeline: name, branch, runId },
+              config = {},
+        } = this.context;
         const { isMultiBranch } = this.props;
         const mergedConfig = { ...config, name, branch, runId, isMultiBranch };
         return mergedConfig;
     }
-  
+
     render() {
         const { pipeline: name, branch, runId } = this.context.params;
         const { isMultiBranch, nodes } = this.props;
 
+        if (!nodes) {
+            return null;
+        }
         const mergedConfig = this.generateConfig();
         const key = calculateNodeBaseUrl(mergedConfig);
         const logGeneral = calculateRunLogURLObject(mergedConfig);
         return (
-      <div>
-        <ExtensionPoint name="jenkins.pipeline.run.result"
-          pipelineName={name}
-          branchName={isMultiBranch ? branch : undefined}
-          runId={runId}
-        />
-        <LogToolbar fileName={logGeneral.fileName} url={logGeneral.url} />
-        { nodes && <Nodes
-          nodeInformation={nodes[key]}
-        />
-        }
-      </div>
+          <div>
+            <ExtensionPoint name="jenkins.pipeline.run.result"
+              pipelineName={name}
+              branchName={isMultiBranch ? branch : undefined}
+              runId={runId}
+            />
+            <LogToolbar fileName={logGeneral.fileName} url={logGeneral.url} />
+            { nodes && <Nodes
+              nodeInformation={nodes[key]}
+              {...this.props}
+            />
+            }
+          </div>
     );
     }
 }

@@ -40,14 +40,13 @@ class RunDetails extends Component {
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const {
-        params: {
-          pipeline,
-          },
-        config = {},
-        } = this.context;
+                params: {
+                    pipeline,
+                },
+                config = {},
+            } = this.context;
             config.pipeline = pipeline;
             this.props.fetchRunsIfNeeded(config);
-            this.props.setPipeline(config);
         }
     }
 

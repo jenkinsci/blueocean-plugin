@@ -19,6 +19,7 @@ export default class Nodes extends Component {
                   key={index}
                   node={item}
                   nodesBaseUrl={nodesBaseUrl}
+                  {...this.props}
                 />)
             }
         </div>);
