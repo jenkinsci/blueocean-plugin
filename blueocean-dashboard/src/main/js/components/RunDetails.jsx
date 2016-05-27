@@ -1,20 +1,20 @@
 import React, { Component, PropTypes } from 'react';
 import {
-  ModalView,
-  ModalBody,
-  ModalHeader,
-  PipelineResult,
-  PageTabs,
-  TabLink,
+    ModalView,
+    ModalBody,
+    ModalHeader,
+    PipelineResult,
+    PageTabs,
+    TabLink,
 } from '@jenkins-cd/design-language';
 
 import {
-  actions,
-  currentRuns as runsSelector,
-  isMultiBranch as isMultiBranchSelector,
-  previous as previousSelector,
-  createSelector,
-  connect,
+    actions,
+    currentRuns as runsSelector,
+    isMultiBranch as isMultiBranchSelector,
+    previous as previousSelector,
+    createSelector,
+    connect,
 } from '../redux';
 
 const { func, object, array, any, string } = PropTypes;
@@ -36,51 +36,49 @@ class RunDetails extends Component {
 
         this.navigateToChanges = this.navigateToChanges.bind(this);
     }
-
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const {
                 params: {
                     pipeline,
-                },
+                    },
                 config = {},
-            } = this.context;
+                } = this.context;
             config.pipeline = pipeline;
             this.props.fetchRunsIfNeeded(config);
+            this.props.setPipeline(config);
         }
     }
-
     navigateToChanges() {
         const changesUrl = `${cleanBaseUrl(this.context.location.pathname)}/changes`;
         this.context.router.push(changesUrl);
     }
-
     render() {
-    // early out
+        // early out
         if (!this.context.params
-      || !this.props.runs
-      || this.props.isMultiBranch === null) {
+            || !this.props.runs
+            || this.props.isMultiBranch === null) {
             return null;
         }
         const {
-      context: {
-        router,
-        location,
-        params: {
-          branch,
-          runId,
-          pipeline: name,
-          },
-        },
-      props: {
-        previous,
-        },
-      } = this;
+            context: {
+                router,
+                location,
+                params: {
+                    branch,
+                    runId,
+                    pipeline: name,
+                    },
+                },
+            props: {
+                previous,
+                },
+            } = this;
 
         const baseUrl = cleanBaseUrl(this.context.location.pathname);
 
         const result = this.props.runs.filter(
-      (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
+            (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
 
         result.name = name;
 
@@ -96,16 +94,16 @@ class RunDetails extends Component {
 
         return (
             <ModalView
-              isVisible
-              transitionClass="slideup"
-              transitionDuration={300}
-              result={result.result}
-              {...{ afterClose }}
+                isVisible
+                transitionClass="slideup"
+                transitionDuration={300}
+                result={result.result}
+                {...{ afterClose }}
             >
                 <ModalHeader>
                     <div>
                         <PipelineResult data={result}
-                          onAuthorsClick={this.navigateToChanges}
+                                        onAuthorsClick={this.navigateToChanges}
                         />
                         <PageTabs base={baseUrl}>
                             <TabLink to="/pipeline">Pipeline</TabLink>
@@ -113,7 +111,7 @@ class RunDetails extends Component {
                             <TabLink to="/tests">Tests</TabLink>
                             <TabLink to="/artifacts">Artifacts</TabLink>
                         </PageTabs>
-                        </div>
+                    </div>
                 </ModalHeader>
                 <ModalBody>
                     <div>
@@ -147,7 +145,7 @@ RunDetails.propTypes = {
 };
 
 const selectors = createSelector(
-  [runsSelector, isMultiBranchSelector, previousSelector],
-  (runs, isMultiBranch, previous) => ({ runs, isMultiBranch, previous }));
+    [runsSelector, isMultiBranchSelector, previousSelector],
+    (runs, isMultiBranch, previous) => ({ runs, isMultiBranch, previous }));
 
 export default connect(selectors, actions)(RunDetails);

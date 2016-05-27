@@ -71,10 +71,7 @@ describe("React component test of different runs", () => {
   });
 });
 
-// url for a multiBranch pipeline
-// '/rest/organizations/jenkins/pipelines/jdl/branches/experiment%252FUX-38-Flow/runs/3/nodes/'
-
-describe("xxx LogStore should work", () => {
+describe("LogStore should work", () => {
   afterEach(() => {
     nock.cleanAll()
   })

@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import {
     actions,
     pipelines as pipelinesSelector,
-    isMultiBranch as isMultiBranchSelector,
     connect,
     createSelector,
 } from './redux';
@@ -18,7 +17,7 @@ sse.connect('jenkins_blueocean');
 
 class OrganisationPipelines extends Component {
 
-    // FIXME: IMO the following should be droped
+    // FIXME: IMO the following should be dropped
     getChildContext() {
         const {
             params,
@@ -133,7 +132,7 @@ OrganisationPipelines.childContextTypes = {
     location: object, // From react-router
 };
 
-const selectors = createSelector([pipelinesSelector, isMultiBranchSelector],
-    (pipelines, isMultiBranch) => ({ pipelines, isMultiBranch }));
+const selectors = createSelector([pipelinesSelector],
+    (pipelines) => ({ pipelines }));
 
 export default connect(selectors, actions)(OrganisationPipelines);
