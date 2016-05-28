@@ -8,13 +8,13 @@ import { urlPrefix } from '../config';
 export default class PipelineRowItem extends Component {
 
     calculateResponse(passing, failing) {
-        let restponse = '-';
+        let response = '-';
         if (failing > 0) {
-            restponse = (`${failing} failing`);
+            response = (`${failing} failing`);
         } else if (passing > 0) {
-            restponse = (`${passing} passing`);
+            response = (`${passing} passing`);
         }
-        return restponse;
+        return response;
     }
 
     render() {
