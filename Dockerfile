@@ -1,4 +1,4 @@
-FROM jenkinsci/jenkins:2.6
+FROM jenkinsci/jenkins:latest
 
 COPY blueocean-commons/target/blueocean-commons.hpi /usr/share/jenkins/ref/plugins/
 COPY blueocean-dashboard/target/blueocean-dashboard.hpi /usr/share/jenkins/ref/plugins/
