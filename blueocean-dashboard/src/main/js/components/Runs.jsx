@@ -45,7 +45,9 @@ export default class Runs extends Component {
 
         const url = `/pipelines/${pipelineName}/detail/${pipeline}/${id}/pipeline`;
         const open = () => {
+            location.hash = '';
             location.pathname = url;
+
             router.push(location);
         };
 
