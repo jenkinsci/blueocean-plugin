@@ -1,7 +1,15 @@
 const path = require('path');
 
 module.exports = {
-    module: {},
+    module: {
+        loaders: [
+            {
+                test: /\.css?$/,
+                loaders: [ 'style', 'raw' ],
+                include: path.resolve(__dirname, '../')
+            }
+        ]
+    },
     resolve: {
         extensions: [
             '.js', // required by storybook
