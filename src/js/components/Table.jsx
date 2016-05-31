@@ -27,9 +27,10 @@ export class Table extends Component {
 
     render() {
         const { headers, children } = this.props;
+        const className = 'jdl-table' + (this.props.className ? ` ${this.props.className}` : '');
 
         return (
-            <table className={this.props.className}>
+            <table className={className}>
             { headers &&
                 <thead>
                     <tr>
