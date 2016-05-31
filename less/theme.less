@@ -415,11 +415,11 @@ code, pre, kbd {
 // --------------------------------------------------
 
 table {
-    color: @gray-light;
+    border-collapse: collapse;
     width: 100%;
 
     a {
-        color: @gray-light;
+        color: @text-color;
     }
 }
 
@@ -600,7 +600,7 @@ code.hash {
 }
 
 .global-header a:hover {
-  color: black;
+  color: @gray-dark;
 }
 
 .sub-header {
@@ -890,10 +890,6 @@ footer {
 }
 .clickIndicator {
     cursor: pointer;
-}
-
-table {
-    border-collapse:collapse;
 }
 
 .activity-table tbody tr:hover,
