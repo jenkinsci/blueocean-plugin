@@ -18,10 +18,7 @@ Blue Ocean Dashboard plugin. Currently contains the bulk of the Blue Ocean user 
 
 ## blueocean-plugin
 
-This plugin currently exists for two purposes (and so is likely to be separated out into two plugins - TBD): 
-
-1. Provides the default implementation of the REST Api defined in the `blueocean-rest` plugin.
-2. Acts as an aggregator plugin, making it an easy place from which to run Blue Ocean via `hpi:run`. 
+Acts as an aggregator plugin, making it an easy place from which to run Blue Ocean via `hpi:run`. 
 
 __NOTE__: As already stated, this plugin is likely to be refactored in the near future.
 
@@ -29,6 +26,10 @@ __NOTE__: As already stated, this plugin is likely to be refactored in the near 
 ## blueocean-rest
 
 Java interfaces and classes that specify the definition of the REST API. See the README within this module for more information.
+
+## blueocean-rest-impl
+
+Provides the default implementation of the REST Api defined in the `blueocean-rest` plugin.
 
 ## blueocean-web
 
@@ -62,7 +63,7 @@ Follow the steps above for getting it running first.
 Look in following README's for:
 * ``blueocean-dashboard`` guide on how to modify the GUI in the dashboard plugin. https://github.com/cloudbees/blueocean-sample-pipeline-result-ext-plugin has a video/sample of a plugin that extends Blue Ocean. 
 * ``blueocean-rest`` for how to navigate the rest api. 
-* ``blueocean-plugin`` for more details on how to actively develop this plugin for both the frontend and backend codebases.
+* ``blueocean-rest-impl`` for more details on how to actively develop this plugin for backend codebases.
 
 ### Tools needed
 
