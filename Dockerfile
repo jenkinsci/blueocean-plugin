@@ -26,12 +26,4 @@ RUN cd /usr/share/jenkins/ref/plugins/; \
 RUN echo -n 2.0 > /usr/share/jenkins/ref/jenkins.install.UpgradeWizard.state  && \
     echo -n 2.0 > /usr/share/jenkins/ref/jenkins.install.InstallUtil.lastExecVersion
 
-# Security must be enabled to enable HTML rendering of the system message.
-# Sacrifice to the Demo Gods.
-ENV ADMIN_USERNAME admin
-ENV ADMIN_PASSWORD admin
-
-COPY docker-demo/blueocean-demo.png /usr/share/jenkins/ref/userContent/blueocean-demo.png
-COPY docker-demo/*.groovy  /usr/share/jenkins/ref/init.groovy.d/
-
 USER jenkins
