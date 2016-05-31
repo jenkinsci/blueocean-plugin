@@ -29,5 +29,5 @@ export class ReadableDate extends Component {
 }
 
 ReadableDate.propTypes = {
-    date: PropTypes.string.isRequired,
+    date: PropTypes.string,
 };
