@@ -13,10 +13,17 @@ const
 describe("pipelines", () => {
   let tree;
 
+  const config = {
+    getRootURL: () => "/"
+  };
+
   beforeEach(() => {
       tree = sd.shallowRender(
           ()=>React.createElement(Pipelines), // For some reason using a fn turns on context
-          {pipelines: Immutable.fromJS(pipelines)}
+          {
+            pipelines: Immutable.fromJS(pipelines),
+            config
+          }
       );
   });
 

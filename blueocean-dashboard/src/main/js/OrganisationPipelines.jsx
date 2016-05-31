@@ -44,11 +44,25 @@ class OrganisationPipelines extends Component {
             this.jobListener = sse.subscribe('job', (event) => {
                 // Enrich the event with blueocean specific properties
                 // before passing it on to be processed.
-
                 const eventCopy = pushEventUtil.enrichJobEvent(event, _this.props.params.pipeline);
 
                 // See http://jenkinsci.github.io/pubsub-light-module/org/jenkins/pubsub/Events.JobChannel.html
                 switch (eventCopy.jenkins_event) {
+                case 'job_crud_created':
+                case 'job_crud_deleted':
+                case 'job_crud_renamed':
+                    // Just refetch and update the pipelines list.
+                    // Yes, in some of these cases it would be possible to
+                    // update the redux store state without making a REST call.
+                    // Trading off for simplicity and view consistency here.
+                    // Doing it this way leaves the code a lot simpler + guarantees
+                    // That the user sees the pipelines in the same order etc as they
+                    // would if they did a page reload. Also remember that these
+                    // crud operations are relative low frequency, so not much
+                    // benefit to be got from optimizing things here.
+                    // TODO: fix https://issues.jenkins-ci.org/browse/JENKINS-35153 for delete
+                    _this.props.fetchPipelines(_this.context.config);
+                    break;
                 case 'job_run_queue_buildable':
                 case 'job_run_queue_enter':
                     _this.props.processJobQueuedEvent(eventCopy);
@@ -89,6 +103,7 @@ OrganisationPipelines.contextTypes = {
 };
 
 OrganisationPipelines.propTypes = {
+    fetchPipelines: func.isRequired,
     fetchPipelinesIfNeeded: func.isRequired,
     processJobQueuedEvent: func.isRequired,
     updateRunState: func.isRequired,
