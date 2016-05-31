@@ -19,7 +19,7 @@ export class ReadableDate extends Component {
 
             if (date.isValid()) {
                 return (
-                    <span title={this.props.date}>{date.fromNow()}</span>
+                    <time dateTime={this.props.date} title={this.props.date}>{date.fromNow()}</time>
                 );
             }
         }
