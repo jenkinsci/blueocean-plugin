@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 
-const { array, string } = PropTypes;
+const { array, node, string } = PropTypes;
 
-export default class Table extends Component {
+export class Table extends Component {
 
     getKey(column) {
         if (typeof column === 'string') {
@@ -54,6 +54,6 @@ export default class Table extends Component {
 
 Table.propTypes = {
     headers: array,
-    children: array,
+    children: node,
     className: string,
 };
