@@ -30,6 +30,10 @@ export default class Pipelines extends Component {
             { label: '', className: 'favorite' },
         ];
 
+        console.log(config);
+
+        const isShowMoreButtonVisible = pipelines.length > 5;
+
         const baseUrl = config.getRootURL();
         const newJobUrl = `${baseUrl}view/All/newJob`;
 
@@ -55,6 +59,10 @@ export default class Pipelines extends Component {
                                   key={pipeline.name} pipeline={pipeline}
                                 />)
                             }
+
+                            {isShowMoreButtonVisible && <tr><td colspan="5"><button className="">Show More</button></td></tr>}
+
+
                         </Table>
                     </article>
                 </main>
