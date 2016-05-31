@@ -3,5 +3,6 @@ require('./filesize.jsx');
 require('./modalview.jsx');
 require('./pipelinegraph.jsx');
 require('./pipelineresult.jsx');
-require('./toast.jsx');
+require('./readabledate.jsx');
 require('./statusIndicatorStories.jsx');
+require('./toast.jsx');
