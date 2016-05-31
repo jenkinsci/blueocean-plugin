@@ -33,6 +33,7 @@ public abstract class BlueRun extends Resource {
     public static final String RESULT = "result";
     public static final String STATE = "state";
     public static final String ARTIFACTS = "artifacts";
+    public static final String QUEUE_ID = "queueId";
 
 
 
@@ -51,6 +52,12 @@ public abstract class BlueRun extends Resource {
      */
     @Exported(name = ID)
     public abstract String getId();
+
+    /**
+     * @return Queue Id of run. Unique within org.
+     */
+    @Exported(name = QUEUE_ID)
+    public abstract String getQueueId();
 
     /**
      * @return Pipeline name - unique within an organization

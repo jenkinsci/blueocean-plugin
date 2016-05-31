@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.model.queue.BlueTask;
 import org.kohsuke.stapler.export.Exported;
 
 /**

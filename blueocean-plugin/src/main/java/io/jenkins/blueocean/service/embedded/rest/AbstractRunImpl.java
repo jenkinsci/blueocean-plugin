@@ -56,6 +56,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
+    public String getQueueId() {
+        return Long.toString(run.getQueueId());
+    }
+
+    @Override
     public String getPipeline() {
         return run.getParent().getName();
     }
@@ -155,7 +160,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return null; // default
     }
 
-    protected static BlueRun getBlueRun(Run r){
+    public static BlueRun getBlueRun(Run r){
         //TODO: We need to take care several other job types
         if (r instanceof FreeStyleBuild) {
             return new FreeStyleRunImpl((FreeStyleBuild)r);
