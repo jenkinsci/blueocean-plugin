@@ -11,7 +11,7 @@ const { array } = PropTypes;
 export default class Pipelines extends Component {
 
     render() {
-        const { pipelines } = this.context;
+        const { pipelines, config } = this.context;
 
         // Early out
         if (!pipelines) {
@@ -30,16 +30,15 @@ export default class Pipelines extends Component {
             { label: '', className: 'favorite' },
         ];
 
+        const baseUrl = config.getRootURL();
+        const newJobUrl = `${baseUrl}view/All/newJob`;
+
         return (
             <Page>
                 <PageHeader>
                     <Title>
                         <h1>Dashboard</h1>
-                        <a
-                          target="_blank"
-                          className="btn-inverse"
-                          href="/jenkins/view/All/newJob"
-                        >
+                        <a target="_blank" className="btn-inverse" href={newJobUrl}>
                             New Pipeline
                         </a>
                     </Title>
@@ -65,4 +64,5 @@ export default class Pipelines extends Component {
 
 Pipelines.contextTypes = {
     pipelines: array,
+    config: PropTypes.object,
 };
