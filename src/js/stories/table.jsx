@@ -2,8 +2,6 @@ import React from 'react';
 import { action, storiesOf } from '@kadira/storybook';
 import { Table } from '../components/Table';
 
-require('./table.css');
-
 const headers = ['A','B','C'];
 const headers2 = [
     { className: 'red', label: 'A' },
