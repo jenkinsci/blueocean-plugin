@@ -10,8 +10,8 @@ export {WeatherIcon} from './weather-icon';
 export {Page} from './page';
 export {GlobalHeader, GlobalNav} from './global-header';
 export {PageHeader, Title, PageTabs, TabLink} from './page-header';
-export {Table} from './table';
 export {LogConsole} from './log/index';
+export {Table} from './Table';
 export {
     StatusIndicator,
     SvgSpinner,
@@ -28,3 +28,4 @@ export {EmptyStateIcon} from './EmptyStateIcon';
 export {PipelineGraph} from './PipelineGraph';
 export {FileSize} from './FileSize';
 export {Toast} from './Toast';
+export {TimeDuration} from './TimeDuration';
