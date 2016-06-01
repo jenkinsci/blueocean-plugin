@@ -4,5 +4,6 @@ require('./modalview.jsx');
 require('./pipelinegraph.jsx');
 require('./pipelineresult.jsx');
 require('./statusIndicatorStories.jsx');
+require('./table.jsx');
 require('./timeduration.jsx');
 require('./toast.jsx');
