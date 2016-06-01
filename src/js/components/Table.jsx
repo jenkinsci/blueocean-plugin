@@ -2,6 +2,17 @@ import React, { Component, PropTypes } from 'react';
 
 const { array, node, string } = PropTypes;
 
+/**
+ * Renders a simple HTML table with optional header elements.
+ *
+ * Properties:
+ * "children": one or more TR elements
+ * "headers": an array of Strings to render, or
+ *            an array of Objects with shape: { label:String, className:String }
+ *
+ * To set explicit column widths, specify className for the header elements and
+ * specify specify className="fixed" on the Table component to use table-layout: fixed.
+ */
 export class Table extends Component {
 
     getKey(column) {
