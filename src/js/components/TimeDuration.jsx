@@ -18,9 +18,7 @@ const { number, oneOfType, string} = PropTypes;
  */
 export class TimeDuration extends Component {
     render() {
-        const millis = !isNaN(this.props.millis) ?
-            parseInt(this.props.millis) :
-            this.props.millis;
+        const millis = parseInt(this.props.millis);
 
         if (!isNaN(millis)) {
             const duration = moment.duration(millis).humanize();
