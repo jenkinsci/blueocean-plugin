@@ -28,3 +28,4 @@ export {EmptyStateIcon} from './EmptyStateIcon';
 export {PipelineGraph} from './PipelineGraph';
 export {FileSize} from './FileSize';
 export {Toast} from './Toast';
+export {TimeDuration} from './TimeDuration';
