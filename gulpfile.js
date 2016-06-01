@@ -92,6 +92,15 @@ gulp.task("clean", () =>
     gulp.src(config.clean, {read: false})
         .pipe(clean()));
 
+// Testing
+
+gulp.task("test", () => (
+    gulp.src(config.test.sources)
+        .pipe(mocha({
+            compilers: { js: babelCompiler }
+        }))
+));
+
 // Build all
 
 gulp.task("build", ["compile-react", "less", "copy"]);
@@ -104,13 +113,6 @@ gulp.task("compile-react", () =>
         .pipe(babel(config.react.babel))
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(config.react.dest)));
-
-gulp.task("test", () => {
-    gulp.src(config.test.sources)
-        .pipe(mocha({
-            compilers: { js: babelCompiler }
-        }));
-});
 
 // Build the CSS
 
