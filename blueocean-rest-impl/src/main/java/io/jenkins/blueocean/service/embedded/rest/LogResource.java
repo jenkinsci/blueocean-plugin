@@ -62,14 +62,15 @@ public class LogResource{
         }
 
         CharSpool spool = new CharSpool();
-        
+
         long r = logText.writeLogTo(offset,spool);
-        Writer w = createWriter(req, rsp, r - offset);
-        spool.writeTo(new LineEndNormalizingWriter(w));
         rsp.addHeader("X-Text-Size",String.valueOf(r));
         if(!logText.isComplete()) {
             rsp.addHeader("X-More-Data", "true");
         }
+
+        Writer w = createWriter(req, rsp, r - offset);
+        spool.writeTo(new LineEndNormalizingWriter(w));
         w.close();
     }
 
