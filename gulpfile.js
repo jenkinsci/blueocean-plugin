@@ -16,6 +16,7 @@ const copy = require('gulp-copy');
 const svgmin = require('gulp-svgmin');
 const mocha = require('gulp-mocha');
 const babelCompiler = require('babel-core/register');
+const lint = require('gulp-eslint');
 
 // Options, src/dest folders, etc
 
@@ -93,6 +94,13 @@ gulp.task("clean", () =>
         .pipe(clean()));
 
 // Testing
+
+gulp.task("lint", () => (
+    gulp.src(config.react.sources)
+        .pipe(lint())
+        .pipe(lint.format())
+        .pipe(lint.failAfterError())
+));
 
 gulp.task("test", () => (
     gulp.src(config.test.sources)
