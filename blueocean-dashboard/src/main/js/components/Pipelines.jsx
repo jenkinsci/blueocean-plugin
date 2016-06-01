@@ -10,8 +10,22 @@ const { array } = PropTypes;
 
 export default class Pipelines extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            showAllPipelines: false,
+        };
+        this.onShowAllClick = this.onShowAllClick.bind(this);
+    }
+
+    onShowAllClick() {
+        this.state.showAllPipelines = true;
+        this.forceUpdate();
+    }
+
     render() {
         const { pipelines, config } = this.context;
+        const numInitialPiplinesToDisplay = 5;
 
         // Early out
         if (!pipelines) {
@@ -22,6 +36,20 @@ export default class Pipelines extends Component {
             .map(data => new PipelineRecord(data))
             .sort(pipeline => !!pipeline.branchNames);
 
+        // Identify if we will only display the first {numInitialPiplinesToDisplay} pipelines or display them all
+        const isShowMoreButtonVisible = !this.state.showAllPipelines && pipelines.length > numInitialPiplinesToDisplay;
+        var pipelinesToDisplay = [];
+        if(isShowMoreButtonVisible) {
+            for(var i = 0; i < pipelines.length; i++) {
+                if(i >= numInitialPiplinesToDisplay) {
+                    break;
+                }
+                pipelinesToDisplay.push(pipelines[i]);
+            }
+        } else {
+            pipelinesToDisplay = pipelineRecords;
+        }
+
         const headers = [
             { label: 'Name', className: 'name' },
             'Health',
@@ -30,7 +58,9 @@ export default class Pipelines extends Component {
             { label: '', className: 'favorite' },
         ];
 
-        const isShowMoreButtonVisible = pipelines.length > 5;
+
+        console.log('len', pipelinesToDisplay);
+        console.log('isShowMoreButtonVisible', isShowMoreButtonVisible);
 
         const baseUrl = config.getRootURL();
         const newJobUrl = `${baseUrl}view/All/newJob`;
@@ -52,13 +82,18 @@ export default class Pipelines extends Component {
                           className="pipelines-table"
                           headers={headers}
                         >
-                            { pipelineRecords
+                            { pipelinesToDisplay
                                 .map(pipeline => <PipelineRowItem
                                   key={pipeline.name} pipeline={pipeline}
                                 />)
                             }
-
-                            {isShowMoreButtonVisible && <tr><td colspan="5"><button className="">Show More</button></td></tr>}
+                            {isShowMoreButtonVisible &&
+                                <tr>
+                                    <td colspan="5">
+                                        <button className="pipelines-show-all-button" onClick={this.onShowAllClick}>Show All</button>
+                                    </td>
+                                </tr>
+                            }
 
                         </Table>
                     </article>
