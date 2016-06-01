@@ -66,7 +66,7 @@ const config = {
     },
     clean: ["dist", "licenses"],
     test: {
-        sources: ["test/**/*-spec.js"]
+        sources: "test/**/*-spec.js"
     }
 };
 
@@ -96,7 +96,7 @@ gulp.task("clean", () =>
 // Testing
 
 gulp.task("lint", () => (
-    gulp.src(config.react.sources)
+    gulp.src([config.react.sources, config.test.sources])
         .pipe(lint())
         .pipe(lint.format())
         .pipe(lint.failAfterError())
