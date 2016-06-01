@@ -38,7 +38,7 @@
     "@jenkins-cd/design-language": "0.0.37",
     "@jenkins-cd/js-extensions": "0.0.14",
     "@jenkins-cd/js-modules": "0.0.5",
-    "@jenkins-cd/sse-gateway": "0.0.3",
+    "@jenkins-cd/sse-gateway": "0.0.5-beta1",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "keymirror": "^0.1.1",
