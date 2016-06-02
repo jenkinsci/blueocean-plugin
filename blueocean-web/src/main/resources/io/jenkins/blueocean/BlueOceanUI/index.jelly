@@ -11,7 +11,7 @@
 
         <head data-rooturl="${rootURL}/"
               data-resurl="${resURL}"
-              data-appurl="${rootURL}/${it.uIUrlBase}"
+              data-appurl="${rootURL}/${it.urlBase}"
               data-adjuncturl="${rootURL}/${j.getAdjuncts('').rootURL}">
 
             <title>Jenkins Blue Ocean</title>
