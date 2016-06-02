@@ -1,5 +1,5 @@
 import React from 'react';
-import { action, storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@kadira/storybook';
 import { ModalView, ModalHeader, ModalBody } from '../components/modal/modalview';
 
 storiesOf('ModalView', module)

@@ -1,5 +1,5 @@
 import React from 'react';
-import { action, storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@kadira/storybook';
 import { TimeDuration } from '../components/TimeDuration';
 
 storiesOf('TimeDuration', module)
