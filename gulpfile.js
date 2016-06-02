@@ -116,7 +116,13 @@ gulp.task("test-karma", (done) => {
     }, done).start();
 });
 
+gulp.task("test-karma-debug", (done) => {
+    new Karma({
         configFile: __dirname + '/karma.conf.js',
+        colors: true,
+        autoWatch: true,
+        singleRun: false,
+        browsers: ['Chrome'],
     }, done).start();
 });
 
