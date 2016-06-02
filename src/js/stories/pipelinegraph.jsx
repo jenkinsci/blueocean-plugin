@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { action, storiesOf } from '@kadira/storybook';
 import {PipelineGraph, defaultLayout} from '../components/PipelineGraph';
 
 import { StatusIndicator } from '../components';
@@ -30,7 +30,7 @@ function renderFlatPipeline() {
     ];
 
     // Reduce spacing just to make this graph smaller
-    const layout = {nodeSpacingH:90}
+    const layout = { nodeSpacingH: 90 };
 
     return <div><PipelineGraph stages={stages} layout={layout}/></div>;
 }
@@ -63,7 +63,7 @@ function renderFlatPipelineFat() {
     };
 
     return (
-        <div style={{padding:10}}>
+        <div style={{ padding: 10 }}>
             <h1>Same data, different layout</h1>
             <h3>Normal</h3>
             <PipelineGraph stages={stages}/>
@@ -112,7 +112,7 @@ function renderListenersPipeline() {
         makeNode("Production")
     ];
 
-    return <div><PipelineGraph stages={stages} onNodeClick={nodeName => console.log('Clicked', nodeName)}/></div>;
+    return <div><PipelineGraph stages={stages} onNodeClick={nodeName => action('Clicked', nodeName)}/></div>;
 }
 function renderParallelPipeline() {
 
@@ -207,7 +207,7 @@ class PipelineGraphConstructionKit extends Component {
         const changed = (e) => {
             const value = e.target.value;
 
-            let layout = Object.assign({}, this.state.layout);
+            const layout = Object.assign({}, this.state.layout);
             layout[property] = parseInt(value);
 
             this.setState({layout});
