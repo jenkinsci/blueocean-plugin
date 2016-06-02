@@ -63,6 +63,7 @@ $$
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
+      "fullName": "pipeline1",
       "weatherScore": 100,
       "estimatedDurationInMillis": 20264,
       "lastSuccessfulRun": "http://localhost:64106/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1",
@@ -100,10 +101,68 @@ $$
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
+      "fullName" : "pipeline1",      
       "weatherScore": 100,
       "estimatedDurationInMillis": 280,
       } 
     ]
+
+## Get a Folder
+
+    curl -v -X GET  http://localhost:63934/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl",
+      "displayName" : "folder1",
+      "fullName" : "folder1",
+      "name" : "folder1",
+      "organization" : "jenkins",
+      "numberOfFolders" : 1,
+      "numberOfPipelines" : 1
+    }
+       
+
+## Get Nested Pipeline Inside A Folder
+    
+    curl -v -X GET   http://localhost:62054/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/test2/
+    
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineImpl",
+      "displayName" : "test2",
+      "estimatedDurationInMillis" : -1,
+      "fullName" : "folder1/folder2/test2",
+      "lastSuccessfulRun" : null,
+      "latestRun" : null,
+      "name" : "test2",
+      "fullName" : "test2",      
+      "organization" : "jenkins",
+      "weatherScore" : 100
+    }
+    
+## Get nested Folder and Pipeline
+
+Pipelines can be nested inside folder.
+    
+    curl -v -X GET   http://localhost:62054/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/
+    
+    [ {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl",
+      "displayName" : "folder2",
+      "fullName" : "folder1/folder2",
+      "name" : "folder2",
+      "organization" : "jenkins",
+      "numberOfFolders" : 0,
+      "numberOfPipelines" : 1
+    }, {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineImpl",
+      "displayName" : "test1",
+      "estimatedDurationInMillis" : -1,
+      "fullName" : "folder1/test1",
+      "lastSuccessfulRun" : null,
+      "latestRun" : null,
+      "name" : "test1",
+      "organization" : "jenkins",
+      "weatherScore" : 100
+    } ]
     
 ## Get all runs in a pipeline
     
