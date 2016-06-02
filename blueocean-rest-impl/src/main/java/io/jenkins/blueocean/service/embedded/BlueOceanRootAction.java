@@ -1,19 +1,22 @@
 package io.jenkins.blueocean.service.embedded;
 
+import com.google.inject.Binder;
+import com.google.inject.Inject;
+import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.RootAction;
 import io.jenkins.blueocean.BlueOceanUI;
 import org.kohsuke.stapler.StaplerProxy;
-
-import javax.inject.Inject;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 @Extension
 public class BlueOceanRootAction implements RootAction, StaplerProxy {
+    private static final String URL_BASE="blue";
+
     @Inject
-    BlueOceanUI app;
+    private BlueOceanUI app;
 
     @Override
     public String getIconFileName() {
@@ -30,11 +33,21 @@ public class BlueOceanRootAction implements RootAction, StaplerProxy {
      */
     @Override
     public String getUrlName() {
-        return app.getUIUrlBase();
+        return URL_BASE;
     }
 
     @Override
     public Object getTarget() {
         return app;
+    }
+
+    /** Provides implementation of BlueOceanUI */
+    @Extension
+    public static class ModuleImpl implements Module {
+
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(BlueOceanUI.class).toInstance(new BlueOceanUI(URL_BASE));
+        }
     }
 }
