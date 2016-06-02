@@ -3,31 +3,27 @@ import { storiesOf } from '@kadira/storybook';
 import { ReadableDate } from '../components/ReadableDate';
 
 storiesOf('ReadableDate', module)
-    .add('standard, now', scenario1)
-    .add('standard, arbitrary', scenario2)
-    .add('bad data', scenario3)
-    .add('undefined data', scenario4);
+    .add('standard, distant', scenario1)
+    .add('standard, recent', scenario2)
+    .add('bad data', scenario3);
 
 function scenario1() {
     return (
-        <ReadableDate date={new Date().toISOString()} />
+        <ReadableDate date="2015-05-24T08:57:06.406+0000" />
+
     );
 }
 
 function scenario2() {
+    const year = new Date().getFullYear();
+    const date = `${year}-05-24T08:57:06.406-0400`;
     return (
-        <ReadableDate date="2016-05-24T08:57:06.406-0400" />
+        <ReadableDate date={date} />
     );
 }
 
 function scenario3() {
     return (
         <ReadableDate date="bad date" />
-    );
-}
-
-function scenario4() {
-    return (
-        <ReadableDate />
     );
 }
