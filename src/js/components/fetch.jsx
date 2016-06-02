@@ -3,7 +3,7 @@
 import React, { Component, PropTypes } from 'react';
 import fetchData from './fetcher';
 
-export {fetchData}
+export {fetchData};
 
 function placeholder() {
     return null;
@@ -11,7 +11,9 @@ function placeholder() {
 
 // FIXME: we're overloading the ES5 fetch global with this
 // FIXME: config is :any because this function should never have been in the JDL.
-export function fetch(ComposedComponent: ReactClass, getURLFromProps: (props: any, config: any) => ?string = placeholder, toJson: boolean) {
+export function fetch(ComposedComponent: ReactClass,
+                      getURLFromProps: (props: any, config: any) => ?string = placeholder, toJson: boolean) {
+    
     class Wrapped extends Component {
 
         _lastUrl: ?string;

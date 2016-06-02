@@ -1,6 +1,6 @@
 // @flow
 
-import React, {Component} from 'react';
+import React, { Component, PropTypes } from 'react';
 
 export class GlobalHeader extends Component {
     render() {
@@ -8,8 +8,16 @@ export class GlobalHeader extends Component {
     }
 }
 
+GlobalHeader.propTypes = {
+    children: PropTypes.node,
+};
+
 export class GlobalNav extends Component {
     render() {
         return <nav>{this.props.children}</nav>;
     }
 }
+
+GlobalNav.propTypes = {
+    children: PropTypes.node,
+};

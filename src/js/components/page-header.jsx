@@ -1,6 +1,6 @@
 // @flow
 
-import React, {Component} from 'react';
+import React, { Component, PropTypes } from 'react';
 import {Link} from 'react-router';
 
 export class PageHeader extends Component {
@@ -8,6 +8,10 @@ export class PageHeader extends Component {
         return <header className="sub-header">{this.props.children}</header>;
     }
 }
+
+PageHeader.propTypes = {
+    children: PropTypes.node
+};
 
 export class Title extends Component {
     render() {
@@ -21,6 +25,10 @@ export class Title extends Component {
     }
 }
 
+Title.propTypes = {
+    children: PropTypes.node,
+};
+
 export class PageTabs extends Component {
     render() {
         const base = this.props.base;
@@ -33,7 +41,8 @@ export class PageTabs extends Component {
 }
 
 PageTabs.propTypes = {
-    base: React.PropTypes.string
+    children: PropTypes.node,
+    base: PropTypes.string
 };
 
 export class TabLink extends Component {
@@ -46,8 +55,9 @@ export class TabLink extends Component {
 }
 
 TabLink.propTypes = {
-    base: React.PropTypes.string,
-    to: React.PropTypes.string.isRequired
+    children: PropTypes.node,
+    base: PropTypes.string,
+    to: PropTypes.string.isRequired
 };
 
 TabLink.contextTypes = {
