@@ -66,7 +66,7 @@ const config = {
     },
     clean: ["dist", "licenses"],
     test: {
-        sources: "test/**/*-spec.js"
+        sources: "test/**/*-spec.{js,jsx}"
     }
 };
 
