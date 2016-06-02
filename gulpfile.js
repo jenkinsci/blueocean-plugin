@@ -14,6 +14,9 @@ const runSequence = require('run-sequence');
 const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const svgmin = require('gulp-svgmin');
+const mocha = require('gulp-mocha');
+const babelCompiler = require('babel-core/register');
+const lint = require('gulp-eslint');
 
 // Options, src/dest folders, etc
 
@@ -61,7 +64,10 @@ const config = {
             dest: "licenses/"
         }
     },
-    clean: ["dist", "licenses"]
+    clean: ["dist", "licenses"],
+    test: {
+        sources: "test/**/*-spec.js"
+    }
 };
 
 // Watch
@@ -79,13 +85,29 @@ gulp.task("watch-styles", ["default"], () => {
 // Default to clean and build
 
 gulp.task("default", () =>
-    runSequence("clean", "build"));
+    runSequence("clean", "test", "build"));
 
 // Clean
 
 gulp.task("clean", () =>
     gulp.src(config.clean, {read: false})
         .pipe(clean()));
+
+// Testing
+
+gulp.task("lint", () => (
+    gulp.src([config.react.sources, config.test.sources])
+        .pipe(lint())
+        .pipe(lint.format())
+        .pipe(lint.failAfterError())
+));
+
+gulp.task("test", () => (
+    gulp.src(config.test.sources)
+        .pipe(mocha({
+            compilers: { js: babelCompiler }
+        }))
+));
 
 // Build all
 

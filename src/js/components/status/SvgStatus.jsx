@@ -2,7 +2,9 @@
 
 import React, { Component, PropTypes } from 'react';
 
-// These were taken from SVG and pre-translated
+import type { Result } from './StatusIndicator';
+
+// These were mostly taken from SVG and pre-translated
 const questionMarkPath = "M-0.672,4.29 L0.753,4.29 L0.753,5.78 L-0.672,5.78 L-0.672,4.29 Z M-2.21,-3.94 " +
     "C-1.63,-4.57 -0.830,-4.88 0.187,-4.88 C1.13,-4.88 1.88,-4.61 2.45,-4.07 C3.01,-3.54 3.30,-2.85 3.30,-2.01 " +
     "C3.30,-1.51 3.19,-1.10 2.99,-0.782 C2.78,-0.467 2.36,-0.00346 1.73,0.608 C1.27,1.05 0.972,1.43 0.836,1.74 " +
@@ -12,12 +14,17 @@ const questionMarkPath = "M-0.672,4.29 L0.753,4.29 L0.753,5.78 L-0.672,5.78 L-0.
     "C-0.660,-3.76 -1.21,-3.47 -1.52,-2.87 C-1.69,-2.54 -1.79,-2.07 -1.81,-1.45 L-3.09,-1.45 " +
     "C-3.09,-2.48 -2.80,-3.31 -2.21,-3.94 L-2.21,-3.94 Z";
 
+const hollowCirclePath = "M 0,-6 A 6,6 0 0 1 0,6 A 6,6 0 0 1 0,-6 m 0,1.3 A 4,4 0 0 0 0,4.7 A 4,4 0 0 0 0,-4.7";
+
 const checkMarkPoints = "-2.00 2.80 -4.80 0.00 -5.73 0.933 -2.00 4.67 6.00 -3.33 5.07 -4.27";
 
 const crossPoints = "4.67 -3.73 3.73 -4.67 0 -0.94 -3.73 -4.67 -4.67 -3.73 -0.94 0 -4.67 3.73 -3.73 4.67 0 0.94 " +
     "3.73 4.67 4.67 3.73 0.94 0";
 
-function getGlyphFor(result) {
+/**
+    Returns a glyph (as <g>) for specified result type. Centered at 0,0, scaled for 24px icons.
+ */
+export function getGlyphFor(result:Result) {
 
     // NB: If we start resizing these things, we'll need to use radius/12 to
     // generate a "scale" transform for the group
@@ -49,6 +56,14 @@ function getGlyphFor(result) {
             return (
                 <g className="glyph">
                     <polygon points={crossPoints}/>
+                </g>
+            );
+        case "running":
+        case "queued":
+            // hollow circle
+            return (
+                <g className="glyph">
+                    <path transform="scale(0.9)" d={hollowCirclePath}/>
                 </g>
             );
     }
