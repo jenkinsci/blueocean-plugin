@@ -50,7 +50,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             throw new ServiceException.UnexpectedErrorException("no master branch to favorite");
         }
 
-        FavoriteUtil.favoriteJob(job, favoriteAction.isFavorite());
+        FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
     }
 
     @Override
@@ -61,6 +61,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public String getDisplayName() {
         return mbp.getDisplayName();
+    }
+
+    @Override
+    public String getFullName() {
+        return mbp.getFullName();
     }
 
     @Override
@@ -95,7 +100,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     @SuppressWarnings("unchecked")
-    public int getWeatherScore(){
+    public Integer getWeatherScore(){
         /**
          * TODO: this code need cleanup once MultiBranchProject exposes default branch. At present
          *
@@ -229,5 +234,4 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             }
         };
     }
-
 }

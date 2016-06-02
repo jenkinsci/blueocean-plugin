@@ -1,25 +1,23 @@
 package io.jenkins.blueocean.service.embedded.util;
 
+import hudson.model.Item;
+import hudson.model.ItemGroup;
+import hudson.model.User;
+import hudson.plugins.favorite.FavoritePlugin;
+import hudson.plugins.favorite.user.FavoriteUserProperty;
+import io.jenkins.blueocean.commons.ServiceException;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.Stapler;
 
 import java.io.IOException;
 
-import hudson.model.Item;
-import hudson.model.ItemGroup;
-import hudson.model.Job;
-import hudson.model.User;
-import hudson.plugins.favorite.FavoritePlugin;
-import hudson.plugins.favorite.user.FavoriteUserProperty;
-import io.jenkins.blueocean.commons.ServiceException;
-import jenkins.model.Jenkins;
-
 /**
  * @author Ivan Meredith
  */
 public class FavoriteUtil {
-    public static void favoriteJob(Job job, boolean favorite) {
+    public static void favoriteJob(String fullName, boolean favorite) {
         User user = User.current();
         if(user == null) {
             throw new ServiceException.ForbiddenException("Must be logged in to use set favotites");
@@ -27,7 +25,7 @@ public class FavoriteUtil {
         boolean set = false;
         FavoriteUserProperty fup = user.getProperty(FavoriteUserProperty.class);
         if(fup != null) {
-            set = fup.isJobFavorite(job.getFullName());
+            set = fup.isJobFavorite(fullName);
         }
         //TODO: FavoritePlugin is null
         FavoritePlugin plugin = Jenkins.getInstance().getPlugin(FavoritePlugin.class);
@@ -36,7 +34,7 @@ public class FavoriteUtil {
         }
         if(favorite != set) {
             try {
-                plugin.doToggleFavorite(Stapler.getCurrentRequest(), Stapler.getCurrentResponse(), job.getFullName(), Jenkins.getAuthentication().getName(), false);
+                plugin.doToggleFavorite(Stapler.getCurrentRequest(), Stapler.getCurrentResponse(), fullName, Jenkins.getAuthentication().getName(), false);
             } catch (IOException e) {
                 throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
             }

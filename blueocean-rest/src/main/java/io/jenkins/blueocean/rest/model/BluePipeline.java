@@ -3,10 +3,7 @@ package io.jenkins.blueocean.rest.model;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.json.JsonResponse;
 import org.kohsuke.stapler.verb.PUT;
-
-import javax.xml.ws.WebFault;
 
 /**
  * Defines pipeline state and its routing
@@ -17,6 +14,7 @@ public abstract class BluePipeline extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String NAME="name";
     public static final String DISPLAY_NAME="displayName";
+    public static final String FULL_NAME="fullName";
     public static final String WEATHER_SCORE ="weatherScore";
     public static final String LATEST_RUN = "latestRun";
     public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
@@ -42,10 +40,16 @@ public abstract class BluePipeline extends Resource {
     public abstract String getDisplayName();
 
     /**
+     * @return Includes parent folders if any. For example folder1/folder2/p1
+     */
+    @Exported(name = FULL_NAME)
+    public abstract String getFullName();
+
+    /**
      * @return weather health score percentile
      */
     @Exported(name = WEATHER_SCORE)
-    public abstract int getWeatherScore();
+    public abstract Integer getWeatherScore();
 
     /**
      * @return The Latest Run for the branch
