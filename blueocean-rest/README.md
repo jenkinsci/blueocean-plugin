@@ -1,20 +1,24 @@
+# REST api for Blue Ocean components
+
+This defines the http/REST like interface that Blue Ocean components use. 
+
 # Usage
 
 ## Crumbs
 
-Jenkins usually requires a "crumb" with posted reuqests to prevent request forgery and other shenanigans. 
+Jenkins usually requires a "crumb" with posted requests to prevent request forgery and other shenanigans. 
 To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
 
-## Run BlueOcean plugin
+## Run Blue Ocean plugin
 
     cd bluecoean-plugin
     mvn hpi:run
     
-This will launch jenkins with BlueOcean plugin. 
+This will launch a development Jenkins instance with the Blue Ocean plugin and this plugin ready to go. 
 
 BlueOcean UI is available at:
     
-    http://localhost:8080/jenkins/bo
+    http://localhost:8080/jenkins/blue
     
 
 BlueOcean rest API base URL is:
@@ -751,20 +755,28 @@ Get steps of 'test' stage node:
                        
 # Fetching logs
 
-Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response. 
+Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response.
+ 
+ By default only last 150 KB log data is returned in the response. You can fetch full log by sending start=0 query 
+ parameter. You can override default log size from 150KB to other values using thresholdInKB query parameter. 
 
-* X-More-Data
+* X-More-Data Header
 
 If *X-More-Data* is true, then client should repeat the request after some delay. In the repeated request it should use 
 *X-TEXT-SIZE* header value with *start* query parameter.       
 
-* X-TEXT-SIZE
+* X-TEXT-SIZE Header
 
 X-TEXT-SIZE is the byte offset of the raw log file client should use in the next request as value of start query parameter.
 
-* start
+* start Query Parameter
 
-start query parameter tells API to send log starting from this offset in the log file.
+start query parameter tells API to send log starting from this offset in the log file. 
+
+* thresholdInKB Query Parameter
+
+Size of log to return in the response. Default value is 150 KB of log data.
+
 
     
 ## Get log for a Pipeline run
@@ -795,20 +807,6 @@ start query parameter tells API to send log starting from this offset in the log
     Finished: SUCCESS
 
 > Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essetnailly a folder hence no logs.
-
-## Get log for a Pipeline node
-
-    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/3/log
-    
-    Content-Type: text/plain; charset=utf-8
-    X-Text-Size: 164
-    Content-Length: 168
-    Server: Jetty(6.1.26)
-    
-    Entering stage build
-    Proceeding
-    Running on master in /var/folders/5q/51y3qf0x5t39d4c4c_c2l1s40000gn/T/hudson8758973583122932916test/workspace/pipeline1
-    Building...
 
 ### Get log for a Pipeline step
 

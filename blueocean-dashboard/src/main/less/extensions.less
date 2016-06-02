@@ -1,0 +1,144 @@
+.activity-table {
+  table-layout: fixed;
+
+  th {
+    width: 75px;
+  }
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  .branch {
+    width: 175px;
+  }
+  .message {
+    width: 50%;
+  }
+
+  .duration, .completed {
+    width: 125px;
+  }
+
+  .status-link {
+    cursor: pointer;
+  }
+}
+
+.pipelines-table {
+  table-layout: fixed;
+
+  th {
+    width: 100px;
+  }
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  .name {
+    width: auto;
+  }
+
+  .favorite {
+    width: 30px;
+  }
+
+}
+
+.multibranch-table {
+  table-layout: fixed;
+
+  th {
+    width: 75px;
+  }
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  .branch {
+    width: 200px;
+  }
+  .message {
+    width: 50%;
+  }
+
+  .lastcommit, .completed {
+    width: 125px;
+  }
+}
+
+.pr-table {
+  table-layout: fixed;
+
+  th {
+    width: 75px;
+  }
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  .summary {
+    width: 100%;
+  }
+
+  .build, .completed {
+    width: 125px;
+  }
+}
+
+.changeset-table {
+  table-layout: fixed;
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  th {
+    width: 100px;
+  }
+
+  .author {
+    width: 150px;
+  }
+
+  .message {
+    width: 100%;
+  }
+}
+
+.artifacts-table {
+  table-layout: fixed;
+
+  th, td {
+    .text-overflow();
+    padding-right: 0.5em;
+  }
+
+  th {
+    width: 100px;
+  }
+
+  .name {
+    width: 100%;
+  }
+
+  .download {
+    text-align: right;
+  }
+}
+
+
+// TODO: duplicated from the JDL; long-term may want to expose mixins to Less in other plugins? (UX-285?)
+.text-overflow() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
