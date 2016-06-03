@@ -70,12 +70,12 @@ export class Activity extends Component {
             { label: 'Completed', className: 'completed' },
         ];
 
-        let latestRecord = {};
         return (<main>
             <article>
                 <Table className="activity-table fixed" headers={headers}>
                     { runs.map((run, index) => {
                         const changeset = run.changeSet;
+                        let latestRecord = {};
                         if (changeset && changeset.length > 0) {
                             latestRecord = new ChangeSetRecord(changeset[
                                 Object.keys(changeset)[0]

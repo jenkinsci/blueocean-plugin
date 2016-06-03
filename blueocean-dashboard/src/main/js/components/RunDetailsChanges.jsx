@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { CommitHash, EmptyStateView, Table } from '@jenkins-cd/design-language';
+import { CommitHash, EmptyStateView, ReadableDate, Table } from '@jenkins-cd/design-language';
 
 const { object } = PropTypes;
 
@@ -29,6 +29,7 @@ export default class RunDetailsChanges extends Component {
             'Commit',
             { label: 'Author', className: 'author' },
             { label: 'Message', className: 'message' },
+            { label: 'Date', className: 'date' },
         ];
 
         return (
@@ -38,6 +39,7 @@ export default class RunDetailsChanges extends Component {
                         <td><CommitHash commitId={commit.commitId} /></td>
                         <td>{commit.author.fullName}</td>
                         <td>{commit.msg}</td>
+                        <td><ReadableDate date={commit.timestamp} /></td>
                     </tr>
                 ))}
             </Table>
