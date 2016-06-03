@@ -14,7 +14,7 @@ describe("PullRequests should render", () => {
     assert.equal(wrapper.find('PullRequest').length, pr.length);
     const table = wrapper.find('Table').node;
     assert.isOk(table);
-    assert.equal(table.props.className, 'pr-table');
+    assert.include(table.props.className, 'pr-table');
   });
 
 });

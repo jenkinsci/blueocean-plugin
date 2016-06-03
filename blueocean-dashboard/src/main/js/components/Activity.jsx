@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView } from '@jenkins-cd/design-language';
-import Table from './Table';
+import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Runs from './Runs';
 import { scrollToHash } from './ScrollToHash';
 import { ActivityRecord, ChangeSetRecord } from './records';
@@ -74,7 +73,7 @@ export class Activity extends Component {
         let latestRecord = {};
         return (<main>
             <article>
-                <Table className="activity-table" headers={headers}>
+                <Table className="activity-table fixed" headers={headers}>
                     { runs.map((run, index) => {
                         const changeset = run.changeSet;
                         if (changeset && changeset.length > 0) {

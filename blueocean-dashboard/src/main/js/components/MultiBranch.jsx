@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import Table from './Table';
-import { EmptyStateView } from '@jenkins-cd/design-language';
+import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Branches from './Branches';
 import { RunsRecord } from './records';
 import { scrollToHash } from './ScrollToHash';
@@ -73,7 +72,7 @@ export class MultiBranch extends Component {
         return (
             <main>
                 <article>
-                    <Table className="multibranch-table"
+                    <Table className="multibranch-table fixed"
                       headers={headers}
                     >
                         {branches.map((run, index) => {
