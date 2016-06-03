@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { createRenderer } from 'react-addons-test-utils';
 import { assert } from 'chai';
 import sd from 'skin-deep';
-import moment from 'moment';
 
 import PullRequest from '../../main/js/components/PullRequest.jsx';
 import { RunsRecord } from '../../main/js/components/records.jsx';
