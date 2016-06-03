@@ -14,7 +14,7 @@ public class GenericResource<T> extends Resource {
         this.value = value;
     }
 
-    @Exported(merge = true)
+    @Exported(merge = false)
     @Override
     public Object getState() {
         return value;

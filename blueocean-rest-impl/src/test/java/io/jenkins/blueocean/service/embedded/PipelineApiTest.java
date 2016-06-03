@@ -156,16 +156,21 @@ public class PipelineApiTest extends BaseTest {
         TestResultAction resultAction = b.getAction(TestResultAction.class);
         Assert.assertEquals("io.jenkins.blueocean.jsextensions.JenkinsJSExtensionsTest",resultAction.getResult().getSuites().iterator().next().getName());
         j.assertBuildStatusSuccess(b);
-        Map resp = get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId()+"/test/");
+        Map resp = get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId());
 
-        Assert.assertNotNull(resp.get("_links"));
+        List<Map> exts = (List<Map>) resp.get("extensions");
 
-        Map l = (Map) resp.get("_links");
-        Assert.assertNotNull(l.get("result"));
-        Map r = (Map) l.get("result");
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline4/runs/1/test/result/", r.get("href"));
-        Map s = (Map) l.get("self");
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline4/runs/1/test/", s.get("href"));
+        for(Map e:exts){
+            get("/classes/"+e.get("_class")+"/");
+        }
+//        Assert.assertNotNull(resp.get("_links"));
+//
+//        Map l = (Map) resp.get("_links");
+//        Assert.assertNotNull(l.get("result"));
+//        Map r = (Map) l.get("result");
+//        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline4/runs/1/test/result/", r.get("href"));
+//        Map s = (Map) l.get("self");
+//        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline4/runs/1/test/", s.get("href"));
     }
 
     @Test

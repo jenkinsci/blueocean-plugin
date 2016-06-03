@@ -157,6 +157,9 @@ public abstract class BlueRun extends Resource {
      */
     public abstract BluePipelineNodeContainer getNodes();
 
+    @Exported(name = "extensions", inline = true)
+    public abstract BlueExtensionProxies getExtensions();
+
     /**
      * @return Instance of stapler aware instance that can do the following:
      * <p></p><ul>

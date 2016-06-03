@@ -1,16 +1,15 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.model.Action;
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;
-import hudson.tasks.test.AbstractTestResultAction;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.model.BlueExtensionProxies;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
-import io.jenkins.blueocean.rest.model.Resource;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
@@ -158,6 +157,16 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return null; // default
     }
 
+    @Override
+    public BlueExtensionProxies getExtensions() {
+        List<? extends Action> actions = run.getAllActions();
+        ExtensionProxiesImpl extensionWrapper = new ExtensionProxiesImpl();
+        for(final Action a: actions){
+            extensionWrapper.add(a);
+        }
+        return extensionWrapper;
+    }
+
     protected static BlueRun getBlueRun(Run r){
         //TODO: We need to take care several other job types
         if (r instanceof FreeStyleBuild) {
@@ -184,43 +193,4 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public BlueRunStopResponse stop() {
         throw new ServiceException.NotImplementedException("Stop should be implemented on a subclass");
     }
-
-    @Navigable
-    public TestResultActionWrapper getTest(){
-        return new TestResultActionWrapper(run.getAction(AbstractTestResultAction.class));
-    }
-
-
-    /**
-     * XXX: This wrapper is a temporary measure and should be removed once core rest infra is moved to core
-     * and the relevant models in core adopt these concepts to generate discoverable links themselves.
-     */
-    public static class TestResultActionWrapper extends Resource {
-        private final AbstractTestResultAction testResultAction;
-
-        public TestResultActionWrapper(AbstractTestResultAction testResultAction) {
-            this.testResultAction = testResultAction;
-        }
-
-        @Exported
-        public int getFailCount(){
-            return testResultAction.getFailCount();
-        }
-
-        @Exported
-        public int getSkipCount(){
-            return testResultAction.getSkipCount();
-        }
-
-        @Exported
-        public int getTotalCount(){
-            return testResultAction.getTotalCount();
-        }
-
-        @Navigable
-        public Object getResult(){
-            return testResultAction.getResult();
-        }
-    }
-
 }
