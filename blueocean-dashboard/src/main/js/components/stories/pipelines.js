@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 import PipelineRowItem from '../PipelineRowItem.jsx';
 import { PipelineRecord } from '../records.jsx';
-import Table from '../Table.jsx';
+import Table from '@jenkins-cd/design-language';
 
 /*
 First example of using storybook
