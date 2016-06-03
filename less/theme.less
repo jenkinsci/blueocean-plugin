@@ -484,7 +484,7 @@ code {
   border: 1px solid @pre-border-color;
   border-radius: 4px;
   position: relative;
-  counter-reset: line-numbering;
+  counter-reset: line;
   overflow-x: auto;
   font-size: 1.1rem;
 }
@@ -494,6 +494,7 @@ code p:hover {
 }
 
 code p {
+  counter-increment: line;
   margin: 0;
 }
 
@@ -515,9 +516,8 @@ code a:hover {
 }
 
 code p a::before {
-  opacity: 0.4;
-  content: counter(line-numbering);
-  counter-increment: line-numbering;
+  color: @gray-light;
+  content: counter(line);
   float: left;
   min-width: 20px;
   white-space: nowrap;
