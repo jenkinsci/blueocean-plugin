@@ -1,11 +1,15 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.model.BuildableItem;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
+import jenkins.branch.MultiBranchProject;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
@@ -14,6 +18,7 @@ import org.kohsuke.stapler.verb.DELETE;
 import java.io.IOException;
 
 import static io.jenkins.blueocean.rest.Utils.ensureTrailingSlash;
+import static io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl.isMultiBranchProjectJob;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -21,10 +26,19 @@ import static io.jenkins.blueocean.rest.Utils.ensureTrailingSlash;
 public class PipelineImpl extends BluePipeline {
     /*package*/ final Job job;
 
-    protected PipelineImpl(Job job) {
+    private final ItemGroup folder;
+    protected PipelineImpl(ItemGroup folder, Job job) {
         this.job = job;
+        this.folder = folder;
     }
 
+    public PipelineImpl(ItemGroup folder) {
+        this(folder, null);
+    }
+
+    public PipelineImpl(Job job) {
+        this(null, job);
+    }
     @Override
     public String getOrganization() {
         return OrganizationImpl.INSTANCE.getName();
@@ -41,7 +55,7 @@ public class PipelineImpl extends BluePipeline {
     }
 
     @Override
-    public int getWeatherScore() {
+    public Integer getWeatherScore() {
         return job.getBuildHealth().getScore();
     }
 
@@ -93,6 +107,30 @@ public class PipelineImpl extends BluePipeline {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
 
-        FavoriteUtil.favoriteJob(job, favoriteAction.isFavorite());
+        FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
+    }
+
+    @Override
+    public String getFullName(){
+        return job.getFullName();
+    }
+
+    public BluePipeline getPipelines(String name){
+        assert folder != null;
+        return getPipelines(folder, name);
+    }
+
+    protected static BluePipeline getPipelines(ItemGroup itemGroup, String name){
+        Item item = itemGroup.getItem(name);
+        if(item instanceof BuildableItem){
+            if(item instanceof MultiBranchProject){
+                return new MultiBranchPipelineImpl((MultiBranchProject) item);
+            }else if(!isMultiBranchProjectJob((BuildableItem) item) && item instanceof Job){
+                return new PipelineImpl(itemGroup, (Job) item);
+            }
+        }else if(item instanceof ItemGroup){
+            return new PipelineImpl((ItemGroup) item, null);
+        }
+        throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", name));
     }
 }

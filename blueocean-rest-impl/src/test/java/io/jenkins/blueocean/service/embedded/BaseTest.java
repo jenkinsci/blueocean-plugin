@@ -253,6 +253,7 @@ public abstract class BaseTest {
         Assert.assertEquals("jenkins", resp.get("organization"));
         Assert.assertEquals(p.getName(), resp.get("name"));
         Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
+        Assert.assertEquals(p.getFullName(), resp.get("fullName"));
         Assert.assertEquals(p.getBuildHealth().getScore(), resp.get("weatherScore"));
         if(p.getLastSuccessfulBuild() != null){
             Run b = p.getLastSuccessfulBuild();
