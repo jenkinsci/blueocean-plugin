@@ -50,6 +50,10 @@ public class PipelineApiTest extends BaseTest {
         MockFolder folder3 = folder1.createProject(MockFolder.class, "folder3");
         Project p2 = folder2.createProject(FreeStyleProject.class, "test2");
 
+        List<Map> topFolders = get("/organizations/jenkins/pipelines/", List.class);
+
+        Assert.assertEquals(1, topFolders.size());
+
         Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/folder2/test2");
         validatePipeline(p2, response);
 

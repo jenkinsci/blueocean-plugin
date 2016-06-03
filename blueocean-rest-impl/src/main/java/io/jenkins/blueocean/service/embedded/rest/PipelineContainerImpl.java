@@ -4,6 +4,7 @@ import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
+import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -63,7 +64,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         if(itemGroup != null){
             return getPipelines(itemGroup.getItems());
         }else{
-            return getPipelines(Jenkins.getActiveInstance().getAllItems(Item.class));
+            return getPipelines(Jenkins.getActiveInstance().getItems(TopLevelItem.class));
         }
     }
 
@@ -71,7 +72,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         return item instanceof WorkflowJob && item.getParent() instanceof MultiBranchProject;
     }
 
-    protected static Iterator<BluePipeline> getPipelines(Collection<Item> items){
+    protected static Iterator<BluePipeline> getPipelines(Collection<? extends Item> items){
         List<BluePipeline> pipelines = new ArrayList<>();
         for (Item item : items) {
             if(item instanceof MultiBranchProject){
