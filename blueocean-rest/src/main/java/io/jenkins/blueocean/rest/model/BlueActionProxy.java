@@ -5,6 +5,6 @@ package io.jenkins.blueocean.rest.model;
  *
  * @author Vivek Pandey
  */
-public abstract class BlueExtensionProxies implements Iterable<Object> {
+public abstract class BlueActionProxy extends Resource {
 
 }

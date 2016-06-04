@@ -7,6 +7,7 @@ import org.kohsuke.stapler.json.JsonResponse;
 import org.kohsuke.stapler.verb.PUT;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -157,8 +158,8 @@ public abstract class BlueRun extends Resource {
      */
     public abstract BluePipelineNodeContainer getNodes();
 
-    @Exported(name = "extensions", inline = true)
-    public abstract BlueExtensionProxies getExtensions();
+    @Exported(name = "actions")
+    public abstract Collection<?> getActions();
 
     /**
      * @return Instance of stapler aware instance that can do the following:

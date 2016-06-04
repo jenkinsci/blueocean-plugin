@@ -5,7 +5,8 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.model.BlueExtensionProxies;
+import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
@@ -14,6 +15,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -158,13 +160,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public BlueExtensionProxies getExtensions() {
-        List<? extends Action> actions = run.getAllActions();
-        ExtensionProxiesImpl extensionWrapper = new ExtensionProxiesImpl();
-        for(final Action a: actions){
-            extensionWrapper.add(a);
-        }
-        return extensionWrapper;
+    public Collection<?> getActions() {
+        return run.getAllActions();
     }
 
     protected static BlueRun getBlueRun(Run r){
@@ -193,4 +190,25 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public BlueRunStopResponse stop() {
         throw new ServiceException.NotImplementedException("Stop should be implemented on a subclass");
     }
+
+    public Object getDynamic(String token) {
+        for (Action a : run.getAllActions()) {
+            if (token.equals(a.getUrlName()))
+                return a;
+        }
+
+        return null;
+    }
+
+    @Override
+    public Links getLinks() {
+        Links links = super.getLinks();
+        for (Action a : run.getAllActions()) {
+            if (a.getUrlName()!=null) {
+                links.add(a.getUrlName(), new Link(links.get("self").getHref()  + a.getUrlName()));
+            }
+        }
+        return links;
+    }
+
 }

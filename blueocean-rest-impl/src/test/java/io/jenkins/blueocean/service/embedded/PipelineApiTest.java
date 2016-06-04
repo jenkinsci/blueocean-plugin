@@ -158,20 +158,19 @@ public class PipelineApiTest extends BaseTest {
         j.assertBuildStatusSuccess(b);
         Map resp = get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId());
 
-        List<Map> exts = (List<Map>) resp.get("extensions");
+        List<Map> exts = (List<Map>) resp.get("actions");
 
         for(Map e:exts){
-            get("/classes/"+e.get("_class")+"/");
+            Map r = get("/classes/"+e.get("_class")+"/");
+            Assert.assertTrue(((List)r.get("classes")).size() > 0 );
         }
-//        Assert.assertNotNull(resp.get("_links"));
-//
-//        Map l = (Map) resp.get("_links");
-//        Assert.assertNotNull(l.get("result"));
-//        Map r = (Map) l.get("result");
-//        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline4/runs/1/test/result/", r.get("href"));
-//        Map s = (Map) l.get("self");
-//        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline4/runs/1/test/", s.get("href"));
+
+//        get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId()+"/testReport/");
+
+
     }
+
+
 
     @Test
     public void getPipelineRunTest() throws Exception {

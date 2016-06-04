@@ -21,4 +21,6 @@ public class GenericResource<T> extends Resource {
     }
 
     // TODO: allow 'value' to expose additional routes
+    // see http://stapler.kohsuke.org/reference.html
+    // also see MetaClass in Stapler
 }
