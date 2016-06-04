@@ -80,7 +80,7 @@ export class Toast extends Component {
 
     render() {
         return (
-            <ReactCSSTransitionGroup transitionName="toast" transitionAppear={true}
+            <ReactCSSTransitionGroup transitionName="toast" transitionAppear
                 transitionAppearTimeout={300} transitionEnterTimeout={300} transitionLeaveTimeout={300}
             >
                 { !this.state.dismissing ?

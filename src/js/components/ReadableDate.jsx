@@ -10,10 +10,6 @@ import moment from 'moment';
  * If time zone is omitted, then UTC is assumed.
  */
 export class ReadableDate extends Component {
-    constructor() {
-        super();
-    }
-
     render() {
         if (this.props.date) {
             // enforce a ISO-8601 date and try to set proper timezone

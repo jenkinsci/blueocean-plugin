@@ -28,7 +28,7 @@ export class Favorite extends Component {
 
     toggle(e: Event) {
         if (e.target instanceof HTMLInputElement) {
-            let checked = e.target.checked;
+            const checked = e.target.checked;
             this.setState({
                 checked: checked
             });

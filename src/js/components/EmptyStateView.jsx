@@ -36,6 +36,7 @@ export class EmptyStateView extends Component {
 }
 
 EmptyStateView.propTypes = {
+    children: PropTypes.node,
     iconName: PropTypes.oneOf(['branch','goat','shoes']),
     tightSpacing: PropTypes.bool,
 };

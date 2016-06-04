@@ -1,7 +1,7 @@
 // @flow
 
 import React, {Component, PropTypes} from 'react';
-import {describeArcAsPath, polarToCartesian} from '../SVG';
+import { describeArcAsPath } from '../SVG';
 
 export const strokeWidth = 3.5; // px. Maybe we can fetch this from CSS at runtime in the future
 
@@ -12,7 +12,7 @@ export default class SvgSpinner extends Component {
         const radius = (this.props.radius || 12) - (0.5 * strokeWidth); // No "inside" stroking in SVG`
 
         let percentage = this.props.percentage;
-        let groupClasses = ['progress-spinner', result];
+        const groupClasses = ['progress-spinner', result];
 
         if (result === 'queued') {
             percentage = 0;
@@ -24,7 +24,7 @@ export default class SvgSpinner extends Component {
             percentage = 0;
         }
         else if (percentage === 100) {
-            groupClasses.push('pc-over-100')
+            groupClasses.push('pc-over-100');
             percentage = 0;
         }
         else if (percentage > 100) {
@@ -47,4 +47,5 @@ export default class SvgSpinner extends Component {
 SvgSpinner.propTypes = {
     percentage: PropTypes.number,
     radius: PropTypes.number,
+    result: PropTypes.string,
 };

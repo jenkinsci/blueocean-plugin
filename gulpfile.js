@@ -66,7 +66,7 @@ const config = {
     },
     clean: ["dist", "licenses"],
     test: {
-        sources: "test/**/*-spec.js"
+        sources: "test/**/*-spec.{js,jsx}"
     }
 };
 
@@ -85,7 +85,7 @@ gulp.task("watch-styles", ["default"], () => {
 // Default to clean and build
 
 gulp.task("default", () =>
-    runSequence("clean", "test", "build"));
+    runSequence("clean", "lint", "test", "build"));
 
 // Clean
 
