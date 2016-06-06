@@ -3,19 +3,23 @@ import Immutable from 'immutable';
 since we would return a function, */
 /* eslint new-cap: [0] */
 const { Record } = Immutable;
-export const PipelineRecord = Record({
-    displayName: '',
-    name: '',
-    organization: '',
-    weatherScore: 0,
+export class PipelineRecord extends Record({
     branchNames: null,
+    displayName: '',
+    estimatedDurationInMillis: 0,
+    fullName: '',
+    lastSuccessfulRun: null,
+    latestRun: null,
+    name: '',
     numberOfFailingBranches: 0,
     numberOfFailingPullRequests: 0,
     numberOfSuccessfulBranches: 0,
     numberOfSuccessfulPullRequests: 0,
+    organization: '',
     totalNumberOfBranches: 0,
     totalNumberOfPullRequests: 0,
-});
+    weatherScore: 0,
+}){}
 
 export const ChangeSetRecord = Record({
     author: {
