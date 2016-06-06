@@ -5,7 +5,7 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.hal.Links;
+import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
@@ -14,6 +14,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -160,7 +161,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public Collection<?> getActions() {
-        return run.getAllActions();
+        List<BlueActionProxy> actionProxies = new ArrayList<>();
+        for(Action action:run.getAllActions()){
+            actionProxies.add(new ActionProxiesImpl(action));
+        }
+        return actionProxies;
     }
 
     protected static BlueRun getBlueRun(Run r){
@@ -206,15 +211,17 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return null;
     }
 
-    @Override
-    public Links getLinks() {
-        Links links = super.getLinks();
-        for (Action a : run.getAllActions()) {
-            if (a.getUrlName()!=null) {
-                links.add(a.getUrlName());
-            }
-        }
-        return links;
-    }
+    //XXX: Each action should provide their own link
+
+//    @Override
+//    public Links getLinks() {
+//        Links links = super.getLinks();
+//        for (Action a : run.getAllActions()) {
+//            if (a.getUrlName()!=null) {
+//                links.add(a.getUrlName());
+//            }
+//        }
+//        return links;
+//    }
 
 }

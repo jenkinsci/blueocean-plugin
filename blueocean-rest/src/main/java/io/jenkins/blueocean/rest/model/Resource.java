@@ -34,4 +34,7 @@ public abstract class Resource {
     public Links getLinks(){
         return new Links(this);
     }
+
+
+
 }
