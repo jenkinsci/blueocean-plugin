@@ -65,6 +65,15 @@ export const RunsRecord = Record({
     pullRequest: PullRequestRecord,
 });
 
+export class FolderRecord extends Record({
+    displayName: '',
+    fullName: '',
+    name: '',
+    numberOfFolders: 0,
+    numberOfPipelines: 0,
+    organization: 'jenkins',
+}){}
+
 export const State = Record({
     isFetching: false,
     pipelines: null,
