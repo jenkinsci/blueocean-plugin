@@ -14,9 +14,10 @@ const runSequence = require('run-sequence');
 const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const svgmin = require('gulp-svgmin');
+const lint = require('gulp-eslint');
+const Karma = require('karma').Server;
 const mocha = require('gulp-mocha');
 const babelCompiler = require('babel-core/register');
-const lint = require('gulp-eslint');
 
 // Options, src/dest folders, etc
 
@@ -108,6 +109,22 @@ gulp.task("test", () => (
             compilers: { js: babelCompiler }
         }))
 ));
+
+gulp.task("test-karma", (done) => {
+    new Karma({
+        configFile: __dirname + '/karma.conf.js',
+    }, done).start();
+});
+
+gulp.task("test-karma-debug", (done) => {
+    new Karma({
+        configFile: __dirname + '/karma.conf.js',
+        colors: true,
+        autoWatch: true,
+        singleRun: false,
+        browsers: ['Chrome'],
+    }, done).start();
+});
 
 // Build all
 
