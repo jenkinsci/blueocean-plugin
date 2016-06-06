@@ -22,11 +22,13 @@ describe("CommitHash", () => {
         ));
     });
 
-    it("renders sha-1 char hash", () => {
+    it("renders sha-1 char hash with proper length", () => {
         const wrapper = shallow(<CommitHash commitId="676b757ecb542a44dd6f63fd1fb08b659f7a7b03" />);
 
         assert.isTrue(wrapper.is('code'));
+        assert.equal(wrapper.text().length, 7);
         assert.equal(wrapper.text(), '676b757');
+
     });
 
 });
