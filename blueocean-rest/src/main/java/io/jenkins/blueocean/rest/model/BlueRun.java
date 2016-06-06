@@ -32,6 +32,7 @@ public abstract class BlueRun extends Resource {
     public static final String RESULT = "result";
     public static final String STATE = "state";
     public static final String ARTIFACTS = "artifacts";
+    public static final String ACTIONS = "actions";
 
 
 
@@ -158,7 +159,7 @@ public abstract class BlueRun extends Resource {
      */
     public abstract BluePipelineNodeContainer getNodes();
 
-    @Exported(name = "actions")
+    @Exported(name = ACTIONS, inline = true)
     public abstract Collection<?> getActions();
 
     /**

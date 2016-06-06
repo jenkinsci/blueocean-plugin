@@ -5,7 +5,6 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -191,6 +190,13 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         throw new ServiceException.NotImplementedException("Stop should be implemented on a subclass");
     }
 
+    /**
+     * Handles HTTP path handled by actions or other extensions
+     *
+     * @param token path token that an action or extension can handle
+     *
+     * @return action or extension that handles this path.
+     */
     public Object getDynamic(String token) {
         for (Action a : run.getAllActions()) {
             if (token.equals(a.getUrlName()))
@@ -205,7 +211,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         Links links = super.getLinks();
         for (Action a : run.getAllActions()) {
             if (a.getUrlName()!=null) {
-                links.add(a.getUrlName(), new Link(links.get("self").getHref()  + a.getUrlName()));
+                links.add(a.getUrlName());
             }
         }
         return links;

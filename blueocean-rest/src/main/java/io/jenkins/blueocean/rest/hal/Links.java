@@ -57,6 +57,31 @@ public final class Links extends HashMap<String,Link>{
         return this;
     }
 
+    /**
+     * Add a new link with key 'ref' and href being self.href+ref
+     * <pre>
+     * <code>
+     *     links.addRelative("testResult");
+     *
+     *     {
+     *         "_links":[
+     *          {
+     *              "self":{"href":"/organizations/jenkins/pipelines/p1/runs/2/"},
+     *              "testResult":{"href":"/organizations/jenkins/pipelines/p1/runs/2/testResult"},
+     *          }
+     *
+     *         ]
+     *     }
+     * </code>
+     * </pre>
+     * @param ref relative path to be added as new {@link Link} relative to 'self''s href
+     * @return this Links instance
+     */
+    public Links add(String ref){
+        put(ref,new Link(get(SELF).getHref()+ref));
+        return this;
+    }
+
     private void populateReferences(){
         Class clazz = self.getClass();
         /** Find if there is method returning a {@link Container}, add this as link */
