@@ -19,7 +19,7 @@ export class PipelineRecord extends Record({
     totalNumberOfBranches: 0,
     totalNumberOfPullRequests: 0,
     weatherScore: 0,
-}){}
+}) {}
 
 export const ChangeSetRecord = Record({
     author: {
@@ -76,7 +76,7 @@ export class FolderRecord extends Record({
     numberOfFolders: 0,
     numberOfPipelines: 0,
     organization: 'jenkins',
-}){}
+}) {}
 
 export const State = Record({
     isFetching: false,
