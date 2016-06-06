@@ -26,7 +26,7 @@ class LogConsole extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        let lines = nextProps.data;
+        const lines = nextProps.data;
 
         if (!lines) {
             return;
