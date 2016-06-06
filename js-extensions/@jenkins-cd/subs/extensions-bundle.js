@@ -100,7 +100,7 @@ function transformToJSX() {
         var extensions = extensionsMeta.extensions;
         var srcRoot = path.dirname(jsExtensionsYAMLFile);
         var targetRoot = cwd + '/target';
-        var relPath = path.relative(targetRoot, srcRoot);
+        var relPath = path.relative(targetRoot, srcRoot).replace(/\\/g, "/");
         var jsxFilePath = targetRoot + '/jenkins-js-extension.jsx';
         var jsxFileContent = '';
 
