@@ -1,5 +1,5 @@
 import React from 'react';
-import { action, storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@kadira/storybook';
 import { Table } from '../components/Table';
 
 const headers = ['A','B','C'];

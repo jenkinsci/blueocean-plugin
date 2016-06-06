@@ -1,7 +1,6 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import {describeArcAsPath, polarToCartesian} from './SVG';
 import {getGroupForResult, decodeResultValue} from './status/StatusIndicator';
 import {strokeWidth as nodeStrokeWidth} from './status/SvgSpinner';
 
@@ -104,7 +103,7 @@ export class PipelineGraph extends Component {
             // If layout props changed, we need to update the layout state
             // and then re-do layout (it relies on the new state)
 
-            let layout = Object.assign({}, defaultLayout, this.props.layout);
+            const layout = Object.assign({}, defaultLayout, this.props.layout);
             this.setState({layout}, () => {
                 this.stagesUpdated(nextProps.stages);
             });
@@ -121,12 +120,12 @@ export class PipelineGraph extends Component {
         // Connect to top of previous/next column. Curves added when creating SVG
 
         // Collapse from previous node(s) to top column node
-        for (let previousNode of previousNodes) {
+        for (const previousNode of previousNodes) {
             connections.push([previousNode, columnNodes[0]]);
         }
 
         // Expand from top previous node to column node(s) - first one done already above
-        for (let columnNode of columnNodes.slice(1)) {
+        for (const columnNode of columnNodes.slice(1)) {
             connections.push([previousNodes[0], columnNode]);
         }
     }
@@ -150,7 +149,7 @@ export class PipelineGraph extends Component {
         var mostColumnNodes = 0;
 
         // For reach top-level stage we have a column of node(s)
-        for (let topStage of newStages) {
+        for (const topStage of newStages) {
 
             yp = ypStart;
 
@@ -162,13 +161,13 @@ export class PipelineGraph extends Component {
             });
 
             // If stage has children, we don't draw a node for it, just its children
-            let nodeStages = topStage.children && topStage.children.length ?
+            const nodeStages = topStage.children && topStage.children.length ?
                 topStage.children : [topStage];
 
-            let columnNodes: Array<NodeInfo> = [];
+            const columnNodes: Array<NodeInfo> = [];
 
-            for (let nodeStage of nodeStages) {
-                let node = {
+            for (const nodeStage of nodeStages) {
+                const node = {
                     x: xp,
                     y: yp,
                     name: nodeStage.name,
@@ -298,12 +297,12 @@ export class PipelineGraph extends Component {
 
         if (leftPos.y == rightPos.y) {
             // Nice horizontal line
-            return <line {...connectorStroke}
+            return (<line {...connectorStroke}
                          key={key}
                          x1={leftPos.x}
                          y1={leftPos.y}
                          x2={rightPos.x}
-                         y2={rightPos.y}/>;
+                         y2={rightPos.y}/>);
         }
 
         // Otherwise, we'd like a curve
@@ -330,17 +329,14 @@ export class PipelineGraph extends Component {
 
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
 
-        // Use a smaller radius when stroking nodes (for hollow / outline nodes)
-        const outlineNodeRadius = nodeRadius - (nodeStrokeWidth / 2);
-
         // Use a bigger radius for invisible click/touch target
         const mouseTargetRadius = nodeRadius + (2 * connectorStrokeWidth);
 
         const resultClean = decodeResultValue(node.state);
         const key = "n_" + node.name + node.id;
 
-        let completePercent = node.completePercent || 0;
-        let groupChildren = [getGroupForResult(resultClean, completePercent, nodeRadius)];
+        const completePercent = node.completePercent || 0;
+        const groupChildren = [getGroupForResult(resultClean, completePercent, nodeRadius)];
 
         // If somebody is listening for clicks, we'll add an invisible click/touch target, coz
         // the nodes are small and (more importantly) many are hollow.

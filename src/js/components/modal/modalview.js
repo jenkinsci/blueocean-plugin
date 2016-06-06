@@ -232,7 +232,7 @@ class ModalView extends Component {
                 { transitionClass ?
                     <ReactCSSTransitionGroup
                         transitionName={transitionClass}
-                        transitionAppear={true}
+                        transitionAppear
                         transitionAppearTimeout={transitionDuration}
                         transitionEnterTimeout={transitionDuration}
                         transitionLeaveTimeout={transitionDuration}

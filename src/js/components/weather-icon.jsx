@@ -28,6 +28,7 @@ export class WeatherIcon extends Component {
     };
 
     static propTypes = {
+        score: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         size: PropTypes.string
     };
 }

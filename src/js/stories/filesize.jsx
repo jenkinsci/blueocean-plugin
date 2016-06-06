@@ -39,7 +39,7 @@ function scenario4() {
 function scenario5() {
     return (
         <FileSize bytes="5500" />
-    )
+    );
 }
 
 function scenario6() {

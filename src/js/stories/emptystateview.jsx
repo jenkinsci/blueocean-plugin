@@ -11,7 +11,7 @@ storiesOf('EmptyStateView', module)
 
 function oneLiner() {
     return (
-        <EmptyStateView tightSpacing={true}>
+        <EmptyStateView tightSpacing>
             <p>There are no artifacts for this pipeline run.</p>
         </EmptyStateView>
     );
