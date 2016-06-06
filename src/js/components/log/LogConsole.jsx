@@ -76,7 +76,6 @@ class LogConsole extends Component {
 
     render() {
         const lines = this.state.lines;
-        console.log('render this.state.lines.length=', this.state.lines.length);
 
         return (<code
           className="block"
