@@ -170,6 +170,7 @@
                 <disabledTestInjection>true</disabledTestInjection>
             </configuration>
         </plugin>
+  
     </plugins>
   </build>
 </project>
