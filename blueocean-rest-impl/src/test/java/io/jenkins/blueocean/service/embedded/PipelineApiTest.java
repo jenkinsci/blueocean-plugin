@@ -158,14 +158,14 @@ public class PipelineApiTest extends BaseTest {
         j.assertBuildStatusSuccess(b);
         Map resp = get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId());
 
-        List<Map> exts = (List<Map>) resp.get("actions");
+//        List<Map> exts = (List<Map>) resp.get("actions");
+//
+//        for(Map e:exts){
+//            Map r = get("/classes/"+e.get("_class")+"/");
+//            Assert.assertTrue(((List)r.get("classes")).size() > 0 );
+//        }
 
-        for(Map e:exts){
-            Map r = get("/classes/"+e.get("_class")+"/");
-            Assert.assertTrue(((List)r.get("classes")).size() > 0 );
-        }
-
-//        get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId()+"/testReport/");
+        get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId()+"/testReport/result");
 
 
     }

@@ -39,6 +39,8 @@ public abstract class BlueActionProxy extends Resource {
         return getAction().getClass().getName();
     }
 
+
+
     /**
      *
      * Self href is the link to the action instance.

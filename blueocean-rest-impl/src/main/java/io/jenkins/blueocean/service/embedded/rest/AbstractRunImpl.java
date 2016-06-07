@@ -10,9 +10,11 @@ import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
+import io.jenkins.blueocean.rest.model.GenericResource;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -163,6 +165,9 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public Collection<?> getActions() {
         List<BlueActionProxy> actionProxies = new ArrayList<>();
         for(Action action:run.getAllActions()){
+            if(!action.getClass().isAnnotationPresent(ExportedBean.class)){
+                continue;
+            }
             actionProxies.add(new ActionProxiesImpl(action));
         }
         return actionProxies;
@@ -202,10 +207,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
      *
      * @return action or extension that handles this path.
      */
+    @Exported(visibility = 4)
     public Object getDynamic(String token) {
         for (Action a : run.getAllActions()) {
             if (token.equals(a.getUrlName()))
-                return a;
+                return new GenericResource<>(a);
         }
 
         return null;
