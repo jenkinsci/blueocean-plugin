@@ -13,13 +13,19 @@ export class PipelineRecord extends Record({
     name: '',
     numberOfFailingBranches: 0,
     numberOfFailingPullRequests: 0,
+    numberOfFolders: null,
+    numberOfPipelines: null,
     numberOfSuccessfulBranches: 0,
     numberOfSuccessfulPullRequests: 0,
     organization: '',
     totalNumberOfBranches: 0,
     totalNumberOfPullRequests: 0,
     weatherScore: 0,
-}) {}
+}) {
+    isFolder() {
+        return this.numberOfFolders !== null;
+    }
+}
 
 export const ChangeSetRecord = Record({
     author: {
@@ -68,15 +74,6 @@ export const RunsRecord = Record({
     weatherScore: 0,
     pullRequest: PullRequestRecord,
 });
-
-export class FolderRecord extends Record({
-    displayName: '',
-    fullName: '',
-    name: '',
-    numberOfFolders: 0,
-    numberOfPipelines: 0,
-    organization: 'jenkins',
-}) {}
 
 export const State = Record({
     isFetching: false,

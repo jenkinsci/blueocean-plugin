@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import PipelineRowItem from './PipelineRowItem';
-import { FolderRecord, PipelineRecord } from './records';
+import { PipelineRecord } from './records';
 
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
@@ -18,12 +18,8 @@ export default class Pipelines extends Component {
         }
 
         const pipelineRecords = pipelines
-            .map(data =>
-                'numberOfFolders' in data ?
-                    new FolderRecord(data) :
-                    new PipelineRecord(data)
-            )
-            .filter(data => !(data instanceof FolderRecord))
+            .map(data => new PipelineRecord(data))
+            .filter(data => !data.isFolder())
             .sort(pipeline => !!pipeline.branchNames);
 
         const headers = [
