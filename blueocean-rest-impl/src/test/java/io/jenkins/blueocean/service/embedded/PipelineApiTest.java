@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestBuilder;
+import org.kohsuke.stapler.AcceptHeader;
 
 import java.io.IOException;
 import java.util.List;
@@ -334,7 +335,9 @@ public class PipelineApiTest extends BaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        HttpResponse<String> response = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0", 200,"text/plain",HttpResponse.class);
+        HttpResponse<String> response = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0", 200,HttpResponse.class);
+        AcceptHeader acceptHeader = new AcceptHeader(response.getHeaders().getFirst("Content-Type"));
+        Assert.assertNotNull(acceptHeader.select("text/plain"));
 
         int size = Integer.parseInt(response.getHeaders().getFirst("X-Text-Size"));
         System.out.println(response.getBody());
