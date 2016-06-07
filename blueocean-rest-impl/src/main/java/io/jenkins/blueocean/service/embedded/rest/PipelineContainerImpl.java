@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.Extension;
 import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
@@ -20,6 +21,7 @@ import java.util.List;
 /**
  * @author Vivek Pandey
  */
+@Extension
 public class PipelineContainerImpl extends BluePipelineContainer {
     private final ItemGroup itemGroup;
 

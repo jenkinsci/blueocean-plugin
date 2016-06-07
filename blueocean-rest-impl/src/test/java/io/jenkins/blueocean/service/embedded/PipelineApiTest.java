@@ -76,6 +76,23 @@ public class PipelineApiTest extends BaseTest {
 
     }
 
+    @Test
+    public void getPipelinesTest() throws Exception {
+
+        Project p2 = j.createFreeStyleProject("pipeline2");
+        Project p1 = j.createFreeStyleProject("pipeline1");
+
+        List<Map> responses = get("/pipelines/", List.class);
+        Assert.assertEquals(2, responses.size());
+        validatePipeline(p1, responses.get(0));
+        validatePipeline(p2, responses.get(1));
+
+        p1.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
+        FreeStyleBuild b = (FreeStyleBuild) p1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b);
+
+
+    }
 
     @Test
     public void getPipelineTest() throws IOException {
