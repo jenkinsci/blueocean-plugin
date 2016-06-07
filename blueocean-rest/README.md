@@ -92,9 +92,28 @@ $$
         }
     }
 
-## Get Pipelines
+## Get Pipelines for an organization
+
+Pipelines are sorted by pipeline name alphabetically
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/
+    
+    [ 
+      {
+      "organization" : "jenkins",
+      "name" : "pipeline1",
+      "displayName": "pipeline1",
+      "fullName" : "pipeline1",      
+      "weatherScore": 100,
+      "estimatedDurationInMillis": 280,
+      } 
+    ]
+
+## Get Pipelines
+
+Pipelines are sorted by pipeline name alphabetically
+
+    curl -v -X GET  http://localhost:8080/pipelines/
     
     [ 
       {
