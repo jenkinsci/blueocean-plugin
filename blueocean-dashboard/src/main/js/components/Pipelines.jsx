@@ -37,7 +37,7 @@ export default class Pipelines extends Component {
                 <PageHeader>
                     <Title>
                         <h1>Dashboard</h1>
-                        <a target="_blank" className="btn-inverse" href={newJobUrl}>
+                        <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
                             New Pipeline
                         </a>
                     </Title>
