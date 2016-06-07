@@ -31,7 +31,7 @@ function buttonsLightBg() {
                 <button disabled="disabled">Default Button Disabled</button>
             </div>
             <div style={buttons}>
-                <div>.btn-primary</div>
+                <div>.btn, .btn-default, .btn-primary</div>
                 <button className="btn-primary">Primary Button</button>
                 <a className="btn-primary">Primary Anchor</a>
                 <button className="btn-primary" disabled="disabled">Primary Button Disabled</button>
@@ -61,7 +61,7 @@ function buttonsDarkBg() {
                 <button className="inverse" disabled="disabled">Default Button Disabled</button>
             </div>
             <div style={buttons}>
-                <div>.btn-primary .inverse</div>
+                <div>.btn, .btn-default, .btn-primary with .inverse</div>
                 <button className="btn-primary inverse">Primary Button</button>
                 <a className="btn-primary inverse">Primary Anchor</a>
                 <button className="btn-primary inverse" disabled="disabled">Primary Button Disabled</button>
