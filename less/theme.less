@@ -90,15 +90,23 @@ a {
   color: @link-color;
 }
 
+a:hover {
+  color: @link-hover-color;
+  text-decoration: @link-hover-decoration;
+}
+
+a.inverse {
+  color: white;
+
+  &:hover {
+    color: white;
+  }
+}
+
 .list-group-item.active .list-group-item-text,
 .list-group-item.active:focus .list-group-item-text,
 .list-group-item.active:hover .list-group-item-text {
   color: white;
-}
-
-a:hover {
-  color: @link-hover-color;
-  text-decoration: @link-hover-decoration;
 }
 
 .nav-pills > li.active > a,
@@ -137,10 +145,13 @@ code, pre, kbd {
   border: solid 1px @btn-border;
   border-radius: 3px;
 
+  text-align: center;
   text-decoration: none;
 
   background-color: @btn-color;
   color: @btn-text;
+  cursor: pointer;
+  min-width: 130px;
 
   &:hover,
   &:focus,
@@ -161,22 +172,26 @@ code, pre, kbd {
     &.focus,
     &:active,
     &.active {
-      background-color: darken(@btn-color, 12%);
+      opacity: 0.5;
     }
   }
 }
 
 // Apply the mixin to the buttons
-.btn-default, .btn, button {
-  .btn-styles(@btn-default-bg, @btn-default-border, @btn-default-color);
-}
-
-.btn-primary {
+.btn-default, .btn, button, .btn-primary {
   .btn-styles(@btn-primary-bg, @btn-primary-border, @btn-primary-color);
+
+  &.inverse {
+    .btn-styles(white, @brand-primary, @brand-primary);
+  }
 }
 
-.btn-inverse {
-    .btn-styles(transparent, white, white);
+.btn-secondary {
+    .btn-styles(transparent, @btn-primary-border, @btn-primary-border);
+
+  &.inverse {
+    .btn-styles(transparent, white, white)
+  }
 }
 
 .btn-success {
