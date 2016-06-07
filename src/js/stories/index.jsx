@@ -1,3 +1,4 @@
+require('./buttons.jsx');
 require('./emptystateview.jsx');
 require('./filesize.jsx');
 require('./modalview.jsx');
