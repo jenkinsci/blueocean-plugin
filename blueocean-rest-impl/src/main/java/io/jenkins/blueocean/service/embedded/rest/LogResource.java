@@ -30,11 +30,12 @@ public class LogResource{
 
     private void writeLog(StaplerRequest req, StaplerResponse rsp, AcceptHeader accept) {
         try {
-            switch (accept.select("text/html","text/plain")) {
+            switch (accept.select("text/plain","text/html")) {
                 case "text/html":
                     rsp.setContentType("text/html;charset=UTF-8");
                     rsp.setStatus(HttpServletResponse.SC_OK);
                     req.setAttribute("html", Boolean.valueOf(true));
+                    break;
                 case "text/plain":
                     rsp.setContentType("text/plain;charset=UTF-8");
                     rsp.setStatus(HttpServletResponse.SC_OK);

@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestBuilder;
+import org.kohsuke.stapler.AcceptHeader;
 
 import java.io.IOException;
 import java.util.List;
@@ -52,6 +53,10 @@ public class PipelineApiTest extends BaseTest {
         MockFolder folder3 = folder1.createProject(MockFolder.class, "folder3");
         Project p2 = folder2.createProject(FreeStyleProject.class, "test2");
 
+        List<Map> topFolders = get("/organizations/jenkins/pipelines/", List.class);
+
+        Assert.assertEquals(1, topFolders.size());
+
         Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/folder2/test2");
         validatePipeline(p2, response);
 
@@ -73,6 +78,23 @@ public class PipelineApiTest extends BaseTest {
 
     }
 
+    @Test
+    public void getPipelinesTest() throws Exception {
+
+        Project p2 = j.createFreeStyleProject("pipeline2");
+        Project p1 = j.createFreeStyleProject("pipeline1");
+
+        List<Map> responses = get("/pipelines/", List.class);
+        Assert.assertEquals(2, responses.size());
+        validatePipeline(p1, responses.get(0));
+        validatePipeline(p2, responses.get(1));
+
+        p1.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
+        FreeStyleBuild b = (FreeStyleBuild) p1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b);
+
+
+    }
 
     @Test
     public void getPipelineTest() throws IOException {
@@ -363,7 +385,9 @@ public class PipelineApiTest extends BaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        HttpResponse<String> response = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0", 200,"text/plain",HttpResponse.class);
+        HttpResponse<String> response = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0", 200,HttpResponse.class);
+        AcceptHeader acceptHeader = new AcceptHeader(response.getHeaders().getFirst("Content-Type"));
+        Assert.assertNotNull(acceptHeader.select("text/plain"));
 
         int size = Integer.parseInt(response.getHeaders().getFirst("X-Text-Size"));
         System.out.println(response.getBody());

@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { CommitHash, EmptyStateView } from '@jenkins-cd/design-language';
-import Table from './Table';
+import { CommitHash, EmptyStateView, ReadableDate, Table } from '@jenkins-cd/design-language';
 
 const { object } = PropTypes;
 
@@ -30,15 +29,17 @@ export default class RunDetailsChanges extends Component {
             'Commit',
             { label: 'Author', className: 'author' },
             { label: 'Message', className: 'message' },
+            { label: 'Date', className: 'date' },
         ];
 
         return (
-            <Table headers={headers} className="changeset-table">
+            <Table headers={headers} className="changeset-table fixed">
                 { changeSet.map(commit => (
                     <tr key={commit.commitId}>
                         <td><CommitHash commitId={commit.commitId} /></td>
                         <td>{commit.author.fullName}</td>
                         <td>{commit.msg}</td>
+                        <td><ReadableDate date={commit.timestamp} /></td>
                     </tr>
                 ))}
             </Table>

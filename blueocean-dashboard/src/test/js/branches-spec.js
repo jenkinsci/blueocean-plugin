@@ -31,7 +31,7 @@ describe("Branches should render", () => {
     assert.isNotNull(weatherIcon.props.score);
     assert.equal(weatherIcon.props.score, data[0].score);
     // dash for empty or id
-    const commitHash = data[0].latestRun.commitId.substr(0, 8);
+    const commitHash = data[0].latestRun.commitId.substr(0, 7);
     const hashComp = row[3].getRenderOutput().props.children;
     const hashRendered = sd.shallowRender(hashComp).getRenderOutput();
     assert.equal(hashRendered.props.children, commitHash);
