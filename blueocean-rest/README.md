@@ -113,7 +113,7 @@ Pipelines are sorted by pipeline name alphabetically
 
 Pipelines are sorted by pipeline name alphabetically
 
-    curl -v -X GET  http://localhost:8080/pipelines/
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/pipelines/
     
     [ 
       {
