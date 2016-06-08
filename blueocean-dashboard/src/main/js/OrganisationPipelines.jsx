@@ -3,13 +3,14 @@ import { actions, pipelines as pipelinesSelector, connect, createSelector } from
 import * as sse from '@jenkins-cd/sse-gateway';
 import * as pushEventUtil from './util/push-event-util';
 
-const { object, array, func, node } = PropTypes;
+const { object, array, func, node, string } = PropTypes;
 
 // Connect to the SSE Gateway and allocate a
 // dispatcher for blueocean.
 // TODO: We might want to move this code to a local SSE util module.
 sse.connect('jenkins_blueocean');
 
+// TODO: rename this component to something more generic with respect to pipelines
 class OrganisationPipelines extends Component {
 
     getChildContext() {
@@ -34,7 +35,7 @@ class OrganisationPipelines extends Component {
 
     componentWillMount() {
         if (this.context.config) {
-            this.props.fetchPipelinesIfNeeded(this.context.config);
+            this.props.fetchPipelinesIfNeeded(this.context.config, this.props.organization);
             const _this = this;
 
             // Subscribe for job channel push events
@@ -58,7 +59,7 @@ class OrganisationPipelines extends Component {
                         // crud operations are relative low frequency, so not much
                         // benefit to be got from optimizing things here.
                         // TODO: fix https://issues.jenkins-ci.org/browse/JENKINS-35153 for delete
-                        _this.props.fetchPipelines(_this.context.config);
+                        _this.props.fetchPipelines(_this.context.config, _this.props.organization);
                         break;
                     case 'job_run_queue_buildable':
                     case 'job_run_queue_enter':
@@ -105,6 +106,7 @@ OrganisationPipelines.propTypes = {
     fetchPipelinesIfNeeded: func.isRequired,
     processJobQueuedEvent: func.isRequired,
     updateRunState: func.isRequired,
+    organization: string,
     params: object, // From react-router
     children: node, // From react-router
     location: object, // From react-router

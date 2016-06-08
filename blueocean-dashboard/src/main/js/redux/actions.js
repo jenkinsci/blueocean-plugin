@@ -143,7 +143,6 @@ export const actions = {
      * @param organizationName (optional)
      */
     fetchPipelinesIfNeeded(config, organizationName) {
-        debugger;
         return (dispatch, getState) => {
             const pipelines = getState().adminStore.pipelines;
             const baseUrl = config.getAppURLBase();
