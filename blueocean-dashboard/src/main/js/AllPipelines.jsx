@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import OrganisationPipelines from './OrganisationPipelines';
 
 class AllPipelines extends Component {
