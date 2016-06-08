@@ -19,6 +19,7 @@ export default class Pipelines extends Component {
 
         const pipelineRecords = pipelines
             .map(data => new PipelineRecord(data))
+            .filter(data => !data.isFolder())
             .sort(pipeline => !!pipeline.branchNames);
 
         const headers = [
