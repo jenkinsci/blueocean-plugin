@@ -79,7 +79,7 @@ __NOTE__: look in the README.md of the respective modules for more detailed dev 
 # Debug and live reload with IntelliJ
 Automatically deploys changes to an instance of blueocean that is run with hpi:run.
 
-1. Enable class reloading: Preferences > Build, Execution, Deployment > Debugger > HowSwap
+1. Enable class reloading: Preferences > Build, Execution, Deployment > Debugger > HotSwap
   * Reload classes in background
   * Reload classes after compilation: always
 2. Create a Maven Run/Debug configuration
