@@ -1,5 +1,6 @@
 import { Route, Redirect, IndexRoute, IndexRedirect } from 'react-router';
 import React from 'react';
+import Dashboard from './Dashboard';
 import OrganisationPipelines from './OrganisationPipelines';
 import {
     Pipelines,
@@ -14,11 +15,8 @@ import {
     RunDetailsTests,
 } from './components';
 
-// Config has some globals in it for path / routes
-import { rootRoutePath } from './config';
-
 export default (
-    <Route path={rootRoutePath}>
+    <Route path="/" component={Dashboard}>
         <Route path="organization/:org" component={OrganisationPipelines}>
             <IndexRoute component={Pipelines} />
 
