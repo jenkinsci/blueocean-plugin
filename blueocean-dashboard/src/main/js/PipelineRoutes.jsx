@@ -18,7 +18,8 @@ import {
 export default (
     <Route path="/" component={Dashboard}>
         <Route path="organizations/:org" component={OrganisationPipelines}>
-            <IndexRoute component={Pipelines} />
+            <IndexRedirect to="pipelines" />
+            <Route path="pipelines" component={Pipelines} />
 
             <Route component={PipelinePage}>
                 <Route path=":pipeline/branches" component={MultiBranch} />
