@@ -3,8 +3,6 @@ import { Link } from 'react-router';
 import { WeatherIcon } from '@jenkins-cd/design-language';
 import { Favorite } from '@jenkins-cd/design-language';
 
-import { urlPrefix } from '../config';
-
 export default class PipelineRowItem extends Component {
 
     calculateResponse(passing, failing) {
@@ -36,9 +34,12 @@ export default class PipelineRowItem extends Component {
         const hasPullRequests = !simple && (
             numberOfSuccessfulPullRequests || numberOfFailingPullRequests);
 
-        const multiBranchURL = `${urlPrefix}/${name}/branches`;
-        const pullRequestsURL = `${urlPrefix}/${name}/pr`;
-        const activitiesURL = `${urlPrefix}/${name}/activity`;
+
+        // TODO: make this link dynamic
+        const baseUrl = `/organizations/jenkins/${pipeline.name}`;
+        const multiBranchURL = `${baseUrl}/branches`;
+        const pullRequestsURL = `${baseUrl}/pr`;
+        const activitiesURL = `${baseUrl}/activity`;
         const nameLink = <Link to={activitiesURL}>{name}</Link>;
 
         let multiBranchLabel = ' - ';
@@ -81,4 +82,8 @@ export default class PipelineRowItem extends Component {
 
 PipelineRowItem.propTypes = {
     pipeline: PropTypes.object.isRequired,
+};
+
+PipelineRowItem.contextTypes = {
+    location: PropTypes.object,
 };

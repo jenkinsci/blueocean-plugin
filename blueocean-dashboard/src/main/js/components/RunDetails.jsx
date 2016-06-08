@@ -17,18 +17,9 @@ import {
     connect,
 } from '../redux';
 
-const { func, object, array, any, string } = PropTypes;
+import { removeLastUrlSegment } from '../util/UrlUtils';
 
-/**
- * Trim the last path element off a URL. Handles trailing slashes nicely.
- * @param url
- * @returns {string}
- */
-function cleanBaseUrl(url) {
-    const paths = url.split('/').filter(path => (path.length > 0));
-    paths.pop();
-    return paths.join('/');
-}
+const { func, object, array, any, string } = PropTypes;
 
 class RunDetails extends Component {
     constructor(props) {
@@ -53,7 +44,7 @@ class RunDetails extends Component {
         }
     }
     navigateToChanges() {
-        const changesUrl = `${cleanBaseUrl(this.context.location.pathname)}/changes`;
+        const changesUrl = `${removeLastUrlSegment(this.context.location.pathname)}/changes`;
         this.context.router.push(changesUrl);
     }
     render() {
@@ -74,7 +65,7 @@ class RunDetails extends Component {
             },
         } = this.context;
 
-        const baseUrl = cleanBaseUrl(this.context.location.pathname);
+        const baseUrl = removeLastUrlSegment(this.context.location.pathname);
 
         const result = this.props.runs.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];

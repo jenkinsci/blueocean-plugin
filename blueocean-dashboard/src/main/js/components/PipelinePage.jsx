@@ -8,7 +8,7 @@ import {
     WeatherIcon,
     Favorite,
 } from '@jenkins-cd/design-language';
-import { urlPrefix } from '../config';
+import { removeLastUrlSegment } from '../util/UrlUtils';
 
 const { object } = PropTypes;
 
@@ -20,6 +20,8 @@ export default class PipelinePage extends Component {
             return null; // Loading...
         }
 
+        const baseUrl = removeLastUrlSegment(this.context.location.pathname);
+
         return (
             <Page>
                 <PageHeader>
@@ -28,7 +30,7 @@ export default class PipelinePage extends Component {
                         <h1>{pipeline.organization} / {pipeline.name}</h1>
                         <Favorite darkTheme />
                     </Title>
-                    <PageTabs base={`${urlPrefix}/${pipeline.name}`}>
+                    <PageTabs base={baseUrl}>
                         <TabLink to="/activity">Activity</TabLink>
                         <TabLink to="/branches">Branches</TabLink>
                         <TabLink to="/pr">Pull Requests</TabLink>
@@ -45,5 +47,6 @@ PipelinePage.propTypes = {
 };
 
 PipelinePage.contextTypes = {
+    location: object,
     pipeline: object,
 };

@@ -17,7 +17,7 @@ import {
 
 export default (
     <Route path="/" component={Dashboard}>
-        <Route path="organization/:org" component={OrganisationPipelines}>
+        <Route path="organizations/:org" component={OrganisationPipelines}>
             <IndexRoute component={Pipelines} />
 
             <Route component={PipelinePage}>
