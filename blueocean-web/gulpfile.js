@@ -34,3 +34,49 @@ builder.bundle('src/main/js/blueocean.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/main/less/blueocean.less')
     .generateNoImportsBundle();
+
+// 
+// Copy/link the JDL assests into the webapp dir, making them available at runtime.
+// 
+var isWindows = /^win/.test(process.platform);
+var assetsDstPath = './src/main/webapp/assets';
+if (isWindows) {
+    var assestsCopyDone = false;
+    builder.onPreBundle(function() {
+        if (!assestsCopyDone) {
+            assestsCopyDone = true;
+            var ncp = require('ncp').ncp;
+
+            // wipe the destination directory and recreate.
+            if (fs.existsSync(assetsDstPath)) {
+                rmdir(assetsDstPath);
+            } 
+            fs.mkdirSync(assetsDstPath);
+            // copy assets from stc to dsy.
+            var assetsSrcPath = './node_modules/@jenkins-cd/design-language/dist/assets';
+            ncp(assetsSrcPath, assetsDstPath, function (err) {
+                if (err) {
+                    return logger.logError(err);
+                }
+            });
+        }
+    });
+} else if (!fs.existsSync(assetsDstPath)) {
+    // Just need a symlink for non-windows platforms.
+    var assetsSrcPath = '../../../node_modules/@jenkins-cd/design-language/dist/assets';
+    fs.symlinkSync(assetsSrcPath, assetsDstPath);
+}
+
+function rmdir(path) {
+    if (fs.existsSync(path)) {
+        fs.readdirSync(path).forEach(function (file) {
+            var curPath = path + "/" + file;
+            if (fs.lstatSync(curPath).isDirectory()) {
+                rmdir(curPath);
+            } else {
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
+}
