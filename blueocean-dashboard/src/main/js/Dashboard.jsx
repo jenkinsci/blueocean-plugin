@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { actions, connect, createSelector } from './redux';
 
-const { object, array, func, node } = PropTypes;
+const { object, node } = PropTypes;
 
 class Dashboard extends Component {
 
@@ -33,6 +32,4 @@ Dashboard.childContextTypes = {
     location: object, // From react-router
 };
 
-const selectors = [];
-
-export default connect()(Dashboard);
+export default Dashboard;
