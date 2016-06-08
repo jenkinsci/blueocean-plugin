@@ -16,7 +16,8 @@ export default class PipelineRowItem extends Component {
     }
 
     render() {
-        const { pipeline } = this.props;
+        const { pipeline, showOrganization } = this.props;
+
         // Early out
         if (!pipeline) {
             return null;
@@ -24,6 +25,7 @@ export default class PipelineRowItem extends Component {
         const simple = !pipeline.branchNames;
         const {
             name,
+            organization,
             weatherScore,
             numberOfSuccessfulBranches,
             numberOfFailingBranches,
@@ -34,13 +36,19 @@ export default class PipelineRowItem extends Component {
         const hasPullRequests = !simple && (
             numberOfSuccessfulPullRequests || numberOfFailingPullRequests);
 
-
-        // TODO: make this link dynamic
-        const baseUrl = `/organizations/jenkins/${pipeline.name}`;
+        const baseUrl = `/organizations/${organization}/${pipeline.name}`;
         const multiBranchURL = `${baseUrl}/branches`;
         const pullRequestsURL = `${baseUrl}/pr`;
         const activitiesURL = `${baseUrl}/activity`;
-        const nameLink = <Link to={activitiesURL}>{name}</Link>;
+
+        const nameLink = (
+            <Link to={activitiesURL}>
+                { showOrganization ?
+                    `${organization} / ${name}` :
+                    name
+                }
+            </Link>
+        );
 
         let multiBranchLabel = ' - ';
         let multiPrLabel = ' - ';
@@ -82,6 +90,7 @@ export default class PipelineRowItem extends Component {
 
 PipelineRowItem.propTypes = {
     pipeline: PropTypes.object.isRequired,
+    showOrganization: PropTypes.bool,
 };
 
 PipelineRowItem.contextTypes = {
