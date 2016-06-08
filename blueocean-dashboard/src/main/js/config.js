@@ -1,3 +1,3 @@
 // Shared consts.urlPrefix
-export const rootRoutePath = 'pipelines';
+export const rootRoutePath = '';
 export const urlPrefix = `/${rootRoutePath}`;
