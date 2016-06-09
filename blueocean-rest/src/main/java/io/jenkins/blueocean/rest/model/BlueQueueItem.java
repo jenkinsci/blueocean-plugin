@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Date;

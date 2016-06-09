@@ -1,16 +1,14 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import hudson.model.*;
+import hudson.model.BuildableItem;
+import hudson.model.Job;
+import hudson.model.Queue;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.model.*;
+import io.jenkins.blueocean.rest.model.BlueQueueContainer;
+import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
 
-import javax.annotation.Nullable;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
