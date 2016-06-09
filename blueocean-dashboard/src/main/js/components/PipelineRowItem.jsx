@@ -73,7 +73,7 @@ export default class PipelineRowItem extends Component {
 
         // FIXME: Visual alignment of the last column
         return (
-            <tr>
+            <tr data-name={name} data-organization={organization}>
                 <td>{nameLink}</td>
                 <td><WeatherIcon score={weatherScore} /></td>
                 {
