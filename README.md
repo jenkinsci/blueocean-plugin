@@ -45,6 +45,12 @@ Builds all maven modules (run this the first time you check things out, at least
 $ mvn clean install
 ```
 
+For now, you'll need to skip the tests if __building on Windows__, so be sure to include the `-DskipTests` switch e.g.
+
+```
+$ mvn clean install -DskipTests
+```
+
 ## Running Blue Ocean
 
 ```
@@ -55,6 +61,17 @@ $ mvn hpi:run
 Then open http://localhost:8080/jenkins/blue to start using Blue Ocean.
 
 The Jenkins Classic UI exists side-by-side at its usual place at http://localhost:8080/jenkins.
+
+# Browser compatibility
+
+The obviously goal is for Blue Ocean to be runnable on all browsers on all platforms. We're not there yet, but getting
+closer. The ultimate goal will be to have browser support in line with the [Jenkins Browser Compatibility Matrix](https://wiki.jenkins-ci.org/display/JENKINS/Browser+Compatibility+Matrix). 
+
+List of browsers where we know Blue Ocean is not yet runnable:
+
+* Internet Explorer (all versions) on Windows
+
+
 
 # Developing 
 
