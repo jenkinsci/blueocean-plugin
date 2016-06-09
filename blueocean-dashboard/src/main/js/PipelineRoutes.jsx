@@ -1,7 +1,7 @@
 import { Route, Redirect, IndexRoute, IndexRedirect } from 'react-router';
 import React from 'react';
 import Dashboard from './Dashboard';
-import OrganisationPipelines from './OrganisationPipelines';
+import OrganizationPipelines from './OrganizationPipelines';
 import {
     Pipelines,
     MultiBranch,
@@ -17,7 +17,7 @@ import {
 
 export default (
     <Route path="/" component={Dashboard}>
-        <Route path="organizations/:organization" component={OrganisationPipelines}>
+        <Route path="organizations/:organization" component={OrganizationPipelines}>
             <IndexRedirect to="pipelines" />
             <Route path="pipelines" component={Pipelines} />
 
@@ -37,7 +37,7 @@ export default (
                 <Redirect from=":pipeline/*" to=":pipeline/activity" />
             </Route>
         </Route>
-        <Route path="/pipelines" component={OrganisationPipelines}>
+        <Route path="/pipelines" component={OrganizationPipelines}>
             <IndexRoute component={Pipelines} />
         </Route>
         <IndexRedirect to="pipelines" />

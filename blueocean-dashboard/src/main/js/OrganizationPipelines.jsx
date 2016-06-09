@@ -10,7 +10,7 @@ const { object, array, func, node, string } = PropTypes;
 // TODO: We might want to move this code to a local SSE util module.
 sse.connect('jenkins_blueocean');
 
-class OrganisationPipelines extends Component {
+class OrganizationPipelines extends Component {
 
     getChildContext() {
         const {
@@ -96,12 +96,12 @@ class OrganisationPipelines extends Component {
     }
 }
 
-OrganisationPipelines.contextTypes = {
+OrganizationPipelines.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
 };
 
-OrganisationPipelines.propTypes = {
+OrganizationPipelines.propTypes = {
     fetchPipelines: func.isRequired,
     fetchPipelinesIfNeeded: func.isRequired,
     processJobQueuedEvent: func.isRequired,
@@ -113,11 +113,11 @@ OrganisationPipelines.propTypes = {
     pipelines: array,
 };
 
-OrganisationPipelines.childContextTypes = {
+OrganizationPipelines.childContextTypes = {
     pipelines: array,
     pipeline: object,
 };
 
 const selectors = createSelector([pipelinesSelector], (pipelines) => ({ pipelines }));
 
-export default connect(selectors, actions)(OrganisationPipelines);
+export default connect(selectors, actions)(OrganizationPipelines);
