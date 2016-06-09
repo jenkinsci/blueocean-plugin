@@ -73,6 +73,8 @@ public abstract class BluePipeline extends Resource {
      */
     public abstract BlueRunContainer getRuns();
 
+    public abstract BlueQueueContainer getQueue();
+
     @PUT
     @WebMethod(name="favorite")
     public abstract void favorite(@JsonBody FavoriteAction favoriteAction);

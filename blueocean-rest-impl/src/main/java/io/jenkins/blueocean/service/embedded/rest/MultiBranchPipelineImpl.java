@@ -202,6 +202,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         return head != null && head.getAction(ChangeRequestAction.class) != null;
     }
 
+
     @Override
     public BlueRunContainer getRuns() {
         return new BlueRunContainer() {
