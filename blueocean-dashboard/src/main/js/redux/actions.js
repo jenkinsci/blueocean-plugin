@@ -122,6 +122,7 @@ export const actions = {
      * @param config Application configuration.
      */
     fetchPipelines(config) {
+
         return (dispatch) => {
             const url = `${config.getAppURLBase()}` +
                 '/rest/organizations/jenkins/pipelines/';
@@ -140,9 +141,10 @@ export const actions = {
     fetchPipelinesIfNeeded(config) {
         return (dispatch, getState) => {
             const pipelines = getState().adminStore.pipelines;
-            const url = `${config.getAppURLBase()}` +
-                '/rest/organizations/jenkins/pipelines/';
             if (!pipelines) {
+                const url = `${config.getAppURLBase()}` +
+                    '/rest/organizations/jenkins/pipelines/';
+
                 return dispatch(actions.generateData(
                     url,
                     ACTION_TYPES.SET_PIPELINES_DATA
