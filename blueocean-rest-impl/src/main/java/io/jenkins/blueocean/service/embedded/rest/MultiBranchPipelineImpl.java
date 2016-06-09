@@ -4,11 +4,7 @@ import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
-import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BluePipelineContainer;
-import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.*;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
@@ -201,6 +197,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         SCMHead head = SCMHead.HeadByItem.findHead(job);
         return head != null && head.getAction(ChangeRequestAction.class) != null;
     }
+
 
     @Override
     public BlueRunContainer getRuns() {

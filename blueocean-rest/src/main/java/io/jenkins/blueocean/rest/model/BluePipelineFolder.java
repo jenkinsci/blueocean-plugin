@@ -90,5 +90,11 @@ public abstract class BluePipelineFolder extends BluePipeline {
         return null;
     }
 
+    @Override
+    @Exported(skipNull = true)
+    public BlueQueueContainer getQueue() {
+        return null;
+    }
+
 
 }
