@@ -45,4 +45,9 @@ public class ChangeSetResource extends Resource {
             return null;
         }
     }
+
+    @Override
+    public String getUrlName() {
+        return "changeset/"+getDelegate().getCommitId();
+    }
 }

@@ -14,7 +14,7 @@ public final class Link {
     private final String href;
 
     public Link(String href) {
-        this.href = href;
+        this.href = Links.ensureTrailingSlash(href);
     }
 
     @Exported(name = "href")

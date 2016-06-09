@@ -17,7 +17,6 @@ import org.kohsuke.stapler.verb.DELETE;
 
 import java.io.IOException;
 
-import static io.jenkins.blueocean.rest.Utils.ensureTrailingSlash;
 import static io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl.isMultiBranchProjectJob;
 
 /**
@@ -64,7 +63,7 @@ public class PipelineImpl extends BluePipeline {
         if(job.getLastBuild() == null){
             return null;
         }
-        return AbstractRunImpl.getBlueRun(job.getLastBuild());
+        return AbstractRunImpl.getBlueRun(job.getLastBuild(), this);
     }
 
     @Override
@@ -76,9 +75,8 @@ public class PipelineImpl extends BluePipeline {
     public String getLastSuccessfulRun() {
         if(job.getLastSuccessfulBuild() != null){
             String id = job.getLastSuccessfulBuild().getId();
-            return String.format("%s%s%s/%s",Stapler.getCurrentRequest().getRootPath(),
-                getPathInfo(), "runs",
-                job.getLastSuccessfulBuild().getId());
+
+            return Stapler.getCurrentRequest().getRootPath()+getLink().getHref()+"runs/"+id;
         }
         return null;
     }
@@ -93,13 +91,6 @@ public class PipelineImpl extends BluePipeline {
         job.delete();
     }
 
-    private String getPathInfo(){
-        String path = Stapler.getCurrentRequest().getPathInfo();
-        if(!path.endsWith(getName()) && !path.endsWith(getName()+"/")){
-            return String.format("%s%s/", ensureTrailingSlash(path), getName());
-        }
-        return ensureTrailingSlash(path);
-    }
 
     @Override
     public void favorite(@JsonBody FavoriteAction favoriteAction) {

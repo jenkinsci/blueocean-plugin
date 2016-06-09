@@ -5,7 +5,9 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
@@ -30,9 +32,11 @@ import java.util.Map;
  */
 public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
+    protected final BluePipeline pipeline;
 
-    public AbstractRunImpl(T run) {
+    public AbstractRunImpl(T run, BluePipeline pipeline) {
         this.run = run;
+        this.pipeline = pipeline;
     }
 
     //TODO: It serializes jenkins Run model children, enable this code after fixing it
@@ -151,6 +155,12 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
                         return 0;
                     }
                 }
+
+                @Override
+                public Link getLink() {
+                    return new Link(getUrl());
+                }
+
             });
         }
         return Containers.fromResourceMap(m);
@@ -168,19 +178,19 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
             if(!action.getClass().isAnnotationPresent(ExportedBean.class)){
                 continue;
             }
-            actionProxies.add(new ActionProxiesImpl(action));
+            actionProxies.add(new ActionProxiesImpl(action, this));
         }
         return actionProxies;
     }
 
-    protected static BlueRun getBlueRun(Run r){
+    protected static BlueRun getBlueRun(Run r, BluePipeline pipeline){
         //TODO: We need to take care several other job types
         if (r instanceof FreeStyleBuild) {
-            return new FreeStyleRunImpl((FreeStyleBuild)r);
+            return new FreeStyleRunImpl((FreeStyleBuild)r, pipeline);
         }else if(r instanceof WorkflowRun){
-            return new PipelineRunImpl((WorkflowRun)r);
+            return new PipelineRunImpl((WorkflowRun)r, pipeline);
         }else{
-            return new AbstractRunImpl<>(r);
+            return new AbstractRunImpl<>(r, pipeline);
         }
     }
 
@@ -207,7 +217,6 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
      *
      * @return action or extension that handles this path.
      */
-    @Exported(visibility = 4)
     public Object getDynamic(String token) {
         for (Action a : run.getAllActions()) {
             if (token.equals(a.getUrlName()))
@@ -217,17 +226,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return null;
     }
 
-    //XXX: Each action should provide their own link
-
-//    @Override
-//    public Links getLinks() {
-//        Links links = super.getLinks();
-//        for (Action a : run.getAllActions()) {
-//            if (a.getUrlName()!=null) {
-//                links.add(a.getUrlName());
-//            }
-//        }
-//        return links;
-//    }
-
+    @Override
+    public Link getLink() {
+        return new Link(pipeline.getLink().getHref()+"runs/"+getId());
+    }
 }

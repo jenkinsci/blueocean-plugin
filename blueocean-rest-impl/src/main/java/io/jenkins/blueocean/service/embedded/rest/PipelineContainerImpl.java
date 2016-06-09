@@ -37,7 +37,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
     public BluePipeline get(String name) {
         Item item;
         if(itemGroup == null){
-            item = Jenkins.getActiveInstance().getItem(name);
+            item = Jenkins.getActiveInstance().getItemByFullName(name);
         }else{
             item = itemGroup.getItem(name);
         }
@@ -49,7 +49,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         if (item instanceof BuildableItem) {
             if (item instanceof MultiBranchProject) {
                 return new MultiBranchPipelineImpl((MultiBranchProject) item);
-            } else if (!isMultiBranchProjectJob((BuildableItem) item) && item instanceof Job) {
+            } else if (item instanceof Job) {
                 return new PipelineImpl((Job) item);
             }
         } else if (item instanceof ItemGroup) {

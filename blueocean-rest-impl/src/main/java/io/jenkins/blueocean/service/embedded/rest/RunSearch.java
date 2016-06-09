@@ -16,7 +16,6 @@ import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -71,7 +70,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
             RunList<? extends Run> runList = p.getBuilds();
 
             for (Run r : runList) {
-                runs.add(AbstractRunImpl.getBlueRun(r));
+                runs.add(AbstractRunImpl.getBlueRun(r,new PipelineContainerImpl().get(p.getFullName())));
             }
         }
 
@@ -82,7 +81,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
         if(job != null){
             Run r = job.getLastBuild();
             if(r != null) {
-                AbstractRunImpl.getBlueRun(r);
+                AbstractRunImpl.getBlueRun(r, new PipelineContainerImpl().get(job.getFullName()));
             }
         }
         return null;

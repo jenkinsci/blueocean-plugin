@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -11,7 +10,6 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.PUT;
 
-import javax.inject.Inject;
 import java.io.IOException;
 
 /**
@@ -22,8 +20,8 @@ import java.io.IOException;
  */
 public class OrganizationImpl extends BlueOrganization {
 
-    @Inject
-    UserContainerImpl users;
+
+    private final UserContainerImpl users = new UserContainerImpl();
 
     /**
      * In embedded mode, there's only one organization

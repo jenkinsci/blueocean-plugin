@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
+import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
@@ -16,8 +17,8 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
-    public PipelineRunImpl(WorkflowRun run) {
-        super(run);
+    public PipelineRunImpl(WorkflowRun run, BluePipeline pipeline) {
+        super(run, pipeline);
     }
 
     @Override

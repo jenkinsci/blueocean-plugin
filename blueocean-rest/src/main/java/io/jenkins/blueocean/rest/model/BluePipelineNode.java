@@ -105,4 +105,9 @@ public abstract class BluePipelineNode extends Resource{
      * @return Steps inside a Pipeline Stage or Parallel branch
      */
     public abstract BluePipelineStepContainer getSteps();
+
+    @Override
+    public String getUrlName() {
+        return getId();
+    }
 }

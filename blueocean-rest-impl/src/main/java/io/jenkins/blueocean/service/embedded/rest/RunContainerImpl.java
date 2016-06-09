@@ -44,7 +44,7 @@ public class RunContainerImpl extends BlueRunContainer {
         } else {
             run = runList.getLastBuild();
         }
-        return  AbstractRunImpl.getBlueRun(run);
+        return  AbstractRunImpl.getBlueRun(run, pipeline);
     }
 
     @Override

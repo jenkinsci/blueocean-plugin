@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.hal;
 
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Resource;
 import org.jvnet.tiger_types.Types;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
@@ -43,10 +44,10 @@ import java.util.List;
  * @see io.jenkins.blueocean.rest.model.Resource
  **/
 public final class Links extends HashMap<String,Link>{
-    private final Object self;
+    private final Resource self;
 
     private static final String SELF = "self";
-    public Links(Object self) {
+    public Links(Resource self) {
         this.self = self;
         getOrCreateSelfRef();
         populateReferences();
@@ -55,6 +56,10 @@ public final class Links extends HashMap<String,Link>{
     public Links add(String ref, Link link){
         put(ref, link);
         return this;
+    }
+
+    public Link self(){
+        return get(SELF);
     }
 
     /**
@@ -87,7 +92,7 @@ public final class Links extends HashMap<String,Link>{
         /** Find if there is method returning a {@link Container}, add this as link */
         for (Method m : findMethods(clazz,clazz,new ArrayList<Method>())) {
             String p = getPathFromMethodName(m);
-            put(p, createLinkRef(p, Stapler.getCurrentRequest().getPathInfo()));
+            put(p, createLinkRef(p));
         }
     }
 
@@ -115,8 +120,7 @@ public final class Links extends HashMap<String,Link>{
         if(ref != null){
             return ref;
         }
-        ref = new Link(Stapler.getCurrentRequest().getPathInfo());
-        put(SELF, ref);
+        put(SELF, self.getLink());
         return ref;
     }
 
@@ -125,7 +129,8 @@ public final class Links extends HashMap<String,Link>{
      *
      * @return for name doXyz or getXyz, gives xyz. For other than 'get' or 'do' prefix, gives lowercased method name
      */
-    private Link createLinkRef(String name, String base){
+    private Link createLinkRef(String name){
+        String base = self().getHref();
         base = ensureTrailingSlash(base);
         return new Link(String.format("%s%s/",base, name));
     }
@@ -160,7 +165,7 @@ public final class Links extends HashMap<String,Link>{
         return path;
     }
 
-    private String ensureTrailingSlash(String path){
+    public static String ensureTrailingSlash(String path){
         if(path.charAt(path.length() - 1) != '/'){
            return path + "/";
         }

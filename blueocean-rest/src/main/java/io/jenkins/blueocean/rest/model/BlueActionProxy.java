@@ -1,8 +1,12 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.hal.Links;
+import org.kohsuke.stapler.Ancestor;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
+
+import java.util.List;
 
 /**
  * Proxy of Jenkins action
@@ -37,18 +41,5 @@ public abstract class BlueActionProxy extends Resource {
     @Exported(name = "_class")
     public String get_Class(){
         return getAction().getClass().getName();
-    }
-
-
-
-    /**
-     *
-     * Self href is the link to the action instance.
-     *
-     * @return Links instance
-     */
-    @Override
-    public Links getLinks() {
-        return super.getLinks().add("self", new Link(super.getLinks().get("self").getHref()+getUrlName()));
     }
 }

@@ -1,7 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Action;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.Resource;
 
 /**
  * @author Vivek Pandey
@@ -9,8 +11,10 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 public class ActionProxiesImpl extends BlueActionProxy {
 
     private final Action action;
-    public ActionProxiesImpl(Action action) {
+    private final Resource parent;
+    public ActionProxiesImpl(Action action, Resource parent) {
         this.action = action;
+        this.parent = parent;
     }
 
 
@@ -27,5 +31,13 @@ public class ActionProxiesImpl extends BlueActionProxy {
     @Override
     public String get_Class() {
         return action.getClass().getName();
+    }
+
+    @Override
+    public Link getLink() {
+        if(getUrlName() != null) {
+            return new Link(parent.getLink().getHref().concat(getUrlName()));
+        }
+        return null;
     }
 }

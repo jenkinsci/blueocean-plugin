@@ -159,7 +159,7 @@ public abstract class BlueRun extends Resource {
      */
     public abstract BluePipelineNodeContainer getNodes();
 
-    @Exported(name = ACTIONS, inline = true)
+    @Exported(name = ACTIONS, inline = true, visibility = 10)
     public abstract Collection<?> getActions();
 
     /**
@@ -222,7 +222,7 @@ public abstract class BlueRun extends Resource {
     }
 
     @ExportedBean(defaultVisibility = 2)
-    public abstract class BlueArtifact extends Resource{
+    public static abstract class BlueArtifact extends Resource{
         public static final String NAME = "name";
         public static final String URL = "url";
         public static final String SIZE = "size";
@@ -238,4 +238,8 @@ public abstract class BlueRun extends Resource {
         public abstract long getSize();
     }
 
+    @Override
+    public String getUrlName() {
+        return getId();
+    }
 }
