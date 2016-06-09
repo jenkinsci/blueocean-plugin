@@ -10,7 +10,6 @@ const { object, array, func, node, string } = PropTypes;
 // TODO: We might want to move this code to a local SSE util module.
 sse.connect('jenkins_blueocean');
 
-// TODO: rename this component to something more generic with respect to pipelines
 class OrganisationPipelines extends Component {
 
     getChildContext() {
@@ -35,7 +34,8 @@ class OrganisationPipelines extends Component {
 
     componentWillMount() {
         if (this.context.config) {
-            this.props.fetchPipelinesIfNeeded(this.context.config, this.props.organization);
+            const { organization } = this.context.params;
+            this.props.fetchPipelinesIfNeeded(this.context.config, organization);
             const _this = this;
 
             // Subscribe for job channel push events
@@ -97,8 +97,8 @@ class OrganisationPipelines extends Component {
 }
 
 OrganisationPipelines.contextTypes = {
-    router: object.isRequired,
     config: object.isRequired,
+    params: object.isRequired,
 };
 
 OrganisationPipelines.propTypes = {
