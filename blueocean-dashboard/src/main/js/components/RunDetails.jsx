@@ -73,7 +73,7 @@ class RunDetails extends Component {
         result.name = name;
 
         const afterClose = () => {
-            const fallback = `/pipelines/${name}/`;
+            const fallback = `/organizations/${organization}/${name}/`;
 
             location.pathname = this.opener || fallback;
             location.hash = `#${branch}-${runId}`;
