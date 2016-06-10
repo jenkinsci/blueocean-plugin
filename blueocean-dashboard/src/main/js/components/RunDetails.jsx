@@ -17,16 +17,9 @@ import {
     connect,
 } from '../redux';
 
-import { removeLastUrlSegment } from '../util/UrlUtils';
-
 const { func, object, array, any, string } = PropTypes;
 
 class RunDetails extends Component {
-    constructor(props) {
-        super(props);
-
-        this.navigateToChanges = this.navigateToChanges.bind(this);
-    }
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const {
@@ -43,8 +36,28 @@ class RunDetails extends Component {
             this.opener = this.props.previous;
         }
     }
+    navigateToOrganization() {
+        const { organization } = this.props.pipeline;
+        const organizationUrl = `/organizations/${organization}`;
+        this.context.router.push(organizationUrl);
+    }
+    navigateToPipeline() {
+        const { organization, name } = this.props.pipeline;
+        const pipelineUrl = `/organizations/${organization}/${name}`;
+        this.context.router.push(pipelineUrl);
+    }
     navigateToChanges() {
-        const changesUrl = `${removeLastUrlSegment(this.context.location.pathname)}/changes`;
+        const {
+            params: {
+                organization,
+                pipeline: name,
+                branch,
+                runId,
+            },
+        } = this.context;
+
+        const changesUrl = `/organizations/${organization}/${name}` +
+            `/detail/${branch}/${runId}/changes`;
         this.context.router.push(changesUrl);
     }
     render() {
@@ -59,13 +72,15 @@ class RunDetails extends Component {
             router,
             location,
             params: {
+                organization,
                 branch,
                 runId,
                 pipeline: name,
             },
         } = this.context;
 
-        const baseUrl = removeLastUrlSegment(this.context.location.pathname);
+        const baseUrl = `/organizations/${organization}/${name}` +
+            `/detail/${branch}/${runId}`;
 
         const result = this.props.runs.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
@@ -92,7 +107,9 @@ class RunDetails extends Component {
                 <ModalHeader>
                     <div>
                         <PipelineResult data={result}
-                          onAuthorsClick={this.navigateToChanges}
+                          onOrganizationClick={() => this.navigateToOrganization()}
+                          onNameClick={() => this.navigateToPipeline()}
+                          onAuthorsClick={() => this.navigateToChanges()}
                         />
                         <PageTabs base={baseUrl}>
                             <TabLink to="/pipeline">Pipeline</TabLink>
@@ -124,6 +141,7 @@ RunDetails.contextTypes = {
 
 RunDetails.propTypes = {
     children: PropTypes.node,
+    pipeline: object,
     runs: array,
     isMultiBranch: any,
     fetchIfNeeded: func,
