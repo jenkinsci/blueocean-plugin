@@ -8,7 +8,6 @@ import {
     WeatherIcon,
     Favorite,
 } from '@jenkins-cd/design-language';
-import { removeLastUrlSegment } from '../util/UrlUtils';
 
 const { object } = PropTypes;
 
@@ -20,7 +19,7 @@ export default class PipelinePage extends Component {
             return null; // Loading...
         }
 
-        const baseUrl = removeLastUrlSegment(this.context.location.pathname);
+        const baseUrl = `/organizations/${pipeline.organization}/${pipeline.name}`;
 
         return (
             <Page>
