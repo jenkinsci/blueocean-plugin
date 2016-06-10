@@ -11,33 +11,33 @@ const
   ;
 
 describe("pipelines", () => {
-  let tree;
+    let tree;
 
-  const config = {
-    getRootURL: () => "/"
-  };
+    const config = {
+        getRootURL: () => '/',
+    };
 
-  beforeEach(() => {
-      tree = sd.shallowRender(
-          ()=>React.createElement(Pipelines), // For some reason using a fn turns on context
-          {
-            pipelines: Immutable.fromJS(pipelines),
-            config
-          }
-      );
-  });
+    const params = {};
 
-  it("renders pipelines - check header to be as expected", () => {
-    const
-      header = tree.subTree('Table').getRenderOutput();
-    assert.equal(header.props.headers.length, resultArrayHeaders.length);
-  });
+    beforeEach(() => {
+        tree = sd.shallowRender(
+            () => React.createElement(Pipelines), // For some reason using a fn turns on context
+            {
+                pipelines: Immutable.fromJS(pipelines),
+                params,
+                config,
+            }
+        );
+    });
 
-  it("renders pipelines - check rows number to be as expected", () => {
-    const
-      row = tree.everySubTree('PipelineRowItem')
-      ;
-    assert.equal(row.length, 2);
-  });
+    it("renders pipelines - check header to be as expected", () => {
+        const header = tree.subTree('Table').getRenderOutput();
+        assert.equal(header.props.headers.length, resultArrayHeaders.length);
+    });
+
+    it("renders pipelines - check rows number to be as expected", () => {
+        const row = tree.everySubTree('PipelineRowItem');
+        assert.equal(row.length, 2);
+    });
 
 });
