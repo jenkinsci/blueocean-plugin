@@ -15,6 +15,18 @@ class PipelineResult extends Component {
         }
     }
 
+    handleOrganizationClick() {
+        if (this.props.onOrganizationClick) {
+            this.props.onOrganizationClick();
+        }
+    }
+
+    handleNameClick() {
+        if (this.props.onNameClick) {
+            this.props.onNameClick();
+        }
+    }
+
     render() {
         const {
             data: {
@@ -49,7 +61,13 @@ class PipelineResult extends Component {
                 }} />
             </section>
             <section className="table">
-                <h4>{organization} / {name} #{id}</h4>
+                <h4>
+                    <a onClick={() => this.handleOrganizationClick()}>{organization}</a>
+                    &nbsp;/&nbsp;
+                    <a onClick={() => this.handleNameClick()}>{name}</a>
+                    &nbsp;
+                    #{id}
+                </h4>
 
                 <div className="row">
                     <div className="commons">
@@ -101,6 +119,8 @@ class PipelineResult extends Component {
 PipelineResult.propTypes = {
     data: object.isRequired,
     colors: object,
+    onOrganizationClick: func,
+    onNameClick: func,
     onAuthorsClick: func,
 };
 
