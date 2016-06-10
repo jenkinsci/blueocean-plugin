@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import moment from 'moment';
-import { StatusIndicator, CommitHash, ReadableDate } from '@jenkins-cd/design-language';
+import {
+    CommitHash, ReadableDate, StatusIndicator, TimeDuration,
+}
+    from '@jenkins-cd/design-language';
 const { object, string, any } = PropTypes;
-
-require('moment-duration-format');
 
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
@@ -40,7 +40,6 @@ export default class Runs extends Component {
             },
         } = this;
 
-        const duration = moment.duration(durationInMillis).humanize();
         const resultRun = result === 'UNKNOWN' ? state : result;
 
         const url = `/pipelines/${pipelineName}/detail/${pipeline}/${id}/pipeline`;
@@ -59,7 +58,7 @@ export default class Runs extends Component {
             <td><CommitHash commitId={commitId} /></td>
             <td>{decodeURIComponent(pipeline)}</td>
             <td>{changeset && changeset.comment || '-'}</td>
-            <td>{duration}</td>
+            <td><TimeDuration millis={durationInMillis} /></td>
             <td><ReadableDate date={endTime} /></td>
         </tr>);
     }

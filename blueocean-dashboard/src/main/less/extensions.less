@@ -1,18 +1,26 @@
-.activity-table {
-  table-layout: fixed;
-
+.pipelines-table {
   th {
-    width: 75px;
+    width: 100px;
   }
 
-  th, td {
-    .text-overflow();
-    padding-right: 0.5em;
+  .name {
+    width: auto;
+  }
+
+  .favorite {
+    width: 30px;
+  }
+}
+
+.activity-table {
+  th {
+    width: 75px;
   }
 
   .branch {
     width: 175px;
   }
+
   .message {
     width: 50%;
   }
@@ -26,43 +34,15 @@
   }
 }
 
-.pipelines-table {
-  table-layout: fixed;
-
-  th {
-    width: 100px;
-  }
-
-  th, td {
-    .text-overflow();
-    padding-right: 0.5em;
-  }
-
-  .name {
-    width: auto;
-  }
-
-  .favorite {
-    width: 30px;
-  }
-
-}
-
 .multibranch-table {
-  table-layout: fixed;
-
   th {
     width: 75px;
-  }
-
-  th, td {
-    .text-overflow();
-    padding-right: 0.5em;
   }
 
   .branch {
     width: 200px;
   }
+
   .message {
     width: 50%;
   }
@@ -73,15 +53,8 @@
 }
 
 .pr-table {
-  table-layout: fixed;
-
   th {
     width: 75px;
-  }
-
-  th, td {
-    .text-overflow();
-    padding-right: 0.5em;
   }
 
   .summary {
@@ -94,13 +67,6 @@
 }
 
 .changeset-table {
-  table-layout: fixed;
-
-  th, td {
-    .text-overflow();
-    padding-right: 0.5em;
-  }
-
   th {
     width: 100px;
   }
@@ -112,16 +78,13 @@
   .message {
     width: 100%;
   }
+
+  .date {
+    width: 125px;
+  }
 }
 
 .artifacts-table {
-  table-layout: fixed;
-
-  th, td {
-    .text-overflow();
-    padding-right: 0.5em;
-  }
-
   th {
     width: 100px;
   }
@@ -133,14 +96,6 @@
   .download {
     text-align: right;
   }
-}
-
-
-// TODO: duplicated from the JDL; long-term may want to expose mixins to Less in other plugins? (UX-285?)
-.text-overflow() {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .nodes {

@@ -44,9 +44,12 @@ class RunDetails extends Component {
                     },
                 config = {},
                 } = this.context;
+
             config.pipeline = pipeline;
+
             this.props.fetchRunsIfNeeded(config);
             this.props.setPipeline(config);
+            this.opener = this.props.previous;
         }
     }
     navigateToChanges() {
@@ -60,6 +63,7 @@ class RunDetails extends Component {
             || this.props.isMultiBranch === null) {
             return null;
         }
+
         const {
             context: {
                 router,
@@ -73,7 +77,7 @@ class RunDetails extends Component {
             props: {
                 previous,
                 },
-            } = this;
+        } = this;
 
         const baseUrl = cleanBaseUrl(this.context.location.pathname);
 
@@ -83,12 +87,11 @@ class RunDetails extends Component {
         result.name = name;
 
         const afterClose = () => {
+            const fallback = `/pipelines/${name}/`;
+
+            location.pathname = this.opener || fallback;
             location.hash = `#${branch}-${runId}`;
-            if (previous) {
-                location.pathname = previous;
-            } else {
-                location.pathname = `/pipelines/${name}/activity/`;
-            }
+
             router.push(location);
         };
 

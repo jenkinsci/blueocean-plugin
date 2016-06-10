@@ -1,9 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import PipelineRowItem from './PipelineRowItem';
 import { PipelineRecord } from './records';
-import Table from './Table';
 
-import { Page, PageHeader, Title } from '@jenkins-cd/design-language';
+import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 
 const { array } = PropTypes;
@@ -11,7 +10,7 @@ const { array } = PropTypes;
 export default class Pipelines extends Component {
 
     render() {
-        const { pipelines } = this.context;
+        const { pipelines, config } = this.context;
 
         // Early out
         if (!pipelines) {
@@ -20,6 +19,7 @@ export default class Pipelines extends Component {
 
         const pipelineRecords = pipelines
             .map(data => new PipelineRecord(data))
+            .filter(data => !data.isFolder())
             .sort(pipeline => !!pipeline.branchNames);
 
         const headers = [
@@ -30,16 +30,15 @@ export default class Pipelines extends Component {
             { label: '', className: 'favorite' },
         ];
 
+        const baseUrl = config.getRootURL();
+        const newJobUrl = `${baseUrl}view/All/newJob`;
+
         return (
             <Page>
                 <PageHeader>
                     <Title>
                         <h1>Dashboard</h1>
-                        <a
-                          target="_blank"
-                          className="btn-inverse"
-                          href="/jenkins/view/All/newJob"
-                        >
+                        <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
                             New Pipeline
                         </a>
                     </Title>
@@ -48,7 +47,7 @@ export default class Pipelines extends Component {
                     <article>
                         <ExtensionPoint name="jenkins.pipeline.list.top" />
                         <Table
-                          className="pipelines-table"
+                          className="pipelines-table fixed"
                           headers={headers}
                         >
                             { pipelineRecords
@@ -65,4 +64,5 @@ export default class Pipelines extends Component {
 
 Pipelines.contextTypes = {
     pipelines: array,
+    config: PropTypes.object,
 };

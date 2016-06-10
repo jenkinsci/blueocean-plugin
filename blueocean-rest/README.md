@@ -63,6 +63,7 @@ $$
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
+      "fullName": "pipeline1",
       "weatherScore": 100,
       "estimatedDurationInMillis": 20264,
       "lastSuccessfulRun": "http://localhost:64106/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1",
@@ -91,7 +92,9 @@ $$
         }
     }
 
-## Get Pipelines
+## Get Pipelines for an organization
+
+Pipelines are sorted by pipeline name alphabetically
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/
     
@@ -100,10 +103,85 @@ $$
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
+      "fullName" : "pipeline1",      
       "weatherScore": 100,
       "estimatedDurationInMillis": 280,
       } 
     ]
+
+## Get Pipelines
+
+Pipelines are sorted by pipeline name alphabetically
+
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/pipelines/
+    
+    [ 
+      {
+      "organization" : "jenkins",
+      "name" : "pipeline1",
+      "displayName": "pipeline1",
+      "fullName" : "pipeline1",      
+      "weatherScore": 100,
+      "estimatedDurationInMillis": 280,
+      } 
+    ]
+
+## Get a Folder
+
+    curl -v -X GET  http://localhost:63934/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl",
+      "displayName" : "folder1",
+      "fullName" : "folder1",
+      "name" : "folder1",
+      "organization" : "jenkins",
+      "numberOfFolders" : 1,
+      "numberOfPipelines" : 1
+    }
+       
+
+## Get Nested Pipeline Inside A Folder
+    
+    curl -v -X GET   http://localhost:62054/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/test2/
+    
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineImpl",
+      "displayName" : "test2",
+      "estimatedDurationInMillis" : -1,
+      "fullName" : "folder1/folder2/test2",
+      "lastSuccessfulRun" : null,
+      "latestRun" : null,
+      "name" : "test2",
+      "fullName" : "test2",      
+      "organization" : "jenkins",
+      "weatherScore" : 100
+    }
+    
+## Get nested Folder and Pipeline
+
+Pipelines can be nested inside folder.
+    
+    curl -v -X GET   http://localhost:62054/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/
+    
+    [ {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl",
+      "displayName" : "folder2",
+      "fullName" : "folder1/folder2",
+      "name" : "folder2",
+      "organization" : "jenkins",
+      "numberOfFolders" : 0,
+      "numberOfPipelines" : 1
+    }, {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineImpl",
+      "displayName" : "test1",
+      "estimatedDurationInMillis" : -1,
+      "fullName" : "folder1/test1",
+      "lastSuccessfulRun" : null,
+      "latestRun" : null,
+      "name" : "test1",
+      "organization" : "jenkins",
+      "weatherScore" : 100
+    } ]
     
 ## Get all runs in a pipeline
     
@@ -755,20 +833,28 @@ Get steps of 'test' stage node:
                        
 # Fetching logs
 
-Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response. 
+Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response.
+ 
+ By default only last 150 KB log data is returned in the response. You can fetch full log by sending start=0 query 
+ parameter. You can override default log size from 150KB to other values using thresholdInKB query parameter. 
 
-* X-More-Data
+* X-More-Data Header
 
 If *X-More-Data* is true, then client should repeat the request after some delay. In the repeated request it should use 
 *X-TEXT-SIZE* header value with *start* query parameter.       
 
-* X-TEXT-SIZE
+* X-TEXT-SIZE Header
 
 X-TEXT-SIZE is the byte offset of the raw log file client should use in the next request as value of start query parameter.
 
-* start
+* start Query Parameter
 
-start query parameter tells API to send log starting from this offset in the log file.
+start query parameter tells API to send log starting from this offset in the log file. 
+
+* thresholdInKB Query Parameter
+
+Size of log to return in the response. Default value is 150 KB of log data.
+
 
     
 ## Get log for a Pipeline run
@@ -799,20 +885,6 @@ start query parameter tells API to send log starting from this offset in the log
     Finished: SUCCESS
 
 > Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essetnailly a folder hence no logs.
-
-## Get log for a Pipeline node
-
-    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/3/log
-    
-    Content-Type: text/plain; charset=utf-8
-    X-Text-Size: 164
-    Content-Length: 168
-    Server: Jetty(6.1.26)
-    
-    Entering stage build
-    Proceeding
-    Running on master in /var/folders/5q/51y3qf0x5t39d4c4c_c2l1s40000gn/T/hudson8758973583122932916test/workspace/pipeline1
-    Building...
 
 ### Get log for a Pipeline step
 
@@ -856,3 +928,20 @@ Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
       "result" : "ABORTED",
       "state" : "FINISHED"
     }
+
+## Fetch queue for an pipeline
+
+     curl http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/queue
+     [ {
+       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+       "expectedBuildNumber" : 4,
+       "id" : "4",
+       "pipeline" : "pipeline1",
+       "queuedTime" : 1465433910205
+     }, {
+       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+       "expectedBuildNumber" : 3,
+       "id" : "3",
+       "pipeline" : "pipeline1",
+       "queuedTime" : 1465433910203
+     } ]

@@ -52,13 +52,9 @@ exports.initialize = function (oncomplete) {
 
     // Load and export the react modules, allowing them to be imported by other bundles.
     const react = require('react');
-    const reactRouter = require('react-router');
     const reactDOM = require('react-dom');
-    const reactCssTransitions = require('react-addons-css-transition-group');
     jenkinsMods.export('react', 'react', react);
     jenkinsMods.export('react', 'react-dom', reactDOM);
-    jenkinsMods.export('react', 'react-router', reactRouter);
-    jenkinsMods.export('react', 'react-addons-css-transition-group', reactCssTransitions);
 
     // Manually register extention points. TODO: we will be auto-registering these.
     extensions.store.addExtension('jenkins.topNavigation.menu', AboutNavLink);

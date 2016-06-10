@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, FileSize } from '@jenkins-cd/design-language';
+import { EmptyStateView, FileSize, Table } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
-import Table from './Table';
 
 const { object } = PropTypes;
 
@@ -39,7 +38,7 @@ export default class RunDetailsArtifacts extends Component {
         const style = { fill: '#4a4a4a' };
 
         return (
-            <Table headers={headers} className="artifacts-table">
+            <Table headers={headers} className="artifacts-table fixed">
                 { artifacts.map(artifact => (
                     <tr key={artifact.url}>
                         <td>{artifact.name}</td>

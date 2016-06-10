@@ -3,7 +3,7 @@ Blue Ocean is the next generation user experience for Jenkins.
 It is a multi-module maven project with a few Jenkins plugins. 
 
 Read it: 
-https://jenkins.io//blog/2016/05/26/introducing-blue-ocean/
+https://jenkins.io/blog/2016/05/26/introducing-blue-ocean/
 
 
 
@@ -18,10 +18,7 @@ Blue Ocean Dashboard plugin. Currently contains the bulk of the Blue Ocean user 
 
 ## blueocean-plugin
 
-This plugin currently exists for two purposes (and so is likely to be separated out into two plugins - TBD): 
-
-1. Provides the default implementation of the REST Api defined in the `blueocean-rest` plugin.
-2. Acts as an aggregator plugin, making it an easy place from which to run Blue Ocean via `hpi:run`. 
+Acts as an aggregator plugin, making it an easy place from which to run Blue Ocean via `hpi:run`. 
 
 __NOTE__: As already stated, this plugin is likely to be refactored in the near future.
 
@@ -29,6 +26,10 @@ __NOTE__: As already stated, this plugin is likely to be refactored in the near 
 ## blueocean-rest
 
 Java interfaces and classes that specify the definition of the REST API. See the README within this module for more information.
+
+## blueocean-rest-impl
+
+Provides the default implementation of the REST Api defined in the `blueocean-rest` plugin.
 
 ## blueocean-web
 
@@ -44,6 +45,12 @@ Builds all maven modules (run this the first time you check things out, at least
 $ mvn clean install
 ```
 
+For now, you'll need to skip the tests if __building on Windows__, so be sure to include the `-DskipTests` switch e.g.
+
+```
+$ mvn clean install -DskipTests
+```
+
 ## Running Blue Ocean
 
 ```
@@ -55,6 +62,17 @@ Then open http://localhost:8080/jenkins/blue to start using Blue Ocean.
 
 The Jenkins Classic UI exists side-by-side at its usual place at http://localhost:8080/jenkins.
 
+# Browser compatibility
+
+The obviously goal is for Blue Ocean to be runnable on all browsers on all platforms. We're not there yet, but getting
+closer. The ultimate goal will be to have browser support in line with the [Jenkins Browser Compatibility Matrix](https://wiki.jenkins-ci.org/display/JENKINS/Browser+Compatibility+Matrix). 
+
+List of browsers where we know Blue Ocean is not yet runnable:
+
+* Internet Explorer (all versions) on Windows
+
+
+
 # Developing 
 
 Follow the steps above for getting it running first. 
@@ -62,7 +80,7 @@ Follow the steps above for getting it running first.
 Look in following README's for:
 * ``blueocean-dashboard`` guide on how to modify the GUI in the dashboard plugin. https://github.com/cloudbees/blueocean-sample-pipeline-result-ext-plugin has a video/sample of a plugin that extends Blue Ocean. 
 * ``blueocean-rest`` for how to navigate the rest api. 
-* ``blueocean-plugin`` for more details on how to actively develop this plugin for both the frontend and backend codebases.
+* ``blueocean-rest-impl`` for more details on how to actively develop this plugin for backend codebases.
 
 ### Tools needed
 
@@ -78,7 +96,7 @@ __NOTE__: look in the README.md of the respective modules for more detailed dev 
 # Debug and live reload with IntelliJ
 Automatically deploys changes to an instance of blueocean that is run with hpi:run.
 
-1. Enable class reloading: Preferences > Build, Execution, Deployment > Debugger > HowSwap
+1. Enable class reloading: Preferences > Build, Execution, Deployment > Debugger > HotSwap
   * Reload classes in background
   * Reload classes after compilation: always
 2. Create a Maven Run/Debug configuration

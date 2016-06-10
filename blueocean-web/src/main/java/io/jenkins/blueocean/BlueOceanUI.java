@@ -1,6 +1,5 @@
 package io.jenkins.blueocean;
 
-import hudson.Extension;
 import hudson.ExtensionList;
 import io.jenkins.blueocean.jsextensions.JenkinsJSExtensions;
 import org.kohsuke.accmod.Restricted;
@@ -18,8 +17,13 @@ import java.io.IOException;
  *
  * @author Kohsuke Kawaguchi
  */
-@Extension
 public class BlueOceanUI {
+    private final String urlBase;
+
+    public BlueOceanUI(String rootPath) {
+        this.urlBase = rootPath;
+    }
+
     /**
      * Exposes {@link RootRoutable}s to the URL space. Returns <code>this</code> if none found, allowing the UI to
      * resolve routes. This also has the side effect that we won't be able to generate 404s for any URL that *might*
@@ -37,8 +41,8 @@ public class BlueOceanUI {
     /**
      * The base of all BlueOcean URLs (underneath wherever Jenkins itself is deployed).
      */
-    public String getUIUrlBase() {
-        return "blue";
+    public String getUrlBase() {
+        return urlBase;
     }
 
     // TODO: Look into using new Stapler stuff for doing this.

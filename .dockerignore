@@ -1,0 +1,7 @@
+*
+!blueocean-commons/target/blueocean-commons.hpi 
+!blueocean-dashboard/target/blueocean-dashboard.hpi 
+!blueocean-plugin/target/blueocean-plugin.hpi 
+!blueocean-rest/target/blueocean-rest.hpi 
+!blueocean-web/target/blueocean-web.hpi 
+!docker-demo/

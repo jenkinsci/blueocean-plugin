@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView } from '@jenkins-cd/design-language';
-import Table from './Table';
+import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import PullRequest from './PullRequest';
 import { scrollToHash } from './ScrollToHash';
 import { RunsRecord } from './records';
@@ -72,7 +71,7 @@ export class PullRequests extends Component {
         return (
             <main>
                 <article>
-                    <Table className="pr-table" headers={headers}>
+                    <Table className="pr-table fixed" headers={headers}>
                         { pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest

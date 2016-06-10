@@ -60,6 +60,7 @@ describe('RunDetailsChanges', () => {
             assert.equal(cols[0].text(), '<CommitHash />');
             assert.equal(cols[1].text(), 'tscherler');
             assert.equal(cols[2].text(), 'Update Jenkinsfile');
+            assert.equal(cols[3].text(), '<ReadableDate />');
         });
     });
 });

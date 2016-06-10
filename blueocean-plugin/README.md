@@ -1,6 +1,6 @@
-# Embedded Jenkins Plugin
+# BlueOcean Aggregator
 
-This plugin allows blueocean to run as a plugin inside an existing Jenkins.
+Aggreagates all BlueOcean modules. 
 
 ## To start it all up
 

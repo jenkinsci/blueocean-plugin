@@ -145,5 +145,21 @@ describe("Activity should not render", () => {
     const wrapper =  shallow(<Activity />).node;
     assert.isNull(wrapper);
   });
+});
 
+describe('Pipeline -> Activity List', () => {
+    it('should not duplicate changeset messages', () => {
+        const wrapper =  shallow(<Activity runs={data} />);
+        assert.isNotNull(wrapper);
+
+        const runs = wrapper.find('Runs');
+        assert.isNotNull(runs);
+
+        const run4 = runs.at(3);
+        const run5 = runs.at(4);
+        assert.notEqual(
+            run4.props().changeset,
+            run5.props().changeset
+        );
+    });
 });
