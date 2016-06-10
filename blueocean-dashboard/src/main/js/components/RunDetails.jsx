@@ -65,21 +65,16 @@ class RunDetails extends Component {
         }
 
         const {
-            context: {
-                router,
-                location,
-                params: {
-                    branch,
-                    runId,
-                    pipeline: name,
-                    },
-                },
-            props: {
-                previous,
-                },
-        } = this;
+            router,
+            location,
+            params: {
+                branch,
+                runId,
+                pipeline: name,
+            },
+        } = this.context;
 
-        const baseUrl = cleanBaseUrl(this.context.location.pathname);
+        const baseUrl = cleanBaseUrl(location.pathname);
 
         const result = this.props.runs.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
@@ -97,16 +92,16 @@ class RunDetails extends Component {
 
         return (
             <ModalView
-                isVisible
-                transitionClass="slideup"
-                transitionDuration={300}
-                result={result.result}
-                {...{ afterClose }}
+              isVisible
+              transitionClass="slideup"
+              transitionDuration={300}
+              result={result.result}
+              {...{ afterClose }}
             >
                 <ModalHeader>
                     <div>
                         <PipelineResult data={result}
-                                        onAuthorsClick={this.navigateToChanges}
+                          onAuthorsClick={this.navigateToChanges}
                         />
                         <PageTabs base={baseUrl}>
                             <TabLink to="/pipeline">Pipeline</TabLink>
