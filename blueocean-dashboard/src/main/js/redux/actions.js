@@ -125,9 +125,9 @@ export const actions = {
     fetchPipelines(config, organizationName) {
         return (dispatch) => {
             const baseUrl = config.getAppURLBase();
-            const url = !organizationName ?
-                `${baseUrl}/rest/pipelines/` :
-                `${baseUrl}/rest/organizations/${organizationName}/pipelines/`;
+            const url = organizationName ?
+                `${baseUrl}/rest/organizations/${organizationName}/pipelines/` :
+                `${baseUrl}/rest/pipelines/`;
 
             return dispatch(actions.generateData(
                 url,
