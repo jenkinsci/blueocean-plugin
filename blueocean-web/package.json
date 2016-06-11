@@ -20,6 +20,7 @@
     "eslint-plugin-react": "^5.0.1",
     "giti": "^1.0.6",
     "gulp": "^3.9.1",
+    "jquery-detached": "^2.1.4-v4",
     "ncp": "^2.0.0",
     "zombie": "^4.2.1"
   },

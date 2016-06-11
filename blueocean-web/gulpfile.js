@@ -35,6 +35,17 @@ builder.bundle('src/main/js/blueocean.js')
     .less('src/main/less/blueocean.less')
     .generateNoImportsBundle();
 
+//
+// Create the "Try Blue Ocean" Javascript bundle.
+// This .js bundle will be added to every classic Jenkins page
+// via a PageDecorator. Using this as a way of enticing Jenkins
+// users to move from classic Jenkins to Blue Ocean where possible.
+//
+builder.bundle('src/main/js/try.js')
+    .inDir('target/classes/io/jenkins/blueocean')
+    .withExternalModuleMapping('jquery-detached', 'core-assets/jquery-detached:jquery2') // Bundled in Jenkins 2.x 
+    .less('src/main/less/try.less');
+
 // 
 // Copy/link the JDL assests into the webapp dir, making them available at runtime.
 // 
