@@ -16,6 +16,8 @@
 
             <title>Jenkins Blue Ocean</title>
 
+            <st:adjunct includes="org.jenkinsci.plugins.ssegateway.sse.EventSource" />
+
             <!-- Reset -->
             <link href="${resURL}/plugin/blueocean-web/assets/css/normalize.css" rel="stylesheet"/>
 

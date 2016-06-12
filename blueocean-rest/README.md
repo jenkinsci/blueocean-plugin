@@ -928,3 +928,20 @@ Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
       "result" : "ABORTED",
       "state" : "FINISHED"
     }
+
+## Fetch queue for an pipeline
+
+     curl http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/queue
+     [ {
+       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+       "expectedBuildNumber" : 4,
+       "id" : "4",
+       "pipeline" : "pipeline1",
+       "queuedTime" : 1465433910205
+     }, {
+       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+       "expectedBuildNumber" : 3,
+       "id" : "3",
+       "pipeline" : "pipeline1",
+       "queuedTime" : 1465433910203
+     } ]

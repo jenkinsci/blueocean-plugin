@@ -20,10 +20,12 @@
     "eslint-plugin-react": "^5.0.1",
     "giti": "^1.0.6",
     "gulp": "^3.9.1",
+    "jquery-detached": "^2.1.4-v4",
+    "ncp": "^2.0.0",
     "zombie": "^4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.43",
+    "@jenkins-cd/design-language": "0.0.44",
     "@jenkins-cd/js-extensions": "0.0.15",
     "@jenkins-cd/js-modules": "0.0.5",
     "history": "2.0.2",

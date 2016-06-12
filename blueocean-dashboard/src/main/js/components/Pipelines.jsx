@@ -11,14 +11,20 @@ export default class Pipelines extends Component {
 
     render() {
         const { pipelines, config } = this.context;
+        const { organization } = this.context.params;
 
         // Early out
         if (!pipelines) {
             return <div>No pipelines found.</div>;
         }
 
+        const dashboardText = !organization ?
+            'Dashboard' :
+            `Dashboard / ${organization}`;
+
         const pipelineRecords = pipelines
             .map(data => new PipelineRecord(data))
+            .filter(data => !data.isFolder())
             .sort(pipeline => !!pipeline.branchNames);
 
         const headers = [
@@ -36,8 +42,8 @@ export default class Pipelines extends Component {
             <Page>
                 <PageHeader>
                     <Title>
-                        <h1>Dashboard</h1>
-                        <a target="_blank" className="btn-inverse" href={newJobUrl}>
+                        <h1>{dashboardText}</h1>
+                        <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
                             New Pipeline
                         </a>
                     </Title>
@@ -52,6 +58,7 @@ export default class Pipelines extends Component {
                             { pipelineRecords
                                 .map(pipeline => <PipelineRowItem
                                   key={pipeline.name} pipeline={pipeline}
+                                  showOrganization={!organization}
                                 />)
                             }
                         </Table>
@@ -62,6 +69,7 @@ export default class Pipelines extends Component {
 }
 
 Pipelines.contextTypes = {
-    pipelines: array,
     config: PropTypes.object,
+    params: PropTypes.object,
+    pipelines: array,
 };

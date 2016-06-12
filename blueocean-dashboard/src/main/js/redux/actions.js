@@ -120,11 +120,15 @@ export const actions = {
     /**
      * Unconditionally fetch and update the pipelines list.
      * @param config Application configuration.
+     * @param organizationName (optional)
      */
-    fetchPipelines(config) {
+    fetchPipelines(config, organizationName) {
         return (dispatch) => {
-            const url = `${config.getAppURLBase()}` +
-                '/rest/organizations/jenkins/pipelines/';
+            const baseUrl = config.getAppURLBase();
+            const url = organizationName ?
+                `${baseUrl}/rest/organizations/${organizationName}/pipelines/` :
+                `${baseUrl}/rest/pipelines/`;
+
             return dispatch(actions.generateData(
                 url,
                 ACTION_TYPES.SET_PIPELINES_DATA
@@ -136,12 +140,16 @@ export const actions = {
      * Fetch and update the pipelines list if the store doesn't already have
      * a list of the pipelines.
      * @param config Application configuration.
+     * @param organizationName (optional)
      */
-    fetchPipelinesIfNeeded(config) {
+    fetchPipelinesIfNeeded(config, organizationName) {
         return (dispatch, getState) => {
             const pipelines = getState().adminStore.pipelines;
-            const url = `${config.getAppURLBase()}` +
-                '/rest/organizations/jenkins/pipelines/';
+            const baseUrl = config.getAppURLBase();
+            const url = !organizationName ?
+                `${baseUrl}/rest/pipelines/` :
+                `${baseUrl}/rest/organizations/${organizationName}/pipelines/`;
+
             if (!pipelines) {
                 return dispatch(actions.generateData(
                     url,

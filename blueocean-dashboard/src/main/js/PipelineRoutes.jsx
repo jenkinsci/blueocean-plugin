@@ -1,6 +1,7 @@
 import { Route, Redirect, IndexRoute, IndexRedirect } from 'react-router';
 import React from 'react';
-import OrganisationPipelines from './OrganisationPipelines';
+import Dashboard from './Dashboard';
+import OrganizationPipelines from './OrganizationPipelines';
 import {
     Pipelines,
     MultiBranch,
@@ -14,27 +15,31 @@ import {
     RunDetailsTests,
 } from './components';
 
-// Config has some globals in it for path / routes
-import { rootRoutePath } from './config';
-
 export default (
-    <Route path={rootRoutePath} component={OrganisationPipelines}>
-        <IndexRoute component={Pipelines} />
+    <Route path="/" component={Dashboard}>
+        <Route path="organizations/:organization" component={OrganizationPipelines}>
+            <IndexRedirect to="pipelines" />
+            <Route path="pipelines" component={Pipelines} />
 
-        <Route component={PipelinePage}>
-            <Route path=":pipeline/branches" component={MultiBranch} />
-            <Route path=":pipeline/activity" component={Activity} />
-            <Route path=":pipeline/pr" component={PullRequests} />
+            <Route component={PipelinePage}>
+                <Route path=":pipeline/branches" component={MultiBranch} />
+                <Route path=":pipeline/activity" component={Activity} />
+                <Route path=":pipeline/pr" component={PullRequests} />
 
-            <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
-                <IndexRedirect to="pipeline" />
-                <Route path="pipeline" component={RunDetailsPipeline} />
-                <Route path="changes" component={RunDetailsChanges} />
-                <Route path="tests" component={RunDetailsTests} />
-                <Route path="artifacts" component={RunDetailsArtifacts} />
+                <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
+                    <IndexRedirect to="pipeline" />
+                    <Route path="pipeline" component={RunDetailsPipeline} />
+                    <Route path="changes" component={RunDetailsChanges} />
+                    <Route path="tests" component={RunDetailsTests} />
+                    <Route path="artifacts" component={RunDetailsArtifacts} />
+                </Route>
+
+                <Redirect from=":pipeline/*" to=":pipeline/activity" />
             </Route>
-
-            <Redirect from=":pipeline/*" to=":pipeline/activity" />
         </Route>
+        <Route path="/pipelines" component={OrganizationPipelines}>
+            <IndexRoute component={Pipelines} />
+        </Route>
+        <IndexRedirect to="pipelines" />
     </Route>
 );

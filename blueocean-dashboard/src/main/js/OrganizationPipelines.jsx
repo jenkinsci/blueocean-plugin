@@ -3,19 +3,18 @@ import { actions, pipelines as pipelinesSelector, connect, createSelector } from
 import * as sse from '@jenkins-cd/sse-gateway';
 import * as pushEventUtil from './util/push-event-util';
 
-const { object, array, func, node } = PropTypes;
+const { object, array, func, node, string } = PropTypes;
 
 // Connect to the SSE Gateway and allocate a
 // dispatcher for blueocean.
 // TODO: We might want to move this code to a local SSE util module.
 sse.connect('jenkins_blueocean');
 
-class OrganisationPipelines extends Component {
+class OrganizationPipelines extends Component {
 
     getChildContext() {
         const {
             params,
-            location,
             pipelines,
         } = this.props;
 
@@ -30,14 +29,13 @@ class OrganisationPipelines extends Component {
         return {
             pipelines,
             pipeline,
-            params,
-            location,
         };
     }
 
     componentWillMount() {
         if (this.context.config) {
-            this.props.fetchPipelinesIfNeeded(this.context.config);
+            const { organization } = this.context.params;
+            this.props.fetchPipelinesIfNeeded(this.context.config, organization);
             const _this = this;
 
             // Subscribe for job channel push events
@@ -61,7 +59,7 @@ class OrganisationPipelines extends Component {
                     // crud operations are relative low frequency, so not much
                     // benefit to be got from optimizing things here.
                     // TODO: fix https://issues.jenkins-ci.org/browse/JENKINS-35153 for delete
-                    _this.props.fetchPipelines(_this.context.config);
+                    _this.props.fetchPipelines(_this.context.config, _this.props.organization);
                     break;
                 case 'job_run_queue_buildable':
                 case 'job_run_queue_enter':
@@ -80,11 +78,12 @@ class OrganisationPipelines extends Component {
                     break;
                 }
                 default :
-                    // Else ignore the event.
+                // Else ignore the event.
                 }
             });
         }
     }
+
     componentWillUnmount() {
         if (this.jobListener) {
             sse.unsubscribe(this.jobListener);
@@ -97,29 +96,28 @@ class OrganisationPipelines extends Component {
     }
 }
 
-OrganisationPipelines.contextTypes = {
-    router: object.isRequired,
+OrganizationPipelines.contextTypes = {
     config: object.isRequired,
+    params: object.isRequired,
 };
 
-OrganisationPipelines.propTypes = {
+OrganizationPipelines.propTypes = {
     fetchPipelines: func.isRequired,
     fetchPipelinesIfNeeded: func.isRequired,
     processJobQueuedEvent: func.isRequired,
     updateRunState: func.isRequired,
+    organization: string,
     params: object, // From react-router
     children: node, // From react-router
     location: object, // From react-router
     pipelines: array,
 };
 
-OrganisationPipelines.childContextTypes = {
+OrganizationPipelines.childContextTypes = {
     pipelines: array,
     pipeline: object,
-    params: object, // From react-router
-    location: object, // From react-router
 };
 
 const selectors = createSelector([pipelinesSelector], (pipelines) => ({ pipelines }));
 
-export default connect(selectors, actions)(OrganisationPipelines);
+export default connect(selectors, actions)(OrganizationPipelines);

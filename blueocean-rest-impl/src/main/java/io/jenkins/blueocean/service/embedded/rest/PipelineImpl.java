@@ -6,6 +6,7 @@ import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
@@ -84,6 +85,11 @@ public class PipelineImpl extends BluePipeline {
     @Override
     public BlueRunContainer getRuns() {
         return new RunContainerImpl(this, job);
+    }
+
+    @Override
+    public BlueQueueContainer getQueue() {
+        return new QueueContainerImpl(this, job);
     }
 
     @WebMethod(name="") @DELETE

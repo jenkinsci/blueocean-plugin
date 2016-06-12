@@ -91,4 +91,9 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
             }
         };
     }
+
+    @Override
+    public BlueQueueContainer getQueue() {
+        return null; //noop
+    }
 }

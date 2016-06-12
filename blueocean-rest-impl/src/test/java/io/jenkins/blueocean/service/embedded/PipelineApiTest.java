@@ -6,15 +6,22 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Cause;
+import hudson.model.CauseAction;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.model.ParametersAction;
+import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Project;
 import hudson.model.Result;
 import hudson.model.Run;
+import hudson.model.StringParameterDefinition;
+import hudson.model.StringParameterValue;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
 import hudson.tasks.junit.TestResultAction;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -476,4 +483,22 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals("fizz", artifacts.get(0).get("name"));
     }
 
+    @Test
+    public void testPipelineQueue() throws Exception {
+        FreeStyleProject p1 = j.createFreeStyleProject("pipeline1");
+
+        p1.setConcurrentBuild(true);
+        p1.addProperty(new ParametersDefinitionProperty(new StringParameterDefinition("test","test")));
+        p1.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
+
+        p1.scheduleBuild2(0).waitForStart();
+        p1.scheduleBuild2(0).waitForStart();
+        Jenkins.getInstance().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test1")), new CauseAction(new Cause.UserIdCause()));
+        Jenkins.getInstance().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test2")), new CauseAction(new Cause.UserIdCause()));
+
+        List queue = request().get("/organizations/jenkins/pipelines/pipeline1/queue").build(List.class);
+        Assert.assertEquals(queue.size(),2);
+        Assert.assertEquals(((Map) queue.get(0)).get("expectedBuildNumber"), 4);
+        Assert.assertEquals(((Map) queue.get(1)).get("expectedBuildNumber"), 3);
+    }
 }

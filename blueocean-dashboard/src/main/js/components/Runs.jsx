@@ -3,6 +3,8 @@ import {
     CommitHash, ReadableDate, StatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
+import { removeLastUrlSegment } from '../util/UrlUtils';
+
 const { object, string, any } = PropTypes;
 
 /*
@@ -22,9 +24,6 @@ export default class Runs extends Component {
             context: {
                 router,
                 location,
-                pipeline: {
-                    name: pipelineName,
-                },
             },
             props: {
                 result: {
@@ -42,7 +41,8 @@ export default class Runs extends Component {
 
         const resultRun = result === 'UNKNOWN' ? state : result;
 
-        const url = `/pipelines/${pipelineName}/detail/${pipeline}/${id}/pipeline`;
+        const baseUrl = removeLastUrlSegment(this.context.location.pathname);
+        const url = `${baseUrl}/detail/${pipeline}/${id}/pipeline`;
         const open = () => {
             location.pathname = url;
             router.push(location);
