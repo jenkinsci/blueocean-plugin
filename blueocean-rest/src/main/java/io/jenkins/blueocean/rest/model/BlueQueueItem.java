@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.Date;
 
@@ -10,7 +11,8 @@ import java.util.Date;
  *
  * @author Ivan Meredith
  */
-public abstract class BlueQueueItem extends Resource {
+@ExportedBean
+public abstract class BlueQueueItem {
 
     /**
      * @return Id of the item in the queue. Much be unique in the queue of a pipeline
