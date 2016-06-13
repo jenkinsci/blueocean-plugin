@@ -10,7 +10,13 @@ const INITIAL_RENDER_DELAY = 300;
 const RENDER_CHUNK_SIZE = 500;
 const RERENDER_DELAY = 17;
 
+type Line = String;
+
 class LogConsole extends Component {
+
+    queuedLines: Array<Line>;
+    state: {lines:Array<Line>};
+
     constructor(props) {
         super(props);
 

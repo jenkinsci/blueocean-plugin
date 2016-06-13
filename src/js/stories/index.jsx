@@ -9,3 +9,4 @@ require('./statusIndicatorStories.jsx');
 require('./table.jsx');
 require('./timeduration.jsx');
 require('./toast.jsx');
+require('./resultItemStories.jsx');

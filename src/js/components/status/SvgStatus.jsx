@@ -59,10 +59,11 @@ export function getGlyphFor(result:Result) {
                 </g>
             );
         case "running":
+        case "not_built":
         case "queued":
             // hollow circle
             return (
-                <g className="glyph">
+                <g className="result-status-glyph">
                     <path transform="scale(0.9)" d={hollowCirclePath}/>
                 </g>
             );

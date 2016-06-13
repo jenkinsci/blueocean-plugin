@@ -3,6 +3,7 @@
 *
 * Licensed under MIT
 */
+
 //
 // Load core variables and mixins
 // --------------------------------------------------
@@ -16,18 +17,19 @@
 // --------------------------------------------------
 
 html {
-  font-size: 62.5%; // Make 1rem == 10px
+    font-size: 62.5%; // Make 1rem == 10px
 }
 
 #root {
-  font-size: 1.4rem;
+    font-size: 1.4rem;
 }
 
 body {
-  text-rendering: optimizeSpeed;
-  font-feature-settings: "kern" on, "liga" off;
-  -moz-font-feature-settings: "kern" on, "liga" off;
-  //TODO: Do we really want this for everything? -webkit-font-smoothing: antialiased;
+    color: @text-color;
+    text-rendering: optimizeSpeed;
+    font-feature-settings: "kern" on, "liga" off;
+    -moz-font-feature-settings: "kern" on, "liga" off;
+    //TODO: Do we really want this for everything? -webkit-font-smoothing: antialiased;
 }
 
 //
@@ -35,100 +37,99 @@ body {
 // --------------------------------------------------
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 // Default All headings to basically "bold and display:block"
 h1, h2, h3, h4, h5 h6 {
-  font-size: 100%;
-  margin: 0;
-  padding: 0;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 // Make h1 slightly bigger :)
 h1 {
-  font-size: 1.8rem;
-  font-family: @font-family-nav;
-  letter-spacing: 1.1px;
+    font-size: 1.8rem;
+    font-family: @font-family-nav;
+    letter-spacing: 1.1px;
 }
 
 main {
-  color: @text-color;
 }
 
 .label-danger {
-  background-color: @brand-danger;
+    background-color: @brand-danger;
 }
 
 .label-warning {
-  background-color: @brand-warning;
+    background-color: @brand-warning;
 }
 
 .label-info {
-  background-color: @brand-info;
+    background-color: @brand-info;
 }
 
 .label-success {
-  background-color: @brand-success;
+    background-color: @brand-success;
 }
 
 .label-primary {
-  background-color: @brand-primary;
+    background-color: @brand-primary;
 }
 
 .btn-link {
-  color: @link-color;
+    color: @link-color;
 }
 
 a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .list-group-item.active > .badge,
 .nav-pills > .active > a > .badge,
 a {
-  color: @link-color;
+    color: @link-color;
 }
 
 a:hover {
-  color: @link-hover-color;
-  text-decoration: @link-hover-decoration;
+    color: @link-hover-color;
+    text-decoration: @link-hover-decoration;
 }
 
 a.inverse {
-  color: white;
-
-  &:hover {
     color: white;
-  }
+
+    &:hover {
+        color: white;
+    }
 }
 
 .list-group-item.active .list-group-item-text,
 .list-group-item.active:focus .list-group-item-text,
 .list-group-item.active:hover .list-group-item-text {
-  color: white;
+    color: white;
 }
 
 .nav-pills > li.active > a,
 .nav-pills > li.active > a:focus {
-  background-color: @link-color;
+    background-color: @link-color;
 }
 
 .nav-pills > li.active > a:hover {
-  background-color: @link-hover-color;
+    background-color: @link-hover-color;
 }
 
 .progress-bar {
-  background-color: @progress-bar-bg;
+    background-color: @progress-bar-bg;
 }
 
 body {
-  font-family: @font-family-base;
-  background-color: @body-bg;
+    font-family: @font-family-base;
+    background-color: @body-bg;
 }
 
 code, pre, kbd {
-  font-family: @font-family-monospace;
+    font-family: @font-family-monospace;
 }
 
 //
@@ -138,76 +139,76 @@ code, pre, kbd {
 // Mixin for generating btn styles
 .btn-styles(@btn-color; @btn-border; @btn-text) {
 
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  font-family: @font-family-btn;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    font-family: @font-family-btn;
 
-  border: solid 1px @btn-border;
-  border-radius: 3px;
+    border: solid 1px @btn-border;
+    border-radius: 3px;
 
-  text-align: center;
-  text-decoration: none;
-
-  background-color: @btn-color;
-  color: @btn-text;
-  cursor: pointer;
-  min-width: 130px;
-
-  &:hover,
-  &:focus,
-  &:active,
-  &.active {
-    background-color: @btn-color;
-    border-color: darken(@btn-border, 12%);
-    color: @btn-text;
+    text-align: center;
     text-decoration: none;
-  }
 
-  &.disabled,
-  &[disabled],
-  fieldset[disabled] & {
-    &,
+    background-color: @btn-color;
+    color: @btn-text;
+    cursor: pointer;
+    min-width: 130px;
+
     &:hover,
     &:focus,
-    &.focus,
     &:active,
     &.active {
-      opacity: 0.4;
+        background-color: @btn-color;
+        border-color: darken(@btn-border, 12%);
+        color: @btn-text;
+        text-decoration: none;
     }
-  }
+
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+        &,
+        &:hover,
+        &:focus,
+        &.focus,
+        &:active,
+        &.active {
+            opacity: 0.4;
+        }
+    }
 }
 
 // Apply the mixin to the buttons
 .btn-default, .btn, button, .btn-primary {
-  .btn-styles(@btn-primary-bg, @btn-primary-border, @btn-primary-color);
+    .btn-styles(@btn-primary-bg, @btn-primary-border, @btn-primary-color);
 
-  &.inverse {
-    .btn-styles(white, @brand-primary, @brand-primary);
-  }
+    &.inverse {
+        .btn-styles(white, @brand-primary, @brand-primary);
+    }
 }
 
 .btn-secondary {
     .btn-styles(transparent, @btn-primary-border, @btn-primary-border);
 
-  &.inverse {
-    .btn-styles(transparent, white, white)
-  }
+    &.inverse {
+        .btn-styles(transparent, white, white)
+    }
 }
 
 .btn-success {
-  .btn-styles(@btn-success-bg, @btn-success-border, @btn-success-color);
+    .btn-styles(@btn-success-bg, @btn-success-border, @btn-success-color);
 }
 
 .btn-info {
-  .btn-styles(@btn-info-bg, @btn-info-border, @btn-info-color);
+    .btn-styles(@btn-info-bg, @btn-info-border, @btn-info-color);
 }
 
 .btn-warning {
-  .btn-styles(@btn-warning-bg, @btn-warning-border, @btn-warning-color);
+    .btn-styles(@btn-warning-bg, @btn-warning-border, @btn-warning-color);
 }
 
 .btn-danger {
-  .btn-styles(@btn-danger-bg, @btn-danger-border, @btn-danger-color);
+    .btn-styles(@btn-danger-bg, @btn-danger-border, @btn-danger-color);
 }
 
 //
@@ -216,7 +217,7 @@ code, pre, kbd {
 
 .thumbnail,
 .img-thumbnail {
-  .box-shadow(0 1px 2px rgba(0, 0, 0, .075));
+    .box-shadow(0 1px 2px rgba(0, 0, 0, .075));
 }
 
 //
@@ -225,27 +226,27 @@ code, pre, kbd {
 
 .dropdown-menu > li > a:hover,
 .dropdown-menu > li > a:focus {
-  #gradient > .vertical(@start-color: @dropdown-link-hover-bg; @end-color: darken(@dropdown-link-hover-bg, 5%));
-  background-color: darken(@dropdown-link-hover-bg, 5%);
+    #gradient > .vertical(@start-color: @dropdown-link-hover-bg; @end-color: darken(@dropdown-link-hover-bg, 5%));
+    background-color: darken(@dropdown-link-hover-bg, 5%);
 }
 
 .dropdown-menu > .active > a,
 .dropdown-menu > .active > a:hover,
 .dropdown-menu > .active > a:focus {
-  #gradient > .vertical(@start-color: @dropdown-link-active-bg; @end-color: darken(@dropdown-link-active-bg, 5%));
-  background-color: darken(@dropdown-link-active-bg, 5%);
+    #gradient > .vertical(@start-color: @dropdown-link-active-bg; @end-color: darken(@dropdown-link-active-bg, 5%));
+    background-color: darken(@dropdown-link-active-bg, 5%);
 }
 
 // Fix active state of dropdown items in collapsed mode
 @media (max-width: @grid-float-breakpoint-max) {
-  .navbar .navbar-nav .open .dropdown-menu > .active > a {
-    &,
-    &:hover,
-    &:focus {
-      color: #fff;
-      #gradient > .vertical(@start-color: @dropdown-link-active-bg; @end-color: darken(@dropdown-link-active-bg, 5%));
+    .navbar .navbar-nav .open .dropdown-menu > .active > a {
+        &,
+        &:hover,
+        &:focus {
+            color: #fff;
+            #gradient > .vertical(@start-color: @dropdown-link-active-bg; @end-color: darken(@dropdown-link-active-bg, 5%));
+        }
     }
-  }
 }
 
 //
@@ -254,31 +255,31 @@ code, pre, kbd {
 
 // Common styles
 .alert {
-  border: none;
+    border: none;
 }
 
 // Mixin for generating new styles
 .alert-styles(@color; @text-color; @border-color) {
-  background-color: @color;
-  color: @text-color;
-  border-radius: 3px;
+    background-color: @color;
+    color: @text-color;
+    border-radius: 3px;
 }
 
 // Apply the mixin to the alerts
 .alert-success {
-  .alert-styles(@alert-success-bg, @alert-success-text, @alert-success-border);
+    .alert-styles(@alert-success-bg, @alert-success-text, @alert-success-border);
 }
 
 .alert-info {
-  .alert-styles(@alert-info-bg, @alert-info-text, @alert-info-border);
+    .alert-styles(@alert-info-bg, @alert-info-text, @alert-info-border);
 }
 
 .alert-warning {
-  .alert-styles(@alert-warning-bg, @alert-warning-text, @alert-warning-border);
+    .alert-styles(@alert-warning-bg, @alert-warning-text, @alert-warning-border);
 }
 
 .alert-danger {
-  .alert-styles(@alert-danger-bg, @alert-danger-text, @alert-danger-border);
+    .alert-styles(@alert-danger-bg, @alert-danger-text, @alert-danger-border);
 }
 
 //
@@ -287,39 +288,39 @@ code, pre, kbd {
 
 // Give the progress background some depth
 .progress {
-  #gradient > .vertical(@start-color: darken(@progress-bg, 4%); @end-color: @progress-bg)
+    #gradient > .vertical(@start-color: darken(@progress-bg, 4%); @end-color: @progress-bg)
 }
 
 // Mixin for generating new styles
 .progress-bar-styles(@color) {
-  #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 10%));
+    #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 10%));
 }
 
 // Apply the mixin to the progress bars
 .progress-bar {
-  .progress-bar-styles(@progress-bar-bg);
+    .progress-bar-styles(@progress-bar-bg);
 }
 
 .progress-bar-success {
-  .progress-bar-styles(@progress-bar-success-bg);
+    .progress-bar-styles(@progress-bar-success-bg);
 }
 
 .progress-bar-info {
-  .progress-bar-styles(@progress-bar-info-bg);
+    .progress-bar-styles(@progress-bar-info-bg);
 }
 
 .progress-bar-warning {
-  .progress-bar-styles(@progress-bar-warning-bg);
+    .progress-bar-styles(@progress-bar-warning-bg);
 }
 
 .progress-bar-danger {
-  .progress-bar-styles(@progress-bar-danger-bg);
+    .progress-bar-styles(@progress-bar-danger-bg);
 }
 
 // Reset the striped class because our mixins don't do multiple gradients and
 // the above custom styles override the new `.progress-bar-striped` in v3.2.0.
 .progress-bar-striped {
-  #gradient > .striped();
+    #gradient > .striped();
 }
 
 //
@@ -327,20 +328,20 @@ code, pre, kbd {
 // --------------------------------------------------
 
 .list-group {
-  border-radius: @border-radius-base;
-  .box-shadow(0 1px 2px rgba(0, 0, 0, .075));
+    border-radius: @border-radius-base;
+    .box-shadow(0 1px 2px rgba(0, 0, 0, .075));
 }
 
 .list-group-item.active,
 .list-group-item.active:hover,
 .list-group-item.active:focus {
-  text-shadow: 0 -1px 0 darken(@list-group-active-bg, 10%);
-  #gradient > .vertical(@start-color: @list-group-active-bg; @end-color: darken(@list-group-active-bg, 7.5%));
-  border-color: darken(@list-group-active-border, 7.5%);
+    text-shadow: 0 -1px 0 darken(@list-group-active-bg, 10%);
+    #gradient > .vertical(@start-color: @list-group-active-bg; @end-color: darken(@list-group-active-bg, 7.5%));
+    border-color: darken(@list-group-active-border, 7.5%);
 
-  .badge {
-    text-shadow: none;
-  }
+    .badge {
+        text-shadow: none;
+    }
 }
 
 //
@@ -349,65 +350,65 @@ code, pre, kbd {
 
 // Common styles
 .panel {
-  .box-shadow(0 1px 2px rgba(0, 0, 0, .05));
+    .box-shadow(0 1px 2px rgba(0, 0, 0, .05));
 }
 
 // Mixin for generating new styles
 .panel-heading-styles(@color) {
-  background-color: @color;
-  #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 5%));
-  color: white;
-  border: inherit;
+    background-color: @color;
+    #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 5%));
+    color: white;
+    border: inherit;
 }
 
 // Apply the mixin to the panel headings only
 .panel-default > .panel-heading {
-  .panel-heading-styles(@panel-default-heading-bg);
+    .panel-heading-styles(@panel-default-heading-bg);
 }
 
 .panel-primary > .panel-heading {
-  .panel-heading-styles(@panel-primary-heading-bg);
+    .panel-heading-styles(@panel-primary-heading-bg);
 }
 
 .panel-success > .panel-heading {
-  .panel-heading-styles(@panel-success-heading-bg);
+    .panel-heading-styles(@panel-success-heading-bg);
 }
 
 .panel-info > .panel-heading {
-  .panel-heading-styles(@panel-info-heading-bg);
+    .panel-heading-styles(@panel-info-heading-bg);
 }
 
 .panel-warning > .panel-heading {
-  .panel-heading-styles(@panel-warning-heading-bg);
+    .panel-heading-styles(@panel-warning-heading-bg);
 }
 
 .panel-danger > .panel-heading {
-  .panel-heading-styles(@panel-danger-heading-bg);
+    .panel-heading-styles(@panel-danger-heading-bg);
 }
 
 // Fix all the hardcoded borders set in bootstrap.css
 .panel-default {
-  border-color: @panel-default-border;
+    border-color: @panel-default-border;
 }
 
 .panel-primary {
-  border-color: @panel-primary-border;
+    border-color: @panel-primary-border;
 }
 
 .panel-success {
-  border-color: @panel-success-border;
+    border-color: @panel-success-border;
 }
 
 .panel-info {
-  border-color: @panel-info-border;
+    border-color: @panel-info-border;
 }
 
 .panel-warning {
-  border-color: @panel-warning-border;
+    border-color: @panel-warning-border;
 }
 
 .panel-danger {
-  border-color: @panel-danger-border;
+    border-color: @panel-danger-border;
 }
 
 //
@@ -415,10 +416,10 @@ code, pre, kbd {
 // --------------------------------------------------
 
 .well {
-  #gradient > .vertical(@start-color: darken(@well-bg, 5%); @end-color: @well-bg);
-  border-color: darken(@well-bg, 10%);
-  @shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 1px 0 rgba(255, 255, 255, .1);
-  .box-shadow(@shadow);
+    #gradient > .vertical(@start-color: darken(@well-bg, 5%); @end-color: @well-bg);
+    border-color: darken(@well-bg, 10%);
+    @shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 1px 0 rgba(255, 255, 255, .1);
+    .box-shadow(@shadow);
 }
 
 //
@@ -435,14 +436,14 @@ table {
 }
 
 thead tr:last-child {
-  border-bottom: solid 1px;
-  th {
-    padding-bottom: 1.5rem;
-  }
+    border-bottom: solid 1px;
+    th {
+        padding-bottom: 1.5rem;
+    }
 }
 
 tbody tr:first-child td {
-  padding-top: 1rem;
+    padding-top: 1rem;
 }
 
 th {
@@ -451,13 +452,13 @@ th {
 }
 
 td, th {
-  padding: 0.5em 0;
-  text-align: left;
+    padding: 0.5em 0;
+    text-align: left;
 }
 
 th:first-child,
 td:first-child {
-  padding-left: 1em;
+    padding-left: 1em;
 }
 
 //
@@ -465,97 +466,97 @@ td:first-child {
 // --------------------------------------------------
 
 .log-header {
-  font-family: @font-family-panel;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid @text-color;
-  margin-bottom: 20px;
+    font-family: @font-family-panel;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid @text-color;
+    margin-bottom: 20px;
 }
 
 .log-header__section {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .log-header__section a {
-  padding-left: 10px;
+    padding-left: 10px;
 }
 
 .download-log-button {
-  cursor: pointer;
-  opacity:0.87000002;
+    cursor: pointer;
+    opacity: 0.87000002;
 }
 
 code {
-  font-family: @font-family-monospace;
-  width: 100%;
-  min-height: 12px;
-  white-space: normal;
-  border: 1px solid @pre-border-color;
-  border-radius: 4px;
-  position: relative;
-  counter-reset: line;
-  overflow-x: auto;
-  font-size: 1.1rem;
+    font-family: @font-family-monospace;
+    width: 100%;
+    min-height: 12px;
+    white-space: normal;
+    border: 1px solid @pre-border-color;
+    border-radius: 4px;
+    position: relative;
+    counter-reset: line;
+    overflow-x: auto;
+    font-size: 1.1rem;
 }
 
 code p:hover {
-  background-color: @pre-color-hover;
+    background-color: @pre-color-hover;
 }
 
 code p {
-  counter-increment: line;
-  margin: 0;
+    counter-increment: line;
+    margin: 0;
 }
 
 code p::nth-line {
-  color: yellow !important;
+    color: yellow !important;
 }
 
 code p a {
-  margin: 0;
-  padding: 0 15px 0 20px;
-  word-wrap: break-word;
-  display: inline;
-  color: @pre-color;
+    margin: 0;
+    padding: 0 15px 0 20px;
+    word-wrap: break-word;
+    display: inline;
+    color: @pre-color;
 }
 
 code a:hover {
-  color: @pre-color;
-  text-decoration: none;
+    color: @pre-color;
+    text-decoration: none;
 }
 
 code p a::before {
-  color: @gray-light;
-  content: counter(line);
-  float: left;
-  min-width: 20px;
-  white-space: nowrap;
-  padding-right: 1em;
-  padding-left: 10px;
-  text-align: right;
-  .user-select(none);
+    color: @gray-light;
+    content: counter(line);
+    float: left;
+    min-width: 20px;
+    white-space: nowrap;
+    padding-right: 1em;
+    padding-left: 10px;
+    text-align: right;
+    .user-select(none);
 }
 
 code.block {
-  background-color: @pre-bg;
-  color: @pre-color;
-  display: block;
-  padding: 0.5rem;
-  white-space: pre;
-  //max-height: @pre-scrollable-max-height;
-  border: solid 1px darken(@pre-bg, 20%);;
+    background-color: @pre-bg;
+    color: @pre-color;
+    display: block;
+    padding: 0.5rem;
+    white-space: pre;
+    //max-height: @pre-scrollable-max-height;
+    border: solid 1px darken(@pre-bg, 20%);;
 }
 
 code.inline {
-  display: inline-block;
-  padding: inherit;
-  white-space: pre-wrap;
+    display: inline-block;
+    padding: inherit;
+    white-space: pre-wrap;
 }
 
 code.hash {
-  border: 0;
+    border: 0;
 }
 
 //
@@ -563,11 +564,11 @@ code.hash {
 // --------------------------------------------------
 
 .material-icons {
-  color: @brand-primary;
+    color: @brand-primary;
 }
 
 .material-icons.selected {
-  color: @brand-warning;
+    color: @brand-warning;
 }
 
 //
@@ -575,15 +576,15 @@ code.hash {
 // --------------------------------------------------
 
 .content-width {
-  min-width: 70rem;
-  margin-left: 100px;
-  margin-right: 100px;
+    min-width: 70rem;
+    margin-left: 100px;
+    margin-right: 100px;
 
-  @media screen and (max-width: 1000px) {
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-  }
+    @media screen and (max-width: 1000px) {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 .global-header {
@@ -594,7 +595,7 @@ code.hash {
 }
 
 .global-header a {
-  color: white;
+    color: white;
 }
 
 .global-header nav {
@@ -612,7 +613,7 @@ code.hash {
 }
 
 .global-header a:hover {
-  color: @gray-dark;
+    color: @gray-dark;
 }
 
 .sub-header {
@@ -644,7 +645,7 @@ code.hash {
 }
 
 .sub-header nav.page-tabs {
-  .content-width;
+    .content-width;
 }
 
 .page-tabs a {
@@ -656,21 +657,19 @@ code.hash {
     text-align: center;
     text-decoration: none;
 
-  // For transforming underline
-  position: relative;
-  overflow: hidden;
-  transform: translateZ(0);
-  margin-bottom: -3px;
+    // For transforming underline
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+    margin-bottom: -3px;
 }
 
 // Applies this style to safari 9.0+
-@supports (overflow:-webkit-marquee) and (justify-content:inherit)
-{
-  .page-tabs a {
-    margin-bottom: 0px;
-  }
+@supports (overflow:-webkit-marquee) and (justify-content:inherit) {
+    .page-tabs a {
+        margin-bottom: 0px;
+    }
 }
-
 
 .page-tabs a:before {
     // For transforming underline
@@ -691,13 +690,13 @@ code.hash {
 .page-tabs a.selected:before,
 .page-tabs:hover a.selected:hover:before,
 .page-tabs a:hover:before {
-  // For transforming underline
-  transform: translateY(0);
+    // For transforming underline
+    transform: translateY(0);
 }
 
 .page-tabs:hover a.selected:before {
-  // For transforming underline
-  transform: translateY(3px);
+    // For transforming underline
+    transform: translateY(3px);
 }
 
 main article {
@@ -706,203 +705,203 @@ main article {
 }
 
 .container-fluid {
-  padding: 0;
+    padding: 0;
 }
 
 footer {
-  text-align: center;
-  margin: 1em;
+    text-align: center;
+    margin: 1em;
 }
 
 // Modal css
 .overlayStyles {
-  position: fixed;
-  display: block;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  zIndex: 99;
-  background-color: rgba(0, 0, 0, 0.3);
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    zIndex: 99;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .dialog {
-  width: 100%;
-  height: 100%;
-  min-width: 640px; // avoid flow issues when resizing dialogs very small
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
-  border-radius: 2px;
-  z-index: 100;
-  box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+    width: 100%;
+    height: 100%;
+    min-width: 640px; // avoid flow issues when resizing dialogs very small
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 2px;
+    z-index: 100;
+    box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
 }
 
 .slideup-appear {
-  .transition(all ease-out 0.3s);
-  top: 75%;
-  opacity: 0.01;
+    .transition(all ease-out 0.3s);
+    top: 75%;
+    opacity: 0.01;
 
-  &.slideup-appear-active {
-    top: 0;
-    opacity: 1;
-  }
+    &.slideup-appear-active {
+        top: 0;
+        opacity: 1;
+    }
 }
 
 .slideup-leave {
-  .transition(all ease-out 0.3s);
+    .transition(all ease-out 0.3s);
     top: 0;
-  opacity: 1;
+    opacity: 1;
 
-  &.slideup-leave-active {
-    top: 75%;
-    opacity: 0.01;
-  }
+    &.slideup-leave-active {
+        top: 75%;
+        opacity: 0.01;
+    }
 }
 
 .fadein-appear {
-  .transition(opacity ease-out 1s);
-  opacity: 0.01;
+    .transition(opacity ease-out 1s);
+    opacity: 0.01;
 
-  &.fadein-appear-active {
-    opacity: 1;
-  }
+    &.fadein-appear-active {
+        opacity: 1;
+    }
 }
 
 .dialog .header {
-  color: #ffffff;
-  font-weight: normal;
-  line-height: 20px;
-  font-size: 1.6rem;
+    color: #ffffff;
+    font-weight: normal;
+    line-height: 20px;
+    font-size: 1.6rem;
 }
 
 .dialog .header-content {
-  padding: 25px 50px 0 50px;
+    padding: 25px 50px 0 50px;
 }
 
 .dialog .header .page-tabs {
-  font-size: 1.5rem;
+    font-size: 1.5rem;
 
-  a {
-    letter-spacing: 1.1px;
-    margin-bottom: -4px;
-  }
+    a {
+        letter-spacing: 1.1px;
+        margin-bottom: -4px;
+    }
 }
 
 .dialog .header.info {
-  background-color: @header-bg;
+    background-color: @header-bg;
 }
 
 .dialog .header.success {
-  background-color: @brand-success;
+    background-color: @brand-success;
 }
 
 .dialog .header.failure {
-  background-color: @brand-danger;
+    background-color: @brand-danger;
 }
 
 .dialog .header.unstable {
-  background-color: @brand-warning;
+    background-color: @brand-warning;
 }
 
 .dialog .header.unknown {
-  background-color: @brand-unknown;
+    background-color: @brand-unknown;
 }
 
 .dialog .header.aborted,
 .dialog .header.not_built {
-  background-color: @brand-grey;
+    background-color: @brand-grey;
 }
 
 .dialog .content {
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  padding: 25px 50px 25px 50px;
-  background-color: @modal-content-bg;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 25px 50px 25px 50px;
+    background-color: @modal-content-bg;
 }
 
 .header .title {
-  margin-top: 0
+    margin-top: 0
 }
 
 .header .closeButton {
-  cursor: pointer;
-  text-decoration: none;
-  position: absolute;
-  font-size: 3em;
-  color: #ffffff;
-  right: 10px;
-  top: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    position: absolute;
+    font-size: 3em;
+    color: #ffffff;
+    right: 10px;
+    top: 10px;
 }
 
 .spin {
-  -webkit-animation-name: spin;
-  -webkit-animation-duration: 4000ms;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-timing-function: linear;
-  -moz-animation-name: spin;
-  -moz-animation-duration: 4000ms;
-  -moz-animation-iteration-count: infinite;
-  -moz-animation-timing-function: linear;
-  -ms-animation-name: spin;
-  -ms-animation-duration: 4000ms;
-  -ms-animation-iteration-count: infinite;
-  -ms-animation-timing-function: linear;
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 4000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: spin;
+    -moz-animation-duration: 4000ms;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+    -ms-animation-name: spin;
+    -ms-animation-duration: 4000ms;
+    -ms-animation-iteration-count: infinite;
+    -ms-animation-timing-function: linear;
 
-  animation-name: spin;
-  animation-duration: 4000ms;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
+    animation-name: spin;
+    animation-duration: 4000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
 }
 
 @-ms-keyframes spin {
-  from {
-    -ms-transform: rotate(0deg);
-  }
-  to {
-    -ms-transform: rotate(360deg);
-  }
+    from {
+        -ms-transform: rotate(0deg);
+    }
+    to {
+        -ms-transform: rotate(360deg);
+    }
 }
 
 @-moz-keyframes spin {
-  from {
-    -moz-transform: rotate(0deg);
-  }
-  to {
-    -moz-transform: rotate(360deg);
-  }
+    from {
+        -moz-transform: rotate(0deg);
+    }
+    to {
+        -moz-transform: rotate(360deg);
+    }
 }
 
 @-webkit-keyframes spin {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(360deg);
-  }
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-
 .left {
-  float: left;
+    float: left;
 }
 
 .right {
-  float: right;
+    float: right;
 }
+
 .clickIndicator {
     cursor: pointer;
 }
@@ -910,9 +909,10 @@ footer {
 .activity-table tbody tr:hover,
 .multibranch-table tbody tr:hover,
 .pr-table tbody tr:hover {
-    cursor:pointer;
+    cursor: pointer;
     background-color: rgba(148, 147, 147, 0.1);
 }
+
 .Site {
     display: flex;
     min-height: 100vh;

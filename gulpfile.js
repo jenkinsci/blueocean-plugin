@@ -71,22 +71,28 @@ const config = {
     }
 };
 
-// Watch
+// Watch all
 
-gulp.task("watch", ["default"], () => {
+gulp.task("watch", ["clean-build"], () => {
    gulp.watch(config.react.sources, ["compile-react"]);
    gulp.watch(config.less.watch, ["less"]);
 });
 
-// Watch styles only, when you're using Storybook
-gulp.task("watch-styles", ["default"], () => {
+// Watch only styles, for when you're using Storybook
+
+gulp.task("watch-styles", ["clean-build"], () => {
    gulp.watch(config.less.watch, ["less"]);
 });
 
-// Default to clean and build
+// Default to all
 
 gulp.task("default", () =>
     runSequence("clean", "lint", "test", "build"));
+
+// Clean and build only, for watching
+
+gulp.task("clean-build", () =>
+    runSequence("clean", "build"));
 
 // Clean
 

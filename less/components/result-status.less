@@ -3,7 +3,7 @@
     within the PipelineGraph component.
 */
 
-.svgResultStatus .glyph {
+.result-status-glyph {
     stroke: none;
     fill: #fff;
 }
@@ -77,3 +77,114 @@
 .pipeline-connector {
     stroke: @brand-grey-lite;
 }
+
+.result-bg.success {
+    background:@brand-success-lite;
+}
+
+.result-bg.aborted,
+.result-bg.failure {
+    background:@brand-danger-lite;
+}
+
+.result-bg.not_built,
+.result-bg.queued {
+    background:@brand-grey-lite;
+}
+
+.result-bg.running {
+    background:@progress-bar-color;
+}
+
+.result-bg.unstable {
+    background:@brand-warning-lite;
+}
+
+.result-bg.unknown {
+    background:@brand-unknown-lite;
+}
+
+//--[ ResultItem ]---------------------------------------------------------------
+
+.result-item {
+    border-bottom: solid 1px @brand-grey-lite;
+}
+
+.result-item:first-child {
+    border-top: solid 1px @brand-grey-lite;
+}
+
+.result-item-head {
+    display:flex;
+    align-items:stretch;
+    cursor:pointer;
+}
+
+.result-item-icon {
+    display:flex;
+    align-items:flex-start;
+}
+
+.result-item-title {
+    flex: 1 1 auto;
+    display:flex;
+    align-items:center;
+}
+
+.result-item-label {
+    flex: 1 1 auto;
+    font-family: @font-family-ss-regular;
+}
+
+.result-item-head:hover .result-item-label {
+    text-decoration:underline;
+}
+
+.result-item-expando {
+    cursor: pointer;
+}
+
+.expando-glyph {
+    transform:rotate(0deg);
+    transition: transform 150ms ease-in;
+    fill: @text-color;
+}
+
+.result-item-expando.expanded .expando-glyph {
+    transform: rotate(90deg);
+    transition: transform 150ms ease-in;
+}
+
+.result-item-expando.disabled .expando-glyph {
+    opacity:0.3;
+}
+
+.result-item-children {
+    background-color: @pre-bg;
+    color: @pre-color;
+    padding:0.5em;
+    border-left: solid 24px darken(@pre-bg, 1%);
+}
+
+// Expand animation
+.slide-down-enter, .slide-down-appear {
+    max-height:0;
+    overflow:hidden;
+}
+
+.slide-down-enter.slide-down-enter-active, .slide-down-appear.slide-down-appear-active {
+    max-height:600px;
+    transition: all 300ms ease-in;
+}
+
+.slide-down-leave {
+    max-height:600px;
+    overflow:hidden
+}
+
+.slide-down-leave.slide-down-leave-active {
+    max-height:0;
+    transition: all 300ms ease-out;
+}
+
+//--[ /ResultItem ]--------------------------------------------------------------
