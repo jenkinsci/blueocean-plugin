@@ -103,12 +103,16 @@ gulp.task("lint", () => (
         .pipe(lint.failAfterError())
 ));
 
-gulp.task("test", () => (
+gulp.task("test-mocha", () => (
     gulp.src(config.test.sources)
         .pipe(mocha({
             compilers: { js: babelCompiler }
         }))
 ));
+
+gulp.task("test", ['test-karma']);
+
+gulp.task("test-debug", ['test-karma-debug']);
 
 gulp.task("test-karma", (done) => {
     new Karma({

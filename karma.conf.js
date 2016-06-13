@@ -11,14 +11,14 @@ module.exports = function (config) {
 
         // include only tests here; browserify will find the rest
         files: [
-            'test/**/*-spec.js'
+            'test/**/*-spec.+(js|jsx)'
         ],
 
         exclude: [],
 
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'test/**/*-spec.js': ['browserify']
+            'test/**/*-spec.+(js|jsx)': ['browserify']
         },
 
         browserify: {
@@ -36,7 +36,7 @@ module.exports = function (config) {
         },
 
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress'],
+        reporters: ['mocha'],
 
         // web server port
         port: 9876,

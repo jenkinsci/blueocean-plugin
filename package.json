@@ -48,6 +48,7 @@
         "karma-browserify": "5.0.5",
         "karma-chrome-launcher": "1.0.1",
         "karma-mocha": "1.0.1",
+        "karma-mocha-reporter": "2.0.3",
         "karma-phantomjs-launcher": "1.0.0",
         "mocha": "2.4.5",
         "normalize.css": "^4.1.1",
