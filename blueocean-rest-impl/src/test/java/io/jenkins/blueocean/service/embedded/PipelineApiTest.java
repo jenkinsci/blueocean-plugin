@@ -512,5 +512,26 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals(queue.size(),2);
         Assert.assertEquals(((Map) queue.get(0)).get("expectedBuildNumber"), 4);
         Assert.assertEquals(((Map) queue.get(1)).get("expectedBuildNumber"), 3);
+        System.out.println(request().get("/organizations/jenkins/pipelines/pipeline1/queue").build(String.class));
+
+    }
+
+    @Test
+    public void testNewPipelineQueueItem() throws Exception {
+        FreeStyleProject p1 = j.createFreeStyleProject("pipeline1");
+        FreeStyleProject p2 = j.createFreeStyleProject("pipeline2");
+        FreeStyleProject p3 = j.createFreeStyleProject("pipeline3");
+        p1.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
+        p2.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
+        p3.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
+        p1.scheduleBuild2(0).waitForStart();
+        p2.scheduleBuild2(0).waitForStart();
+
+        Map r = request().post("/organizations/jenkins/pipelines/pipeline3/queue/new").build(Map.class);
+
+        Assert.assertEquals("3", r.get("id"));
+
+        Assert.assertNotNull(p3.getQueueItem());
+        Assert.assertEquals(Long.toString(p3.getQueueItem().getId()), r.get("id"));
     }
 }

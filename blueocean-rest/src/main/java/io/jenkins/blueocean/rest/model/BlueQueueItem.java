@@ -1,8 +1,13 @@
 package io.jenkins.blueocean.rest.model;
 
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static io.jenkins.blueocean.commons.JsonConverter.DATE_FORMAT_STRING;
+
 
 /**
  * This class models an item waiting in the queue for an executor so that
@@ -10,7 +15,10 @@ import java.util.Date;
  *
  * @author Ivan Meredith
  */
-public abstract class BlueQueueItem extends Resource {
+@ExportedBean
+public abstract class BlueQueueItem {
+
+    public static final String QUEUED_TIME = "qeueudTime";
 
     /**
      * @return Id of the item in the queue. Much be unique in the queue of a pipeline
@@ -29,12 +37,15 @@ public abstract class BlueQueueItem extends Resource {
      *
      * @return Time the item entered the queue.
      */
-    @Exported
     public abstract Date getQueuedTime();
 
+    @Exported(name=QUEUED_TIME)
+    public final String getQueuedTimeString(){
+        return new SimpleDateFormat(DATE_FORMAT_STRING).format(getQueuedTime());
+    }
     /**
      *
-     * @return The expected build number of the build. This may change.
+     * @returnx  The expected build number of the build. This may change.
      */
     @Exported
     public abstract int getExpectedBuildNumber();
