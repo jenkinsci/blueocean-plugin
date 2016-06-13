@@ -1,10 +1,11 @@
 FROM jenkinsci/jenkins:latest
 
-COPY blueocean-commons/target/blueocean-commons.hpi /usr/share/jenkins/ref/plugins/
-COPY blueocean-dashboard/target/blueocean-dashboard.hpi /usr/share/jenkins/ref/plugins/
-COPY blueocean-plugin/target/blueocean-plugin.hpi /usr/share/jenkins/ref/plugins/
-COPY blueocean-rest/target/blueocean-rest.hpi /usr/share/jenkins/ref/plugins/
-COPY blueocean-web/target/blueocean-web.hpi /usr/share/jenkins/ref/plugins/
+ADD blueocean-commons/target/blueocean-commons.hpi /usr/share/jenkins/ref/plugins/
+ADD blueocean-dashboard/target/blueocean-dashboard.hpi /usr/share/jenkins/ref/plugins/
+ADD blueocean-plugin/target/blueocean.hpi /usr/share/jenkins/ref/plugins/blueocean-plugin.hpi
+ADD blueocean-rest/target/blueocean-rest.hpi /usr/share/jenkins/ref/plugins/
+ADD blueocean-rest-impl/target/blueocean-rest-impl.hpi /usr/share/jenkins/ref/plugins/
+ADD blueocean-web/target/blueocean-web.hpi /usr/share/jenkins/ref/plugins/
 
 USER root
 
