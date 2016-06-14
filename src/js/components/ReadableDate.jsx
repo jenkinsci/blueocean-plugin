@@ -34,7 +34,7 @@ export class ReadableDate extends Component {
         this.state = {date: null};
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.handleProps(this.props);
     }
 
