@@ -22,7 +22,6 @@
             <link href="${resURL}/plugin/blueocean-web/assets/css/normalize.css" rel="stylesheet"/>
 
             <!-- Icons + Fonts -->
-            <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
             <link rel="stylesheet" href="${resURL}/plugin/blueocean-web/assets/css/latofonts.css" type="text/css"/>
             <link rel="stylesheet" href="${resURL}/plugin/blueocean-web/assets/octicons/octicons.css" type="text/css"/>
 
