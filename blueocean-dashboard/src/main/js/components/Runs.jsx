@@ -1,9 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    CommitHash, ReadableDate, StatusIndicator, TimeDuration,
+    CommitHash, ReadableDate, RunningStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
 import { removeLastUrlSegment } from '../util/UrlUtils';
+import moment from 'moment';
 
 const { object, string, any } = PropTypes;
 
@@ -40,6 +41,8 @@ export default class Runs extends Component {
         } = this;
 
         const resultRun = result === 'UNKNOWN' ? state : result;
+        const estimatedDuration = this.context.pipeline.estimatedDurationInMillis;
+        const startTime = moment.parseZone(this.props.result.startTime).valueOf();
 
         const baseUrl = removeLastUrlSegment(this.context.location.pathname);
         const url = `${baseUrl}/detail/${pipeline}/${id}/pipeline`;
@@ -50,7 +53,7 @@ export default class Runs extends Component {
 
         return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
             <td>
-                <StatusIndicator result={resultRun} />
+                <RunningStatusIndicator result={resultRun} startTime={startTime} estimatedDuration={estimatedDuration} />
             </td>
             <td>
                 {id}
