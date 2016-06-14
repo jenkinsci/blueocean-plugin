@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import {Icon} from 'react-material-icons-blue';
 
 const { func, number, string } = PropTypes;
 
@@ -87,7 +88,13 @@ export class Toast extends Component {
                 <div className="toast">
                     <span className="text">{this.props.text}</span>
                     <a className="action" onClick={() => this.onActionClick()}>{this.props.action}</a>
-                    <a className="dismiss" onClick={() => this.onDismissClick()}>X</a>
+                    <a className="dismiss" onClick={() => this.onDismissClick()}>
+                      <Icon {...{
+                          size: 18,
+                          icon: 'clear',
+                          style: { fill: "#fff" },
+                      }} />
+                    </a>
                 </div>
                 : null }
             </ReactCSSTransitionGroup>

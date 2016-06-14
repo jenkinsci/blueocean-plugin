@@ -76,7 +76,7 @@ Assuming you're in a directory containing clones of JDL and Blue Ocean:
 ```bash
 $ cd blueocean/blueocean-web/
 $ npm install ../../jenkins-design-language/
-$ cd ../blueocean-admin/
+$ cd ../blueocean-dashboard/
 $ npm install ../../jenkins-design-language/
 ```
 
@@ -103,7 +103,7 @@ You should see something like `Watching for changes in /Users/jdoe/work/jenkins-
 This will need to be done for any other modules related to your testing. *In another terminal:*
 
 ```bash
-$ cd blueocean/blueocean-admin/
+$ cd blueocean/blueocean-dashboard/
 $ slink ../../jenkins-design-language/
 ```
 It may seem strange that you need to do this, but there's a good reason. Blue Ocean does not load and
@@ -129,7 +129,7 @@ code, triggering a rebundle of `blueocean-web` code, making it available to the 
 Basically ... repeating Steps 2, 4, and 5 in other HPI plugins that you are working on.
 
 ```bash
-$ cd blueocean/blueocean-admin/
+$ cd blueocean/blueocean-dashboard/
 $ npm run gulp bundle:watch
 ```
 
