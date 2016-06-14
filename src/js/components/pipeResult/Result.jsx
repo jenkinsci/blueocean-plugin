@@ -48,14 +48,14 @@ class PipelineResult extends Component {
                 Number(durationInMillis), 'milliseconds').humanize();
 
         // Grab author from each change, run through a set for uniqueness
-        // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059 
+        // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
         const authors = [...(new Set(changeSet.map(change => change.author.fullName)):any)];
 
         return (
         <div className="pipeline-result">
             <section className="status">
                 <Icon {...{
-                    size: 125,
+                    size: 92,
                     icon: iconFromResult(result),
                     style: { fill: "#fff" }
                 }} />
@@ -95,7 +95,7 @@ class PipelineResult extends Component {
                     <div className="times">
                         <div>
                             <Icon {...{
-                                size: 25,
+                                size: 20,
                                 icon: 'timelapse',
                                 style: { fill: "#fff" },
                             }} />
@@ -103,7 +103,7 @@ class PipelineResult extends Component {
                         </div>
                         <div>
                             <Icon {...{
-                                size: 25,
+                                size: 20,
                                 icon: 'access_time',
                                 style: { fill: "#fff" },
                             }} />

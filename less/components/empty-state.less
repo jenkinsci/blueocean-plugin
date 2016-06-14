@@ -2,6 +2,9 @@
   display: flex;
   justify-content: center;
 
+  @empty-state-teal: #4FBCC0;
+  @empty-state-green: #8BE187;
+
   .empty-state-container {
     display: flex;
     justify-content: center;
@@ -9,9 +12,9 @@
     min-width: 40rem;
     max-width: 80rem;
     padding: 4rem 4rem;
-    margin: 2rem 4rem;
+    margin: 4rem 4rem;
     border-radius: 2px;
-    background-color: @brand-success-lite;
+    background-image: linear-gradient(135deg, @empty-state-green 0%, @empty-state-teal 100%);
 
     .empty-state-icon {
       margin-right: 3rem;
@@ -27,7 +30,6 @@
 
     .empty-state-content {
       color: white;
-      font-family: @font-family-nav;
       max-width: 40rem;
 
       h1 {
@@ -35,7 +37,7 @@
       }
 
       button {
-        .btn-styles(transparent, white, white);
+        .btn-styles(white, white, @empty-state-teal);
       }
     }
 

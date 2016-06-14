@@ -26,10 +26,12 @@ html {
 
 body {
     color: @text-color;
-    text-rendering: optimizeSpeed;
-    font-feature-settings: "kern" on, "liga" off;
-    -moz-font-feature-settings: "kern" on, "liga" off;
-    //TODO: Do we really want this for everything? -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeSpeed;
+  font-feature-settings: "kern" on, "liga" off;
+  -moz-font-feature-settings: "kern" on, "liga" off;
+  // Want to change this? Pick a fight with i386
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 //
@@ -41,17 +43,37 @@ body {
 }
 
 // Default All headings to basically "bold and display:block"
-h1, h2, h3, h4, h5 h6 {
-    font-size: 100%;
-    margin: 0;
-    padding: 0;
+h1, h2, h3, h4, h5, h6 {
+  font-size: 100%;
+  font-family: @font-family-ss-light;
+  margin: 0;
+  padding: 0;
 }
 
-// Make h1 slightly bigger :)
 h1 {
-    font-size: 1.8rem;
+    font-size: @font-size-h1;
     font-family: @font-family-nav;
     letter-spacing: 1.1px;
+}
+
+h2 {
+  font-size: @font-size-h2;
+}
+
+h3 {
+  font-size: @font-size-h3;
+}
+
+h4 {
+  font-size: @font-size-h4;
+}
+
+h5 {
+  font-size: @font-size-h5;
+}
+
+h6 {
+  font-size: @font-size-h6;
 }
 
 main {
@@ -641,6 +663,10 @@ code.hash {
 
     a {
         color: white;
+    }
+
+    h1 {
+      font-size: 1.8rem;
     }
 }
 
