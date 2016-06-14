@@ -49,7 +49,7 @@ export class ReadableDate extends Component {
             this.timer = 0;
         }
 
-        let date = null; // TODO: type this to ?moment, whatever the fuck that produces
+        let date = null;
 
         if (props.date) {
             // enforce a ISO-8601 date and try to set proper timezone
