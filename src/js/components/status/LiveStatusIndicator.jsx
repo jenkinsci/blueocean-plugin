@@ -22,14 +22,14 @@ const validResultValues = {
 export type Result = $Keys<typeof validResultValues>;
 
 /**
- * RunningStatusIndicator is a wrapper around StatusIndicator that allows
+ * LiveStatusIndicator is a wrapper around StatusIndicator that allows
  * for an in-progress status to self update.
  *
  * Properties:
  * "estimatedDuration": time in millis over which the progress indicator will update.
  * "startTime": epoch millis indicating when tracking of progress begins from.
  */
-export class RunningStatusIndicator extends Component {
+export class LiveStatusIndicator extends Component {
 
     static validResultValues:typeof validResultValues;
 
@@ -130,7 +130,7 @@ export class RunningStatusIndicator extends Component {
     }
 }
 
-RunningStatusIndicator.propTypes = {
+LiveStatusIndicator.propTypes = {
     result: string,
     percentage: number,
     width: string,
@@ -139,4 +139,4 @@ RunningStatusIndicator.propTypes = {
     estimatedDuration: number,
 };
 
-RunningStatusIndicator.validResultValues = validResultValues;
+LiveStatusIndicator.validResultValues = validResultValues;

@@ -2,29 +2,29 @@ import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 import moment from 'moment';
 
-import { RunningStatusIndicator } from '../components';
+import { LiveStatusIndicator } from '../components';
 
-storiesOf('RunningStatusIndicator', module)
+storiesOf('LiveStatusIndicator', module)
     .add('10s, start now', scenario1)
     .add('60s, started 30s ago', scenario2)
     .add('already exceeded estimate', scenario3);
 
 function scenario1() {
     return (
-        <RunningStatusIndicator result={'running'} estimatedDuration={10000} />
+        <LiveStatusIndicator result={'running'} estimatedDuration={10000} />
     );
 }
 
 function scenario2() {
     const started = moment().subtract(30, 'seconds').valueOf();
     return (
-        <RunningStatusIndicator result={'running'} startTime={started} estimatedDuration={1000*60} />
+        <LiveStatusIndicator result={'running'} startTime={started} estimatedDuration={1000*60} />
     );
 }
 
 function scenario3() {
     const started = moment().subtract(1, 'minute').valueOf();
     return (
-        <RunningStatusIndicator result={'running'} startTime={started} estimatedDuration={1000*30} />
+        <LiveStatusIndicator result={'running'} startTime={started} estimatedDuration={1000*30} />
     );
 }
