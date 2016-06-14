@@ -18,26 +18,14 @@ public class ExtensionClassImpl extends BlueExtensionClass {
     @Override
     public Collection<String> getClasses() {
         List<String> classes = new ArrayList<>();
-        collectSuperInterfaces(classes, baseClass);
         collectSuperClasses(classes, baseClass);
         return classes;
-    }
-
-    private void collectSuperInterfaces(List<String> classes, Class base){
-        for(Class c:base.getInterfaces()){
-            if(classes.contains(c.getName()) && !isBlackListed(c.getName())){
-                continue;
-            }
-            classes.add(c.getName());
-            collectSuperInterfaces(classes,c);
-        }
     }
 
     private void collectSuperClasses(List<String> classes, Class base){
         Class clz = base.getSuperclass();
         if(clz != null && !isBlackListed(clz.getName()) && !classes.contains(clz.getName())){
             classes.add(clz.getName());
-            collectSuperInterfaces(classes,clz);
             collectSuperClasses(classes,clz);
         }
     }
