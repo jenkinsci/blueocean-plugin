@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    CommitHash, ReadableDate, RunningStatusIndicator, TimeDuration,
+    CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
 import { removeLastUrlSegment } from '../util/UrlUtils';
@@ -53,7 +53,7 @@ export default class Runs extends Component {
 
         return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
             <td>
-                <RunningStatusIndicator result={resultRun} startTime={startTime} estimatedDuration={estimatedDuration} />
+                <LiveStatusIndicator result={resultRun} startTime={startTime} estimatedDuration={estimatedDuration} />
             </td>
             <td>
                 {id}
