@@ -83,4 +83,5 @@ export const State = Record({
     currentRuns: null,
     branches: null,
     currentBranches: null,
+    testResults: null,
 });

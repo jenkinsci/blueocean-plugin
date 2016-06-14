@@ -14,6 +14,7 @@ export const ACTION_TYPES = keymirror({
     SET_BRANCHES_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
+    SET_TEST_RESULTS: null,
 });
 
 export const actionHandlers = {
@@ -55,6 +56,9 @@ export const actionHandlers = {
         const branches = state.get('branches') || {};
         branches[id] = payload;
         return state.set('branches', branches);
+    },
+    [ACTION_TYPES.SET_TEST_RESULTS](state, { payload }): State {
+        return state.set('testResults', payload);
     },
 };
 
@@ -474,5 +478,11 @@ export const actions = {
                 payload: null,
                 type: actionType,
             }));
+    },
+    
+    fetchTestResults() {
+        return (dispatch) => {
+            return dispatch({ type: ACTION_TYPES.SET_TEST_RESULTS, payload: {message: 'Hi Thor'} });
+        };
     },
 };

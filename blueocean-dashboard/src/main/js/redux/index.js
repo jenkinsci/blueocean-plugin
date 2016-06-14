@@ -9,6 +9,7 @@ export {
     branches,
     isMultiBranch,
     currentBranches,
+    testResults,
 } from './reducer';
 export { ACTION_TYPES, actionHandlers, actions } from './actions';
 export { connect } from 'react-redux';
