@@ -29,10 +29,11 @@ export default class PullRequest extends Component {
                 location,
                 pipeline: {
                     name: pipelineName,
+                    organization,
             },
                 },
         } = this;
-        const url = `/pipelines/${pipelineName}/detail/${name}/${id}/pipeline`;
+        const url = `organizations/${organization}/${pipelineName}/detail/${name}/${id}/pipeline`;
         const open = () => {
             location.pathname = url;
             router.push(location);
