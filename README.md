@@ -76,7 +76,7 @@ Assuming you're in a directory containing clones of JDL and Blue Ocean:
 ```bash
 $ cd blueocean/blueocean-web/
 $ npm install ../../jenkins-design-language/
-$ cd ../blueocean-admin/
+$ cd ../blueocean-dashboard/
 $ npm install ../../jenkins-design-language/
 ```
 
