@@ -32,14 +32,14 @@ export function getGlyphFor(result:Result) {
     switch (result) {
         case "aborted":
             return (
-                <g className="glyph">
+                <g className="result-status-glyph">
                     <polygon points="-5 -1 5 -1 5 1 -5 1"/>
                 </g>
             );
         case "unstable":
             // "!"
             return (
-                <g className="glyph">
+                <g className="result-status-glyph">
                     <polygon points="-1 -5 1 -5 1 1 -1 1"/>
                     <polygon points="-1 3 1 3 1 5 -1 5"/>
                 </g>
@@ -47,14 +47,14 @@ export function getGlyphFor(result:Result) {
         case "success":
             // check-mark
             return (
-                <g className="glyph">
+                <g className="result-status-glyph">
                     <polygon points={checkMarkPoints}/>
                 </g>
             );
         case "failure":
             // "X"
             return (
-                <g className="glyph">
+                <g className="result-status-glyph">
                     <polygon points={crossPoints}/>
                 </g>
             );
@@ -70,7 +70,7 @@ export function getGlyphFor(result:Result) {
     }
     // "?" for unknown / invalid
     return (
-        <g className="glyph">
+        <g className="result-status-glyph">
             <path d={questionMarkPath}/>
         </g>
     );
