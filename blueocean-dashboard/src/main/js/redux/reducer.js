@@ -12,7 +12,8 @@ export const runs = createSelector([adminStore], store => store.runs);
 export const currentRuns = createSelector([adminStore], store => store.currentRuns);
 export const branches = createSelector([adminStore], store => store.branches);
 export const logs = createSelector([adminStore], store => store.logs);
-export const nodes = createSelector([adminStore], store => store.nodes);
+export const node = createSelector([adminStore], store => store.node);
+export const steps = createSelector([adminStore], store => store.steps);
 export const currentBranches = createSelector([adminStore], store => store.currentBranches);
 export const isMultiBranch = createSelector(
     [pipeline], (pipe) => {

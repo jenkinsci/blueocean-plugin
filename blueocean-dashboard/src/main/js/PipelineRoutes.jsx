@@ -28,7 +28,9 @@ export default (
 
                 <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
                     <IndexRedirect to="pipeline" />
-                    <Route path="pipeline" component={RunDetailsPipeline} />
+                    <Route path="pipeline" component={RunDetailsPipeline} >
+                        <Route path=":node" component={RunDetailsPipeline} />
+                    </Route>
                     <Route path="changes" component={RunDetailsChanges} />
                     <Route path="tests" component={RunDetailsTests} />
                     <Route path="artifacts" component={RunDetailsArtifacts} />

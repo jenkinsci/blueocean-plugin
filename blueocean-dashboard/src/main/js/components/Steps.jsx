@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import Node from './Node';
+import Step from './Step';
 
 export default class Nodes extends Component {
     render() {
@@ -12,10 +12,11 @@ export default class Nodes extends Component {
             model,
             nodesBaseUrl,
         } = nodeInformation;
+
         return (<div>
             {
               model.map((item, index) =>
-                <Node
+                <Step
                   key={index}
                   node={item}
                   nodesBaseUrl={nodesBaseUrl}

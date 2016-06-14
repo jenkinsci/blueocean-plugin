@@ -11,7 +11,7 @@ export const STATES = keymirror({
     FINISHED: null,
 });
 
-export const getStagesInformation = (nodes) => {
+export const getNodesInformation = (nodes) => {
     const information = {};
 
   // calculation of information about stages

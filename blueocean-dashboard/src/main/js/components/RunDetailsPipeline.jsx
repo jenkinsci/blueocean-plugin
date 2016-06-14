@@ -1,12 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
-import Nodes from './Nodes';
+import Steps from './Steps';
 import {
-    nodes as nodeSelector,
+    steps as stepsSelector,
     logs as logSelector,
+    node as nodeSelector,
     actions,
     calculateRunLogURLObject,
-    calculateNodeBaseUrl,
+    calculateStepsBaseUrl,
     connect,
     createSelector,
 } from '../redux';
@@ -17,7 +18,9 @@ const { string, object, any, func } = PropTypes;
 
 export class RunDetailsPipeline extends Component {
     componentWillMount() {
-        if (this.context.config && this.context.params) {
+        if (this.context.params.node) {
+            this.props.fetchSteps(this.generateConfig());
+        } else {
             if (this.props.fetchNodes) {
                 this.props.fetchNodes(this.generateConfig());
             }
@@ -26,23 +29,24 @@ export class RunDetailsPipeline extends Component {
 
     generateConfig() {
         const {
-              params: { pipeline: name, branch, runId },
+              params: { pipeline: name, branch, runId, node: nodeParam },
               config = {},
         } = this.context;
-        const { isMultiBranch } = this.props;
-        const mergedConfig = { ...config, name, branch, runId, isMultiBranch };
+        const { isMultiBranch, nodeId } = this.props;
+        const node = nodeParam || nodeId;
+        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node };
         return mergedConfig;
     }
 
     render() {
         const { pipeline: name, branch, runId } = this.context.params;
-        const { isMultiBranch, nodes } = this.props;
+        const { isMultiBranch, steps } = this.props;
 
-        if (!nodes) {
+        if (!steps) {
             return null;
         }
         const mergedConfig = this.generateConfig();
-        const key = calculateNodeBaseUrl(mergedConfig);
+        const key = calculateStepsBaseUrl(mergedConfig);
         const logGeneral = calculateRunLogURLObject(mergedConfig);
         return (
           <div>
@@ -52,8 +56,8 @@ export class RunDetailsPipeline extends Component {
               runId={runId}
             />
             <LogToolbar fileName={logGeneral.fileName} url={logGeneral.url} />
-            { nodes && <Nodes
-              nodeInformation={nodes[key]}
+            { steps && <Steps
+              nodeInformation={steps[key]}
               {...this.props}
             />
             }
@@ -68,7 +72,9 @@ RunDetailsPipeline.propTypes = {
     fileName: string,
     url: string,
     fetchNodes: func,
-    nodes: any,
+    fetchSteps: func,
+    steps: any,
+    nodeId: any,
 };
 
 RunDetailsPipeline.contextTypes = {
@@ -77,6 +83,7 @@ RunDetailsPipeline.contextTypes = {
     pipeline: object,
 };
 
-const selectors = createSelector([nodeSelector, logSelector], (nodes, logs) => ({ nodes, logs }));
+const selectors = createSelector(
+    [stepsSelector, logSelector, nodeSelector], (steps, logs, nodeId) => ({ steps, logs, nodeId }));
 
 export default connect(selectors, actions)(RunDetailsPipeline);

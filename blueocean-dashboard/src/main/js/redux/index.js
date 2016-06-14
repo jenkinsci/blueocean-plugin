@@ -6,7 +6,8 @@ export {
     pipeline,
     runs,
     logs,
-    nodes,
+    node,
+    steps,
     currentRuns,
     branches,
     isMultiBranch,
@@ -19,6 +20,7 @@ export {
   calculateNodeBaseUrl,
   calculateRunLogURLObject,
   calculateLogUrl,
+  calculateStepsBaseUrl,
 } from './actions';
 export { connect } from 'react-redux';
 export { createSelector } from 'reselect';

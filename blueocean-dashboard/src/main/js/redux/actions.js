@@ -3,7 +3,7 @@ import keymirror from 'keymirror';
 import fetch from 'isomorphic-fetch';
 import { State } from '../components/records';
 
-import { getStagesInformation } from '../util/logDisplayHelper';
+import { getNodesInformation } from '../util/logDisplayHelper';
 
 // helper functions
 
@@ -26,6 +26,17 @@ export function calculateNodeBaseUrl(config) {
         return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/`;
     }
     return `${baseUrl}/runs/${runId}/nodes/`;
+}
+
+export function calculateStepsBaseUrl(config) {
+    const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
+    const baseUrl =
+      `${_appURLBase}/rest/organizations/jenkins/` +
+      `pipelines/${uriString(name)}`;
+    if (isMultiBranch) {
+        return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/${node}/steps`;
+    }
+    return `${baseUrl}/runs/${runId}/nodes/${node}/steps`;
 }
 
 export function calculateRunLogURLObject(config) {
@@ -59,7 +70,8 @@ export const ACTION_TYPES = keymirror({
     SET_BRANCHES_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
-    SET_NODES: null,
+    SET_STEPS: null,
+    SET_NODE: null,
     SET_LOGS: null,
 });
 
@@ -88,6 +100,9 @@ export const actionHandlers = {
     [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
         return state.set('currentRuns', payload);
     },
+    [ACTION_TYPES.SET_NODE](state, { payload }): State {
+        return state.set('node', payload);
+    },
     [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
         const runs = { ...state.runs } || {};
         runs[id] = payload;
@@ -104,10 +119,10 @@ export const actionHandlers = {
         branches[id] = payload;
         return state.set('branches', branches);
     },
-    [ACTION_TYPES.SET_NODES](state, { payload }): State {
-        const nodes = { ...state.nodes } || {};
-        nodes[payload.nodesBaseUrl] = payload;
-        return state.set('nodes', nodes);
+    [ACTION_TYPES.SET_STEPS](state, { payload }): State {
+        const steps = { ...state.steps } || {};
+        steps[payload.nodesBaseUrl] = payload;
+        return state.set('steps', steps);
     },
     [ACTION_TYPES.SET_LOGS](state, { payload }): State {
         const logs = { ...state.logs } || {};
@@ -539,7 +554,9 @@ export const actions = {
             }));
     },
     /*
-      For the detail view we need to fetch the different nodes of a run.
+      For the detail view we need to fetch the different nodes of
+      a run in case we do not have specific node, to
+      determine which one we have to show in the detail view.
       We later store them with the key: nodesBaseUrl
       so we only fetch them once.
     */
@@ -551,10 +568,44 @@ export const actions = {
                 return exports.fetchJson(
                   nodesBaseUrl,
                   (json) => {
-                      const information = getStagesInformation(json);
-                      information.nodesBaseUrl = nodesBaseUrl;
+                      const information = getNodesInformation(json);
+                      const focused = information.model.filter((item) => item.isFocused)[0];
+                      let node;
+                      if (focused) {
+                          node = focused.id;
+                      } else {
+                          node = (information.model[information.model.length - 1]).id;
+                      }
+                      const mergedConfig = { ...config, node };
+                      dispatch({
+                          type: ACTION_TYPES.SET_NODE,
+                          payload: node,
+                      });
+                      return dispatch(actions.fetchSteps(mergedConfig));
+                  },
+                  (error) => console.error('error', error)
+                );
+            }
+            return null;
+        };
+    },
+    /*
+      For the detail view we need to fetch the different steps of a nodes.
+      We later store them with the key: nodesBaseUrl
+      so we only fetch them once.
+    */
+    fetchSteps(config) {
+        return (dispatch, getState) => {
+            const data = getState().adminStore.steps;
+            const stepBaseUrl = calculateStepsBaseUrl(config);
+            if (!data || !data[stepBaseUrl] || !data[stepBaseUrl]) {
+                return exports.fetchJson(
+                  stepBaseUrl,
+                  (json) => {
+                      const information = getNodesInformation(json);
+                      information.nodesBaseUrl = stepBaseUrl;
                       return dispatch({
-                          type: ACTION_TYPES.SET_NODES,
+                          type: ACTION_TYPES.SET_STEPS,
                           payload: information,
                       });
                   },
@@ -564,7 +615,7 @@ export const actions = {
             return null;
         };
     },
-    /*
+    /* l
       Get a specific log for a node, fetch it only if needed.
       key for cache: logUrl = calculateLogUrl
      */

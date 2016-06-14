@@ -8,17 +8,17 @@ import nock from 'nock';
 import {
   actions,
   ACTION_TYPES,
-  nodes as nodesSelector,
+  steps as stepsSelector,
 } from '../../main/js/redux';
 
 import { runNodesSuccess, runNodesFail, runNodesRunning } from './runNodes';
 import {firstFinishedSecondRunning } from './runNodes-firstFinishedSecondRunning';
 import { firstRunning } from './runNodes-firstRunning';
 import { finishedMultipleFailure } from './runNodes-finishedMultipleFailure';
-import {getStagesInformation} from './../../main/js/util/logDisplayHelper';
+import {getNodesInformation} from './../../main/js/util/logDisplayHelper';
 
-import Node from '../../main/js/components/Node';
-import Nodes from '../../main/js/components/Nodes';
+import Step from '../../main/js/components/Step';
+import Steps from '../../main/js/components/Steps';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -32,20 +32,20 @@ const assertResult = (item, {finished = true, failed = false, errors = 0 , runni
 
 describe("Logic test of different runs", () => {
   it("handles success", () => {
-    const stagesInformationSuccess = getStagesInformation(runNodesSuccess);
+    const stagesInformationSuccess = getNodesInformation(runNodesSuccess);
     assertResult(stagesInformationSuccess, {});
   });
   it("handles error", () => {
-    let stagesInformationFail = getStagesInformation(runNodesFail);
+    let stagesInformationFail = getNodesInformation(runNodesFail);
     assertResult(stagesInformationFail, {failed: true, errors: 2});
-    stagesInformationFail = getStagesInformation(finishedMultipleFailure);
+    stagesInformationFail = getNodesInformation(finishedMultipleFailure);
     assertResult(stagesInformationFail, {failed: true, errors: 3});
   });
   it("handles running", () => {
     const runningSamples = [runNodesRunning, firstRunning, firstFinishedSecondRunning];
     runningSamples
       .map((item) => assertResult(
-        getStagesInformation(item),
+        getNodesInformation(item),
         {finished: false, failed: null, running: 1}
       ));
   });
@@ -54,19 +54,19 @@ describe("Logic test of different runs", () => {
 describe("React component test of different runs", () => {
   it("handles success", () => {
     const wrapper = shallow(
-      <Nodes nodeInformation={getStagesInformation(runNodesSuccess)}/>);
+      <Steps nodeInformation={getNodesInformation(runNodesSuccess)}/>);
     assert.isNotNull(wrapper);
     assert.equal(wrapper.find('Node').length, runNodesSuccess.length)
   });
   it("handles error", () => {
     const wrapper = shallow(
-      <Nodes nodeInformation={getStagesInformation(runNodesFail)}/>);
+      <Steps nodeInformation={getNodesInformation(runNodesFail)}/>);
     assert.isNotNull(wrapper);
     assert.equal(wrapper.find('Node').length, runNodesFail.length)
   });
   it("handles error node", () => {
     const wrapper = shallow(
-      <Node node={getStagesInformation(runNodesFail).model[2]}/>);
+      <Step node={getNodesInformation(runNodesFail).model[2]}/>);
     assert.isNotNull(wrapper);
   });
 });
@@ -93,16 +93,16 @@ Tue May 24 13:42:18 CEST 2016
 Tue May 24 13:42:38 CEST 2016
 `);
     const store = mockStore({adminStore: {logs: []}});
-    const runNodesInformation = getStagesInformation(runNodesSuccess);
+    const runNodesInformation = getNodesInformation(runNodesSuccess);
     const model = runNodesInformation.model;
     return store.dispatch(
-      actions.generateData('http://example.com' + nodes, ACTION_TYPES.SET_NODES))
+      actions.generateData('http://example.com' + nodes, ACTION_TYPES.SET_STEPS))
       .then(() => { // return of async actions
-        assert.equal(store.getActions()[0].type, 'SET_NODES');
+        assert.equal(store.getActions()[0].type, 'SET_STEPS');
         const modelLength = model.length;
         const payload = store.getActions()[0].payload;
         assert.equal(payload.length, modelLength);
-        const selector = nodesSelector({adminStore: {nodes: model}});
+        const selector = stepsSelector({adminStore: {steps: model}});
         assert.equal(selector.length, modelLength);
       });
   });
