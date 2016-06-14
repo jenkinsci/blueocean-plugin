@@ -480,9 +480,22 @@ export const actions = {
             }));
     },
     
-    fetchTestResults() {
+    fetchTestResults(config, runDetails) {
         return (dispatch) => {
-            return dispatch({ type: ACTION_TYPES.SET_TEST_RESULTS, payload: {message: 'Hi Thor'} });
+            //const appUrlBase = config.getAppURLBase(); // TODO: Should use this instead
+            const appUrlBase = '/jenkins';
+            let url;
+            
+            if (runDetails.isMultiBranch) {
+                url = `TODO`; // Construct different URL for multi-branch
+            } else {
+                url = `${appUrlBase}/blue/rest/organizations/${runDetails.organization}/pipelines/${runDetails.branch}/runs/${runDetails.runId}/testReport/result`;
+            }
+
+            return dispatch(actions.generateData(
+                url,
+                ACTION_TYPES.SET_TEST_RESULTS
+            ));
         };
     },
 };

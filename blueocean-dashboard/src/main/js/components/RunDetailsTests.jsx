@@ -17,21 +17,34 @@ export default class RunDetailsTests extends Component {
     }
 
     componentWillMount() {
-        console.log(this.props);
-        this.props.fetchTestResults();
+        this.props.fetchTestResults(
+            this.context.config, 
+            {
+                isMultiBranch: this.props.isMultiBranch,
+                organization: this.props.params.organization,
+                pipeline: this.props.params.pipeline,
+                branch: this.props.params.branch,
+                runId: this.props.params.runId,
+            }
+        );
     }
 
     render() {
         const { result, testResults } = this.props;
-
-        console.log(testResults);
         
-        if (!testResults) {
+        if (!testResults || !testResults.suites) {
             return null;
         }
 
+        // TODO: Move the rest of this into a plugin.
+        // passing it testResults via an ExtensionPoint ? Hmmm
+        const suites = testResults.suites;
         return (<div>
-            [{testResults.message}]
+            {
+                suites.map((suite) => 
+                    <div>{suite.name}</div>    
+                )
+            }
         </div>);
     }
 }
