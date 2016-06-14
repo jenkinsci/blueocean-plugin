@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import PipelineRowItem from './PipelineRowItem';
 import { PipelineRecord } from './records';
 
@@ -18,9 +19,10 @@ export default class Pipelines extends Component {
             return <div>No pipelines found.</div>;
         }
 
-        const dashboardText = !organization ?
-            'Dashboard' :
-            `Dashboard / ${organization}`;
+        const orgLink = organization ?
+            <Link to={`organizations/${organization}`} className="inverse">
+                {organization}
+            </Link> : '';
 
         const pipelineRecords = pipelines
             .map(data => new PipelineRecord(data))
@@ -42,7 +44,11 @@ export default class Pipelines extends Component {
             <Page>
                 <PageHeader>
                     <Title>
-                        <h1>{dashboardText}</h1>
+                        <h1>
+                            <Link to="/" className="inverse">Dashboard</Link>
+                            { organization && ' / ' }
+                            { organization && orgLink }
+                        </h1>
                         <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
                             New Pipeline
                         </a>

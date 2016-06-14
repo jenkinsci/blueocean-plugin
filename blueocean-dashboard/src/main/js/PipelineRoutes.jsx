@@ -34,7 +34,7 @@ export default (
                     <Route path="artifacts" component={RunDetailsArtifacts} />
                 </Route>
 
-                <Redirect from=":pipeline/*" to=":pipeline/activity" />
+                <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
             </Route>
         </Route>
         <Route path="/pipelines" component={OrganizationPipelines}>
