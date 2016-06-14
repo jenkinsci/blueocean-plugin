@@ -31,7 +31,7 @@ export class RunningStatusIndicator extends Component {
             percentage: 0,
         };
 
-        this.runningStartMillis = - 1;
+        this.startTimeMillis = - 1;
         this.clearIntervalId = -1;
     }
 
@@ -44,6 +44,10 @@ export class RunningStatusIndicator extends Component {
     }
 
     _initializeProgress(props) {
+        // ensure we don't leak setInterval by proactively clearing it
+        // the code will restart the interval if the state dictates it
+        this._stopProgressUpdates();
+
         if (!props) {
             return;
         }
@@ -52,23 +56,19 @@ export class RunningStatusIndicator extends Component {
         const isRunning = cleanResult === validResultValues.running;
 
         if (isRunning) {
-            this.runningStartMillis = this.props.startTime || moment().valueOf();
-
-            this._updateProgress();
+            this.startTimeMillis = this.props.startTime || moment().valueOf();
 
             this.clearIntervalId = setInterval(() => {
                 this._updateProgress();
             }, 1000);
-        }
-        else
-        {
-            this._stopProgressUpdates();
+
+            this._updateProgress();
         }
     }
 
     _updateProgress() {
         const nowMillis = moment().valueOf();
-        const percentage = (nowMillis - this.runningStartMillis) / this.props.estimatedDuration * 100;
+        const percentage = (nowMillis - this.startTimeMillis) / this.props.estimatedDuration * 100;
         this.setState({
             percentage
         });
@@ -80,6 +80,7 @@ export class RunningStatusIndicator extends Component {
 
     _stopProgressUpdates() {
         clearInterval(this.clearIntervalId);
+        this.clearIntervalId = -1;
     }
 
     componentWillUnmount() {
