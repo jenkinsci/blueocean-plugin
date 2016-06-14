@@ -1,10 +1,13 @@
 package io.jenkins.blueocean.rest.model;
 
 import hudson.util.AdaptedIterator;
+import io.jenkins.blueocean.rest.hal.Link;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static sun.plugin.javascript.navig.JSType.Link;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -15,8 +18,13 @@ public class Containers {
     }
 
 
-    public static <T extends Resource> Container<T> fromResource(final List<T> base) {
+    public static <T extends Resource> Container<T> fromResource(final Link self, final List<T> base) {
         return new AbstractContainer<T>() {
+            @Override
+            public Link getLink() {
+                return self;
+            }
+
             @Override
             public T get(String name) {
                 int idx = Integer.parseInt(name);   // TODO: more graceful error check
@@ -36,8 +44,13 @@ public class Containers {
     }
 
 
-    public static <T> Container<Resource> from(final List<T> base) {
+    public static <T> Container<Resource> from(final Link self, final List<T> base) {
         return new AbstractContainer<Resource>() {
+            @Override
+            public Link getLink() {
+                return self;
+            }
+
             @Override
             public Resource get(String name) {
                 int idx = Integer.parseInt(name);   // TODO: more graceful error check
@@ -61,9 +74,14 @@ public class Containers {
         };
     }
 
-    public static <T> Container<Resource> from(final Map<String,T> base) {
+    public static <T> Container<Resource> from(final Link self, final Map<String,T> base) {
 
         return new AbstractContainer<Resource>() {
+            @Override
+            public Link getLink() {
+                return self;
+            }
+
             @Override
             public Resource get(String name) {
                 T u = base.get(name);
@@ -83,8 +101,13 @@ public class Containers {
         };
     }
 
-    public static <T extends Resource> Container<T> fromResourceMap(final Map<String,T> base) {
+    public static <T extends Resource> Container<T> fromResourceMap(final Link self, final Map<String,T> base) {
         return new AbstractContainer<T>() {
+            @Override
+            public Link getLink() {
+                return self;
+            }
+
             @Override
             public T get(String name) {
                 T u = base.get(name);

@@ -14,6 +14,8 @@ import org.kohsuke.stapler.verb.PUT;
 
 import java.io.IOException;
 
+import static org.eclipse.jgit.lib.ObjectChecker.parent;
+
 /**
  * {@link BlueOrganization} implementation for the embedded use.
  *
@@ -21,8 +23,6 @@ import java.io.IOException;
  * @author Kohsuke Kawaguchi
  */
 public class OrganizationImpl extends BlueOrganization {
-    private final OrganizationContainerImpl parent;
-
     private final UserContainerImpl users = new UserContainerImpl();
 
     /**
@@ -30,13 +30,12 @@ public class OrganizationImpl extends BlueOrganization {
      */
     public static final OrganizationImpl INSTANCE = new OrganizationImpl();
 
-    private OrganizationImpl(OrganizationContainerImpl parent) {
-        this.parent = parent;
+    private OrganizationImpl() {
     }
 
     @Override
     public Link getLink() {
-        return parent.getLink().rel(getName());
+        return new Link("/organizations/"+getName()+"/");
     }
 
     /**
