@@ -6,6 +6,7 @@ import { StatusIndicator, decodeResultValue } from './StatusIndicator';
 
 const {number, string} = PropTypes;
 
+// TODO: avoid duplicating flow constants from StatusIndicator
 const validResultValues = {
     success: 'success',
     failure: 'failure',
@@ -18,11 +19,19 @@ const validResultValues = {
 };
 
 // Enum type from const validResultValues
-//export type Result = $Keys<typeof validResultValues>;
+export type Result = $Keys<typeof validResultValues>;
 
+/**
+ * RunningStatusIndicator is a wrapper around StatusIndicator that allows
+ * for an in-progress status to self update.
+ *
+ * Properties:
+ * "estimatedDuration": time in millis over which the progress indicator will update.
+ * "startTime": epoch millis indicating when tracking of progress begins from.
+ */
 export class RunningStatusIndicator extends Component {
 
-    //static validResultValues:typeof validResultValues;
+    static validResultValues:typeof validResultValues;
 
     constructor(props) {
         super(props);
@@ -58,6 +67,9 @@ export class RunningStatusIndicator extends Component {
         if (isRunning) {
             this.startTimeMillis = this.props.startTime || moment().valueOf();
 
+            // TODO: implement a clever algorithm to determine update frequency
+            // we probably just need to divide duration by some fixed constant
+            // equal to the max number of updates we want to draw
             this.clearIntervalId = setInterval(() => {
                 this._updateProgress();
             }, 1000);
