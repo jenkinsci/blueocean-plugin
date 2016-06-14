@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import {
     Page,
     PageHeader,
@@ -8,27 +9,35 @@ import {
     WeatherIcon,
     Favorite,
 } from '@jenkins-cd/design-language';
-import { urlPrefix } from '../config';
 
 const { object } = PropTypes;
 
 export default class PipelinePage extends Component {
     render() {
         const { pipeline } = this.context;
+        const { organization, name } = pipeline || {};
+        const orgUrl = `/organizations/${organization}`;
+        const activityUrl = `${orgUrl}/${name}/activity`;
 
         if (!pipeline) {
             return null; // Loading...
         }
+
+        const baseUrl = `/organizations/${pipeline.organization}/${pipeline.name}`;
 
         return (
             <Page>
                 <PageHeader>
                     <Title>
                         <WeatherIcon score={pipeline.weatherScore} size="large" />
-                        <h1>{pipeline.organization} / {pipeline.name}</h1>
+                        <h1>
+                            <Link to={orgUrl}>{organization}</Link>
+                            <span> / </span>
+                            <Link to={activityUrl}>{name}</Link>
+                        </h1>
                         <Favorite darkTheme />
                     </Title>
-                    <PageTabs base={`${urlPrefix}/${pipeline.name}`}>
+                    <PageTabs base={baseUrl}>
                         <TabLink to="/activity">Activity</TabLink>
                         <TabLink to="/branches">Branches</TabLink>
                         <TabLink to="/pr">Pull Requests</TabLink>
@@ -45,5 +54,6 @@ PipelinePage.propTypes = {
 };
 
 PipelinePage.contextTypes = {
+    location: object,
     pipeline: object,
 };

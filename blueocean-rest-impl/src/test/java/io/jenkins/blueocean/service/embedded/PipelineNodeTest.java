@@ -157,6 +157,138 @@ public class PipelineNodeTest extends BaseTest {
     }
 
     @Test
+    public void nodesFailureTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
+            "    node {\n" +
+            "       sh \"echo here\"\n" +
+            "    }\n" +
+            "\n" +
+            "stage \"Test\"\n" +
+            "    parallel (\n" +
+            "        \"Firefox\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo ffox\"\n" +
+            "            }\n" +
+            "        },\n" +
+            "        \"Chrome\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo chrome\"\n" +
+            "            }\n" +
+            "        }\n" +
+            "    )\n" +
+            "\n" +
+            "stage \"CrashyMcgee\"\n" +
+            "  parallel (\n" +
+            "    \"SlowButSuccess\" : {\n" +
+            "        node {\n" +
+            "            echo 'This is time well spent.'\n" +
+            "        }\n" +
+            "    },\n" +
+            "    \"DelayThenFail\" : {\n" +
+            "        node {\n" +
+            "            echo 'Not yet.'\n" +
+            "        }\n" +
+            "    }\n" +
+            "  )\n" +
+            "\n" +
+            "\n" +
+            "stage \"Deploy\"\n" +
+            "    node {\n" +
+            "        sh \"echo deploying\"\n" +
+            "    }"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        job1.setDefinition(new CpsFlowDefinition("throw stage \"Build\"\n" +
+            "    node {\n" +
+            "       sh \"echo here\"\n" +
+            "    }\n" +
+            "\n" +
+            "stage \"Test\"\n" +
+            "    parallel (\n" +
+            "        \"Firefox\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo ffox\"\n" +
+            "            }\n" +
+            "        },\n" +
+            "        \"Chrome\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo chrome\"\n" +
+            "            }\n" +
+            "        }\n" +
+            "    )\n" +
+            "\n" +
+            "stage \"CrashyMcgee\"\n" +
+            "  parallel (\n" +
+            "    \"SlowButSuccess\" : {\n" +
+            "        node {\n" +
+            "            echo 'This is time well spent.'\n" +
+            "        }\n" +
+            "    },\n" +
+            "    \"DelayThenFail\" : {\n" +
+            "        node {\n" +
+            "            echo 'Not yet.'\n" +
+            "        }\n" +
+            "    }\n" +
+            "  )\n" +
+            "\n" +
+            "\n" +
+            "stage \"Deploy\"\n" +
+            "    node {\n" +
+            "        sh \"echo deploying\"\n" +
+            "    }"));
+
+        job1.scheduleBuild2(0);
+        WorkflowRun b2 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b2);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/", List.class);
+        Assert.assertEquals(8, resp.size());
+        for(int i=0; i< resp.size();i++){
+            Map rn = resp.get(i);
+            List<Map> edges = (List<Map>) rn.get("edges");
+
+            if(rn.get("displayName").equals("Test")){
+                Assert.assertEquals(2, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("Firefox")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("Chrome")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("CrashyMcgee")){
+                Assert.assertEquals(2, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("SlowButSuccess")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("DelayThenFail")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("build")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("Deploy")){
+                Assert.assertEquals(0, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }
+
+        }
+    }
+
+
+    @Test
     public void getPipelineJobRunNodesTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 

@@ -53,8 +53,9 @@ public class PipelineNodeGraphBuilder {
             }
         });
 
-        Iterables.addAll(nodeTreeSet, new FlowGraphWalker(run.getExecution()));
-
+        if(run.getExecution() != null) {
+            Iterables.addAll(nodeTreeSet, new FlowGraphWalker(run.getExecution()));
+        }
         this.sortedNodes = Collections.unmodifiableList(new ArrayList<>(nodeTreeSet));
 //        dumpNodes();
         build();
@@ -220,7 +221,7 @@ public class PipelineNodeGraphBuilder {
                 InactiveFlowNodeWrapper n = new InactiveFlowNodeWrapper(thatNodes.get(i));
 
                 // Add the last successful pipeline's first node to the edge of current node's last node
-                if (i == currentNodeSize) {
+                if (currentNodeSize> 0 && i == currentNodeSize) {
                     FlowNode latestNode = nodes.get(currentNodeSize - 1);
                     if (PipelineNodeUtil.isStage(latestNode)) {
                         addChild(latestNode, n);

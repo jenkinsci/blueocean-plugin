@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import PipelineRowItem from './PipelineRowItem';
 import { PipelineRecord } from './records';
 
@@ -11,11 +12,17 @@ export default class Pipelines extends Component {
 
     render() {
         const { pipelines, config } = this.context;
+        const { organization } = this.context.params;
 
         // Early out
         if (!pipelines) {
             return <div>No pipelines found.</div>;
         }
+
+        const orgLink = organization ?
+            <Link to={`organizations/${organization}`} className="inverse">
+                {organization}
+            </Link> : '';
 
         const pipelineRecords = pipelines
             .map(data => new PipelineRecord(data))
@@ -37,7 +44,11 @@ export default class Pipelines extends Component {
             <Page>
                 <PageHeader>
                     <Title>
-                        <h1>Dashboard</h1>
+                        <h1>
+                            <Link to="/" className="inverse">Dashboard</Link>
+                            { organization && ' / ' }
+                            { organization && orgLink }
+                        </h1>
                         <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
                             New Pipeline
                         </a>
@@ -53,6 +64,7 @@ export default class Pipelines extends Component {
                             { pipelineRecords
                                 .map(pipeline => <PipelineRowItem
                                   key={pipeline.name} pipeline={pipeline}
+                                  showOrganization={!organization}
                                 />)
                             }
                         </Table>
@@ -63,6 +75,7 @@ export default class Pipelines extends Component {
 }
 
 Pipelines.contextTypes = {
-    pipelines: array,
     config: PropTypes.object,
+    params: PropTypes.object,
+    pipelines: array,
 };
