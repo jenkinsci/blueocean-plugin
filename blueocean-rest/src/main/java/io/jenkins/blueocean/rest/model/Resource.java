@@ -55,30 +55,5 @@ public abstract class Resource implements Routable, Reachable{
      *
      * @see BluePipeline#getLink()
      */
-    public Link getLink(){
-        Ancestor ancestor = Stapler.getCurrentRequest().findAncestor(this.getClass());
-        if(ancestor == null){
-            List<Ancestor> ancestors = Stapler.getCurrentRequest().getAncestors();
-
-            //get current ancestor
-            Ancestor current = ancestors.get(ancestors.size()-1);
-            String contextPath = Stapler.getCurrentRequest().getContextPath();
-            String parentUrl = current.getUrl();
-            if(!contextPath.isEmpty() && !contextPath.equals("/")){
-                int i = parentUrl.indexOf(contextPath);
-                if(i>=0 && i+contextPath.length() < parentUrl.length()){
-                    parentUrl = parentUrl.substring(i+contextPath.length());
-                }
-            }
-            if(!getUrlName().isEmpty()){
-                return new Link(String.format("%s/%s",parentUrl,getUrlName()));
-            }else{
-                return new Link(String.format("%s/",parentUrl));
-            }
-
-
-        }
-        return new Link(Stapler.getCurrentRequest().getPathInfo());
-    }
-
+    public abstract Link getLink();
 }

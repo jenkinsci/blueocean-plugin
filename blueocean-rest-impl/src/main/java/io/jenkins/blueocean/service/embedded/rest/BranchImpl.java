@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
@@ -79,6 +80,11 @@ public class BranchImpl extends PipelineImpl {
         @Exported(name = PULL_REQUEST_AUTHOR)
         public String getAuthor() {
             return author;
+        }
+
+        @Override
+        public Link getLink() {
+            return null;
         }
     }
 

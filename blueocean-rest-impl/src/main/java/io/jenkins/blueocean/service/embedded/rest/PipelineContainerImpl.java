@@ -7,12 +7,15 @@ import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,24 +26,22 @@ import java.util.List;
  */
 @Extension
 public class PipelineContainerImpl extends BluePipelineContainer {
-    private final ItemGroup itemGroup;
+    private final @Nonnull ItemGroup itemGroup;
 
-    public PipelineContainerImpl(ItemGroup itemGroup) {
+    public PipelineContainerImpl(Reachable parent, ItemGroup itemGroup) {
+        super(parent);
         this.itemGroup = itemGroup;
     }
 
     public PipelineContainerImpl() {
-        this.itemGroup = null;
+        super(null);
+        this.itemGroup = Jenkins.getInstance();
     }
 
     @Override
     public BluePipeline get(String name) {
         Item item;
-        if(itemGroup == null){
-            item = Jenkins.getActiveInstance().getItemByFullName(name);
-        }else{
-            item = itemGroup.getItem(name);
-        }
+        item = itemGroup.getItem(name);
 
         if(item == null){
             throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", name));
@@ -63,11 +64,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
     @Override
     @SuppressWarnings("unchecked")
     public Iterator<BluePipeline> iterator() {
-        if(itemGroup != null){
-            return getPipelines(itemGroup.getItems());
-        }else{
-            return getPipelines(Jenkins.getActiveInstance().getItems(TopLevelItem.class));
-        }
+        return getPipelines(itemGroup.getItems());
     }
 
     protected static boolean isMultiBranchProjectJob(BuildableItem item){
