@@ -44,7 +44,8 @@ export class RunningStatusIndicator extends Component {
         // percentage of progress based on last check
         this.percentage = 0;
         this.startTimeMillis = - 1;
-        this.clearIntervalId = -1;
+        this.clearIntervalId = 0;
+        this.animationFrameId = 0;
     }
 
     componentDidMount() {
@@ -84,10 +85,7 @@ export class RunningStatusIndicator extends Component {
         this.percentage = Math.floor((nowMillis - this.startTimeMillis) / this.props.estimatedDuration * 100);
 
         if (this.percentage <= 100) {
-            // update the UI's percentage on next frame
-            requestAnimationFrame(() => {
-                this._drawProgress();
-            });
+            this._drawProgress();
         } else {
             // set the percentage > 100 so the indeterminate spinner will display
             // no more progress updates are required
@@ -108,7 +106,7 @@ export class RunningStatusIndicator extends Component {
                 percentage: newPercent
             });
 
-            requestAnimationFrame(() => {
+            this.animationFrameId = requestAnimationFrame(() => {
                 this._drawProgress();
             });
         }
@@ -116,7 +114,9 @@ export class RunningStatusIndicator extends Component {
 
     _stopProgressUpdates() {
         clearInterval(this.clearIntervalId);
-        this.clearIntervalId = -1;
+        this.clearIntervalId = 0;
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = 0;
     }
 
     componentWillUnmount() {
