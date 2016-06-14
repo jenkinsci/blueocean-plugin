@@ -37,9 +37,12 @@ export class RunningStatusIndicator extends Component {
         super(props);
 
         this.state = {
+            // percentage of progress currently drawn in UI
             percentage: 0,
         };
 
+        // percentage of progress based on last check
+        this.percentage = 0;
         this.startTimeMillis = - 1;
         this.clearIntervalId = -1;
     }
@@ -54,7 +57,7 @@ export class RunningStatusIndicator extends Component {
 
     _initializeProgress(props) {
         // ensure we don't leak setInterval by proactively clearing it
-        // the code will restart the interval if the state dictates it
+        // the code will restart the interval if needed
         this._stopProgressUpdates();
 
         if (!props) {
@@ -67,9 +70,7 @@ export class RunningStatusIndicator extends Component {
         if (isRunning) {
             this.startTimeMillis = this.props.startTime || moment().valueOf();
 
-            // TODO: implement a clever algorithm to determine update frequency
-            // we probably just need to divide duration by some fixed constant
-            // equal to the max number of updates we want to draw
+            // update the progress each second
             this.clearIntervalId = setInterval(() => {
                 this._updateProgress();
             }, 1000);
@@ -80,13 +81,36 @@ export class RunningStatusIndicator extends Component {
 
     _updateProgress() {
         const nowMillis = moment().valueOf();
-        const percentage = (nowMillis - this.startTimeMillis) / this.props.estimatedDuration * 100;
-        this.setState({
-            percentage
-        });
+        this.percentage = Math.floor((nowMillis - this.startTimeMillis) / this.props.estimatedDuration * 100);
 
-        if (percentage >= 100) {
+        if (this.percentage <= 100) {
+            // update the UI's percentage on next frame
+            requestAnimationFrame(() => {
+                this._drawProgress();
+            });
+        } else {
+            // set the percentage > 100 so the indeterminate spinner will display
+            // no more progress updates are required
+            this.setState({
+                percentage: 101
+            });
+
             this._stopProgressUpdates();
+        }
+    }
+
+    _drawProgress() {
+        if (this.state.percentage <= this.percentage) {
+            // increment the progress to trigger a rerender
+            // then request another draw on next frame
+            const newPercent = this.state.percentage + 1;
+            this.setState({
+                percentage: newPercent
+            });
+
+            requestAnimationFrame(() => {
+                this._drawProgress();
+            });
         }
     }
 
