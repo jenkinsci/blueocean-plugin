@@ -1,5 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { fetch, PipelineGraph } from '@jenkins-cd/design-language';
+import { PipelineGraph } from '@jenkins-cd/design-language';
+
+const { string, array } = PropTypes;
+
 
 function badNode(jenkinsNode) {
     // eslint-disable-next-line
@@ -98,7 +101,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph) {
     return results;
 }
 
-export class PipelineRunGraph extends Component {
+export default class PipelineRunGraph extends Component {
 
     constructor(props) {
         super(props);
@@ -107,12 +110,12 @@ export class PipelineRunGraph extends Component {
     }
 
     componentWillMount() {
-        this.processData(this.props.data);
+        this.processData(this.props.nodes);
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.lastData) {
-            this.processData(nextProps.data);
+        if (nextProps.nodes !== this.lastData) {
+            this.processData(nextProps.nodes);
         }
     }
 
@@ -128,10 +131,10 @@ export class PipelineRunGraph extends Component {
         const { graphNodes } = this.state;
 
         if (!graphNodes) {
-            // FIXME: Make a placeholder empty state when data is null (loading)
+            // FIXME: Make a placeholder empty state when nodes is null (loading)
             return <div>Loading...</div>;
         } else if (graphNodes.length === 0) {
-            // Do nothing when there's no node data
+            // Do nothing when there's no nodes
             return null;
         }
 
@@ -149,34 +152,8 @@ export class PipelineRunGraph extends Component {
 }
 
 PipelineRunGraph.propTypes = {
-    pipelineName: PropTypes.string,
-    branchName: PropTypes.string,
-    runId: PropTypes.string,
-    data: PropTypes.array,
+    pipelineName: string,
+    branchName: string,
+    runId: string,
+    nodes: array,
 };
-
-export default fetch(PipelineRunGraph, (props, config) => {
-    const { pipelineName, branchName, runId } = props;
-
-    if (!pipelineName || !runId) {
-        return null; // Nothing to load yet
-    }
-
-    let id;
-
-    if (branchName) {
-        // Multibranch
-        // eslint-disable-next-line
-        id = encodeURIComponent(pipelineName) + '/branches/' +
-            encodeURIComponent(branchName);
-    } else {
-        // No multibranch
-        id = encodeURIComponent(pipelineName);
-    }
-
-    // eslint-disable-next-line
-    return config.getAppURLBase() +
-        '/rest/organizations/jenkins' +
-        `/pipelines/${id}/runs/${runId}/nodes/`;
-}) ;
-

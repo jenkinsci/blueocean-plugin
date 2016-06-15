@@ -72,6 +72,7 @@ export const ACTION_TYPES = keymirror({
     CLEAR_CURRENT_BRANCHES_DATA: null,
     SET_STEPS: null,
     SET_NODE: null,
+    SET_NODES: null,
     SET_LOGS: null,
 });
 
@@ -102,6 +103,11 @@ export const actionHandlers = {
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
         return state.set('node', payload);
+    },
+    [ACTION_TYPES.SET_NODES](state, { payload }): State {
+        const nodes = { ...state.nodes } || {};
+        nodes[payload.nodesBaseUrl] = payload;
+        return state.set('nodes', nodes);
     },
     [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
         const runs = { ...state.runs } || {};
@@ -569,12 +575,21 @@ export const actions = {
                   nodesBaseUrl,
                   (json) => {
                       const information = getNodesInformation(json);
-                      const focused = information.model.filter((item) => item.isFocused)[0];
+                      information.nodesBaseUrl = nodesBaseUrl;
+                      dispatch({
+                          type: ACTION_TYPES.SET_NODES,
+                          payload: information,
+                      });
                       let node;
-                      if (focused) {
-                          node = focused.id;
+                      if (!config.node) {
+                          const focused = information.model.filter((item) => item.isFocused)[0];
+                          if (focused) {
+                              node = focused.id;
+                          } else {
+                              node = (information.model[information.model.length - 1]).id;
+                          }
                       } else {
-                          node = (information.model[information.model.length - 1]).id;
+                          node = config.node;
                       }
                       const mergedConfig = { ...config, node };
                       dispatch({

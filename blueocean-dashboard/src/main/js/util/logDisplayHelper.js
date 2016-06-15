@@ -34,6 +34,8 @@ export const getNodesInformation = (nodes) => {
         const modelItem = {
             key: index,
             id: item.id,
+            edges: item.edges,
+            displayName: item.displayName,
             title: item.displayName || `runId: ${item.id}`,
             durationInMillis: item.durationInMillis,
             startTime: item.startTime,

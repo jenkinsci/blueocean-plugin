@@ -7,6 +7,7 @@ export {
     runs,
     logs,
     node,
+    nodes,
     steps,
     currentRuns,
     branches,
