@@ -48,6 +48,7 @@ export const ActivityRecord = Record({
     durationInMillis: null,
     enQueueTime: null,
     endTime: null,
+    estimatedDurationInMillis: null,
     id: null,
     organization: null,
     pipeline: null,
