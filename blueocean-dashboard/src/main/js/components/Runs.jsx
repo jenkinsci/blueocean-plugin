@@ -28,6 +28,7 @@ export default class Runs extends Component {
             props: {
                 result: {
                     durationInMillis,
+                    estimatedDurationInMillis,
                     pipeline,
                     id,
                     result,
@@ -41,8 +42,6 @@ export default class Runs extends Component {
         } = this;
 
         const resultRun = result === 'UNKNOWN' ? state : result;
-        const estimatedDuration = this.context.pipeline.estimatedDurationInMillis;
-
         const baseUrl = removeLastUrlSegment(this.context.location.pathname);
         const url = `${baseUrl}/detail/${pipeline}/${id}/pipeline`;
         const open = () => {
@@ -52,7 +51,9 @@ export default class Runs extends Component {
 
         return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
             <td>
-                <LiveStatusIndicator result={resultRun} startTime={startTime} estimatedDuration={estimatedDuration} />
+                <LiveStatusIndicator result={resultRun} startTime={startTime}
+                  estimatedDuration={estimatedDurationInMillis}
+                />
             </td>
             <td>
                 {id}
