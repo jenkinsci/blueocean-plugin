@@ -1,14 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
-import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
-
 import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.User;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
@@ -28,10 +25,14 @@ import java.util.List;
 public class UserImpl extends BlueUser {
     private final User user;
 
-    public UserImpl(User user) {
+    public UserImpl(User user, Reachable parent) {
+        super(parent);
         this.user = user;
     }
 
+    public UserImpl(User user) {
+        this.user = user;
+    }
     @Override
     public String getId() {
         return user.getId();

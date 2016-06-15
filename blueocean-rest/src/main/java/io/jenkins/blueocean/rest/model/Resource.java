@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import io.jenkins.blueocean.Routable;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Links;
@@ -15,7 +14,7 @@ import org.kohsuke.stapler.verb.GET;
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
-public abstract class Resource implements Routable, Reachable{
+public abstract class Resource implements Reachable{
     /**
      * Returns the DTO object that gets databound to Json/XML etc. for state transfer
      *
@@ -35,9 +34,5 @@ public abstract class Resource implements Routable, Reachable{
     @Exported(name = "_links", visibility = 9999)
     public Links getLinks(){
         return new Links(this);
-    }
-
-    public String getUrlName(){
-        return "";
     }
 }

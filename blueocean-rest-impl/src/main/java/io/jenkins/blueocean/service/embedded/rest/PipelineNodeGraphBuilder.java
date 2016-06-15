@@ -206,7 +206,7 @@ public class PipelineNodeGraphBuilder {
      * @param other Other {@link PipelineNodeGraphBuilder} to create union with
      * @return list of FlowNode that is union of current set of nodes and the given list of nodes. If futureNodes
      * are not bigger than this pipeline nodes then no union is performed.
-     * @see PipelineNodeContainerImpl#PipelineNodeContainerImpl(WorkflowRun)
+     * @see PipelineNodeContainerImpl#PipelineNodeContainerImpl(WorkflowRun, Link)
      */
     public List<BluePipelineNode> union(PipelineNodeGraphBuilder other, Link parentLink) {
         Map<FlowNode, List<FlowNode>> futureNodes = other.parentToChildrenMap;

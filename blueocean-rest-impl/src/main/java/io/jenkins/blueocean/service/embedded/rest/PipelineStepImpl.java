@@ -17,9 +17,10 @@ public class PipelineStepImpl extends BluePipelineStep {
     private final FlowNode node;
     private final PipelineNodeGraphBuilder.NodeRunStatus status;
     private final long durationInMillis;
+    private final Link self;
 
     public PipelineStepImpl(FlowNode node, PipelineNodeGraphBuilder graphBuilder, Link parent) {
-        super(parent);
+        this.self = parent.rel(node.getId());
         this.node = node;
         this.status = new PipelineNodeGraphBuilder.NodeRunStatus(node);
         this.durationInMillis = graphBuilder.getDurationInMillis(node);
@@ -70,6 +71,6 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public Link getLink() {
-        return null;
+        return self;
     }
 }

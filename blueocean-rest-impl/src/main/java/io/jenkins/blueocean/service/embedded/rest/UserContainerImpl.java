@@ -30,7 +30,7 @@ public class UserContainerImpl extends BlueUserContainer {
     public BlueUser get(String name) {
         User user = User.get(name, false, ImmutableMap.of());
         if (user==null)     return null;
-        return new UserImpl(user);
+        return new UserImpl(user, this);
     }
 
     /**
@@ -41,7 +41,7 @@ public class UserContainerImpl extends BlueUserContainer {
         return new AdaptedIterator<User, BlueUser>(User.getAll()) {
             @Override
             protected BlueUser adapt(User item) {
-                return new UserImpl(item);
+                return new UserImpl(item, UserContainerImpl.this);
             }
         };
     }

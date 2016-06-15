@@ -3,7 +3,6 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
 
 import javax.annotation.Nonnull;
@@ -27,7 +26,7 @@ public abstract class BlueUser extends Resource {
     }
 
     public BlueUser() {
-        this.parent = (ApiHead) Stapler.getCurrentRequest().findAncestor(ApiHead.class).getObject();;
+        this.parent = null;
     }
     /**
      * @return The id of the user
@@ -52,6 +51,6 @@ public abstract class BlueUser extends Resource {
 
     @Override
     public Link getLink() {
-        return parent.getLink().rel(getUrlName());
+        return (parent != null)?parent.getLink().rel(getId()): ApiHead.INSTANCE().getLink().rel("users/"+getId());
     }
 }

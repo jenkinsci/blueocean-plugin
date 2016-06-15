@@ -3,7 +3,6 @@ package io.jenkins.blueocean.rest.model;
 import hudson.ExtensionPoint;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.ApiRoutable;
-import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 
 /**
@@ -12,9 +11,9 @@ import io.jenkins.blueocean.rest.hal.Link;
  * @author Kohsuke Kawaguchi
  */
 public abstract class BluePipelineContainer extends Container<BluePipeline> implements ApiRoutable, ExtensionPoint{
-    private final Reachable parent;
+    protected final Link parent;
 
-    protected BluePipelineContainer(Reachable parent) {
+    protected BluePipelineContainer(Link parent) {
         this.parent = parent;
     }
 
@@ -26,7 +25,7 @@ public abstract class BluePipelineContainer extends Container<BluePipeline> impl
     @Override
     public Link getLink() {
         if(parent!=null) {
-            return parent.getLink().rel(getUrlName());
+            return parent.rel(getUrlName());
         }
         return ApiHead.INSTANCE().getLink().rel(getUrlName());
     }

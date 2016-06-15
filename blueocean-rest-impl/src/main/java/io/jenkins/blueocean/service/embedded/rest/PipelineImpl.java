@@ -28,6 +28,7 @@ public class PipelineImpl extends BluePipeline {
     /*package*/ final Job job;
 
     private final ItemGroup folder;
+
     protected PipelineImpl(ItemGroup folder, Job job) {
         this.job = job;
         this.folder = folder;
@@ -119,7 +120,7 @@ public class PipelineImpl extends BluePipeline {
         return getPipelines(folder, name);
     }
 
-    protected static BluePipeline getPipelines(ItemGroup itemGroup, String name){
+    private  BluePipeline getPipelines(ItemGroup itemGroup, String name){
         Item item = itemGroup.getItem(name);
         if(item instanceof BuildableItem){
             if(item instanceof MultiBranchProject){

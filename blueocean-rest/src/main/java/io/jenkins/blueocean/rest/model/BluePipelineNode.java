@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
-import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -63,12 +63,6 @@ public abstract class BluePipelineNode extends Resource{
     public static final String EDGES = "edges";
     public static final String DURATION_IN_MILLIS="durationInMillis";
 
-    protected final Link self;
-
-    public BluePipelineNode(Link parent) {
-        this.self = parent.rel(getId());
-    }
-
     @Exported(name = ID)
     public abstract String getId();
 
@@ -111,15 +105,6 @@ public abstract class BluePipelineNode extends Resource{
     /**
      * @return Steps inside a Pipeline Stage or Parallel branch
      */
+    @Navigable
     public abstract BluePipelineStepContainer getSteps();
-
-    @Override
-    public String getUrlName() {
-        return getId();
-    }
-
-    @Override
-    public Link getLink() {
-        return self;
-    }
 }

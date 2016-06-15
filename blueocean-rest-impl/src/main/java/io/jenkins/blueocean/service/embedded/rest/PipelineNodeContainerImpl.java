@@ -20,13 +20,13 @@ import java.util.Map;
 public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
     private final WorkflowRun run;
     private final Map<String, BluePipelineNode> nodeMap = new HashMap<>();
-    private final Link self;
 
     List<BluePipelineNode> nodes = new ArrayList<>();
+    private final Link self;
 
     public PipelineNodeContainerImpl(WorkflowRun run, Link parentLink) {
-        this.self = parentLink.rel("nodes");
         this.run = run;
+        this.self = parentLink.rel("nodes");
 
         WorkflowJob job = run.getParent();
 

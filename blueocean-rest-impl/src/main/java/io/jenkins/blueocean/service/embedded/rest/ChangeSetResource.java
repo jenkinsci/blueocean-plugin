@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.Resource;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -47,13 +48,9 @@ public class ChangeSetResource extends Resource {
         }
     }
 
-    @Override
-    public String getUrlName() {
-        return "changeset/"+getDelegate().getCommitId();
-    }
 
     @Override
     public Link getLink() {
-        return null;
+        return new Link(Stapler.getCurrentRequest().getPathInfo()).rel("changeset/"+getDelegate().getCommitId());
     }
 }

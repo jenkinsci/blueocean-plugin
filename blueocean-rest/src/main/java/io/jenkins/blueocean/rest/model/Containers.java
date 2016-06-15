@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static sun.plugin.javascript.navig.JSType.Link;
-
 /**
  * @author Kohsuke Kawaguchi
  */

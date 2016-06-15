@@ -1,7 +1,9 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.slf4j.Logger;
@@ -20,9 +22,16 @@ public class GenericResource<T> extends Resource {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericResource.class);
 
     private final T value;
+    private final Reachable self;
 
     public GenericResource(T value) {
         this.value = value;
+        this.self = null;
+    }
+
+    public GenericResource(T value, Reachable self) {
+        this.value = value;
+        this.self = self;
     }
 
     @Exported(merge = false)
@@ -64,7 +73,7 @@ public class GenericResource<T> extends Resource {
 
     @Override
     public Link getLink() {
-        return this.getLink();
+        return (self !=null) ? self.getLink() : new Link(Stapler.getCurrentRequest().getPathInfo());
     }
 
 

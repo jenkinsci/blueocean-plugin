@@ -29,11 +29,6 @@ public abstract class BlueOrganization extends Resource {
     public abstract BlueUserContainer getUsers();
 
     @Override
-    public String getUrlName() {
-        return getName();
-    }
-
-    @Override
     public Link getLink() {
         return ApiHead.INSTANCE().getLink().rel("organizations/"+getName());
     }

@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Job;
-import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.scm.api.SCMHead;
@@ -15,11 +14,8 @@ public class BranchImpl extends PipelineImpl {
 
     private static final String PULL_REQUEST = "pullRequest";
 
-    private final Reachable parent;
-
-    public BranchImpl(Reachable parent, Job job) {
+    public BranchImpl(Job job) {
         super(job);
-        this.parent = parent;
     }
 
     @Exported(name = PULL_REQUEST, inline = true)
@@ -32,12 +28,6 @@ public class BranchImpl extends PipelineImpl {
             }
         }
         return null;
-    }
-
-
-    @Override
-    public Link getLink() {
-        return parent.getLink().rel(getName());
     }
 
     public static class PullRequest extends Resource {

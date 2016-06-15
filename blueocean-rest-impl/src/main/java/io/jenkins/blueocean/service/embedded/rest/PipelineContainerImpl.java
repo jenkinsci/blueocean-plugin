@@ -6,7 +6,7 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import jenkins.branch.MultiBranchProject;
@@ -31,7 +31,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         this.itemGroup = Jenkins.getInstance();
     }
 
-    public PipelineContainerImpl(Reachable parent, ItemGroup itemGroup) {
+    public PipelineContainerImpl(ItemGroup itemGroup, Link parent) {
         super(parent);
         this.itemGroup = itemGroup;
     }
@@ -56,7 +56,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
                 return new PipelineImpl((Job) item);
             }
         } else if (item instanceof ItemGroup) {
-            return new PipelineFolderImpl(this,(ItemGroup) item);
+            return new PipelineFolderImpl((ItemGroup) item, getLink());
         }
 
         // TODO: I'm going to turn this into a decorator annotation
@@ -82,7 +82,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
                 && item instanceof Job){
                 pipelines.add(new PipelineImpl((Job) item));
             }else if(item instanceof ItemGroup){
-                pipelines.add(new PipelineFolderImpl(this, (ItemGroup) item));
+                pipelines.add(new PipelineFolderImpl((ItemGroup) item, getLink()));
             }
         }
         return pipelines.iterator();
