@@ -1,5 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import { actions, pipelines as pipelinesSelector, connect, createSelector } from './redux';
+import {
+    actions,
+    pipelines as pipelinesSelector,
+    connect,
+    createSelector,
+} from './redux';
 import * as sse from '@jenkins-cd/sse-gateway';
 import * as pushEventUtil from './util/push-event-util';
 
@@ -12,6 +17,7 @@ sse.connect('jenkins_blueocean');
 
 class OrganizationPipelines extends Component {
 
+    // FIXME: IMO the following should be dropped
     getChildContext() {
         const {
             params,
@@ -33,9 +39,15 @@ class OrganizationPipelines extends Component {
     }
 
     componentWillMount() {
-        if (this.context.config) {
+        const config = this.context.config;
+        if (config) {
             const { organization } = this.context.params;
             this.props.fetchPipelinesIfNeeded(this.context.config, organization);
+            if (this.props.params.pipeline) {
+                const { pipeline } = this.props.params;
+                config.pipeline = pipeline;
+                this.props.setPipeline(config);
+            }
             const _this = this;
 
             // Subscribe for job channel push events
@@ -84,15 +96,27 @@ class OrganizationPipelines extends Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.params.pipeline !== this.props.params.pipeline) {
+            const config = this.context.config;
+            const { pipeline } = nextProps.params;
+            config.pipeline = pipeline;
+            this.props.setPipeline(config);
+        }
+    }
+
     componentWillUnmount() {
         if (this.jobListener) {
             sse.unsubscribe(this.jobListener);
             delete this.jobListener;
         }
     }
-
+    /*
+     FIXME we should use clone here, this way we could pass all actions and reducer down to all
+     components and get rid of the seperate connect in each subcomponents -> see RunDetailsPipeline
+     */
     render() {
-        return this.props.children; // Set by router
+        return this.props.children;
     }
 }
 
@@ -104,6 +128,7 @@ OrganizationPipelines.contextTypes = {
 OrganizationPipelines.propTypes = {
     fetchPipelines: func.isRequired,
     fetchPipelinesIfNeeded: func.isRequired,
+    setPipeline: func,
     processJobQueuedEvent: func.isRequired,
     updateRunState: func.isRequired,
     organization: string,
@@ -118,6 +143,7 @@ OrganizationPipelines.childContextTypes = {
     pipeline: object,
 };
 
-const selectors = createSelector([pipelinesSelector], (pipelines) => ({ pipelines }));
+const selectors = createSelector([pipelinesSelector],
+    (pipelines) => ({ pipelines }));
 
 export default connect(selectors, actions)(OrganizationPipelines);
