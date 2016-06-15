@@ -8,7 +8,7 @@ import {
     nodes as nodesSelector,
     actions,
     calculateRunLogURLObject,
-calculateNodeBaseUrl,
+    calculateNodeBaseUrl,
     calculateStepsBaseUrl,
     connect,
     createSelector,
