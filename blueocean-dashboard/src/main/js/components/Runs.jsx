@@ -4,7 +4,6 @@ import {
 }
     from '@jenkins-cd/design-language';
 import { removeLastUrlSegment } from '../util/UrlUtils';
-import moment from 'moment';
 
 const { object, string, any } = PropTypes;
 
@@ -33,6 +32,7 @@ export default class Runs extends Component {
                     id,
                     result,
                     state,
+                    startTime,
                     endTime,
                     commitId,
                 },
@@ -42,7 +42,6 @@ export default class Runs extends Component {
 
         const resultRun = result === 'UNKNOWN' ? state : result;
         const estimatedDuration = this.context.pipeline.estimatedDurationInMillis;
-        const startTime = moment.parseZone(this.props.result.startTime).valueOf();
 
         const baseUrl = removeLastUrlSegment(this.context.location.pathname);
         const url = `${baseUrl}/detail/${pipeline}/${id}/pipeline`;
