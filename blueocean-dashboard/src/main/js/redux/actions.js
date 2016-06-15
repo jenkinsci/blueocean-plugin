@@ -90,7 +90,7 @@ function parseJSON(response) {
  * @param onSuccess o
  * @param onError
  */
-exports.fetchJson = function (url, onSuccess, onError) {
+exports.fetchJson = function fetchJson(url, onSuccess, onError) {
     fetch(url, fetchOptions)
         .then(checkStatus)
         .then(parseJSON)
@@ -99,11 +99,7 @@ exports.fetchJson = function (url, onSuccess, onError) {
             if (onError) {
                 onError(error);
             } else {
-                console.error(error);
-                dispatch({
-                    payload: { type: 'ERROR', message: (''+error.stack) },
-                    type: ACTION_TYPES.UPDATE_MESSAGES,
-                });
+                console.error(error); // eslint-disable-line no-console
             }
         });
 };
@@ -293,7 +289,7 @@ export const actions = {
             if (storeData) {
                 let runUrl;
 
-                const updateRunData = function (runData, skipStoreDataRefresh) {
+                const updateRunData = function updateRunData(runData, skipStoreDataRefresh) {
                     const newRunData = Object.assign({}, runData);
                     let newRuns;
 
@@ -357,7 +353,9 @@ export const actions = {
                     // Getting the actual state of the run failed. Lets log
                     // the failure and update the state manually as best we can.
 
+                    // eslint-disable-next-line no-console
                     console.warn(`Error getting run data from REST endpoint: ${runUrl}`);
+                    // eslint-disable-next-line no-console
                     console.warn(error);
 
                     // We're after coming out of an async operation (the fetch).
@@ -458,9 +456,9 @@ export const actions = {
                         });
                     })
                     .catch((error) => {
-                        console.error(error);
+                        console.error(error); // eslint-disable-line no-console
                         dispatch({
-                            payload: { type: 'ERROR', message: (''+error.stack) },
+                            payload: { type: 'ERROR', message: `${error.stack}` },
                             type: ACTION_TYPES.UPDATE_MESSAGES,
                         });
                     });
@@ -485,9 +483,9 @@ export const actions = {
                 payload: json,
             }))
             .catch((error) => {
-                console.error(error);
+                console.error(error); // eslint-disable-line no-console
                 dispatch({
-                    payload: { type: 'ERROR', message: (''+error.stack) },
+                    payload: { type: 'ERROR', message: `${error.stack}` },
                     type: ACTION_TYPES.UPDATE_MESSAGES,
                 });
             });
