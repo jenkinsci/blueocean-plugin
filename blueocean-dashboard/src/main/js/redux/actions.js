@@ -4,6 +4,7 @@ import fetch from 'isomorphic-fetch';
 import { State } from '../components/records';
 
 export const ACTION_TYPES = keymirror({
+    UPDATE_MESSAGES: null,
     CLEAR_PIPELINES_DATA: null,
     SET_PIPELINES_DATA: null,
     SET_PIPELINE: null,
@@ -17,6 +18,13 @@ export const ACTION_TYPES = keymirror({
 });
 
 export const actionHandlers = {
+    [ACTION_TYPES.UPDATE_MESSAGES](state, { payload }): State {
+        const messages = state.get('messages') || [];
+        if (payload) {
+            messages.push(payload);
+        }
+        return state.set('messages', messages);
+    },
     [ACTION_TYPES.CLEAR_PIPELINES_DATA](state) {
         return state.set('pipelines', null);
     },
@@ -82,7 +90,7 @@ function parseJSON(response) {
  * @param onSuccess o
  * @param onError
  */
-exports.fetchJson = function (url, onSuccess, onError) {
+exports.fetchJson = function fetchJson(url, onSuccess, onError) {
     fetch(url, fetchOptions)
         .then(checkStatus)
         .then(parseJSON)
@@ -90,6 +98,8 @@ exports.fetchJson = function (url, onSuccess, onError) {
         .catch((error) => {
             if (onError) {
                 onError(error);
+            } else {
+                console.error(error); // eslint-disable-line no-console
             }
         });
 };
@@ -279,7 +289,7 @@ export const actions = {
             if (storeData) {
                 let runUrl;
 
-                const updateRunData = function (runData, skipStoreDataRefresh) {
+                const updateRunData = function updateRunData(runData, skipStoreDataRefresh) {
                     const newRunData = Object.assign({}, runData);
                     let newRuns;
 
@@ -343,7 +353,9 @@ export const actions = {
                     // Getting the actual state of the run failed. Lets log
                     // the failure and update the state manually as best we can.
 
+                    // eslint-disable-next-line no-console
                     console.warn(`Error getting run data from REST endpoint: ${runUrl}`);
+                    // eslint-disable-next-line no-console
                     console.warn(error);
 
                     // We're after coming out of an async operation (the fetch).
@@ -443,12 +455,13 @@ export const actions = {
                             type: types.general,
                         });
                     })
-                    .catch(() => dispatch({
-                        id,
-                        payload: [],
-                        type: types.current,
-                    })
-                    );
+                    .catch((error) => {
+                        console.error(error); // eslint-disable-line no-console
+                        dispatch({
+                            payload: { type: 'ERROR', message: `${error.stack}` },
+                            type: ACTION_TYPES.UPDATE_MESSAGES,
+                        });
+                    });
             } else if (data && data[id]) {
                 dispatch({
                     id,
@@ -469,10 +482,12 @@ export const actions = {
                 type: actionType,
                 payload: json,
             }))
-            .catch(() => dispatch({
-                ...optional,
-                payload: null,
-                type: actionType,
-            }));
+            .catch((error) => {
+                console.error(error); // eslint-disable-line no-console
+                dispatch({
+                    payload: { type: 'ERROR', message: `${error.stack}` },
+                    type: ACTION_TYPES.UPDATE_MESSAGES,
+                });
+            });
     },
 };

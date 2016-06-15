@@ -6,6 +6,7 @@ const adminStore = state => state.adminStore;
 const location = (state) => state.location;
 export const previous = createSelector([location], store => store.previous);
 export const current = createSelector([location], store => store.current);
+export const messages = createSelector([adminStore], store => store.messages);
 export const pipelines = createSelector([adminStore], store => store.pipelines);
 export const pipeline = createSelector([adminStore], store => store.pipeline);
 export const runs = createSelector([adminStore], store => store.runs);
