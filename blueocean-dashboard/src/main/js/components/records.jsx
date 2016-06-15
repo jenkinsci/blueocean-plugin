@@ -80,6 +80,7 @@ export const State = Record({
     node: null,
     nodes: null,
     logs: null,
+    messages: null,
     pipelines: null,
     pipeline: PipelineRecord,
     runs: null,

@@ -2,6 +2,7 @@ export {
     reducer,
     previous,
     current,
+    messages,
     pipelines,
     pipeline,
     runs,
