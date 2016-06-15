@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    CommitHash, ReadableDate, StatusIndicator, TimeDuration,
+    CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
 import { removeLastUrlSegment } from '../util/UrlUtils';
@@ -28,10 +28,12 @@ export default class Runs extends Component {
             props: {
                 result: {
                     durationInMillis,
+                    estimatedDurationInMillis,
                     pipeline,
                     id,
                     result,
                     state,
+                    startTime,
                     endTime,
                     commitId,
                 },
@@ -40,7 +42,6 @@ export default class Runs extends Component {
         } = this;
 
         const resultRun = result === 'UNKNOWN' ? state : result;
-
         const baseUrl = removeLastUrlSegment(this.context.location.pathname);
         const url = `${baseUrl}/detail/${pipeline}/${id}/pipeline`;
         const open = () => {
@@ -50,7 +51,9 @@ export default class Runs extends Component {
 
         return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
             <td>
-                <StatusIndicator result={resultRun} />
+                <LiveStatusIndicator result={resultRun} startTime={startTime}
+                  estimatedDuration={estimatedDurationInMillis}
+                />
             </td>
             <td>
                 {id}

@@ -25,9 +25,9 @@ class RunDetails extends Component {
             const {
                 params: {
                     pipeline,
-                },
+                    },
                 config = {},
-            } = this.context;
+                } = this.context;
 
             config.pipeline = pipeline;
 
@@ -117,7 +117,7 @@ class RunDetails extends Component {
                             <TabLink to="/tests">Tests</TabLink>
                             <TabLink to="/artifacts">Artifacts</TabLink>
                         </PageTabs>
-                        </div>
+                    </div>
                 </ModalHeader>
                 <ModalBody>
                     <div>

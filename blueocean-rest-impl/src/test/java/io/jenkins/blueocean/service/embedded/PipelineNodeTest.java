@@ -18,6 +18,60 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class PipelineNodeTest extends BaseTest {
+
+    @Test
+    public void nodesWithFutureTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("node {\n" +
+            "  stage 'build'\n" +
+            "  sh 'echo s1'\n" +
+            "  stage 'test'\n" +
+            "  echo 'Hello World 2'\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.SUCCESS,b1);
+
+        get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+        job1.setDefinition(new CpsFlowDefinition("node {\n" +
+            "  stage 'build'\n" +
+            "  sh 'echo s1'\n" +
+            "  stage 'test'\n" +
+            "  echo 'Hello World 2'\n" +
+            "}\n" +
+            "parallel firstBranch: {\n" +
+            "  echo 'Hello first'\n" +
+            "}, secondBranch: {\n" +
+            " echo 'Hello second'\n" +
+            "}"));
+
+
+
+        WorkflowRun b2 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.SUCCESS,b2);
+
+        job1.setDefinition(new CpsFlowDefinition("node {\n" +
+            "  stage 'build'\n" +
+            "  sh 'echo s1'\n" +
+            "  stage 'test'\n" +
+            "  echo 'Hello World 2'\n" +
+            "}\n" +
+            "parallel firstBranch: {\n" +
+            "  echo 'Hello first'\n" +
+            "}, secondBranch: {\n" +
+            " sh 'Hello second'\n" +
+            "}"));
+
+
+
+        WorkflowRun b3 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE,b3);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(2, resp.size());
+    }
+
     @Test
     public void nodesTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
