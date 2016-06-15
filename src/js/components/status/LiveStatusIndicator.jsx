@@ -27,7 +27,7 @@ export type Result = $Keys<typeof validResultValues>;
  *
  * Properties:
  * "estimatedDuration": time in millis over which the progress indicator will update.
- * "startTime": epoch millis indicating when tracking of progress begins from.
+ * "startTime": ISO-8601 string indicating when tracking of progress begins from.
  */
 export class LiveStatusIndicator extends Component {
 
@@ -43,7 +43,7 @@ export class LiveStatusIndicator extends Component {
 
         // percentage of progress based on last check
         this.percentage = 0;
-        this.startTimeMillis = - 1;
+        this.startTime = null;
         this.clearIntervalId = 0;
         this.animationFrameId = 0;
     }
@@ -69,7 +69,8 @@ export class LiveStatusIndicator extends Component {
         const isRunning = cleanResult === validResultValues.running;
 
         if (isRunning) {
-            this.startTimeMillis = this.props.startTime || moment().valueOf();
+            this.startTime = moment(props.startTime, moment.ISO_8601)
+                .utcOffset(props.startTime);
 
             // update the progress each second
             this.clearIntervalId = setInterval(() => {
@@ -81,8 +82,9 @@ export class LiveStatusIndicator extends Component {
     }
 
     _updateProgress() {
-        const nowMillis = moment().valueOf();
-        this.percentage = Math.floor((nowMillis - this.startTimeMillis) / this.props.estimatedDuration * 100);
+        const now = moment();
+        const elapsed = now.diff(this.startTime);
+        this.percentage = Math.floor(elapsed / this.props.estimatedDuration * 100);
 
         if (this.percentage <= 100) {
             this._drawProgress();
@@ -135,7 +137,7 @@ LiveStatusIndicator.propTypes = {
     percentage: number,
     width: string,
     height: string,
-    startTime: number,
+    startTime: string,
     estimatedDuration: number,
 };
 
