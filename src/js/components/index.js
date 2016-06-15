@@ -17,6 +17,9 @@ export {
     SvgSpinner,
     SvgStatus,
 } from './status/StatusIndicator';
+export {
+    LiveStatusIndicator,
+} from './status/LiveStatusIndicator';
 export {fetch, fetchData} from './fetch';
 export {PipelineResult} from './pipeResult/Result';
 export {Favorite} from './favorite/Favorite';
