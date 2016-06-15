@@ -5,6 +5,7 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -88,6 +89,7 @@ public class PipelineImpl extends BluePipeline {
     }
 
     @Override
+    @Navigable
     public BlueQueueContainer getQueue() {
         return new QueueContainerImpl(this, job);
     }

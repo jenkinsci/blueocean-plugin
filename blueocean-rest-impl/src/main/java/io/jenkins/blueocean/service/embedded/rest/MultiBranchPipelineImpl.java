@@ -4,6 +4,8 @@ import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -156,6 +158,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
+    @Navigable
     public BluePipelineContainer getBranches() {
         return new BranchContainerImpl(this);
     }
@@ -205,7 +208,12 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public BlueRunContainer getRuns() {
-        return new BlueRunContainer() {
+        return new BlueRunContainer(this) {
+            @Override
+            public Link getLink() {
+                return getLink().rel("runs");
+            }
+
             @Override
             public BluePipeline getPipeline(String name) {
                 return null;

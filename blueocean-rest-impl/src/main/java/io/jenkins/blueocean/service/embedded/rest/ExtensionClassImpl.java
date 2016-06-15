@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueExtensionClass;
 
 import java.util.ArrayList;
@@ -11,8 +13,11 @@ import java.util.List;
  */
 public class ExtensionClassImpl extends BlueExtensionClass {
     private final Class baseClass;
-    public ExtensionClassImpl(Class baseClass) {
+    private final Reachable parent;
+
+    public ExtensionClassImpl(Reachable parent, Class baseClass) {
         this.baseClass = baseClass;
+        this.parent = parent;
     }
 
     @Override
@@ -41,4 +46,8 @@ public class ExtensionClassImpl extends BlueExtensionClass {
 
     private static final String[] BLACK_LISTED_CLASSES={"java.", "javax.", "com.sun."};
 
+    @Override
+    public Link getLink() {
+        return parent.getLink().rel(baseClass.getName());
+    }
 }

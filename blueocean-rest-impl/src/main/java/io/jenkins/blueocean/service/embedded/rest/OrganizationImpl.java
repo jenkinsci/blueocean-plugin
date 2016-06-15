@@ -2,8 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
-import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
@@ -14,8 +12,6 @@ import org.kohsuke.stapler.verb.PUT;
 
 import java.io.IOException;
 
-import static org.eclipse.jgit.lib.ObjectChecker.parent;
-
 /**
  * {@link BlueOrganization} implementation for the embedded use.
  *
@@ -23,7 +19,7 @@ import static org.eclipse.jgit.lib.ObjectChecker.parent;
  * @author Kohsuke Kawaguchi
  */
 public class OrganizationImpl extends BlueOrganization {
-    private final UserContainerImpl users = new UserContainerImpl();
+    private final UserContainerImpl users = new UserContainerImpl(this);
 
     /**
      * In embedded mode, there's only one organization
@@ -31,11 +27,6 @@ public class OrganizationImpl extends BlueOrganization {
     public static final OrganizationImpl INSTANCE = new OrganizationImpl();
 
     private OrganizationImpl() {
-    }
-
-    @Override
-    public Link getLink() {
-        return new Link("/organizations/"+getName()+"/");
     }
 
     /**

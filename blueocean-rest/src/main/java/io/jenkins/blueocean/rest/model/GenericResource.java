@@ -62,6 +62,11 @@ public class GenericResource<T> extends Resource {
         }
     }
 
+    @Override
+    public Link getLink() {
+        return this.getLink();
+    }
+
 
     /**
      * Resource that exposes primitive type value as JSON bean

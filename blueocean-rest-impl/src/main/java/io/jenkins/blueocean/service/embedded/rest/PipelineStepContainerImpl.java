@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
@@ -16,7 +17,9 @@ import java.util.List;
 public class PipelineStepContainerImpl extends BluePipelineStepContainer {
     private final FlowNode node;
     private final PipelineNodeGraphBuilder graphBuilder;
-    public PipelineStepContainerImpl(FlowNode node, PipelineNodeGraphBuilder graphBuilder) {
+
+    public PipelineStepContainerImpl(FlowNode node, PipelineNodeGraphBuilder graphBuilder, Link parentLink) {
+        super(parentLink);
         this.node = node;
         this.graphBuilder = graphBuilder;
     }
@@ -41,5 +44,10 @@ public class PipelineStepContainerImpl extends BluePipelineStepContainer {
             pipelineSteps.add(new PipelineStepImpl(node, graphBuilder));
         }
         return pipelineSteps.iterator();
+    }
+
+    @Override
+    public Link getLink() {
+        return null;
     }
 }

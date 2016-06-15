@@ -70,7 +70,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
             RunList<? extends Run> runList = p.getBuilds();
 
             for (Run r : runList) {
-                runs.add(AbstractRunImpl.getBlueRun(r,new PipelineContainerImpl().get(p.getFullName())));
+                runs.add(AbstractRunImpl.getBlueRun(r,new PipelineContainerImpl().get(Jenkins.getInstance().getItemByFullName(p.getFullName()))));
             }
         }
 

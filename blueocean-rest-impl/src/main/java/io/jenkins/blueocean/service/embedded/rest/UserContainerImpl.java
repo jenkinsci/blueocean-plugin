@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.util.AdaptedIterator;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 /**
@@ -16,6 +18,14 @@ import java.util.Iterator;
  */
 @Extension
 public class UserContainerImpl extends BlueUserContainer {
+    protected UserContainerImpl(@Nonnull Reachable parent) {
+        super(parent);
+    }
+
+    public UserContainerImpl() {
+        super(null);
+    }
+
     @Override
     public BlueUser get(String name) {
         User user = User.get(name, false, ImmutableMap.of());

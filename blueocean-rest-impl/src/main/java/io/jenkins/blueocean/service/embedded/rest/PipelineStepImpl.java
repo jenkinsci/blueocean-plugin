@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -17,7 +18,8 @@ public class PipelineStepImpl extends BluePipelineStep {
     private final PipelineNodeGraphBuilder.NodeRunStatus status;
     private final long durationInMillis;
 
-    public PipelineStepImpl(FlowNode node, PipelineNodeGraphBuilder graphBuilder) {
+    public PipelineStepImpl(FlowNode node, PipelineNodeGraphBuilder graphBuilder, Link parent) {
+        super(parent);
         this.node = node;
         this.status = new PipelineNodeGraphBuilder.NodeRunStatus(node);
         this.durationInMillis = graphBuilder.getDurationInMillis(node);
@@ -66,4 +68,8 @@ public class PipelineStepImpl extends BluePipelineStep {
         return null; //steps dont have steps
     }
 
+    @Override
+    public Link getLink() {
+        return null;
+    }
 }

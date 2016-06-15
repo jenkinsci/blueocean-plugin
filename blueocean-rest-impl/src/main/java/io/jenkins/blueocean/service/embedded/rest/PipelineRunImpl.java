@@ -33,13 +33,13 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 m.put(id, new ChangeSetResource(e));
             }
         }
-        return Containers.fromResourceMap(m);
+        return Containers.fromResourceMap(pipeline.getLink(),m);
     }
 
     @Override
     public BluePipelineNodeContainer getNodes() {
         if (run != null) {
-            return new PipelineNodeContainerImpl(run);
+            return new PipelineNodeContainerImpl(run, getLink());
         }
         return null;
     }

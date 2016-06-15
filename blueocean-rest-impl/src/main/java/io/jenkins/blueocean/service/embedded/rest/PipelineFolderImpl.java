@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
@@ -14,11 +15,11 @@ import org.kohsuke.stapler.json.JsonBody;
 public class PipelineFolderImpl extends BluePipelineFolder {
 
     private final ItemGroup folder;
-    private final BluePipelineContainer container;
+    private final Reachable parent;
 
-    public PipelineFolderImpl(ItemGroup folder) {
+    public PipelineFolderImpl(Reachable parent, ItemGroup folder) {
         this.folder = folder;
-        this.container = new PipelineContainerImpl(folder);
+        this.parent = parent;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl(folder);
+        return new PipelineContainerImpl(parent,folder);
     }
 
     @Override

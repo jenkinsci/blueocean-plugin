@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -30,5 +32,11 @@ public abstract class BlueOrganization extends Resource {
     public String getUrlName() {
         return getName();
     }
+
+    @Override
+    public Link getLink() {
+        return ApiHead.INSTANCE().getLink().rel("organizations/"+getName());
+    }
+
 }
 

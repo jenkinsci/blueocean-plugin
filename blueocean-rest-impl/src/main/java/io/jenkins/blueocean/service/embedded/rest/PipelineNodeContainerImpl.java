@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Result;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -19,9 +20,12 @@ import java.util.Map;
 public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
     private final WorkflowRun run;
     private final Map<String, BluePipelineNode> nodeMap = new HashMap<>();
+    private final Link self;
+
     List<BluePipelineNode> nodes = new ArrayList<>();
 
-    public PipelineNodeContainerImpl(WorkflowRun run) {
+    public PipelineNodeContainerImpl(WorkflowRun run, Link parentLink) {
+        this.self = parentLink.rel("nodes");
         this.run = run;
 
         WorkflowJob job = run.getParent();
@@ -33,9 +37,9 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
             && job.getLastSuccessfulBuild() != null
             && !job.getLastSuccessfulBuild().getId().equals(job.getLastBuild().getId())){
             PipelineNodeGraphBuilder pastBuild = new PipelineNodeGraphBuilder(job.getLastSuccessfulBuild());
-            this.nodes = graphBuilder.union(pastBuild);
+            this.nodes = graphBuilder.union(pastBuild,getLink());
         }else{
-            this.nodes = graphBuilder.getPipelineNodes();
+            this.nodes = graphBuilder.getPipelineNodes(getLink());
         }
         for(BluePipelineNode node: nodes){
             nodeMap.put(node.getId(), node);
@@ -54,5 +58,10 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
     @Override
     public Iterator<BluePipelineNode> iterator() {
         return nodes.iterator();
+    }
+
+    @Override
+    public Link getLink() {
+        return self;
     }
 }

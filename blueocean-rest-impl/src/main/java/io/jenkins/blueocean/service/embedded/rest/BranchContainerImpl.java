@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Job;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 
@@ -16,6 +17,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
     private final MultiBranchPipelineImpl pipeline;
 
     public BranchContainerImpl(MultiBranchPipelineImpl pipeline) {
+        super(pipeline);
         this.pipeline = pipeline;
     }
 
@@ -24,7 +26,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
     public BluePipeline get(String name) {
         Job job = pipeline.mbp.getBranch(name);
         if(job != null){
-            return new BranchImpl(job);
+            return new BranchImpl(this,job);
         }
         return null;
     }
@@ -34,8 +36,13 @@ public class BranchContainerImpl extends BluePipelineContainer {
         List<BluePipeline> branches = new ArrayList<>();
         Collection<Job> jobs = pipeline.mbp.getAllJobs();
         for(Job j: jobs){
-            branches.add(new BranchImpl(j));
+            branches.add(new BranchImpl(this,j));
         }
         return branches.iterator();
+    }
+
+    @Override
+    public Link getLink() {
+        return pipeline.getLink().rel("branches");
     }
 }

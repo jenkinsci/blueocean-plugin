@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.Resource;
@@ -49,5 +50,10 @@ public class ChangeSetResource extends Resource {
     @Override
     public String getUrlName() {
         return "changeset/"+getDelegate().getCommitId();
+    }
+
+    @Override
+    public Link getLink() {
+        return null;
     }
 }

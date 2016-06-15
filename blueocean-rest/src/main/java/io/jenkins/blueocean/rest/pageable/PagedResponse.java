@@ -41,18 +41,24 @@ public @interface PagedResponse {
             return new HttpResponse() {
                 @Override
                 public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                    int start = (req.getParameter("start") != null) ? Integer.parseInt(req.getParameter("start")) : -1;
-                    int limit = (req.getParameter("limit") != null) ? Integer.parseInt(req.getParameter("limit")) : -1;
+                    int page = (req.getParameter("page") != null) ? Integer.parseInt(req.getParameter("page")) : -1;
+                    int perPage = (req.getParameter("perPage") != null) ? Integer.parseInt(req.getParameter("perPage")) : -1;
 
-                    Object[] page;
-                    if (start >= 0 && limit >= 0) {
-                        page = Iterators.toArray(resp.iterator(start, limit), Object.class);
+                    Object[] pages;
+                    if (page >= 1 && perPage >= 0) {
+                        pages = Iterators.toArray(resp.iterator((page - 1) * perPage, perPage), Object.class);
+
                         // TODO: this is still a toy just to show the concept
-                        rsp.setHeader("Link", "<" + req.getRequestURI() + "&start=" + (start + limit) + ">; rel=\"next\"");
+                        rsp.setHeader("Link", "<" + req.getRequestURI() + "&page=" + (page+1) + ">; rel=\"next\"");
+                        rsp.setHeader("Link", "<" + req.getRequestURI() + "&page=1>; rel=\"first\"");
+
+                        if(page > 1) {
+                            rsp.setHeader("Link", "<" + req.getRequestURI() + "&page=" + (page + 1) + ">; rel=\"prev\"");
+                        }
                     } else {
-                        page = Iterators.toArray(resp.iterator(), Object.class);
+                        pages = Iterators.toArray(resp.iterator(), Object.class);
                     }
-                    new Api(page).doJson(req, rsp);
+                    new Api(pages).doJson(req, rsp);
                 }
             };
         }

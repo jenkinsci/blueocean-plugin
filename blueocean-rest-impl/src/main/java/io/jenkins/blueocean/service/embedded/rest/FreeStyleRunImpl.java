@@ -31,7 +31,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
             if (id==null)   id = String.valueOf(cnt);
             m.put(id,new ChangeSetResource(e));
         }
-        return Containers.fromResourceMap(m);
+        return Containers.fromResourceMap(this.getLink(),m);
     }
 
     @Override

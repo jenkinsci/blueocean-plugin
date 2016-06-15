@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
@@ -27,7 +28,8 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final PipelineNodeGraphBuilder.NodeRunStatus status;
     private final PipelineNodeGraphBuilder nodeGraphBuilder;
 
-    public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeGraphBuilder.NodeRunStatus status, PipelineNodeGraphBuilder nodeGraphBuilder) {
+    public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeGraphBuilder.NodeRunStatus status, PipelineNodeGraphBuilder nodeGraphBuilder, Link parentLink) {
+        super(parentLink);
         this.run = run;
         this.node = node;
         this.children = nodeGraphBuilder.getChildren(node);
@@ -100,9 +102,8 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public BluePipelineStepContainer getSteps() {
-        return new PipelineStepContainerImpl(node, nodeGraphBuilder);
+        return new PipelineStepContainerImpl(node, nodeGraphBuilder, self);
     }
-
 
     public static class EdgeImpl extends Edge{
         private final FlowNode node;

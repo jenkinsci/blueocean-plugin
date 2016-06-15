@@ -19,6 +19,7 @@ public class RunContainerImpl extends BlueRunContainer {
     private final BluePipeline pipeline;
 
     public RunContainerImpl(@Nonnull BluePipeline pipeline, @Nonnull Job job) {
+        super(pipeline);
         this.job = job;
         this.pipeline = pipeline;
     }

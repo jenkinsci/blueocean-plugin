@@ -163,7 +163,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
             });
         }
-        return Containers.fromResourceMap(m);
+        return Containers.fromResourceMap(getLink(),m);
     }
 
     @Override
@@ -228,6 +228,6 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public Link getLink() {
-        return new Link(pipeline.getLink().getHref()+"runs/"+getId());
+        return pipeline.getLink().rel("runs/"+getId());
     }
 }

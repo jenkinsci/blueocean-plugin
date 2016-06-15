@@ -5,7 +5,6 @@ import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
-import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -15,7 +14,6 @@ import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,15 +26,16 @@ import java.util.List;
 public class PipelineContainerImpl extends BluePipelineContainer {
     private final @Nonnull ItemGroup itemGroup;
 
+    public PipelineContainerImpl() {
+        super(null);
+        this.itemGroup = Jenkins.getInstance();
+    }
+
     public PipelineContainerImpl(Reachable parent, ItemGroup itemGroup) {
         super(parent);
         this.itemGroup = itemGroup;
     }
 
-    public PipelineContainerImpl() {
-        super(null);
-        this.itemGroup = Jenkins.getInstance();
-    }
 
     @Override
     public BluePipeline get(String name) {
@@ -46,7 +45,10 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         if(item == null){
             throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", name));
         }
+        return get(item);
+    }
 
+    public BluePipeline get(Item item){
         if (item instanceof BuildableItem) {
             if (item instanceof MultiBranchProject) {
                 return new MultiBranchPipelineImpl((MultiBranchProject) item);
@@ -54,11 +56,11 @@ public class PipelineContainerImpl extends BluePipelineContainer {
                 return new PipelineImpl((Job) item);
             }
         } else if (item instanceof ItemGroup) {
-            return new PipelineFolderImpl((ItemGroup) item);
+            return new PipelineFolderImpl(this,(ItemGroup) item);
         }
 
         // TODO: I'm going to turn this into a decorator annotation
-        throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", name));
+        throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", item.getName()));
     }
 
     @Override
@@ -71,7 +73,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         return item instanceof WorkflowJob && item.getParent() instanceof MultiBranchProject;
     }
 
-    protected static Iterator<BluePipeline> getPipelines(Collection<? extends Item> items){
+    private  Iterator<BluePipeline> getPipelines(Collection<? extends Item> items){
         List<BluePipeline> pipelines = new ArrayList<>();
         for (Item item : items) {
             if(item instanceof MultiBranchProject){
@@ -80,7 +82,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
                 && item instanceof Job){
                 pipelines.add(new PipelineImpl((Job) item));
             }else if(item instanceof ItemGroup){
-                pipelines.add(new PipelineFolderImpl((ItemGroup) item));
+                pipelines.add(new PipelineFolderImpl(this, (ItemGroup) item));
             }
         }
         return pipelines.iterator();

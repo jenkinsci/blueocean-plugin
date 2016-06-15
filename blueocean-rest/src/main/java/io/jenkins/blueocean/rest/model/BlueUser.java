@@ -1,9 +1,12 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
+
+import javax.annotation.Nonnull;
 
 /**
  * API endpoint for a user
@@ -17,6 +20,15 @@ public abstract class BlueUser extends Resource {
     public static final String EMAIL="email";
     public static final String FAVORITES = "favorites";
 
+    private final Reachable parent;
+
+    public BlueUser(@Nonnull Reachable parent) {
+        this.parent = parent;
+    }
+
+    public BlueUser() {
+        this.parent = (ApiHead) Stapler.getCurrentRequest().findAncestor(ApiHead.class).getObject();;
+    }
     /**
      * @return The id of the user
      */
@@ -40,7 +52,6 @@ public abstract class BlueUser extends Resource {
 
     @Override
     public Link getLink() {
-        ApiHead apiHead = (ApiHead) Stapler.getCurrentRequest().findAncestor(ApiHead.class).getObject();
-        return new Link(apiHead.getLink().getHref()+"users/"+getId()+"/");
+        return parent.getLink().rel(getUrlName());
     }
 }

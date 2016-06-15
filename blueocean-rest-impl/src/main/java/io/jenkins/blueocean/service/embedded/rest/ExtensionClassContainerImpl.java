@@ -15,7 +15,7 @@ public class ExtensionClassContainerImpl extends BlueExtensionClassContainer {
     public BlueExtensionClass get(String name) {
         try {
             Class clz = this.getClass().getClassLoader().loadClass(name);
-            return new ExtensionClassImpl(clz);
+            return new ExtensionClassImpl(this,clz);
         } catch (ClassNotFoundException e) {
             throw new ServiceException.NotFoundException(String.format("Class %s is not known", name));
         }
