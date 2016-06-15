@@ -443,6 +443,12 @@ export const actions = {
                             type: types.general,
                         });
                     });
+//                    .catch(() => dispatch({
+//                        id,
+//                        payload: [],
+//                        type: types.current,
+//                    })
+//                    );
             } else if (data && data[id]) {
                 dispatch({
                     id,
@@ -462,11 +468,11 @@ export const actions = {
                 ...optional,
                 type: actionType,
                 payload: json,
-            }))
-            .catch(() => dispatch({
-                ...optional,
-                payload: null,
-                type: actionType,
             }));
+//            .catch(() => dispatch({
+//                ...optional,
+//                payload: null,
+//                type: actionType,
+//            }));
     },
 };
