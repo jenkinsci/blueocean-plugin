@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
@@ -72,7 +73,11 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
      *
      */
     public BlueRunContainer getRuns(){
-        return new BlueRunContainer(this) {
+        return new BlueRunContainer() {
+            @Override
+            public Link getLink() {
+                return BlueMultiBranchPipeline.this.getLink().rel("runs");
+            }
 
             @Override
             public BluePipeline getPipeline(String name) {

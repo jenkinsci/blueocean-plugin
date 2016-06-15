@@ -11,10 +11,7 @@ import io.jenkins.blueocean.rest.hal.Link;
  * @author Kohsuke Kawaguchi
  */
 public abstract class BluePipelineContainer extends Container<BluePipeline> implements ApiRoutable, ExtensionPoint{
-    protected final Link parent;
-
-    protected BluePipelineContainer(Link parent) {
-        this.parent = parent;
+    protected BluePipelineContainer() {
     }
 
     @Override
@@ -22,11 +19,11 @@ public abstract class BluePipelineContainer extends Container<BluePipeline> impl
         return "pipelines";
     }
 
-    @Override
-    public Link getLink() {
-        if(parent!=null) {
-            return parent.rel(getUrlName());
-        }
-        return ApiHead.INSTANCE().getLink().rel(getUrlName());
-    }
+//    @Override
+//    public Link getLink() {
+//        if(parent!=null) {
+//            return parent.rel(getUrlName());
+//        }
+//        return ApiHead.INSTANCE().getLink().rel(getUrlName());
+//    }
 }

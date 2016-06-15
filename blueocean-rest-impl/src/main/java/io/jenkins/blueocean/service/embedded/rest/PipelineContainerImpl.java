@@ -6,6 +6,7 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -19,21 +20,32 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.eclipse.jgit.lib.ObjectChecker.parent;
+
 /**
  * @author Vivek Pandey
  */
 @Extension
 public class PipelineContainerImpl extends BluePipelineContainer {
     private final @Nonnull ItemGroup itemGroup;
+    private final Link parent;
 
     public PipelineContainerImpl() {
-        super(null);
         this.itemGroup = Jenkins.getInstance();
+        this.parent = null;
     }
 
     public PipelineContainerImpl(ItemGroup itemGroup, Link parent) {
-        super(parent);
         this.itemGroup = itemGroup;
+        this.parent = parent;
+    }
+
+    @Override
+    public Link getLink() {
+        if(parent!=null) {
+            return parent.rel(getUrlName());
+        }
+        return ApiHead.INSTANCE().getLink().rel(getUrlName());
     }
 
 

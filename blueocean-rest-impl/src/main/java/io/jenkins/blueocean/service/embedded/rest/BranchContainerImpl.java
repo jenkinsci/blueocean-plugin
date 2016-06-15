@@ -17,7 +17,6 @@ public class BranchContainerImpl extends BluePipelineContainer {
     private final MultiBranchPipelineImpl pipeline;
 
     public BranchContainerImpl(MultiBranchPipelineImpl pipeline) {
-        super(pipeline.getLink());
         this.pipeline = pipeline;
     }
 
