@@ -71,10 +71,12 @@ class OrganizationPipelines extends Component {
                 }
                 case 'job_run_started': {
                     _this.props.updateRunState(eventCopy, _this.context.config, true);
+                    _this.props.updateBranchState(eventCopy, _this.context.config);
                     break;
                 }
                 case 'job_run_ended': {
                     _this.props.updateRunState(eventCopy, _this.context.config);
+                    _this.props.updateBranchState(eventCopy, _this.context.config);
                     break;
                 }
                 default :
@@ -106,6 +108,7 @@ OrganizationPipelines.propTypes = {
     fetchPipelinesIfNeeded: func.isRequired,
     processJobQueuedEvent: func.isRequired,
     updateRunState: func.isRequired,
+    updateBranchState: func.isRequired,
     organization: string,
     params: object, // From react-router
     children: node, // From react-router

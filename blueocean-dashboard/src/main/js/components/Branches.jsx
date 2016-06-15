@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
-import { WeatherIcon, StatusIndicator } from '@jenkins-cd/design-language';
+import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
 
 const { object } = PropTypes;
 
@@ -26,7 +26,7 @@ export default class Branches extends Component {
                 },
             } = this;
         const {
-            latestRun: { id, result, endTime, changeSet, state, commitId },
+            latestRun: { id, result, startTime, endTime, changeSet, state, commitId, estimatedDurationInMillis },
             weatherScore,
             name,
         } = data;
@@ -36,10 +36,13 @@ export default class Branches extends Component {
             router.push(location);
         };
         const { msg } = changeSet[0] || {};
+
         return (<tr key={name} onClick={open} id={`${name}-${id}`} >
             <td><WeatherIcon score={weatherScore} /></td>
             <td>
-                <StatusIndicator result={result === 'UNKNOWN' ? state : result} />
+                <LiveStatusIndicator result={result === 'UNKNOWN' ? state : result}
+                  startTime={startTime} estimatedDuration={estimatedDurationInMillis}
+                />
             </td>
             <td>{decodeURIComponent(name)}</td>
             <td><CommitHash commitId={commitId} /></td>
