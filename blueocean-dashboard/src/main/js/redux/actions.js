@@ -4,6 +4,7 @@ import fetch from 'isomorphic-fetch';
 import { State } from '../components/records';
 
 export const ACTION_TYPES = keymirror({
+    UPDATE_MESSAGES: null,
     CLEAR_PIPELINES_DATA: null,
     SET_PIPELINES_DATA: null,
     SET_PIPELINE: null,
@@ -17,6 +18,13 @@ export const ACTION_TYPES = keymirror({
 });
 
 export const actionHandlers = {
+    [ACTION_TYPES.UPDATE_MESSAGES](state, { payload }): State {
+        const messages = state.get('messages') || [];
+        if (payload) {
+            messages.push(payload);
+        }
+        return state.set('messages', messages);
+    },
     [ACTION_TYPES.CLEAR_PIPELINES_DATA](state) {
         return state.set('pipelines', null);
     },
@@ -90,6 +98,12 @@ exports.fetchJson = function (url, onSuccess, onError) {
         .catch((error) => {
             if (onError) {
                 onError(error);
+            } else {
+                console.error(error);
+                dispatch({
+                    payload: { type: 'ERROR', message: (''+error.stack) },
+                    type: ACTION_TYPES.UPDATE_MESSAGES,
+                });
             }
         });
 };
@@ -442,13 +456,14 @@ export const actions = {
                             payload: json,
                             type: types.general,
                         });
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        dispatch({
+                            payload: { type: 'ERROR', message: (''+error.stack) },
+                            type: ACTION_TYPES.UPDATE_MESSAGES,
+                        });
                     });
-//                    .catch(() => dispatch({
-//                        id,
-//                        payload: [],
-//                        type: types.current,
-//                    })
-//                    );
             } else if (data && data[id]) {
                 dispatch({
                     id,
@@ -468,11 +483,13 @@ export const actions = {
                 ...optional,
                 type: actionType,
                 payload: json,
-            }));
-//            .catch(() => dispatch({
-//                ...optional,
-//                payload: null,
-//                type: actionType,
-//            }));
+            }))
+            .catch((error) => {
+                console.error(error);
+                dispatch({
+                    payload: { type: 'ERROR', message: (''+error.stack) },
+                    type: ACTION_TYPES.UPDATE_MESSAGES,
+                });
+            });
     },
 };

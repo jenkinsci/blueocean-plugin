@@ -77,6 +77,7 @@ export const RunsRecord = Record({
 
 export const State = Record({
     isFetching: false,
+    messages: null,
     pipelines: null,
     pipeline: PipelineRecord,
     runs: null,
