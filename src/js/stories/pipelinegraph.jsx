@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import { action, storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@kadira/storybook';
 import {PipelineGraph, defaultLayout} from '../components/PipelineGraph';
 
 import { StatusIndicator } from '../components';
@@ -7,6 +7,7 @@ const pipelineStageState = StatusIndicator.validResultValues;
 
 storiesOf('PipelineGraph', module)
     .add('Mixed', renderMultiParallelPipeline)
+    .add('Duplicate Names', renderWithDuplicateNames)
     .add('Fat', renderFlatPipelineFat)
     .add('Legend', renderFlatPipeline)
     .add('Constructor', renderConstructomatic)
@@ -33,6 +34,27 @@ function renderFlatPipeline() {
     const layout = { nodeSpacingH: 90 };
 
     return <div><PipelineGraph stages={stages} layout={layout}/></div>;
+}
+
+function renderWithDuplicateNames() {
+
+    const stages = [
+        makeNode("Build"),
+        makeNode("Test"),
+        makeNode("Browser Tests", [
+            makeNode("Internet Explorer"),
+            makeNode("Chrome")
+        ]),
+        makeNode("Test"),
+        makeNode("Staging"),
+        makeNode("Production")
+    ];
+
+    return (
+        <div>
+            <PipelineGraph stages={stages}/>
+        </div>
+    );
 }
 
 function renderFlatPipelineFat() {
@@ -108,12 +130,18 @@ function renderListenersPipeline() {
             makeNode("Chrome", [], pipelineStageState.queued)
         ]),
         makeNode("Dev"),
+        makeNode("Dev"), // Make sure it works with dupe names
         makeNode("Staging"),
         makeNode("Production")
     ];
 
-    return <div><PipelineGraph stages={stages} onNodeClick={nodeName => action('Clicked', nodeName)}/></div>;
+    function nodeClicked(...values) {
+        console.log('Node clicked', values);
+    }
+
+    return <div><PipelineGraph stages={stages} onNodeClick={nodeClicked}/></div>;
 }
+
 function renderParallelPipeline() {
 
     const stages = [

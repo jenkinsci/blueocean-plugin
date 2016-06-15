@@ -6,19 +6,6 @@ import {strokeWidth as nodeStrokeWidth} from './status/SvgSpinner';
 
 import type {Result} from './status/StatusIndicator';
 
-// See: io.jenkins.blueocean.rest.model.BlueRun.BlueRunState
-// See: io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult
-export const pipelineStageState:{ [key: string]: Result } = {
-    // TODO: Replace use of this exported const with StatusIndicator.validResultValues in BO tests
-    queued: "queued", // May run in future
-    running: "running",
-    success: "success",
-    failure: "failure",
-    aborted: "aborted",
-    unstable: "unstable",
-    notBuilt: "not_built" // Not run, and will not be
-};
-
 // Dimensions used for layout, px
 export const defaultLayout = {
     nodeSpacingH: 120,
@@ -53,6 +40,7 @@ type ConnectionInfo = [NodeInfo, NodeInfo];
 type LabelInfo = {
     x: number,
     y: number,
+    nodeId: string,
     text: string
 };
 
@@ -157,7 +145,8 @@ export class PipelineGraph extends Component {
             bigLabels.push({
                 x: xp,
                 y: yp,
-                text: topStage.name
+                text: topStage.name,
+                nodeId: topStage.id
             });
 
             // If stage has children, we don't draw a node for it, just its children
@@ -183,7 +172,8 @@ export class PipelineGraph extends Component {
                     smallLabels.push({
                         x: xp,
                         y: yp,
-                        text: nodeStage.name
+                        text: nodeStage.name,
+                        nodeId: nodeStage.id
                     });
                 }
 
@@ -238,7 +228,9 @@ export class PipelineGraph extends Component {
             left: x + "px"
         });
 
-        return <div className="pipeline-big-label" style={style} key={details.text}>{details.text}</div>;
+        const key = details.nodeId + '-big';
+
+        return <div className="pipeline-big-label" style={style} key={key}>{details.text}</div>;
     }
 
     createSmallLabel(details: LabelInfo) {
@@ -269,7 +261,9 @@ export class PipelineGraph extends Component {
             left: x
         });
 
-        return <div className="pipeline-small-label" style={style} key={details.text}>{details.text}</div>;
+        const key = details.nodeId + '-big';
+
+        return <div className="pipeline-small-label" style={style} key={key}>{details.text}</div>;
     }
 
     renderConnection(connection: ConnectionInfo) {
@@ -347,7 +341,7 @@ export class PipelineGraph extends Component {
                         className="pipeline-node-hittarget"
                         fillOpacity="0"
                         stroke="none"
-                        onClick={() => this.props.onNodeClick(node.name)}/>
+                        onClick={() => this.props.onNodeClick(node.name, node.id)}/>
             );
         }
 
