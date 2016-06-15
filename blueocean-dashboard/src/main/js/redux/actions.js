@@ -3,7 +3,64 @@ import keymirror from 'keymirror';
 import fetch from 'isomorphic-fetch';
 import { State } from '../components/records';
 
+import { getNodesInformation } from '../util/logDisplayHelper';
+
+// helper functions
+
+// helper to clean the path
+function uriString(input) {
+    return encodeURIComponent(input).replace(/%2F/g, '%252F');
+}
+// helper calculate url
+export function calculateLogUrl(config) {
+    const { nodesBaseUrl, node } = config;
+    return `${nodesBaseUrl}/${node.id}/log`;
+}
+
+export function calculateNodeBaseUrl(config) {
+    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
+    const baseUrl =
+      `${_appURLBase}/rest/organizations/jenkins/` +
+      `pipelines/${uriString(name)}`;
+    if (isMultiBranch) {
+        return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/`;
+    }
+    return `${baseUrl}/runs/${runId}/nodes/`;
+}
+
+export function calculateStepsBaseUrl(config) {
+    const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
+    const baseUrl =
+      `${_appURLBase}/rest/organizations/jenkins/` +
+      `pipelines/${uriString(name)}`;
+    if (isMultiBranch) {
+        return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/${node}/steps`;
+    }
+    return `${baseUrl}/runs/${runId}/nodes/${node}/steps`;
+}
+
+export function calculateRunLogURLObject(config) {
+    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
+    const baseUrl = `${_appURLBase}/rest/organizations/jenkins` +
+    `/pipelines/${uriString(name)}`;
+    let url;
+    let fileName;
+    if (isMultiBranch) {
+        url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
+        fileName = `${branch}-${runId}.txt`;
+    } else {
+        url = `${baseUrl}/runs/${runId}/log/`;
+        fileName = `${runId}.txt`;
+    }
+    return {
+        url,
+        fileName,
+    };
+}
+
+// main actin logic
 export const ACTION_TYPES = keymirror({
+    UPDATE_MESSAGES: null,
     CLEAR_PIPELINES_DATA: null,
     SET_PIPELINES_DATA: null,
     SET_PIPELINE: null,
@@ -15,9 +72,20 @@ export const ACTION_TYPES = keymirror({
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
     UPDATE_BRANCH_DATA: null,
+    SET_STEPS: null,
+    SET_NODE: null,
+    SET_NODES: null,
+    SET_LOGS: null,
 });
 
 export const actionHandlers = {
+    [ACTION_TYPES.UPDATE_MESSAGES](state, { payload }): State {
+        const messages = state.get('messages') || [];
+        if (payload) {
+            messages.push(payload);
+        }
+        return state.set('messages', messages);
+    },
     [ACTION_TYPES.CLEAR_PIPELINES_DATA](state) {
         return state.set('pipelines', null);
     },
@@ -28,11 +96,12 @@ export const actionHandlers = {
         return state.set('pipeline', null);
     },
     [ACTION_TYPES.SET_PIPELINE](state, { id }): State {
-        const pipelines = state.get('pipelines');
+        const pipelines = state.pipelines;
         if (!pipelines) {
             return state.set('pipeline', null);
         }
-        const pipeline = pipelines.filter(item => item.name === id);
+        // [].slice(0) returns a clone, we do need it for uniqueness
+        const pipeline = pipelines.slice(0).filter(item => item.name === id);
         return state.set('pipeline', pipeline[0] ? pipeline[0] : null);
     },
     [ACTION_TYPES.CLEAR_CURRENT_RUN_DATA](state) {
@@ -41,8 +110,16 @@ export const actionHandlers = {
     [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
         return state.set('currentRuns', payload);
     },
+    [ACTION_TYPES.SET_NODE](state, { payload }): State {
+        return state.set('node', payload);
+    },
+    [ACTION_TYPES.SET_NODES](state, { payload }): State {
+        const nodes = { ...state.nodes } || {};
+        nodes[payload.nodesBaseUrl] = payload;
+        return state.set('nodes', nodes);
+    },
     [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
-        const runs = state.get('runs') || {};
+        const runs = { ...state.runs } || {};
         runs[id] = payload;
         return state.set('runs', runs);
     },
@@ -53,10 +130,21 @@ export const actionHandlers = {
         return state.set('currentBranches', payload);
     },
     [ACTION_TYPES.SET_BRANCHES_DATA](state, { payload, id }): State {
-        const branches = state.get('branches') || {};
+        const branches = { ...state.branches } || {};
         branches[id] = payload;
         return state.set('branches', branches);
     },
+    [ACTION_TYPES.SET_STEPS](state, { payload }): State {
+        const steps = { ...state.steps } || {};
+        steps[payload.nodesBaseUrl] = payload;
+        return state.set('steps', steps);
+    },
+    [ACTION_TYPES.SET_LOGS](state, { payload }): State {
+        const logs = { ...state.logs } || {};
+        logs[payload.logUrl] = payload;
+        return state.set('logs', logs);
+    },
+
     [ACTION_TYPES.UPDATE_BRANCH_DATA](state, { payload, id }): State {
         const branches = state.get('branches') || {};
         const jobBranches = branches[id];
@@ -90,6 +178,9 @@ function parseJSON(response) {
     return response.json();
 }
 
+function parseText(response) {
+    return response.text();
+}
 /**
  * Fetch JSON data.
  * <p>
@@ -99,7 +190,7 @@ function parseJSON(response) {
  * @param onSuccess o
  * @param onError
  */
-exports.fetchJson = function (url, onSuccess, onError) {
+exports.fetchJson = function fetchJson(url, onSuccess, onError) {
     fetch(url, fetchOptions)
         .then(checkStatus)
         .then(parseJSON)
@@ -107,6 +198,8 @@ exports.fetchJson = function (url, onSuccess, onError) {
         .catch((error) => {
             if (onError) {
                 onError(error);
+            } else {
+                console.error(error); // eslint-disable-line no-console
             }
         });
 };
@@ -296,7 +389,7 @@ export const actions = {
             if (storeData) {
                 let runUrl;
 
-                const updateRunData = function (runData, skipStoreDataRefresh) {
+                const updateRunData = function updateRunData(runData, skipStoreDataRefresh) {
                     const newRunData = Object.assign({}, runData);
                     let newRuns;
 
@@ -360,7 +453,9 @@ export const actions = {
                     // Getting the actual state of the run failed. Lets log
                     // the failure and update the state manually as best we can.
 
+                    // eslint-disable-next-line no-console
                     console.warn(`Error getting run data from REST endpoint: ${runUrl}`);
+                    // eslint-disable-next-line no-console
                     console.warn(error);
 
                     // We're after coming out of an async operation (the fetch).
@@ -501,12 +596,13 @@ export const actions = {
                             type: types.general,
                         });
                     })
-                    .catch(() => dispatch({
-                        id,
-                        payload: [],
-                        type: types.current,
-                    })
-                    );
+                    .catch((error) => {
+                        console.error(error); // eslint-disable-line no-console
+                        dispatch({
+                            payload: { type: 'ERROR', message: `${error.stack}` },
+                            type: ACTION_TYPES.UPDATE_MESSAGES,
+                        });
+                    });
             } else if (data && data[id]) {
                 dispatch({
                     id,
@@ -527,10 +623,107 @@ export const actions = {
                 type: actionType,
                 payload: json,
             }))
-            .catch(() => dispatch({
-                ...optional,
-                payload: null,
-                type: actionType,
-            }));
+            .catch((error) => {
+                console.error(error); // eslint-disable-line no-console
+                dispatch({
+                    payload: { type: 'ERROR', message: `${error.stack}` },
+                    type: ACTION_TYPES.UPDATE_MESSAGES,
+                });
+            });
+    },
+    /*
+      For the detail view we need to fetch the different nodes of
+      a run in case we do not have specific node, to
+      determine which one we have to show in the detail view.
+      We later store them with the key: nodesBaseUrl
+      so we only fetch them once.
+    */
+    fetchNodes(config) {
+        return (dispatch, getState) => {
+            const data = getState().adminStore.nodes;
+            const nodesBaseUrl = calculateNodeBaseUrl(config);
+            if (!data || !data[nodesBaseUrl]) {
+                return exports.fetchJson(
+                  nodesBaseUrl,
+                  (json) => {
+                      const information = getNodesInformation(json);
+                      information.nodesBaseUrl = nodesBaseUrl;
+                      dispatch({
+                          type: ACTION_TYPES.SET_NODES,
+                          payload: information,
+                      });
+                      let node;
+                      if (!config.node) {
+                          const focused = information.model.filter((item) => item.isFocused)[0];
+                          if (focused) {
+                              node = focused.id;
+                          } else {
+                              node = (information.model[information.model.length - 1]).id;
+                          }
+                      } else {
+                          node = config.node;
+                      }
+                      const mergedConfig = { ...config, node };
+                      dispatch({
+                          type: ACTION_TYPES.SET_NODE,
+                          payload: node,
+                      });
+                      return dispatch(actions.fetchSteps(mergedConfig));
+                  },
+                  (error) => console.error('error', error)
+                );
+            }
+            return null;
+        };
+    },
+    /*
+      For the detail view we need to fetch the different steps of a nodes.
+      We later store them with the key: nodesBaseUrl
+      so we only fetch them once.
+    */
+    fetchSteps(config) {
+        return (dispatch, getState) => {
+            const data = getState().adminStore.steps;
+            const stepBaseUrl = calculateStepsBaseUrl(config);
+            if (!data || !data[stepBaseUrl] || !data[stepBaseUrl]) {
+                return exports.fetchJson(
+                  stepBaseUrl,
+                  (json) => {
+                      const information = getNodesInformation(json);
+                      information.nodesBaseUrl = stepBaseUrl;
+                      return dispatch({
+                          type: ACTION_TYPES.SET_STEPS,
+                          payload: information,
+                      });
+                  },
+                  (error) => console.error('error', error)
+                );
+            }
+            return null;
+        };
+    },
+    /* l
+      Get a specific log for a node, fetch it only if needed.
+      key for cache: logUrl = calculateLogUrl
+     */
+    fetchLog(config) {
+        return (dispatch, getState) => {
+            const data = getState().adminStore.logs;
+            const logUrl = calculateLogUrl(config);
+            if (!data || !data[logUrl]) {
+                return fetch(logUrl, fetchOptions)
+            .then(checkStatus)
+            .then(parseText)
+            .then(text => dispatch({
+                type: ACTION_TYPES.SET_LOGS,
+                payload: {
+                    text,
+                    logUrl,
+                },
+            }))
+            .catch((error) => console.error('error', error));
+            }
+            return null;
+        };
     },
 };
