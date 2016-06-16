@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
 
-const { string, array } = PropTypes;
+const { string, array, object, any } = PropTypes;
 
 
 function badNode(jenkinsNode) {
@@ -145,7 +145,25 @@ export default class PipelineRunGraph extends Component {
 
         return (
             <div style={outerDivStyle}>
-                <PipelineGraph stages={graphNodes} />
+                <PipelineGraph
+                  stages={graphNodes}
+                  onNodeClick={
+                    (name, id) => {
+                        const pathname = this.props.location.pathname;
+                        // if path ends with pipeline we simply add the node id
+                        if (pathname.endsWith('pipeline/')) {
+                            this.props.router.push(`${pathname}${id}`);
+                        } else {
+                            // remove last bit and replace it with node
+                            const pathArray = pathname.split('/');
+                            pathArray.pop();
+                            pathArray.pop();
+                            pathArray.shift();
+                            this.props.router.push(`${pathArray.join('/')}/${id}/`);
+                        }
+                    }
+                  }
+                />
             </div>
         );
     }
@@ -156,4 +174,7 @@ PipelineRunGraph.propTypes = {
     branchName: string,
     runId: string,
     nodes: array,
+    node: any,
+    router: object.isRequired, // From react-router
+    location: object.isRequired, // From react-router
 };
