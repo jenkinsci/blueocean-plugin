@@ -71,6 +71,7 @@ export const ACTION_TYPES = keymirror({
     SET_BRANCHES_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
+    UPDATE_BRANCH_DATA: null,
     SET_STEPS: null,
     SET_NODE: null,
     SET_NODES: null,
@@ -144,6 +145,22 @@ export const actionHandlers = {
         return state.set('logs', logs);
     },
 
+    [ACTION_TYPES.UPDATE_BRANCH_DATA](state, { payload, id }): State {
+        const branches = state.get('branches') || {};
+        const jobBranches = branches[id];
+
+        // store the new branch data for the single branch
+        // then update all branch data in the store
+        const newBranches = jobBranches.map(branch =>
+            branch.name === payload.name ?
+                payload : branch
+        );
+
+        branches[id] = newBranches;
+        return state
+            .set('branches', branches)
+            .set('currentBranches', newBranches);
+    },
 };
 
 // fetch helper
@@ -257,7 +274,6 @@ export const actions = {
         return (dispatch, getState) => {
             dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
             const pipelines = getState().adminStore.pipelines;
-
 
             if (!pipelines) {
                 return dispatch(actions.fetchPipelinesIfNeeded(config))
@@ -472,6 +488,47 @@ export const actions = {
                     // storeData again because we already just did it at the start of
                     // this function call.
                     updateRunData(runData, false);
+                });
+            }
+        };
+    },
+
+    updateBranchState(event, config) {
+        return (dispatch, getState) => {
+            // if the job event is multibranch, refetch the corresponding branch
+            // from the REST API and update our stores
+            if (event.blueocean_is_multi_branch) {
+                const branches = getState().adminStore.branches || {};
+                const jobs = branches[event.blueocean_job_name] || [];
+                const branch = jobs.find(job => job.name === event.blueocean_branch_name);
+
+                if (!branch) {
+                    return;
+                }
+
+                const url = `${config.getAppURLBase()}/rest/organizations/${branch.organization}` +
+                    `/pipelines/${event.blueocean_job_name}/branches/${branch.name}`;
+
+                const processBranchData = function (branchData) {
+                    const { latestRun } = branchData;
+
+                    // same issue as in 'updateRunData'; see comment above
+                    if (event.jenkins_event === 'job_run_ended') {
+                        latestRun.state = 'FINISHED';
+                    } else {
+                        latestRun.state = 'RUNNING';
+                    }
+
+                    // apply the new data to the store
+                    dispatch({
+                        payload: branchData,
+                        id: event.blueocean_job_name,
+                        type: ACTION_TYPES.UPDATE_BRANCH_DATA,
+                    });
+                };
+
+                exports.fetchJson(url, processBranchData, (error) => {
+                    console.log(error);
                 });
             }
         };
