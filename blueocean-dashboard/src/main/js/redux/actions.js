@@ -676,6 +676,13 @@ export const actions = {
             return null;
         };
     },
+
+    cleanNodePointer() {
+        return (dispatch) => dispatch({
+            type: ACTION_TYPES.SET_NODE,
+            payload: null,
+        });
+    },
     /*
       For the detail view we need to fetch the different steps of a nodes.
       We later store them with the key: nodesBaseUrl
