@@ -434,7 +434,7 @@ public class PipelineNodeGraphBuilder {
         public NodeRunStatus(FlowNode endNode) {
             if (endNode.getError() != null) {
                 this.result = BlueRun.BlueRunResult.FAILURE;
-                this.state = BlueRun.BlueRunState.FINISHED;
+                this.state = endNode.isRunning() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
             }else if (endNode.isRunning()) {
                 this.result = BlueRun.BlueRunResult.UNKNOWN;
                 this.state = BlueRun.BlueRunState.RUNNING;
