@@ -28,27 +28,60 @@ const EmptyState = ({ repoName }) => (
     </main>
 );
 
+const NotSupported = () => (
+    <main>
+        <EmptyStateView>
+            <h1>Pull Requests are unsupported</h1>
+            <p>
+            Validated pull request builds only work with the <i>Multi-Branch Pipeline</i> job type.
+            This is just one of the many reasons to switch to Jenkins Pipeline.
+            </p>
+            <a href="https://jenkins.io/doc/book/pipeline-as-code/" target="_blank">Learn more</a>
+        </EmptyStateView>
+    </main>
+);
+
 EmptyState.propTypes = {
     repoName: string,
 };
 
 export class PullRequests extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            unsupportedJob: false,
+        };
+    }
+
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const {
-                params: {
-                    pipeline,
-                },
                 config = {},
+                params: {
+                    pipeline: pipelineName,
+                },
+                pipeline,
             } = this.context;
-            config.pipeline = pipeline;
+
+            if (!pipeline.branchNames || !pipeline.branchNames.length) {
+                this.setState({
+                    unsupportedJob: true,
+                });
+                return;
+            }
+
+            config.pipeline = pipelineName;
             this.props.fetchBranchesIfNeeded(config);
         }
     }
 
-
     render() {
         const { branches } = this.props;
+
+        if (this.state.unsupportedJob) {
+            return (<NotSupported />);
+        }
+
         // early out
         if (!branches) {
             return null;
@@ -87,8 +120,9 @@ export class PullRequests extends Component {
 }
 
 PullRequests.contextTypes = {
-    params: object.isRequired,
     config: object.isRequired,
+    params: object.isRequired,
+    pipeline: object,
 };
 
 PullRequests.propTypes = {
