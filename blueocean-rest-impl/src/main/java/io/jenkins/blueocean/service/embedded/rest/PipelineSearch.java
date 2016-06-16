@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
-import hudson.model.Project;
+import hudson.model.Item;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.pageable.Pageables;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,16 +26,26 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
 
     @Override
     public Pageable<BluePipeline> search(Query q) {
-        List<Project> projects = Jenkins.getActiveInstance().getAllItems(Project.class);
+        final Iterator<BluePipeline> pipelineIterator = PipelineContainerImpl
+            .getPipelines(Jenkins.getActiveInstance().getAllItems(Item.class));
         final List<BluePipeline> pipelines = new ArrayList<>();
         String pipeline = q.param(getType());
-        for (Project project : projects) {
-            if (pipeline != null && !project.getName().equals(pipeline)) {
-                continue;
+        if(pipeline == null) {
+            return Pageables.wrap(new Iterable<BluePipeline>() {
+                @Override
+                public Iterator<BluePipeline> iterator() {
+                    return pipelineIterator;
+                }
+            });
+        }else{
+            while (pipelineIterator.hasNext()) {
+                BluePipeline p = pipelineIterator.next();
+                if (!p.getName().equals(pipeline)) {
+                    continue;
+                }
+                pipelines.add(p);
             }
-            pipelines.add(new PipelineImpl(project));
+            return Pageables.wrap(pipelines);
         }
-
-        return Pageables.wrap(pipelines);
     }
 }

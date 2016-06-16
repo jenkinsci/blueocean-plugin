@@ -237,7 +237,7 @@ export const actions = {
             const baseUrl = config.getAppURLBase();
             const url = organizationName ?
                 `${baseUrl}/rest/organizations/${organizationName}/pipelines/` :
-                `${baseUrl}/rest/pipelines/`;
+                `${baseUrl}/rest/search/?q=type:pipeline`;
 
             return dispatch(actions.generateData(
                 url,
@@ -257,7 +257,7 @@ export const actions = {
             const pipelines = getState().adminStore.pipelines;
             const baseUrl = config.getAppURLBase();
             const url = !organizationName ?
-                `${baseUrl}/rest/pipelines/` :
+                `${baseUrl}/rest/search/?q=type:pipeline` :
                 `${baseUrl}/rest/organizations/${organizationName}/pipelines/`;
 
             if (!pipelines) {
