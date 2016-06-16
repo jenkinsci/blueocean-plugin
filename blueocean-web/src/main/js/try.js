@@ -1,13 +1,10 @@
 var $ = require('jquery-detached').getJQuery();
-var jsModules = require('@jenkins-cd/js-modules');
 
 function getAppUrl() {
-    var rootUrl = jsModules.getRootURL();
+    const headElement = document.getElementsByTagName("head")[0];
+    const rootUrl = headElement.getAttribute("data-rooturl");
     
-    // If there's no prefix, rooturl is blank, resulting in js-modules
-    // returning the static url. We don't want to use that when
-    // switching to blue ocean, so return '' instead.
-    if (rootUrl.indexOf('/static/') === 0) {
+    if (!rootUrl) {
         return '';
     } else {
         return rootUrl;
