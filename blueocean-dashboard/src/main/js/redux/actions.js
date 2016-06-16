@@ -654,7 +654,7 @@ export const actions = {
                 } else {
                     node = config.node;
                 }
-                const mergedConfig = {...config, node};
+                const mergedConfig = { ...config, node };
                 dispatch({
                     type: ACTION_TYPES.SET_NODE,
                     payload: node,
@@ -676,10 +676,8 @@ export const actions = {
                   },
                   (error) => console.error('error', error)
                 );
-            } else {
-                return getNodeAndSteps(data[nodesBaseUrl]);
             }
-            return null;
+            return getNodeAndSteps(data[nodesBaseUrl]);
         };
     },
 
