@@ -642,6 +642,25 @@ export const actions = {
         return (dispatch, getState) => {
             const data = getState().adminStore.nodes;
             const nodesBaseUrl = calculateNodeBaseUrl(config);
+            function getNodeAndSteps(information) {
+                let node;
+                if (!config.node) {
+                    const focused = information.model.filter((item) => item.isFocused)[0];
+                    if (focused) {
+                        node = focused.id;
+                    } else {
+                        node = (information.model[information.model.length - 1]).id;
+                    }
+                } else {
+                    node = config.node;
+                }
+                const mergedConfig = {...config, node};
+                dispatch({
+                    type: ACTION_TYPES.SET_NODE,
+                    payload: node,
+                });
+                return dispatch(actions.fetchSteps(mergedConfig));
+            }
             if (!data || !data[nodesBaseUrl]) {
                 return exports.fetchJson(
                   nodesBaseUrl,
@@ -652,26 +671,13 @@ export const actions = {
                           type: ACTION_TYPES.SET_NODES,
                           payload: information,
                       });
-                      let node;
-                      if (!config.node) {
-                          const focused = information.model.filter((item) => item.isFocused)[0];
-                          if (focused) {
-                              node = focused.id;
-                          } else {
-                              node = (information.model[information.model.length - 1]).id;
-                          }
-                      } else {
-                          node = config.node;
-                      }
-                      const mergedConfig = { ...config, node };
-                      dispatch({
-                          type: ACTION_TYPES.SET_NODE,
-                          payload: node,
-                      });
-                      return dispatch(actions.fetchSteps(mergedConfig));
+
+                      return getNodeAndSteps(information);
                   },
                   (error) => console.error('error', error)
                 );
+            } else {
+                return getNodeAndSteps(data[nodesBaseUrl]);
             }
             return null;
         };
