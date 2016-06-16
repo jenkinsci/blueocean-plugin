@@ -51,7 +51,9 @@ function basicStory() {
                         onCollapse={onCollapse} data="echo">{moLipsum()}</ResultItem>
             <ResultItem result="aborted" label="Aborted Step" extraInfo="1 min, 12 sec" onExpand={onExpand}
                         onCollapse={onCollapse} data="echo">{moLipsum()}</ResultItem>
-            
+            <ResultItem result="success" label="Expanded by default step" extraInfo="13 sec" onExpand={onExpand}
+                        onCollapse={onCollapse} data="foxtrot" expanded="true">{moLipsum()}</ResultItem>
+
             <h2>Separator</h2>
             
             <ResultItem result="running" label="Running Step, with taller child" extraInfo="a few seconds"
