@@ -31,26 +31,55 @@ const EmptyState = ({ repoName }) => (
     </main>
 );
 
+const NotSupported = () => (
+    <main>
+        <EmptyStateView tightSpacing>
+            <p>Branches are not supported for this job type.</p>
+        </EmptyStateView>
+    </main>
+);
+
 EmptyState.propTypes = {
     repoName: string,
 };
 
 export class MultiBranch extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            unsupportedJob: false,
+        };
+    }
+    
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const {
-                params: {
-                    pipeline,
-                },
                 config = {},
+                params: {
+                    pipeline: pipelineName,
+                },
+                pipeline,
             } = this.context;
-            config.pipeline = pipeline;
+
+            if (!pipeline.branchNames || !pipeline.branchNames.length) {
+                this.setState({
+                    unsupportedJob: true,
+                });
+                return;
+            }
+
+            config.pipeline = pipelineName;
             this.props.fetchBranchesIfNeeded(config);
         }
     }
 
     render() {
         const { branches } = this.props;
+
+        if (this.state.unsupportedJob) {
+            return (<NotSupported />);
+        }
+
         // early out
         if (!branches) {
             return null;
@@ -91,8 +120,9 @@ export class MultiBranch extends Component {
 }
 
 MultiBranch.contextTypes = {
-    params: object.isRequired,
     config: object.isRequired,
+    params: object.isRequired,
+    pipeline: object,
 };
 
 MultiBranch.propTypes = {
