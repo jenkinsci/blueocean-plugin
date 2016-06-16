@@ -1,9 +1,7 @@
 var $ = require('jquery-detached').getJQuery();
 
 function getAppUrl() {
-    const headElement = document.getElementsByTagName("head")[0];
-    const rootUrl = headElement.getAttribute("data-rooturl");
-    
+    const rootUrl = $('head').attr('data-rooturl');
     if (!rootUrl) {
         return '';
     } else {
