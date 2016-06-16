@@ -8,6 +8,10 @@
     fill: #fff;
 }
 
+.svgResultStatus.no-background .circle-bg {
+    opacity: 0;
+}
+
 .svgResultStatus circle.success {
     stroke: none;
     fill: @brand-success-lite;
@@ -52,6 +56,18 @@
 .progress-spinner.pc-over-100 path {
     fill: none;
     stroke: @brand-warning-lite;
+}
+
+.inverse .progress-spinner.running {
+    circle {
+        fill: none;
+        stroke: white;
+    }
+
+    path {
+        fill: none;
+        stroke: @brand-info-lite;
+    }
 }
 
 .progress-spinner.queued circle {

@@ -3,6 +3,7 @@
 import React, { Component, PropTypes } from 'react';
 import {Icon} from 'react-material-icons-blue';
 import { ReadableDate } from '../ReadableDate';
+import { LiveStatusIndicator } from '../status/LiveStatusIndicator';
 
 import moment from 'moment';
 
@@ -36,8 +37,11 @@ class PipelineResult extends Component {
                 pipeline,
                 changeSet,
                 result,
+                state,
                 durationInMillis,
                 endTime,
+                startTime,
+                estimatedDurationInMillis,
                 commitId,
 
             },
@@ -50,15 +54,15 @@ class PipelineResult extends Component {
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
         const authors = [...(new Set(changeSet.map(change => change.author.fullName)):any)];
+        const status = result === "UNKNOWN" ? state : result;
 
         return (
         <div className="pipeline-result">
-            <section className="status">
-                <Icon {...{
-                    size: 92,
-                    icon: iconFromResult(result),
-                    style: { fill: "#fff" }
-                }} />
+            <section className="status inverse">
+                <LiveStatusIndicator result={status} startTime={startTime}
+                  estimatedDuration={estimatedDurationInMillis}
+                  width="70px" height="70px" noBackground
+                />
             </section>
             <section className="table">
                 <h4>
@@ -123,19 +127,5 @@ PipelineResult.propTypes = {
     onNameClick: func,
     onAuthorsClick: func,
 };
-
-function iconFromResult(result) {
-    switch(result) {
-        case "SUCCESS":
-        case "UNSTABLE":
-            return "done";
-        case "FAILURE":
-        case "ABORTED":
-        case "NOT_BUILT":
-            return "close";
-        default:
-            return "close";
-    }
-}
 
 export { PipelineResult };

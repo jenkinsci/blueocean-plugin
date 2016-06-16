@@ -29,8 +29,8 @@ const glyphResultValues = resultValues.slice(5); // Just skip all the repeats of
 
 storiesOf('StatusIndicator', module)
     .add('all', statusIndicatorStories)
-    .add('status glyphs', glyphStories);
-
+    .add('status glyphs', glyphStories)
+    .add('no bg, large', noBgLargeStories);
 
 function statusIndicatorStories() {
     return (
@@ -92,6 +92,45 @@ function glyphStories() {
                         </tr>
                     );
                 })}
+            </tbody>
+        </table>
+    );
+}
+
+function noBgLargeStories() {
+    const styleCell = {
+        display: 'flex',
+    };
+    const styleIndicator = {
+        backgroundColor: '#eee',
+        border: '1px solid black',
+    };
+    return (
+        <table>
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th>Value</th>
+                <th>StatusIndicator</th>
+            </tr>
+            </thead>
+            <tbody>
+            {resultValues.map((testValue, i) => {
+                const [label, value, percentage = 0] = testValue;
+                return (
+                    <tr key={i}>
+                        <td>{label}</td>
+                        <td>{value}</td>
+                        <td style={styleCell}>
+                            <span style={styleIndicator}>
+                                <StatusIndicator noBackground width="100px" height="100px"
+                                  result={value} percentage={percentage}
+                                />
+                            </span>
+                        </td>
+                    </tr>
+                );
+            })}
             </tbody>
         </table>
     );
