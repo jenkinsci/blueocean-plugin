@@ -82,10 +82,12 @@ class RunDetails extends Component {
         const baseUrl = `/organizations/${organization}/${name}` +
             `/detail/${branch}/${runId}`;
 
-        const result = this.props.runs.filter(
+        const currentRun = this.props.runs.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
 
-        result.name = name;
+        currentRun.name = name;
+
+        const status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
 
         const afterClose = () => {
             const fallback = `/organizations/${organization}/${name}/`;
@@ -101,12 +103,12 @@ class RunDetails extends Component {
               isVisible
               transitionClass="slideup"
               transitionDuration={300}
-              result={result.result}
+              result={status}
               {...{ afterClose }}
             >
                 <ModalHeader>
                     <div>
-                        <PipelineResult data={result}
+                        <PipelineResult data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
@@ -123,7 +125,7 @@ class RunDetails extends Component {
                     <div>
                         {React.cloneElement(
                             this.props.children,
-                            { baseUrl, result, ...this.props }
+                            { baseUrl, currentRun, ...this.props }
                         )}
                     </div>
                 </ModalBody>
