@@ -31,6 +31,11 @@ export class RunDetailsPipeline extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.props.cleanNodePointer();
+    }
+
+
     generateConfig(props) {
         const {
             config = {},
@@ -98,6 +103,7 @@ RunDetailsPipeline.propTypes = {
     url: string,
     fetchNodes: func,
     fetchSteps: func,
+    cleanNodePointer: func,
     steps: object,
     nodes: object,
     nodeId: string,

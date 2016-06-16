@@ -28,6 +28,7 @@ export default class Node extends Component {
           durationInMillis,
           result,
           id,
+          isFocused,
           state,
         } = node;
 
@@ -43,6 +44,7 @@ export default class Node extends Component {
             <ResultItem
               key={id}
               result={resultRun.toLowerCase()}
+              expanded={isFocused}
               label={title}
               onExpand={getLogForNode}
               durationMillis={durationInMillis}

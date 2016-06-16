@@ -153,13 +153,17 @@ export default class PipelineRunGraph extends Component {
                         // if path ends with pipeline we simply add the node id
                         if (pathname.endsWith('pipeline/')) {
                             this.props.router.push(`${pathname}${id}`);
+                        } else if (pathname.endsWith('pipeline')) {
+                            this.props.router.push(`${pathname}/${id}`);
                         } else {
                             // remove last bit and replace it with node
                             const pathArray = pathname.split('/');
                             pathArray.pop();
-                            pathArray.pop();
+                            if (pathname.endsWith('/')) {
+                                pathArray.pop();
+                            }
                             pathArray.shift();
-                            this.props.router.push(`${pathArray.join('/')}/${id}/`);
+                            this.props.router.push(`${pathArray.join('/')}/${id}`);
                         }
                     }
                   }
