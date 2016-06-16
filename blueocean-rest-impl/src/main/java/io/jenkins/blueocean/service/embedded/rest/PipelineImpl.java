@@ -5,7 +5,9 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -29,17 +31,20 @@ public class PipelineImpl extends BluePipeline {
 
     private final ItemGroup folder;
 
-    protected PipelineImpl(ItemGroup folder, Job job) {
+    private final Link parent;
+
+    protected PipelineImpl(ItemGroup folder, Job job, Link parent) {
         this.job = job;
         this.folder = folder;
+        this.parent = parent;
     }
 
-    public PipelineImpl(ItemGroup folder) {
-        this(folder, null);
+    public PipelineImpl(ItemGroup folder, Link parent) {
+        this(folder, null,parent);
     }
 
-    public PipelineImpl(Job job) {
-        this(null, job);
+    public PipelineImpl(Job job, Link parent) {
+        this(null, job, parent);
     }
     @Override
     public String getOrganization() {
@@ -66,7 +71,7 @@ public class PipelineImpl extends BluePipeline {
         if(job.getLastBuild() == null){
             return null;
         }
-        return AbstractRunImpl.getBlueRun(job.getLastBuild(), this);
+        return AbstractRunImpl.getBlueRun(job.getLastBuild(), this.getLink());
     }
 
     @Override
@@ -117,20 +122,28 @@ public class PipelineImpl extends BluePipeline {
 
     public BluePipeline getPipelines(String name){
         assert folder != null;
-        return getPipelines(folder, name);
+        return getPipeline(folder, name);
     }
 
-    private  BluePipeline getPipelines(ItemGroup itemGroup, String name){
+    private  BluePipeline getPipeline(ItemGroup itemGroup, String name){
         Item item = itemGroup.getItem(name);
         if(item instanceof BuildableItem){
             if(item instanceof MultiBranchProject){
-                return new MultiBranchPipelineImpl((MultiBranchProject) item);
+                return new MultiBranchPipelineImpl((MultiBranchProject) item, getLink());
             }else if(!isMultiBranchProjectJob((BuildableItem) item) && item instanceof Job){
-                return new PipelineImpl(itemGroup, (Job) item);
+                return new PipelineImpl(itemGroup, (Job) item, getLink());
             }
         }else if(item instanceof ItemGroup){
-            return new PipelineImpl((ItemGroup) item, null);
+            return new PipelineImpl((ItemGroup) item, null,getLink());
         }
         throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", name));
     }
+
+    @Override
+    public Link getLink() {
+        return parent != null ? parent.rel(getName()) :
+            ApiHead.INSTANCE().getLink().rel(String.format("organizations/%s/pipelines/%s/",
+                getOrganization(), getName())) ;
+    }
+
 }

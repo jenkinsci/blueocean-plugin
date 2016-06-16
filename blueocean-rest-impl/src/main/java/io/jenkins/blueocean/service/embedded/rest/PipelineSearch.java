@@ -32,7 +32,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
             if (pipeline != null && !project.getName().equals(pipeline)) {
                 continue;
             }
-            pipelines.add(new PipelineImpl(project));
+            pipelines.add(new PipelineImpl(project, null));
         }
 
         return Pageables.wrap(pipelines);

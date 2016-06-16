@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.util.AdaptedIterator;
+import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
 
@@ -18,12 +20,15 @@ import java.util.Iterator;
  */
 @Extension
 public class UserContainerImpl extends BlueUserContainer {
-    protected UserContainerImpl(@Nonnull Reachable parent) {
-        super(parent);
+
+    private final Reachable parent;
+
+    public UserContainerImpl(@Nonnull Reachable parent) {
+        this.parent = parent;
     }
 
     public UserContainerImpl() {
-        super(null);
+        this.parent = null;
     }
 
     @Override
@@ -45,4 +50,13 @@ public class UserContainerImpl extends BlueUserContainer {
             }
         };
     }
+
+    @Override
+    public Link getLink() {
+        if(parent!=null) {
+            return parent.getLink().rel(getUrlName());
+        }
+        return ApiHead.INSTANCE().getLink().rel(getUrlName());
+    }
+
 }

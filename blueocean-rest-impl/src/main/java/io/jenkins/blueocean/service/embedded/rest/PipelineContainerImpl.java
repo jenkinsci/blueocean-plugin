@@ -6,7 +6,6 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -19,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import static org.eclipse.jgit.lib.ObjectChecker.parent;
 
 /**
  * @author Vivek Pandey
@@ -35,6 +32,11 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         this.parent = null;
     }
 
+    public PipelineContainerImpl(Link parent) {
+        this.itemGroup = Jenkins.getInstance();
+        this.parent = parent;
+    }
+
     public PipelineContainerImpl(ItemGroup itemGroup, Link parent) {
         this.itemGroup = itemGroup;
         this.parent = parent;
@@ -45,7 +47,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         if(parent!=null) {
             return parent.rel(getUrlName());
         }
-        return ApiHead.INSTANCE().getLink().rel(getUrlName());
+        return OrganizationImpl.INSTANCE.getLink().rel("pipelines");
     }
 
 
@@ -63,9 +65,9 @@ public class PipelineContainerImpl extends BluePipelineContainer {
     public BluePipeline get(Item item){
         if (item instanceof BuildableItem) {
             if (item instanceof MultiBranchProject) {
-                return new MultiBranchPipelineImpl((MultiBranchProject) item);
+                return new MultiBranchPipelineImpl((MultiBranchProject) item, getLink());
             } else if (item instanceof Job) {
-                return new PipelineImpl((Job) item);
+                return new PipelineImpl((Job) item, getLink());
             }
         } else if (item instanceof ItemGroup) {
             return new PipelineFolderImpl((ItemGroup) item, getLink());
@@ -89,10 +91,10 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         List<BluePipeline> pipelines = new ArrayList<>();
         for (Item item : items) {
             if(item instanceof MultiBranchProject){
-                pipelines.add(new MultiBranchPipelineImpl((MultiBranchProject) item));
+                pipelines.add(new MultiBranchPipelineImpl((MultiBranchProject) item, getLink()));
             }else if(item instanceof BuildableItem && !isMultiBranchProjectJob((BuildableItem) item)
                 && item instanceof Job){
-                pipelines.add(new PipelineImpl((Job) item));
+                pipelines.add(new PipelineImpl((Job) item, getLink()));
             }else if(item instanceof ItemGroup){
                 pipelines.add(new PipelineFolderImpl((ItemGroup) item, getLink()));
             }

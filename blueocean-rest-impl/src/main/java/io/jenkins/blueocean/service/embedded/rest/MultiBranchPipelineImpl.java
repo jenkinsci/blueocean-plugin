@@ -31,8 +31,10 @@ import java.util.List;
 public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     /*package*/ final MultiBranchProject mbp;
 
-    public MultiBranchPipelineImpl(MultiBranchProject mbp) {
+    private final Link self;
+    public MultiBranchPipelineImpl(MultiBranchProject mbp, Link parent) {
         this.mbp = mbp;
+        this.self = parent.rel(mbp.getName());
     }
 
     @Override
@@ -208,10 +210,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public BlueRunContainer getRuns() {
-        return new BlueRunContainer(this) {
+        return new BlueRunContainer() {
             @Override
             public Link getLink() {
-                return getLink().rel("runs");
+                return MultiBranchPipelineImpl.this.getLink().rel("runs");
             }
 
             @Override
@@ -242,5 +244,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 return c.iterator();
             }
         };
+    }
+
+    @Override
+    public Link getLink() {
+        return self;
     }
 }

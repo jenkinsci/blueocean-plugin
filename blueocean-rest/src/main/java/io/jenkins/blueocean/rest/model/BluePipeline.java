@@ -1,8 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
-import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Navigable;
-import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
@@ -85,41 +83,6 @@ public abstract class BluePipeline extends Resource {
     @PUT
     @WebMethod(name="favorite")
     public abstract void favorite(@JsonBody FavoriteAction favoriteAction);
-
-
-    /**
-     *
-     * BluePipeline resource link by default is in context of organization:
-     *
-     * e.g. /rest/organizations/jenkins/pipelines/pipeline1/
-     *
-     * In case of folders with nested pipelines or folders it follows recursive pattern
-     *
-     * /rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/test1
-     *
-     * @return {@link Link} to self
-     */
-    @Override
-    public Link getLink() {
-        StringBuilder pipelinePath = new StringBuilder();
-        String[] names = getFullName().split("/");
-        int count = 1;
-        if(names.length > 1) { //nested
-            for (String n : names) {
-                if(count == 1){
-                    pipelinePath.append(n);
-                }else{
-                    pipelinePath.append("/pipelines/").append(n);
-                }
-                count++;
-            }
-        }else{
-            pipelinePath.append(getFullName());
-        }
-        String href = String.format("organizations/%s/pipelines/%s/", getOrganization(), pipelinePath.toString());
-
-        return ApiHead.INSTANCE().getLink().rel(href);
-    }
 
     public static class FavoriteAction {
         private boolean favorite;

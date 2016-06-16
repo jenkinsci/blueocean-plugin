@@ -1,11 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
-import io.jenkins.blueocean.rest.ApiHead;
-import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.export.Exported;
-
-import javax.annotation.Nonnull;
 
 /**
  * API endpoint for a user
@@ -19,15 +14,6 @@ public abstract class BlueUser extends Resource {
     public static final String EMAIL="email";
     public static final String FAVORITES = "favorites";
 
-    private final Reachable parent;
-
-    public BlueUser(@Nonnull Reachable parent) {
-        this.parent = parent;
-    }
-
-    public BlueUser() {
-        this.parent = null;
-    }
     /**
      * @return The id of the user
      */
@@ -48,9 +34,4 @@ public abstract class BlueUser extends Resource {
     public abstract String getEmail();
 
     public abstract BlueFavoriteContainer getFavorites();
-
-    @Override
-    public Link getLink() {
-        return (parent != null)?parent.getLink().rel(getId()): ApiHead.INSTANCE().getLink().rel("users/"+getId());
-    }
 }

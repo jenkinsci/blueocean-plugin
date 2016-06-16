@@ -76,7 +76,7 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
         return new BlueRunContainer() {
             @Override
             public Link getLink() {
-                return BlueMultiBranchPipeline.this.getLink().rel("runs");
+                return null;
             }
 
             @Override

@@ -49,12 +49,12 @@ public class RunContainerImpl extends BlueRunContainer {
         } else {
             run = runList.getLastBuild();
         }
-        return  AbstractRunImpl.getBlueRun(run, pipeline);
+        return  AbstractRunImpl.getBlueRun(run, pipeline.getLink());
     }
 
     @Override
     public Iterator<BlueRun> iterator() {
-        return RunSearch.findRuns(job).iterator();
+        return RunSearch.findRuns(job, pipeline.getLink()).iterator();
     }
 
     @Override

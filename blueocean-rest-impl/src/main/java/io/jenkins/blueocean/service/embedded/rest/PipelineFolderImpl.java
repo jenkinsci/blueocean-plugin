@@ -44,7 +44,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl(folder, parent);
+        return new PipelineContainerImpl(folder, getLink());
     }
 
     @Override
@@ -78,4 +78,10 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
         FavoriteUtil.favoriteJob(folder.getFullName(), favoriteAction.isFavorite());
     }
+
+    @Override
+    public Link getLink() {
+        return parent.rel(getName());
+    }
+
 }

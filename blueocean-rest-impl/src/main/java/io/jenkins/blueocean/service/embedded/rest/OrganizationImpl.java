@@ -2,6 +2,8 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
+import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
@@ -66,4 +68,10 @@ public class OrganizationImpl extends BlueOrganization {
     public BlueUserContainer getUsers() {
         return users;
     }
+
+    @Override
+    public Link getLink() {
+        return ApiHead.INSTANCE().getLink().rel("organizations/"+getName());
+    }
+
 }
