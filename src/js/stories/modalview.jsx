@@ -5,7 +5,8 @@ import { ModalView, ModalHeader, ModalBody } from '../components/modal/modalview
 storiesOf('ModalView', module)
     .add('standard', scenario1)
     .add('transition: slide up', scenario2)
-    .add('transition: fade in, slow', scenario3);
+    .add('transition: fade in, slow', scenario3)
+    .add('transition: expand-in normal', scenario4);
 
 function scenario1() {
     return (
@@ -62,6 +63,27 @@ function scenario3() {
             <ModalBody>
                 <div>
                     Test Modal
+                </div>
+            </ModalBody>
+        </ModalView>
+    );
+}
+
+function scenario4() {
+    return (
+        <ModalView
+            isVisible
+            transitionClass="expand-in"
+            transitionDuration={200}
+        >
+            <ModalHeader>
+                <div>
+                    Test Expand Header
+                </div>
+            </ModalHeader>
+            <ModalBody>
+                <div>
+                    Test Expand Modal
                 </div>
             </ModalBody>
         </ModalView>

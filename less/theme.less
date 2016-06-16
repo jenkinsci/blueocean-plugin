@@ -766,6 +766,32 @@ footer {
     box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
 }
 
+.expand-in-appear {
+    .transition(all ease-out 0.2s);
+    top: 20%;
+    opacity: 0.01;
+    transform: scale(0.9);
+
+    &.expand-in-appear-active {
+        top: 0;
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.expand-in-leave {
+    .transition(all ease-out 0.2s);
+    top: 0;
+    opacity: 1;
+    transform: scale(1);
+
+    &.expand-in-leave-active {
+        top: 20%;
+        opacity: 0.01;
+        transform: scale(0.9);
+    }
+}
+
 .slideup-appear {
     .transition(all ease-out 0.3s);
     top: 75%;
