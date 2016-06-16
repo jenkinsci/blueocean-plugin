@@ -2,7 +2,6 @@
 
 import React, { Component, PropTypes } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { TimeDuration } from './';
 
 import { StatusIndicator, decodeResultValue } from './status/StatusIndicator';
 import { getGlyphFor } from './status/SvgStatus';
@@ -18,7 +17,7 @@ type State = {
 type Props = {
     result: Result,
     label: String,
-    durationMillis: ?number,
+    extraInfo: ?String,
     data: ?any,
     onExpand: (data: ?any, event: ?Event) => void,
     onCollapse: (data: ?any, event: ?Event) => void,
@@ -73,7 +72,7 @@ export class ResultItem extends Component {
     };
 
     render() {
-        const { label, durationMillis } = this.props;
+        const { label, extraInfo } = this.props;
         const { resultClean, statusGlyph } = this.state;
 
         const hasChildren = !!this.props.children;
@@ -92,15 +91,15 @@ export class ResultItem extends Component {
             <div className={outerClassName}>
                 <div className="result-item-head" onClick={this.toggleExpanded}>
                     <span className={iconClassName}>
-                        <svg width="24" height="24">
-                            <g transform="translate(12 12)" className="result-status-glyph">{statusGlyph}</g>
+                        <svg width="28" height="34">
+                            <g transform="translate(14 16)" className="result-status-glyph">{statusGlyph}</g>
                         </svg>
                     </span>
                     <span className="result-item-title">
                         <Expando expanded={expanded} disabled={!hasChildren}/>
                         <span className="result-item-label">{label}</span>
-                        <span className="result-item-duration">
-                            <TimeDuration millis={durationMillis}/>
+                        <span className="result-item-extra-info">
+                            {extraInfo}
                         </span>
                     </span>
                 </div>
@@ -120,7 +119,7 @@ export class ResultItem extends Component {
 ResultItem.propTypes = {
     result: PropTypes.oneOf(Object.keys(StatusIndicator.validResultValues)),
     label: PropTypes.string,
-    durationMillis: PropTypes.number,
+    extraInfo: PropTypes.string,
     data: PropTypes.any, // Whatever you want, will be sent back to listeners
     onExpand: PropTypes.func, // f(data:*, originalEvent:?event)
     onCollapse: PropTypes.func, // f(data:*, originalEvent:?event)
@@ -143,8 +142,8 @@ class Expando extends Component {
 
         const outerClassName = classes.join(' ');
         return (
-            <svg width="24" height="24" className={outerClassName}>
-                <g transform="translate(12 12)">
+            <svg width="28" height="24" className={outerClassName}>
+                <g transform="translate(14 12)">
                     <g className="expando-glyph">
                         <polygon points="-1.7,-5 3.3,0 -1.7,5 -2.9,3.8 1,0 -2.9,-3.8"/>
                     </g>

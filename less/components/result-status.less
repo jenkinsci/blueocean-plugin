@@ -80,49 +80,55 @@
 
 .result-bg.success {
     background:@brand-success-lite;
+    border-bottom: 1px solid fade(darken(@brand-success-lite, 10%), 50%);
 }
 
 .result-bg.aborted,
 .result-bg.failure {
     background:@brand-danger-lite;
+    border-bottom: 1px solid fade(darken(@brand-danger-lite, 10%), 50%);
 }
 
 .result-bg.not_built,
 .result-bg.queued {
     background:@brand-grey-lite;
+    border-bottom: 1px solid fade(darken(@brand-grey-lite, 10%), 50%);
 }
 
 .result-bg.running {
     background:@progress-bar-color;
+    border-bottom: 1px solid fade(darken(@progress-bar-color, 10%), 50%);
 }
 
 .result-bg.unstable {
     background:@brand-warning-lite;
+    border-bottom: 1px solid fade(darken(@brand-warning-lite, 10%), 50%);
 }
 
 .result-bg.unknown {
     background:@brand-unknown-lite;
+    border-bottom: 1px solid fade(darken(@brand-unknown-lite, 10%), 50%);
 }
 
 //--[ ResultItem ]---------------------------------------------------------------
 
-.result-item {
-    border-bottom: solid 1px @brand-grey-lite;
-}
-
-.result-item:first-child {
-    border-top: solid 1px @brand-grey-lite;
+.result-item + .result-item {
+    .result-item-head {
+        border-top: 0;
+    }
 }
 
 .result-item-head {
     display:flex;
     align-items:stretch;
     cursor:pointer;
+    border: solid 1px @gray-lighter;
 }
 
 .result-item-icon {
     display:flex;
     align-items:flex-start;
+    margin: -1px 0 -1px -1px
 }
 
 .result-item-title {
@@ -131,13 +137,17 @@
     align-items:center;
 }
 
+.result-item-extra-info {
+    padding-right: 0.6em;
+}
+
 .result-item-label {
     flex: 1 1 auto;
     font-family: @font-family-ss-regular;
 }
 
-.result-item-head:hover .result-item-label {
-    text-decoration:underline;
+.result-item-head:hover {
+    background: #f8f8f8;
 }
 
 .result-item-expando {
@@ -162,8 +172,9 @@
 .result-item-children {
     background-color: @pre-bg;
     color: @pre-color;
-    padding:0.5em;
-    border-left: solid 24px darken(@pre-bg, 1%);
+    padding: 0.5em;
+    border-left: solid 28px darken(@pre-bg, 5%);
+    margin-bottom: 1px;
 }
 
 // Expand animation
