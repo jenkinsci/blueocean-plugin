@@ -70,8 +70,34 @@
     }
 }
 
+.progress-spinner circle.inner,
+.progress-spinner.running.spin circle.inner {
+  display: none;
+  animation: progress-spinner-pulsate 1.2s ease-out;
+  animation-iteration-count: infinite;
+  opacity: 0;
+}
+
+.progress-spinner.running circle.inner {
+    display: block;
+    fill: @progress-bar-color;
+    stroke: @progress-bar-color;
+}
+
+@keyframes progress-spinner-pulsate {
+    0% { transform: scale(0.1, 0.1); opacity: 0.0; }
+    50% { opacity: 1; }
+    100% { transform: scale(1.2, 1.2); opacity: 0.0; }
+}
+
 .progress-spinner.queued circle {
     fill: none;
+    stroke: @brand-grey-lite;
+}
+
+.progress-spinner.queued circle.inner {
+    display: block;
+    fill: @brand-grey-lite;
     stroke: @brand-grey-lite;
 }
 
