@@ -21,6 +21,7 @@ type Props = {
     data: ?any,
     onExpand: (data: ?any, event: ?Event) => void,
     onCollapse: (data: ?any, event: ?Event) => void,
+    expanded: ?boolean,
 };
 
 export class ResultItem extends Component {
@@ -32,7 +33,7 @@ export class ResultItem extends Component {
         this.state = {
             resultClean: null,
             statusGlyph: null,
-            expanded: false,
+            expanded: props.expanded || false,
         };
     }
 
@@ -49,6 +50,9 @@ export class ResultItem extends Component {
         if (resultClean !== this.state.resultClean) {
             const statusGlyph = getGlyphFor(resultClean);
             this.setState({resultClean, statusGlyph});
+        }
+        if (props.expanded!=this.props.expanded) {
+            this.toggleExpanded();
         }
     }
 
