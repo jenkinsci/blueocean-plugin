@@ -18,6 +18,8 @@ import java.util.concurrent.*;
  * Listen for run events, filter and publish stage/branch events
  * to notify the UX that there are changes when viewing the
  * pipeline results screen.
+ *
+ * This may be useful (or may not be needed) for live-ness of the pipeline results screen.
  */
 @Extension
 public class StageEventRunListener extends RunListener<Run<?,?>> {
@@ -25,24 +27,36 @@ public class StageEventRunListener extends RunListener<Run<?,?>> {
 
     private class StageEventPublisher implements GraphListener {
 
+        private final Run run;
+
+        public StageEventPublisher(Run r) {
+            this.run = r;
+        }
+
         @Override
         public void onNewHead(FlowNode flowNode) {
 
-
-            System.err.println("---------------------------");
-            System.err.println("---------------------------");
-            System.err.println(flowNode.getDisplayName());
-            System.err.println("   ");
-
-
+            System.err.println("Starting run for " + run.getFullDisplayName());
+            System.err.println(flowNode.toString());
 
             for (Action a : flowNode.getActions()) {
-                System.err.println("\t" + a.getClass().toString());
-                System.err.println("\n");
+                String clazz = a.getClass().toString();
+
+                if (clazz.equals("class org.jenkinsci.plugins.workflow.cps.steps.ParallelStepExecution$ParallelLabelAction")) {
+                    System.err.println("   ---------------------   ");
+                    System.err.println("---------------------------");
+                    System.err.println("Start parallel: " + flowNode.getDisplayName());
+
+                }
+                if (clazz.equals("class org.jenkinsci.plugins.workflow.support.steps.StageStepExecution$StageActionImpl")) {
+                    System.err.println("   ---------------------   ");
+                    System.err.println("---------------------------");
+                    System.err.println("Start stage: " + flowNode.getDisplayName());
+                    System.err.println("---------------------------");
+                    System.err.println("   ---------------------   ");
+                }
+
             }
-            System.err.println("   ");
-            System.err.println("---------------------------");
-            System.err.println("---------------------------");
 
         }
     }
@@ -57,10 +71,10 @@ public class StageEventRunListener extends RunListener<Run<?,?>> {
             promise.addListener(new Runnable() {
                 @Override
                 public void run() {
-                    FlowExecution ex = null;
                     try {
-                        ex = ((WorkflowRun) run).getExecutionPromise().get();
-                        ex.addListener(new StageEventPublisher());
+
+                        FlowExecution ex = ((WorkflowRun) run).getExecutionPromise().get();
+                        ex.addListener(new StageEventPublisher(run));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
