@@ -111,6 +111,7 @@ public class MultiBranchTest extends BaseTest{
 
         IsArrayContainingInAnyOrder.arrayContainingInAnyOrder(names, branches);
 
+        Thread.sleep(1000);
         List<Map> br = get("/organizations/jenkins/pipelines/p/branches", List.class);
 
         List<String> branchNames = new ArrayList<>();
