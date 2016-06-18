@@ -390,7 +390,7 @@ export class PipelineGraph extends Component {
         const highlightRadius = nodeRadius + (0.49 * connectorStrokeWidth);
         let selectedNode = null;
 
-        for (let node of this.state.nodes) {
+        for (const node of this.state.nodes) {
             if (this.stageIsSelected(node.stage)) {
                 selectedNode = node;
                 break;
@@ -422,7 +422,7 @@ export class PipelineGraph extends Component {
         const {selectedStage} = this.state;
 
         if (children && selectedStage) {
-            for (let child of children) {
+            for (const child of children) {
                 if (child === selectedStage) {
                     return true;
                 }
@@ -440,7 +440,7 @@ export class PipelineGraph extends Component {
         }
 
         // Update selection
-        this.setState({selectedStage:stage});
+        this.setState({selectedStage: stage});
     }
 
     render() {
