@@ -24,6 +24,74 @@ BlueOcean UI is available at:
 BlueOcean rest API base URL is:
     
     http://localhost:8080/jenkins/blue/rest
+    
+## Links
+
+Each BlueOcean JSON response object includes *_links" as defined by [HAL](https://tools.ietf.org/html/draft-kelly-json-hal-08) spec.
+*self* link references the reachable path to *this* resource. It may include other navigable resources as well. A resource can exponse it's methods as navigable by using [@Navigable](https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean-rest/src/main/java/io/jenkins/blueocean/rest/Navigable.java) annotation.   
+
+    "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/f/"
+        },
+        "runs" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/f/runs/"
+        },
+        "queue" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/f/queue/"
+        }
+
+Above, *self* references path to pipeline 'f', *runs* and *queue* resource are navigable from this resource and their 
+href references path to them.
+
+
+## Class of resource discovery
+
+Each resource provides _class field, it’s a fully qualified name and is an  identifier of the producer of this 
+resource's capability.
+
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/p/"
+        },
+        "branches" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/"
+        },
+        "runs" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/p/runs/"
+        },
+        "queue" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/p/queue/"
+        }
+      },
+      "displayName" : "p",
+      ....
+    }
+
+
+Above a multi-branch pipeline resource object's class is exposed using _class element: *io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl*.
+
+### classes API
+To get list of what other classes or capabilities io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl class supports, use *classes* API:
+
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/classes/io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl
+    {
+      “classes”:[“io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline”,"io.jenkins.blueocean.rest.model.BluePipeline","io.jenkins.blueocean.rest.model.Resource"]
+    }
+
+Above MultiBranchPipelineImpl supports capabilities: BlueMultiBranchPipeline, BluePipeline and Resource.
+
+Frontend can use _class in resource and classes API to serve UI based on class or capability this resource supports.
+
 
 ## Get a user
 

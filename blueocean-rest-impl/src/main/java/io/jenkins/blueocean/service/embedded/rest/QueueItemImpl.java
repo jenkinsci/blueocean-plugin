@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Queue;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 
@@ -38,5 +39,10 @@ public class QueueItemImpl extends BlueQueueItem {
     @Override
     public int getExpectedBuildNumber() {
         return expectedBuildNumber;
+    }
+
+    @Override
+    public Link getLink() {
+        return pipeline.getQueue().getLink().rel(getId());
     }
 }

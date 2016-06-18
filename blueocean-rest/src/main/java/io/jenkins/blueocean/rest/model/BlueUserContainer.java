@@ -12,6 +12,7 @@ import java.util.Iterator;
  * @author Kohsuke Kawaguchi
  */
 public abstract class BlueUserContainer extends Container<BlueUser> implements ApiRoutable, ExtensionPoint {
+
     @Override
     public final String getUrlName() {
         return "users";

@@ -34,5 +34,4 @@ public abstract class BlueUser extends Resource {
     public abstract String getEmail();
 
     public abstract BlueFavoriteContainer getFavorites();
-
 }

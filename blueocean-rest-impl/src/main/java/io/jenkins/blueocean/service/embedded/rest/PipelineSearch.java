@@ -26,7 +26,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
 
     @Override
     public Pageable<BluePipeline> search(Query q) {
-        final Iterator<BluePipeline> pipelineIterator = PipelineContainerImpl
+        final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl()
             .getPipelines(Jenkins.getActiveInstance().getAllItems(Item.class));
         final List<BluePipeline> pipelines = new ArrayList<>();
         String pipeline = q.param(getType());

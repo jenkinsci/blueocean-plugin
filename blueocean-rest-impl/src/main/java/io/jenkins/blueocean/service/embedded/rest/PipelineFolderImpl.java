@@ -2,11 +2,14 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.json.JsonBody;
+
+import static io.jenkins.blueocean.service.embedded.rest.PipelineImpl.getRecursivePathFromFullName;
 
 /**
  * @author Vivek Pandey
@@ -14,11 +17,11 @@ import org.kohsuke.stapler.json.JsonBody;
 public class PipelineFolderImpl extends BluePipelineFolder {
 
     private final ItemGroup folder;
-    private final BluePipelineContainer container;
+    private final Link parent;
 
-    public PipelineFolderImpl(ItemGroup folder) {
+    public PipelineFolderImpl(ItemGroup folder, Link parent) {
         this.folder = folder;
-        this.container = new PipelineContainerImpl(folder);
+        this.parent = parent;
     }
 
     @Override
@@ -77,4 +80,10 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
         FavoriteUtil.favoriteJob(folder.getFullName(), favoriteAction.isFavorite());
     }
+
+    @Override
+    public Link getLink() {
+        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
+    }
+
 }
