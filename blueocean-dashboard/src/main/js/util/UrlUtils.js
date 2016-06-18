@@ -11,7 +11,26 @@ export const removeLastUrlSegment = (url) => {
 };
 
 /**
- * Build a root-relative URL to the run details modal.
+ * Build a root-relative URL to the pipeline details screen.
+ * @param organization
+ * @param fullName
+ * @param tabName
+ * @returns {string}
+ */
+export const buildPipelineUrl = (organization, fullName, tabName) => {
+    const pathElements = fullName.split('/');
+    const pipeline = pathElements.pop();
+    const folderPath = pathElements.join('/');
+    const folderPart = folderPath ? `${encodeURIComponent(folderPath)}/` : '';
+
+    const baseUrl = `/organizations/${encodeURIComponent(organization)}/` +
+        `${folderPart}` + `${encodeURIComponent(pipeline)}`;
+
+    return tabName ? `${baseUrl}/${tabName}` : baseUrl;
+};
+
+/**
+ * Build a root-relative URL to the run details screen.
  * @param organization
  * @param pipeline
  * @param branch
