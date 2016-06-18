@@ -27,10 +27,11 @@ export default class LogToolbar extends Component {
               } }}
               />}
 
-                <a { ...{
+                <a {...{
                     title: 'Display the log in new window',
                     target: '_blank',
-                    href: url } }
+                    href: url,
+                }}
                 >
                     <Icon {...{ style, icon: 'launch' }} />
                 </a>
