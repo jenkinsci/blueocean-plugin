@@ -1,17 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.plugins.favorite.FavoritePlugin;
-import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
-import jenkins.model.Jenkins;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
-import org.kohsuke.stapler.verb.POST;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -35,4 +29,8 @@ public class FavoriteImpl extends BlueFavoriteContainer {
         return user.getFavouriteIterator();
     }
 
+    @Override
+    public Link getLink() {
+        return user.getLink().rel("favorites");
+    }
 }

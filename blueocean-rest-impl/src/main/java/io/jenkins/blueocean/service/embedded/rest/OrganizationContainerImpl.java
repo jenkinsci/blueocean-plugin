@@ -2,12 +2,12 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationContainer;
-import io.jenkins.blueocean.rest.model.BlueUserContainer;
 import jenkins.model.Jenkins;
 
-import javax.inject.Inject;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -19,6 +19,7 @@ import java.util.Iterator;
  */
 @Extension
 public class OrganizationContainerImpl extends BlueOrganizationContainer {
+
     @Override
     public BlueOrganization get(String name) {
         validateOrganization(name);
@@ -35,5 +36,10 @@ public class OrganizationContainerImpl extends BlueOrganizationContainer {
             throw new ServiceException.UnprocessableEntityException(String.format("Organization %s not found",
                 organization));
         }
+    }
+
+    @Override
+    public Link getLink() {
+        return ApiHead.INSTANCE().getLink().rel("organizations");
     }
 }

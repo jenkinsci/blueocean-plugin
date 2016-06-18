@@ -4,6 +4,8 @@ import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -29,8 +31,10 @@ import java.util.List;
 public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     /*package*/ final MultiBranchProject mbp;
 
-    public MultiBranchPipelineImpl(MultiBranchProject mbp) {
+    private final Link self;
+    public MultiBranchPipelineImpl(MultiBranchProject mbp, Link parent) {
         this.mbp = mbp;
+        this.self = parent.rel(mbp.getName());
     }
 
     @Override
@@ -156,6 +160,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
+    @Navigable
     public BluePipelineContainer getBranches() {
         return new BranchContainerImpl(this);
     }
@@ -207,6 +212,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     public BlueRunContainer getRuns() {
         return new BlueRunContainer() {
             @Override
+            public Link getLink() {
+                return MultiBranchPipelineImpl.this.getLink().rel("runs");
+            }
+
+            @Override
             public BluePipeline getPipeline(String name) {
                 return null;
             }
@@ -234,5 +244,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 return c.iterator();
             }
         };
+    }
+
+    @Override
+    public Link getLink() {
+        return self;
     }
 }

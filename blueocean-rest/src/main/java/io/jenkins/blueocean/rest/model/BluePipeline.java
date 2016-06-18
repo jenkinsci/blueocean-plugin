@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
@@ -20,7 +21,6 @@ public abstract class BluePipeline extends Resource {
     public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
     public static final String LAST_SUCCESSFUL_RUN = "lastSuccessfulRun";
 
-
     /**
      * @return name of the organization
      */
@@ -40,7 +40,7 @@ public abstract class BluePipeline extends Resource {
     public abstract String getDisplayName();
 
     /**
-     * @return Includes parent folders if any. For example folder1/folder2/p1
+     * @return Includes parentLink folders if any. For example folder1/folder2/p1
      */
     @Exported(name = FULL_NAME)
     public abstract String getFullName();
@@ -71,8 +71,13 @@ public abstract class BluePipeline extends Resource {
     /**
      * @return Gives Runs in this pipeline
      */
+    @Navigable
     public abstract BlueRunContainer getRuns();
 
+    /**
+     * @return Gives {@link BlueQueueContainer}
+     */
+    @Navigable
     public abstract BlueQueueContainer getQueue();
 
     @PUT

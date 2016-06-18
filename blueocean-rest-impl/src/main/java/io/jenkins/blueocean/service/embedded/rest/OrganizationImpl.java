@@ -1,8 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
+import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
@@ -11,7 +12,6 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.PUT;
 
-import javax.inject.Inject;
 import java.io.IOException;
 
 /**
@@ -21,16 +21,16 @@ import java.io.IOException;
  * @author Kohsuke Kawaguchi
  */
 public class OrganizationImpl extends BlueOrganization {
+    private final UserContainerImpl users = new UserContainerImpl(this);
 
-    UserContainerImpl users;
     /**
      * In embedded mode, there's only one organization
      */
     public static final OrganizationImpl INSTANCE = new OrganizationImpl();
 
     private OrganizationImpl() {
-        users = new UserContainerImpl();
     }
+
     /**
      * In embedded mode, there's only one organization
      */
@@ -40,7 +40,7 @@ public class OrganizationImpl extends BlueOrganization {
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl();
+        return new PipelineContainerImpl(Jenkins.getInstance());
     }
 
     @WebMethod(name="") @DELETE
@@ -68,4 +68,10 @@ public class OrganizationImpl extends BlueOrganization {
     public BlueUserContainer getUsers() {
         return users;
     }
+
+    @Override
+    public Link getLink() {
+        return ApiHead.INSTANCE().getLink().rel("organizations/"+getName());
+    }
+
 }
