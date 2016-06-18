@@ -15,17 +15,6 @@ export default class LogToolbar extends Component {
             return null;
         }
         const style = { fill: '#4a4a4a' };
-        const downloadLink = data ?
-            <DownloadLink
-              {...{ style,
-                    fileData: {
-                        filename: fileName,
-                        contents: data,
-                        mime: 'text/plain',
-                    },
-              }}
-            /> : null;
-
         return (<div className="log-header">
             <div className="log-header__section">
                 {title}
