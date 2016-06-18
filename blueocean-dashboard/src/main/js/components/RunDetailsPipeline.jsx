@@ -27,7 +27,9 @@ export class RunDetailsPipeline extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.params.node !== this.props.params.node) {
-            this.props.fetchSteps(this.generateConfig(nextProps));
+            const config = this.generateConfig(nextProps);
+            this.props.setNode(config);
+            this.props.fetchSteps(config);
         }
     }
 
@@ -42,12 +44,16 @@ export class RunDetailsPipeline extends Component {
         } = this.context;
         const {
             isMultiBranch,
-            nodeId,
             params: { pipeline: name, branch, runId, node: nodeParam },
         } = props;
+        // we would use default properties however the node can be null so no default properties will be triggered
+        let { nodeReducer } = props;
+        if (!nodeReducer) {
+            nodeReducer = { id: null, displayName: 'default title' };
+        }
         // if we have a node param we do not want the calculation of the focused node
-        const node = nodeParam || nodeId;
-        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node };
+        const node = nodeParam || nodeReducer.id;
+        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer };
         return mergedConfig;
     }
 
@@ -84,7 +90,11 @@ export class RunDetailsPipeline extends Component {
                   runId={runId}
                 />
                 }
-                <LogToolbar fileName={logGeneral.fileName} url={logGeneral.url} />
+                <LogToolbar
+                  fileName={logGeneral.fileName}
+                  url={logGeneral.url}
+                  title={mergedConfig.nodeReducer.displayName}
+                />
                 { steps && steps[key] && <Steps
                   nodeInformation={steps[key]}
                   {...this.props}
@@ -102,11 +112,12 @@ RunDetailsPipeline.propTypes = {
     fileName: string,
     url: string,
     fetchNodes: func,
+    setNode: func,
     fetchSteps: func,
     cleanNodePointer: func,
     steps: object,
     nodes: object,
-    nodeId: string,
+    nodeReducer: object,
 };
 
 RunDetailsPipeline.contextTypes = {
@@ -119,6 +130,6 @@ RunDetailsPipeline.contextTypes = {
 
 const selectors = createSelector(
     [stepsSelector, logSelector, nodeSelector, nodesSelector],
-    (steps, logs, nodeId, nodes) => ({ steps, logs, nodeId, nodes }));
+    (steps, logs, nodeReducer, nodes) => ({ steps, logs, nodeReducer, nodes }));
 
 export default connect(selectors, actions)(RunDetailsPipeline);
