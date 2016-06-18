@@ -1,3 +1,5 @@
+// @flow
+
 import React, {Component, PropTypes} from 'react';
 import moment from 'moment';
 import { StatusIndicator, decodeResultValue } from './StatusIndicator';

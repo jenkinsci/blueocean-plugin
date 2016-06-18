@@ -3,7 +3,7 @@ import { storiesOf } from '@kadira/storybook';
 import {PipelineGraph, defaultLayout} from '../components/PipelineGraph';
 
 import { StatusIndicator } from '../components';
-const pipelineStageState = StatusIndicator.validResultValues;
+const validResultValues = StatusIndicator.validResultValues; 
 
 storiesOf('PipelineGraph', module)
     .add('Mixed', renderMultiParallelPipeline)
@@ -18,16 +18,15 @@ storiesOf('PipelineGraph', module)
 function renderFlatPipeline() {
 
     const stages = [
-        makeNode("Success", [], pipelineStageState.success),
-        makeNode("Failure", [], pipelineStageState.failure),
-        makeNode("Running", [], pipelineStageState.running),
-        makeNode("Slow", [], pipelineStageState.running, 150),
-        makeNode("Queued", [], pipelineStageState.queued),
-        makeNode("Unstable", [], pipelineStageState.unstable),
-        makeNode("Aborted", [], pipelineStageState.aborted),
-        makeNode("Not Built", [], pipelineStageState.not_built),
+        makeNode("Success", [], validResultValues.success),
+        makeNode("Failure", [], validResultValues.failure),
+        makeNode("Running", [], validResultValues.running),
+        makeNode("Slow", [], validResultValues.running, 150),
+        makeNode("Queued", [], validResultValues.queued),
+        makeNode("Unstable", [], validResultValues.unstable),
+        makeNode("Aborted", [], validResultValues.aborted),
+        makeNode("Not Built", [], validResultValues.not_built),
         makeNode("Bad data", [], "this is not my office")
-
     ];
 
     // Reduce spacing just to make this graph smaller
@@ -60,21 +59,21 @@ function renderWithDuplicateNames() {
 function renderFlatPipelineFat() {
 
     const stages = [
-        makeNode("Success", [], pipelineStageState.success),
-        makeNode("Failure", [], pipelineStageState.failure),
+        makeNode("Success", [], validResultValues.success),
+        makeNode("Failure", [], validResultValues.failure),
         makeNode("Running", [
-            makeNode("Job 1", [], pipelineStageState.running),
-            makeNode("Job 2", [], pipelineStageState.running),
-            makeNode("Job 3", [], pipelineStageState.running)
+            makeNode("Job 1", [], validResultValues.running),
+            makeNode("Job 2", [], validResultValues.running),
+            makeNode("Job 3", [], validResultValues.running)
         ]),
         makeNode("Queued", [
-            makeNode("Job 4", [], pipelineStageState.queued),
-            makeNode("Job 5", [], pipelineStageState.queued),
-            makeNode("Job 6", [], pipelineStageState.queued),
-            makeNode("Job 7", [], pipelineStageState.queued),
-            makeNode("Job 8", [], pipelineStageState.queued)
+            makeNode("Job 4", [], validResultValues.queued),
+            makeNode("Job 5", [], validResultValues.queued),
+            makeNode("Job 6", [], validResultValues.queued),
+            makeNode("Job 7", [], validResultValues.queued),
+            makeNode("Job 8", [], validResultValues.queued)
         ]),
-        makeNode("Not Built", [], pipelineStageState.not_built),
+        makeNode("Not Built", [], validResultValues.not_built),
         makeNode("Bad data", [], "this is not my office")
     ];
 
@@ -99,21 +98,21 @@ function renderFlatPipelineFat() {
 function renderConstructomatic() {
 
     const stages = [
-        makeNode("Success", [], pipelineStageState.success),
-        makeNode("Failure", [], pipelineStageState.failure),
+        makeNode("Success", [], validResultValues.success),
+        makeNode("Failure", [], validResultValues.failure),
         makeNode("Running", [
-            makeNode("Job 1", [], pipelineStageState.running),
-            makeNode("Job 2", [], pipelineStageState.running),
-            makeNode("Job 3", [], pipelineStageState.running)
+            makeNode("Job 1", [], validResultValues.running),
+            makeNode("Job 2", [], validResultValues.running),
+            makeNode("Job 3", [], validResultValues.running)
         ]),
         makeNode("Queued", [
-            makeNode("Job 4", [], pipelineStageState.queued),
-            makeNode("This is Job number 5", [], pipelineStageState.queued),
-            makeNode("Job 6", [], pipelineStageState.queued),
-            makeNode("Job 7", [], pipelineStageState.queued),
-            makeNode("Job 8", [], pipelineStageState.queued)
+            makeNode("Job 4", [], validResultValues.queued),
+            makeNode("This is Job number 5", [], validResultValues.queued),
+            makeNode("Job 6", [], validResultValues.queued),
+            makeNode("Job 7", [], validResultValues.queued),
+            makeNode("Job 8", [], validResultValues.queued)
         ]),
-        makeNode("Not Built", [], pipelineStageState.not_built),
+        makeNode("Not Built", [], validResultValues.not_built),
         makeNode("Bad data", [], "this is not my office")
     ];
 
@@ -123,11 +122,11 @@ function renderConstructomatic() {
 function renderListenersPipeline() {
 
     const stages = [
-        makeNode("Build", [], pipelineStageState.success),
-        makeNode("Test", [], pipelineStageState.success),
+        makeNode("Build", [], validResultValues.success),
+        makeNode("Test", [], validResultValues.success),
         makeNode("Browser Tests", [
-            makeNode("Internet Explorer", [], pipelineStageState.queued),
-            makeNode("Chrome", [], pipelineStageState.queued)
+            makeNode("Internet Explorer", [], validResultValues.queued),
+            makeNode("Chrome", [], validResultValues.queued)
         ]),
         makeNode("Dev"),
         makeNode("Dev"), // Make sure it works with dupe names
@@ -172,42 +171,42 @@ function renderParallelPipeline() {
 function renderMultiParallelPipeline() {
 
     const stages = [
-        makeNode("Build", [], pipelineStageState.success),
+        makeNode("Build", [], validResultValues.success),
         makeNode("Test", [
-            makeNode("JUnit", [], pipelineStageState.success),
-            makeNode("DBUnit", [], pipelineStageState.success),
-            makeNode("Jasmine", [], pipelineStageState.success)
+            makeNode("JUnit", [], validResultValues.success),
+            makeNode("DBUnit", [], validResultValues.success),
+            makeNode("Jasmine", [], validResultValues.success)
         ]),
         makeNode("Browser Tests", [
-            makeNode("Firefox", [], pipelineStageState.success),
-            makeNode("Edge", [], pipelineStageState.failure),
-            makeNode("Safari", [], pipelineStageState.running, 60),
-            makeNode("Chrome", [], pipelineStageState.running, 120)
+            makeNode("Firefox", [], validResultValues.success),
+            makeNode("Edge", [], validResultValues.failure),
+            makeNode("Safari", [], validResultValues.running, 60),
+            makeNode("Chrome", [], validResultValues.running, 120)
         ]),
         makeNode("Dev"),
         makeNode("Staging"),
         makeNode("Production")
     ];
 
-    return <div><PipelineGraph stages={stages}/></div>;
+    return <div><PipelineGraph stages={stages} selectedStage={stages[0]}/></div>;
 }
 
 function renderParallelPipelineDeep() {
 
     const stages = [
-        makeNode("Build", [], pipelineStageState.success),
-        makeNode("Test", [], pipelineStageState.success),
+        makeNode("Build", [], validResultValues.success),
+        makeNode("Test", [], validResultValues.success),
         makeNode("Browser Tests", [
-            makeNode("Internet Explorer", [], pipelineStageState.success),
-            makeNode("Firefox", [], pipelineStageState.running),
-            makeNode("Edge", [], pipelineStageState.failure),
-            makeNode("Safari", [], pipelineStageState.running),
-            makeNode("LOLpera", [], pipelineStageState.queued),
-            makeNode("Chrome", [], pipelineStageState.queued)
+            makeNode("Internet Explorer", [], validResultValues.success),
+            makeNode("Firefox", [], validResultValues.running),
+            makeNode("Edge", [], validResultValues.failure),
+            makeNode("Safari", [], validResultValues.running),
+            makeNode("LOLpera", [], validResultValues.queued),
+            makeNode("Chrome", [], validResultValues.queued)
         ]),
-        makeNode("Dev", [], pipelineStageState.not_built),
-        makeNode("Staging", [], pipelineStageState.not_built),
-        makeNode("Production", [], pipelineStageState.not_built)
+        makeNode("Dev", [], validResultValues.not_built),
+        makeNode("Staging", [], validResultValues.not_built),
+        makeNode("Production", [], validResultValues.not_built)
     ];
 
     return <div><PipelineGraph stages={stages}/></div>;
@@ -216,8 +215,8 @@ function renderParallelPipelineDeep() {
 let __id = 1;
 
 /// Simple helper for data generation
-function makeNode(name, children = [], state = pipelineStageState.not_built, completePercent) {
-    completePercent = completePercent || ((state == pipelineStageState.running) ? Math.floor(Math.random() * 60 + 20) : 50);
+function makeNode(name, children = [], state = validResultValues.not_built, completePercent) {
+    completePercent = completePercent || ((state == validResultValues.running) ? Math.floor(Math.random() * 60 + 20) : 50);
     const id = __id++;
     return {name, children, state, completePercent, id};
 }

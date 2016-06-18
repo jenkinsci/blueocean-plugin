@@ -23,7 +23,8 @@ type StageInfo = {
     name: string,
     state: Result,
     completePercent: number,
-    id: number
+    id: number,
+    children: Array<StageInfo>
 };
 
 type NodeInfo = {
@@ -32,7 +33,8 @@ type NodeInfo = {
     name: string,
     state: Result,
     completePercent: number,
-    id: number
+    id: number,
+    stage: StageInfo
 };
 
 type ConnectionInfo = [NodeInfo, NodeInfo];
@@ -40,8 +42,8 @@ type ConnectionInfo = [NodeInfo, NodeInfo];
 type LabelInfo = {
     x: number,
     y: number,
-    nodeId: string,
-    text: string
+    text: string,
+    stage:StageInfo
 };
 
 type LayoutInfo = typeof defaultLayout;
@@ -51,7 +53,8 @@ type LayoutInfo = typeof defaultLayout;
 type Props = {
     stages: Array<StageInfo>,
     layout: LayoutInfo,
-    onNodeClick: (nodeName: string) => void
+    onNodeClick: (nodeName: string, id: string) => void,
+    selectedStage: StageInfo
 };
 
 export class PipelineGraph extends Component {
@@ -64,7 +67,8 @@ export class PipelineGraph extends Component {
         smallLabels: Array<LabelInfo>,
         measuredWidth: number,
         measuredHeight: number,
-        layout: LayoutInfo
+        layout: LayoutInfo,
+        selectedStage: StageInfo
     };
 
     constructor(props: Props) {
@@ -76,7 +80,8 @@ export class PipelineGraph extends Component {
             smallLabels: [],
             measuredWidth: 0,
             measuredHeight: 0,
-            layout: Object.assign({}, defaultLayout, props.layout)
+            layout: Object.assign({}, defaultLayout, props.layout),
+            selectedStage: props.selectedStage
         };
     }
 
@@ -86,21 +91,35 @@ export class PipelineGraph extends Component {
 
     componentWillReceiveProps(nextProps: Props) {
 
+        let newState = null; // null == no new state
+        let needsLayout = false;
+
         if (nextProps.layout != this.props.layout) {
+            // TODO: Does layout obj really need to be in state?
+            newState = {...newState, layout: Object.assign({}, defaultLayout, this.props.layout)};
+            needsLayout = true;
+        }
 
-            // If layout props changed, we need to update the layout state
-            // and then re-do layout (it relies on the new state)
+        if (nextProps.selectedStage !== this.props.selectedStage) {
+            // If we're just changing selectedStage, we don't need to re-generate the children
+            newState = {...newState, selectedStage: nextProps.selectedStage};
+        }
 
-            const layout = Object.assign({}, defaultLayout, this.props.layout);
-            this.setState({layout}, () => {
+        if (nextProps.stages !== this.props.stages) {
+            needsLayout = true;
+        }
+
+        const doLayoutIfNeeded = () => {
+            if (needsLayout) {
                 this.stagesUpdated(nextProps.stages);
-            });
+            }
+        };
 
-        } else if (nextProps.stages !== this.props.stages) {
-
-            // Stages have changed, but not layout props, so we can re-do layout immediately
-
-            this.stagesUpdated(nextProps.stages);
+        if (newState) {
+            // If we need to update the state, then we'll delay any layout changes
+            this.setState(newState, doLayoutIfNeeded);
+        } else {
+            doLayoutIfNeeded();
         }
     }
 
@@ -146,7 +165,7 @@ export class PipelineGraph extends Component {
                 x: xp,
                 y: yp,
                 text: topStage.name,
-                nodeId: topStage.id
+                stage: topStage
             });
 
             // If stage has children, we don't draw a node for it, just its children
@@ -162,7 +181,8 @@ export class PipelineGraph extends Component {
                     name: nodeStage.name,
                     state: nodeStage.state,
                     completePercent: nodeStage.completePercent,
-                    id: nodeStage.id
+                    id: nodeStage.id,
+                    stage: nodeStage
                 };
 
                 columnNodes.push(node);
@@ -173,7 +193,7 @@ export class PipelineGraph extends Component {
                         x: xp,
                         y: yp,
                         text: nodeStage.name,
-                        nodeId: nodeStage.id
+                        stage: nodeStage
                     });
                 }
 
@@ -204,7 +224,7 @@ export class PipelineGraph extends Component {
         });
     }
 
-    createBigLabel(details: LabelInfo) {
+    renderBigLabel(details: LabelInfo) {
 
         const { nodeSpacingH, labelOffsetV } = this.state.layout;
 
@@ -228,12 +248,18 @@ export class PipelineGraph extends Component {
             left: x + "px"
         });
 
-        const key = details.nodeId + '-big';
+        const key = details.stage.id + "-big";
 
-        return <div className="pipeline-big-label" style={style} key={key}>{details.text}</div>;
+        const classNames = ["pipeline-big-label"];
+        if (this.stageIsSelected(details.stage)
+            || this.stageChildIsSelected(details.stage)) {
+            classNames.push("selected");
+        }
+
+        return <div className={classNames.join(" ")} style={style} key={key}>{details.text}</div>;
     }
 
-    createSmallLabel(details: LabelInfo) {
+    renderSmallLabel(details: LabelInfo) {
 
         const {
             nodeSpacingH,
@@ -248,7 +274,6 @@ export class PipelineGraph extends Component {
             position: "absolute",
             width: smallLabelWidth,
             textAlign: "center",
-            fontSize: "80%",
             marginLeft: smallLabelOffsetH,
             marginTop: smallLabelOffsetV
         };
@@ -261,9 +286,14 @@ export class PipelineGraph extends Component {
             left: x
         });
 
-        const key = details.nodeId + '-big';
+        const key = details.stage.id + '-big';
 
-        return <div className="pipeline-small-label" style={style} key={key}>{details.text}</div>;
+        const classNames = ["pipeline-small-label"];
+        if (this.stageIsSelected(details.stage)) {
+            classNames.push("selected");
+        }
+
+        return <div className={classNames.join(" ")} style={style} key={key}>{details.text}</div>;
     }
 
     renderConnection(connection: ConnectionInfo) {
@@ -321,6 +351,7 @@ export class PipelineGraph extends Component {
 
     renderNode(node: NodeInfo) {
 
+        const nodeIsSelected = this.stageIsSelected(node.stage);
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
 
         // Use a bigger radius for invisible click/touch target
@@ -332,26 +363,84 @@ export class PipelineGraph extends Component {
         const completePercent = node.completePercent || 0;
         const groupChildren = [getGroupForResult(resultClean, completePercent, nodeRadius)];
 
-        // If somebody is listening for clicks, we'll add an invisible click/touch target, coz
-        // the nodes are small and (more importantly) many are hollow.
-        if (this.props.onNodeClick) {
-            groupChildren.push(
-                <circle r={mouseTargetRadius}
-                        cursor="pointer"
-                        className="pipeline-node-hittarget"
-                        fillOpacity="0"
-                        stroke="none"
-                        onClick={() => this.props.onNodeClick(node.name, node.id)}/>
-            );
-        }
+        // Add an invisible click/touch target, coz the nodes are small and (more importantly)
+        // many are hollow.
+        groupChildren.push(
+            <circle r={mouseTargetRadius}   
+                    cursor="pointer"
+                    className="pipeline-node-hittarget"
+                    fillOpacity="0"
+                    stroke="none"
+                    onClick={() => this.nodeClicked(node)}/>
+        );
 
         // All the nodes are in shared code, so they're rendered at 0,0 so we transform within a <g>
         const groupProps = {
             key,
-            transform: `translate(${node.x},${node.y})`
+            transform: `translate(${node.x},${node.y})`,
+            className: nodeIsSelected ? "pipeline-node-selected" : "pipeline-node"
         };
 
         return React.createElement("g", groupProps, ...groupChildren);
+    }
+
+    renderSelectionHighlight() {
+
+        const { nodeRadius, connectorStrokeWidth } = this.state.layout;
+        const highlightRadius = nodeRadius + (0.49 * connectorStrokeWidth);
+        let selectedNode = null;
+
+        for (const node of this.state.nodes) {
+            if (this.stageIsSelected(node.stage)) {
+                selectedNode = node;
+                break;
+            }
+        }
+
+        if (!selectedNode) {
+            return null;
+        }
+
+        const transform = `translate(${selectedNode.x} ${selectedNode.y})`;
+
+        return (
+            <g className="pipeline-selection-highlight" transform={transform}>
+                <circle r={highlightRadius} strokeWidth={connectorStrokeWidth * 1.1}/>
+            </g>
+        );
+    }
+
+    // Put in a function so we can make improvements / multi-select
+    stageIsSelected(stage: StageInfo) {
+        const {selectedStage} = this.state;
+
+        return selectedStage && selectedStage === stage;
+    }
+
+    stageChildIsSelected(stage: StageInfo) {
+        const {children} = stage;
+        const {selectedStage} = this.state;
+
+        if (children && selectedStage) {
+            for (const child of children) {
+                if (child === selectedStage) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    nodeClicked(node:NodeInfo) {
+        const stage = node.stage;
+        const listener = this.props.onNodeClick;
+
+        if (listener) {
+            listener(stage.name, stage.id);
+        }
+
+        // Update selection
+        this.setState({selectedStage: stage});
     }
 
     render() {
@@ -372,11 +461,12 @@ export class PipelineGraph extends Component {
         return (
             <div style={outerDivStyle}>
                 <svg width={measuredWidth} height={measuredHeight}>
+                    {this.renderSelectionHighlight()}
                     {connections.map(conn => this.renderConnection(conn))}
                     {nodes.map(node => this.renderNode(node))}
                 </svg>
-                {bigLabels.map(label => this.createBigLabel(label))}
-                {smallLabels.map(label => this.createSmallLabel(label))}
+                {bigLabels.map(label => this.renderBigLabel(label))}
+                {smallLabels.map(label => this.renderSmallLabel(label))}
             </div>
         );
     }
