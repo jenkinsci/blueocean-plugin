@@ -1,17 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Job;
-import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.JsonBody;
-import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
-
-import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.verb.PUT;
 
 /**
  * @author Vivek Pandey
@@ -20,8 +14,11 @@ public class BranchImpl extends PipelineImpl {
 
     private static final String PULL_REQUEST = "pullRequest";
 
-    public BranchImpl(Job job) {
-        super(job);
+    private final Link parent;
+
+    public BranchImpl(Job job, Link parent) {
+        super(job, parent);
+        this.parent = parent;
     }
 
     @Exported(name = PULL_REQUEST, inline = true)
@@ -36,6 +33,10 @@ public class BranchImpl extends PipelineImpl {
         return null;
     }
 
+    @Override
+    public Link getLink() {
+        return parent.rel(getName());
+    }
 
     public static class PullRequest extends Resource {
         private static final String PULL_REQUEST_NUMBER = "id";
@@ -79,6 +80,11 @@ public class BranchImpl extends PipelineImpl {
         @Exported(name = PULL_REQUEST_AUTHOR)
         public String getAuthor() {
             return author;
+        }
+
+        @Override
+        public Link getLink() {
+            return null;
         }
     }
 

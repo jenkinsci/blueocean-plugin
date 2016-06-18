@@ -4,9 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.util.AdaptedIterator;
+import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 /**
@@ -16,11 +20,22 @@ import java.util.Iterator;
  */
 @Extension
 public class UserContainerImpl extends BlueUserContainer {
+
+    private final Reachable parent;
+
+    public UserContainerImpl(@Nonnull Reachable parent) {
+        this.parent = parent;
+    }
+
+    public UserContainerImpl() {
+        this.parent = null;
+    }
+
     @Override
     public BlueUser get(String name) {
         User user = User.get(name, false, ImmutableMap.of());
         if (user==null)     return null;
-        return new UserImpl(user);
+        return new UserImpl(user, this);
     }
 
     /**
@@ -31,8 +46,17 @@ public class UserContainerImpl extends BlueUserContainer {
         return new AdaptedIterator<User, BlueUser>(User.getAll()) {
             @Override
             protected BlueUser adapt(User item) {
-                return new UserImpl(item);
+                return new UserImpl(item, UserContainerImpl.this);
             }
         };
     }
+
+    @Override
+    public Link getLink() {
+        if(parent!=null) {
+            return parent.getLink().rel(getUrlName());
+        }
+        return ApiHead.INSTANCE().getLink().rel(getUrlName());
+    }
+
 }

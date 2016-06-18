@@ -5,6 +5,7 @@ import hudson.model.BuildableItem;
 import hudson.model.Job;
 import hudson.model.Queue;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
@@ -63,5 +64,10 @@ public class QueueContainerImpl extends BlueQueueContainer {
         } else {
             throw new ServiceException.UnexpectedErrorException("This pipeline is not buildable and therefore does not have a queue.");
         }
+    }
+
+    @Override
+    public Link getLink() {
+        return pipeline.getLink().rel("queue");
     }
 }

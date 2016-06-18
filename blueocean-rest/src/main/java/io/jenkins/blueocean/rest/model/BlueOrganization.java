@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -14,6 +15,7 @@ public abstract class BlueOrganization extends Resource {
     @Exported(name = NAME)
     public abstract String getName();
 
+    @Navigable
     public abstract BluePipelineContainer getPipelines();
 
     /**
@@ -21,7 +23,7 @@ public abstract class BlueOrganization extends Resource {
      *
      * @return {@link BlueUserContainer}
      */
+    @Navigable
     public abstract BlueUserContainer getUsers();
-
 }
 

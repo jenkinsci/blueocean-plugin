@@ -4,9 +4,11 @@ import hudson.Extension;
 import hudson.ExtensionList;
 import io.jenkins.blueocean.RootRoutable;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
+import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -19,11 +21,10 @@ import java.util.Map;
 /**
  * Entrypoint for blueocean REST apis. $CONTEXT_PATH/rest being root. e.g. /jenkins/rest
  *
- *
  * @author Vivek Pandey
  */
 @Extension
-public final class ApiHead implements RootRoutable  {
+public final class ApiHead implements RootRoutable, Reachable  {
 
     private final Map<String,ApiRoutable> apis = new HashMap<>();
 
@@ -78,4 +79,22 @@ public final class ApiHead implements RootRoutable  {
         return apis.get(route);
     }
 
+    @Override
+    public Link getLink() {
+        Ancestor apiHead = Stapler.getCurrentRequest().findAncestor(ApiHead.class);
+
+        String contextPath = Stapler.getCurrentRequest().getContextPath();
+        String parentUrl = apiHead.getUrl();
+        if(!contextPath.isEmpty() && !contextPath.equals("/")){
+            int i = parentUrl.indexOf(contextPath);
+            if(i>=0 && i+contextPath.length() < parentUrl.length()){
+                parentUrl = parentUrl.substring(i+contextPath.length());
+            }
+        }
+        return new Link(parentUrl);
+    }
+
+    public static ApiHead INSTANCE(){
+        return (ApiHead) Stapler.getCurrentRequest().findAncestor(ApiHead.class).getObject();
+    }
 }
