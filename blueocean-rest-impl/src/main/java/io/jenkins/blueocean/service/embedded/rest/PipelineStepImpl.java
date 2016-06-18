@@ -19,6 +19,8 @@ public class PipelineStepImpl extends BluePipelineStep {
     private final Link self;
 
     public PipelineStepImpl(FlowNode node, PipelineNodeGraphBuilder graphBuilder, Link parent) {
+        assert graphBuilder != null;
+        assert node != null;
         this.self = parent.rel(node.getId());
         this.node = node;
         this.status = new PipelineNodeGraphBuilder.NodeRunStatus(node);
