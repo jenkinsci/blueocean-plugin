@@ -24,8 +24,7 @@ export default class LogToolbar extends Component {
                   filename: fileName,
                   contents: data,
                   mime: 'text/plain',
-              } }}
-              />}
+              } }}/>}
 
                 <a {...{
                     title: 'Display the log in new window',
