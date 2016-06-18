@@ -1,18 +1,25 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.model.Action;
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
+import io.jenkins.blueocean.rest.model.GenericResource;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +33,10 @@ import java.util.Map;
 public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
 
-    public AbstractRunImpl(T run) {
+    private final Link parent;
+    public AbstractRunImpl(T run, Link parent) {
         this.run = run;
+        this.parent = parent;
     }
 
     //TODO: It serializes jenkins Run model children, enable this code after fixing it
@@ -146,9 +155,15 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
                         return 0;
                     }
                 }
+
+                @Override
+                public Link getLink() {
+                    return new Link(getUrl());
+                }
+
             });
         }
-        return Containers.fromResourceMap(m);
+        return Containers.fromResourceMap(getLink(),m);
     }
 
     @Override
@@ -161,14 +176,25 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return null;
     }
 
-    protected static BlueRun getBlueRun(Run r){
+    public Collection<?> getActions() {
+        List<BlueActionProxy> actionProxies = new ArrayList<>();
+        for(Action action:run.getAllActions()){
+            if(!action.getClass().isAnnotationPresent(ExportedBean.class)){
+                continue;
+            }
+            actionProxies.add(new ActionProxiesImpl(action, this));
+        }
+        return actionProxies;
+    }
+
+    protected static BlueRun getBlueRun(Run r, Link parent){
         //TODO: We need to take care several other job types
         if (r instanceof FreeStyleBuild) {
-            return new FreeStyleRunImpl((FreeStyleBuild)r);
+            return new FreeStyleRunImpl((FreeStyleBuild)r, parent);
         }else if(r instanceof WorkflowRun){
-            return new PipelineRunImpl((WorkflowRun)r);
+            return new PipelineRunImpl((WorkflowRun)r, parent);
         }else{
-            return new AbstractRunImpl<>(r);
+            return new AbstractRunImpl<>(r, parent);
         }
     }
 
@@ -186,5 +212,29 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BlueRunStopResponse stop() {
         throw new ServiceException.NotImplementedException("Stop should be implemented on a subclass");
+    }
+
+    /**
+     * Handles HTTP path handled by actions or other extensions
+     *
+     * @param token path token that an action or extension can handle
+     *
+     * @return action or extension that handles this path.
+     */
+    public Object getDynamic(String token) {
+        for (Action a : run.getAllActions()) {
+            if (token.equals(a.getUrlName()))
+                return new GenericResource<>(a);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Link getLink() {
+        if(parent == null){
+            return OrganizationImpl.INSTANCE.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
+        }
+        return parent.rel("runs/"+getId());
     }
 }

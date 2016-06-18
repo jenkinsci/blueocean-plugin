@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.FreeStyleBuild;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 
@@ -15,8 +16,8 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
-    public FreeStyleRunImpl(FreeStyleBuild run) {
-        super(run);
+    public FreeStyleRunImpl(FreeStyleBuild run, Link parent) {
+        super(run, parent);
     }
 
     @Override
@@ -30,7 +31,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
             if (id==null)   id = String.valueOf(cnt);
             m.put(id,new ChangeSetResource(e));
         }
-        return Containers.fromResourceMap(m);
+        return Containers.fromResourceMap(this.getLink(),m);
     }
 
     @Override

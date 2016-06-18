@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -7,6 +8,7 @@ import org.kohsuke.stapler.json.JsonResponse;
 import org.kohsuke.stapler.verb.PUT;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -26,14 +28,13 @@ public abstract class BlueRun extends Resource {
     public static final String ENQUEUE_TIME="enQueueTime";
     public static final String DURATION_IN_MILLIS="durationInMillis";
     public static final String ESTIMATED_DURATION_IN_MILLIS="estimatedDurationInMillis";
-    public static final String BRANCH = "branch";
-    public static final String COMMIT_ID = "commitId";
     public static final String TYPE = "type";
     public static final String RUN_SUMMARY = "runSummary";
     public static final String RESULT = "result";
     public static final String STATE = "state";
     public static final String ARTIFACTS = "artifacts";
-    private static final String STEPS = "steps";
+    public static final String STEPS = "steps";
+    public static final String ACTIONS = "actions";
 
 
 
@@ -158,7 +159,11 @@ public abstract class BlueRun extends Resource {
      * @return Serves .../runs/{rundId}/nodes/ and provides pipeline execution nodes
      * @see BluePipelineNode
      */
+    @Navigable
     public abstract BluePipelineNodeContainer getNodes();
+
+    @Exported(name = ACTIONS, inline = true)
+    public abstract Collection<?> getActions();
 
     /**
      * @return Gives steps from pipeline. The list of steps must not include stages, this is because stage could be
@@ -227,7 +232,7 @@ public abstract class BlueRun extends Resource {
     }
 
     @ExportedBean(defaultVisibility = 2)
-    public abstract class BlueArtifact extends Resource{
+    public static abstract class BlueArtifact extends Resource{
         public static final String NAME = "name";
         public static final String URL = "url";
         public static final String SIZE = "size";
@@ -242,5 +247,4 @@ public abstract class BlueRun extends Resource {
         @Exported(name=SIZE)
         public abstract long getSize();
     }
-
 }

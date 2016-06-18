@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
@@ -219,9 +220,9 @@ public class PipelineNodeGraphBuilder {
      * @param other Other {@link PipelineNodeGraphBuilder} to create union with
      * @return list of FlowNode that is union of current set of nodes and the given list of nodes. If futureNodes
      * are not bigger than this pipeline nodes then no union is performed.
-     * @see PipelineNodeContainerImpl#PipelineNodeContainerImpl(WorkflowRun)
+     * @see PipelineNodeContainerImpl#PipelineNodeContainerImpl(WorkflowRun, Link)
      */
-    public List<BluePipelineNode> union(PipelineNodeGraphBuilder other) {
+    public List<BluePipelineNode> union(PipelineNodeGraphBuilder other, Link parentLink) {
         Map<FlowNode, List<FlowNode>> futureNodes = other.parentToChildrenMap;
         if (parentToChildrenMap.size() < futureNodes.size()) {
 
@@ -259,10 +260,10 @@ public class PipelineNodeGraphBuilder {
                 parentToChildrenMap.put(n, futureNodes.get(n.inactiveNode));
             }
         }
-        return getPipelineNodes();
+        return getPipelineNodes(parentLink);
     }
 
-    public List<BluePipelineNode> getPipelineNodes() {
+    public List<BluePipelineNode> getPipelineNodes(Link parentLink) {
         List<BluePipelineNode> nodes = new ArrayList<>();
         for (FlowNode n : parentToChildrenMap.keySet()) {
             PipelineNodeGraphBuilder.NodeRunStatus status = nodeStatusMap.get(n);
@@ -272,7 +273,7 @@ public class PipelineNodeGraphBuilder {
             } else if (status == null) {
                 status = getEffectiveBranchStatus(n);
             }
-            nodes.add(new PipelineNodeImpl(run, n, status, this));
+            nodes.add(new PipelineNodeImpl(run, n, status, this,parentLink));
         }
         return nodes;
     }

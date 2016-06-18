@@ -5,6 +5,8 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -18,7 +20,6 @@ import org.kohsuke.stapler.verb.DELETE;
 
 import java.io.IOException;
 
-import static io.jenkins.blueocean.rest.Utils.ensureTrailingSlash;
 import static io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl.isMultiBranchProjectJob;
 
 /**
@@ -28,17 +29,21 @@ public class PipelineImpl extends BluePipeline {
     /*package*/ final Job job;
 
     private final ItemGroup folder;
-    protected PipelineImpl(ItemGroup folder, Job job) {
+
+    private final Link parent;
+
+    protected PipelineImpl(ItemGroup folder, Job job, Link parent) {
         this.job = job;
         this.folder = folder;
+        this.parent = null;
     }
 
-    public PipelineImpl(ItemGroup folder) {
-        this(folder, null);
+    public PipelineImpl(ItemGroup folder, Link parent) {
+        this(folder, null,parent);
     }
 
-    public PipelineImpl(Job job) {
-        this(null, job);
+    public PipelineImpl(Job job, Link parent) {
+        this(null, job, parent);
     }
     @Override
     public String getOrganization() {
@@ -65,7 +70,7 @@ public class PipelineImpl extends BluePipeline {
         if(job.getLastBuild() == null){
             return null;
         }
-        return AbstractRunImpl.getBlueRun(job.getLastBuild());
+        return AbstractRunImpl.getBlueRun(job.getLastBuild(), this.getLink());
     }
 
     @Override
@@ -77,9 +82,8 @@ public class PipelineImpl extends BluePipeline {
     public String getLastSuccessfulRun() {
         if(job.getLastSuccessfulBuild() != null){
             String id = job.getLastSuccessfulBuild().getId();
-            return String.format("%s%s%s/%s",Stapler.getCurrentRequest().getRootPath(),
-                getPathInfo(), "runs",
-                job.getLastSuccessfulBuild().getId());
+
+            return Stapler.getCurrentRequest().getRootPath()+getLink().getHref()+"runs/"+id+"/";
         }
         return null;
     }
@@ -90,6 +94,7 @@ public class PipelineImpl extends BluePipeline {
     }
 
     @Override
+    @Navigable
     public BlueQueueContainer getQueue() {
         return new QueueContainerImpl(this, job);
     }
@@ -99,13 +104,6 @@ public class PipelineImpl extends BluePipeline {
         job.delete();
     }
 
-    private String getPathInfo(){
-        String path = Stapler.getCurrentRequest().getPathInfo();
-        if(!path.endsWith(getName()) && !path.endsWith(getName()+"/")){
-            return String.format("%s%s/", ensureTrailingSlash(path), getName());
-        }
-        return ensureTrailingSlash(path);
-    }
 
     @Override
     public void favorite(@JsonBody FavoriteAction favoriteAction) {
@@ -123,20 +121,47 @@ public class PipelineImpl extends BluePipeline {
 
     public BluePipeline getPipelines(String name){
         assert folder != null;
-        return getPipelines(folder, name);
+        return getPipeline(folder, name);
     }
 
-    protected static BluePipeline getPipelines(ItemGroup itemGroup, String name){
+    private  BluePipeline getPipeline(ItemGroup itemGroup, String name){
         Item item = itemGroup.getItem(name);
         if(item instanceof BuildableItem){
             if(item instanceof MultiBranchProject){
-                return new MultiBranchPipelineImpl((MultiBranchProject) item);
+                return new MultiBranchPipelineImpl((MultiBranchProject) item, getLink());
             }else if(!isMultiBranchProjectJob((BuildableItem) item) && item instanceof Job){
-                return new PipelineImpl(itemGroup, (Job) item);
+                return new PipelineImpl(itemGroup, (Job) item, parent);
             }
         }else if(item instanceof ItemGroup){
             return new PipelineImpl((ItemGroup) item, null);
         }
         throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", name));
     }
+
+    @Override
+    public Link getLink() {
+//        Link parentLink = (parent == null) ? OrganizationImpl.INSTANCE.getLink().rel("pipelines") : parent;
+
+        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
+    }
+
+    protected static String getRecursivePathFromFullName(BluePipeline pipeline){
+        StringBuilder pipelinePath = new StringBuilder();
+        String[] names = pipeline.getFullName().split("/");
+        int count = 1;
+        if(names.length > 1) { //nested
+            for (String n : names) {
+                if(count == 1){
+                    pipelinePath.append(n);
+                }else{
+                    pipelinePath.append("/pipelines/").append(n);
+                }
+                count++;
+            }
+        }else{
+            pipelinePath.append(pipeline.getFullName());
+        }
+        return pipelinePath.toString();
+    }
+
 }

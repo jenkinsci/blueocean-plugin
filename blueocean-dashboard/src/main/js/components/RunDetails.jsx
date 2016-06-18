@@ -17,6 +17,8 @@ import {
     connect,
 } from '../redux';
 
+import { buildRunDetailsUrl } from '../util/UrlUtils';
+
 const { func, object, array, any, string } = PropTypes;
 
 class RunDetails extends Component {
@@ -79,8 +81,7 @@ class RunDetails extends Component {
             },
         } = this.context;
 
-        const baseUrl = `/organizations/${organization}/${name}` +
-            `/detail/${branch}/${runId}`;
+        const baseUrl = buildRunDetailsUrl(organization, name, branch, runId);
 
         const currentRun = this.props.runs.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
@@ -125,7 +126,7 @@ class RunDetails extends Component {
                     <div>
                         {React.cloneElement(
                             this.props.children,
-                            { baseUrl, currentRun, ...this.props }
+                            { baseUrl, result: currentRun, ...this.props }
                         )}
                     </div>
                 </ModalBody>

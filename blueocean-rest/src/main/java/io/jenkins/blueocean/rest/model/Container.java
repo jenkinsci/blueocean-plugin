@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
@@ -13,7 +14,7 @@ import java.util.Iterator;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class Container<T> implements Pageable<T> {
+public abstract class Container<T> implements Pageable<T>, Reachable {
     /**
      * Gets the individual member by its name
      *

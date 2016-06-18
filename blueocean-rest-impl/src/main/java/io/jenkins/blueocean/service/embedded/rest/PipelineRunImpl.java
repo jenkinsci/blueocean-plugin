@@ -2,8 +2,10 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -20,8 +22,8 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
-    public PipelineRunImpl(WorkflowRun run) {
-        super(run);
+    public PipelineRunImpl(WorkflowRun run, Link parent) {
+        super(run, parent);
     }
 
     @Override
@@ -36,13 +38,13 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 m.put(id, new ChangeSetResource(e));
             }
         }
-        return Containers.fromResourceMap(m);
+        return Containers.fromResourceMap(getLink(),m);
     }
 
     @Override
     public BluePipelineNodeContainer getNodes() {
         if (run != null) {
-            return new PipelineNodeContainerImpl(run);
+            return new PipelineNodeContainerImpl(run, getLink());
         }
         return null;
     }
@@ -53,9 +55,9 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         List<FlowNode> nodes = graphBuilder.getAllSteps();
         List<BluePipelineStep> pipelineSteps = new ArrayList<>();
         for(FlowNode node:nodes){
-            pipelineSteps.add(new PipelineStepImpl(node, graphBuilder));
+            pipelineSteps.add(new PipelineStepImpl(node, graphBuilder, getLink().rel(BlueRun.STEPS)));
         }
-        return Containers.from(pipelineSteps);
+        return Containers.fromResource(getLink().rel(BlueRun.STEPS), pipelineSteps);
     }
 
     @Override
