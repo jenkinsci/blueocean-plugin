@@ -188,7 +188,7 @@ function renderMultiParallelPipeline() {
         makeNode("Production")
     ];
 
-    return <div><PipelineGraph stages={stages}/></div>;
+    return <div><PipelineGraph stages={stages} selectedStage={stages[0]}/></div>;
 }
 
 function renderParallelPipelineDeep() {
