@@ -9,3 +9,18 @@ export const removeLastUrlSegment = (url) => {
     paths.pop();
     return paths.join('/');
 };
+
+/**
+ * Build a root-relative URL to the run details modal.
+ * @param organization
+ * @param pipeline
+ * @param branch
+ * @param runId
+ * @param tabName
+ */
+export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabName) => {
+    const baseUrl = `/organizations/${encodeURIComponent(organization)}/` +
+        `${encodeURIComponent(pipeline)}/detail/` +
+        `${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
+    return tabName ? `${baseUrl}/${tabName}` : baseUrl;
+};
