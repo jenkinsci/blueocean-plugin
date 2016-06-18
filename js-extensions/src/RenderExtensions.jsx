@@ -1,7 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var store = require('./store.js');
-var cssloadtracker = require('./cssloadtracker');
+var ExtensionStore = require('./ExtensionStore.js');
+var ResourceLoadTracker = require('./ResourceLoadTracker');
 
 // TODO: Move this package to babel, and update this to ES6
 
@@ -35,23 +35,22 @@ ContextBridge.propTypes = {
 };
 
 /**
- * Implement an ExtensionPoint for which other plugins can provide an implementing Component.
+ * Implement an RenderExtensions for which other plugins can provide an implementing Component.
  */
-var ExtensionPoint = React.createClass({
+var RenderExtensions = React.createClass({
 
     getInitialState: function () {
         // Initial state is empty. See the componentDidMount and render functions.
-        return {};
+        return { extensions: [] };
     },
-
+    
+    componentWillMount: function() {
+        this._setExtensions();
+    },
+    
     componentDidMount: function() {
-        cssloadtracker.onMount(this.props.name);
-        var thisEp = this;
-        ExtensionPoint.registerExtensionPoint(this.props.name, function(extensions) {
-            thisEp.setState({
-                extensions: extensions
-            });
-        });
+        ResourceLoadTracker.onMount(this.props.name);
+        this._renderAllExtensions();
     },
 
     componentDidUpdate: function() {
@@ -60,33 +59,42 @@ var ExtensionPoint = React.createClass({
 
     componentWillUnmount: function() {
         this._unmountAllExtensions();
-        cssloadtracker.onUnmount(this.props.name);
+        ResourceLoadTracker.onUnmount(this.props.name);
     },
-
+    
+    _setExtensions: function() {
+        var extensions = ExtensionStore.getExtensions(this.props.name, this.props.type);
+        if (!extensions) {
+            ExtensionStore.loadExtensions(this.props.name, function() { this._setExtensions(); }.bind(this));
+            return;
+        }
+        
+        if (this.props.type) {
+            var classInfo = ExtensionStore.getClassInfo(this.props.type);
+            if (!classInfo) {
+                ExtensionStore.loadClassInfo(this.props.type, function() { this._setExtensions(); }.bind(this));
+                return;
+            };
+        }
+        
+        this.setState({extensions: extensions});
+    },
+    
     /**
      * This method renders the "leaf node" container divs, one for each registered extension, that live in the same
-     * react hierarchy as the &lt;ExtensionPoint&gt; instance itself. As far as our react is concerned, these are
+     * react hierarchy as the &lt;RenderExtensions&gt; instance itself. As far as our react is concerned, these are
      * childless divs that are never updated. Actually rendering the extensions themselves is done by
      * _renderAllExtensions.
      */
     render: function() {
         var extensions = this.state.extensions;
-
-        if (!extensions) {
-            // Initial state. componentDidMount will kick in and load the extensions.
-            return null;
-        } else if (extensions.length === 0) {
-            console.warn('No "' + this.props.name + '" ExtensionPoint implementations were found across the installed plugin set. See ExtensionList:');
-            console.log(store.getExtensionList());
-            return null;
-        } else {
-            // Add a <div> for each of the extensions. See the __renderAllExtensions function.
-            var extensionDivs = [];
-            for (var i = 0; i < extensions.length; i++) {
-                extensionDivs.push(<div key={i}/>);
-            }
-            return React.createElement(this.props.wrappingElement, null, extensionDivs);
+        
+        // Add a <div> for each of the extensions. See the __renderAllExtensions function.
+        var extensionDivs = [];
+        for (var i = 0; i < extensions.length; i++) {
+            extensionDivs.push(<div key={i}/>);
         }
+        return React.createElement(this.props.wrappingElement, null, extensionDivs);
     },
 
     /**
@@ -102,12 +110,12 @@ var ExtensionPoint = React.createClass({
         if (el) {
             const children = el.children;
             if (children) {
-                const extensions = store.getExtensions(this.props.name);
+                const extensions = this.state.extensions;
 
                 // The number of children should be exactly the same as the number
                 // of extensions. See the render function for where these are added.
                 if (!extensions || extensions.length !== children.length) {
-                    console.error('Unexpected error in Jenkins ExtensionPoint rendering (' + this.props.name + '). Expecting a child DOM node for each extension point.');
+                    console.error('Unexpected error in Jenkins RenderExtensions rendering (' + this.props.name + '). Expecting a child DOM node for each extension point.');
                     return;
                 }
                 // render each extension on the allocated child node.
@@ -160,34 +168,22 @@ var ExtensionPoint = React.createClass({
     }
 });
 
-ExtensionPoint.defaultProps = {
+RenderExtensions.defaultProps = {
     wrappingElement: "div"
 };
 
-ExtensionPoint.propTypes = {
+RenderExtensions.propTypes = {
     name: React.PropTypes.string.isRequired,
     wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element])
 };
 
-ExtensionPoint.contextTypes = {
+RenderExtensions.contextTypes = {
     router: React.PropTypes.object,
     config: React.PropTypes.object
 };
 
-/**
- * Provide a static helper to avoid having to expose the store
- */
-ExtensionPoint.getExtensions = function getExtensions(name) {
-    return store.getExtensions(name);
-};
+RenderExtensions.store = RenderExtensions.ExtensionStore = ExtensionStore;
+RenderExtensions.store.RenderExtensions = RenderExtensions;
+RenderExtensions.RenderExtensions = RenderExtensions;
 
-/**
- * Register the existence of an ExtensionPoint and load the extensions. onLoad is (extensions)=>{}
- */
-ExtensionPoint.registerExtensionPoint = function registerExtensionPoint (name, onLoad) {
-    store.loadExtensions(name, function (extensions) {
-        if (typeof onLoad === "function") onLoad(extensions);
-    });
-};
-
-module.exports = ExtensionPoint;
+module.exports = RenderExtensions;

@@ -5,7 +5,7 @@ import { createHistory } from 'history';
 import { Provider, configureStore, combineReducers} from './redux';
 import { DevelopmentFooter } from './DevelopmentFooter';
 
-import { ExtensionPoint } from '@jenkins-cd/js-extensions';
+import { RenderExtensions } from '@jenkins-cd/js-extensions';
 import rootReducer, { ACTION_TYPES } from './redux/router';
 
 import Config from './config';
@@ -26,7 +26,7 @@ class App extends Component {
             <div className="Site">
                 <div id="outer">
                     <header className="global-header">
-                        <ExtensionPoint name="jenkins.logo.top"/>
+                        <RenderExtensions name="jenkins.logo.top"/>
                         <nav>
                             <Link to="/pipelines">Pipelines</Link>
                             <a href="#">Administration</a>
@@ -60,7 +60,7 @@ class NotFound extends Component {
 function makeRoutes() {
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
     const appRoutes = [
-        ...ExtensionPoint.getExtensions("jenkins.main.routes"),
+        ...RenderExtensions.store.getExtensions("jenkins.main.routes"),
         // FIXME: Not sure best how to set this up without the hardcoded IndexRedirect :-/
         <IndexRedirect to="/pipelines" />,
         <Route path="*" component={NotFound}/>
@@ -106,7 +106,7 @@ function startApp() {
     });
 
     // get all ExtensionPoints related to redux-stores
-    const stores = ExtensionPoint.getExtensions("jenkins.main.stores");
+    const stores = RenderExtensions.store.getExtensions("jenkins.main.stores");
     let store;
     if (stores.length === 0) {
         // if we do not have any stores we only add the location store
@@ -144,6 +144,6 @@ function startApp() {
       , rootElement);
 }
 
-ExtensionPoint.registerExtensionPoint("jenkins.main.routes", () => {
+RenderExtensions.store.loadExtensions("jenkins.main.routes", () => {
     startApp();
 });

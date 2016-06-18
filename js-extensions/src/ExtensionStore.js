@@ -1,43 +1,81 @@
 /**
  * The registered ExtensionPoint instances.
  */
-var points = {};
+var extensionPoints = {};
 /**
  * The ExtensionPoint metadata.
  */
 var extensionPointList = [];
+/**
+ * All extension point metadata
+ */
+var extensionPointMetadata = {};
+/**
+ * Type info cache
+ */
+var classInfo = {};
+/**
+ * Used to fetch type information
+ */
+var typeFetchFunction;
 
-exports.setExtensionPointMetadata = function(data) {
-    // This data should come from <jenkins>/blue/javaScriptExtensionInfo
+/**
+ * called as setExtensionPointMetadata(data, typeFetch);
+ * typeFetch = function(type, oncomplete) ...
+ */
+exports.setExtensionPointMetadata = function(data, typeFetch) {
+    typeFetchFunction = typeFetch;
+    // This data should come from <jenkins>/blue/js-extensions
     if (data) {
         // We clone the data because we add to it.
         extensionPointList = JSON.parse(JSON.stringify(data));
-        var cssloadtracker = require('./cssloadtracker');
-        cssloadtracker.setExtensionPointMetadata(extensionPointList);
+        console.log(extensionPointList);
+        var ResourceLoadTracker = require('./ResourceLoadTracker');
+        ResourceLoadTracker.setExtensionPointMetadata(extensionPointList);
     }
 };
 
-exports.addExtensionPoint = function(key) {
-    points[key] = points[key] || [];
-};
-
-exports.addExtension = function (key, extension) {
-    exports.addExtensionPoint(key);
-    points[key].push(extension);
+exports.register = exports.addExtension = function (key, extension) {
+    extensionPoints[key] = extensionPoints[key] || [];
+    extensionPoints[key].push(extension);
 };
 
 exports.loadExtensions = function(key, onload) {
     loadBundles(key, function() {
-        onload(exports.getExtensions(key));
+        if(onload) onload(exports.getExtensions(key));
     });
 };
 
-exports.getExtensions = function(key) {
-    return points[key] || [];
+exports.getExtensions = function(key, type) {
+    var extensions = extensionPoints[key];
+    if (extensions) {
+        if (type && extensions.length > 0 && key in extensionPointMetadata) {
+            for (var i = 0; i < extensionPointMetadata[key].length; i++) {
+                var extensionList = extensions[i];
+                var extensionType = extension.type;
+                if (extensionType && classInfo[extensionType].classes.indexOf(type)) {
+                    return [ extension ];
+                }
+            }
+            return [];
+        }
+    }
+    return extensions;
 };
 
 exports.getExtensionList = function() {
     return extensionPointList;
+};
+
+exports.getClassInfo = function getClassInfo(type) {
+    return classInfo[type];
+};
+
+exports.loadClassInfo = function loadClassInfo(type, oncomplete) {
+    typeFetchFunction(type, function(data) {
+        classInfo[type] = data;
+        oncomplete();
+    });
 };
 
 function LoadCountMonitor() {
@@ -60,8 +98,10 @@ LoadCountMonitor.prototype.onchange = function(callback) {
     this.callback = callback;
 };
 
-function loadBundles(extensionPointId, onBundlesLoaded) {
 
+function loadBundles(extensionPointId, onBundlesLoaded) {
+    extensionPoints[extensionPointId] = extensionPoints[extensionPointId] || []; // always track this was loaded
+    
     var jsModules = require('@jenkins-cd/js-modules');
     var loadCountMonitor = new LoadCountMonitor();
 
@@ -101,10 +141,13 @@ function loadBundles(extensionPointId, onBundlesLoaded) {
     for(var i1 = 0; i1 < extensionPointList.length; i1++) {
 
         var pluginMetadata = extensionPointList[i1];
-        var extensions = pluginMetadata.extensions;
+        var extensions = pluginMetadata.extensions || [];
 
         for(var i2 = 0; i2 < extensions.length; i2++) {
-            if (extensions[i2].extensionPoint === extensionPointId) {
+            var extensionMetadata = extensions[i2];
+            if (extensionMetadata.extensionPoint === extensionPointId) {
+                extensionPointMetadata[extensionPointId] = extensionPointMetadata[extensionPointId] || [];
+                extensionPointMetadata[extensionPointId].push(extensionMetadata);
                 // This plugin implements the ExtensionPoint.
                 // If we haven't already loaded the extension point
                 // bundle for this plugin, lets load it now.

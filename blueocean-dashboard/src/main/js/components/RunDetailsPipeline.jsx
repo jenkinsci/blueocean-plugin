@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { ExtensionPoint } from '@jenkins-cd/js-extensions';
+import { RenderExtensions } from '@jenkins-cd/js-extensions';
 import Steps from './Steps';
 import {
     steps as stepsSelector,
@@ -74,7 +74,7 @@ export class RunDetailsPipeline extends Component {
         const logGeneral = calculateRunLogURLObject(mergedConfig);
         return (
             <div>
-                { nodes && nodes[nodeKey] && <ExtensionPoint
+                { nodes && nodes[nodeKey] && <RenderExtensions
                   router={router}
                   location={location}
                   name="jenkins.pipeline.run.result"

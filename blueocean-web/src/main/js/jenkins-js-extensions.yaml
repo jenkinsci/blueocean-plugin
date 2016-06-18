@@ -1,0 +1,4 @@
+# Extensions in this plugin
+extensions:
+  - component: AboutNavLink
+    extensionPoint: jenkins.topNavigation.menu

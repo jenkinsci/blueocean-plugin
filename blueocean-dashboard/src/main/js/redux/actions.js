@@ -164,7 +164,6 @@ export const actionHandlers = {
         return state
             .set('branches', branches)
             .set('currentBranches', newBranches);
->>>>>>> primary/master
     },
 };
 
@@ -745,13 +744,14 @@ export const actions = {
     
     fetchTestResults(config, runDetails) {
         return (dispatch) => {
-            //const appUrlBase = config.getAppURLBase(); // TODO: Should use this instead
+            // const appUrlBase = config.getAppURLBase(); // TODO: Should use this instead
             const appUrlBase = '/jenkins';
             let url;
             
             if (runDetails.isMultiBranch) {
-                url = `TODO`; // Construct different URL for multi-branch
+                url = 'TODO'; // Construct different URL for multi-branch
             } else {
+                // eslint-disable-next-line max-len
                 url = `${appUrlBase}/blue/rest/organizations/${runDetails.organization}/pipelines/${runDetails.branch}/runs/${runDetails.runId}/testReport/result`;
             }
 
@@ -759,6 +759,15 @@ export const actions = {
                 url,
                 ACTION_TYPES.SET_TEST_RESULTS
             ));
+        };
+    },
+    
+    resetTestDetails() {
+        return (dispatch) => {
+            return dispatch({
+                type: ACTION_TYPES.SET_TEST_RESULTS,
+                payload: null
+            });
         };
     },
 };

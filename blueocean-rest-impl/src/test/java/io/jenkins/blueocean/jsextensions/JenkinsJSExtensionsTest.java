@@ -23,6 +23,7 @@
  */
 package io.jenkins.blueocean.jsextensions;
 
+import io.jenkins.blueocean.jsextensions.JenkinsJSExtensions;
 import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class JenkinsJSExtensionsTest extends BaseTest{
         // FIXME: This test relies on configuration in a separate project
         // Simple test of the rest endpoint. It should find the "blueocean-dashboard"
         // plugin ExtensionPoint contributions.
-        List<Map> extensions = get("/javaScriptExtensionInfo", List.class);
+        List<Map> extensions = get("/js-extensions", List.class);
 
         Assert.assertEquals(1, extensions.size());
         Assert.assertEquals("blueocean-dashboard", extensions.get(0).get("hpiPluginId"));
@@ -55,9 +56,9 @@ public class JenkinsJSExtensionsTest extends BaseTest{
         // result in the same object instance being returned because the list of plugin
         // has not changed i.e. we have a simple optimization in there where we only scan
         // the classpath if the active plugin lust has changed.
-        Assert.assertArrayEquals(
-            JenkinsJSExtensions.INSTANCE.getJenkinsJSExtensionData(),
-            JenkinsJSExtensions.INSTANCE.getJenkinsJSExtensionData()
+        Assert.assertEquals(
+            JenkinsJSExtensions.getJenkinsJSExtensionData(),
+            JenkinsJSExtensions.getJenkinsJSExtensionData()
         );
     }
 

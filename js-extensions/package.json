@@ -10,7 +10,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && jsx src/ExtensionPoint.jsx > dist/ExtensionPoint.js && cp src/*.js dist/",
+    "build": "rm -rf dist && mkdir dist && jsx src/RenderExtensions.jsx > dist/RenderExtensions.js && cp src/*.js dist/",
     "test": "gulp test",
     "prepublish": "npm run build"
   },

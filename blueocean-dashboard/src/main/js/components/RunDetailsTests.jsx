@@ -1,24 +1,25 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView } from '@jenkins-cd/design-language';
-import { actions, testResults as testResultsSelector, connect, createSelector } from '../redux';
+import { actions as selectorActions, testResults as testResultsSelector,
+    connect, createSelector } from '../redux';
+import { RenderExtensions } from '@jenkins-cd/js-extensions';
 
-const { object, func } = PropTypes;
+const EmptyState = (props) => (
+    <EmptyStateView tightSpacing>
+        <p>
+            There are no tests run for this build.
+        </p>
+    </EmptyStateView>
+);
+
 
 /**
  * Displays a list of tests from the supplied build run property.
  */
-export default class RunDetailsTests extends Component {
-    renderEmptyState() {
-        return (
-            <EmptyStateView tightSpacing>
-                <p>There are no tests for this pipeline run.</p>
-            </EmptyStateView>
-        );
-    }
-
+export class RunDetailsTests extends Component {
     componentWillMount() {
         this.props.fetchTestResults(
-            this.context.config, 
+            this.context.config,
             {
                 isMultiBranch: this.props.isMultiBranch,
                 organization: this.props.params.organization,
@@ -28,33 +29,54 @@ export default class RunDetailsTests extends Component {
             }
         );
     }
+    
+    componentWillUnmount() {
+        this.props.resetTestDetails();
+    }
+
+    renderEmptyState() {
+        return (
+            <EmptyStateView tightSpacing>
+                <p>There are no tests for this pipeline run.</p>
+            </EmptyStateView>
+        );
+    }
 
     render() {
-        const { result, testResults } = this.props;
+        const { testResults } = this.props;
         
         if (!testResults || !testResults.suites) {
-            return null;
+            return <EmptyState/>;
         }
-
-        // TODO: Move the rest of this into a plugin.
-        // passing it testResults via an ExtensionPoint ? Hmmm
-        const suites = testResults.suites;
-        return (<div>
-            {
-                suites.map((suite) => 
-                    <div>{suite.name}</div>    
-                )
-            }
+        
+        const percentComplete = testResults.passCount /
+            (testResults.passCount + testResults.failCount);
+        
+        return (<div className="test-results-container">
+            <div className="test=result-summary" style={{display:'none'}}>
+                <div className={`test-result-bar ${percentComplete}%`}></div>
+                <div className="test-result-passed">Passed {testResults.passCount}</div>
+                <div className="test-result-failed">Failed {testResults.failCount}</div>
+                <div className="test-result-skipped">Skipped {testResults.skipCount}</div>
+                <div className="test-result-duration">Duration {testResults.duration}</div>
+            </div>
+            
+            <RenderExtensions type={testResults._class} name="jenkins.test.result" testResults={testResults} />
         </div>);
     }
 }
 
 RunDetailsTests.propTypes = {
-    result: object,
-    testResults: object,
-    fetchTestResults: func,
+    params: PropTypes.object,
+    isMultiBranch: PropTypes.bool,
+    result: PropTypes.object,
+    testResults: PropTypes.object,
+    resetTestDetails: PropTypes.func,
+    fetchTestResults: PropTypes.func,
+    fetchTypeInfo: PropTypes.func,
 };
 
-const selectors = createSelector([testResultsSelector], (testResults) => ({ testResults }));
+const selectors = createSelector([testResultsSelector],
+    (testResults) => ({ testResults }));
 
-export default connect(selectors, actions)(RunDetailsTests);
+export default connect(selectors, selectorActions)(RunDetailsTests);

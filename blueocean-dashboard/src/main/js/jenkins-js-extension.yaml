@@ -10,3 +10,6 @@ extensions:
     extensionPoint: jenkins.main.stores
   - component: components/PipelineRunGraph
     extensionPoint: jenkins.pipeline.run.result
+  - component: components/tests/AbstractTestResult
+    extensionPoint: jenkins.test.result
+    type: hudson.tasks.test.AbstractTestResultAction
