@@ -49,7 +49,7 @@ export class RunDetailsPipeline extends Component {
         // we would use default properties however the node can be null so no default properties will be triggered
         let { nodeReducer } = props;
         if (!nodeReducer) {
-            nodeReducer = {id: null, displayName: 'default title'};
+            nodeReducer = { id: null, displayName: 'default title' };
         }
         // if we have a node param we do not want the calculation of the focused node
         const node = nodeParam || nodeReducer.id;
@@ -91,9 +91,9 @@ export class RunDetailsPipeline extends Component {
                 />
                 }
                 <LogToolbar
-                    fileName={logGeneral.fileName}
-                    url={logGeneral.url}
-                    title={mergedConfig.nodeReducer.displayName}
+                  fileName={logGeneral.fileName}
+                  url={logGeneral.url}
+                  title={mergedConfig.nodeReducer.displayName}
                 />
                 { steps && steps[key] && <Steps
                   nodeInformation={steps[key]}

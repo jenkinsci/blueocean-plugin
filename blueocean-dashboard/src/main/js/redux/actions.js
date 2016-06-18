@@ -696,7 +696,7 @@ export const actions = {
                 type: ACTION_TYPES.SET_NODE,
                 payload: node,
             });
-        }
+        };
     },
 
     cleanNodePointer() {
