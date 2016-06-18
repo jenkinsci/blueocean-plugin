@@ -1,7 +1,7 @@
 {
     "name": "@jenkins-cd/design-language",
     "jdlName": "jenkinçs-design-language",
-    "version": "0.0.54",
+    "version": "0.0.55-unpublished",
     "description": "Styles, assets, and React classes for Jenkins Design Language",
     "main": "dist/js/components/index.js",
     "scripts": {
