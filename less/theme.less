@@ -766,6 +766,32 @@ footer {
     box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
 }
 
+.expand-in-appear {
+    .transition(all ease-out 0.15s);
+    top: 4%;
+    opacity: 0.01;
+    transform: scale(0.96);
+
+    &.expand-in-appear-active {
+        top: 0;
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.expand-in-leave {
+    .transition(all ease-out 0.1s);
+    top: 0;
+    opacity: 1;
+    transform: scale(1);
+
+    &.expand-in-leave-active {
+        top: 4%;
+        opacity: 0.01;
+        transform: scale(0.96);
+    }
+}
+
 .slideup-appear {
     .transition(all ease-out 0.3s);
     top: 75%;
@@ -805,7 +831,7 @@ footer {
 }
 
 .dialog .header-content {
-    padding: 25px 50px 0 50px;
+    padding: 0 50px 0 50px;
 }
 
 .dialog .header .page-tabs {
@@ -817,29 +843,30 @@ footer {
     }
 }
 
-.dialog .header.info {
-    background-color: @header-bg;
-}
+.dialog .header {
+    &.success {
+        background-color: @brand-success;
+    }
 
-.dialog .header.success {
-    background-color: @brand-success;
-}
+    &.failure, &.aborted {
+        background-color: @brand-danger;
+    }
 
-.dialog .header.failure {
-    background-color: @brand-danger;
-}
+    &.unstable {
+        background-color: @brand-warning;
+    }
 
-.dialog .header.unstable {
-    background-color: @brand-warning;
-}
+    &.info, &.queued, &.running {
+        background-color: @brand-info;
+    }
 
-.dialog .header.unknown {
-    background-color: @brand-unknown;
-}
+    &.not_built {
+        background-color: @brand-grey;
+    }
 
-.dialog .header.aborted,
-.dialog .header.not_built {
-    background-color: @brand-grey;
+    &.unknown {
+        background-color: @brand-unknown;
+    }
 }
 
 .dialog .content {

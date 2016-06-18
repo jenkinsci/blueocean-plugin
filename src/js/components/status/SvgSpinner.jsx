@@ -35,9 +35,12 @@ export default class SvgSpinner extends Component {
         const rotate = percentage / 100 * 360;
         const d = describeArcAsPath(0, 0, radius, 0, rotate);
 
+        const innerRadius = radius / 3;
+
         return (
             <g className={groupClasses.join(' ')}>
                 <circle cx="0" cy="0" r={radius} strokeWidth={strokeWidth}/>
+                <circle className="inner" cx="0" cy="0" r={innerRadius} />
                 { percentage ? <path className={result} fill="none" strokeWidth={strokeWidth} d={d}/> : null}
             </g>
         );

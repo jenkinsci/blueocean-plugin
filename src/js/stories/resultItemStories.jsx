@@ -1,6 +1,5 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-
 import { ResultItem } from '../components';
 
 import lipsum from './lipsum';
@@ -40,15 +39,24 @@ function basicStory() {
 
     return (
         <div style={wrapperStyle}>
-            <ResultItem result="success" label="Successful Step" durationMillis={11337} onExpand={onExpand}
+            <ResultItem result="success" label="Successful Step" extraInfo="11 sec" onExpand={onExpand}
                         onCollapse={onCollapse} data="bravo">{moLipsum()}</ResultItem>
-            <ResultItem result="failure" label="Failed Step" durationMillis={29876} onExpand={onExpand}
+            <ResultItem result="failure" label="Failed Step" extraInfo="29 sec" onExpand={onExpand}
                         onCollapse={onCollapse} data="charlie">{moLipsum()}</ResultItem>
-            <ResultItem result="queued" label="Pending Step" durationMillis={94567} onExpand={onExpand}
+            <ResultItem result="queued" label="Pending Step" extraInfo="1 millis" onExpand={onExpand}
                         onCollapse={onCollapse} data="delta">{moLipsum()}</ResultItem>
-            <ResultItem result="aborted" label="Aborted Step" durationMillis={33} onExpand={onExpand}
+            <ResultItem result="aborted" label="Aborted Step" extraInfo="1 min, 12 sec" onExpand={onExpand}
                         onCollapse={onCollapse} data="echo">{moLipsum()}</ResultItem>
-            <ResultItem result="running" label="Running Step, with taller child" durationMillis={12345678}
+            <ResultItem result="aborted" label="Aborted Step" extraInfo="1 min, 12 sec" onExpand={onExpand}
+                        onCollapse={onCollapse} data="echo">{moLipsum()}</ResultItem>
+            <ResultItem result="aborted" label="Aborted Step" extraInfo="1 min, 12 sec" onExpand={onExpand}
+                        onCollapse={onCollapse} data="echo">{moLipsum()}</ResultItem>
+            <ResultItem result="success" label="Expanded by default step" extraInfo="13 sec" onExpand={onExpand}
+                        onCollapse={onCollapse} data="foxtrot" expanded="true">{moLipsum()}</ResultItem>
+
+            <h2>Separator</h2>
+            
+            <ResultItem result="running" label="Running Step, with taller child" extraInfo="a few seconds"
                         onExpand={onExpand} onCollapse={onCollapse} data="foxtrot">
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur deserunt dicta impedit nam
                 quaerat quasi sapiente sint ullam veniam.</p>
@@ -59,10 +67,13 @@ function basicStory() {
                 <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
                 <p>Eius enim magnam obcaecati perferendis quam?</p>
             </ResultItem>
-            <ResultItem result="unstable" label="Unstable Step" durationMillis={5342345} onExpand={onExpand}
+            
+            <h2>Separator</h2>
+            
+            <ResultItem result="unstable" label="Unstable Step" extraInfo="55 sec" onExpand={onExpand}
                         onCollapse={onCollapse} data="golf">{moLipsum()}</ResultItem>
             <ResultItem result="not_built" label="Not Built Step - no details"/>
-            <ResultItem result="unknown" label="Unknown Step" durationMillis={999999} onExpand={onExpand}
+            <ResultItem result="unknown" label="Unknown Step" extraInfo="5 minutes" onExpand={onExpand}
                         onCollapse={onCollapse} data="indigo">{moLipsum()}</ResultItem>
         </div>
     );

@@ -1,25 +1,6 @@
-// @flow
-
 import React, {Component, PropTypes} from 'react';
 import moment from 'moment';
 import { StatusIndicator, decodeResultValue } from './StatusIndicator';
-
-const {number, string} = PropTypes;
-
-// TODO: avoid duplicating flow constants from StatusIndicator
-const validResultValues = {
-    success: 'success',
-    failure: 'failure',
-    running: 'running',
-    queued: 'queued',
-    unstable: 'unstable',
-    aborted: 'aborted',
-    not_built: 'not_built',
-    unknown: 'unknown'
-};
-
-// Enum type from const validResultValues
-export type Result = $Keys<typeof validResultValues>;
 
 /**
  * LiveStatusIndicator is a wrapper around StatusIndicator that allows
@@ -30,8 +11,6 @@ export type Result = $Keys<typeof validResultValues>;
  * "startTime": ISO-8601 string indicating when tracking of progress begins from.
  */
 export class LiveStatusIndicator extends Component {
-
-    static validResultValues:typeof validResultValues;
 
     constructor(props) {
         super(props);
@@ -66,7 +45,8 @@ export class LiveStatusIndicator extends Component {
         }
 
         const cleanResult = decodeResultValue(props.result);
-        const isRunning = cleanResult === validResultValues.running;
+        // TODO: pull in validResultValues from StatusIndicator
+        const isRunning = cleanResult === 'running';
 
         if (isRunning) {
             this.startTime = moment(props.startTime, moment.ISO_8601)
@@ -133,12 +113,11 @@ export class LiveStatusIndicator extends Component {
 }
 
 LiveStatusIndicator.propTypes = {
-    result: string,
-    percentage: number,
-    width: string,
-    height: string,
-    startTime: string,
-    estimatedDuration: number,
+    result: PropTypes.string,
+    percentage: PropTypes.number,
+    width: PropTypes.string,
+    height: PropTypes.string,
+    noBackground: PropTypes.bool,
+    startTime: PropTypes.string,
+    estimatedDuration: PropTypes.number,
 };
-
-LiveStatusIndicator.validResultValues = validResultValues;
