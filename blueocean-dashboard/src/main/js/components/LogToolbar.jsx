@@ -31,7 +31,7 @@ export default class LogToolbar extends Component {
                     target: '_blank',
                     href: `${url}?start=0`,
                 }}>
-                    <Icon {...{ style, icon: 'launch' }} />
+                    <Icon size={24} {...{ style, icon: 'launch' }} />
                 </a>
             </div>
         </div>);
@@ -43,4 +43,3 @@ LogToolbar.propTypes = {
     fileName: string,
     url: string.isRequired,
 };
-
