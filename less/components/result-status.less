@@ -120,10 +120,6 @@
     stroke: none;
 }
 
-.pipeline-connector {
-    stroke: @brand-grey-lite;
-}
-
 .result-bg.success {
     background:@brand-success-lite;
     border-bottom: 1px solid fade(darken(@brand-success-lite, 10%), 50%);
@@ -245,3 +241,28 @@
 }
 
 //--[ /ResultItem ]--------------------------------------------------------------
+//--[ PipelineGraph ]------------------------------------------------------------
+
+.pipeline-connector {
+    stroke: @brand-grey-lite;
+}
+
+.pipeline-big-label {
+}
+
+.pipeline-small-label {
+    font-size: 80%;
+}
+
+.pipeline-big-label.selected,
+.pipeline-small-label.selected {
+    font-weight:bold;
+}
+
+.pipeline-selection-highlight circle {
+    fill: none; //@brand-selection;
+    //stroke: @brand-selection;
+    stroke: @brand-grey-lite;
+}
+
+//--[ /PipelineGraph ]-----------------------------------------------------------
