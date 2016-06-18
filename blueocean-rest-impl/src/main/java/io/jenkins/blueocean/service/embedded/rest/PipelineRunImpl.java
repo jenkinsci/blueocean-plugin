@@ -3,11 +3,15 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
+import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
+import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +45,17 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             return new PipelineNodeContainerImpl(run);
         }
         return null;
+    }
+
+    @Override
+    public Container<?> getSteps() {
+        PipelineNodeGraphBuilder graphBuilder = new PipelineNodeGraphBuilder(run);
+        List<FlowNode> nodes = graphBuilder.getAllSteps();
+        List<BluePipelineStep> pipelineSteps = new ArrayList<>();
+        for(FlowNode node:nodes){
+            pipelineSteps.add(new PipelineStepImpl(node, graphBuilder));
+        }
+        return Containers.from(pipelineSteps);
     }
 
     @Override

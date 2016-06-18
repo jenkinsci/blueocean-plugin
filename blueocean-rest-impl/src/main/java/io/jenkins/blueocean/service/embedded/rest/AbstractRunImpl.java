@@ -5,6 +5,7 @@ import hudson.model.Run;
 import hudson.plugins.git.util.BuildData;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
+import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
@@ -153,6 +154,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BluePipelineNodeContainer getNodes() {
         return null; // default
+    }
+
+    @Override
+    public Container<?> getSteps() {
+        return null;
     }
 
     protected static BlueRun getBlueRun(Run r){

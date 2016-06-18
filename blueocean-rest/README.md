@@ -831,6 +831,42 @@ Get steps of 'test' stage node:
       "startTime" : "2016-05-13T09:37:01.230-0700",
       "state" : "FINISHED"
     }
+    
+# Get Pipeline Steps
+
+    Gives all steps in a pipeline. Excludes stages and prallels/blocks.
+
+    curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/
+    
+    [ {
+      "_class" : "io.jenkins.blueocean.rest.model.GenericResource",
+      "displayName" : "Shell Script",
+      "durationInMillis" : 70,
+      "id" : "5",
+      "result" : "SUCCESS",
+      "startTime" : "2016-06-18T13:28:29.443+0900"
+    }, {
+      "_class" : "io.jenkins.blueocean.rest.model.GenericResource",
+      "displayName" : "Print Message",
+      "durationInMillis" : 1,
+      "id" : "10",
+      "result" : "SUCCESS",
+      "startTime" : "2016-06-18T13:28:29.545+0900"
+    }, {
+      "_class" : "io.jenkins.blueocean.rest.model.GenericResource",
+      "displayName" : "Shell Script",
+      "durationInMillis" : 265,
+      "id" : "11",
+      "result" : "SUCCESS",
+      "startTime" : "2016-06-18T13:28:29.546+0900"
+    }, {
+      "_class" : "io.jenkins.blueocean.rest.model.GenericResource",
+      "displayName" : "Shell Script",
+      "durationInMillis" : 279,
+      "id" : "12",
+      "result" : "SUCCESS",
+      "startTime" : "2016-06-18T13:28:29.811+0900"
+    } ]
                        
 # Fetching logs
 

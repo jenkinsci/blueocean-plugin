@@ -33,6 +33,7 @@ public abstract class BlueRun extends Resource {
     public static final String RESULT = "result";
     public static final String STATE = "state";
     public static final String ARTIFACTS = "artifacts";
+    private static final String STEPS = "steps";
 
 
 
@@ -158,6 +159,13 @@ public abstract class BlueRun extends Resource {
      * @see BluePipelineNode
      */
     public abstract BluePipelineNodeContainer getNodes();
+
+    /**
+     * @return Gives steps from pipeline. The list of steps must not include stages, this is because stage could be
+     * interpreted as step as its StepAtomNode and implementation of this API must ensure not to include it.
+     */
+    @Exported(name = STEPS)
+    public abstract Container<?> getSteps();
 
     /**
      * @return Instance of stapler aware instance that can do the following:
