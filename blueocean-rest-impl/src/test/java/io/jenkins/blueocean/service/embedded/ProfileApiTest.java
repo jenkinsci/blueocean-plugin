@@ -20,6 +20,7 @@ public class ProfileApiTest extends BaseTest{
     @Test
     public void getUserTest() throws Exception {
         User system = j.jenkins.getUser("SYSTEM");
+        get("/users/", List.class);
         Map response = get("/users/"+system.getId());
         Assert.assertEquals(system.getId(), response.get("id"));
         Assert.assertEquals(system.getFullName(), response.get("fullName"));

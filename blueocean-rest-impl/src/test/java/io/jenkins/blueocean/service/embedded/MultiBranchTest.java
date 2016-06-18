@@ -158,7 +158,6 @@ public class MultiBranchTest extends BaseTest{
         assertEquals(1, b3.getNumber());
 
 
-
         List<Map> br = get("/organizations/jenkins/pipelines/p/branches", List.class);
 
         List<String> branchNames = new ArrayList<>();

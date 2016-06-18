@@ -1,9 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
-import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Navigable;
-import io.jenkins.blueocean.rest.hal.Link;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
@@ -24,7 +21,6 @@ public abstract class BluePipeline extends Resource {
     public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
     public static final String LAST_SUCCESSFUL_RUN = "lastSuccessfulRun";
 
-
     /**
      * @return name of the organization
      */
@@ -44,7 +40,7 @@ public abstract class BluePipeline extends Resource {
     public abstract String getDisplayName();
 
     /**
-     * @return Includes parent folders if any. For example folder1/folder2/p1
+     * @return Includes parentLink folders if any. For example folder1/folder2/p1
      */
     @Exported(name = FULL_NAME)
     public abstract String getFullName();
@@ -78,59 +74,15 @@ public abstract class BluePipeline extends Resource {
     @Navigable
     public abstract BlueRunContainer getRuns();
 
+    /**
+     * @return Gives {@link BlueQueueContainer}
+     */
+    @Navigable
     public abstract BlueQueueContainer getQueue();
 
     @PUT
     @WebMethod(name="favorite")
     public abstract void favorite(@JsonBody FavoriteAction favoriteAction);
-
-
-    /**
-     *
-     * BluePipeline resource link by default is in context of organization:
-     *
-     * e.g. /rest/organizations/jenkins/pipelines/pipeline1/
-     *
-     * In case of folders with nested pipelines or folders it follows recursive pattern
-     *
-     * /rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/test1
-     *
-     * @return {@link Link} to self
-     */
-    @Override
-    public Link getLink() {
-        ApiHead apiHead = (ApiHead)Stapler.getCurrentRequest().findAncestor(ApiHead.class).getObject();
-
-//        Ancestor pipelineContainer = Stapler.getCurrentRequest().findAncestor(BluePipelineContainer.class);
-//
-//        if(pipelineContainer != null){
-            StringBuilder pipelinePath = new StringBuilder();
-            String[] names = getFullName().split("/");
-            int count = 1;
-            if(names.length > 1) { //nested
-                for (String n : names) {
-                    if(count == 1){
-                        pipelinePath.append(n);
-                    }else{
-                        pipelinePath.append("/pipelines/").append(n);
-                    }
-                    count++;
-                }
-            }else{
-                pipelinePath.append(getFullName());
-            }
-            String href = String.format("organizations/%s/pipelines/%s/", getOrganization(), pipelinePath.toString());
-
-            return new Link(apiHead.getLink().getHref() + href);
-//        }
-//
-//        return super.getLink();
-    }
-
-    @Override
-    public String getUrlName() {
-        return getName();
-    }
 
     public static class FavoriteAction {
         private boolean favorite;

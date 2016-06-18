@@ -25,6 +25,7 @@ export default class PipelineRowItem extends Component {
         const simple = !pipeline.branchNames;
         const {
             name,
+            fullName,
             organization,
             weatherScore,
             numberOfSuccessfulBranches,
@@ -41,11 +42,12 @@ export default class PipelineRowItem extends Component {
         const pullRequestsURL = `${baseUrl}/pr`;
         const activitiesURL = `${baseUrl}/activity`;
 
+        const formattedName = fullName ? fullName.split('/').join(' / ') : '';
         const nameLink = (
             <Link to={activitiesURL}>
                 { showOrganization ?
-                    `${organization} / ${name}` :
-                    name
+                    `${organization} / ${formattedName}` :
+                    formattedName
                 }
             </Link>
         );

@@ -258,7 +258,7 @@ public abstract class BaseTest {
         if(p.getLastSuccessfulBuild() != null){
             Run b = p.getLastSuccessfulBuild();
             Assert.assertEquals(baseUrl + "/organizations/jenkins/pipelines/" +
-                p.getName() + "/runs/" + b.getId(), resp.get("lastSuccessfulRun"));
+                p.getName() + "/runs/" + b.getId()+"/", resp.get("lastSuccessfulRun"));
 
         }else{
             Assert.assertNull(resp.get("lastSuccessfulRun"));

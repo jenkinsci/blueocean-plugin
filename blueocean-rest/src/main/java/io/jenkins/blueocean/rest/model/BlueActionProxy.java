@@ -1,12 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
-import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.hal.Link;
-import org.kohsuke.stapler.Ancestor;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
-
-import java.util.List;
 
 /**
  * Proxy of Jenkins action

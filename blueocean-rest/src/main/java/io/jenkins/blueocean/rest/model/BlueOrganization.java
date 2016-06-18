@@ -25,10 +25,5 @@ public abstract class BlueOrganization extends Resource {
      */
     @Navigable
     public abstract BlueUserContainer getUsers();
-
-    @Override
-    public String getUrlName() {
-        return getName();
-    }
 }
 

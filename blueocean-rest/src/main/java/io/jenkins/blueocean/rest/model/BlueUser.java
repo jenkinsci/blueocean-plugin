@@ -1,8 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import io.jenkins.blueocean.rest.ApiHead;
-import io.jenkins.blueocean.rest.hal.Link;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -37,10 +34,4 @@ public abstract class BlueUser extends Resource {
     public abstract String getEmail();
 
     public abstract BlueFavoriteContainer getFavorites();
-
-    @Override
-    public Link getLink() {
-        ApiHead apiHead = (ApiHead) Stapler.getCurrentRequest().findAncestor(ApiHead.class).getObject();
-        return new Link(apiHead.getLink().getHref()+"users/"+getId()+"/");
-    }
 }

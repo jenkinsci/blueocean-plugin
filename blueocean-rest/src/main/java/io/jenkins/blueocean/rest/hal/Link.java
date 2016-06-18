@@ -21,4 +21,11 @@ public final class Link {
     public String getHref(){
         return href;
     }
+
+    /**
+     * Resolves a relative reference.
+     */
+    public Link rel(String name) {
+        return new Link(href+name);
+    }
 }

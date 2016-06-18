@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Action;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
-import io.jenkins.blueocean.rest.model.Resource;
 
 /**
  * @author Vivek Pandey
@@ -11,8 +11,8 @@ import io.jenkins.blueocean.rest.model.Resource;
 public class ActionProxiesImpl extends BlueActionProxy {
 
     private final Action action;
-    private final Resource parent;
-    public ActionProxiesImpl(Action action, Resource parent) {
+    private final Reachable parent;
+    public ActionProxiesImpl(Action action, Reachable parent) {
         this.action = action;
         this.parent = parent;
     }
@@ -36,7 +36,7 @@ public class ActionProxiesImpl extends BlueActionProxy {
     @Override
     public Link getLink() {
         if(getUrlName() != null) {
-            return new Link(parent.getLink().getHref().concat(getUrlName()));
+            return parent.getLink().rel(getUrlName());
         }
         return null;
     }

@@ -9,6 +9,7 @@ import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
@@ -57,12 +58,11 @@ public class RunSearch extends OmniSearch<BlueRun> {
         }
         return Pageables.wrap(findRuns(null));
     }
-
-    public static Iterable<BlueRun> findRuns(Job pipeline){
+    public static Iterable<BlueRun> findRuns(Job job, Link parent){
         final List<BlueRun> runs = new ArrayList<>();
         Iterable<Job> pipelines;
-        if(pipeline != null){
-            pipelines = ImmutableList.of(pipeline);
+        if(job != null){
+            pipelines = ImmutableList.of(job);
         }else{
             pipelines = Jenkins.getActiveInstance().getItems(Job.class);
         }
@@ -70,18 +70,22 @@ public class RunSearch extends OmniSearch<BlueRun> {
             RunList<? extends Run> runList = p.getBuilds();
 
             for (Run r : runList) {
-                runs.add(AbstractRunImpl.getBlueRun(r,new PipelineContainerImpl().get(p.getFullName())));
+                runs.add(AbstractRunImpl.getBlueRun(r,parent));
             }
         }
 
         return runs;
     }
 
+    public static Iterable<BlueRun> findRuns(Job pipeline){
+        return findRuns(pipeline, null);
+    }
+
     private BlueRun getLatestRun(Job job){
         if(job != null){
             Run r = job.getLastBuild();
             if(r != null) {
-                AbstractRunImpl.getBlueRun(r, new PipelineContainerImpl().get(job.getFullName()));
+                AbstractRunImpl.getBlueRun(r, new PipelineContainerImpl().get(job.getFullName()).getLink());
             }
         }
         return null;

@@ -17,6 +17,8 @@ import {
     connect,
 } from '../redux';
 
+import { buildRunDetailsUrl } from '../util/UrlUtils';
+
 const { func, object, array, any, string } = PropTypes;
 
 class RunDetails extends Component {
@@ -79,13 +81,14 @@ class RunDetails extends Component {
             },
         } = this.context;
 
-        const baseUrl = `/organizations/${organization}/${name}` +
-            `/detail/${branch}/${runId}`;
+        const baseUrl = buildRunDetailsUrl(organization, name, branch, runId);
 
-        const result = this.props.runs.filter(
+        const currentRun = this.props.runs.filter(
             (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
 
-        result.name = name;
+        currentRun.name = name;
+
+        const status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
 
         const afterClose = () => {
             const fallback = `/organizations/${organization}/${name}/`;
@@ -101,12 +104,12 @@ class RunDetails extends Component {
               isVisible
               transitionClass="expand-in"
               transitionDuration={150}
-              result={result.result}
+              result={status}
               {...{ afterClose }}
             >
                 <ModalHeader>
                     <div>
-                        <PipelineResult data={result}
+                        <PipelineResult data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
@@ -123,7 +126,7 @@ class RunDetails extends Component {
                     <div>
                         {React.cloneElement(
                             this.props.children,
-                            { baseUrl, result, ...this.props }
+                            { baseUrl, result: currentRun, ...this.props }
                         )}
                     </div>
                 </ModalBody>

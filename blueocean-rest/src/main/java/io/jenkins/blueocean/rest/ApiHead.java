@@ -93,4 +93,8 @@ public final class ApiHead implements RootRoutable, Reachable  {
         }
         return new Link(parentUrl);
     }
+
+    public static ApiHead INSTANCE(){
+        return (ApiHead) Stapler.getCurrentRequest().findAncestor(ApiHead.class).getObject();
+    }
 }

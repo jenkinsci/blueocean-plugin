@@ -2,9 +2,11 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.Resource;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -46,8 +48,9 @@ public class ChangeSetResource extends Resource {
         }
     }
 
+
     @Override
-    public String getUrlName() {
-        return "changeset/"+getDelegate().getCommitId();
+    public Link getLink() {
+        return new Link(Stapler.getCurrentRequest().getPathInfo()).rel("changeset/"+getDelegate().getCommitId());
     }
 }

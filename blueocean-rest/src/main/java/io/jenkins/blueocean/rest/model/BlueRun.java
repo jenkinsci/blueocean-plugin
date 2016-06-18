@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -157,6 +158,7 @@ public abstract class BlueRun extends Resource {
      * @return Serves .../runs/{rundId}/nodes/ and provides pipeline execution nodes
      * @see BluePipelineNode
      */
+    @Navigable
     public abstract BluePipelineNodeContainer getNodes();
 
     @Exported(name = ACTIONS, inline = true, visibility = 10)
@@ -236,10 +238,5 @@ public abstract class BlueRun extends Resource {
 
         @Exported(name=SIZE)
         public abstract long getSize();
-    }
-
-    @Override
-    public String getUrlName() {
-        return getId();
     }
 }

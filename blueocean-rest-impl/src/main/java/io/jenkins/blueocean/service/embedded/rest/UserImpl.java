@@ -1,14 +1,13 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
-import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
-
 import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.User;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
@@ -28,8 +27,15 @@ import java.util.List;
 public class UserImpl extends BlueUser {
     private final User user;
 
+    private final Reachable parent;
+    public UserImpl(User user, Reachable parent) {
+        this.parent = parent;
+        this.user = user;
+    }
+
     public UserImpl(User user) {
         this.user = user;
+        this.parent = null;
     }
 
     @Override
@@ -89,4 +95,10 @@ public class UserImpl extends BlueUser {
         }
         return new FavoriteImpl(this);
     }
+
+    @Override
+    public Link getLink() {
+        return (parent != null)?parent.getLink().rel(getId()): ApiHead.INSTANCE().getLink().rel("users/"+getId());
+    }
+
 }

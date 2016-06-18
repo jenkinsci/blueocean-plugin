@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Job;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
@@ -23,6 +24,10 @@ public class RunContainerImpl extends BlueRunContainer {
         this.pipeline = pipeline;
     }
 
+    @Override
+    public Link getLink() {
+        return pipeline.getLink().rel("runs");
+    }
 
     @Override
     public BlueRun get(String name) {
@@ -44,12 +49,12 @@ public class RunContainerImpl extends BlueRunContainer {
         } else {
             run = runList.getLastBuild();
         }
-        return  AbstractRunImpl.getBlueRun(run, pipeline);
+        return  AbstractRunImpl.getBlueRun(run, pipeline.getLink());
     }
 
     @Override
     public Iterator<BlueRun> iterator() {
-        return RunSearch.findRuns(job).iterator();
+        return RunSearch.findRuns(job, pipeline.getLink()).iterator();
     }
 
     @Override

@@ -1,6 +1,9 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.slf4j.Logger;
@@ -19,9 +22,16 @@ public class GenericResource<T> extends Resource {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericResource.class);
 
     private final T value;
+    private final Reachable self;
 
     public GenericResource(T value) {
         this.value = value;
+        this.self = null;
+    }
+
+    public GenericResource(T value, Reachable self) {
+        this.value = value;
+        this.self = self;
     }
 
     @Exported(merge = false)
@@ -44,13 +54,15 @@ public class GenericResource<T> extends Resource {
             // path handling
             Method m = clz.getMethod("get"+ Character.toUpperCase(token.charAt(0))+token.substring(1));
 
+            Link subResLink = getLink().rel(token+"/");
+
             final Object v = m.invoke(value);
             if(v instanceof List){
-                return Containers.from((List)v);
+                return Containers.from(subResLink,(List)v);
             }else if(v instanceof Map){
-                return Containers.from((Map)v);
+                return Containers.from(subResLink,(Map)v);
             }else if(v instanceof String){
-                return new PrimitiveTypeResource(v);
+                return new PrimitiveTypeResource(subResLink,v);
             }
             return new GenericResource<>(v);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
@@ -59,15 +71,27 @@ public class GenericResource<T> extends Resource {
         }
     }
 
+    @Override
+    public Link getLink() {
+        return (self !=null) ? self.getLink() : new Link(Stapler.getCurrentRequest().getPathInfo());
+    }
+
 
     /**
      * Resource that exposes primitive type value as JSON bean
      */
-    public static class PrimitiveTypeResource extends Resource{
+    public static class PrimitiveTypeResource extends Resource {
+        private final Link self;
         private final Object v;
 
-        public PrimitiveTypeResource(Object v) {
+        public PrimitiveTypeResource(Link self, Object v) {
+            this.self = self;
             this.v = v;
+        }
+
+        @Override
+        public Link getLink() {
+            return self;
         }
 
         @Exported
