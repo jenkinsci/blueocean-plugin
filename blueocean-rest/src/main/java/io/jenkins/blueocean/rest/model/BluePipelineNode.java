@@ -4,11 +4,7 @@ import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-
-import static io.jenkins.blueocean.rest.model.BlueRun.STATE;
 
 /**
  * Abstraction of Pipeline run node.
@@ -55,46 +51,12 @@ import static io.jenkins.blueocean.rest.model.BlueRun.STATE;
  *</pre>
  * @author Vivek Pandey
  */
-public abstract class BluePipelineNode extends Resource{
-    public static final String DISPLAY_NAME="displayName";
-    public static final String RESULT = "result";
-    public static final String START_TIME="startTime";
-    public static final String ID = "id";
-    public static final String EDGES = "edges";
-    public static final String DURATION_IN_MILLIS="durationInMillis";
-
-    @Exported(name = ID)
-    public abstract String getId();
-
-    @Exported(name = DISPLAY_NAME)
-    public abstract String getDisplayName();
-
-    @Exported(name = RESULT)
-    public abstract BlueRun.BlueRunResult getResult();
-
-    @Exported(name=STATE)
-    public abstract BlueRun.BlueRunState getStateObj();
-
-    public abstract Date getStartTime();
-
-    @Exported(name = EDGES, inline = true)
-    public abstract List<Edge> getEdges();
-
-    @Exported(name = START_TIME)
-    public final String getStartTimeString(){
-        if(getStartTime() == null) {
-            return null;
-        }
-        return new SimpleDateFormat(BlueRun.DATE_FORMAT_STRING).format(getStartTime());
-    }
-
-    @Exported(name= DURATION_IN_MILLIS)
-    public abstract Long getDurationInMillis();
-
+public abstract class BluePipelineNode extends BluePipelineStep{
     /**
-     * @return Gives logs associated with this node
+     * @return Steps inside a Pipeline Stage or Parallel branch
      */
-    public abstract Object getLog();
+    @Navigable
+    public abstract BluePipelineStepContainer getSteps();
 
     @ExportedBean
     public abstract static class Edge{
@@ -102,9 +64,7 @@ public abstract class BluePipelineNode extends Resource{
         public abstract String getId();
     }
 
-    /**
-     * @return Steps inside a Pipeline Stage or Parallel branch
-     */
-    @Navigable
-    public abstract BluePipelineStepContainer getSteps();
+    @Exported(name = EDGES, inline = true)
+    public abstract List<Edge> getEdges();
+
 }
