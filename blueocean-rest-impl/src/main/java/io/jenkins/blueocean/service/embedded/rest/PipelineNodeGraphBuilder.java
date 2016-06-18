@@ -54,10 +54,11 @@ public class PipelineNodeGraphBuilder {
             }
         });
 
-        Iterables.addAll(nodeTreeSet, new FlowGraphWalker(run.getExecution()));
-
+        if(run.getExecution() != null) {
+            Iterables.addAll(nodeTreeSet, new FlowGraphWalker(run.getExecution()));
+        }
         this.sortedNodes = Collections.unmodifiableList(new ArrayList<>(nodeTreeSet));
-//        dumpNodes();
+//        dumpNodes(sortedNodes);
         build();
 
     }
@@ -98,6 +99,9 @@ public class PipelineNodeGraphBuilder {
                 FlowNode endNode = getStepEndNode(node);
                 if (endNode != null) {
                     nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));
+                }else{
+                    //It's still running, report it as state: running and result: unknown
+                    nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING));
                 }
                 previousBranch = node;
             }
@@ -221,7 +225,7 @@ public class PipelineNodeGraphBuilder {
                 InactiveFlowNodeWrapper n = new InactiveFlowNodeWrapper(thatNodes.get(i));
 
                 // Add the last successful pipeline's first node to the edge of current node's last node
-                if (i == currentNodeSize) {
+                if (currentNodeSize> 0 && i == currentNodeSize) {
                     FlowNode latestNode = nodes.get(currentNodeSize - 1);
                     if (PipelineNodeUtil.isStage(latestNode)) {
                         addChild(latestNode, n);
@@ -429,7 +433,10 @@ public class PipelineNodeGraphBuilder {
         private final BlueRun.BlueRunState state;
 
         public NodeRunStatus(FlowNode endNode) {
-            if (endNode.isRunning()) {
+            if (endNode.getError() != null) {
+                this.result = BlueRun.BlueRunResult.FAILURE;
+                this.state = endNode.isRunning() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
+            }else if (endNode.isRunning()) {
                 this.result = BlueRun.BlueRunResult.UNKNOWN;
                 this.state = BlueRun.BlueRunState.RUNNING;
             } else if (NotExecutedNodeAction.isExecuted(endNode)) {

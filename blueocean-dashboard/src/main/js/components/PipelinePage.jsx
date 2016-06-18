@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import {
     Page,
     PageHeader,
@@ -14,6 +15,9 @@ const { object } = PropTypes;
 export default class PipelinePage extends Component {
     render() {
         const { pipeline } = this.context;
+        const { organization, name } = pipeline || {};
+        const orgUrl = `/organizations/${organization}`;
+        const activityUrl = `${orgUrl}/${name}/activity`;
 
         if (!pipeline) {
             return null; // Loading...
@@ -26,7 +30,11 @@ export default class PipelinePage extends Component {
                 <PageHeader>
                     <Title>
                         <WeatherIcon score={pipeline.weatherScore} size="large" />
-                        <h1>{pipeline.organization} / {pipeline.name}</h1>
+                        <h1>
+                            <Link to={orgUrl}>{organization}</Link>
+                            <span> / </span>
+                            <Link to={activityUrl}>{name}</Link>
+                        </h1>
                         <Favorite darkTheme />
                     </Title>
                     <PageTabs base={baseUrl}>

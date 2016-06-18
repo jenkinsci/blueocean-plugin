@@ -14,8 +14,11 @@ public class BranchImpl extends PipelineImpl {
 
     private static final String PULL_REQUEST = "pullRequest";
 
+    private final Link parent;
+
     public BranchImpl(Job job, Link parent) {
         super(job, parent);
+        this.parent = parent;
     }
 
     @Exported(name = PULL_REQUEST, inline = true)
@@ -28,6 +31,11 @@ public class BranchImpl extends PipelineImpl {
             }
         }
         return null;
+    }
+
+    @Override
+    public Link getLink() {
+        return parent.rel(getName());
     }
 
     public static class PullRequest extends Resource {

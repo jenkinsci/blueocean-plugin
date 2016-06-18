@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { ReadableDate, StatusIndicator } from '@jenkins-cd/design-language';
+import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
 
 const { object } = PropTypes;
 
@@ -13,7 +13,9 @@ export default class PullRequest extends Component {
             latestRun: {
                 result: resultString,
                 id,
+                startTime,
                 endTime,
+                estimatedDurationInMillis,
                 state,
             },
             pullRequest: {
@@ -29,16 +31,22 @@ export default class PullRequest extends Component {
                 location,
                 pipeline: {
                     name: pipelineName,
+                    organization,
             },
                 },
         } = this;
-        const url = `/pipelines/${pipelineName}/detail/${name}/${id}/pipeline`;
+        const url = `organizations/${organization}/${pipelineName}/detail/${name}/${id}/pipeline`;
         const open = () => {
             location.pathname = url;
             router.push(location);
         };
+
         return (<tr key={id} onClick={open} id={`${name}-${id}`} >
-            <td><StatusIndicator result={result} /></td>
+            <td>
+                <LiveStatusIndicator result={result} startTime={startTime}
+                  estimatedDuration={estimatedDurationInMillis}
+                />
+            </td>
             <td>{id}</td>
             <td>{title || '-'}</td>
             <td>{author || '-'}</td>

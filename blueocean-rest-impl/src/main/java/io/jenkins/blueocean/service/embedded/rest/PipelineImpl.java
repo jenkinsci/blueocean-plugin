@@ -5,7 +5,6 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -36,7 +35,7 @@ public class PipelineImpl extends BluePipeline {
     protected PipelineImpl(ItemGroup folder, Job job, Link parent) {
         this.job = job;
         this.folder = folder;
-        this.parent = parent;
+        this.parent = null;
     }
 
     public PipelineImpl(ItemGroup folder, Link parent) {
@@ -84,7 +83,7 @@ public class PipelineImpl extends BluePipeline {
         if(job.getLastSuccessfulBuild() != null){
             String id = job.getLastSuccessfulBuild().getId();
 
-            return Stapler.getCurrentRequest().getRootPath()+getLink().getHref()+"runs/"+id;
+            return Stapler.getCurrentRequest().getRootPath()+getLink().getHref()+"runs/"+id+"/";
         }
         return null;
     }
@@ -131,19 +130,38 @@ public class PipelineImpl extends BluePipeline {
             if(item instanceof MultiBranchProject){
                 return new MultiBranchPipelineImpl((MultiBranchProject) item, getLink());
             }else if(!isMultiBranchProjectJob((BuildableItem) item) && item instanceof Job){
-                return new PipelineImpl(itemGroup, (Job) item, getLink());
+                return new PipelineImpl(itemGroup, (Job) item, parent);
             }
         }else if(item instanceof ItemGroup){
-            return new PipelineImpl((ItemGroup) item, null,getLink());
+            return new PipelineImpl((ItemGroup) item, null);
         }
         throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", name));
     }
 
     @Override
     public Link getLink() {
-        return parent != null ? parent.rel(getName()) :
-            ApiHead.INSTANCE().getLink().rel(String.format("organizations/%s/pipelines/%s/",
-                getOrganization(), getName())) ;
+//        Link parentLink = (parent == null) ? OrganizationImpl.INSTANCE.getLink().rel("pipelines") : parent;
+
+        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
+    }
+
+    protected static String getRecursivePathFromFullName(BluePipeline pipeline){
+        StringBuilder pipelinePath = new StringBuilder();
+        String[] names = pipeline.getFullName().split("/");
+        int count = 1;
+        if(names.length > 1) { //nested
+            for (String n : names) {
+                if(count == 1){
+                    pipelinePath.append(n);
+                }else{
+                    pipelinePath.append("/pipelines/").append(n);
+                }
+                count++;
+            }
+        }else{
+            pipelinePath.append(pipeline.getFullName());
+        }
+        return pipelinePath.toString();
     }
 
 }

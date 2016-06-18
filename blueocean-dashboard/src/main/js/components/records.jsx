@@ -48,6 +48,7 @@ export const ActivityRecord = Record({
     durationInMillis: null,
     enQueueTime: null,
     endTime: null,
+    estimatedDurationInMillis: null,
     id: null,
     organization: null,
     pipeline: null,
@@ -77,10 +78,15 @@ export const RunsRecord = Record({
 
 export const State = Record({
     isFetching: false,
+    node: null,
+    nodes: null,
+    logs: null,
+    messages: null,
     pipelines: null,
     pipeline: PipelineRecord,
     runs: null,
     currentRuns: null,
     branches: null,
+    steps: null,
     currentBranches: null,
 });

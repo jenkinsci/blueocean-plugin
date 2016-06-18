@@ -10,14 +10,132 @@ import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Vivek Pandey
  */
 public class PipelineNodeTest extends BaseTest {
+
+    //TODO: Enable this test if there is way to determine when test starts running and not waiting till launched
+//    @Test
+    public void nodesTest1() throws IOException, ExecutionException, InterruptedException {
+        WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "p1");
+        job.setDefinition(new CpsFlowDefinition("node {\n" +
+            "   stage 'Stage 1a'\n" +
+            "    echo 'Stage 1a'\n" +
+            "\n" +
+            "   stage 'Stage 2'\n" +
+            "   echo 'Stage 2'\n" +
+            "}\n" +
+            "node {\n" +
+            "    stage 'testing'\n" +
+            "    echo 'testig'\n" +
+            "}\n" +
+            "\n" +
+            "node {\n" +
+            "    parallel firstBranch: {\n" +
+            "    echo 'first Branch'\n" +
+            "    sh 'sleep 1'\n" +
+            "    echo 'first Branch end'\n" +
+            "    }, secondBranch: {\n" +
+            "       echo 'Hello second Branch'\n" +
+            "    sh 'sleep 1'   \n" +
+            "    echo 'second Branch end'\n" +
+            "       \n" +
+            "    },\n" +
+            "    failFast: false\n" +
+            "}"));
+        job.scheduleBuild2(0).waitForStart();
+
+        Thread.sleep(1000);
+        List<Map> resp = get("/organizations/jenkins/pipelines/p1/runs/1/nodes/", List.class);
+
+        for(int i=0; i< resp.size();i++){
+            Map rn = resp.get(i);
+            List<Map> edges = (List<Map>) rn.get("edges");
+
+            if(rn.get("displayName").equals("Stage 1a")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("Stage 2")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("testing")){
+                Assert.assertEquals(2, edges.size());
+                Assert.assertEquals(rn.get("result"), "UNKNOWN");
+                Assert.assertEquals(rn.get("state"), "RUNNING");
+            }else if(rn.get("displayName").equals("firstBranch")){
+                Assert.assertEquals(0, edges.size());
+                Assert.assertEquals(rn.get("result"), "UNKNOWN");
+                Assert.assertEquals(rn.get("state"), "RUNNING");
+            }else if(rn.get("displayName").equals("secondBranch")){
+                Assert.assertEquals(0, edges.size());
+                Assert.assertEquals(rn.get("result"), "UNKNOWN");
+                Assert.assertEquals(rn.get("state"), "RUNNING");
+            }
+        }
+    }
+
+    @Test
+    public void nodesWithFutureTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("node {\n" +
+            "  stage 'build'\n" +
+            "  sh 'echo s1'\n" +
+            "  stage 'test'\n" +
+            "  echo 'Hello World 2'\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.SUCCESS,b1);
+
+        get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+        job1.setDefinition(new CpsFlowDefinition("node {\n" +
+            "  stage 'build'\n" +
+            "  sh 'echo s1'\n" +
+            "  stage 'test'\n" +
+            "  echo 'Hello World 2'\n" +
+            "}\n" +
+            "parallel firstBranch: {\n" +
+            "  echo 'Hello first'\n" +
+            "}, secondBranch: {\n" +
+            " echo 'Hello second'\n" +
+            "}"));
+
+
+
+        WorkflowRun b2 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.SUCCESS,b2);
+
+        job1.setDefinition(new CpsFlowDefinition("node {\n" +
+            "  stage 'build'\n" +
+            "  sh 'echo s1'\n" +
+            "  stage 'test'\n" +
+            "  echo 'Hello World 2'\n" +
+            "}\n" +
+            "parallel firstBranch: {\n" +
+            "  echo 'Hello first'\n" +
+            "}, secondBranch: {\n" +
+            " sh 'Hello second'\n" +
+            "}"));
+
+
+
+        WorkflowRun b3 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE,b3);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(2, resp.size());
+    }
+
     @Test
     public void nodesTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
@@ -155,6 +273,138 @@ public class PipelineNodeTest extends BaseTest {
         }
 
     }
+
+    @Test
+    public void nodesFailureTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
+            "    node {\n" +
+            "       sh \"echo here\"\n" +
+            "    }\n" +
+            "\n" +
+            "stage \"Test\"\n" +
+            "    parallel (\n" +
+            "        \"Firefox\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo ffox\"\n" +
+            "            }\n" +
+            "        },\n" +
+            "        \"Chrome\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo chrome\"\n" +
+            "            }\n" +
+            "        }\n" +
+            "    )\n" +
+            "\n" +
+            "stage \"CrashyMcgee\"\n" +
+            "  parallel (\n" +
+            "    \"SlowButSuccess\" : {\n" +
+            "        node {\n" +
+            "            echo 'This is time well spent.'\n" +
+            "        }\n" +
+            "    },\n" +
+            "    \"DelayThenFail\" : {\n" +
+            "        node {\n" +
+            "            echo 'Not yet.'\n" +
+            "        }\n" +
+            "    }\n" +
+            "  )\n" +
+            "\n" +
+            "\n" +
+            "stage \"Deploy\"\n" +
+            "    node {\n" +
+            "        sh \"echo deploying\"\n" +
+            "    }"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        job1.setDefinition(new CpsFlowDefinition("throw stage \"Build\"\n" +
+            "    node {\n" +
+            "       sh \"echo here\"\n" +
+            "    }\n" +
+            "\n" +
+            "stage \"Test\"\n" +
+            "    parallel (\n" +
+            "        \"Firefox\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo ffox\"\n" +
+            "            }\n" +
+            "        },\n" +
+            "        \"Chrome\" : {\n" +
+            "            node {\n" +
+            "                sh \"echo chrome\"\n" +
+            "            }\n" +
+            "        }\n" +
+            "    )\n" +
+            "\n" +
+            "stage \"CrashyMcgee\"\n" +
+            "  parallel (\n" +
+            "    \"SlowButSuccess\" : {\n" +
+            "        node {\n" +
+            "            echo 'This is time well spent.'\n" +
+            "        }\n" +
+            "    },\n" +
+            "    \"DelayThenFail\" : {\n" +
+            "        node {\n" +
+            "            echo 'Not yet.'\n" +
+            "        }\n" +
+            "    }\n" +
+            "  )\n" +
+            "\n" +
+            "\n" +
+            "stage \"Deploy\"\n" +
+            "    node {\n" +
+            "        sh \"echo deploying\"\n" +
+            "    }"));
+
+        job1.scheduleBuild2(0);
+        WorkflowRun b2 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b2);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/", List.class);
+        Assert.assertEquals(8, resp.size());
+        for(int i=0; i< resp.size();i++){
+            Map rn = resp.get(i);
+            List<Map> edges = (List<Map>) rn.get("edges");
+
+            if(rn.get("displayName").equals("Test")){
+                Assert.assertEquals(2, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("Firefox")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("Chrome")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("CrashyMcgee")){
+                Assert.assertEquals(2, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("SlowButSuccess")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("DelayThenFail")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("build")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }else if(rn.get("displayName").equals("Deploy")){
+                Assert.assertEquals(0, edges.size());
+                Assert.assertNull(rn.get("result"));
+                Assert.assertNull(rn.get("state"));
+            }
+
+        }
+    }
+
 
     @Test
     public void getPipelineJobRunNodesTest() throws Exception {

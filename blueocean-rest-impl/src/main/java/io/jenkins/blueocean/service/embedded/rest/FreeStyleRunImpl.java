@@ -7,7 +7,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -23,7 +23,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     @Override
     public Container<ChangeSetResource> getChangeSet() {
 
-        Map<String,ChangeSetResource> m = new HashMap<>();
+        Map<String, ChangeSetResource> m = new LinkedHashMap<>();
         int cnt=0;
         for (ChangeLogSet.Entry e : run.getChangeSet()) {
             cnt++;

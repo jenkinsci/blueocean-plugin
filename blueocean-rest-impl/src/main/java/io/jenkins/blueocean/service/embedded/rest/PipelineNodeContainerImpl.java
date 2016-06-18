@@ -31,11 +31,11 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
         WorkflowJob job = run.getParent();
 
         PipelineNodeGraphBuilder graphBuilder = new PipelineNodeGraphBuilder(run);
+
         //If build either failed or is in progress then return union with last successful pipeline run
-        if(job.getLastBuild() != null
-            && job.getLastBuild().getResult() != Result.SUCCESS
+        if(run.getResult() != Result.SUCCESS
             && job.getLastSuccessfulBuild() != null
-            && !job.getLastSuccessfulBuild().getId().equals(job.getLastBuild().getId())){
+            && Integer.valueOf(job.getLastSuccessfulBuild().getId()) < Integer.valueOf(run.getId())){
             PipelineNodeGraphBuilder pastBuild = new PipelineNodeGraphBuilder(job.getLastSuccessfulBuild());
             this.nodes = graphBuilder.union(pastBuild,getLink());
         }else{

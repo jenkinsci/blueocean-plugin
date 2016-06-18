@@ -40,7 +40,7 @@ public class OrganizationImpl extends BlueOrganization {
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl(Jenkins.getInstance(), getLink());
+        return new PipelineContainerImpl(Jenkins.getInstance());
     }
 
     @WebMethod(name="") @DELETE

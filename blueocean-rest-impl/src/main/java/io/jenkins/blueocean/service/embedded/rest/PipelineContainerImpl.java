@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.Extension;
 import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
@@ -22,34 +21,21 @@ import java.util.List;
 /**
  * @author Vivek Pandey
  */
-@Extension
 public class PipelineContainerImpl extends BluePipelineContainer {
     private final @Nonnull ItemGroup itemGroup;
-    private final Link parent;
 
     public PipelineContainerImpl() {
         this.itemGroup = Jenkins.getInstance();
-        this.parent = null;
     }
 
-    public PipelineContainerImpl(Link parent) {
-        this.itemGroup = Jenkins.getInstance();
-        this.parent = parent;
-    }
-
-    public PipelineContainerImpl(ItemGroup itemGroup, Link parent) {
+    public PipelineContainerImpl(ItemGroup itemGroup) {
         this.itemGroup = itemGroup;
-        this.parent = parent;
     }
 
     @Override
     public Link getLink() {
-        if(parent!=null) {
-            return parent.rel(getUrlName());
-        }
         return OrganizationImpl.INSTANCE.getLink().rel("pipelines");
     }
-
 
     @Override
     public BluePipeline get(String name) {
@@ -87,7 +73,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         return item instanceof WorkflowJob && item.getParent() instanceof MultiBranchProject;
     }
 
-    private  Iterator<BluePipeline> getPipelines(Collection<? extends Item> items){
+    protected  Iterator<BluePipeline> getPipelines(Collection<? extends Item> items){
         List<BluePipeline> pipelines = new ArrayList<>();
         for (Item item : items) {
             if(item instanceof MultiBranchProject){

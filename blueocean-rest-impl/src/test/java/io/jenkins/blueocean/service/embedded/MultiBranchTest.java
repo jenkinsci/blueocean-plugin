@@ -158,7 +158,6 @@ public class MultiBranchTest extends BaseTest{
         assertEquals(1, b3.getNumber());
 
 
-
         List<Map> br = get("/organizations/jenkins/pipelines/p/branches", List.class);
 
         List<String> branchNames = new ArrayList<>();
@@ -275,9 +274,26 @@ public class MultiBranchTest extends BaseTest{
         assertEquals(1, b1.getNumber());
         assertEquals(3, mp.getItems().size());
 
+
+        String[] messages = {"tweaked11","tweaked12","tweaked13","tweaked14"};
+
         sampleRepo.git("checkout","master");
         sampleRepo.write("file", "subsequent content11");
-        sampleRepo.git("commit", "--all", "--message=tweaked11");
+        sampleRepo.git("commit", "--all", "--message="+messages[0]);
+
+        sampleRepo.git("checkout","master");
+        sampleRepo.write("file", "subsequent content12");
+        sampleRepo.git("commit", "--all", "--message="+messages[1]);
+
+        sampleRepo.git("checkout","master");
+        sampleRepo.write("file", "subsequent content13");
+        sampleRepo.git("commit", "--all", "--message="+messages[2]);
+
+
+        sampleRepo.git("checkout","master");
+        sampleRepo.write("file", "subsequent content14");
+        sampleRepo.git("commit", "--all", "--message="+messages[3]);
+
 
         p = scheduleAndFindBranchProject(mp, "master");
         j.waitUntilNoActivity();
@@ -286,16 +302,28 @@ public class MultiBranchTest extends BaseTest{
 
         ChangeLogSet.Entry changeLog = b4.getChangeSets().get(0).iterator().next();
 
+        int i=0;
+        for(ChangeLogSet.Entry c:b4.getChangeSets().get(0)){
+            Assert.assertEquals(messages[i], c.getMsg());
+            i++;
+        }
 
         Map run = get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId()+"/");
         validateRun(b4, run);
         List<Map> changetSet = (List<Map>) run.get("changeSet");
+
         Map c = changetSet.get(0);
 
         Assert.assertEquals(changeLog.getCommitId(), c.get("commitId"));
         Map a = (Map) c.get("author");
         Assert.assertEquals(changeLog.getAuthor().getId(), a.get("id"));
         Assert.assertEquals(changeLog.getAuthor().getFullName(), a.get("fullName"));
+
+        int j=0;
+        for(ChangeLogSet.Entry cs:b4.getChangeSets().get(0)){
+            Assert.assertEquals(cs.getCommitId(),changetSet.get(j).get("commitId"));
+            j++;
+        }
     }
 
     @Test

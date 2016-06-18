@@ -9,6 +9,8 @@ import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.json.JsonBody;
 
+import static io.jenkins.blueocean.service.embedded.rest.PipelineImpl.getRecursivePathFromFullName;
+
 /**
  * @author Vivek Pandey
  */
@@ -44,7 +46,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl(folder, getLink());
+        return new PipelineContainerImpl(folder);
     }
 
     @Override
@@ -81,7 +83,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public Link getLink() {
-        return parent.rel(getName());
+        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
 
 }
