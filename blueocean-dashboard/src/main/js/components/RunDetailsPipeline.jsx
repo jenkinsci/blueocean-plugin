@@ -21,16 +21,30 @@ const { string, object, any, func } = PropTypes;
 export class RunDetailsPipeline extends Component {
     componentWillMount() {
         if (this.props.fetchNodes) {
-            this.props.fetchNodes(this.generateConfig());
+            this.props.fetchNodes(this.generateConfig(this.props));
         }
     }
 
-    generateConfig() {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.params.node !== this.props.params.node) {
+            this.props.fetchSteps(this.generateConfig(nextProps));
+        }
+    }
+
+    componentWillUnmount() {
+        this.props.cleanNodePointer();
+    }
+
+
+    generateConfig(props) {
         const {
-              params: { pipeline: name, branch, runId, node: nodeParam },
-              config = {},
+            config = {},
         } = this.context;
-        const { isMultiBranch, nodeId } = this.props;
+        const {
+            isMultiBranch,
+            nodeId,
+            params: { pipeline: name, branch, runId, node: nodeParam },
+        } = props;
         // if we have a node param we do not want the calculation of the focused node
         const node = nodeParam || nodeId;
         const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node };
@@ -38,53 +52,69 @@ export class RunDetailsPipeline extends Component {
     }
 
     render() {
-        const { pipeline: name, branch, runId } = this.context.params;
-        const { isMultiBranch, steps, nodes } = this.props;
+        const {
+            location,
+            router,
+        } = this.context;
+
+        const {
+            params: {
+                pipeline: name, branch, runId,
+            },
+            isMultiBranch, steps, nodes,
+        } = this.props;
 
         if (!steps) {
             return null;
         }
-        const mergedConfig = this.generateConfig();
+        const mergedConfig = this.generateConfig(this.props);
+
         const nodeKey = calculateNodeBaseUrl(mergedConfig);
         const key = calculateStepsBaseUrl(mergedConfig);
         const logGeneral = calculateRunLogURLObject(mergedConfig);
-
         return (
-          <div>
-            { nodes && nodes[nodeKey] && <ExtensionPoint
-              name="jenkins.pipeline.run.result"
-              nodes={nodes[nodeKey].model}
-              pipelineName={name}
-              branchName={isMultiBranch ? branch : undefined}
-              runId={runId}
-            />
-            }
-            <LogToolbar fileName={logGeneral.fileName} url={logGeneral.url} />
-            { steps && <Steps
-              nodeInformation={steps[key]}
-              {...this.props}
-            />
-            }
-          </div>
-    );
+            <div>
+                { nodes && nodes[nodeKey] && <ExtensionPoint
+                  router={router}
+                  location={location}
+                  name="jenkins.pipeline.run.result"
+                  nodes={nodes[nodeKey].model}
+                  pipelineName={name}
+                  branchName={isMultiBranch ? branch : undefined}
+                  runId={runId}
+                />
+                }
+                <LogToolbar fileName={logGeneral.fileName} url={logGeneral.url} />
+                { steps && steps[key] && <Steps
+                  nodeInformation={steps[key]}
+                  {...this.props}
+                />
+                }
+            </div>
+        );
     }
 }
 
 RunDetailsPipeline.propTypes = {
     pipeline: object,
     isMultiBranch: any,
+    params: object,
     fileName: string,
     url: string,
     fetchNodes: func,
-    steps: any,
-    nodes: any,
-    nodeId: any,
+    fetchSteps: func,
+    cleanNodePointer: func,
+    steps: object,
+    nodes: object,
+    nodeId: string,
 };
 
 RunDetailsPipeline.contextTypes = {
     config: object.isRequired,
     params: object,
     pipeline: object,
+    router: object.isRequired, // From react-router
+    location: object.isRequired, // From react-router
 };
 
 const selectors = createSelector(

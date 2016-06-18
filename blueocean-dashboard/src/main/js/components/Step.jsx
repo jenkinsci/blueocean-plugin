@@ -27,6 +27,8 @@ export default class Node extends Component {
           title,
           durationInMillis,
           result,
+          id,
+          isFocused,
           state,
         } = node;
 
@@ -39,12 +41,15 @@ export default class Node extends Component {
             }
         };
         return (<div>
-            <ResultItem result={resultRun.toLowerCase()}
+            <ResultItem
+              key={id}
+              result={resultRun.toLowerCase()}
+              expanded={isFocused}
               label={title}
               onExpand={getLogForNode}
               durationMillis={durationInMillis}
             >
-                { log && <LogConsole data={log.text} /> } &nbsp;
+                { log && <LogConsole key={id} data={log.text} /> } &nbsp;
             </ResultItem>
       </div>);
     }

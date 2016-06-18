@@ -89,7 +89,7 @@ public class PipelineApiTest extends BaseTest {
         Project p2 = j.createFreeStyleProject("pipeline2");
         Project p1 = j.createFreeStyleProject("pipeline1");
 
-        List<Map> responses = get("/pipelines/", List.class);
+        List<Map> responses = get("/search/?q=type:pipeline", List.class);
         Assert.assertEquals(2, responses.size());
         validatePipeline(p1, responses.get(0));
         validatePipeline(p2, responses.get(1));
@@ -391,6 +391,23 @@ public class PipelineApiTest extends BaseTest {
             FreeStyleBuild b = builds.pop();
             validateRun(b, p);
         }
+    }
+
+    @Test
+    public void findAllPipelineTest() throws IOException, ExecutionException, InterruptedException {
+        MockFolder folder1 = j.createFolder("folder1");
+        j.createFolder("afolder");
+        Project p1 = folder1.createProject(FreeStyleProject.class, "test1");
+        MockFolder folder2 = folder1.createProject(MockFolder.class, "folder2");
+        folder1.createProject(MockFolder.class, "folder3");
+        folder2.createProject(FreeStyleProject.class, "test2");
+
+        FreeStyleBuild b1 = (FreeStyleBuild) p1.scheduleBuild2(0).get();
+
+
+        List<Map> resp = get("/search?q=type:pipeline", List.class);
+
+        Assert.assertEquals(6, resp.size());
     }
 
     @Test

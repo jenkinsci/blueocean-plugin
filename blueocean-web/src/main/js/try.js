@@ -1,5 +1,13 @@
 var $ = require('jquery-detached').getJQuery();
-var jsModules = require('@jenkins-cd/js-modules');
+
+function getAppUrl() {
+    const rootUrl = $('head').attr('data-rooturl');
+    if (!rootUrl) {
+        return '';
+    } else {
+        return rootUrl;
+    }
+}
 
 $(document).ready(() => {
     var tryBlueOcean = $('<div class="try-blueocean header-callout">Try Blue Ocean UI ...</div>');
@@ -11,7 +19,7 @@ $(document).ready(() => {
         // are currently in a job on classic UI, bring them to the
         // same job in BO UI Vs just brining them to the root of
         // BO UI i.e. make the button context sensitive.
-        window.location.replace(`${jsModules.getRootURL()}/blue`);
+        window.location.replace(`${getAppUrl()}/blue`);
     });
     
     $('#page-head #header').append(tryBlueOcean);

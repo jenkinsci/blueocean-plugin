@@ -7,7 +7,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -22,7 +22,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Override
     public Container<ChangeSetResource> getChangeSet() {
-        Map<String, ChangeSetResource> m = new HashMap<>();
+        Map<String, ChangeSetResource> m = new LinkedHashMap<>();
         int cnt = 0;
         for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
             for (ChangeLogSet.Entry e : cs) {

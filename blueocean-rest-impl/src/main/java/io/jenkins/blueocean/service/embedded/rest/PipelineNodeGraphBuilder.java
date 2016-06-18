@@ -98,6 +98,9 @@ public class PipelineNodeGraphBuilder {
                 FlowNode endNode = getStepEndNode(node);
                 if (endNode != null) {
                     nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));
+                }else{
+                    //It's still running, report it as state: running and result: unknown
+                    nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING));
                 }
                 previousBranch = node;
             }
@@ -429,7 +432,10 @@ public class PipelineNodeGraphBuilder {
         private final BlueRun.BlueRunState state;
 
         public NodeRunStatus(FlowNode endNode) {
-            if (endNode.isRunning()) {
+            if (endNode.getError() != null) {
+                this.result = BlueRun.BlueRunResult.FAILURE;
+                this.state = endNode.isRunning() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
+            }else if (endNode.isRunning()) {
                 this.result = BlueRun.BlueRunResult.UNKNOWN;
                 this.state = BlueRun.BlueRunState.RUNNING;
             } else if (NotExecutedNodeAction.isExecuted(endNode)) {

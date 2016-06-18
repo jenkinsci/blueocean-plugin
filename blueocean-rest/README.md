@@ -109,11 +109,12 @@ Pipelines are sorted by pipeline name alphabetically
       } 
     ]
 
-## Get Pipelines
+## Get Pipelines across organization
 
-Pipelines are sorted by pipeline name alphabetically
+Pipelines are sorted by pipeline name alphabetically across organizations. It gives flattened list of pipelines including 
+folders and nested pipelines inside them.
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/pipelines/
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/search/?q=type:pipeline
     
     [ 
       {

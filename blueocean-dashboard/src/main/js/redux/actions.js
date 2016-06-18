@@ -237,7 +237,7 @@ export const actions = {
             const baseUrl = config.getAppURLBase();
             const url = organizationName ?
                 `${baseUrl}/rest/organizations/${organizationName}/pipelines/` :
-                `${baseUrl}/rest/pipelines/`;
+                `${baseUrl}/rest/search/?q=type:pipeline`;
 
             return dispatch(actions.generateData(
                 url,
@@ -257,7 +257,7 @@ export const actions = {
             const pipelines = getState().adminStore.pipelines;
             const baseUrl = config.getAppURLBase();
             const url = !organizationName ?
-                `${baseUrl}/rest/pipelines/` :
+                `${baseUrl}/rest/search/?q=type:pipeline` :
                 `${baseUrl}/rest/organizations/${organizationName}/pipelines/`;
 
             if (!pipelines) {
@@ -642,6 +642,25 @@ export const actions = {
         return (dispatch, getState) => {
             const data = getState().adminStore.nodes;
             const nodesBaseUrl = calculateNodeBaseUrl(config);
+            function getNodeAndSteps(information) {
+                let node;
+                if (!config.node) {
+                    const focused = information.model.filter((item) => item.isFocused)[0];
+                    if (focused) {
+                        node = focused.id;
+                    } else {
+                        node = (information.model[information.model.length - 1]).id;
+                    }
+                } else {
+                    node = config.node;
+                }
+                const mergedConfig = { ...config, node };
+                dispatch({
+                    type: ACTION_TYPES.SET_NODE,
+                    payload: node,
+                });
+                return dispatch(actions.fetchSteps(mergedConfig));
+            }
             if (!data || !data[nodesBaseUrl]) {
                 return exports.fetchJson(
                   nodesBaseUrl,
@@ -652,29 +671,21 @@ export const actions = {
                           type: ACTION_TYPES.SET_NODES,
                           payload: information,
                       });
-                      let node;
-                      if (!config.node) {
-                          const focused = information.model.filter((item) => item.isFocused)[0];
-                          if (focused) {
-                              node = focused.id;
-                          } else {
-                              node = (information.model[information.model.length - 1]).id;
-                          }
-                      } else {
-                          node = config.node;
-                      }
-                      const mergedConfig = { ...config, node };
-                      dispatch({
-                          type: ACTION_TYPES.SET_NODE,
-                          payload: node,
-                      });
-                      return dispatch(actions.fetchSteps(mergedConfig));
+
+                      return getNodeAndSteps(information);
                   },
                   (error) => console.error('error', error)
                 );
             }
-            return null;
+            return getNodeAndSteps(data[nodesBaseUrl]);
         };
+    },
+
+    cleanNodePointer() {
+        return (dispatch) => dispatch({
+            type: ACTION_TYPES.SET_NODE,
+            payload: null,
+        });
     },
     /*
       For the detail view we need to fetch the different steps of a nodes.

@@ -54,8 +54,7 @@ $ mvn clean install -DskipTests
 ## Running Blue Ocean
 
 ```
-$ cd blueocean-plugin
-$ mvn hpi:run
+$ mvn -f blueocean-plugin/pom.xml hpi:run
 ```
 
 Then open http://localhost:8080/jenkins/blue to start using Blue Ocean.
