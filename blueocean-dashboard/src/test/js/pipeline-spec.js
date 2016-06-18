@@ -15,6 +15,7 @@ const
   pipelineMulti = {
     'displayName': 'moreBeers',
     'name': 'morebeers',
+    'fullName': 'beersland/morebeers',
     'organization': 'jenkins',
     'weatherScore': 0,
     'branchNames': ['master'],
@@ -28,6 +29,7 @@ const
   pipelineMultiSuccess = {
     'displayName': 'moreBeersSuccess',
     'name': 'morebeersSuccess',
+    'fullName': 'morebeersSuccess',
     'organization': 'jenkins',
     'weatherScore': 0,
     'branchNames': ['master'],
@@ -41,6 +43,7 @@ const
   pipelineSimple = {
     'displayName': 'beers',
     'name': 'beers',
+    'fullName': 'beers',
     'organization': 'jenkins',
     'weatherScore': 0
   },
@@ -77,7 +80,7 @@ describe("pipeline component simple rendering", () => {
       children = result.props.children;
 
     assert.equal(result.type, 'tr');
-    assert.equal(children[0].props.children.props.children, pipelineSimple.name);
+    assert.equal(children[0].props.children.props.children, pipelineSimple.fullName);
     // simple element has no children
     assert.equal(children[2].type, 'td');
     assert.isObject(children[2].props);
@@ -97,7 +100,7 @@ describe("pipeline component multiBranch rendering", () => {
       children = result.props.children;
 
     assert.equal(result.type, 'tr');
-    assert.equal(children[0].props.children.props.children, pipelineMulti.name);
+    assert.equal(children[0].props.children.props.children, pipelineMulti.fullName.split('/').join(' / '));
     // simple element has no children
     assert.equal(children[2].type, 'td');
     assert.isObject(children[2].props);
@@ -120,7 +123,7 @@ describe("pipeline component multiBranch rendering - success", () => {
       children = result.props.children;
 
     assert.equal(result.type, 'tr');
-    assert.equal(children[0].props.children.props.children, pipelineMultiSuccess.name);
+    assert.equal(children[0].props.children.props.children, pipelineMultiSuccess.fullName);
     // simple element has no children
     assert.equal(children[2].type, 'td');
     assert.isObject(children[2].props);
