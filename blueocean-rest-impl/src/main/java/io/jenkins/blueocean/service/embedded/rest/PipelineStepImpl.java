@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
-import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
@@ -20,6 +19,8 @@ public class PipelineStepImpl extends BluePipelineStep {
     private final Link self;
 
     public PipelineStepImpl(FlowNode node, PipelineNodeGraphBuilder graphBuilder, Link parent) {
+        assert graphBuilder != null;
+        assert node != null;
         this.self = parent.rel(node.getId());
         this.node = node;
         this.status = new PipelineNodeGraphBuilder.NodeRunStatus(node);
@@ -62,11 +63,6 @@ public class PipelineStepImpl extends BluePipelineStep {
             return new LogResource(node.getAction(LogAction.class).getLogText());
         }
         return null;
-    }
-
-    @Override
-    public BluePipelineStepContainer getSteps() {
-        return null; //steps dont have steps
     }
 
     @Override

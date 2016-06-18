@@ -9,7 +9,7 @@ const { string } = PropTypes;
 // FIXME: add fetchRunLog in actions for getting data
 export default class LogToolbar extends Component {
     render() {
-        const { fileName, data, url } = this.props;
+        const { fileName, data, url, title } = this.props;
         // early out
         if (!url) {
             return null;
@@ -17,7 +17,7 @@ export default class LogToolbar extends Component {
         const style = { fill: '#4a4a4a' };
         return (<div className="log-header">
             <div className="log-header__section">
-                Build log – Build > Build source
+                {title}
             </div>
             <div className="log-header__section download-log-button">
               { data && <DownloadLink {...{ style, fileData: {
@@ -31,7 +31,7 @@ export default class LogToolbar extends Component {
                     target: '_blank',
                     href: `${url}?start=0`,
                 }}>
-                    <Icon {...{ style, icon: 'launch' }} />
+                    <Icon size={24} {...{ style, icon: 'launch' }} />
                 </a>
             </div>
         </div>);
@@ -40,7 +40,7 @@ export default class LogToolbar extends Component {
 
 LogToolbar.propTypes = {
     data: string,
+    title: string,
     fileName: string,
     url: string.isRequired,
 };
-

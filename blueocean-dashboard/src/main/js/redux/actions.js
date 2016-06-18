@@ -647,22 +647,25 @@ export const actions = {
             const data = getState().adminStore.nodes;
             const nodesBaseUrl = calculateNodeBaseUrl(config);
             function getNodeAndSteps(information) {
+                let nodeModel;
                 let node;
                 if (!config.node) {
                     const focused = information.model.filter((item) => item.isFocused)[0];
                     if (focused) {
-                        node = focused.id;
+                        nodeModel = focused;
                     } else {
-                        node = (information.model[information.model.length - 1]).id;
+                        nodeModel = (information.model[information.model.length - 1]);
                     }
+                    node = nodeModel.id;
                 } else {
+                    nodeModel = information.model.filter((item) => item.id === config.node)[0];
                     node = config.node;
                 }
-                const mergedConfig = { ...config, node };
                 dispatch({
                     type: ACTION_TYPES.SET_NODE,
-                    payload: node,
+                    payload: nodeModel,
                 });
+                const mergedConfig = { ...config, node };
                 return dispatch(actions.fetchSteps(mergedConfig));
             }
             if (!data || !data[nodesBaseUrl]) {
@@ -682,6 +685,21 @@ export const actions = {
                 );
             }
             return getNodeAndSteps(data[nodesBaseUrl]);
+        };
+    },
+
+    setNode(config) {
+        return (dispatch, getState) => {
+            const data = getState().adminStore.nodes;
+            const nodesBaseUrl = calculateNodeBaseUrl(config);
+            if (!data || !data[nodesBaseUrl]) {
+                return actions.fetchNodes(config);
+            }
+            const node = data[nodesBaseUrl].model.filter((item) => item.id === config.node)[0];
+            return dispatch({
+                type: ACTION_TYPES.SET_NODE,
+                payload: node,
+            });
         };
     },
 
