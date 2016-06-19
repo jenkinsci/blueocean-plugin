@@ -179,7 +179,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public Collection<?> getActions() {
         List<BlueActionProxy> actionProxies = new ArrayList<>();
         for(Action action:run.getAllActions()){
-            if(!action.getClass().isAnnotationPresent(ExportedBean.class)){
+            if(action == null || !action.getClass().isAnnotationPresent(ExportedBean.class)){
                 continue;
             }
             actionProxies.add(new ActionProxiesImpl(action, this));
@@ -202,7 +202,9 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public String getCommitId(){
         BuildData data = run.getAction(BuildData.class);
 
-        if(data == null){
+        if (data == null
+            || data.getLastBuiltRevision() == null
+            || data.getLastBuiltRevision().getSha1String() == null) {
             return null;
         } else {
             return data.getLastBuiltRevision().getSha1String();
