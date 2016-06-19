@@ -46,6 +46,13 @@ public class QueueContainerImpl extends BlueQueueContainer {
         return null;
     }
 
+    /**
+     * Schedules a build. If build already exists in the queue and the pipeline does not
+     * support running multiple builds at the same time, return a reference to the existing
+     * build.
+     *
+     * @return Qeueu item.
+     */
     @Override
     public BlueQueueItemCreateResponse createItem() {
         if (job instanceof Queue.Task) {

@@ -45,7 +45,7 @@ public abstract class BlueQueueItem {
     }
     /**
      *
-     * @returnx  The expected build number of the build. This may change.
+     * @return  The expected build number of the build. This may change.
      */
     @Exported
     public abstract int getExpectedBuildNumber();
