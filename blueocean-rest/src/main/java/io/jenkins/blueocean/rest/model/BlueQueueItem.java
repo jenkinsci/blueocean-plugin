@@ -15,8 +15,7 @@ import static io.jenkins.blueocean.commons.JsonConverter.DATE_FORMAT_STRING;
  *
  * @author Ivan Meredith
  */
-@ExportedBean
-public abstract class BlueQueueItem {
+public abstract class BlueQueueItem extends Resource {
 
     public static final String QUEUED_TIME = "qeueudTime";
 
