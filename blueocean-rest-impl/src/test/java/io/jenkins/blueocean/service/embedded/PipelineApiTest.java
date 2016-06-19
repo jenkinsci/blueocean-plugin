@@ -529,8 +529,6 @@ public class PipelineApiTest extends BaseTest {
 
         Map r = request().post("/organizations/jenkins/pipelines/pipeline3/queue/new").build(Map.class);
 
-        Assert.assertEquals("3", r.get("id"));
-
         Assert.assertNotNull(p3.getQueueItem());
         Assert.assertEquals(Long.toString(p3.getQueueItem().getId()), r.get("id"));
     }
