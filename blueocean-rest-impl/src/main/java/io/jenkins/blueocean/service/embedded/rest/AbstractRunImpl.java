@@ -202,7 +202,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public String getCommitId(){
         BuildData data = run.getAction(BuildData.class);
 
-        if (data == null
+        if(data == null
             || data.getLastBuiltRevision() == null
             || data.getLastBuiltRevision().getSha1String() == null) {
             return null;
