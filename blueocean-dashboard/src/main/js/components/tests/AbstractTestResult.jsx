@@ -9,7 +9,7 @@ const TestCaseResultRow = (props) => {
     const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
     const expandable = t.errorStackTrace;
 
-    let testDetails = (<div className="test-details">
+    let testDetails = expandable ? null : (<div className="test-details">
         <div className="test-detail-text" style={{ display: 'none' }}>
             {duration}
         </div>
@@ -32,7 +32,6 @@ const TestCaseResultRow = (props) => {
         break;
     case 'SKIPPED':
         statusIndicator = StatusIndicator.validResultValues.unstable;
-        testDetails = null;
         break;
     case 'PASSING':
         statusIndicator = StatusIndicator.validResultValues.success;
@@ -49,6 +48,10 @@ const TestCaseResultRow = (props) => {
     >
         { testDetails }
     </ResultItem>);
+};
+
+TestCaseResultRow.propTypes = {
+    testCase: PropTypes.object,
 };
 
 export default class AbstractTestResult extends Component {
@@ -76,7 +79,7 @@ export default class AbstractTestResult extends Component {
             } else {
                 newFailureBlock = [
                     <h4>New failing - {newFailures.length}</h4>,
-                    newFailures.map((t,i) => <TestCaseResultRow key={i} testCase={t} />),
+                    newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
                 ];
             }
         }
@@ -84,14 +87,14 @@ export default class AbstractTestResult extends Component {
         if (existingFailures.length > 0) {
             existingFailureBlock = [
                 <h4>Existing failures - {existingFailures.length}</h4>,
-                existingFailures.map((t,i) => <TestCaseResultRow key={i} testCase={t} />),
+                existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
             ];
         }
 
         if (skipped.length > 0) {
             skippedBlock = [
                 <h4>Skipped - {skipped.length}</h4>,
-                skipped.map((t,i) => <TestCaseResultRow key={i} testCase={t} />),
+                skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
             ];
         }
 

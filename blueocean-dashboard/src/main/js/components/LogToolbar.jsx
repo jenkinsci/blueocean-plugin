@@ -15,22 +15,19 @@ export default class LogToolbar extends Component {
             return null;
         }
         const style = { fill: '#4a4a4a' };
+        const fileData = {
+            filename: fileName,
+            contents: data,
+            mime: 'text/plain',
+        };
         return (<div className="log-header">
             <div className="log-header__section">
                 {title}
             </div>
             <div className="log-header__section download-log-button">
-              { data && <DownloadLink {...{ style, fileData: {
-                  filename: fileName,
-                  contents: data,
-                  mime: 'text/plain',
-              } }} />}
+              { data && <DownloadLink style={style} fileData={fileData} /> }
 
-                <a {...{
-                    title: 'Display the log in new window',
-                    target: '_blank',
-                    href: `${url}?start=0`,
-                }}>
+                <a title="Display the log in new window" target="_blank" href={`${url}?start=0`}>
                     <Icon size={24} {...{ style, icon: 'launch' }} />
                 </a>
             </div>

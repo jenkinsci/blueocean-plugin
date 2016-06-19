@@ -4,7 +4,7 @@ import { actions as selectorActions, testResults as testResultsSelector,
     connect, createSelector } from '../redux';
 import { RenderExtensions } from '@jenkins-cd/js-extensions';
 
-const EmptyState = (props) => (
+const EmptyState = () => (
     <EmptyStateView tightSpacing>
         <p>
             There are no tests run for this build.
@@ -46,14 +46,14 @@ export class RunDetailsTests extends Component {
         const { testResults } = this.props;
         
         if (!testResults || !testResults.suites) {
-            return <EmptyState/>;
+            return <EmptyState />;
         }
         
         const percentComplete = testResults.passCount /
             (testResults.passCount + testResults.failCount);
         
         return (<div className="test-results-container">
-            <div className="test=result-summary" style={{display:'none'}}>
+            <div className="test=result-summary" style={{ display: 'none' }}>
                 <div className={`test-result-bar ${percentComplete}%`}></div>
                 <div className="test-result-passed">Passed {testResults.passCount}</div>
                 <div className="test-result-failed">Failed {testResults.failCount}</div>

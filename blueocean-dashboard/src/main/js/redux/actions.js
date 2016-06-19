@@ -781,11 +781,10 @@ export const actions = {
     },
     
     resetTestDetails() {
-        return (dispatch) => {
-            return dispatch({
+        return (dispatch) =>
+            dispatch({
                 type: ACTION_TYPES.SET_TEST_RESULTS,
-                payload: null
+                payload: null,
             });
-        };
     },
 };
