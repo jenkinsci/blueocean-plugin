@@ -16,6 +16,4 @@ exports.loadConfig = function () {
     }
 
     exports.jenkinsRootURL = headElement.getAttribute('data-rooturl');
-    exports.jenkinsCrumbField = headElement.getAttribute('data-crumb-field');
-    exports.jenkinsCrumb = headElement.getAttribute('data-crumb');
 };
