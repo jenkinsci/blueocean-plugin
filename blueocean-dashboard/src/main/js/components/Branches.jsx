@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
+import RunPipeline from './RunPipeline.jsx';
 
 const { object } = PropTypes;
 
@@ -37,17 +38,18 @@ export default class Branches extends Component {
         };
         const { msg } = changeSet[0] || {};
 
-        return (<tr key={name} onClick={open} id={`${name}-${id}`} >
-            <td><WeatherIcon score={weatherScore} /></td>
-            <td>
+        return (<tr key={name} id={`${name}-${id}`} >
+            <td onClick={open}><WeatherIcon score={weatherScore} /></td>
+            <td onClick={open}>
                 <LiveStatusIndicator result={result === 'UNKNOWN' ? state : result}
                   startTime={startTime} estimatedDuration={estimatedDurationInMillis}
                 />
             </td>
-            <td>{decodeURIComponent(name)}</td>
-            <td><CommitHash commitId={commitId} /></td>
-            <td>{msg || '-'}</td>
-            <td><ReadableDate date={endTime || ''} /></td>
+            <td onClick={open}>{decodeURIComponent(name)}</td>
+            <td onClick={open}><CommitHash commitId={commitId} /></td>
+            <td onClick={open}>{msg || '-'}</td>
+            <td onClick={open}><ReadableDate date={endTime || ''} /></td>
+            <td><RunPipeline organization={organization} pipeline={pipelineName} branch={name} /></td>
         </tr>);
     }
 }

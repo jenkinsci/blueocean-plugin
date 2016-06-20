@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Job;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Resource;
+import jenkins.model.ParameterizedJobMixIn;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
 import org.kohsuke.stapler.export.Exported;
@@ -31,6 +32,14 @@ public class BranchImpl extends PipelineImpl {
             }
         }
         return null;
+    }
+
+    // TODO: remove when JENKINS-35797 is done
+    // Note that when I (TF) tried using @POST, @TreeResponse etc I got a 500 error. The
+    // invocation did arive at the function so the bining did happen, but on the
+    // response something went wrong.
+    public void doStartRun() {
+        ParameterizedJobMixIn.scheduleBuild2(job, 0);
     }
 
     @Override

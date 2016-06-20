@@ -1,6 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import appConfig from './config';
 
 const { object, node } = PropTypes;
+
+appConfig.loadConfig();
 
 class Dashboard extends Component {
 

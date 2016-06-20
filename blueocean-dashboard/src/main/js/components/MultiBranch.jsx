@@ -101,6 +101,7 @@ export class MultiBranch extends Component {
             { label: 'Last commit', className: 'lastcommit' },
             { label: 'Latest message', className: 'message' },
             { label: 'Completed', className: 'completed' },
+            { label: '', className: 'run' },
         ];
 
         return (
