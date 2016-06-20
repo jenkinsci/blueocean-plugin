@@ -11,7 +11,7 @@ exports.loadConfig = function () {
     // Look up where the Blue Ocean app is hosted
     exports.blueoceanAppURL = headElement.getAttribute('data-appurl');
 
-    if (typeof blueoceanAppURL !== 'string') {
+    if (typeof exports.blueoceanAppURL !== 'string') {
         exports.blueoceanAppURL = '/';
     }
 
