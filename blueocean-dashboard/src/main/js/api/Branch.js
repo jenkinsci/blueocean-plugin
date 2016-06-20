@@ -5,7 +5,7 @@
  * interacting with pipeline branches, encapsulating REST API calls etc.
  */
 
-import fetch from 'isomorphic-fetch';
+// import fetch from 'isomorphic-fetch';
 import config from '../config';
 
 export default class Branch {
@@ -23,30 +23,31 @@ export default class Branch {
         // Is supposed to be extended from whatwg-fetch.
         // See https://www.npmjs.com/package/whatwg-fetch#post-json
         //
-        //fetch(url, {
+        // fetch(url, {
         //    method: 'post',
         //    headers: {
         //        'Content-Type': 'application/json',
         //    },
-        //}).then((response) => {
+        // }).then((response) => {
         //    console.log(response);
-        //});
+        // });
 
         // Just use XMLHttpRequest for now. See above.
+        // eslint-disable-next-line
         post(url);
     }
 }
 
 // TODO: remove once we find out why isomorphic-fetch is not working
 function post(toUrl) {
-    var http = new XMLHttpRequest();
+    const http = new XMLHttpRequest();
 
     http.onreadystatechange = function () {
         if (http.readyState === 4) {
             if (http.status >= 200 && http.status < 300) {
                 // Not a JSON response.
             } else {
-                console.error('Error invoking Job run via ' + toUrl + ': ');
+                console.error(`Error invoking Job run via ${toUrl}: `);
                 console.error(http);
             }
         }
