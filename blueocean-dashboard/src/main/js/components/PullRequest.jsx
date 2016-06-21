@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
+import RunPipeline from './RunPipeline.jsx';
 
 const { object } = PropTypes;
 
@@ -41,16 +42,17 @@ export default class PullRequest extends Component {
             router.push(location);
         };
 
-        return (<tr key={id} onClick={open} id={`${name}-${id}`} >
-            <td>
+        return (<tr key={id} id={`${name}-${id}`} >
+            <td onClick={open}>
                 <LiveStatusIndicator result={result} startTime={startTime}
                   estimatedDuration={estimatedDurationInMillis}
                 />
             </td>
-            <td>{id}</td>
-            <td>{title || '-'}</td>
-            <td>{author || '-'}</td>
-            <td><ReadableDate date={endTime} /></td>
+            <td onClick={open}>{id}</td>
+            <td onClick={open}>{title || '-'}</td>
+            <td onClick={open}>{author || '-'}</td>
+            <td onClick={open}><ReadableDate date={endTime} /></td>
+            <td><RunPipeline organization={organization} pipeline={pipelineName} branch={name} /></td>
         </tr>);
     }
 }
