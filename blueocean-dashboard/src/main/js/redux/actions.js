@@ -33,13 +33,17 @@ export function calculateNodeBaseUrl(config) {
 
 export function calculateStepsBaseUrl(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
-    const baseUrl =
+    let baseUrl =
       `${_appURLBase}/rest/organizations/jenkins/` +
       `pipelines/${uriString(name)}`;
     if (isMultiBranch) {
-        return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/${node}/steps`;
+        baseUrl = `${baseUrl}/branches/${uriString(branch)}`;
     }
-    return `${baseUrl}/runs/${runId}/nodes/${node}/steps`;
+    // console.log('xxx'), baseUrl;
+    if (node && node !== null) {
+        return `${baseUrl}/runs/${runId}/nodes/${node}/steps`;
+    }
+    return `${baseUrl}/runs/${runId}/steps/`;
 }
 
 export function calculateRunLogURLObject(config) {
@@ -655,7 +659,7 @@ export const actions = {
                     } else {
                         nodeModel = (information.model[information.model.length - 1]);
                     }
-                    node = nodeModel.id;
+                    node = nodeModel ? nodeModel.id : null;
                 } else {
                     nodeModel = information.model.filter((item) => item.id === config.node)[0];
                     node = config.node;
