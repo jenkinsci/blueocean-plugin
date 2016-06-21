@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

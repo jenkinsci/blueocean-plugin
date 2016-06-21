@@ -251,7 +251,24 @@ Pipelines can be nested inside folder.
       "organization" : "jenkins",
       "weatherScore" : 100
     } ]
-    
+
+## Build a pipeline
+
+    curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline3/queue/3/"
+        }
+      },
+      "expectedBuildNumber" : 1,
+      "id" : "3",
+      "pipeline" : "pipeline3",
+      "qeueudTime" : "2016-06-22T11:05:41.309+1200"
+    }
+
 ## Get all runs in a pipeline
     
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs
