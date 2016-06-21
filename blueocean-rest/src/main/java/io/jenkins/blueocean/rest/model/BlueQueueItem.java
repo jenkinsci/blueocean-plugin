@@ -17,7 +17,7 @@ import static io.jenkins.blueocean.commons.JsonConverter.DATE_FORMAT_STRING;
  */
 public abstract class BlueQueueItem extends Resource {
 
-    public static final String QUEUED_TIME = "qeueudTime";
+    public static final String QUEUED_TIME = "queuedTime";
 
     /**
      * @return Id of the item in the queue. Much be unique in the queue of a pipeline

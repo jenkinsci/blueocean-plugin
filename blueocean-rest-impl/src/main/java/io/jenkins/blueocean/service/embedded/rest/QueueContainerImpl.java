@@ -14,6 +14,7 @@ import hudson.model.StringParameterValue;
 import hudson.model.queue.ScheduleResult;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
@@ -38,7 +39,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
 
     @Override
     public BlueQueueItem get(String name) {
-        for (BlueQueueItem blueQueueItem : getQueuedItems()) {
+        for (BlueQueueItem blueQueueItem : getQueuedItems(job, pipeline)) {
             if(name.equals(blueQueueItem.getId())){
                 return blueQueueItem;
             }
@@ -46,47 +47,10 @@ public class QueueContainerImpl extends BlueQueueContainer {
         return null;
     }
 
-    /**
-     * Schedules a build. If build already exists in the queue and the pipeline does not
-     * support running multiple builds at the same time, return a reference to the existing
-     * build.
-     *
-     * @return Qeueu item.
-     */
-    @Override
-    public BlueQueueItemCreateResponse createItem() {
-        if (job instanceof Queue.Task) {
-           ScheduleResult scheduleResult = Jenkins.getInstance()
-                .getQueue()
-                .schedule2((Queue.Task)job, 0, new CauseAction(new Cause.UserIdCause()));
-
-           if(scheduleResult.isAccepted()) {
-               final Queue.Item item = scheduleResult.getItem();
-
-               BlueQueueItem queueItem = FluentIterableWrapper.from(getQueuedItems())
-                   .firstMatch(new Predicate<BlueQueueItem>() {
-                       @Override
-                       public boolean apply(@Nullable BlueQueueItem input) {
-                           return input.getId().equalsIgnoreCase(Long.toString(item.getId()));
-                       }
-                   }).orNull();
-
-               if (queueItem == null) {
-                   throw new ServiceException.UnexpectedErrorException("The queue item does not exist in the queue");
-               } else {
-                   return new BlueQueueItemCreateResponse(queueItem);
-               }
-           } else {
-               throw new ServiceException.UnexpectedErrorException("Queue item request was not accepted");
-           }
-        } else {
-            throw new ServiceException.NotImplementedException("This pipeline type does not support being queued.");
-        }
-    }
 
     @Override
     public Iterator<BlueQueueItem> iterator() {
-        return getQueuedItems().iterator();
+        return getQueuedItems(job, pipeline).iterator();
     }
 
     /**
@@ -97,7 +61,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
      *
      * @return List of items newest first
      */
-    private List<BlueQueueItem> getQueuedItems() {
+    public static List<BlueQueueItem> getQueuedItems(Job job, BluePipeline pipeline) {
         if(job instanceof BuildableItem) {
             BuildableItem task = (BuildableItem)job;
             List<Queue.Item> items = Jenkins.getInstance().getQueue().getItems(task);

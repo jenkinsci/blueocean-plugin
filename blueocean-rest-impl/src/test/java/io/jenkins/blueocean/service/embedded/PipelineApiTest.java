@@ -527,7 +527,7 @@ public class PipelineApiTest extends BaseTest {
         p1.scheduleBuild2(0).waitForStart();
         p2.scheduleBuild2(0).waitForStart();
 
-        Map r = request().post("/organizations/jenkins/pipelines/pipeline3/queue/new").build(Map.class);
+        Map r = request().post("/organizations/jenkins/pipelines/pipeline3/runs/").build(Map.class);
 
         Assert.assertNotNull(p3.getQueueItem());
         Assert.assertEquals(Long.toString(p3.getQueueItem().getId()), r.get("id"));
