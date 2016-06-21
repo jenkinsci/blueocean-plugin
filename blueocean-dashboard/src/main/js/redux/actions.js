@@ -13,8 +13,11 @@ function uriString(input) {
 }
 // helper calculate url
 export function calculateLogUrl(config) {
-    const { nodesBaseUrl, node } = config;
-    return `${nodesBaseUrl}/${node.id}/log`;
+    if (config.node) {
+        const { nodesBaseUrl, node } = config;
+        return `${nodesBaseUrl}/${node.id}/log`;
+    }
+    return config.url;
 }
 
 export function calculateNodeBaseUrl(config) {

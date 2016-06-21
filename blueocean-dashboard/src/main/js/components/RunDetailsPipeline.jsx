@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
+import LogConsole from './LogConsole';
+
 import Steps from './Steps';
 import {
     steps as stepsSelector,
@@ -20,8 +22,15 @@ const { string, object, any, func } = PropTypes;
 
 export class RunDetailsPipeline extends Component {
     componentWillMount() {
-        if (this.props.fetchNodes) {
-            this.props.fetchNodes(this.generateConfig(this.props));
+        const { fetchNodes, fetchLog, result } = this.props;
+        const mergedConfig = this.generateConfig(this.props);
+
+        if (result && result._class === 'io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl') {
+            fetchNodes(mergedConfig);
+        } else {
+            // console.log('fetch the log directly')
+            const logGeneral = calculateRunLogURLObject(mergedConfig);
+            fetchLog({ ...logGeneral });
         }
     }
 
@@ -67,17 +76,21 @@ export class RunDetailsPipeline extends Component {
             params: {
                 pipeline: name, branch, runId,
             },
-            isMultiBranch, steps, nodes,
+            isMultiBranch, steps, nodes, result, logs,
         } = this.props;
 
-        if (!steps) {
-            return null;
-        }
         const mergedConfig = this.generateConfig(this.props);
 
         const nodeKey = calculateNodeBaseUrl(mergedConfig);
         const key = calculateStepsBaseUrl(mergedConfig);
         const logGeneral = calculateRunLogURLObject(mergedConfig);
+        const log = logs ? logs[logGeneral.url] : null;
+        let title;
+        if (log) {
+            title = `${result.name} #${result.id}`;
+        } else {
+            title = mergedConfig.nodeReducer.displayName;
+        }
         return (
             <div>
                 { nodes && nodes[nodeKey] && <ExtensionPoint
@@ -93,13 +106,15 @@ export class RunDetailsPipeline extends Component {
                 <LogToolbar
                   fileName={logGeneral.fileName}
                   url={logGeneral.url}
-                  title={mergedConfig.nodeReducer.displayName}
+                  title={title}
                 />
                 { steps && steps[key] && <Steps
                   nodeInformation={steps[key]}
                   {...this.props}
                 />
                 }
+
+                { log && <LogConsole key={logGeneral.url} data={log.text} /> }
             </div>
         );
     }
@@ -109,12 +124,15 @@ RunDetailsPipeline.propTypes = {
     pipeline: object,
     isMultiBranch: any,
     params: object,
+    result: object,
     fileName: string,
     url: string,
+    fetchLog: func,
     fetchNodes: func,
     setNode: func,
     fetchSteps: func,
     cleanNodePointer: func,
+    logs: object,
     steps: object,
     nodes: object,
     nodeReducer: object,
