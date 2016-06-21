@@ -39,7 +39,7 @@ exports.enrichJobEvent = function (event, activePipelineName) {
         eventCopy.blueocean_is_multi_branch = false;
     }
 
-    // Is this even associated with the currently active pipeline job?
+    // Is this event associated with the currently active pipeline job?
     eventCopy.blueocean_is_for_current_job =
         (eventCopy.blueocean_job_name === activePipelineName);
 
