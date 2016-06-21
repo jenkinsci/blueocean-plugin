@@ -1,3 +1,6 @@
+/**
+ * Simple widget for triggering the running of a pipeline.
+ */
 
 import React, { Component, PropTypes } from 'react';
 import Pipeline from '../api/Pipeline';
