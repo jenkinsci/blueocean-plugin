@@ -170,7 +170,7 @@ public abstract class BlueRun extends Resource {
      * interpreted as step as its StepAtomNode and implementation of this API must ensure not to include it.
      */
     @Exported(name = STEPS)
-    public abstract Container<?> getSteps();
+    public abstract BluePipelineStepContainer getSteps();
 
     /**
      * @return Instance of stapler aware instance that can do the following:
