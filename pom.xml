@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-alpha-1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean UI Parent</name>
@@ -22,6 +22,24 @@
     <node.version>5.8.0</node.version>
     <npm.version>3.7.3</npm.version>
   </properties>
+  
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/blueocean-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/blueocean-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/blueocean-plugin</url>
+  </scm> 
+  
+  
+  <developers>
+     <developer>
+       <id>michaelneale</id>
+       <name>Michael Neale</name>      
+     </developer>
+     <developer>
+       <id>jamesdumay</id>
+       <name>James Dumay</name>      
+     </developer>    
+  </developers>
 
   <modules>
     <module>blueocean-commons</module>
