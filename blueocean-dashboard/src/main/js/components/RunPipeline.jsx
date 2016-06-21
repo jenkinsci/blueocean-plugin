@@ -4,10 +4,9 @@
 
 import React, { Component, PropTypes } from 'react';
 import Pipeline from '../api/Pipeline';
-import Branch from '../api/Branch';
+import Branch, { fromSSEEvent } from '../api/Branch';
 import { Toast } from '@jenkins-cd/design-language';
 import * as sse from '@jenkins-cd/sse-gateway';
-import * as pushEventUtil from '../util/push-event-util';
 
 export default class RunPipeline extends Component {
 
@@ -16,24 +15,21 @@ export default class RunPipeline extends Component {
         const pipeline = new Pipeline(props.organization, props.pipeline);
         this.branch = new Branch(pipeline, props.branch);
         this.state = {
-            isShowToast: false
+            toast: undefined,
         };
     }
 
     componentDidMount() {
         const _this = this;
         this.jobListener = sse.subscribe('job', (event) => {
-            // Enrich the event with blueocean specific properties.
-            // This allows us to make sense of a regular Jenkins event
-            // in the context of how Blue Ocean conceptualizes them.
-            const eventCopy = pushEventUtil.enrichJobEvent(event);
-            if (eventCopy.blueocean_is_multi_branch &&
-                eventCopy.blueocean_job_name === _this.branch.pipeline.name &&
-                eventCopy.blueocean_branch_name === _this.branch.name) {
-                if (event.jenkins_event === 'job_run_started') {
-                    _this.setState({ isShowToast: true });
+            const eventBranch = fromSSEEvent(event);
+            if (_this.branch.equals(eventBranch)) {
+                if (event.jenkins_event === 'job_run_queue_enter') {
+                    _this.setState({ toast: 'Queued' });
+                } else if (event.jenkins_event === 'job_run_started') {
+                    _this.setState({ toast: 'Started' });
                 } else {
-                    _this.setState({ isShowToast: false });
+                    _this.setState({ toast: undefined });
                 }
             }
         });
@@ -51,16 +47,15 @@ export default class RunPipeline extends Component {
     }
 
     render() {
-        if (this.state.isShowToast) {
+        if (this.state.toast) {
             return (<div>
                 <div className="run-pipeline" onClick={() => this.run()}></div>
                 <div className="run-pipeline-toast">
-                    <Toast text="Started" action="Open" />
+                    <Toast text={this.state.toast} action="Open" />
                 </div>
             </div>);
-        } else {
-            return (<div className="run-pipeline" onClick={() => this.run()}></div>);
         }
+        return (<div className="run-pipeline" onClick={() => this.run()}></div>);
     }
 }
 

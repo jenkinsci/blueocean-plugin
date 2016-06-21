@@ -7,6 +7,8 @@
 
 // import fetch from 'isomorphic-fetch';
 import config from '../config';
+import Pipeline from './Pipeline';
+import * as pushEventUtil from '../util/push-event-util';
 
 export default class Branch {
 
@@ -36,7 +38,29 @@ export default class Branch {
         // eslint-disable-next-line
         post(url);
     }
+
+    equals(branch) {
+        if (branch && branch.name === this.name) {
+            // and it's the same pipeline...
+            return (
+                branch.pipeline.organization === this.pipeline.organization &&
+                branch.pipeline.name === this.pipeline.name
+            );
+        }
+        return false;
+    }
 }
+
+exports.fromSSEEvent = function (event) {
+    const eventCopy = pushEventUtil.enrichJobEvent(event);
+    if (!eventCopy.blueocean_is_multi_branch) {
+        return undefined;
+    }
+    return new Branch(
+        new Pipeline('jenkins', eventCopy.blueocean_job_name),
+        eventCopy.blueocean_branch_name
+    );
+};
 
 // TODO: remove once we find out why isomorphic-fetch is not working
 function post(toUrl) {
