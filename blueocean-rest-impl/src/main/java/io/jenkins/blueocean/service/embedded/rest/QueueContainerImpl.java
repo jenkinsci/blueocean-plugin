@@ -6,6 +6,7 @@ import hudson.model.Job;
 import hudson.model.Queue;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
@@ -27,7 +28,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
 
     @Override
     public BlueQueueItem get(String name) {
-        for (BlueQueueItem blueQueueItem : getQueuedItems()) {
+        for (BlueQueueItem blueQueueItem : getQueuedItems(job, pipeline)) {
             if(name.equals(blueQueueItem.getId())){
                 return blueQueueItem;
             }
@@ -35,9 +36,10 @@ public class QueueContainerImpl extends BlueQueueContainer {
         return null;
     }
 
+
     @Override
     public Iterator<BlueQueueItem> iterator() {
-        return getQueuedItems().iterator();
+        return getQueuedItems(job, pipeline).iterator();
     }
 
     /**
@@ -48,7 +50,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
      *
      * @return List of items newest first
      */
-    private List<BlueQueueItem> getQueuedItems() {
+    public static List<BlueQueueItem> getQueuedItems(Job job, BluePipeline pipeline) {
         if(job instanceof BuildableItem) {
             BuildableItem task = (BuildableItem)job;
             List<Queue.Item> items = Jenkins.getInstance().getQueue().getItems(task);
