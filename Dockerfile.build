@@ -1,0 +1,10 @@
+FROM maven:3
+
+# install nodejs and gulp
+RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install gulp -g
+
+ADD . /etc/blue-ocean
+
+WORKDIR /etc/blue-ocean
