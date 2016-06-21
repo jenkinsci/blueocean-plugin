@@ -623,7 +623,7 @@ public class PipelineNodeTest extends BaseTest {
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
         Assert.assertEquals(4,resp.size());
         String log = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/"+resp.get(0).get("id")+"/log/", String.class);
-        System.out.println(log);
+        Assert.assertNotNull(log);
     }
 
 
