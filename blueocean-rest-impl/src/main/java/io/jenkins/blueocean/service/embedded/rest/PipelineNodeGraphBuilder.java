@@ -163,6 +163,16 @@ public class PipelineNodeGraphBuilder {
         return steps;
     }
 
+    public List<FlowNode> getAllSteps(){
+        List<FlowNode> steps = new ArrayList<>();
+        for(FlowNode c: sortedNodes){
+            if(c instanceof StepAtomNode && !PipelineNodeUtil.isStage(c)) {
+                steps.add(c);
+            }
+        }
+        return steps;
+    }
+
     public List<FlowNode> getParallelBranchSteps(FlowNode p){
         List<FlowNode> steps = new ArrayList<>();
         int i = sortedNodes.indexOf(p);
