@@ -57,7 +57,7 @@ export class RunDetailsPipeline extends Component {
         // we would use default properties however the node can be null so no default properties will be triggered
         let { nodeReducer } = props;
         if (!nodeReducer) {
-            nodeReducer = { id: null, displayName: 'Steps - Name of step node' };
+            nodeReducer = { id: null, displayName: 'Steps' };
         }
         // if we have a node param we do not want the calculation of the focused node
         const node = nodeParam || nodeReducer.id;
