@@ -1,4 +1,5 @@
 #Ignore all dot files
+.DS_Store
 .idea/
 *.iml
 *.ipr
