@@ -8,6 +8,7 @@
 // import fetch from 'isomorphic-fetch';
 import config from '../config';
 import Pipeline from './Pipeline';
+import * as sse from '@jenkins-cd/sse-gateway';
 import * as pushEventUtil from '../util/push-event-util';
 
 export default class Branch {
@@ -15,6 +16,7 @@ export default class Branch {
     constructor(pipeline, name) {
         this.pipeline = pipeline;
         this.name = name;
+        this.sseListeners = [];
     }
 
     runDetailsRouteUrl(runId) {
@@ -26,6 +28,30 @@ export default class Branch {
 
     restUrl() {
         return `${config.blueoceanAppURL}/rest/organizations/${this.pipeline.organization}/pipelines/${this.pipeline.name}/branches/${this.name}`;
+    }
+
+    onJobChannelEvent(callback) {
+        const _this = this;
+        const jobListener = sse.subscribe('job', (event) => {
+            const eventBranch = exports.fromSSEEvent(event);
+            if (_this.equals(eventBranch)) {
+                callback(event);
+            }
+        });
+
+        this.sseListeners.push(jobListener);
+    }
+
+    clearEventListeners() {
+        for (let i = 0; i < this.sseListeners.length; i++) {
+            try {
+                sse.unsubscribe(this.sseListeners[i]);
+            } catch (e) {
+                console.error('Unexpected error clearing SSE event listeners from Branch object');
+                console.error(e);
+            }
+        }
+        this.sseListeners = [];
     }
 
     run() {

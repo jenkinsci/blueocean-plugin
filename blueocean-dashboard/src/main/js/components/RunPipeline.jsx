@@ -4,9 +4,8 @@
 
 import React, { Component, PropTypes } from 'react';
 import Pipeline from '../api/Pipeline';
-import Branch, { fromSSEEvent } from '../api/Branch';
+import Branch from '../api/Branch';
 import { Toast } from '@jenkins-cd/design-language';
-import * as sse from '@jenkins-cd/sse-gateway';
 
 export default class RunPipeline extends Component {
 
@@ -22,39 +21,35 @@ export default class RunPipeline extends Component {
     componentDidMount() {
         const _this = this;
         const reactContext = this.context;
-        this.jobListener = sse.subscribe('job', (event) => {
-            const eventBranch = fromSSEEvent(event);
-            if (_this.branch.equals(eventBranch)) {
-                if (event.jenkins_event === 'job_run_queue_enter') {
-                    _this.setState({
-                        toast: { text: 'ueued' },
-                    });
-                } else if (event.jenkins_event === 'job_run_started') {
-                    _this.setState({
-                        toast: {
-                            text: `Started "${eventBranch.name}" #${event.jenkins_object_id}`,
-                            action: {
-                                label: 'Open',
-                                callback: () => {
-                                    const runDetailsUrl = eventBranch.runDetailsRouteUrl(event.jenkins_object_id);
-                                    reactContext.location.pathname = runDetailsUrl;
-                                    reactContext.router.push(runDetailsUrl);
-                                },
+        const theBranch = this.branch;
+
+        theBranch.onJobChannelEvent((event) => {
+            if (event.jenkins_event === 'job_run_queue_enter') {
+                _this.setState({
+                    toast: { text: 'Queued' },
+                });
+            } else if (event.jenkins_event === 'job_run_started') {
+                _this.setState({
+                    toast: {
+                        text: `Started "${theBranch.name}" #${event.jenkins_object_id}`,
+                        action: {
+                            label: 'Open',
+                            callback: () => {
+                                const runDetailsUrl = theBranch.runDetailsRouteUrl(event.jenkins_object_id);
+                                reactContext.location.pathname = runDetailsUrl;
+                                reactContext.router.push(runDetailsUrl);
                             },
                         },
-                    });
-                } else {
-                    _this.setState({ toast: undefined });
-                }
+                    },
+                });
+            } else {
+                _this.setState({ toast: undefined });
             }
         });
     }
 
     componentWillUnmount() {
-        if (this.jobListener) {
-            sse.unsubscribe(this.jobListener);
-            delete this.jobListener;
-        }
+        this.branch.clearEventListeners();
     }
 
     run() {
