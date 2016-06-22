@@ -17,9 +17,20 @@ export default class Branch {
         this.name = name;
     }
 
+    runDetailsRouteUrl(runId) {
+        if (runId === undefined) {
+            throw new Error('Branch.runDetailsRouteUrl must be supplied with a "runId" parameter.');
+        }
+        return `/organizations/${this.pipeline.organization}/${this.pipeline.name}/detail/${this.name}/${runId}/pipeline`;
+    }
+
+    restUrl() {
+        return `${config.blueoceanAppURL}/rest/organizations/${this.pipeline.organization}/pipelines/${this.pipeline.name}/branches/${this.name}`;
+    }
+
     run() {
         // TODO: fix this when JENKINS-35797 is done
-        const url = `${config.blueoceanAppURL}/rest/organizations/${this.pipeline.organization}/pipelines/${this.pipeline.name}/branches/${this.name}/startRun`;
+        const url = `${this.restUrl()}/startRun`;
 
         // TODO: isomorphic-fetch not working for posts?
         // Is supposed to be extended from whatwg-fetch.

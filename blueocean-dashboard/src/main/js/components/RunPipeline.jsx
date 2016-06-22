@@ -21,13 +21,28 @@ export default class RunPipeline extends Component {
 
     componentDidMount() {
         const _this = this;
+        const reactContext = this.context;
         this.jobListener = sse.subscribe('job', (event) => {
             const eventBranch = fromSSEEvent(event);
             if (_this.branch.equals(eventBranch)) {
                 if (event.jenkins_event === 'job_run_queue_enter') {
-                    _this.setState({ toast: 'Queued' });
+                    _this.etState({
+                        toast: { text: 'ueued' },
+                    });
                 } else if (event.jenkins_event === 'job_run_started') {
-                    _this.setState({ toast: 'Started' });
+                    _this.etState({
+                        toast: {
+                            text: 'Started',
+                            action: {
+                                label: 'Open',
+                                callback: () => {
+                                    const runDetailsUrl = eventBranch.runDetailsRouteUrl(event.jenkins_object_id);
+                                    reactContext.location.pathname = runDetailsUrl;
+                                    reactContext.router.push(runDetailsUrl);
+                                },
+                            },
+                        },
+                    });
                 } else {
                     _this.setState({ toast: undefined });
                 }
@@ -47,11 +62,20 @@ export default class RunPipeline extends Component {
     }
 
     render() {
-        if (this.state.toast) {
+        const toast = this.state.toast;
+        if (toast) {
+            if (toast.action) {
+                return (<div>
+                    <div className="run-pipeline" onClick={() => this.run()}></div>
+                    <div className="run-pipeline-toast">
+                        <Toast text={toast.text} action={toast.action.label} onActionClick={() => toast.action.callback()} />
+                    </div>
+                </div>);
+            }
             return (<div>
                 <div className="run-pipeline" onClick={() => this.run()}></div>
                 <div className="run-pipeline-toast">
-                    <Toast text={this.state.toast} action="Open" />
+                    <Toast text={toast.text} />
                 </div>
             </div>);
         }
@@ -63,4 +87,9 @@ RunPipeline.propTypes = {
     organization: PropTypes.string,
     pipeline: PropTypes.string,
     branch: PropTypes.string,
+};
+
+RunPipeline.contextTypes = {
+    router: PropTypes.object.isRequired, // From react-router
+    location: PropTypes.object,
 };
