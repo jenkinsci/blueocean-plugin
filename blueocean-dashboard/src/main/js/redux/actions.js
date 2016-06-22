@@ -210,7 +210,31 @@ exports.fetchJson = function fetchJson(url, onSuccess, onError) {
             }
         });
 };
-
+exports.fetchLogsReFetch = function fetchJson(url, start, onSuccess, onError) {
+    let refetchUrl;
+    if (start === null) {
+        refetchUrl = url;
+    } else {
+        refetchUrl = `${url}?start=${start}`
+    }
+    fetch(refetchUrl, fetchOptions)
+        .then(checkStatus)
+        .then(response => {
+            if(response.headers.get('X-More-Data')){
+                const start = response.headers.get('X-TEXT-SIZE');
+                setTimeout(exports.fetchLogsReFetch(url, start, onSuccess, onError), 3000);
+            }
+            return response;
+        })
+        .then(onSuccess)
+        .catch((error) => {
+            if (onError) {
+                onError(error);
+            } else {
+                console.error(error); // eslint-disable-line no-console
+            }
+        });
+};
 /**
  * Clone a JSON object/array instance.
  * <p>
@@ -747,17 +771,29 @@ export const actions = {
             const data = getState().adminStore.logs;
             const logUrl = calculateLogUrl(config);
             if (!data || !data[logUrl]) {
-                return fetch(logUrl, fetchOptions)
-            .then(checkStatus)
-            .then(parseText)
-            .then(text => dispatch({
-                type: ACTION_TYPES.SET_LOGS,
-                payload: {
-                    text,
+                return exports.fetchLogsReFetch(
                     logUrl,
-                },
-            }))
-            .catch((error) => console.error('error', error));
+                    null,
+                    response => {
+                        response.text()
+                            .then((text => {
+                                if(response.headers.get('X-More-Data')){
+                                    const logs = getState().adminStore.logs;
+                                    if (logs && logs[logUrl]) {
+                                        text = logs[logUrl].text + text;
+                                    }
+                                }
+                                return dispatch({
+                                    type: ACTION_TYPES.SET_LOGS,
+                                    payload: {
+                                        text,
+                                        logUrl,
+                                    },
+                                });
+                            }));
+                    },
+                  (error) => console.error('error', error)
+                )
             }
             return null;
         };
