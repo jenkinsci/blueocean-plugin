@@ -56,7 +56,7 @@ export default class Branch {
 
     run() {
         // TODO: fix this when JENKINS-35797 is done
-        const url = `${this.restUrl()}/startRun`;
+        const url = `${this.restUrl()}/runs/`;
 
         // TODO: isomorphic-fetch not working for posts?
         // Is supposed to be extended from whatwg-fetch.
