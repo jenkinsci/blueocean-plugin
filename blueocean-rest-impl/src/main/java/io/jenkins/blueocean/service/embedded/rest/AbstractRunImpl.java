@@ -8,7 +8,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
-import io.jenkins.blueocean.rest.model.BluePipelineStep;
+import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
@@ -172,7 +172,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public Container<?> getSteps() {
+    public BluePipelineStepContainer getSteps() {
         return null;
     }
 

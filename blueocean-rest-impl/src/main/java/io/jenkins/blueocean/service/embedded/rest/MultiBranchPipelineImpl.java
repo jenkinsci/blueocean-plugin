@@ -9,6 +9,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
@@ -242,6 +243,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 });
 
                 return c.iterator();
+            }
+
+            @Override
+            public BlueQueueItem create() {
+                throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };
     }
