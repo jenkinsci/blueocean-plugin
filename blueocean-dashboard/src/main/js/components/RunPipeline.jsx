@@ -26,13 +26,13 @@ export default class RunPipeline extends Component {
             const eventBranch = fromSSEEvent(event);
             if (_this.branch.equals(eventBranch)) {
                 if (event.jenkins_event === 'job_run_queue_enter') {
-                    _this.etState({
+                    _this.setState({
                         toast: { text: 'ueued' },
                     });
                 } else if (event.jenkins_event === 'job_run_started') {
-                    _this.etState({
+                    _this.setState({
                         toast: {
-                            text: 'Started',
+                            text: `Started "${eventBranch.name}" #${event.jenkins_object_id}`,
                             action: {
                                 label: 'Open',
                                 callback: () => {
