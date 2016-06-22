@@ -185,9 +185,6 @@ function parseJSON(response) {
     return response.json();
 }
 
-function parseText(response) {
-    return response.text();
-}
 /**
  * Fetch JSON data.
  * <p>
@@ -215,14 +212,14 @@ exports.fetchLogsReFetch = function fetchJson(url, start, onSuccess, onError) {
     if (start === null) {
         refetchUrl = url;
     } else {
-        refetchUrl = `${url}?start=${start}`
+        refetchUrl = `${url}?start=${start}`;
     }
     fetch(refetchUrl, fetchOptions)
         .then(checkStatus)
         .then(response => {
-            if(response.headers.get('X-More-Data')){
-                const start = response.headers.get('X-TEXT-SIZE');
-                setTimeout(exports.fetchLogsReFetch(url, start, onSuccess, onError), 3000);
+            if (response.headers.get('X-More-Data')) {
+                const newStart = response.headers.get('X-TEXT-SIZE');
+                setTimeout(exports.fetchLogsReFetch(url, newStart, onSuccess, onError), 3000);
             }
             return response;
         })
@@ -774,26 +771,25 @@ export const actions = {
                 return exports.fetchLogsReFetch(
                     logUrl,
                     null,
-                    response => {
-                        response.text()
-                            .then((text => {
-                                if(response.headers.get('X-More-Data')){
-                                    const logs = getState().adminStore.logs;
-                                    if (logs && logs[logUrl]) {
-                                        text = logs[logUrl].text + text;
-                                    }
+                    response => response.text()
+                        .then(text => {
+                            let newText = text;
+                            if (response.headers.get('X-More-Data')) {
+                                const logs = getState().adminStore.logs;
+                                if (logs && logs[logUrl]) {
+                                    newText = logs[logUrl].text + text;
                                 }
-                                return dispatch({
-                                    type: ACTION_TYPES.SET_LOGS,
-                                    payload: {
-                                        text,
-                                        logUrl,
-                                    },
-                                });
-                            }));
-                    },
+                            }
+                            return dispatch({
+                                type: ACTION_TYPES.SET_LOGS,
+                                payload: {
+                                    newText,
+                                    logUrl,
+                                },
+                            });
+                        }),
                   (error) => console.error('error', error)
-                )
+                );
             }
             return null;
         };
