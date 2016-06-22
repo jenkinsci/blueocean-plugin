@@ -96,7 +96,7 @@ export class ResultItem extends Component {
                 <div className="result-item-head" onClick={this.toggleExpanded}>
                     <span className={iconClassName}>
                         <svg width="28" height="34">
-                            <g transform="translate(14 16)" className="result-status-glyph">{statusGlyph}</g>
+                            <g transform="translate(14 18)" className="result-status-glyph">{statusGlyph}</g>
                         </svg>
                     </span>
                     <span className="result-item-title">
