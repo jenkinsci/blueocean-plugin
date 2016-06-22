@@ -8,7 +8,8 @@ storiesOf('LiveStatusIndicator', module)
     .add('10s, start now', scenario1)
     .add('60s, started 30s ago', scenario2)
     .add('already exceeded estimate', scenario3)
-    .add('no bg, large', scenario4);
+    .add('no estimate available', scenario4)
+    .add('no bg, large', scenario5);
 
 function scenario1() {
     const started = moment().toISOString();
@@ -32,6 +33,13 @@ function scenario3() {
 }
 
 function scenario4() {
+    const started = moment().subtract(1, 'minute').toISOString();
+    return (
+        <LiveStatusIndicator result={'running'} startTime={started} estimatedDuration={-1} />
+    );
+}
+
+function scenario5() {
     const started = moment().toISOString();
     const styleContainer = {
         display: 'flex',
