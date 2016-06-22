@@ -94,6 +94,11 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
             public Iterator<BlueRun> iterator() {
                 return Collections.emptyIterator();
             }
+
+            @Override
+            public BlueQueueItem create() {
+                throw new ServiceException.NotImplementedException("This action is not supported");
+            }
         };
     }
 
