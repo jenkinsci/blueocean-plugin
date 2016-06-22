@@ -46,7 +46,6 @@ export class RunDetailsPipeline extends Component {
         this.props.cleanNodePointer();
     }
 
-
     generateConfig(props) {
         const {
             config = {},
@@ -58,7 +57,7 @@ export class RunDetailsPipeline extends Component {
         // we would use default properties however the node can be null so no default properties will be triggered
         let { nodeReducer } = props;
         if (!nodeReducer) {
-            nodeReducer = { id: null, displayName: 'default title' };
+            nodeReducer = { id: null, displayName: 'Steps - Name of step node' };
         }
         // if we have a node param we do not want the calculation of the focused node
         const node = nodeParam || nodeReducer.id;
@@ -76,7 +75,7 @@ export class RunDetailsPipeline extends Component {
             params: {
                 pipeline: name, branch, runId,
             },
-            isMultiBranch, steps, nodes, result, logs,
+            isMultiBranch, steps, nodes, logs,
         } = this.props;
 
         const mergedConfig = this.generateConfig(this.props);
@@ -85,11 +84,11 @@ export class RunDetailsPipeline extends Component {
         const key = calculateStepsBaseUrl(mergedConfig);
         const logGeneral = calculateRunLogURLObject(mergedConfig);
         const log = logs ? logs[logGeneral.url] : null;
-        let title;
+        let title = mergedConfig.nodeReducer.displayName;
         if (log) {
-            title = `${result.name} #${result.id}`;
-        } else {
-            title = mergedConfig.nodeReducer.displayName;
+            title = 'Logs';
+        } else if (mergedConfig.nodeReducer.id !== null) {
+            title = `Steps - ${title}`;
         }
         return (
             <div>
