@@ -777,7 +777,7 @@ export const actions = {
                             if (response.headers.get('X-More-Data')) {
                                 const logs = getState().adminStore.logs;
                                 if (logs && logs[logUrl]) {
-                                    newText = logs[logUrl].text + text;
+                                    newText = logs[logUrl].newText + newText;
                                 }
                             }
                             return dispatch({

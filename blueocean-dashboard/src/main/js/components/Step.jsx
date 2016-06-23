@@ -49,7 +49,7 @@ export default class Node extends Component {
               onExpand={getLogForNode}
               durationMillis={durationInMillis}
             >
-                { log && <LogConsole key={id} data={log.text} /> } &nbsp;
+                { log && <LogConsole key={id} data={log.newText} /> } &nbsp;
             </ResultItem>
       </div>);
     }
