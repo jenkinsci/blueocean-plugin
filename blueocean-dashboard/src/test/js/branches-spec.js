@@ -35,7 +35,7 @@ describe("Branches should render", () => {
     const hashComp = row[3].getRenderOutput().props.children;
     const hashRendered = sd.shallowRender(hashComp).getRenderOutput();
     assert.equal(hashRendered.props.children, commitHash);
-    assert.equal(row.length, 6);
+    assert.equal(row.length, 7);
   });
 });
 
