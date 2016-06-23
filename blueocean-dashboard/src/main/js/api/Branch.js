@@ -27,7 +27,7 @@ export default class Branch {
         return urlUtils.buildRunDetailsUrl(
             this.pipeline.organization,
             this.pipeline.name,
-            this.name,  runId, 'pipeline');
+            this.name, runId, 'pipeline');
     }
 
     restUrl() {
