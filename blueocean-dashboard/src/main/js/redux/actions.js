@@ -207,6 +207,18 @@ exports.fetchJson = function fetchJson(url, onSuccess, onError) {
             }
         });
 };
+
+/**
+ * Fetch TXT/log data and repeat until the server tells us that there is no more
+ * <p>
+ * Utility function that can be mocked for testing.
+ *
+ * @param url The URL to fetch from.
+ * @param start query parameter tells API to send log starting from this offset in the log file.
+ * @param onSuccess Main callback to run specific callback code
+ * @param onError Error callback
+ */
+
 exports.fetchLogsReFetch = function fetchJson(url, start, onSuccess, onError) {
     let refetchUrl;
     if (start === null) {
@@ -217,9 +229,17 @@ exports.fetchLogsReFetch = function fetchJson(url, start, onSuccess, onError) {
     fetch(refetchUrl, fetchOptions)
         .then(checkStatus)
         .then(response => {
+            /*
+             * If X-More-Data is true, then client should repeat the request after some delay.
+             * In the repeated request it should use X-TEXT-SIZE header value with start query parameter.
+             */
             if (response.headers.get('X-More-Data')) {
+                /*
+                 * X-TEXT-SIZE is the byte offset of the raw log file client should use in the next request
+                 * as value of start query parameter.
+                 */
                 const newStart = response.headers.get('X-TEXT-SIZE');
-                setTimeout(exports.fetchLogsReFetch(url, newStart, onSuccess, onError), 3000);
+                setTimeout(exports.fetchLogsReFetch(url, newStart, onSuccess, onError), 1000);
             }
             return response;
         })

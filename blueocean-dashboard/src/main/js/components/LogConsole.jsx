@@ -19,11 +19,13 @@ export default class LogConsole extends Component {
             lines: [],
         };
     }
-
+    
     componentWillMount() {
         this._processLines(this.props.data);
     }
 
+    // This will scroll to the bottom of the console diff
+    // React needs the timeout to have the dom ready
     componentDidMount() {
         setTimeout(() => {
             this.updateScroll();
@@ -40,12 +42,15 @@ export default class LogConsole extends Component {
         this._processLines(lines);
     }
 
+    // This will scroll to the bottom of the console diff
+    // React needs the timeout to have the dom ready
     componentDidUpdate() {
         setTimeout(() => {
             this.updateScroll();
         });
     }
 
+    // Find the modal view container and adopt the scrollTop to focus the end
     updateScroll() {
         const nodes = document.getElementsByClassName('content');
         const element = nodes[0];
