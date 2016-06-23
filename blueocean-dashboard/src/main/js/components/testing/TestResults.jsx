@@ -19,7 +19,7 @@ const TestCaseResultRow = (props) => {
                 {t.errorDetails}
             </div>
             <h4>Output</h4>
-            <div className="stack-trace" style={{whiteSpace:'pre'}}>
+            <div className="stack-trace">
                 {t.errorStackTrace}
             </div>
         </div>
@@ -64,7 +64,7 @@ export default class AbstractTestResult extends Component {
         const failures = tests.filter(t => t.status === 'FAILED');
         const skipped = tests.filter(t => t.status === 'SKIPPED');
         const newFailures = failures.filter(t => t.age === 1);
-        const existingFailures = failures.filter(t => t.age >= 1);
+        const existingFailures = failures.filter(t => t.age > 1);
 
         let newFailureBlock = null;
         let existingFailureBlock = null;
