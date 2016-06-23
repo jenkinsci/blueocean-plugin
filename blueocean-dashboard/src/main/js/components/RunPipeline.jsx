@@ -52,7 +52,7 @@ export default class RunPipeline extends Component {
         this.branch.clearEventListeners();
     }
 
-    run() {
+    run(event) {
         const _this = this;
         const theBranch = this.branch;
 
@@ -63,6 +63,8 @@ export default class RunPipeline extends Component {
                 toast: { text: `Failed to queue "${theBranch.name}". Try reloading the page.` },
             });
         });
+        
+        event.stopPropagation();
     }
 
     render() {
@@ -70,20 +72,20 @@ export default class RunPipeline extends Component {
         if (toast) {
             if (toast.action) {
                 return (<div>
-                    <div className="run-pipeline" onClick={() => this.run()}></div>
+                    <div className="run-pipeline" onClick={(event) => this.run(event)}></div>
                     <div className="run-pipeline-toast">
                         <Toast text={toast.text} action={toast.action.label} onActionClick={() => toast.action.callback()} />
                     </div>
                 </div>);
             }
             return (<div>
-                <div className="run-pipeline" onClick={() => this.run()}></div>
+                <div className="run-pipeline" onClick={(event) => this.run(event)}></div>
                 <div className="run-pipeline-toast">
                     <Toast text={toast.text} />
                 </div>
             </div>);
         }
-        return (<div className="run-pipeline" onClick={() => this.run()}></div>);
+        return (<div className="run-pipeline" onClick={(event) => this.run(event)}></div>);
     }
 }
 
