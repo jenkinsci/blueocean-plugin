@@ -793,20 +793,17 @@ export const actions = {
                     null,
                     response => response.text()
                         .then(text => {
-                            let newText = text;
-                            if (response.headers.get('X-More-Data')) {
-                                const logs = getState().adminStore.logs;
-                                if (logs && logs[logUrl]) {
-                                    newText = logs[logUrl].newText + newText;
-                                }
+                            if (text && !!text.trim()) {
+                                const logArray = text.trim().split('\n');
+                                return dispatch({
+                                    type: ACTION_TYPES.SET_LOGS,
+                                    payload: {
+                                        logArray,
+                                        logUrl,
+                                    },
+                                });
                             }
-                            return dispatch({
-                                type: ACTION_TYPES.SET_LOGS,
-                                payload: {
-                                    newText,
-                                    logUrl,
-                                },
-                            });
+                            return null;
                         }),
                   (error) => console.error('error', error)
                 );

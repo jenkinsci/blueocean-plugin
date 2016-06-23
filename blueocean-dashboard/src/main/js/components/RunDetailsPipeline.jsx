@@ -113,7 +113,7 @@ export class RunDetailsPipeline extends Component {
                 />
                 }
 
-                { log && <LogConsole key={logGeneral.url} data={log.newText} /> }
+                { log && <LogConsole key={logGeneral.url} logArray={log.logArray} /> }
             </div>
         );
     }

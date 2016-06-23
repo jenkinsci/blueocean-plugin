@@ -40,16 +40,18 @@ export default class Node extends Component {
                 fetchLog({ ...config, node, nodesBaseUrl });
             }
         };
+        const runResult = resultRun.toLowerCase();
+        const scrollToBottom = runResult === 'failure' || runResult === 'running';
         return (<div>
             <ResultItem
               key={id}
-              result={resultRun.toLowerCase()}
+              result={runResult}
               expanded={isFocused}
               label={title}
               onExpand={getLogForNode}
               durationMillis={durationInMillis}
             >
-                { log && <LogConsole key={id} data={log.newText} /> } &nbsp;
+                { log && <LogConsole key={id} logArray={log.logArray} scrollToBottom={scrollToBottom} /> } &nbsp;
             </ResultItem>
       </div>);
     }
