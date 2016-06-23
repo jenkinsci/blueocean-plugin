@@ -50,7 +50,7 @@ export default class PullRequest extends Component {
             <td>{id}</td>
             <td>{title || '-'}</td>
             <td>{author || '-'}</td>
-            <td><ReadableDate date={endTime} /></td>
+            <td><ReadableDate date={endTime} liveUpdate /></td>
         </tr>);
     }
 }

@@ -47,7 +47,7 @@ export default class Branches extends Component {
             <td>{decodeURIComponent(name)}</td>
             <td><CommitHash commitId={commitId} /></td>
             <td>{msg || '-'}</td>
-            <td><ReadableDate date={endTime || ''} /></td>
+            <td><ReadableDate date={endTime} liveUpdate /></td>
         </tr>);
     }
 }

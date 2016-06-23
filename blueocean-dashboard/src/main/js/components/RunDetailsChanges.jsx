@@ -39,7 +39,7 @@ export default class RunDetailsChanges extends Component {
                         <td><CommitHash commitId={commit.commitId} /></td>
                         <td>{commit.author.fullName}</td>
                         <td>{commit.msg}</td>
-                        <td><ReadableDate date={commit.timestamp} /></td>
+                        <td><ReadableDate date={commit.timestamp} liveUpdate /></td>
                     </tr>
                 ))}
             </Table>
