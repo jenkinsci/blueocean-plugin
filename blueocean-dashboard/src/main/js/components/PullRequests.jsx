@@ -99,6 +99,7 @@ export class PullRequests extends Component {
             { label: 'Summary', className: 'summary' },
             'Author',
             { label: 'Completed', className: 'completed' },
+            { label: '', className: 'run' },
         ];
 
         return (
