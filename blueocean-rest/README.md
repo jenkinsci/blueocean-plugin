@@ -978,6 +978,12 @@ start query parameter tells API to send log starting from this offset in the log
 Size of log to return in the response. Default value is 150 KB of log data.
 
 
+## Download a log for a Pipeline run
+
+This will show up as a download in the browser.
+
+    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0&download=true
+
     
 ## Get log for a Pipeline run
 

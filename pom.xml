@@ -32,13 +32,65 @@
   
   <developers>
      <developer>
-       <id>michaelneale</id>
-       <name>Michael Neale</name>      
+       <id>scherler</id>
+       <name>Thorsten Iberian Sumurai</name>      
      </developer>
      <developer>
-       <id>jamesdumay</id>
+       <id>cliffmeyers</id>
+       <name>Cliff Meyers</name>      
+     </developer>
+     <developer>
+       <id>tfennelly</id>
+       <name>Tom Fennelly</name>      
+     </developer>    
+     <developer>
+       <id>vivek</id>
+       <name>Vivek Pandey</name>      
+     </developer>    
+     <developer>
+       <id>kohsuke</id>
+       <name>Kohsuke</name>      
+     </developer>   
+     <developer>
+       <id>sophistifunk</id>
+       <name>Josh McDonald</name>      
+     </developer>    
+     <developer>
+       <id>imeredith</id>
+       <name>Ivan Meredith</name>      
+     </developer>    
+     <developer>
+       <id>michaelneale</id>
+       <name>Michael Neale</name>      
+     </developer>    
+     <developer>
+       <id>kzantow</id>
+       <name>Keith Zantow</name>      
+     </developer>    
+     <developer>
+       <id>i386</id>
        <name>James Dumay</name>      
      </developer>    
+     <developer>
+       <id>marcesher</id>
+       <name>Marc</name>      
+     </developer>
+     <developer>
+       <id>dragoonis</id>
+       <name>Paul Dragoonis</name>      
+     </developer>   
+     <developer>
+       <id>pragmaticivan</id>
+       <name>Ivan Santos</name>      
+     </developer> 
+     <developer>
+       <id>PeterDaveHello</id>
+       <name>Peter Dave Hello</name>      
+     </developer> 
+     <developer>
+       <id>alexsomai</id>
+       <name>Alexandru Somai</name>      
+     </developer>     
   </developers>
 
   <modules>

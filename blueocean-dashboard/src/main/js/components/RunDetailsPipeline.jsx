@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import Extensions from '@jenkins-cd/js-extensions';
+import LogConsole from './LogConsole';
+
 import Steps from './Steps';
 import {
     steps as stepsSelector,
@@ -20,8 +22,15 @@ const { string, object, any, func } = PropTypes;
 
 export class RunDetailsPipeline extends Component {
     componentWillMount() {
-        if (this.props.fetchNodes) {
-            this.props.fetchNodes(this.generateConfig(this.props));
+        const { fetchNodes, fetchLog, result } = this.props;
+        const mergedConfig = this.generateConfig(this.props);
+
+        if (result && result._class === 'io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl') {
+            fetchNodes(mergedConfig);
+        } else {
+            // console.log('fetch the log directly')
+            const logGeneral = calculateRunLogURLObject(mergedConfig);
+            fetchLog({ ...logGeneral });
         }
     }
 
@@ -37,7 +46,6 @@ export class RunDetailsPipeline extends Component {
         this.props.cleanNodePointer();
     }
 
-
     generateConfig(props) {
         const {
             config = {},
@@ -49,7 +57,7 @@ export class RunDetailsPipeline extends Component {
         // we would use default properties however the node can be null so no default properties will be triggered
         let { nodeReducer } = props;
         if (!nodeReducer) {
-            nodeReducer = { id: null, displayName: 'default title' };
+            nodeReducer = { id: null, displayName: 'Steps' };
         }
         // if we have a node param we do not want the calculation of the focused node
         const node = nodeParam || nodeReducer.id;
@@ -67,17 +75,21 @@ export class RunDetailsPipeline extends Component {
             params: {
                 pipeline: name, branch, runId,
             },
-            isMultiBranch, steps, nodes,
+            isMultiBranch, steps, nodes, logs,
         } = this.props;
 
-        if (!steps) {
-            return null;
-        }
         const mergedConfig = this.generateConfig(this.props);
 
         const nodeKey = calculateNodeBaseUrl(mergedConfig);
         const key = calculateStepsBaseUrl(mergedConfig);
         const logGeneral = calculateRunLogURLObject(mergedConfig);
+        const log = logs ? logs[logGeneral.url] : null;
+        let title = mergedConfig.nodeReducer.displayName;
+        if (log) {
+            title = 'Logs';
+        } else if (mergedConfig.nodeReducer.id !== null) {
+            title = `Steps - ${title}`;
+        }
         return (
             <div>
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
@@ -93,13 +105,15 @@ export class RunDetailsPipeline extends Component {
                 <LogToolbar
                   fileName={logGeneral.fileName}
                   url={logGeneral.url}
-                  title={mergedConfig.nodeReducer.displayName}
+                  title={title}
                 />
                 { steps && steps[key] && <Steps
                   nodeInformation={steps[key]}
                   {...this.props}
                 />
                 }
+
+                { log && <LogConsole key={logGeneral.url} data={log.text} /> }
             </div>
         );
     }
@@ -109,12 +123,15 @@ RunDetailsPipeline.propTypes = {
     pipeline: object,
     isMultiBranch: any,
     params: object,
+    result: object,
     fileName: string,
     url: string,
+    fetchLog: func,
     fetchNodes: func,
     setNode: func,
     fetchSteps: func,
     cleanNodePointer: func,
+    logs: object,
     steps: object,
     nodes: object,
     nodeReducer: object,
