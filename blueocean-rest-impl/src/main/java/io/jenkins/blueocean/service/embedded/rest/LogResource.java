@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Strings;
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.commons.ServiceException;
 import org.kohsuke.stapler.AcceptHeader;
@@ -30,6 +31,12 @@ public class LogResource{
 
     private void writeLog(StaplerRequest req, StaplerResponse rsp, AcceptHeader accept) {
         try {
+            String download = req.getParameter("download");
+
+            if("true".equalsIgnoreCase(download)) {
+                rsp.setHeader("Content-Disposition", "attachment; filename=log.txt");
+            }
+
             switch (accept.select("text/plain","text/html")) {
                 case "text/html":
                     rsp.setContentType("text/html;charset=UTF-8");
