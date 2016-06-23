@@ -22,7 +22,7 @@ describe('PullRequest should render', () => {
 
     it('does renders the PullRequest with data', () => {
         const result = tree.everySubTree('td');
-        assert.equal(result.length, 5);
+        assert.equal(result.length, 6);
         assert.equal(data.length, 2);
         assert.equal(pr.length, 1);
         const im = new RunsRecord(pr[0]);
