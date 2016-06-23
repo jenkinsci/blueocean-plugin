@@ -8,6 +8,7 @@
 import fetch from 'isomorphic-fetch';
 import config from '../config';
 import Pipeline from './Pipeline';
+import * as urlUtils from '../util/UrlUtils';
 import * as sse from '@jenkins-cd/sse-gateway';
 import * as pushEventUtil from '../util/push-event-util';
 
@@ -23,7 +24,10 @@ export default class Branch {
         if (runId === undefined) {
             throw new Error('Branch.runDetailsRouteUrl must be supplied with a "runId" parameter.');
         }
-        return `/organizations/${this.pipeline.organization}/${this.pipeline.name}/detail/${this.name}/${runId}/pipeline`;
+        return urlUtils.buildRunDetailsUrl(
+            this.pipeline.organization,
+            this.pipeline.name,
+            this.name,  runId, 'pipeline');
     }
 
     restUrl() {
