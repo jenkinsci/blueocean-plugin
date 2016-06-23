@@ -24,6 +24,12 @@ export default class LogConsole extends Component {
         this._processLines(this.props.data);
     }
 
+    componentDidMount() {
+        setTimeout(() => {
+            this.updateScroll();
+        });
+    }
+
     componentWillReceiveProps(nextProps) {
         const lines = nextProps.data;
 
@@ -32,6 +38,20 @@ export default class LogConsole extends Component {
         }
 
         this._processLines(lines);
+    }
+
+    componentDidUpdate() {
+        setTimeout(() => {
+            this.updateScroll();
+        });
+    }
+
+    updateScroll() {
+        const nodes = document.getElementsByClassName('content');
+        const element = nodes[0];
+        if (element) {
+            element.scrollTop = element.scrollHeight - element.clientHeight;
+        }
     }
 
     _processLines(data) {
