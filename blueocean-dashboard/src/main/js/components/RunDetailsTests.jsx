@@ -45,7 +45,11 @@ export class RunDetailsTests extends Component {
     render() {
         const { testResults } = this.props;
         
-        if (!testResults || !testResults.suites) {
+        if (!testResults) {
+            return null;
+        }
+        
+        if (!testResults.suites) {
             return <EmptyState />;
         }
         

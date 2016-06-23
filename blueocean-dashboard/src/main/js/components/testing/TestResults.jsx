@@ -33,7 +33,7 @@ const TestCaseResultRow = (props) => {
     case 'SKIPPED':
         statusIndicator = StatusIndicator.validResultValues.unstable;
         break;
-    case 'PASSING':
+    case 'PASSED':
         statusIndicator = StatusIndicator.validResultValues.success;
         break;
     default:
@@ -54,9 +54,10 @@ TestCaseResultRow.propTypes = {
     testCase: PropTypes.object,
 };
 
-export default class AbstractTestResult extends Component {
+export default class TestResult extends Component {
 
     render() {
+        const testResults = this.props.testResults;
         const suites = this.props.testResults.suites;
         const tests = [].concat.apply([], suites.map(t => t.cases));
         
@@ -66,9 +67,24 @@ export default class AbstractTestResult extends Component {
         const newFailures = failures.filter(t => t.age === 1);
         const existingFailures = failures.filter(t => t.age > 1);
 
+        let passBlock = null;
         let newFailureBlock = null;
         let existingFailureBlock = null;
         let skippedBlock = null;
+        
+        if (testResults.failCount === 0) {
+            passBlock = [
+                <h4>Passing - {testResults.passCount}</h4>,
+                suites.map((t, i) => <TestCaseResultRow key={i} testCase={{
+                    className: `${t.cases.filter(c => c.status === 'PASSED').length} Passing`, // this shows second
+                    name: t.name,
+                    duration: t.duration,
+                    status: 'PASSED',
+                } // lint is forcing this terrible formatting...
+                }
+                />),
+            ];
+        }
 
         if (newFailures.length > 0 || existingFailures.length > 0) {
             if (newFailures.length === 0) {
@@ -102,10 +118,11 @@ export default class AbstractTestResult extends Component {
             {newFailureBlock}
             {existingFailureBlock}
             {skippedBlock}
+            {passBlock}
         </div>);
     }
 }
 
-AbstractTestResult.propTypes = {
+TestResult.propTypes = {
     testResults: PropTypes.object,
 };

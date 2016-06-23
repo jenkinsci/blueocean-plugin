@@ -143,7 +143,7 @@ export const actionHandlers = {
         return state.set('branches', branches);
     },
     [ACTION_TYPES.SET_TEST_RESULTS](state, { payload }): State {
-        return state.set('testResults', payload);
+        return state.set('testResults', payload == null ? {} : payload);
     },
     [ACTION_TYPES.SET_STEPS](state, { payload }): State {
         const steps = { ...state.steps } || {};
@@ -639,6 +639,11 @@ export const actions = {
                 dispatch({
                     payload: { type: 'ERROR', message: `${error.stack}` },
                     type: ACTION_TYPES.UPDATE_MESSAGES,
+                });
+                // call again with no payload so actions handle missing data
+                dispatch({
+                    ...optional,
+                    type: actionType,
                 });
             });
     },
