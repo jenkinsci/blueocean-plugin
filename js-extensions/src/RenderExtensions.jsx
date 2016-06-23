@@ -1,28 +1,26 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var ExtensionStore = require('./ExtensionStore.js');
-var ResourceLoadTracker = require('./ResourceLoadTracker');
-
-// TODO: Move this package to babel, and update this to ES6
+var ResourceLoadTracker = require('./ResourceLoadTracker').instance;
 
 /**
  * An internal component that inserts things into the (separate) context of mounted extensions. We need this for our
  * configuration object, which helps resolve URLs for media, REST endpoints, etc, and we also need to bridge the
  * "router" context property in order for extensions to be able to use &lt;Link&gt; from react-router.
  */
-var ContextBridge = React.createClass({
+class ContextBridge extends React.Component {
 
-    getChildContext: function() {
+    getChildContext() {
         return {
             router: this.props.router,
             config: this.props.config
         };
-    },
+    }
 
-    render: function() {
+    render() {
         return this.props.children;
     }
-});
+}
 
 ContextBridge.childContextTypes = {
     router: React.PropTypes.object,
@@ -30,6 +28,7 @@ ContextBridge.childContextTypes = {
 };
 
 ContextBridge.propTypes = {
+    children: React.PropTypes.any,
     router: React.PropTypes.object,
     config: React.PropTypes.object
 };
@@ -37,48 +36,36 @@ ContextBridge.propTypes = {
 /**
  * Implement an RenderExtensions for which other plugins can provide an implementing Component.
  */
-var RenderExtensions = React.createClass({
-
-    getInitialState: function () {
+export class RenderExtensions extends React.Component {
+    constructor() {
+        super();
         // Initial state is empty. See the componentDidMount and render functions.
-        return { extensions: [] };
-    },
+        this.state = { extensions: null };
+    }
     
-    componentWillMount: function() {
+    componentWillMount() {
         this._setExtensions();
-    },
+    }
     
-    componentDidMount: function() {
+    componentDidMount() {
         ResourceLoadTracker.onMount(this.props.name);
         this._renderAllExtensions();
-    },
+    }
 
-    componentDidUpdate: function() {
+    componentDidUpdate() {
         this._renderAllExtensions();
-    },
+    }
 
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         this._unmountAllExtensions();
         ResourceLoadTracker.onUnmount(this.props.name);
-    },
+    }
     
-    _setExtensions: function() {
-        var extensions = ExtensionStore.getExtensions(this.props.name, this.props.type);
-        if (!extensions) {
-            ExtensionStore.loadExtensions(this.props.name, function() { this._setExtensions(); }.bind(this));
-            return;
-        }
-        
-        if (this.props.type) {
-            var classInfo = ExtensionStore.getClassInfo(this.props.type);
-            if (!classInfo) {
-                ExtensionStore.loadClassInfo(this.props.type, function() { this._setExtensions(); }.bind(this));
-                return;
-            };
-        }
-        
-        this.setState({extensions: extensions});
-    },
+    _setExtensions() {
+        ExtensionStore.instance.getExtensions(this.props.name, this.props.dataType,
+            extensions => this.setState({extensions: extensions})
+        );
+    }
     
     /**
      * This method renders the "leaf node" container divs, one for each registered extension, that live in the same
@@ -86,8 +73,11 @@ var RenderExtensions = React.createClass({
      * childless divs that are never updated. Actually rendering the extensions themselves is done by
      * _renderAllExtensions.
      */
-    render: function() {
+    render() {
         var extensions = this.state.extensions;
+        if (!extensions) {
+            return null; // this is called before extension data is available
+        }
         
         // Add a <div> for each of the extensions. See the __renderAllExtensions function.
         var extensionDivs = [];
@@ -95,14 +85,14 @@ var RenderExtensions = React.createClass({
             extensionDivs.push(<div key={i}/>);
         }
         return React.createElement(this.props.wrappingElement, null, extensionDivs);
-    },
+    }
 
     /**
      * For each extension, we have created a "leaf node" element in the DOM. This method creates a new react hierarchy
      * for each, and instructs it to render. From that point on we have a separation that keeps the main app insulated
      * from any plugin issues that may cause react to throw while updating. Inspired by Nylas N1.
      */
-    _renderAllExtensions: function() {
+    _renderAllExtensions() {
         // NB: This needs to be a lot cleverer if the list of extensions for a specific point can change;
         // We will need to link each extension with its containing element, in some way that doesn't leak :) Easy in
         // browsers with WeakMap, less so otherwise.
@@ -124,10 +114,10 @@ var RenderExtensions = React.createClass({
                 }
             }
         }
-    },
+    }
 
     /** Actually render an individual extension */
-    _renderExtension: function(element, extension) {
+    _renderExtension(element, extension) {
         var component = React.createElement(extension, this.props);
         try {
             var contextValuesAsProps = {
@@ -142,13 +132,13 @@ var RenderExtensions = React.createClass({
             var errorDiv = <div className="error alien">Error rendering {extension.name}: {e.toString()}</div>;
             ReactDOM.render(errorDiv, element);
         }
-    },
+    }
 
     /**
      * Clean up child extensions' react hierarchies. Necessary because they live in their own react hierarchies that
      * would otherwise not be notified when this is being unmounted.
      */
-    _unmountAllExtensions: function() {
+    _unmountAllExtensions() {
         var thisNode = ReactDOM.findDOMNode(this);
         var children = thisNode ? thisNode.children : null;
         if (children && children.length) {
@@ -166,7 +156,7 @@ var RenderExtensions = React.createClass({
             }
         }
     }
-});
+}
 
 RenderExtensions.defaultProps = {
     wrappingElement: "div"
@@ -174,6 +164,7 @@ RenderExtensions.defaultProps = {
 
 RenderExtensions.propTypes = {
     name: React.PropTypes.string.isRequired,
+    dataType: React.PropTypes.any,
     wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element])
 };
 
@@ -181,9 +172,3 @@ RenderExtensions.contextTypes = {
     router: React.PropTypes.object,
     config: React.PropTypes.object
 };
-
-RenderExtensions.store = RenderExtensions.ExtensionStore = ExtensionStore;
-RenderExtensions.store.RenderExtensions = RenderExtensions;
-RenderExtensions.RenderExtensions = RenderExtensions;
-
-module.exports = RenderExtensions;

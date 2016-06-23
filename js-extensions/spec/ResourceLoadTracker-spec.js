@@ -1,4 +1,7 @@
 var jsTest = require('@jenkins-cd/js-test');
+var expect = require('chai').expect;
+
+var ResourceLoadTracker = require('../dist/ResourceLoadTracker').instance;
 
 describe("ResourceLoadTracker.js", function () {
 
@@ -24,28 +27,27 @@ describe("ResourceLoadTracker.js", function () {
     it("- test ep-1 loads css from both plugins", function (done) {
         jsTest.onPage(function() {
             var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-02.json');
-            var ResourceLoadTracker = require('../src/ResourceLoadTracker');
 
             // Initialise the load tracker with plugin extension point info.
             ResourceLoadTracker.setExtensionPointMetadata(javaScriptExtensionInfo);
 
             // Verify that there's no link elements on the page.
             var cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(0);
+            expect(cssElements.length).to.equal(0);
 
             // Mounting ep-1 should result in the CSS for both plugins being
             // loaded ...
             ResourceLoadTracker.onMount('ep-1');
             cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(2);
-            expect(cssElements[0].getAttribute('href')).toBe('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
-            expect(cssElements[1].getAttribute('href')).toBe('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
+            expect(cssElements.length).to.equal(2);
+            expect(cssElements[0].getAttribute('href')).to.equal('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
+            expect(cssElements[1].getAttribute('href')).to.equal('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
 
             // Unmounting ep-1 should result in the CSS for both plugins being
             // unloaded ...
             ResourceLoadTracker.onUnmount('ep-1');
             cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(0);
+            expect(cssElements.length).to.equal(0);
 
             done();
         });
@@ -54,26 +56,25 @@ describe("ResourceLoadTracker.js", function () {
     it("- test ep-2 loads css from plugin-1 only", function (done) {
         jsTest.onPage(function() {
             var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-02.json');
-            var ResourceLoadTracker = require('../src/ResourceLoadTracker');
 
             // Initialise the load tracker with plugin extension point info.
             ResourceLoadTracker.setExtensionPointMetadata(javaScriptExtensionInfo);
 
             // Verify that there's no link elements on the page.
             var cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(0);
+            expect(cssElements.length).to.equal(0);
 
             // Mounting ep-2 should result in the CSS for plugin-1 only being
             // loaded ...
             ResourceLoadTracker.onMount('ep-2');
             cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(1);
-            expect(cssElements[0].getAttribute('href')).toBe('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
+            expect(cssElements.length).to.equal(1);
+            expect(cssElements[0].getAttribute('href')).to.equal('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
 
             // Unmounting ep-2 should result in no CSS on the page.
             ResourceLoadTracker.onUnmount('ep-2');
             cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(0);
+            expect(cssElements.length).to.equal(0);
 
             done();
         });
@@ -82,14 +83,13 @@ describe("ResourceLoadTracker.js", function () {
     it("- test ep-1, ep-2 and ep-3 loads and unloads css in correct order", function (done) {
         jsTest.onPage(function() {
             var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-02.json');
-            var ResourceLoadTracker = require('../src/ResourceLoadTracker');
 
             // Initialise the load tracker with plugin extension point info.
             ResourceLoadTracker.setExtensionPointMetadata(javaScriptExtensionInfo);
 
             // Verify that there's no link elements on the page.
             var cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(0);
+            expect(cssElements.length).to.equal(0);
 
             // Mounting ep-* should result in the CSS for both plugins being
             // loaded ...
@@ -97,28 +97,28 @@ describe("ResourceLoadTracker.js", function () {
             ResourceLoadTracker.onMount('ep-2');
             ResourceLoadTracker.onMount('ep-3');
             cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(2);
-            expect(cssElements[0].getAttribute('href')).toBe('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
-            expect(cssElements[1].getAttribute('href')).toBe('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
+            expect(cssElements.length).to.equal(2);
+            expect(cssElements[0].getAttribute('href')).to.equal('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
+            expect(cssElements[1].getAttribute('href')).to.equal('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
 
             // Unmounting ep-1 should no change the page CSS because ep-2 and ep-3
             // are still mounted.
             ResourceLoadTracker.onUnmount('ep-1');
             cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(2);
-            expect(cssElements[0].getAttribute('href')).toBe('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
-            expect(cssElements[1].getAttribute('href')).toBe('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
+            expect(cssElements.length).to.equal(2);
+            expect(cssElements[0].getAttribute('href')).to.equal('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
+            expect(cssElements[1].getAttribute('href')).to.equal('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
 
             // Unmounting ep-3 should should result in plugin-2 CSS being unloaded from the page.
             ResourceLoadTracker.onUnmount('ep-3');
             cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(1);
-            expect(cssElements[0].getAttribute('href')).toBe('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
+            expect(cssElements.length).to.equal(1);
+            expect(cssElements[0].getAttribute('href')).to.equal('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
 
             // Unmounting ep-2 should should result in no CSS being on the page
             ResourceLoadTracker.onUnmount('ep-2');
             cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).toBe(0);
+            expect(cssElements.length).to.equal(0);
 
             done();
         });

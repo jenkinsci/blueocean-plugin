@@ -1,2 +1,3 @@
 // Provide an ExtensionPoints store & RenderExtensions react component
-module.exports = require('./dist/RenderExtensions.js')
+exports.store = require('./dist/ExtensionStore.js').instance;
+exports.Renderer = require('./dist/RenderExtensions.js').RenderExtensions;

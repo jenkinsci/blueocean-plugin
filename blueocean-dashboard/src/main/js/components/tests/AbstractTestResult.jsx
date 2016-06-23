@@ -9,7 +9,7 @@ const TestCaseResultRow = (props) => {
     const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
     const expandable = t.errorStackTrace;
 
-    let testDetails = expandable ? null : (<div className="test-details">
+    let testDetails = !expandable ? null : (<div className="test-details">
         <div className="test-detail-text" style={{ display: 'none' }}>
             {duration}
         </div>
@@ -19,7 +19,7 @@ const TestCaseResultRow = (props) => {
                 {t.errorDetails}
             </div>
             <h4>Output</h4>
-            <div className="stack-trace">
+            <div className="stack-trace" style={{whiteSpace:'pre'}}>
                 {t.errorStackTrace}
             </div>
         </div>

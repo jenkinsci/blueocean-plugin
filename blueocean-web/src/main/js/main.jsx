@@ -5,7 +5,7 @@ import { createHistory } from 'history';
 import { Provider, configureStore, combineReducers} from './redux';
 import { DevelopmentFooter } from './DevelopmentFooter';
 
-import { RenderExtensions } from '@jenkins-cd/js-extensions';
+import Extensions from '@jenkins-cd/js-extensions';
 import rootReducer, { ACTION_TYPES } from './redux/router';
 
 import Config from './config';
@@ -26,7 +26,7 @@ class App extends Component {
             <div className="Site">
                 <div id="outer">
                     <header className="global-header">
-                        <RenderExtensions name="jenkins.logo.top"/>
+                        <Extensions.Renderer name="jenkins.logo.top"/>
                         <nav>
                             <Link to="/pipelines">Pipelines</Link>
                             <a href="#">Administration</a>
@@ -57,10 +57,10 @@ class NotFound extends Component {
     }
 }
 
-function makeRoutes() {
+function makeRoutes(routes) {
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
     const appRoutes = [
-        ...RenderExtensions.store.getExtensions("jenkins.main.routes"),
+        ...routes,
         // FIXME: Not sure best how to set this up without the hardcoded IndexRedirect :-/
         <IndexRedirect to="/pipelines" />,
         <Route path="*" component={NotFound}/>
@@ -75,7 +75,7 @@ function makeRoutes() {
 }
 
 
-function startApp() {
+function startApp(routes, stores) {
 
     const rootElement = document.getElementById("root");
     const headElement = document.getElementsByTagName("head")[0];
@@ -106,7 +106,6 @@ function startApp() {
     });
 
     // get all ExtensionPoints related to redux-stores
-    const stores = RenderExtensions.store.getExtensions("jenkins.main.stores");
     let store;
     if (stores.length === 0) {
         // if we do not have any stores we only add the location store
@@ -139,11 +138,11 @@ function startApp() {
     // Start React
     render(
         <Provider store={store}>
-            <Router history={history}>{ makeRoutes() }</Router>
+            <Router history={history}>{ makeRoutes(routes) }</Router>
         </Provider>
       , rootElement);
 }
 
-RenderExtensions.store.loadExtensions("jenkins.main.routes", () => {
-    startApp();
+Extensions.store.getExtensions(['jenkins.main.routes', 'jenkins.main.stores'], (routes = [], stores = []) => {
+    startApp(routes, stores);
 });

@@ -41,7 +41,7 @@ exports.initialize = function (oncomplete) {
     // will be accessible to bundles from plugins etc at runtime, allowing them to register
     // extension point impls that can be rendered via the ExtensionPoint class.
     const Extensions = require('@jenkins-cd/js-extensions');
-    jenkinsMods.export('jenkins-cd', 'js-extensions', Extensions.store);
+    jenkinsMods.export('jenkins-cd', 'js-extensions', Extensions);
 
     // Create and export a shared instance of the design
     // language React classes.
@@ -57,11 +57,9 @@ exports.initialize = function (oncomplete) {
     // Get the extension list metadata from Jenkins.
     // Might want to do some flux fancy-pants stuff for this.
     const appRoot = document.getElementsByTagName("head")[0].getAttribute("data-appurl");
-    const extensionsURL = `${appRoot}/js-extensions/`;
-    getURL(extensionsURL, data => {
-        Extensions.store.setExtensionPointMetadata(data.data, function(type, oncomplete) {
-            getURL(`${appRoot}/rest/classes/${type}`, oncomplete);
-        });
-        oncomplete();
+    Extensions.store.init({
+        extensionDataProvider: cb => getURL(`${appRoot}/js-extensions`, rsp => cb(rsp.data)),
+        typeInfoProvider: (type, cb) => getURL(`${appRoot}/rest/classes/${type}`, cb)
     });
+    oncomplete();
 };
