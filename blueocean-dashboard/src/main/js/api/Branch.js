@@ -5,7 +5,7 @@
  * interacting with pipeline branches, encapsulating REST API calls etc.
  */
 
-// import fetch from 'isomorphic-fetch';
+import fetch from 'isomorphic-fetch';
 import config from '../config';
 import Pipeline from './Pipeline';
 import * as sse from '@jenkins-cd/sse-gateway';
@@ -54,26 +54,20 @@ export default class Branch {
         this.sseListeners = [];
     }
 
-    run() {
-        // TODO: fix this when JENKINS-35797 is done
+    run(onFail) {
         const url = `${this.restUrl()}/runs/`;
 
-        // TODO: isomorphic-fetch not working for posts?
-        // Is supposed to be extended from whatwg-fetch.
-        // See https://www.npmjs.com/package/whatwg-fetch#post-json
-        //
-        // fetch(url, {
-        //    method: 'post',
-        //    headers: {
-        //        'Content-Type': 'application/json',
-        //    },
-        // }).then((response) => {
-        //    console.log(response);
-        // });
-
-        // Just use XMLHttpRequest for now. See above.
-        // eslint-disable-next-line
-        post(url);
+        fetch(url, {
+            method: 'post',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((response) => {
+            if (onFail && (response.status < 200 || response.status > 299)) {
+                onFail(response);
+            }
+        });
     }
 
     equals(branch) {
@@ -98,23 +92,3 @@ exports.fromSSEEvent = function (event) {
         eventCopy.blueocean_branch_name
     );
 };
-
-// TODO: remove once we find out why isomorphic-fetch is not working
-function post(toUrl) {
-    const http = new XMLHttpRequest();
-
-    http.onreadystatechange = function () {
-        if (http.readyState === 4) {
-            if (http.status >= 200 && http.status < 300) {
-                // Not a JSON response.
-            } else {
-                console.error(`Error invoking Job run via ${toUrl}: `);
-                console.error(http);
-            }
-        }
-    };
-
-    http.open('POST', toUrl, true);
-    http.setRequestHeader('Content-type', 'application/json');
-    http.send();
-}

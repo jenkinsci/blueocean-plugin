@@ -20,11 +20,15 @@
     left: 15px;
     bottom: 15px;
 
-    // Need to set higher specificity rule for the action link
-    // because it's getting overridden by the JDL text rules.
+    // Need to set higher specificity rules for some of the
+    // Toast styles because they are being overridden by other
+    // styles in JDL (table styles).
     .toast {
       a.action {
         color: @blueocean-blue;
+      }
+      .text {
+        white-space: normal;
       }
     }
   }

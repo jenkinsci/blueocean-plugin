@@ -23,10 +23,10 @@ export default class RunPipeline extends Component {
         const reactContext = this.context;
         const theBranch = this.branch;
 
-        theBranch.onJobChannelEvent((event) => {
+        this.branch.onJobChannelEvent((event) => {
             if (event.jenkins_event === 'job_run_queue_enter') {
                 _this.setState({
-                    toast: { text: 'Queued' },
+                    toast: { text: `Queued "${theBranch.name}"` },
                 });
             } else if (event.jenkins_event === 'job_run_started') {
                 _this.setState({
@@ -53,7 +53,16 @@ export default class RunPipeline extends Component {
     }
 
     run() {
-        this.branch.run();
+        const _this = this;
+        const theBranch = this.branch;
+
+        this.branch.run((response) => {
+            console.error(`Unexpected error queuing a run of "${theBranch.name}". Response:`);
+            console.error(response);
+            _this.setState({
+                toast: { text: `Failed to queue "${theBranch.name}". Try reloading the page.` },
+            });
+        });
     }
 
     render() {
