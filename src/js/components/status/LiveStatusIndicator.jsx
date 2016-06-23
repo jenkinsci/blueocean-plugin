@@ -68,7 +68,7 @@ export class LiveStatusIndicator extends Component {
         const elapsed = now.diff(this.startTime);
         this.percentage = Math.floor(elapsed / this.props.estimatedDuration * 100);
 
-        if (this.percentage <= 100) {
+        if (0 <= this.percentage && this.percentage <= 100) {
             this._drawProgress();
         } else {
             // set the percentage > 100 so the indeterminate spinner will display
