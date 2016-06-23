@@ -29,7 +29,6 @@ export default class LogConsole extends Component {
      */
     componentDidMount() {
         if (this.props.scrollToBottom) {
-            console.log('argh')
             setTimeout(() => {
                 this.updateScroll();
             }, INITIAL_RENDER_DELAY);
@@ -55,7 +54,6 @@ export default class LogConsole extends Component {
      */
     componentDidUpdate() {
         if (this.props.scrollToBottom) {
-            console.log('argh')
             setTimeout(() => {
                 this.updateScroll();
             }, INITIAL_RENDER_DELAY);
@@ -120,6 +118,6 @@ export default class LogConsole extends Component {
 }
 
 LogConsole.propTypes = {
-    scrollToBottom: bool, //in case of long logs you can scroll to the bottom
+    scrollToBottom: bool, // in case of long logs you can scroll to the bottom
     logArray: array,
 };
