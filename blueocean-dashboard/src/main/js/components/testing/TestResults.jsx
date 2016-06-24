@@ -80,9 +80,7 @@ export default class TestResult extends Component {
                     name: t.name,
                     duration: t.duration,
                     status: 'PASSED',
-                } // lint is forcing this terrible formatting...
-                }
-                />),
+                }} />),
             ];
         }
 
