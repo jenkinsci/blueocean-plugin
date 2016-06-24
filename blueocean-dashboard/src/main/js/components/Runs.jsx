@@ -3,6 +3,7 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
+import moment from 'moment';
 import { removeLastUrlSegment } from '../util/UrlUtils';
 
 const { object, string, any } = PropTypes;
@@ -42,6 +43,11 @@ export default class Runs extends Component {
         } = this;
 
         const resultRun = result === 'UNKNOWN' ? state : result;
+        const running = resultRun === 'RUNNING';
+        const durationMillis = !running ?
+            durationInMillis :
+            moment().diff(moment(startTime));
+
         const baseUrl = removeLastUrlSegment(this.context.location.pathname);
         const url = `${baseUrl}/detail/${pipeline}/${id}/pipeline`;
         const open = () => {
@@ -61,8 +67,8 @@ export default class Runs extends Component {
             <td><CommitHash commitId={commitId} /></td>
             <td>{decodeURIComponent(pipeline)}</td>
             <td>{changeset && changeset.comment || '-'}</td>
-            <td><TimeDuration millis={durationInMillis} /></td>
-            <td><ReadableDate date={endTime} /></td>
+            <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
+            <td><ReadableDate date={endTime} liveUpdate /></td>
         </tr>);
     }
 }
