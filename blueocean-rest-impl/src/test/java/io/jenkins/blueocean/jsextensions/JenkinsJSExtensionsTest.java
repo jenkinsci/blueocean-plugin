@@ -36,19 +36,20 @@ import java.util.Map;
  */
 public class JenkinsJSExtensionsTest extends BaseTest{
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void test() {
-        // FIXME: This test relies on configuration in a separate project
         // Simple test of the rest endpoint. It should find the "blueocean-dashboard"
         // plugin ExtensionPoint contributions.
-        List<Map> extensions = get("/js-extensions", List.class);
+        Map response = get("/js-extensions", Map.class);
+        List<Map> extensions = (List)response.get("data");
 
         Assert.assertEquals(1, extensions.size());
         Assert.assertEquals("blueocean-dashboard", extensions.get(0).get("hpiPluginId"));
 
         List<Map> ext = (List<Map>) extensions.get(0).get("extensions");
 
-        Assert.assertEquals(4, ext.size());
+        Assert.assertEquals(5, ext.size());
         Assert.assertEquals("AdminNavLink", ext.get(0).get("component"));
         Assert.assertEquals("jenkins.logo.top", ext.get(0).get("extensionPoint"));
 
