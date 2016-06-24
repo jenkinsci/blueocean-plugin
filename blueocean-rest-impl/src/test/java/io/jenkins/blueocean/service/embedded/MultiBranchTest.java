@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
+import hudson.Util;
 import hudson.model.FreeStyleProject;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
@@ -10,6 +11,7 @@ import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
+import org.apache.commons.lang.StringUtils;
 import org.hamcrest.collection.IsArrayContainingInAnyOrder;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -45,7 +47,7 @@ public class MultiBranchTest extends BaseTest{
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
 
 
-    private final String[] branches={"master", "feature1", "feature2"};
+    private final String[] branches={"master", "feature%2Fux-1", "feature2"};
 
     @Before
     public void setup() throws Exception{
@@ -72,6 +74,33 @@ public class MultiBranchTest extends BaseTest{
         Assert.assertEquals(mp.getBranch("master").getBuildHealth().getScore(), resp.get(0).get("weatherScore"));
     }
 
+
+    @Test
+    public void getBranchWithEncodedPath() throws IOException, ExecutionException, InterruptedException {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        FreeStyleProject f = j.jenkins.createProject(FreeStyleProject.class, "f");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/p/branches/", List.class);
+
+        String href = null;
+        for(Map r: resp){
+            if(r.get("name").equals("feature%2Fux-1")){
+                href = (String) ((Map)((Map)r.get("_links")).get("self")).get("href");
+
+                href = StringUtils.substringAfter(href,"/blue/rest");
+            }
+        }
+        Assert.assertNotNull(href);
+        Map r = get(href);
+        Assert.assertEquals("feature%2Fux-1", r.get("name"));
+    }
 
     @Test
     public void getMultiBranchPipelinesWithNonMasterBranch() throws Exception {
@@ -144,8 +173,8 @@ public class MultiBranchTest extends BaseTest{
         assertEquals(1, b1.getNumber());
         assertEquals(3, mp.getItems().size());
 
-        //execute feature 1 branch build
-        p = scheduleAndFindBranchProject(mp, "feature1");
+        //execute feature/ux-1 branch build
+        p = scheduleAndFindBranchProject(mp, "feature%2Fux-1");
         j.waitUntilNoActivity();
         WorkflowRun b2 = p.getLastBuild();
         assertEquals(1, b2.getNumber());
@@ -178,7 +207,7 @@ public class MultiBranchTest extends BaseTest{
         for(String n:branches){
             WorkflowRun b = runs[i];
             j.waitForCompletion(b);
-            Map run = get("/organizations/jenkins/pipelines/p/branches/"+n+"/runs/"+b.getId());
+            Map run = get("/organizations/jenkins/pipelines/p/branches/"+ Util.rawEncode(n)+"/runs/"+b.getId());
             validateRun(b,run);
             i++;
         }
@@ -216,8 +245,8 @@ public class MultiBranchTest extends BaseTest{
         assertEquals(1, b1.getNumber());
         assertEquals(3, mp.getItems().size());
 
-        //execute feature 1 branch build
-        p = findBranchProject(mp, "feature1");
+        //execute feature/ux-1 branch build
+        p = findBranchProject(mp, "feature%2Fux-1");
         WorkflowRun b2 = p.getLastBuild();
         assertEquals(1, b2.getNumber());
 
@@ -243,12 +272,12 @@ public class MultiBranchTest extends BaseTest{
             if(m.get("pipeline").equals("master")){
                 r = b1;
                 d = b1.getAction(BuildData.class);
-            } else if(m.get("pipeline").equals("feature1")){
-                r = b2;
-                d = b2.getAction(BuildData.class);
-            } else{
+            } else if(m.get("pipeline").equals("feature2")){
                 r = b3;
                 d = b3.getAction(BuildData.class);
+            } else{
+                r = b2;
+                d = b2.getAction(BuildData.class);
             }
             validateRun(r,m);
             String commitId = "";
@@ -308,7 +337,7 @@ public class MultiBranchTest extends BaseTest{
             i++;
         }
 
-        Map run = get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId()+"/");
+        Map run = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b4.getId()+"/");
         validateRun(b4, run);
         List<Map> changetSet = (List<Map>) run.get("changeSet");
 
@@ -380,7 +409,7 @@ public class MultiBranchTest extends BaseTest{
         j.waitUntilNoActivity();
 
         new RequestBuilder(baseUrl)
-            .put("/organizations/jenkins/pipelines/p/branches/feature1/favorite")
+            .put("/organizations/jenkins/pipelines/p/branches/feature2/favorite")
             .auth("alice", "alice")
             .data(ImmutableMap.of("favorite", true))
             .build(String.class);
@@ -391,7 +420,7 @@ public class MultiBranchTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(l.size(), 1);
-        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/feature1");
+        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/feature2");
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -437,7 +466,7 @@ public class MultiBranchTest extends BaseTest{
         sampleRepo.git("commit", "--all", "--message=flow");
 
         //create feature branch
-        sampleRepo.git("checkout", "-b", "feature1");
+        sampleRepo.git("checkout", "-b", "feature/ux-1");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
             "   stage ('Build'); " +
             "   echo ('Building'); " +

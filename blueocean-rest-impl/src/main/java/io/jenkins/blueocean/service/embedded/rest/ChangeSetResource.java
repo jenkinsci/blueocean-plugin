@@ -2,11 +2,11 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.Resource;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -24,9 +24,11 @@ import java.text.SimpleDateFormat;
 @ExportedBean
 public class ChangeSetResource extends Resource {
     private final ChangeLogSet.Entry changeSet;
+    private final Reachable parent;
 
-    public ChangeSetResource(Entry changeSet) {
+    public ChangeSetResource(Entry changeSet, Reachable parent) {
         this.changeSet = changeSet;
+        this.parent = parent;
     }
 
     @Exported(merge=true)
@@ -51,6 +53,6 @@ public class ChangeSetResource extends Resource {
 
     @Override
     public Link getLink() {
-        return new Link(Stapler.getCurrentRequest().getPathInfo()).rel("changeset/"+getDelegate().getCommitId());
+        return parent.getLink().rel("changeset/"+getDelegate().getCommitId());
     }
 }
