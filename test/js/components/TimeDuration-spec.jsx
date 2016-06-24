@@ -29,6 +29,14 @@ describe("TimeDuration", () => {
         assert.equal(wrapper.text(), 'a few seconds');
     });
 
+    it("renders 'a few seconds' with 1ms as string", () => {
+        const wrapper = shallow(<TimeDuration date="1" />);
+
+        assert.isTrue(wrapper.equals(
+            <span>-</span>
+        ));
+    });
+
     it("renders '3 hours' with 3.25h", () => {
         const wrapper = shallow(<TimeDuration millis={1000*60*60*3.25} />);
 

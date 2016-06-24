@@ -4,7 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import {Icon} from 'react-material-icons-blue';
 import { ReadableDate } from '../ReadableDate';
 import { LiveStatusIndicator } from '../status/LiveStatusIndicator';
-
+import { TimeDuration } from '../TimeDuration';
 import moment from 'moment';
 
 const { object, func } = PropTypes;
@@ -47,14 +47,14 @@ class PipelineResult extends Component {
             },
         } = this.props;
 
-        let
-            duration = moment.duration(
-                Number(durationInMillis), 'milliseconds').humanize();
-
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
         const authors = [...(new Set(changeSet.map(change => change.author.fullName)):any)];
         const status = result === "UNKNOWN" ? state : result;
+        const running = status === 'RUNNING';
+        const durationMillis = !running ?
+            durationInMillis :
+            moment().diff(moment(startTime));
 
         return (
         <div className="pipeline-result">
@@ -103,7 +103,7 @@ class PipelineResult extends Component {
                                 icon: 'timelapse',
                                 style: { fill: "#fff" },
                             }} />
-                            <span>{duration}</span>
+                            <TimeDuration millis={durationMillis} liveUpdate={running} />
                         </div>
                         <div>
                             <Icon {...{
@@ -111,7 +111,7 @@ class PipelineResult extends Component {
                                 icon: 'access_time',
                                 style: { fill: "#fff" },
                             }} />
-                            <ReadableDate date={endTime} />
+                            <ReadableDate date={endTime} liveUpdate />
                         </div>
                     </div>
                 </div>
