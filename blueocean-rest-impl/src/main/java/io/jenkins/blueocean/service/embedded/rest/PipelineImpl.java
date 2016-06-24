@@ -1,13 +1,18 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.Extension;
+import hudson.model.Action;
 import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
@@ -15,16 +20,21 @@ import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl.isMultiBranchProjectJob;
 
 /**
  * @author Kohsuke Kawaguchi
  */
+
 public class PipelineImpl extends BluePipeline {
     /*package*/ final Job job;
 
@@ -94,6 +104,11 @@ public class PipelineImpl extends BluePipeline {
     }
 
     @Override
+    public Collection<BlueActionProxy> getActions() {
+        return getActionProxies(job.getAllActions(), this);
+    }
+
+    @Override
     @Navigable
     public BlueQueueContainer getQueue() {
         return new QueueContainerImpl(this, job);
@@ -140,8 +155,6 @@ public class PipelineImpl extends BluePipeline {
 
     @Override
     public Link getLink() {
-//        Link parentLink = (parent == null) ? OrganizationImpl.INSTANCE.getLink().rel("pipelines") : parent;
-
         return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
 
@@ -162,6 +175,30 @@ public class PipelineImpl extends BluePipeline {
             pipelinePath.append(pipeline.getFullName());
         }
         return pipelinePath.toString();
+    }
+
+    @Extension(ordinal = 1)
+    public static class PipelineFactoryImpl extends BluePipelineFactory {
+
+        @Override
+        public BluePipeline getPipeline(Item item, Reachable parent) {
+            if (item instanceof Job) {
+                return new PipelineImpl((Job) item, parent.getLink());
+            }
+            return null;
+        }
+    }
+
+    public static Collection<BlueActionProxy> getActionProxies(List<? extends Action> actions, Reachable parent){
+        List<BlueActionProxy> actionProxies = new ArrayList<>();
+        for(Action action:actions){
+            if(action == null || !action.getClass().isAnnotationPresent(ExportedBean.class)){
+                continue;
+            }
+            actionProxies.add(new ActionProxiesImpl(action, parent));
+        }
+        return actionProxies;
+
     }
 
 }

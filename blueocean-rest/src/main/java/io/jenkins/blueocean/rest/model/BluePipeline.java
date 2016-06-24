@@ -6,6 +6,8 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.PUT;
 
+import java.util.Collection;
+
 /**
  * Defines pipeline state and its routing
  *
@@ -20,6 +22,7 @@ public abstract class BluePipeline extends Resource {
     public static final String LATEST_RUN = "latestRun";
     public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
     public static final String LAST_SUCCESSFUL_RUN = "lastSuccessfulRun";
+    public static final String ACTIONS = "actions";
 
     /**
      * @return name of the organization
@@ -73,6 +76,15 @@ public abstract class BluePipeline extends Resource {
      */
     @Navigable
     public abstract BlueRunContainer getRuns();
+
+
+    /**
+     *
+     * @return Gives Actions associated with this Run
+     */
+    @Navigable
+    @Exported(name = ACTIONS, inline = true)
+    public abstract Collection<BlueActionProxy> getActions();
 
     /**
      * @return Gives {@link BlueQueueContainer}

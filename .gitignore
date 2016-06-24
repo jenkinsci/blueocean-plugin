@@ -15,3 +15,4 @@ npm-debug.log
 **/.project
 **/.classpath
 blueocean-web/src/main/webapp/
+.build_container
