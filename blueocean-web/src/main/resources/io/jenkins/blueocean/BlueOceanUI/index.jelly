@@ -32,8 +32,20 @@
 
             <j:if test="${it.includeRollbar()}">
                 <script>
+                    function normalizeURL(location) {
+                        var normalizedUrl = 'http://anon.blueocean.io' + location;
+                        var headElements = document.getElementsByTagName('head');
+                        if (headElements.length == 1) {
+                            var rootUrl = headElements[0].getAttribute('data-rooturl');
+                            if (location.startsWith(rootUrl)) {
+                                normalizedUrl = 'http://anon.blueocean.io' + location.substring(rootUrl.length -1, location.length);
+                            }
+                        }
+                        return normalizedUrl;
+                    }
                     var transformer = function(payload) {
                         payload.data.request.user_ip = '0.0.0.0';
+                        payload.data.request.url = normalizeURL(window.location.pathname);
                     };
                     var _rollbarConfig = {
                         accessToken: "81f3134dedf44871b9cc0a347b1313df",
