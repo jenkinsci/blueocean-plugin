@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
+import RunPipeline from './RunPipeline.jsx';
 
 const { object } = PropTypes;
 
@@ -51,6 +52,7 @@ export default class PullRequest extends Component {
             <td>{title || '-'}</td>
             <td>{author || '-'}</td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
+            <td><RunPipeline organization={organization} pipeline={pipelineName} branch={name} /></td>
         </tr>);
     }
 }

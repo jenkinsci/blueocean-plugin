@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.HttpResponse;
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -10,6 +11,9 @@ import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
+import hudson.model.Job;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Project;
@@ -21,6 +25,11 @@ import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
 import hudson.tasks.junit.TestResultAction;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BluePipelineFactory;
+import io.jenkins.blueocean.service.embedded.rest.PipelineImpl;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -30,6 +39,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestBuilder;
 import org.kohsuke.stapler.AcceptHeader;
+import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
 import java.util.List;
@@ -532,4 +542,40 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertNotNull(p3.getQueueItem());
         Assert.assertEquals(Long.toString(p3.getQueueItem().getId()), r.get("id"));
     }
+
+    @Test
+    public void getPipelinesExtensionTest() throws Exception {
+
+        Project p = j.createFreeStyleProject("pipeline1");
+
+        Map<String,Object> response = get("/organizations/jenkins/pipelines/pipeline1");
+        validatePipeline(p, response);
+
+        Assert.assertEquals("hello world!", response.get("hello"));
+    }
+
+    @Extension(ordinal = 3)
+    public static class PipelineFactoryTestImpl extends BluePipelineFactory {
+
+        @Override
+        public BluePipeline getPipeline(Item item, Reachable parent) {
+            if(item instanceof Job){
+                return new TestPipelineImpl(null, (Job)item, parent.getLink());
+            }
+            return null;
+        }
+    }
+
+    public static class TestPipelineImpl extends PipelineImpl {
+
+        public TestPipelineImpl(ItemGroup folder, Job job, Link parent) {
+            super(folder, job, parent);
+        }
+
+        @Exported(name = "hello")
+        public String getHello(){
+            return "hello world!";
+        }
+    }
+
 }
