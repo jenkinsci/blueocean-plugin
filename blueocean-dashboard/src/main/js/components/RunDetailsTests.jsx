@@ -65,7 +65,7 @@ export class RunDetailsTests extends Component {
                 <div className="test-result-duration">Duration {testResults.duration}</div>
             </div>
             
-            <Extensions.Renderer dataType={testResults} name="jenkins.test.result" testResults={testResults} />
+            <Extensions.Renderer extensionPoint="jenkins.test.result" dataType={testResults} testResults={testResults} />
         </div>);
     }
 }

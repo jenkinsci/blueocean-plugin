@@ -93,9 +93,9 @@ export class RunDetailsPipeline extends Component {
         return (
             <div>
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
+                  extensionPoint="jenkins.pipeline.run.result"
                   router={router}
                   location={location}
-                  name="jenkins.pipeline.run.result"
                   nodes={nodes[nodeKey].model}
                   pipelineName={name}
                   branchName={isMultiBranch ? branch : undefined}

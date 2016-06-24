@@ -72,8 +72,9 @@ export class ExtensionStore {
     }
     
     /**
-     * The primary function to use in order to get extensions, use like:
-     * ExtensionStore.getExtensions({name:'jenkins.main.Menu', type: 'link', ready: function() { ... }});
+     * The primary function to use in order to get extensions,
+     * will call the onload callback with a list of exported extension
+     * objects (e.g. React classes or otherwise).
      */
     getExtensions(key, type, onload) {
         if (!this.extensionDataProvider) {

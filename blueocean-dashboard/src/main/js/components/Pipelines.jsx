@@ -56,7 +56,7 @@ export default class Pipelines extends Component {
                 </PageHeader>
                 <main>
                     <article>
-                        <Extensions.Renderer name="jenkins.pipeline.list.top" />
+                        <Extensions.Renderer extensionPoint="jenkins.pipeline.list.top" />
                         <Table
                           className="pipelines-table fixed"
                           headers={headers}

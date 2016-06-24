@@ -26,7 +26,7 @@ class App extends Component {
             <div className="Site">
                 <div id="outer">
                     <header className="global-header">
-                        <Extensions.Renderer name="jenkins.logo.top"/>
+                        <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
                             <Link to="/pipelines">Pipelines</Link>
                             <a href="#">Administration</a>

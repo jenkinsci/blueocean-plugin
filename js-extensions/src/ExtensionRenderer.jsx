@@ -34,9 +34,9 @@ ContextBridge.propTypes = {
 };
 
 /**
- * Implement an RenderExtensions for which other plugins can provide an implementing Component.
+ * Renderer for react component extensions for which other plugins can provide an implementing Component.
  */
-export class RenderExtensions extends React.Component {
+export class ExtensionRenderer extends React.Component {
     constructor() {
         super();
         // Initial state is empty. See the componentDidMount and render functions.
@@ -48,7 +48,7 @@ export class RenderExtensions extends React.Component {
     }
     
     componentDidMount() {
-        ResourceLoadTracker.onMount(this.props.name);
+        ResourceLoadTracker.onMount(this.props.extensionPoint);
         this._renderAllExtensions();
     }
 
@@ -58,18 +58,18 @@ export class RenderExtensions extends React.Component {
 
     componentWillUnmount() {
         this._unmountAllExtensions();
-        ResourceLoadTracker.onUnmount(this.props.name);
+        ResourceLoadTracker.onUnmount(this.props.extensionPoint);
     }
     
     _setExtensions() {
-        ExtensionStore.instance.getExtensions(this.props.name, this.props.dataType,
+        ExtensionStore.instance.getExtensions(this.props.extensionPoint, this.props.dataType,
             extensions => this.setState({extensions: extensions})
         );
     }
     
     /**
      * This method renders the "leaf node" container divs, one for each registered extension, that live in the same
-     * react hierarchy as the &lt;RenderExtensions&gt; instance itself. As far as our react is concerned, these are
+     * react hierarchy as the &lt;ExtensionRenderer&gt; instance itself. As far as our react is concerned, these are
      * childless divs that are never updated. Actually rendering the extensions themselves is done by
      * _renderAllExtensions.
      */
@@ -105,7 +105,7 @@ export class RenderExtensions extends React.Component {
                 // The number of children should be exactly the same as the number
                 // of extensions. See the render function for where these are added.
                 if (!extensions || extensions.length !== children.length) {
-                    console.error('Unexpected error in Jenkins RenderExtensions rendering (' + this.props.name + '). Expecting a child DOM node for each extension point.');
+                    console.error('Unexpected error in Jenkins ExtensionRenderer rendering (' + this.props.extensionPoint + '). Expecting a child DOM node for each extension point.');
                     return;
                 }
                 // render each extension on the allocated child node.
@@ -158,17 +158,17 @@ export class RenderExtensions extends React.Component {
     }
 }
 
-RenderExtensions.defaultProps = {
+ExtensionRenderer.defaultProps = {
     wrappingElement: "div"
 };
 
-RenderExtensions.propTypes = {
-    name: React.PropTypes.string.isRequired,
+ExtensionRenderer.propTypes = {
+    extensionPoint: React.PropTypes.string.isRequired,
     dataType: React.PropTypes.any,
     wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element])
 };
 
-RenderExtensions.contextTypes = {
+ExtensionRenderer.contextTypes = {
     router: React.PropTypes.object,
     config: React.PropTypes.object
 };
