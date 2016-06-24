@@ -40,10 +40,26 @@ export class RunDetailsPipeline extends Component {
             this.props.setNode(config);
             this.props.fetchSteps(config);
         }
+
+        const { logs, fetchLog } = nextProps;
+        if (logs !== this.props.logs) {
+            const mergedConfig = this.generateConfig(nextProps);
+            const logGeneral = calculateRunLogURLObject(mergedConfig);
+            const log = logs ? logs[logGeneral.url] : null;
+            if (log && log !== null) {
+                const newStart = log.newStart;
+                if (Number(newStart) > 0) {
+                    // kill current  timeout if any
+                    clearTimeout(this.timeout);
+                    this.timeout = setTimeout(() => fetchLog({ ...logGeneral, newStart }), 1000);
+                }
+            }
+        }
     }
 
     componentWillUnmount() {
         this.props.cleanNodePointer();
+        clearTimeout(this.timeout);
     }
 
     generateConfig(props) {
@@ -75,8 +91,15 @@ export class RunDetailsPipeline extends Component {
             params: {
                 pipeline: name, branch, runId,
             },
-            isMultiBranch, steps, nodes, logs,
+            isMultiBranch, steps, nodes, logs, result: resultMeta,
         } = this.props;
+
+        const {
+          result,
+          state,
+        } = resultMeta;
+        const resultRun = result === 'UNKNOWN' || !result ? state : result;
+        const scrollToBottom = resultRun.toLowerCase() === 'failure' || resultRun.toLowerCase() === 'running';
 
         const mergedConfig = this.generateConfig(this.props);
 
@@ -113,7 +136,7 @@ export class RunDetailsPipeline extends Component {
                 />
                 }
 
-                { log && <LogConsole key={logGeneral.url} logArray={log.logArray} /> }
+                { log && <LogConsole key={logGeneral.url} logArray={log.logArray} scrollToBottom={scrollToBottom} /> }
             </div>
         );
     }

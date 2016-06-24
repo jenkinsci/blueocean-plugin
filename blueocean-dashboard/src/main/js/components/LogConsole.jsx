@@ -72,7 +72,7 @@ export default class LogConsole extends Component {
     // initial method to create lines to render
     _processLines(lines) {
         let newLines = lines;
-        if (newLines.length > INITIAL_RENDER_CHUNK_SIZE) {
+        if (newLines && newLines.length > INITIAL_RENDER_CHUNK_SIZE) {
             // queue up all the lines and grab just the beginning to render for now
             this.queuedLines = this.queuedLines.concat(newLines);
             newLines = this.queuedLines.splice(0, INITIAL_RENDER_CHUNK_SIZE);
@@ -89,7 +89,7 @@ export default class LogConsole extends Component {
     // generic method to render more lines if so
     _processNextLines() {
         // grab the next batch of lines and add them to what's already rendered, then re-render
-        const renderedLines = this.state.lines;
+        const renderedLines = this.state.lines || [];
         const nextLines = this.queuedLines.splice(0, RENDER_CHUNK_SIZE);
         const newLines = renderedLines.concat(nextLines);
 
@@ -107,11 +107,14 @@ export default class LogConsole extends Component {
 
     render() {
         const lines = this.state.lines;
+        if (!lines) {
+            return null;
+        }
 
         return (<code
           className="block"
         >
-            {lines.map((line, index) => <p key={index}>
+            { lines.map((line, index) => <p key={index}>
                 <a key={index} name={index}>{line}</a>
             </p>)}</code>);
     }
