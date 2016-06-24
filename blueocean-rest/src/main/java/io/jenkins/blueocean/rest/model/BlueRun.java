@@ -162,13 +162,19 @@ public abstract class BlueRun extends Resource {
     @Navigable
     public abstract BluePipelineNodeContainer getNodes();
 
+    /**
+     *
+     * @return Gives Actions associated with this Run
+     */
+    @Navigable
     @Exported(name = ACTIONS, inline = true)
-    public abstract Collection<?> getActions();
+    public abstract Collection<BlueActionProxy> getActions();
 
     /**
      * @return Gives steps from pipeline. The list of steps must not include stages, this is because stage could be
      * interpreted as step as its StepAtomNode and implementation of this API must ensure not to include it.
      */
+    @Navigable
     @Exported(name = STEPS)
     public abstract BluePipelineStepContainer getSteps();
 
@@ -182,6 +188,7 @@ public abstract class BlueRun extends Resource {
      *                    X-TEXT-SIZE header value with *start* query parameter.</li>
      *  </ul>
      */
+    @Navigable
     public abstract Object getLog();
 
     public enum BlueRunState {
