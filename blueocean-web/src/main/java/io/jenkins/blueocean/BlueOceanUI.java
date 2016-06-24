@@ -1,6 +1,8 @@
 package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
+import hudson.model.UsageStatistics;
+import jenkins.model.Jenkins;
 
 /**
  * Root of Blue Ocean UI
@@ -33,5 +35,19 @@ public class BlueOceanUI {
      */
     public String getUrlBase() {
         return urlBase;
+    }
+
+    /**
+     * @return True if jenkins reports usage statistics.
+     */
+    public boolean includeRollbar() {
+        return Jenkins.getInstance().isUsageStatisticsCollected() && !UsageStatistics.DISABLED;
+    }
+
+    /**
+     * @return Version on the plugin e.g 1.0-SNAPSHOT (private-f9a14d3e-jenkins)
+     */
+    public String getPluginVersion() {
+        return Jenkins.getInstance().getPlugin("blueocean-web").getWrapper().getVersion();
     }
 }

@@ -1,14 +1,19 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.Extension;
+import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
@@ -253,7 +258,24 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
+    public Collection<BlueActionProxy> getActions() {
+        return PipelineImpl.getActionProxies(mbp.getAllActions(), this);
+    }
+
+    @Override
     public Link getLink() {
         return self;
+    }
+
+    @Extension(ordinal = 2)
+    public static class PipelineFactoryImpl extends BluePipelineFactory{
+
+        @Override
+        public BluePipeline getPipeline(Item item, Reachable parent) {
+            if (item instanceof MultiBranchProject) {
+                return new MultiBranchPipelineImpl((MultiBranchProject) item, parent.getLink());
+            }
+            return null;
+        }
     }
 }

@@ -1,13 +1,21 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.Extension;
+import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.json.JsonBody;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static io.jenkins.blueocean.service.embedded.rest.PipelineImpl.getRecursivePathFromFullName;
 
@@ -42,6 +50,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     @Override
     public String getFullName() {
         return folder.getFullName();
+    }
+
+    @Override
+    public Collection<BlueActionProxy> getActions() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -86,4 +99,15 @@ public class PipelineFolderImpl extends BluePipelineFolder {
         return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
 
+    @Extension(ordinal = 0)
+    public static class PipelineFactoryImpl extends BluePipelineFactory{
+
+        @Override
+        public BluePipeline getPipeline(Item item, Reachable parent) {
+            if (item instanceof ItemGroup) {
+                return new PipelineFolderImpl((ItemGroup) item, parent.getLink());
+            }
+            return null;
+        }
+    }
 }

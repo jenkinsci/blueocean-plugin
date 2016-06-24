@@ -16,9 +16,7 @@ import io.jenkins.blueocean.rest.model.GenericResource;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -176,15 +174,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return null;
     }
 
-    public Collection<?> getActions() {
-        List<BlueActionProxy> actionProxies = new ArrayList<>();
-        for(Action action:run.getAllActions()){
-            if(action == null || !action.getClass().isAnnotationPresent(ExportedBean.class)){
-                continue;
-            }
-            actionProxies.add(new ActionProxiesImpl(action, this));
-        }
-        return actionProxies;
+    public Collection<BlueActionProxy> getActions() {
+        return PipelineImpl.getActionProxies(run.getAllActions(), this);
     }
 
     protected static BlueRun getBlueRun(Run r, Link parent){

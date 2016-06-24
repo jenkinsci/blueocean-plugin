@@ -36,7 +36,7 @@ const NotSupported = () => (
         <EmptyStateView>
             <h1>Branches are unsupported</h1>
             <p>
-            Branch builds only work with the <i>Multi-Branch Pipeline</i> job type.
+            Branch builds only work with the <i>Multibranch Pipeline</i> job type.
             This is just one of the many reasons to switch to Jenkins Pipeline.
             </p>
             <a href="https://jenkins.io/doc/book/pipeline-as-code/" target="_blank">Learn more</a>
