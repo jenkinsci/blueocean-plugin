@@ -57,7 +57,7 @@ const config = {
             dest: "dist/assets/fonts/"
         },
         licenses_octicons: {
-            sources: "node_modules/octicons/LICENSE.txt",
+            sources: "node_modules/octicons/LICENSE",
             dest: "licenses/"
         },
         licenses_ofl: {
