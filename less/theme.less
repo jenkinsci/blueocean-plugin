@@ -687,13 +687,6 @@ code.hash {
     transform: translateZ(0);
 }
 
-// Applies this style to safari 9.0+
-@supports (overflow:-webkit-marquee) and (justify-content:inherit) {
-    .page-tabs a {
-        margin-bottom: 0px;
-    }
-}
-
 .page-tabs a:before {
     // For transforming underline
     content: "";
@@ -836,7 +829,13 @@ footer {
 
     a {
         letter-spacing: 1.1px;
-        margin-bottom: -4px;
+    }
+}
+
+// force the parent container of the tabs taller to avoid clipping in Safari 9+
+@supports (overflow:-webkit-marquee) and (justify-content:inherit) {
+    .dialog .header .page-tabs {
+        margin-bottom: 22px;
     }
 }
 
