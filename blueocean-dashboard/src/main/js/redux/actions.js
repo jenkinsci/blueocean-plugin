@@ -1,9 +1,9 @@
 import keymirror from 'keymirror';
 
 import fetch from 'isomorphic-fetch';
-import {State} from '../components/records';
+import { State } from '../components/records';
 
-import {getNodesInformation} from '../util/logDisplayHelper';
+import { getNodesInformation } from '../util/logDisplayHelper';
 
 // helper functions
 
@@ -14,14 +14,14 @@ function uriString(input) {
 // helper calculate url
 export function calculateLogUrl(config) {
     if (config.node) {
-        const {nodesBaseUrl, node} = config;
+        const { nodesBaseUrl, node } = config;
         return `${nodesBaseUrl}/${node.id}/log`;
     }
     return config.url;
 }
 
 export function calculateNodeBaseUrl(config) {
-    const {name, runId, branch, _appURLBase, isMultiBranch} = config;
+    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
     const baseUrl =
         `${_appURLBase}/rest/organizations/jenkins/` +
         `pipelines/${uriString(name)}`;
@@ -32,7 +32,7 @@ export function calculateNodeBaseUrl(config) {
 }
 
 export function calculateStepsBaseUrl(config) {
-    const {name, runId, branch, _appURLBase, isMultiBranch, node} = config;
+    const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
     let baseUrl =
         `${_appURLBase}/rest/organizations/jenkins/` +
         `pipelines/${uriString(name)}`;
@@ -47,7 +47,7 @@ export function calculateStepsBaseUrl(config) {
 }
 
 export function calculateRunLogURLObject(config) {
-    const {name, runId, branch, _appURLBase, isMultiBranch} = config;
+    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
     const baseUrl = `${_appURLBase}/rest/organizations/jenkins` +
         `/pipelines/${uriString(name)}`;
     let url;
@@ -86,7 +86,7 @@ export const ACTION_TYPES = keymirror({
 });
 
 export const actionHandlers = {
-    [ACTION_TYPES.UPDATE_MESSAGES](state, {payload}): State {
+    [ACTION_TYPES.UPDATE_MESSAGES](state, { payload }): State {
         const messages = state.get('messages') || [];
         if (payload) {
             messages.push(payload);
@@ -96,13 +96,13 @@ export const actionHandlers = {
     [ACTION_TYPES.CLEAR_PIPELINES_DATA](state) {
         return state.set('pipelines', null);
     },
-    [ACTION_TYPES.SET_PIPELINES_DATA](state, {payload}): State {
+    [ACTION_TYPES.SET_PIPELINES_DATA](state, { payload }): State {
         return state.set('pipelines', payload);
     },
     [ACTION_TYPES.CLEAR_PIPELINE_DATA](state) {
         return state.set('pipeline', null);
     },
-    [ACTION_TYPES.SET_PIPELINE](state, {id}): State {
+    [ACTION_TYPES.SET_PIPELINE](state, { id }): State {
         const pipelines = state.pipelines;
         if (!pipelines) {
             return state.set('pipeline', null);
@@ -114,45 +114,45 @@ export const actionHandlers = {
     [ACTION_TYPES.CLEAR_CURRENT_RUN_DATA](state) {
         return state.set('currentRuns', null);
     },
-    [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, {payload}): State {
+    [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
         return state.set('currentRuns', payload);
     },
-    [ACTION_TYPES.SET_NODE](state, {payload}): State {
+    [ACTION_TYPES.SET_NODE](state, { payload }): State {
         return state.set('node', payload);
     },
-    [ACTION_TYPES.SET_NODES](state, {payload}): State {
-        const nodes = {...state.nodes} || {};
+    [ACTION_TYPES.SET_NODES](state, { payload }): State {
+        const nodes = { ...state.nodes } || {};
         nodes[payload.nodesBaseUrl] = payload;
         return state.set('nodes', nodes);
     },
-    [ACTION_TYPES.SET_RUNS_DATA](state, {payload, id}): State {
-        const runs = {...state.runs} || {};
+    [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
+        const runs = { ...state.runs } || {};
         runs[id] = payload;
         return state.set('runs', runs);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
         return state.set('currentBranches', null);
     },
-    [ACTION_TYPES.SET_CURRENT_BRANCHES_DATA](state, {payload}): State {
+    [ACTION_TYPES.SET_CURRENT_BRANCHES_DATA](state, { payload }): State {
         return state.set('currentBranches', payload);
     },
-    [ACTION_TYPES.SET_BRANCHES_DATA](state, {payload, id}): State {
-        const branches = {...state.branches} || {};
+    [ACTION_TYPES.SET_BRANCHES_DATA](state, { payload, id }): State {
+        const branches = { ...state.branches } || {};
         branches[id] = payload;
         return state.set('branches', branches);
     },
-    [ACTION_TYPES.SET_STEPS](state, {payload}): State {
-        const steps = {...state.steps} || {};
+    [ACTION_TYPES.SET_STEPS](state, { payload }): State {
+        const steps = { ...state.steps } || {};
         steps[payload.nodesBaseUrl] = payload;
         return state.set('steps', steps);
     },
-    [ACTION_TYPES.SET_LOGS](state, {payload}): State {
-        const logs = {...state.logs} || {};
+    [ACTION_TYPES.SET_LOGS](state, { payload }): State {
+        const logs = { ...state.logs } || {};
         logs[payload.logUrl] = payload;
         return state.set('logs', logs);
     },
 
-    [ACTION_TYPES.UPDATE_BRANCH_DATA](state, {payload, id}): State {
+    [ACTION_TYPES.UPDATE_BRANCH_DATA](state, { payload, id }): State {
         const branches = state.get('branches') || {};
         const jobBranches = branches[id];
 
@@ -171,7 +171,7 @@ export const actionHandlers = {
 };
 
 // fetch helper
-const fetchOptions = {credentials: 'same-origin'};
+const fetchOptions = { credentials: 'same-origin' };
 function checkStatus(response) {
     if (response.status >= 300 || response.status < 200) {
         const error = new Error(response.statusText);
@@ -198,7 +198,7 @@ function parseMoreDataHeader(response) {
          */
         newStart = response.headers.get('X-TEXT-SIZE');
     }
-    const payload = {response, newStart};
+    const payload = { response, newStart };
     return payload;
 }
 /**
@@ -272,9 +272,9 @@ function clone(json) {
 
 // FIXME: Ignoring isFetching for now
 export const actions = {
-    clearPipelinesData: () => ({type: ACTION_TYPES.CLEAR_PIPELINES_DATA}),
+    clearPipelinesData: () => ({ type: ACTION_TYPES.CLEAR_PIPELINES_DATA }),
     clearPipelineData() {
-        return (dispatch) => dispatch({type: ACTION_TYPES.CLEAR_PIPELINE_DATA});
+        return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
     },
 
     /**
@@ -322,14 +322,14 @@ export const actions = {
 
     setPipeline(config) {
         return (dispatch, getState) => {
-            dispatch({type: ACTION_TYPES.CLEAR_PIPELINE_DATA});
+            dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
             const pipelines = getState().adminStore.pipelines;
 
             if (!pipelines) {
                 return dispatch(actions.fetchPipelinesIfNeeded(config))
-                    .then(() => dispatch({id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE}));
+                    .then(() => dispatch({ id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE }));
             }
-            return dispatch({id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE});
+            return dispatch({ id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE });
         };
     },
 
@@ -374,12 +374,12 @@ export const actions = {
 
                 if (event.blueocean_is_for_current_job) {
                     // set current runs since we are ATM looking at it
-                    dispatch({payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA});
+                    dispatch({ payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA });
                 }
                 dispatch({
                     payload: newRuns,
                     id: event.blueocean_job_name,
-                    type: ACTION_TYPES.SET_RUNS_DATA
+                    type: ACTION_TYPES.SET_RUNS_DATA,
                 });
             }
         };
@@ -478,12 +478,12 @@ export const actions = {
 
                     if (event.blueocean_is_for_current_job) {
                         // set current runs since we are ATM looking at it
-                        dispatch({payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA});
+                        dispatch({ payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA });
                     }
                     dispatch({
                         payload: newRuns,
                         id: event.blueocean_job_name,
-                        type: ACTION_TYPES.SET_RUNS_DATA
+                        type: ACTION_TYPES.SET_RUNS_DATA,
                     });
                 };
 
@@ -564,7 +564,7 @@ export const actions = {
                     `/pipelines/${event.blueocean_job_name}/branches/${branch.name}`;
 
                 const processBranchData = function (branchData) {
-                    const {latestRun} = branchData;
+                    const { latestRun } = branchData;
 
                     // same issue as in 'updateRunData'; see comment above
                     if (event.jenkins_event === 'job_run_ended') {
@@ -629,7 +629,7 @@ export const actions = {
     fetchIfNeeded(general, types) {
         return (dispatch, getState) => {
             const data = getState().adminStore[general.type];
-            dispatch({type: types.clear});
+            dispatch({ type: types.clear });
 
             const id = general.id;
 
@@ -653,7 +653,7 @@ export const actions = {
                     .catch((error) => {
                         console.error(error); // eslint-disable-line no-console
                         dispatch({
-                            payload: {type: 'ERROR', message: `${error.stack}`},
+                            payload: { type: 'ERROR', message: `${error.stack}` },
                             type: ACTION_TYPES.UPDATE_MESSAGES,
                         });
                     });
@@ -680,7 +680,7 @@ export const actions = {
             .catch((error) => {
                 console.error(error); // eslint-disable-line no-console
                 dispatch({
-                    payload: {type: 'ERROR', message: `${error.stack}`},
+                    payload: { type: 'ERROR', message: `${error.stack}` },
                     type: ACTION_TYPES.UPDATE_MESSAGES,
                 });
             });
@@ -716,7 +716,7 @@ export const actions = {
                     type: ACTION_TYPES.SET_NODE,
                     payload: nodeModel,
                 });
-                const mergedConfig = {...config, node};
+                const mergedConfig = { ...config, node };
                 return dispatch(actions.fetchSteps(mergedConfig));
             }
 
@@ -805,7 +805,7 @@ export const actions = {
                     config.newStart || null,
                     response => response.response.text()
                         .then(text => {
-                            const {newStart} = response;
+                            const { newStart } = response;
                             const payload = {
                                 logUrl,
                                 newStart,
