@@ -77,7 +77,9 @@ export class RunDetailsPipeline extends Component {
         }
         // if we have a node param we do not want the calculation of the focused node
         const node = nodeParam || nodeReducer.id;
-        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer };
+        // we turn on refetch so we always fetch a new Node result, will be changed to props
+        const refetch = true;
+        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer, refetch };
         return mergedConfig;
     }
 
