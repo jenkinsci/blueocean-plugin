@@ -18,13 +18,8 @@ export const removeLastUrlSegment = (url) => {
  * @returns {string}
  */
 export const buildPipelineUrl = (organization, fullName, tabName) => {
-    const pathElements = fullName.split('/');
-    const pipeline = pathElements.pop();
-    const folderPath = pathElements.join('/');
-    const folderPart = folderPath ? `${encodeURIComponent(folderPath)}/` : '';
-
     const baseUrl = `/organizations/${encodeURIComponent(organization)}/` +
-        `${folderPart}` + `${encodeURIComponent(pipeline)}`;
+        `${encodeURIComponent(fullName)}`;
 
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };

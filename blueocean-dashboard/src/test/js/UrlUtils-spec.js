@@ -18,7 +18,7 @@ describe('UrlUtils', () => {
                 'folder/blueocean',
             );
 
-            assert.equal(url, '/organizations/jenkins/folder/blueocean');
+            assert.equal(url, '/organizations/jenkins/folder%2Fblueocean');
         });
         it('should build the baseUrl for 3-level nested pipeline', () => {
             const url = buildPipelineUrl(
@@ -26,7 +26,7 @@ describe('UrlUtils', () => {
                 'folder1/folder2/folder3/blueocean',
             );
 
-            assert.equal(url, '/organizations/jenkins/folder1%2Ffolder2%2Ffolder3/blueocean');
+            assert.equal(url, '/organizations/jenkins/folder1%2Ffolder2%2Ffolder3%2Fblueocean');
         });
     });
 
