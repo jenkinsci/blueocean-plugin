@@ -16,6 +16,29 @@ export default class Node extends Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        const { node, logs, nodesBaseUrl, fetchLog } = nextProps;
+        const { config = {} } = this.context;
+        const mergedConfig = { ...config, node, nodesBaseUrl };
+        if (logs !== this.props.logs) {
+            const key = calculateLogUrl(mergedConfig);
+            const log = logs ? logs[key] : null;
+            if (log && log !== null) {
+                const number = Number(log.newStart);
+                if (number > 0) {
+                    mergedConfig.newStart = log.newStart;
+                    // kill current  timeout if any
+                    clearTimeout(this.timeout);
+                    this.timeout = setTimeout(() => fetchLog(mergedConfig), 1000);
+                }
+            }
+        }
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.timeout);
+    }
+
     render() {
         const { node, logs, nodesBaseUrl, fetchLog } = this.props;
         // Early out
@@ -34,22 +57,24 @@ export default class Node extends Component {
 
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl })] : null;
-
         const getLogForNode = () => {
             if (!log) {
                 fetchLog({ ...config, node, nodesBaseUrl });
             }
         };
+        const runResult = resultRun.toLowerCase();
+        const scrollToBottom = runResult === 'failure' || runResult === 'running';
+
         return (<div>
             <ResultItem
               key={id}
-              result={resultRun.toLowerCase()}
+              result={runResult}
               expanded={isFocused}
               label={title}
               onExpand={getLogForNode}
               durationMillis={durationInMillis}
             >
-                { log && <LogConsole key={id} data={log.text} /> } &nbsp;
+                { log && <LogConsole key={id} logArray={log.logArray} scrollToBottom={scrollToBottom} /> } &nbsp;
             </ResultItem>
       </div>);
     }

@@ -41,7 +41,8 @@ public class BlueOceanUI {
      * @return True if jenkins reports usage statistics.
      */
     public boolean includeRollbar() {
-        return Jenkins.getInstance().isUsageStatisticsCollected() && !UsageStatistics.DISABLED;
+        return false;
+//        return Jenkins.getInstance().isUsageStatisticsCollected() && !UsageStatistics.DISABLED;
     }
 
     /**
