@@ -11,6 +11,13 @@ export const removeLastUrlSegment = (url) => {
 };
 
 /**
+ * Build a root-relative URL to the organization's pipeline list screen.
+ * @param organization
+ */
+export const buildOrganizationUrl = (organization) =>
+    `/organizations/${encodeURIComponent(organization)}`;
+
+/**
  * Build a root-relative URL to the pipeline details screen.
  * @param organization
  * @param fullName

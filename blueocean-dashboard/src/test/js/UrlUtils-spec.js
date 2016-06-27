@@ -1,8 +1,21 @@
 import { assert } from 'chai';
 
-import { buildPipelineUrl, buildRunDetailsUrl } from '../../main/js/util/UrlUtils';
+import {
+    buildOrganizationUrl,
+    buildPipelineUrl,
+    buildRunDetailsUrl
+} from '../../main/js/util/UrlUtils';
 
 describe('UrlUtils', () => {
+    describe('buildOrganizationUrl', () => {
+        it('should build the proper url', () => {
+            const url = buildOrganizationUrl(
+                'jenkins'
+            );
+
+            assert.equal(url, '/organizations/jenkins');
+        });
+    });
     describe('buildPipelineUrl', () => {
         it('should build the baseUrl for top level pipeline', () => {
             const url = buildPipelineUrl(
