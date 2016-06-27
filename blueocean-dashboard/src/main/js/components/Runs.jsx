@@ -53,7 +53,8 @@ export default class Runs extends Component {
             moment().diff(moment(startTime));
 
         const open = () => {
-            location.pathname = buildRunDetailsUrl(organization, fullName, pipeline, id, 'pipeline');
+            const pipelineName = decodeURIComponent(pipeline);
+            location.pathname = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
             router.push(location);
         };
 
