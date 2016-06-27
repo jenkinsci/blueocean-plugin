@@ -5,6 +5,8 @@ import { State } from '../components/records';
 
 import { getNodesInformation } from '../util/logDisplayHelper';
 
+import { buildUrl } from '../util/UrlUtils';
+
 // helper functions
 
 // helper to clean the path
@@ -836,15 +838,14 @@ export const actions = {
     
     fetchTestResults(config, runDetails) {
         return (dispatch) => {
-            // const appUrlBase = config.getAppURLBase(); // TODO: Should use this instead
-            const appUrlBase = '/jenkins';
+            const baseUrl = `${config.getAppURLBase()}/rest/organizations/`;
             let url;
-            
             if (runDetails.isMultiBranch) {
-                url = 'TODO'; // Construct different URL for multi-branch
+                // eslint-disable-next-line max-len
+                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.pipeline, 'branches', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
             } else {
                 // eslint-disable-next-line max-len
-                url = `${appUrlBase}/blue/rest/organizations/${runDetails.organization}/pipelines/${runDetails.branch}/runs/${runDetails.runId}/testReport/result`;
+                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
             }
 
             return dispatch(actions.generateData(

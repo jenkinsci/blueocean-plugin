@@ -24,3 +24,18 @@ export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabNam
         `${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
+
+/**
+ * Constructs an escaped url based on the arguments, with forward slashes between them
+ * e.g. buildURL('organizations', orgName, 'runs', runId) => organizations/my%20org/runs/34
+ */
+export const buildUrl = (...args) => {
+    let url = '';
+    for (let i = 0; i < args.length; i++) {
+        if (i > 0) {
+            url += '/';
+        }
+        url += encodeURIComponent(args[i]);
+    }
+    return url;
+};

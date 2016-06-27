@@ -18,16 +18,18 @@ const EmptyState = () => (
  */
 export class RunDetailsTests extends Component {
     componentWillMount() {
-        this.props.fetchTestResults(
-            this.context.config,
-            {
-                isMultiBranch: this.props.isMultiBranch,
-                organization: this.props.params.organization,
-                pipeline: this.props.params.pipeline,
-                branch: this.props.params.branch,
-                runId: this.props.params.runId,
-            }
-        );
+        if (this.context.config) {
+            this.props.fetchTestResults(
+                this.context.config,
+                {
+                    isMultiBranch: this.props.isMultiBranch,
+                    organization: this.props.params.organization,
+                    pipeline: this.props.params.pipeline,
+                    branch: this.props.params.branch,
+                    runId: this.props.params.runId,
+                }
+            );
+        }
     }
     
     componentWillUnmount() {
@@ -78,6 +80,10 @@ RunDetailsTests.propTypes = {
     resetTestDetails: PropTypes.func,
     fetchTestResults: PropTypes.func,
     fetchTypeInfo: PropTypes.func,
+};
+
+RunDetailsTests.contextTypes = {
+    config: PropTypes.object.isRequired,
 };
 
 const selectors = createSelector([testResultsSelector],
