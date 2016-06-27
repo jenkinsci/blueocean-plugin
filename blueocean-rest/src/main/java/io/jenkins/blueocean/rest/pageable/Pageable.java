@@ -12,5 +12,7 @@ public interface Pageable<T> extends Iterable<T> {
      * @param limit max number of item requested in the page
      * @return filtered collection
      */
-    Iterator<T> iterator(int start, int limit);
+    default Iterator<T> iterator(int start, int limit) {
+	    return Pageables.slice(iterator(),start,limit);
+	}
 }
