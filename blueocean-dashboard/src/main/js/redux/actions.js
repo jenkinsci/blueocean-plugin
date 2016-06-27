@@ -23,8 +23,8 @@ export function calculateLogUrl(config) {
 export function calculateNodeBaseUrl(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch } = config;
     const baseUrl =
-      `${_appURLBase}/rest/organizations/jenkins/` +
-      `pipelines/${uriString(name)}`;
+        `${_appURLBase}/rest/organizations/jenkins/` +
+        `pipelines/${uriString(name)}`;
     if (isMultiBranch) {
         return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/`;
     }
@@ -34,8 +34,8 @@ export function calculateNodeBaseUrl(config) {
 export function calculateStepsBaseUrl(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
     let baseUrl =
-      `${_appURLBase}/rest/organizations/jenkins/` +
-      `pipelines/${uriString(name)}`;
+        `${_appURLBase}/rest/organizations/jenkins/` +
+        `pipelines/${uriString(name)}`;
     if (isMultiBranch) {
         baseUrl = `${baseUrl}/branches/${uriString(branch)}`;
     }
@@ -49,7 +49,7 @@ export function calculateStepsBaseUrl(config) {
 export function calculateRunLogURLObject(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch } = config;
     const baseUrl = `${_appURLBase}/rest/organizations/jenkins` +
-    `/pipelines/${uriString(name)}`;
+        `/pipelines/${uriString(name)}`;
     let url;
     let fileName;
     if (isMultiBranch) {
@@ -185,8 +185,21 @@ function parseJSON(response) {
     return response.json();
 }
 
-function parseText(response) {
-    return response.text();
+function parseMoreDataHeader(response) {
+    let newStart = null;
+    /*
+     * If X-More-Data is true, then client should repeat the request after some delay.
+     * In the repeated request it should use X-TEXT-SIZE header value with start query parameter.
+     */
+    if (response.headers.get('X-More-Data')) {
+        /*
+         * X-TEXT-SIZE is the byte offset of the raw log file client should use in the next request
+         * as value of start query parameter.
+         */
+        newStart = response.headers.get('X-TEXT-SIZE');
+    }
+    const payload = { response, newStart };
+    return payload;
 }
 /**
  * Fetch JSON data.
@@ -211,6 +224,36 @@ exports.fetchJson = function fetchJson(url, onSuccess, onError) {
         });
 };
 
+/**
+ * Fetch TXT/log data and inject a start parameter to indicate that a refetch is needed
+ * <p>
+ * Utility function that can be mocked for testing.
+ *
+ * @param url The URL to fetch from.
+ * @param start query parameter tells API to send log starting from this offset in the log file.
+ * @param onSuccess Main callback to run specific callback code
+ * @param onError Error callback
+ */
+
+exports.fetchLogsInjectStart = function fetchJson(url, start, onSuccess, onError) {
+    let refetchUrl;
+    if (start === null) {
+        refetchUrl = url;
+    } else {
+        refetchUrl = `${url}?start=${start}`;
+    }
+    fetch(refetchUrl, fetchOptions)
+        .then(checkStatus)
+        .then(parseMoreDataHeader)
+        .then(onSuccess)
+        .catch((error) => {
+            if (onError) {
+                onError(error);
+            } else {
+                console.error(error); // eslint-disable-line no-console
+            }
+        });
+};
 /**
  * Clone a JSON object/array instance.
  * <p>
@@ -333,9 +376,11 @@ export const actions = {
                     // set current runs since we are ATM looking at it
                     dispatch({ payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA });
                 }
-                dispatch({ payload: newRuns,
+                dispatch({
+                    payload: newRuns,
                     id: event.blueocean_job_name,
-                    type: ACTION_TYPES.SET_RUNS_DATA });
+                    type: ACTION_TYPES.SET_RUNS_DATA,
+                });
             }
         };
     },
@@ -435,9 +480,11 @@ export const actions = {
                         // set current runs since we are ATM looking at it
                         dispatch({ payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA });
                     }
-                    dispatch({ payload: newRuns,
+                    dispatch({
+                        payload: newRuns,
                         id: event.blueocean_job_name,
-                        type: ACTION_TYPES.SET_RUNS_DATA });
+                        type: ACTION_TYPES.SET_RUNS_DATA,
+                    });
                 };
 
                 if (event.blueocean_is_multi_branch) {
@@ -544,7 +591,7 @@ export const actions = {
     fetchRunsIfNeeded(config) {
         return (dispatch) => {
             const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-            `/pipelines/${config.pipeline}/runs/`;
+                `/pipelines/${config.pipeline}/runs/`;
             return dispatch(actions.fetchIfNeeded({
                 url: baseUrl,
                 id: config.pipeline,
@@ -560,7 +607,7 @@ export const actions = {
     fetchBranchesIfNeeded(config) {
         return (dispatch) => {
             const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-            `/pipelines/${config.pipeline}/branches`;
+                `/pipelines/${config.pipeline}/branches`;
             return dispatch(actions.fetchIfNeeded({
                 url: baseUrl,
                 id: config.pipeline,
@@ -639,16 +686,17 @@ export const actions = {
             });
     },
     /*
-      For the detail view we need to fetch the different nodes of
-      a run in case we do not have specific node, to
-      determine which one we have to show in the detail view.
-      We later store them with the key: nodesBaseUrl
-      so we only fetch them once.
-    */
+     For the detail view we need to fetch the different nodes of
+     a run in case we do not have specific node, to
+     determine which one we have to show in the detail view.
+     We later store them with the key: nodesBaseUrl
+     so we only fetch them once.
+     */
     fetchNodes(config) {
         return (dispatch, getState) => {
             const data = getState().adminStore.nodes;
             const nodesBaseUrl = calculateNodeBaseUrl(config);
+
             function getNodeAndSteps(information) {
                 let nodeModel;
                 let node;
@@ -671,20 +719,21 @@ export const actions = {
                 const mergedConfig = { ...config, node };
                 return dispatch(actions.fetchSteps(mergedConfig));
             }
+
             if (!data || !data[nodesBaseUrl]) {
                 return exports.fetchJson(
-                  nodesBaseUrl,
-                  (json) => {
-                      const information = getNodesInformation(json);
-                      information.nodesBaseUrl = nodesBaseUrl;
-                      dispatch({
-                          type: ACTION_TYPES.SET_NODES,
-                          payload: information,
-                      });
+                    nodesBaseUrl,
+                    (json) => {
+                        const information = getNodesInformation(json);
+                        information.nodesBaseUrl = nodesBaseUrl;
+                        dispatch({
+                            type: ACTION_TYPES.SET_NODES,
+                            payload: information,
+                        });
 
-                      return getNodeAndSteps(information);
-                  },
-                  (error) => console.error('error', error)
+                        return getNodeAndSteps(information);
+                    },
+                    (error) => console.error('error', error)
                 );
             }
             return getNodeAndSteps(data[nodesBaseUrl]);
@@ -713,51 +762,64 @@ export const actions = {
         });
     },
     /*
-      For the detail view we need to fetch the different steps of a nodes.
-      We later store them with the key: nodesBaseUrl
-      so we only fetch them once.
-    */
+     For the detail view we need to fetch the different steps of a nodes.
+     We later store them with the key: nodesBaseUrl
+     so we only fetch them once.
+     */
     fetchSteps(config) {
         return (dispatch, getState) => {
             const data = getState().adminStore.steps;
             const stepBaseUrl = calculateStepsBaseUrl(config);
             if (!data || !data[stepBaseUrl] || !data[stepBaseUrl]) {
                 return exports.fetchJson(
-                  stepBaseUrl,
-                  (json) => {
-                      const information = getNodesInformation(json);
-                      information.nodesBaseUrl = stepBaseUrl;
-                      return dispatch({
-                          type: ACTION_TYPES.SET_STEPS,
-                          payload: information,
-                      });
-                  },
-                  (error) => console.error('error', error)
+                    stepBaseUrl,
+                    (json) => {
+                        const information = getNodesInformation(json);
+                        information.nodesBaseUrl = stepBaseUrl;
+                        return dispatch({
+                            type: ACTION_TYPES.SET_STEPS,
+                            payload: information,
+                        });
+                    },
+                    (error) => console.error('error', error)
                 );
             }
             return null;
         };
     },
     /* l
-      Get a specific log for a node, fetch it only if needed.
-      key for cache: logUrl = calculateLogUrl
+     Get a specific log for a node, fetch it only if needed.
+     key for cache: logUrl = calculateLogUrl
      */
     fetchLog(config) {
         return (dispatch, getState) => {
             const data = getState().adminStore.logs;
             const logUrl = calculateLogUrl(config);
-            if (!data || !data[logUrl]) {
-                return fetch(logUrl, fetchOptions)
-            .then(checkStatus)
-            .then(parseText)
-            .then(text => dispatch({
-                type: ACTION_TYPES.SET_LOGS,
-                payload: {
-                    text,
+            if (
+                !data || !data[logUrl] ||
+                config.newStart > 0 ||
+                (data && data[logUrl] && data[logUrl].newStart > 0)
+            ) {
+                return exports.fetchLogsInjectStart(
                     logUrl,
-                },
-            }))
-            .catch((error) => console.error('error', error));
+                    config.newStart || null,
+                    response => response.response.text()
+                        .then(text => {
+                            const { newStart } = response;
+                            const payload = {
+                                logUrl,
+                                newStart,
+                            };
+                            if (text && !!text.trim()) {
+                                payload.logArray = text.trim().split('\n');
+                            }
+                            return dispatch({
+                                payload,
+                                type: ACTION_TYPES.SET_LOGS,
+                            });
+                        }),
+                    (error) => console.error('error', error)
+                );
             }
             return null;
         };
