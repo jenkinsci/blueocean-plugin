@@ -108,7 +108,7 @@ export const actionHandlers = {
             return state.set('pipeline', null);
         }
         // [].slice(0) returns a clone, we do need it for uniqueness
-        const pipeline = pipelines.slice(0).filter(item => item.name === id);
+        const pipeline = pipelines.slice(0).filter(item => item.fullName === id);
         return state.set('pipeline', pipeline[0] ? pipeline[0] : null);
     },
     [ACTION_TYPES.CLEAR_CURRENT_RUN_DATA](state) {

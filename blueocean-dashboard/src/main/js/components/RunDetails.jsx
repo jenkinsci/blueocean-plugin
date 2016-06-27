@@ -17,7 +17,11 @@ import {
     connect,
 } from '../redux';
 
-import { buildRunDetailsUrl } from '../util/UrlUtils';
+import {
+    buildOrganizationUrl,
+    buildPipelineUrl,
+    buildRunDetailsUrl,
+} from '../util/UrlUtils';
 
 const { func, object, array, any, string } = PropTypes;
 
@@ -40,26 +44,25 @@ class RunDetails extends Component {
     }
     navigateToOrganization() {
         const { organization } = this.props.pipeline;
-        const organizationUrl = `/organizations/${organization}`;
+        const organizationUrl = buildOrganizationUrl(organization);
         this.context.router.push(organizationUrl);
     }
     navigateToPipeline() {
-        const { organization, name } = this.props.pipeline;
-        const pipelineUrl = `/organizations/${organization}/${name}`;
+        const { organization, fullName } = this.props.pipeline;
+        const pipelineUrl = buildPipelineUrl(organization, fullName);
         this.context.router.push(pipelineUrl);
     }
     navigateToChanges() {
         const {
             params: {
                 organization,
-                pipeline: name,
+                pipeline,
                 branch,
                 runId,
             },
         } = this.context;
 
-        const changesUrl = `/organizations/${organization}/${name}` +
-            `/detail/${branch}/${runId}/changes`;
+        const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
         this.context.router.push(changesUrl);
     }
     render() {
