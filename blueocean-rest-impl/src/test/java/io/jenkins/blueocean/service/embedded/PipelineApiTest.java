@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.HttpResponse;
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -10,6 +11,9 @@ import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
+import hudson.model.Job;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Project;
@@ -21,6 +25,11 @@ import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
 import hudson.tasks.junit.TestResultAction;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BluePipelineFactory;
+import io.jenkins.blueocean.service.embedded.rest.PipelineImpl;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -30,6 +39,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestBuilder;
 import org.kohsuke.stapler.AcceptHeader;
+import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
 import java.util.List;
@@ -512,5 +522,60 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals(queue.size(),2);
         Assert.assertEquals(((Map) queue.get(0)).get("expectedBuildNumber"), 4);
         Assert.assertEquals(((Map) queue.get(1)).get("expectedBuildNumber"), 3);
+        System.out.println(request().get("/organizations/jenkins/pipelines/pipeline1/queue").build(String.class));
+
     }
+
+    @Test
+    public void testNewPipelineQueueItem() throws Exception {
+        FreeStyleProject p1 = j.createFreeStyleProject("pipeline1");
+        FreeStyleProject p2 = j.createFreeStyleProject("pipeline2");
+        FreeStyleProject p3 = j.createFreeStyleProject("pipeline3");
+        p1.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
+        p2.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
+        p3.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
+        p1.scheduleBuild2(0).waitForStart();
+        p2.scheduleBuild2(0).waitForStart();
+
+        Map r = request().post("/organizations/jenkins/pipelines/pipeline3/runs/").build(Map.class);
+
+        Assert.assertNotNull(p3.getQueueItem());
+        Assert.assertEquals(Long.toString(p3.getQueueItem().getId()), r.get("id"));
+    }
+
+    @Test
+    public void getPipelinesExtensionTest() throws Exception {
+
+        Project p = j.createFreeStyleProject("pipeline1");
+
+        Map<String,Object> response = get("/organizations/jenkins/pipelines/pipeline1");
+        validatePipeline(p, response);
+
+        Assert.assertEquals("hello world!", response.get("hello"));
+    }
+
+    @Extension(ordinal = 3)
+    public static class PipelineFactoryTestImpl extends BluePipelineFactory {
+
+        @Override
+        public BluePipeline getPipeline(Item item, Reachable parent) {
+            if(item instanceof Job){
+                return new TestPipelineImpl(null, (Job)item, parent.getLink());
+            }
+            return null;
+        }
+    }
+
+    public static class TestPipelineImpl extends PipelineImpl {
+
+        public TestPipelineImpl(ItemGroup folder, Job job, Link parent) {
+            super(folder, job, parent);
+        }
+
+        @Exported(name = "hello")
+        public String getHello(){
+            return "hello world!";
+        }
+    }
+
 }

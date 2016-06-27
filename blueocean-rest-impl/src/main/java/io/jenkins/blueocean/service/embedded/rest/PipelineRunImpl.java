@@ -4,6 +4,7 @@ import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
+import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -42,6 +43,11 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             return new PipelineNodeContainerImpl(run, getLink());
         }
         return null;
+    }
+
+    @Override
+    public BluePipelineStepContainer getSteps() {
+        return new PipelineStepContainerImpl(null, new PipelineNodeGraphBuilder(run), getLink());
     }
 
     @Override

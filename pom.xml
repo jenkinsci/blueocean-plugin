@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-alpha-1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean UI Parent</name>
@@ -22,6 +22,76 @@
     <node.version>5.8.0</node.version>
     <npm.version>3.7.3</npm.version>
   </properties>
+  
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/blueocean-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/blueocean-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/blueocean-plugin</url>
+  </scm> 
+  
+  
+  <developers>
+     <developer>
+       <id>scherler</id>
+       <name>Thorsten Iberian Sumurai</name>      
+     </developer>
+     <developer>
+       <id>cliffmeyers</id>
+       <name>Cliff Meyers</name>      
+     </developer>
+     <developer>
+       <id>tfennelly</id>
+       <name>Tom Fennelly</name>      
+     </developer>    
+     <developer>
+       <id>vivek</id>
+       <name>Vivek Pandey</name>      
+     </developer>    
+     <developer>
+       <id>kohsuke</id>
+       <name>Kohsuke</name>      
+     </developer>   
+     <developer>
+       <id>sophistifunk</id>
+       <name>Josh McDonald</name>      
+     </developer>    
+     <developer>
+       <id>imeredith</id>
+       <name>Ivan Meredith</name>      
+     </developer>    
+     <developer>
+       <id>michaelneale</id>
+       <name>Michael Neale</name>      
+     </developer>    
+     <developer>
+       <id>kzantow</id>
+       <name>Keith Zantow</name>      
+     </developer>    
+     <developer>
+       <id>i386</id>
+       <name>James Dumay</name>      
+     </developer>    
+     <developer>
+       <id>marcesher</id>
+       <name>Marc</name>      
+     </developer>
+     <developer>
+       <id>dragoonis</id>
+       <name>Paul Dragoonis</name>      
+     </developer>   
+     <developer>
+       <id>pragmaticivan</id>
+       <name>Ivan Santos</name>      
+     </developer> 
+     <developer>
+       <id>PeterDaveHello</id>
+       <name>Peter Dave Hello</name>      
+     </developer> 
+     <developer>
+       <id>alexsomai</id>
+       <name>Alexandru Somai</name>      
+     </developer>     
+  </developers>
 
   <modules>
     <module>blueocean-commons</module>

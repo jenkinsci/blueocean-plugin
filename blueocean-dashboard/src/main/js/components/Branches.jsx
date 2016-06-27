@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
+import RunPipeline from './RunPipeline.jsx';
 
 const { object } = PropTypes;
 
@@ -39,7 +40,7 @@ export default class Branches extends Component {
 
         return (<tr key={name} onClick={open} id={`${name}-${id}`} >
             <td><WeatherIcon score={weatherScore} /></td>
-            <td>
+            <td onClick={open}>
                 <LiveStatusIndicator result={result === 'UNKNOWN' ? state : result}
                   startTime={startTime} estimatedDuration={estimatedDurationInMillis}
                 />
@@ -47,7 +48,8 @@ export default class Branches extends Component {
             <td>{decodeURIComponent(name)}</td>
             <td><CommitHash commitId={commitId} /></td>
             <td>{msg || '-'}</td>
-            <td><ReadableDate date={endTime || ''} /></td>
+            <td><ReadableDate date={endTime} liveUpdate /></td>
+            <td><RunPipeline organization={organization} pipeline={pipelineName} branch={name} /></td>
         </tr>);
     }
 }

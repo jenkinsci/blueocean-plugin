@@ -251,7 +251,24 @@ Pipelines can be nested inside folder.
       "organization" : "jenkins",
       "weatherScore" : 100
     } ]
-    
+
+## Build a pipeline
+
+    curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline3/queue/3/"
+        }
+      },
+      "expectedBuildNumber" : 1,
+      "id" : "3",
+      "pipeline" : "pipeline3",
+      "qeueudTime" : "2016-06-22T11:05:41.309+1200"
+    }
+
 ## Get all runs in a pipeline
     
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs
@@ -899,6 +916,42 @@ Get steps of 'test' stage node:
       "startTime" : "2016-05-13T09:37:01.230-0700",
       "state" : "FINISHED"
     }
+    
+# Get Pipeline Steps
+
+    Gives all steps in a pipeline. Excludes stages and prallels/blocks.
+
+    curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/
+    
+    [ {
+      "_class" : "io.jenkins.blueocean.rest.model.GenericResource",
+      "displayName" : "Shell Script",
+      "durationInMillis" : 70,
+      "id" : "5",
+      "result" : "SUCCESS",
+      "startTime" : "2016-06-18T13:28:29.443+0900"
+    }, {
+      "_class" : "io.jenkins.blueocean.rest.model.GenericResource",
+      "displayName" : "Print Message",
+      "durationInMillis" : 1,
+      "id" : "10",
+      "result" : "SUCCESS",
+      "startTime" : "2016-06-18T13:28:29.545+0900"
+    }, {
+      "_class" : "io.jenkins.blueocean.rest.model.GenericResource",
+      "displayName" : "Shell Script",
+      "durationInMillis" : 265,
+      "id" : "11",
+      "result" : "SUCCESS",
+      "startTime" : "2016-06-18T13:28:29.546+0900"
+    }, {
+      "_class" : "io.jenkins.blueocean.rest.model.GenericResource",
+      "displayName" : "Shell Script",
+      "durationInMillis" : 279,
+      "id" : "12",
+      "result" : "SUCCESS",
+      "startTime" : "2016-06-18T13:28:29.811+0900"
+    } ]
                        
 # Fetching logs
 
@@ -924,6 +977,12 @@ start query parameter tells API to send log starting from this offset in the log
 
 Size of log to return in the response. Default value is 150 KB of log data.
 
+
+## Download a log for a Pipeline run
+
+This will show up as a download in the browser.
+
+    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0&download=true
 
     
 ## Get log for a Pipeline run

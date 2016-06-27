@@ -20,7 +20,7 @@ public class PipelineStepContainerImpl extends BluePipelineStepContainer {
     private final Link self;
 
     public PipelineStepContainerImpl(FlowNode node, PipelineNodeGraphBuilder graphBuilder, Link parentLink) {
-        this.self = parentLink.rel("nodes");
+        this.self = parentLink.rel("steps");
         this.node = node;
         this.graphBuilder = graphBuilder;
     }
@@ -39,10 +39,17 @@ public class PipelineStepContainerImpl extends BluePipelineStepContainer {
 
     @Override
     public Iterator<BluePipelineStep> iterator() {
-        List<FlowNode> nodes = graphBuilder.getSteps(node);
         List<BluePipelineStep> pipelineSteps = new ArrayList<>();
-        for(FlowNode node:nodes){
-            pipelineSteps.add(new PipelineStepImpl(node, graphBuilder, getLink()));
+        if(node!=null) {
+            List<FlowNode> nodes = graphBuilder.getSteps(node);
+            for (FlowNode node : nodes) {
+                pipelineSteps.add(new PipelineStepImpl(node, graphBuilder, getLink()));
+            }
+        }else{
+            List<FlowNode> nodes = graphBuilder.getAllSteps();
+            for(FlowNode node:nodes){
+                pipelineSteps.add(new PipelineStepImpl(node, graphBuilder, getLink()));
+            }
         }
         return pipelineSteps.iterator();
     }

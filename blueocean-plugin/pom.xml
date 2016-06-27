@@ -5,13 +5,13 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-alpha-1-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
     <packaging>hpi</packaging>
 
-    <name>BlueOcean :: Aggregator</name>
+    <name>(Alpha) BlueOcean :: Aggregator</name>
 
     <dependencies>
         <dependency>

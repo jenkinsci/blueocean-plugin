@@ -33,6 +33,7 @@ public abstract class BlueRun extends Resource {
     public static final String RESULT = "result";
     public static final String STATE = "state";
     public static final String ARTIFACTS = "artifacts";
+    public static final String STEPS = "steps";
     public static final String ACTIONS = "actions";
 
 
@@ -161,8 +162,21 @@ public abstract class BlueRun extends Resource {
     @Navigable
     public abstract BluePipelineNodeContainer getNodes();
 
-    @Exported(name = ACTIONS, inline = true, visibility = 10)
-    public abstract Collection<?> getActions();
+    /**
+     *
+     * @return Gives Actions associated with this Run
+     */
+    @Navigable
+    @Exported(name = ACTIONS, inline = true)
+    public abstract Collection<BlueActionProxy> getActions();
+
+    /**
+     * @return Gives steps from pipeline. The list of steps must not include stages, this is because stage could be
+     * interpreted as step as its StepAtomNode and implementation of this API must ensure not to include it.
+     */
+    @Navigable
+    @Exported(name = STEPS)
+    public abstract BluePipelineStepContainer getSteps();
 
     /**
      * @return Instance of stapler aware instance that can do the following:
@@ -174,6 +188,7 @@ public abstract class BlueRun extends Resource {
      *                    X-TEXT-SIZE header value with *start* query parameter.</li>
      *  </ul>
      */
+    @Navigable
     public abstract Object getLog();
 
     public enum BlueRunState {

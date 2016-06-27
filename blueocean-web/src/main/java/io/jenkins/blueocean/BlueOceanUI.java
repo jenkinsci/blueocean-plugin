@@ -1,7 +1,9 @@
 package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
+import hudson.model.UsageStatistics;
 import io.jenkins.blueocean.jsextensions.JenkinsJSExtensions;
+import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.stapler.HttpResponse;
@@ -50,6 +52,21 @@ public class BlueOceanUI {
     @GET
     public HttpResponse doJavaScriptExtensionInfo() {
         return new JsonResponse(JenkinsJSExtensions.INSTANCE.getJenkinsJSExtensionData());
+    }
+
+    /**
+     * @return True if jenkins reports usage statistics.
+     */
+    public boolean includeRollbar() {
+        return false;
+//        return Jenkins.getInstance().isUsageStatisticsCollected() && !UsageStatistics.DISABLED;
+    }
+
+    /**
+     * @return Version on the plugin e.g 1.0-SNAPSHOT (private-f9a14d3e-jenkins)
+     */
+    public String getPluginVersion() {
+        return Jenkins.getInstance().getPlugin("blueocean-web").getWrapper().getVersion();
     }
 
     private class JsonResponse implements HttpResponse {

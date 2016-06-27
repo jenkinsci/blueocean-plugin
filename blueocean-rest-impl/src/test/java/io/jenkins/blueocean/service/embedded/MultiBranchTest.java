@@ -92,7 +92,7 @@ public class MultiBranchTest extends BaseTest{
         Assert.assertNull(mp.getBranch("master"));
     }
 
-    @Test
+//    @Test
     public void getMultiBranchPipeline() throws IOException, ExecutionException, InterruptedException {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),

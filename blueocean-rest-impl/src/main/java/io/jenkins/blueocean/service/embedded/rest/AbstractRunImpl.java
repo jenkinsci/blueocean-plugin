@@ -8,6 +8,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
+import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
@@ -15,9 +16,7 @@ import io.jenkins.blueocean.rest.model.GenericResource;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -171,15 +170,12 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public Collection<?> getActions() {
-        List<BlueActionProxy> actionProxies = new ArrayList<>();
-        for(Action action:run.getAllActions()){
-            if(!action.getClass().isAnnotationPresent(ExportedBean.class)){
-                continue;
-            }
-            actionProxies.add(new ActionProxiesImpl(action, this));
-        }
-        return actionProxies;
+    public BluePipelineStepContainer getSteps() {
+        return null;
+    }
+
+    public Collection<BlueActionProxy> getActions() {
+        return PipelineImpl.getActionProxies(run.getAllActions(), this);
     }
 
     protected static BlueRun getBlueRun(Run r, Link parent){
@@ -197,7 +193,9 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public String getCommitId(){
         BuildData data = run.getAction(BuildData.class);
 
-        if(data == null){
+        if(data == null
+            || data.getLastBuiltRevision() == null
+            || data.getLastBuiltRevision().getSha1String() == null) {
             return null;
         } else {
             return data.getLastBuiltRevision().getSha1String();

@@ -547,6 +547,88 @@ public class PipelineNodeTest extends BaseTest {
     }
 
     @Test
+    public void getPipelineWihNodesAllStepsTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+
+        job1.setDefinition(new CpsFlowDefinition("stage 'build'\n" +
+            "node{\n" +
+            "  sh \"echo Building...\"\n" +
+            "}\n" +
+            "\n" +
+            "stage 'test'\n" +
+            "parallel 'unit':{\n" +
+            "  node{\n" +
+            "    echo \"Unit testing...\"\n" +
+            "    sh \"echo Tests running\"\n" +
+            "    sh \"echo Tests completed\"\n" +
+            "  }\n" +
+            "},'integration':{\n" +
+            "  node{\n" +
+            "    echo \"Integration testing...\"\n" +
+            "  }\n" +
+            "}, 'ui':{\n" +
+            "  node{\n" +
+            "    echo \"UI testing...\"\n" +
+            "  }\n" +
+            "}\n" +
+            "\n" +
+            "node{\n" +
+            "  echo \"Done Testing\"\n" +
+            "}" +
+            "\n" +
+            "stage 'deploy'\n" +
+            "node{\n" +
+            "  echo \"Deploying\"\n" +
+            "}" +
+            "\n" +
+            "stage 'deployToProd'\n" +
+            "node{\n" +
+            "  echo \"Deploying to production\"\n" +
+            "}"
+        ));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
+        nodeGraphTable.build();
+        List<FlowNode> nodes = getStages(nodeGraphTable);
+        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+
+        Assert.assertEquals(7, nodes.size());
+        Assert.assertEquals(3, parallelNodes.size());
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+        Assert.assertEquals(9,resp.size());
+    }
+
+    @Test
+    public void getPipelineWihoutNodesAllStepsTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+
+        job1.setDefinition(new CpsFlowDefinition(
+            "node{\n" +
+            "  sh \"echo Building...\"\n" +
+            "}\n" +
+            "  node{\n" +
+            "    echo \"Unit testing...\"\n" +
+            "    sh \"echo Tests running\"\n" +
+            "    sh \"echo Tests completed\"\n" +
+            "  }"
+        ));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+        Assert.assertEquals(4,resp.size());
+        String log = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/"+resp.get(0).get("id")+"/log/", String.class);
+        Assert.assertNotNull(log);
+    }
+
+
+
+    @Test
     public void getPipelineJobRunNodesTestWithFuture() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 
