@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import {
     buildOrganizationUrl,
     buildPipelineUrl,
-    buildRunDetailsUrl
+    buildRunDetailsUrl,
 } from '../../main/js/util/UrlUtils';
 
 describe('UrlUtils', () => {
