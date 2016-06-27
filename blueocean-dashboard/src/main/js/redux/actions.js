@@ -145,7 +145,7 @@ export const actionHandlers = {
         return state.set('branches', branches);
     },
     [ACTION_TYPES.SET_TEST_RESULTS](state, { payload }): State {
-        return state.set('testResults', payload === null ? {} : payload);
+        return state.set('testResults', payload === undefined ? {} : payload);
     },
     [ACTION_TYPES.SET_STEPS](state, { payload }): State {
         const steps = { ...state.steps } || {};
