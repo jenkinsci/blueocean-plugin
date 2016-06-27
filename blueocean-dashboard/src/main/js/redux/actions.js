@@ -5,7 +5,7 @@ import { State } from '../components/records';
 
 import { getNodesInformation } from '../util/logDisplayHelper';
 
-import {calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, calculateRunLogURLObject} from '../util/UrlUtils';
+import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, } from '../util/UrlUtils';
 
 // main actin logic
 export const ACTION_TYPES = keymirror({
@@ -644,8 +644,8 @@ export const actions = {
                 let node;
                 if (!config.node) {
                     const focused = information.model.filter((item) => {
-                        console.log(item)
-                        return item.isFocused;;
+                        console.log(item);
+                        return item.isFocused;
                     })[0];
                     if (focused) {
                         nodeModel = focused;

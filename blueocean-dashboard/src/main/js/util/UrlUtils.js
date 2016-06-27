@@ -25,14 +25,11 @@ export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabNam
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
 
-
 /*
  * helper to clean the path replace(/%2F/g, '%252F')
  * @param input
  */
-export const uriString = (input) => {
-    return encodeURIComponent(input).replace(/%2F/g, '%252F');
-};
+export const uriString = (input) => encodeURIComponent(input).replace(/%2F/g, '%252F');
 
 /*
  * helper to calculate log url. When we have a node we get create a special url, otherwise we use the url passed to us
@@ -47,7 +44,7 @@ export const calculateLogUrl = (config) => {
 };
 
 /*
- * helper to calculate node(flowNodes) url. 
+ * helper to calculate node(flowNodes) url.
  * If we have multibranch we generate a slightly different url
  * @param config { name, runId, branch, _appURLBase, isMultiBranch}
  */
@@ -63,8 +60,8 @@ export function calculateNodeBaseUrl(config) {
 }
 
 /*
- * helper to calculate steps(flowNodes) url. 
- * If we have multibranch we generate a slightly different url 
+ * helper to calculate steps(flowNodes) url.
+ * If we have multibranch we generate a slightly different url
  * and if there are node in we request the steps for this node
  * @param config { name, runId, branch, _appURLBase, isMultiBranch, node}
  */
@@ -84,7 +81,7 @@ export function calculateStepsBaseUrl(config) {
 
 
 /*
- * helper to calculate general log url, includes filename. 
+ * helper to calculate general log url, includes filename.
  * If we have multibranch we generate a slightly different url
  * @param config { name, runId, branch, _appURLBase, isMultiBranch}
  */

@@ -9,12 +9,11 @@ import {
     node as nodeSelector,
     nodes as nodesSelector,
     actions,
-    calculateRunLogURLObject,
-    calculateNodeBaseUrl,
-    calculateStepsBaseUrl,
     connect,
     createSelector,
 } from '../redux';
+
+import { calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl } from '../util/UrlUtils';
 
 import LogToolbar from './LogToolbar';
 
