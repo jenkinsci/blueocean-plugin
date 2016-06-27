@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { DownloadLink } from '@jenkins-cd/design-language';
 
 import { Icon } from 'react-material-icons-blue';
 
@@ -8,7 +7,7 @@ const { string } = PropTypes;
 
 export default class LogToolbar extends Component {
     render() {
-        const { fileName, url, title } = this.props;
+        const { url, title } = this.props;
         // early out
         if (!url) {
             return null;
