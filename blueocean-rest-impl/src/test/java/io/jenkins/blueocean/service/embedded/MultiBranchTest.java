@@ -337,7 +337,7 @@ public class MultiBranchTest extends BaseTest{
             i++;
         }
 
-        Map run = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b4.getId()+"/");
+        Map run = get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId()+"/");
         validateRun(b4, run);
         List<Map> changetSet = (List<Map>) run.get("changeSet");
 
