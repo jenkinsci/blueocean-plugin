@@ -740,9 +740,9 @@ export const actions = {
                             payload: information,
                         });
 
-                      return getNodeAndSteps(information);
-                  },
-                  (error) => console.error('error', error) // eslint-disable-line no-console
+                        return getNodeAndSteps(information);
+                    },
+                    (error) => console.error('error', error) // eslint-disable-line no-console
                 );
             }
             return getNodeAndSteps(data[nodesBaseUrl]);
