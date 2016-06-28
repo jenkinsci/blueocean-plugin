@@ -1,14 +1,19 @@
-package io.jenkins.blueocean.service.embedded.util;
+package io.jenkins.blueocean.events;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
+import org.jenkins.pubsub.Message;
+import org.jenkins.pubsub.MessageException;
+import org.jenkins.pubsub.PubsubBus;
+import org.jenkins.pubsub.SimpleMessage;
 import org.jenkinsci.plugins.workflow.actions.BodyInvocationAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.flow.GraphListener;
@@ -20,6 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -30,18 +37,20 @@ import java.util.concurrent.*;
  * This may be useful (or may not be needed) for live-ness of the pipeline results screen.
  */
 @Extension
-public class StageEventRunListener extends RunListener<Run<?,?>> {
+public class PipelineEventListener extends RunListener<Run<?,?>> {
 
+    private static final Logger LOGGER = Logger.getLogger(PipelineEventListener.class.getName());
 
     private class StageEventPublisher implements GraphListener {
 
         private final Run run;
+        private final PubsubBus pubSubBus;
         private String currentStageName;
 
         public StageEventPublisher(Run r) {
             this.run = r;
-            System.out.println("***********************************");
-            System.out.println("Starting run for " + run.getFullDisplayName());
+            pubSubBus = PubsubBus.getBus();
+            publishEvent(newMessage(PipelineEventChannel.Event.pipeline_start));
         }
 
         @Override
@@ -50,7 +59,7 @@ public class StageEventRunListener extends RunListener<Run<?,?>> {
                 if (flowNode.getAction(BodyInvocationAction.class) != null) {
                     List<String> branch = getBranch(flowNode);
                     branch.add(flowNode.getId());
-                    System.out.println("Start block: " + toPath(branch));
+                    publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_start, flowNode, branch));
                 }
             } else if (flowNode instanceof StepAtomNode) {
                 List<String> branch = getBranch(flowNode);
@@ -58,11 +67,8 @@ public class StageEventRunListener extends RunListener<Run<?,?>> {
 
                 if (stageAction != null) {
                     currentStageName = stageAction.getStageName();
-                    System.out.println("Stage: " + currentStageName);
-                } else {
-                    System.out.println("Step:  " + flowNode.getDisplayName());
                 }
-                System.out.println("Ctx:   " + toPath(branch));
+                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
             } else if (flowNode instanceof StepEndNode) {
                 if (flowNode.getAction(BodyInvocationAction.class) != null) {
                     try {
@@ -71,14 +77,13 @@ public class StageEventRunListener extends RunListener<Run<?,?>> {
                         List<String> branch = getBranch(startNode);
 
                         branch.add(startNodeId);
-                        System.out.println("End block: " + toPath(branch));
+                        publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_end, flowNode, branch));
                     } catch (IOException e) {
-
+                        LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
                     }
                 }
             } else if (flowNode instanceof FlowEndNode) {
-                System.out.println("Ending run for " + run.getFullDisplayName());
-                System.out.println("***********************************");
+                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_end));
             }
         }
 
@@ -128,6 +133,38 @@ public class StageEventRunListener extends RunListener<Run<?,?>> {
             }
             return builder.toString();
         }
+
+        private Message newMessage(PipelineEventChannel.Event event) {
+            return new SimpleMessage()
+                    .setChannelName(PipelineEventChannel.NAME)
+                    .setEventName(event)
+                    .set(PipelineEventChannel.EventProps.pipeline_job_name, run.getParent().getFullName())
+                    .set(PipelineEventChannel.EventProps.pipeline_run_id, run.getId());
+        }
+
+        private Message newMessage(PipelineEventChannel.Event event, FlowNode flowNode, List<String> branch) {
+            Message message = newMessage(event);
+
+            message.set(PipelineEventChannel.EventProps.pipeline_step_flownode_id, flowNode.getId());
+            message.set(PipelineEventChannel.EventProps.pipeline_context, toPath(branch));
+            if (currentStageName != null) {
+                message.set(PipelineEventChannel.EventProps.pipeline_step_stage_name, currentStageName);
+            }
+            if (flowNode instanceof StepNode) {
+                StepNode stepNode = (StepNode) flowNode;
+                message.set(PipelineEventChannel.EventProps.pipeline_step_name, stepNode.getDescriptor().getFunctionName());
+            }
+
+            return message;
+        }
+
+        private void publishEvent(Message message) {
+            try {
+                pubSubBus.publish(message);
+            } catch (MessageException e) {
+                LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
+            }
+        }
     }
 
     private ExecutorService executor = new ThreadPoolExecutor(0, 5, 10L,TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
@@ -141,18 +178,14 @@ public class StageEventRunListener extends RunListener<Run<?,?>> {
                 @Override
                 public void run() {
                     try {
-
                         FlowExecution ex = ((WorkflowRun) run).getExecutionPromise().get();
                         ex.addListener(new StageEventPublisher(run));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
                     }
                 }
             }, executor);
         }
     }
-
-
-
 
 }

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { ExtensionPoint } from '@jenkins-cd/js-extensions';
 import LogConsole from './LogConsole';
+import * as sse from '@jenkins-cd/sse-gateway';
 
 import Steps from './Steps';
 import {
@@ -31,6 +32,12 @@ export class RunDetailsPipeline extends Component {
             const logGeneral = calculateRunLogURLObject(mergedConfig);
             fetchLog({ ...logGeneral });
         }
+
+        // Listen for pipeline flow node events.
+        // TODO: Filter them
+        this.pipelineListener = sse.subscribe('pipeline', (event) => {
+            console.log(event);
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -57,6 +64,10 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillUnmount() {
+        if (this.pipelineListener) {
+            sse.unsubscribe(this.pipelineListener);
+            delete this.pipelineListener;
+        }
         this.props.cleanNodePointer();
         clearTimeout(this.timeout);
     }
