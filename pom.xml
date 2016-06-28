@@ -99,6 +99,7 @@
     <module>blueocean-rest</module>
     <module>blueocean-dashboard</module>
     <module>blueocean-rest-impl</module>
+    <module>blueocean-events</module>
     <module>blueocean-plugin</module>
   </modules>
 
@@ -145,6 +146,12 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-events</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -158,6 +165,12 @@
 
         <!-- 3rd party dependencies -->
 
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>sse-gateway</artifactId>
+            <version>1.4-SNAPSHOT</version>
+        </dependency>
+      
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
@@ -204,6 +217,12 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mailer</artifactId>
             <version>1.13</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>1.4.9</version>
         </dependency>
 
       <dependency> <!-- TODO pending https://github.com/jenkinsci/jenkins-test-harness/pull/2 -->

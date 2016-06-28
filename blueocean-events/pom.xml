@@ -9,14 +9,18 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>BlueOcean :: Dashboard</name>
-    <artifactId>blueocean-dashboard</artifactId>
+    <name>BlueOcean :: Events</name>
+    <artifactId>blueocean-events</artifactId>
     <packaging>hpi</packaging>
 
     <dependencies>
         <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>sse-gateway</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-events</artifactId>
+            <artifactId>blueocean-rest-impl</artifactId>
         </dependency>
     </dependencies>
 

@@ -18,12 +18,16 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
+import jenkins.model.ParameterizedJobMixIn;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -200,5 +204,19 @@ public class PipelineImpl extends BluePipeline {
         return actionProxies;
 
     }
+    
+    // TODO: @vivek/@ivan please fix me the right way !!!
+    public static @Nonnull Link getLink(@Nonnull ParameterizedJobMixIn.ParameterizedJob job) {
+        Link orgLink = new Link("/rest/organizations/" + OrganizationImpl.INSTANCE.getName());
 
+        if (job instanceof WorkflowJob) {
+            ItemGroup<? extends Item> parent = job.getParent();
+            if (parent instanceof WorkflowMultiBranchProject) {
+                String multiBranchProjectName = ((WorkflowMultiBranchProject) parent).getName();
+                return orgLink.rel("pipelines").rel(multiBranchProjectName).rel("branches").rel(job.getName());
+            }
+        }
+        
+        return orgLink.rel("pipelines").rel(job.getName());
+    }
 }
