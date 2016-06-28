@@ -31,7 +31,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 cnt++;
                 String id = e.getCommitId();
                 if (id == null) id = String.valueOf(cnt);
-                m.put(id, new ChangeSetResource(e));
+                m.put(id, new ChangeSetResource(e, this));
             }
         }
         return Containers.fromResourceMap(getLink(),m);
