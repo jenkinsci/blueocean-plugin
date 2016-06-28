@@ -22,10 +22,11 @@ const { string, object, any, func } = PropTypes;
 
 export class RunDetailsPipeline extends Component {
     componentWillMount() {
-        const { fetchNodes, fetchLog, result } = this.props;
+        const { fetchNodes, fetchLog, result, fetchSteps } = this.props;
         const mergedConfig = this.generateConfig(this.props);
 
-        if (result && result._class === 'io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl') {
+        const supportsNode = result && result._class === 'io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl';
+        if (supportsNode) {
             fetchNodes(mergedConfig);
         } else {
             // console.log('fetch the log directly')
@@ -34,9 +35,30 @@ export class RunDetailsPipeline extends Component {
         }
 
         // Listen for pipeline flow node events.
-        // TODO: Filter them
+        // We filter them only for steps and the end event all other we let pass
         this.pipelineListener = sse.subscribe('pipeline', (event) => {
-            console.log(event);
+            const jenkinsEvent = event.jenkins_event;
+            // we turn on refetch so we always fetch a new Node result
+            const refetch = true;
+            switch (jenkinsEvent) {
+            case 'pipeline_step': {
+                // if the step_stage_id has changed we need to change the focus
+                if (event.pipeline_step_stage_id !== mergedConfig.node) {
+                    mergedConfig.node = event.pipeline_step_stage_id;
+                    fetchNodes({ ...mergedConfig, refetch });
+                } else {
+                    fetchSteps({ ...mergedConfig, refetch });
+                }
+                break;
+            }
+            case 'pipeline_end': {
+                fetchNodes({ ...mergedConfig, refetch });
+                break;
+            }
+            default: {
+                // console.log(event);
+            }
+            }
         });
     }
 
@@ -87,9 +109,7 @@ export class RunDetailsPipeline extends Component {
         }
         // if we have a node param we do not want the calculation of the focused node
         const node = nodeParam || nodeReducer.id;
-        // we turn on refetch so we always fetch a new Node result, will be changed to props
-        const refetch = true;
-        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer, refetch };
+        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer };
         return mergedConfig;
     }
 
