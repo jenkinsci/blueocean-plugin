@@ -22,9 +22,8 @@ export function calculateLogUrl(config) {
 
 export function calculateNodeBaseUrl(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch } = config;
-    const baseUrl =
-        `${_appURLBase}/rest/organizations/jenkins/` +
-        `pipelines/${uriString(name)}`;
+    // TODO: can't hard-code org
+    const baseUrl = `${_appURLBase}/rest/organizations/jenkins/pipelines/${name}`;
     if (isMultiBranch) {
         return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/`;
     }
@@ -33,9 +32,8 @@ export function calculateNodeBaseUrl(config) {
 
 export function calculateStepsBaseUrl(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
-    let baseUrl =
-        `${_appURLBase}/rest/organizations/jenkins/` +
-        `pipelines/${uriString(name)}`;
+    // TODO: can't hard-code org
+    let baseUrl = `${_appURLBase}/rest/organizations/jenkins/pipelines/${name}`;
     if (isMultiBranch) {
         baseUrl = `${baseUrl}/branches/${uriString(branch)}`;
     }
@@ -48,8 +46,8 @@ export function calculateStepsBaseUrl(config) {
 
 export function calculateRunLogURLObject(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch } = config;
-    const baseUrl = `${_appURLBase}/rest/organizations/jenkins` +
-        `/pipelines/${uriString(name)}`;
+    // TODO: can't hard-code org
+    const baseUrl = `${_appURLBase}/rest/organizations/jenkins/pipelines/${name}`;
     let url;
     let fileName;
     if (isMultiBranch) {
