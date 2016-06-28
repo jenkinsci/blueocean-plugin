@@ -98,6 +98,7 @@
     <module>blueocean-web</module>
     <module>blueocean-rest</module>
     <module>blueocean-dashboard</module>
+    <module>blueocean-personalization</module>
     <module>blueocean-rest-impl</module>
     <module>blueocean-plugin</module>
   </modules>
@@ -140,6 +141,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-dashboard</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-personalization</artifactId>
             <version>${project.version}</version>
         </dependency>
 
