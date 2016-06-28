@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.Util;
 import hudson.model.Job;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Resource;
@@ -35,7 +36,7 @@ public class BranchImpl extends PipelineImpl {
 
     @Override
     public Link getLink() {
-        return parent.rel(getName());
+        return parent.rel(Util.rawEncode(getName()));
     }
 
     public static class PullRequest extends Resource {
