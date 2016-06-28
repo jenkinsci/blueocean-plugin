@@ -2,6 +2,7 @@
   "name": "blueocean-personalization",
   "version": "0.0.1",
   "scripts": {
+    "storybook": "start-storybook -p 9001 --static-dir node_modules/@jenkins-cd/design-language/dist/assets/",
     "lint": "gulp lint",
     "lint:fix": "gulp lint --fixLint",
     "lint:watch": "gulp lint:watch --continueOnLint",
@@ -14,6 +15,7 @@
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@jenkins-cd/js-builder": "0.0.34",
     "@jenkins-cd/js-test": "1.1.1",
+    "@kadira/storybook": "1.34.0",
     "babel": "^6.5.2",
     "babel-core": "^6.7.6",
     "babel-eslint": "^6.0.2",
