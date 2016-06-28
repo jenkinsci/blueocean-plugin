@@ -52,5 +52,6 @@ public interface PipelineEventChannel {
         pipeline_step_name,
         pipeline_step_flownode_id,
         pipeline_step_stage_name,
+        pipeline_step_stage_id,
     }
 }

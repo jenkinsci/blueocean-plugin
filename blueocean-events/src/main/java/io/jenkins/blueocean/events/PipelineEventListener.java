@@ -46,6 +46,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
         private final Run run;
         private final PubsubBus pubSubBus;
         private String currentStageName;
+        private String currentStageId;
 
         public StageEventPublisher(Run r) {
             this.run = r;
@@ -67,6 +68,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
 
                 if (stageAction != null) {
                     currentStageName = stageAction.getStageName();
+                    currentStageId = flowNode.getId();
                 }
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
             } else if (flowNode instanceof StepEndNode) {
@@ -149,6 +151,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
             message.set(PipelineEventChannel.EventProps.pipeline_context, toPath(branch));
             if (currentStageName != null) {
                 message.set(PipelineEventChannel.EventProps.pipeline_step_stage_name, currentStageName);
+                message.set(PipelineEventChannel.EventProps.pipeline_step_stage_id, currentStageId);
             }
             if (flowNode instanceof StepNode) {
                 StepNode stepNode = (StepNode) flowNode;
