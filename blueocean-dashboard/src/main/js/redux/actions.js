@@ -280,12 +280,12 @@ export const actions = {
      * @param config Application configuration.
      * @param organizationName (optional)
      */
+    // eslint-disable-next-line no-unused-vars
     fetchPipelines(config, organizationName) {
         return (dispatch) => {
             const baseUrl = config.getAppURLBase();
-            const url = organizationName ?
-                `${baseUrl}/rest/organizations/${organizationName}/pipelines/` :
-                `${baseUrl}/rest/search/?q=type:pipeline`;
+            // TODO: update this code to call /search with organizationName once JENKINS-36273 is ready
+            const url = `${baseUrl}/rest/search/?q=type:pipeline`;
 
             return dispatch(actions.generateData(
                 url,
@@ -300,13 +300,13 @@ export const actions = {
      * @param config Application configuration.
      * @param organizationName (optional)
      */
+    // eslint-disable-next-line no-unused-vars
     fetchPipelinesIfNeeded(config, organizationName) {
         return (dispatch, getState) => {
             const pipelines = getState().adminStore.pipelines;
             const baseUrl = config.getAppURLBase();
-            const url = !organizationName ?
-                `${baseUrl}/rest/search/?q=type:pipeline` :
-                `${baseUrl}/rest/organizations/${organizationName}/pipelines/`;
+            // TODO: update this code to call /search with organizationName once JENKINS-36273 is ready
+            const url = `${baseUrl}/rest/search/?q=type:pipeline`;
 
             if (!pipelines) {
                 return dispatch(actions.generateData(

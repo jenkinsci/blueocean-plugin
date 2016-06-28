@@ -38,7 +38,6 @@ class RunDetails extends Component {
             config.pipeline = pipeline;
 
             this.props.fetchRunsIfNeeded(config);
-            this.props.setPipeline(config);
             this.opener = this.props.previous;
         }
     }

@@ -34,11 +34,7 @@ class OrganizationPipelines extends Component {
         if (config) {
             const { organization } = this.context.params;
             this.props.fetchPipelinesIfNeeded(this.context.config, organization);
-            if (this.props.params.pipeline) {
-                const { pipeline } = this.props.params;
-                config.pipeline = pipeline;
-                this.props.setPipeline(config);
-            }
+
             const _this = this;
 
             // Subscribe for job channel push events
@@ -90,12 +86,10 @@ class OrganizationPipelines extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.params.pipeline !== this.props.params.pipeline) {
-            const config = this.context.config;
-            const { pipeline } = nextProps.params;
-            config.pipeline = pipeline;
-            this.props.setPipeline(config);
-        }
+        const config = this.context.config;
+        const { pipeline } = nextProps.params;
+        config.pipeline = pipeline;
+        this.props.setPipeline(config);
     }
 
     componentWillUnmount() {
