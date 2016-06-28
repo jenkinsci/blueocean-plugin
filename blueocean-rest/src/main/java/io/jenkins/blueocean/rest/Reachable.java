@@ -12,5 +12,7 @@ public interface Reachable {
     /**
      * @return Gives {@link Link} to a reachable Resource or Container
      */
-    Link getLink();
+    default Link getLink() {
+	    return null;
+	}
 }

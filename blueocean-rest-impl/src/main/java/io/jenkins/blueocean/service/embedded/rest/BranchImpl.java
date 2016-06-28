@@ -82,11 +82,6 @@ public class BranchImpl extends PipelineImpl {
         public String getAuthor() {
             return author;
         }
-
-        @Override
-        public Link getLink() {
-            return null;
-        }
     }
 
 }

@@ -2,12 +2,9 @@ package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.pageable.Pageable;
-import io.jenkins.blueocean.rest.pageable.Pageables;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
-
-import java.util.Iterator;
 
 /**
  * Stapler-bound REST endpoint for a collection of objects.
@@ -29,14 +26,6 @@ public abstract class Container<T> implements Pageable<T>, Reachable {
     // for stapler
     public final T getDynamic(String name) {
         return get(name);
-    }
-
-    /**
-     * Base implementation of pagination that is dumb.
-     */
-    @Override
-    public Iterator<T> iterator(int start, int limit) {
-        return Pageables.slice(iterator(),start,limit);
     }
 
     /**
