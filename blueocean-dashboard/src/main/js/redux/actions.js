@@ -5,7 +5,7 @@ import { State } from '../components/records';
 
 import { getNodesInformation } from '../util/logDisplayHelper';
 
-import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, } from '../util/UrlUtils';
+import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
 
 // main actin logic
 export const ACTION_TYPES = keymirror({
