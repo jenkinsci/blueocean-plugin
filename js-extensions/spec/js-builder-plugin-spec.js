@@ -1,3 +1,5 @@
+var expect = require('chai').expect;
+
 describe("js-builder plugin test", function () {
 
     it("- test readYAMLFile", function () {
@@ -17,9 +19,9 @@ describe("js-builder plugin test", function () {
     });
 
     function assertSampleJSONOkay(asJSON) {
-        expect(asJSON.id).toBe('com.example.my.plugin');
-        expect(asJSON.artefacts.page.id).toBe('about-my-plugin');
-        expect(asJSON.artefacts.components[0].id).toBe('MyNeatButton');
-        expect(asJSON.artefacts.components[1].id).toBe('SuperList');
+        expect(asJSON.id).to.equal('com.example.my.plugin');
+        expect(asJSON.artefacts.page.id).to.equal('about-my-plugin');
+        expect(asJSON.artefacts.components[0].id).to.equal('MyNeatButton');
+        expect(asJSON.artefacts.components[1].id).to.equal('SuperList');
     }
 });

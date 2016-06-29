@@ -5,63 +5,7 @@ import { State } from '../components/records';
 
 import { getNodesInformation } from '../util/logDisplayHelper';
 
-// helper functions
-
-// helper to clean the path
-function uriString(input) {
-    return encodeURIComponent(input).replace(/%2F/g, '%252F');
-}
-// helper calculate url
-export function calculateLogUrl(config) {
-    if (config.node) {
-        const { nodesBaseUrl, node } = config;
-        return `${nodesBaseUrl}/${node.id}/log`;
-    }
-    return config.url;
-}
-
-export function calculateNodeBaseUrl(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
-    // TODO: can't hard-code org
-    const baseUrl = `${_appURLBase}/rest/organizations/jenkins/pipelines/${name}`;
-    if (isMultiBranch) {
-        return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/`;
-    }
-    return `${baseUrl}/runs/${runId}/nodes/`;
-}
-
-export function calculateStepsBaseUrl(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
-    // TODO: can't hard-code org
-    let baseUrl = `${_appURLBase}/rest/organizations/jenkins/pipelines/${name}`;
-    if (isMultiBranch) {
-        baseUrl = `${baseUrl}/branches/${uriString(branch)}`;
-    }
-    // console.log('xxx'), baseUrl;
-    if (node && node !== null) {
-        return `${baseUrl}/runs/${runId}/nodes/${node}/steps`;
-    }
-    return `${baseUrl}/runs/${runId}/steps/`;
-}
-
-export function calculateRunLogURLObject(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
-    // TODO: can't hard-code org
-    const baseUrl = `${_appURLBase}/rest/organizations/jenkins/pipelines/${name}`;
-    let url;
-    let fileName;
-    if (isMultiBranch) {
-        url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
-        fileName = `${branch}-${runId}.txt`;
-    } else {
-        url = `${baseUrl}/runs/${runId}/log/`;
-        fileName = `${runId}.txt`;
-    }
-    return {
-        url,
-        fileName,
-    };
-}
+import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, buildUrl } from '../util/UrlUtils';
 
 // main actin logic
 export const ACTION_TYPES = keymirror({
@@ -76,6 +20,7 @@ export const ACTION_TYPES = keymirror({
     SET_BRANCHES_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
+    SET_TEST_RESULTS: null,
     UPDATE_BRANCH_DATA: null,
     SET_STEPS: null,
     SET_NODE: null,
@@ -138,6 +83,9 @@ export const actionHandlers = {
         const branches = { ...state.branches } || {};
         branches[id] = payload;
         return state.set('branches', branches);
+    },
+    [ACTION_TYPES.SET_TEST_RESULTS](state, { payload }): State {
+        return state.set('testResults', payload === undefined ? {} : payload);
     },
     [ACTION_TYPES.SET_STEPS](state, { payload }): State {
         const steps = { ...state.steps } || {};
@@ -561,7 +509,7 @@ export const actions = {
                 const url = `${config.getAppURLBase()}/rest/organizations/${branch.organization}` +
                     `/pipelines/${event.blueocean_job_name}/branches/${branch.name}`;
 
-                const processBranchData = function (branchData) {
+                const processBranchData = function processBranchData(branchData) {
                     const { latestRun } = branchData;
 
                     // same issue as in 'updateRunData'; see comment above
@@ -580,7 +528,7 @@ export const actions = {
                 };
 
                 exports.fetchJson(url, processBranchData, (error) => {
-                    console.log(error);
+                    console.log(error); // eslint-disable-line no-console
                 });
             }
         };
@@ -681,6 +629,11 @@ export const actions = {
                     payload: { type: 'ERROR', message: `${error.stack}` },
                     type: ACTION_TYPES.UPDATE_MESSAGES,
                 });
+                // call again with no payload so actions handle missing data
+                dispatch({
+                    ...optional,
+                    type: actionType,
+                });
             });
     },
     /*
@@ -718,7 +671,7 @@ export const actions = {
                 return dispatch(actions.fetchSteps(mergedConfig));
             }
 
-            if (!data || !data[nodesBaseUrl]) {
+            if (!data || !data[nodesBaseUrl] || config.refetch) {
                 return exports.fetchJson(
                     nodesBaseUrl,
                     (json) => {
@@ -731,7 +684,7 @@ export const actions = {
 
                         return getNodeAndSteps(information);
                     },
-                    (error) => console.error('error', error)
+                    (error) => console.error('error', error) // eslint-disable-line no-console
                 );
             }
             return getNodeAndSteps(data[nodesBaseUrl]);
@@ -742,7 +695,7 @@ export const actions = {
         return (dispatch, getState) => {
             const data = getState().adminStore.nodes;
             const nodesBaseUrl = calculateNodeBaseUrl(config);
-            if (!data || !data[nodesBaseUrl]) {
+            if (!data || !data[nodesBaseUrl] || config.refetch) {
                 return actions.fetchNodes(config);
             }
             const node = data[nodesBaseUrl].model.filter((item) => item.id === config.node)[0];
@@ -768,18 +721,18 @@ export const actions = {
         return (dispatch, getState) => {
             const data = getState().adminStore.steps;
             const stepBaseUrl = calculateStepsBaseUrl(config);
-            if (!data || !data[stepBaseUrl] || !data[stepBaseUrl]) {
+            if (!data || !data[stepBaseUrl] || config.refetch) {
                 return exports.fetchJson(
-                    stepBaseUrl,
-                    (json) => {
-                        const information = getNodesInformation(json);
-                        information.nodesBaseUrl = stepBaseUrl;
-                        return dispatch({
-                            type: ACTION_TYPES.SET_STEPS,
-                            payload: information,
-                        });
-                    },
-                    (error) => console.error('error', error)
+                  stepBaseUrl,
+                  (json) => {
+                      const information = getNodesInformation(json);
+                      information.nodesBaseUrl = stepBaseUrl;
+                      return dispatch({
+                          type: ACTION_TYPES.SET_STEPS,
+                          payload: information,
+                      });
+                  },
+                  (error) => console.error('error', error) // eslint-disable-line no-console
                 );
             }
             return null;
@@ -821,5 +774,32 @@ export const actions = {
             }
             return null;
         };
+    },
+
+    fetchTestResults(config, runDetails) {
+        return (dispatch) => {
+            const baseUrl = `${config.getAppURLBase()}/rest/organizations/`;
+            let url;
+            if (runDetails.isMultiBranch) {
+                // eslint-disable-next-line max-len
+                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.pipeline, 'branches', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
+            } else {
+                // eslint-disable-next-line max-len
+                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
+            }
+
+            return dispatch(actions.generateData(
+                url,
+                ACTION_TYPES.SET_TEST_RESULTS
+            ));
+        };
+    },
+
+    resetTestDetails() {
+        return (dispatch) =>
+            dispatch({
+                type: ACTION_TYPES.SET_TEST_RESULTS,
+                payload: null,
+            });
     },
 };

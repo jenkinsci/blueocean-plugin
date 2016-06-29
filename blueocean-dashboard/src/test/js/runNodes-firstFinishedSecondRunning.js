@@ -43,9 +43,9 @@ export const firstFinishedSecondRunning = [
     "durationInMillis": 7269,
     "edges": [],
     "id": "16",
-    "result": "SUCCESS",
+    "result": "UNKOWN",
     "startTime": "2016-05-25T13:47:50.800+0200",
-    "state": "FINISHED"
+    "state": "RUNNING"
   },
   {
     "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
@@ -53,9 +53,9 @@ export const firstFinishedSecondRunning = [
     "durationInMillis": 7268,
     "edges": [],
     "id": "17",
-    "result": "SUCCESS",
+    "result": "UNKOWN",
     "startTime": "2016-05-25T13:47:50.801+0200",
-    "state": "FINISHED"
+    "state": "RUNNING"
   },
   {
     "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
@@ -63,8 +63,8 @@ export const firstFinishedSecondRunning = [
     "durationInMillis": 7267,
     "edges": [],
     "id": "18",
-    "result": "SUCCESS",
+    "result": "UNKOWN",
     "startTime": "2016-05-25T13:47:50.802+0200",
-    "state": "FINISHED"
+    "state": "RUNNING"
   }
 ]
