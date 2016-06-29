@@ -44,9 +44,9 @@ describe("Logic test of different runs", () => {
   it("handles running", () => {
     const runningSamples = [runNodesRunning, firstRunning, firstFinishedSecondRunning];
     runningSamples
-      .map((item) => assertResult(
+      .map((item, index) => assertResult(
         getNodesInformation(item),
-        {finished: false, failed: null, running: 1}
+        {finished: false, failed: null, running: index === 2 ? 3 : 1}
       ));
   });
 });

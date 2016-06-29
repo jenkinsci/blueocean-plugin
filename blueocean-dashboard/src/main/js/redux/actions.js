@@ -5,67 +5,7 @@ import { State } from '../components/records';
 
 import { getNodesInformation } from '../util/logDisplayHelper';
 
-import { buildUrl } from '../util/UrlUtils';
-
-// helper functions
-
-// helper to clean the path
-function uriString(input) {
-    return encodeURIComponent(input).replace(/%2F/g, '%252F');
-}
-// helper calculate url
-export function calculateLogUrl(config) {
-    if (config.node) {
-        const { nodesBaseUrl, node } = config;
-        return `${nodesBaseUrl}/${node.id}/log`;
-    }
-    return config.url;
-}
-
-export function calculateNodeBaseUrl(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
-    const baseUrl =
-        `${_appURLBase}/rest/organizations/jenkins/` +
-        `pipelines/${uriString(name)}`;
-    if (isMultiBranch) {
-        return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/`;
-    }
-    return `${baseUrl}/runs/${runId}/nodes/`;
-}
-
-export function calculateStepsBaseUrl(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
-    let baseUrl =
-        `${_appURLBase}/rest/organizations/jenkins/` +
-        `pipelines/${uriString(name)}`;
-    if (isMultiBranch) {
-        baseUrl = `${baseUrl}/branches/${uriString(branch)}`;
-    }
-    // console.log('xxx'), baseUrl;
-    if (node && node !== null) {
-        return `${baseUrl}/runs/${runId}/nodes/${node}/steps`;
-    }
-    return `${baseUrl}/runs/${runId}/steps/`;
-}
-
-export function calculateRunLogURLObject(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
-    const baseUrl = `${_appURLBase}/rest/organizations/jenkins` +
-        `/pipelines/${uriString(name)}`;
-    let url;
-    let fileName;
-    if (isMultiBranch) {
-        url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
-        fileName = `${branch}-${runId}.txt`;
-    } else {
-        url = `${baseUrl}/runs/${runId}/log/`;
-        fileName = `${runId}.txt`;
-    }
-    return {
-        url,
-        fileName,
-    };
-}
+import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, buildUrl } from '../util/UrlUtils';
 
 // main actin logic
 export const ACTION_TYPES = keymirror({
@@ -719,7 +659,7 @@ export const actions = {
                 return dispatch(actions.fetchSteps(mergedConfig));
             }
 
-            if (!data || !data[nodesBaseUrl]) {
+            if (!data || !data[nodesBaseUrl] || config.refetch) {
                 return exports.fetchJson(
                     nodesBaseUrl,
                     (json) => {
@@ -743,7 +683,7 @@ export const actions = {
         return (dispatch, getState) => {
             const data = getState().adminStore.nodes;
             const nodesBaseUrl = calculateNodeBaseUrl(config);
-            if (!data || !data[nodesBaseUrl]) {
+            if (!data || !data[nodesBaseUrl] || config.refetch) {
                 return actions.fetchNodes(config);
             }
             const node = data[nodesBaseUrl].model.filter((item) => item.id === config.node)[0];
@@ -769,7 +709,7 @@ export const actions = {
         return (dispatch, getState) => {
             const data = getState().adminStore.steps;
             const stepBaseUrl = calculateStepsBaseUrl(config);
-            if (!data || !data[stepBaseUrl] || !data[stepBaseUrl]) {
+            if (!data || !data[stepBaseUrl] || config.refetch) {
                 return exports.fetchJson(
                   stepBaseUrl,
                   (json) => {
@@ -823,7 +763,7 @@ export const actions = {
             return null;
         };
     },
-    
+
     fetchTestResults(config, runDetails) {
         return (dispatch) => {
             const baseUrl = `${config.getAppURLBase()}/rest/organizations/`;
@@ -842,7 +782,7 @@ export const actions = {
             ));
         };
     },
-    
+
     resetTestDetails() {
         return (dispatch) =>
             dispatch({
