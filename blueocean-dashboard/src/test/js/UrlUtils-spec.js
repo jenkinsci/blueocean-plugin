@@ -2,7 +2,7 @@ import { assert } from 'chai';
 
 import {  calculateRunLogURLObject, calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, buildRunDetailsUrl } from '../../main/js/util/UrlUtils';
 
-describe.only('UrlUtils', () => {
+describe('UrlUtils', () => {
     describe('buildRunDetailsUrl', () => {
         it('should build the baseUrl if tabName ommitted', () => {
             const url = buildRunDetailsUrl(
