@@ -52,11 +52,11 @@ export function calculateNodeBaseUrl(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch } = config;
     const baseUrl =
         `${_appURLBase}/rest/organizations/jenkins/` +
-        `pipelines/${uriString(name)}`;
+        `pipelines/${name}`;
     if (isMultiBranch) {
-        return `${baseUrl}/branches/${uriString(branch)}/runs/${uriString(runId)}/nodes/`;
+        return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/`;
     }
-    return `${baseUrl}/runs/${uriString(runId)}/nodes/`;
+    return `${baseUrl}/runs/${runId}/nodes/`;
 }
 
 /*
@@ -69,14 +69,14 @@ export function calculateStepsBaseUrl(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
     let baseUrl =
         `${_appURLBase}/rest/organizations/jenkins/` +
-        `pipelines/${uriString(name)}`;
+        `pipelines/${name}`;
     if (isMultiBranch) {
-        baseUrl = `${baseUrl}/branches/${uriString(branch)}`;
+        baseUrl = `${baseUrl}/branches/${branch}`;
     }
     if (node && node !== null) {
-        return `${baseUrl}/runs/${uriString(runId)}/nodes/${uriString(node)}/steps`;
+        return `${baseUrl}/runs/${runId}/nodes/${node}/steps`;
     }
-    return `${baseUrl}/runs/${uriString(runId)}/steps/`;
+    return `${baseUrl}/runs/${runId}/steps/`;
 }
 
 /*
@@ -87,14 +87,14 @@ export function calculateStepsBaseUrl(config) {
 export function calculateRunLogURLObject(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch } = config;
     const baseUrl = `${_appURLBase}/rest/organizations/jenkins` +
-        `/pipelines/${uriString(name)}`;
+        `/pipelines/${name}`;
     let url;
     let fileName;
     if (isMultiBranch) {
-        url = `${baseUrl}/branches/${uriString(branch)}/runs/${uriString(runId)}/log/`;
+        url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
         fileName = `${branch}-${runId}.txt`;
     } else {
-        url = `${baseUrl}/runs/${uriString(runId)}/log/`;
+        url = `${baseUrl}/runs/${runId}/log/`;
         fileName = `${runId}.txt`;
     }
     return {
