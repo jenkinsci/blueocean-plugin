@@ -1,17 +1,26 @@
 /**
- * Trim the last path segment off a URL and return it.
- * Handles trailing slashes nicely.
- * @param url
+ * Build a root-relative URL to the organization's pipeline list screen.
+ * @param organization
+ */
+export const buildOrganizationUrl = (organization) =>
+    `/organizations/${encodeURIComponent(organization)}`;
+
+/**
+ * Build a root-relative URL to the pipeline details screen.
+ * @param organization
+ * @param fullName
+ * @param tabName
  * @returns {string}
  */
-export const removeLastUrlSegment = (url) => {
-    const paths = url.split('/').filter(path => (path.length > 0));
-    paths.pop();
-    return paths.join('/');
+export const buildPipelineUrl = (organization, fullName, tabName) => {
+    const baseUrl = `/organizations/${encodeURIComponent(organization)}/` +
+        `${encodeURIComponent(fullName)}`;
+
+    return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
 
 /**
- * Build a root-relative URL to the run details modal.
+ * Build a root-relative URL to the run details screen.
  * @param organization
  * @param pipeline
  * @param branch
