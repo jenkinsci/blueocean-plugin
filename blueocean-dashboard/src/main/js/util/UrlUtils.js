@@ -79,7 +79,6 @@ export function calculateStepsBaseUrl(config) {
     return `${baseUrl}/runs/${uriString(runId)}/steps/`;
 }
 
-
 /*
  * helper to calculate general log url, includes filename.
  * If we have multibranch we generate a slightly different url
@@ -103,3 +102,18 @@ export function calculateRunLogURLObject(config) {
         fileName,
     };
 }
+
+/**
+ * Constructs an escaped url based on the arguments, with forward slashes between them
+ * e.g. buildURL('organizations', orgName, 'runs', runId) => organizations/my%20org/runs/34
+ */
+export const buildUrl = (...args) => {
+    let url = '';
+    for (let i = 0; i < args.length; i++) {
+        if (i > 0) {
+            url += '/';
+        }
+        url += encodeURIComponent(args[i]);
+    }
+    return url;
+};
