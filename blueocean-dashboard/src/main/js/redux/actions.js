@@ -5,65 +5,7 @@ import { State } from '../components/records';
 
 import { getNodesInformation } from '../util/logDisplayHelper';
 
-// helper functions
-
-// helper to clean the path
-function uriString(input) {
-    return encodeURIComponent(input).replace(/%2F/g, '%252F');
-}
-// helper calculate url
-export function calculateLogUrl(config) {
-    if (config.node) {
-        const { nodesBaseUrl, node } = config;
-        return `${nodesBaseUrl}/${node.id}/log`;
-    }
-    return config.url;
-}
-
-export function calculateNodeBaseUrl(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
-    const baseUrl =
-        `${_appURLBase}/rest/organizations/jenkins/` +
-        `pipelines/${uriString(name)}`;
-    if (isMultiBranch) {
-        return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/`;
-    }
-    return `${baseUrl}/runs/${runId}/nodes/`;
-}
-
-export function calculateStepsBaseUrl(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
-    let baseUrl =
-        `${_appURLBase}/rest/organizations/jenkins/` +
-        `pipelines/${uriString(name)}`;
-    if (isMultiBranch) {
-        baseUrl = `${baseUrl}/branches/${uriString(branch)}`;
-    }
-    // console.log('xxx'), baseUrl;
-    if (node && node !== null) {
-        return `${baseUrl}/runs/${runId}/nodes/${node}/steps`;
-    }
-    return `${baseUrl}/runs/${runId}/steps/`;
-}
-
-export function calculateRunLogURLObject(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
-    const baseUrl = `${_appURLBase}/rest/organizations/jenkins` +
-        `/pipelines/${uriString(name)}`;
-    let url;
-    let fileName;
-    if (isMultiBranch) {
-        url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
-        fileName = `${branch}-${runId}.txt`;
-    } else {
-        url = `${baseUrl}/runs/${runId}/log/`;
-        fileName = `${runId}.txt`;
-    }
-    return {
-        url,
-        fileName,
-    };
-}
+import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, buildUrl } from '../util/UrlUtils';
 
 // main actin logic
 export const ACTION_TYPES = keymirror({
@@ -78,6 +20,7 @@ export const ACTION_TYPES = keymirror({
     SET_BRANCHES_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
+    SET_TEST_RESULTS: null,
     UPDATE_BRANCH_DATA: null,
     SET_STEPS: null,
     SET_NODE: null,
@@ -140,6 +83,9 @@ export const actionHandlers = {
         const branches = { ...state.branches } || {};
         branches[id] = payload;
         return state.set('branches', branches);
+    },
+    [ACTION_TYPES.SET_TEST_RESULTS](state, { payload }): State {
+        return state.set('testResults', payload === undefined ? {} : payload);
     },
     [ACTION_TYPES.SET_STEPS](state, { payload }): State {
         const steps = { ...state.steps } || {};
@@ -336,14 +282,14 @@ export const actions = {
     processJobQueuedEvent(event) {
         return (dispatch, getState) => {
             const runsByJobName = getState().adminStore.runs || {};
-            const eventJobRuns = runsByJobName[event.blueocean_job_name];
+            const eventJobRuns = runsByJobName[event.blueocean_job_pipeline_name];
 
             // Only interested in the event if we have already loaded the runs for that job.
             if (eventJobRuns && event.job_run_queueId) {
                 for (let i = 0; i < eventJobRuns.length; i++) {
                     const run = eventJobRuns[i];
-                    if (event.blueocean_is_multi_branch
-                        && event.blueocean_branch_name !== run.pipeline) {
+                    if (event.job_ismultibranch
+                        && event.blueocean_job_branch_name !== run.pipeline) {
                         // Not the same branch. Yes, run.pipeline actually contains
                         // the branch name i.e. naming seems a bit confusing.
                         continue;
@@ -362,10 +308,10 @@ export const actions = {
                 // We keep the queueId so we can cross reference it with the actual
                 // run once it has been started.
                 newRun.job_run_queueId = event.job_run_queueId;
-                if (event.blueocean_is_multi_branch) {
-                    newRun.pipeline = event.blueocean_branch_name;
+                if (event.job_ismultibranch) {
+                    newRun.pipeline = event.blueocean_job_branch_name;
                 } else {
-                    newRun.pipeline = event.blueocean_job_name;
+                    newRun.pipeline = event.blueocean_job_pipeline_name;
                 }
                 newRun.state = 'QUEUED';
                 newRun.result = 'UNKNOWN';
@@ -378,7 +324,7 @@ export const actions = {
                 }
                 dispatch({
                     payload: newRuns,
-                    id: event.blueocean_job_name,
+                    id: event.blueocean_job_pipeline_name,
                     type: ACTION_TYPES.SET_RUNS_DATA,
                 });
             }
@@ -397,7 +343,7 @@ export const actions = {
             // may have changed state.
             function getFromStore() {
                 const runsByJobName = getState().adminStore.runs || {};
-                const eventJobRuns = runsByJobName[event.blueocean_job_name];
+                const eventJobRuns = runsByJobName[event.blueocean_job_pipeline_name];
                 let newStoreData = undefined;
 
                 // Only interested in the event if we have already loaded the runs for that job.
@@ -407,8 +353,8 @@ export const actions = {
 
                     for (let i = 0; i < eventJobRuns.length; i++) {
                         const run = eventJobRuns[i];
-                        if (event.blueocean_is_multi_branch
-                            && event.blueocean_branch_name !== run.pipeline) {
+                        if (event.job_ismultibranch
+                            && event.blueocean_job_branch_name !== run.pipeline) {
                             // Not the same branch. Yes, run.pipeline actually contains
                             // the branch name.
                             continue;
@@ -439,8 +385,6 @@ export const actions = {
 
             // Only interested in the event if we have already loaded the runs for that job.
             if (storeData) {
-                let runUrl;
-
                 const updateRunData = function updateRunData(runData, skipStoreDataRefresh) {
                     const newRunData = Object.assign({}, runData);
                     let newRuns;
@@ -482,21 +426,12 @@ export const actions = {
                     }
                     dispatch({
                         payload: newRuns,
-                        id: event.blueocean_job_name,
+                        id: event.blueocean_job_pipeline_name,
                         type: ACTION_TYPES.SET_RUNS_DATA,
                     });
                 };
 
-                if (event.blueocean_is_multi_branch) {
-                    // TODO: find out how to get a 'master' branch run.
-                    // Doesn't work using 'master'??
-                    runUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                        `/pipelines/${event.blueocean_job_name}` +
-                        `/branches/${event.blueocean_branch_name}/runs/${event.jenkins_object_id}`;
-                } else {
-                    runUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                        `/pipelines/${event.blueocean_job_name}/runs/${event.jenkins_object_id}`;
-                }
+                const runUrl = `${config.getAppURLBase()}${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`;
 
                 // The event tells us that the run state has changed, but does not give all
                 // run related data (times, commit Ids etc). So, lets go get that data from
@@ -523,10 +458,10 @@ export const actions = {
                     } else {
                         runData = {};
                         runData.job_run_queueId = event.job_run_queueId;
-                        if (event.blueocean_is_multi_branch) {
-                            runData.pipeline = event.blueocean_branch_name;
+                        if (event.job_ismultibranch) {
+                            runData.pipeline = event.blueocean_job_branch_name;
                         } else {
-                            runData.pipeline = event.blueocean_job_name;
+                            runData.pipeline = event.blueocean_job_pipeline_name;
                         }
                     }
 
@@ -551,19 +486,18 @@ export const actions = {
         return (dispatch, getState) => {
             // if the job event is multibranch, refetch the corresponding branch
             // from the REST API and update our stores
-            if (event.blueocean_is_multi_branch) {
+            if (event.job_ismultibranch) {
                 const branches = getState().adminStore.branches || {};
-                const jobs = branches[event.blueocean_job_name] || [];
-                const branch = jobs.find(job => job.name === event.blueocean_branch_name);
+                const jobs = branches[event.blueocean_job_pipeline_name] || [];
+                const branch = jobs.find(job => job.name === event.blueocean_job_branch_name);
 
                 if (!branch) {
                     return;
                 }
 
-                const url = `${config.getAppURLBase()}/rest/organizations/${branch.organization}` +
-                    `/pipelines/${event.blueocean_job_name}/branches/${branch.name}`;
+                const url = `${config.getAppURLBase()}${event.blueocean_job_rest_url}`;
 
-                const processBranchData = function (branchData) {
+                const processBranchData = function processBranchData(branchData) {
                     const { latestRun } = branchData;
 
                     // same issue as in 'updateRunData'; see comment above
@@ -576,13 +510,13 @@ export const actions = {
                     // apply the new data to the store
                     dispatch({
                         payload: branchData,
-                        id: event.blueocean_job_name,
+                        id: event.blueocean_job_pipeline_name,
                         type: ACTION_TYPES.UPDATE_BRANCH_DATA,
                     });
                 };
 
                 exports.fetchJson(url, processBranchData, (error) => {
-                    console.log(error);
+                    console.log(error); // eslint-disable-line no-console
                 });
             }
         };
@@ -683,6 +617,11 @@ export const actions = {
                     payload: { type: 'ERROR', message: `${error.stack}` },
                     type: ACTION_TYPES.UPDATE_MESSAGES,
                 });
+                // call again with no payload so actions handle missing data
+                dispatch({
+                    ...optional,
+                    type: actionType,
+                });
             });
     },
     /*
@@ -720,7 +659,7 @@ export const actions = {
                 return dispatch(actions.fetchSteps(mergedConfig));
             }
 
-            if (!data || !data[nodesBaseUrl]) {
+            if (!data || !data[nodesBaseUrl] || config.refetch) {
                 return exports.fetchJson(
                     nodesBaseUrl,
                     (json) => {
@@ -733,7 +672,7 @@ export const actions = {
 
                         return getNodeAndSteps(information);
                     },
-                    (error) => console.error('error', error)
+                    (error) => console.error('error', error) // eslint-disable-line no-console
                 );
             }
             return getNodeAndSteps(data[nodesBaseUrl]);
@@ -744,7 +683,7 @@ export const actions = {
         return (dispatch, getState) => {
             const data = getState().adminStore.nodes;
             const nodesBaseUrl = calculateNodeBaseUrl(config);
-            if (!data || !data[nodesBaseUrl]) {
+            if (!data || !data[nodesBaseUrl] || config.refetch) {
                 return actions.fetchNodes(config);
             }
             const node = data[nodesBaseUrl].model.filter((item) => item.id === config.node)[0];
@@ -770,18 +709,18 @@ export const actions = {
         return (dispatch, getState) => {
             const data = getState().adminStore.steps;
             const stepBaseUrl = calculateStepsBaseUrl(config);
-            if (!data || !data[stepBaseUrl] || !data[stepBaseUrl]) {
+            if (!data || !data[stepBaseUrl] || config.refetch) {
                 return exports.fetchJson(
-                    stepBaseUrl,
-                    (json) => {
-                        const information = getNodesInformation(json);
-                        information.nodesBaseUrl = stepBaseUrl;
-                        return dispatch({
-                            type: ACTION_TYPES.SET_STEPS,
-                            payload: information,
-                        });
-                    },
-                    (error) => console.error('error', error)
+                  stepBaseUrl,
+                  (json) => {
+                      const information = getNodesInformation(json);
+                      information.nodesBaseUrl = stepBaseUrl;
+                      return dispatch({
+                          type: ACTION_TYPES.SET_STEPS,
+                          payload: information,
+                      });
+                  },
+                  (error) => console.error('error', error) // eslint-disable-line no-console
                 );
             }
             return null;
@@ -823,5 +762,32 @@ export const actions = {
             }
             return null;
         };
+    },
+
+    fetchTestResults(config, runDetails) {
+        return (dispatch) => {
+            const baseUrl = `${config.getAppURLBase()}/rest/organizations/`;
+            let url;
+            if (runDetails.isMultiBranch) {
+                // eslint-disable-next-line max-len
+                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.pipeline, 'branches', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
+            } else {
+                // eslint-disable-next-line max-len
+                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
+            }
+
+            return dispatch(actions.generateData(
+                url,
+                ACTION_TYPES.SET_TEST_RESULTS
+            ));
+        };
+    },
+
+    resetTestDetails() {
+        return (dispatch) =>
+            dispatch({
+                type: ACTION_TYPES.SET_TEST_RESULTS,
+                payload: null,
+            });
     },
 };
