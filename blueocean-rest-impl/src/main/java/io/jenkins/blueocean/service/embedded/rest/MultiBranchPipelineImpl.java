@@ -14,6 +14,7 @@ import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFactory;
+import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
@@ -260,6 +261,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public Collection<BlueActionProxy> getActions() {
         return PipelineImpl.getActionProxies(mbp.getAllActions(), this);
+    }
+
+    @Override
+    public BlueQueueContainer getQueue() {
+        return new MultiBranchPipelineQueueContainer(this);
     }
 
     @Override

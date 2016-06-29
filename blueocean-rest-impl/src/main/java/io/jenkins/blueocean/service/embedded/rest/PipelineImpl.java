@@ -111,7 +111,7 @@ public class PipelineImpl extends BluePipeline {
     @Override
     @Navigable
     public BlueQueueContainer getQueue() {
-        return new QueueContainerImpl(this, job);
+        return new QueueContainerImpl(this);
     }
 
     @WebMethod(name="") @DELETE
