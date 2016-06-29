@@ -4,7 +4,7 @@ import {
 }
     from '@jenkins-cd/design-language';
 import moment from 'moment';
-import { removeLastUrlSegment } from '../util/UrlUtils';
+import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 const { object, string, any } = PropTypes;
 
@@ -25,6 +25,10 @@ export default class Runs extends Component {
             context: {
                 router,
                 location,
+                pipeline: {
+                    fullName,
+                    organization,
+                },
             },
             props: {
                 result: {
@@ -48,10 +52,9 @@ export default class Runs extends Component {
             durationInMillis :
             moment().diff(moment(startTime));
 
-        const baseUrl = removeLastUrlSegment(this.context.location.pathname);
-        const url = `${baseUrl}/detail/${pipeline}/${id}/pipeline`;
         const open = () => {
-            location.pathname = url;
+            const pipelineName = decodeURIComponent(pipeline);
+            location.pathname = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
             router.push(location);
         };
 
