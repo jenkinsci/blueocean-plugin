@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 import LogConsole from './LogConsole';
 import * as sse from '@jenkins-cd/sse-gateway';
@@ -21,6 +22,20 @@ import LogToolbar from './LogToolbar';
 const { string, object, any, func } = PropTypes;
 
 export class RunDetailsPipeline extends Component {
+    constructor(props) {
+        super(props);
+        // we do not want to follow any builds that are finished
+        this.state = { followAlong: props && props.result && props.result.state !== 'FINISHED' ? true : false };
+    }
+
+    // shouldComponentUpdate(nextProps) {
+    //     if(nextProps.result.id ===this.props.result.id) {
+    //         console.log('up', nextProps)
+    //         return true;
+    //     }
+    //
+    // }
+
     componentWillMount() {
         const { fetchNodes, fetchLog, result, fetchSteps } = this.props;
         const mergedConfig = this.generateConfig(this.props);
@@ -36,37 +51,83 @@ export class RunDetailsPipeline extends Component {
 
         // Listen for pipeline flow node events.
         // We filter them only for steps and the end event all other we let pass
-        this.pipelineListener = sse.subscribe('pipeline', (event) => {
+        const onSseEvent = (event) => {
             const jenkinsEvent = event.jenkins_event;
-            // we turn on refetch so we always fetch a new Node result
-            const refetch = true;
-            switch (jenkinsEvent) {
-            case 'pipeline_step': {
-                // if the step_stage_id has changed we need to change the focus
-                if (event.pipeline_step_stage_id !== mergedConfig.node) {
-                    mergedConfig.node = event.pipeline_step_stage_id;
-                    fetchNodes({ ...mergedConfig, refetch });
-                } else {
-                    fetchSteps({ ...mergedConfig, refetch });
+            try {
+                if (!this.state.followAlong || event.pipeline_run_id !== this.props.result.id) {
+                    console.log('early out');
+                    throw new Error('exit');
                 }
-                break;
+                // we turn on refetch so we always fetch a new Node result
+                const refetch = true;
+                switch (jenkinsEvent) {
+                case 'pipeline_step':
+                    {
+                        // if the step_stage_id has changed we need to change the focus
+                        if (event.pipeline_step_stage_id !== mergedConfig.node) {
+                            fetchNodes({ ...mergedConfig, refetch });
+                        } else {
+                            fetchSteps({ ...mergedConfig, refetch });
+                        }
+                        break;
+                    }
+                case 'pipeline_end':
+                    {
+                        fetchNodes({ ...mergedConfig, refetch });
+                        break;
+                    }
+                default:
+                    {
+                        // console.log(event);
+                    }
+                }
+            } catch (e) {
+                // we only ignore the exit error
+                if (e.message !== 'exit') {
+                    throw e;
+                }
             }
-            case 'pipeline_end': {
-                fetchNodes({ ...mergedConfig, refetch });
-                break;
+        };
+
+        console.log('?', this.state.followAlong)
+        if (this.state.followAlong) {
+            this.pipelineListener = sse.subscribe('pipeline', onSseEvent);
+        }
+    }
+
+    componentDidMount() {
+
+        const onScrollHandler = (elem) => {
+            if (elem.deltaY < 0 && this.state.followAlong) {
+                console.log('this.setState({ followAlong: false });');
+                this.setState({ followAlong: false });
             }
-            default: {
-                // console.log(event);
+        };
+
+        const _handleKeys = (event) => {
+            if (event.keyCode === 38 && this.state.followAlong) {
+                console.log('this.setState({ followAlong: false });');
+                this.setState({ followAlong: false });
             }
-            }
-        });
+        };
+        const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
+        domNode.addEventListener('wheel', onScrollHandler, false);
+        document.addEventListener('keydown', _handleKeys, false);
     }
 
     componentWillReceiveProps(nextProps) {
+        if (!this.state.followAlong && this.timeout) {
+            console.log('clearTO');
+            clearTimeout(this.timeout);
+        }
+
         if (nextProps.params.node !== this.props.params.node) {
             const config = this.generateConfig(nextProps);
             this.props.setNode(config);
             this.props.fetchSteps(config);
+            if (!this.state.followAlong) {
+                this.setState({ followAlong: true });
+            }
         }
 
         const { logs, fetchLog } = nextProps;
@@ -78,8 +139,12 @@ export class RunDetailsPipeline extends Component {
                 const newStart = log.newStart;
                 if (Number(newStart) > 0) {
                     // kill current  timeout if any
+                    console.log('prefollow', this.state.followAlong);
                     clearTimeout(this.timeout);
-                    this.timeout = setTimeout(() => fetchLog({ ...logGeneral, newStart }), 1000);
+                    if (this.state.followAlong) {
+                        console.log('follow', this.state.followAlong);
+                        this.timeout = setTimeout(() => fetchLog({ ...logGeneral, newStart }), 1000);
+                    }
                 }
             }
         }
@@ -127,11 +192,15 @@ export class RunDetailsPipeline extends Component {
         } = this.props;
 
         const {
-          result,
-          state,
+            result,
+            state,
         } = resultMeta;
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
-        const scrollToBottom = resultRun.toLowerCase() === 'failure' || resultRun.toLowerCase() === 'running';
+        const followAlong = this.state.followAlong;
+        const scrollToBottom =
+            resultRun.toLowerCase() === 'failure'
+            || (resultRun.toLowerCase() === 'running' && followAlong)
+        ;
 
         const mergedConfig = this.generateConfig(this.props);
 
@@ -145,8 +214,13 @@ export class RunDetailsPipeline extends Component {
         } else if (mergedConfig.nodeReducer.id !== null) {
             title = `Steps - ${title}`;
         }
+        console.log(followAlong, 'followAlongsteps');
+        const stopFollowing = (event) => {
+            console.log(this.refs, event, !followAlong);
+            this.setState({ followAlong: !followAlong });
+        };
         return (
-            <div>
+            <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
                   router={router}
@@ -157,6 +231,7 @@ export class RunDetailsPipeline extends Component {
                   runId={runId}
                 />
                 }
+                <button onClick={stopFollowing}>noFollow</button>
                 <LogToolbar
                   fileName={logGeneral.fileName}
                   url={logGeneral.url}
@@ -164,6 +239,7 @@ export class RunDetailsPipeline extends Component {
                 />
                 { steps && steps[key] && <Steps
                   nodeInformation={steps[key]}
+                  followAlong
                   {...this.props}
                 />
                 }

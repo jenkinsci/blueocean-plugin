@@ -706,6 +706,7 @@ export const actions = {
      so we only fetch them once.
      */
     fetchSteps(config) {
+        console.log('rfetch');
         return (dispatch, getState) => {
             const data = getState().adminStore.steps;
             const stepBaseUrl = calculateStepsBaseUrl(config);

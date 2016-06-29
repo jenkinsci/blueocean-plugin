@@ -40,7 +40,7 @@ export default class Node extends Component {
     }
 
     render() {
-        const { node, logs, nodesBaseUrl, fetchLog } = this.props;
+        const { node, logs, nodesBaseUrl, fetchLog, followAlong } = this.props;
         // Early out
         if (!node || !fetchLog) {
             return null;
@@ -64,7 +64,7 @@ export default class Node extends Component {
         };
         const runResult = resultRun.toLowerCase();
         const scrollToBottom = runResult === 'failure' || runResult === 'running';
-
+console.log(followAlong, 'followAlong_step')
         return (<div>
             <ResultItem
               key={id}
