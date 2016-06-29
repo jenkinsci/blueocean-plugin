@@ -54,6 +54,7 @@ public class BlueMessageEnricher extends MessageEnricher {
     @Override
     public void enrich(@Nonnull Message message) {
         
+        // TODO: Replace once https://issues.jenkins-ci.org/browse/JENKINS-36286 is done
         message.set(EventProps.Jenkins.jenkins_org, OrganizationImpl.INSTANCE.getName());
         
         String channelName = message.getChannelName();
