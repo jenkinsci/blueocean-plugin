@@ -27,10 +27,36 @@
         "extensionPoint": "ep-2"
       },
       {
-        "component": "component-1.3",
+        "component": "component-2.3",
         "extensionPoint": "ep-2"
       }
     ],
     "hpiPluginId": "plugin-2"
+  },
+  {
+    "extensions": [
+      {
+        "component": "typed-component-1.1",
+        "extensionPoint": "ept-1",
+        "type": "supertype-1"
+      },
+      {
+        "component": "typed-component-1.2",
+        "extensionPoint": "ept-2",
+        "type": "type-2"
+      },
+      {
+        "component": "typed-component-1.2.1",
+        "extensionPoint": "ept-2",
+        "type": "subtype-2"
+      },
+      {
+        "component": "typed-component-1.2.2",
+        "extensionPoint": "ept-2",
+        "type": "supertype-2"
+      }
+    ],
+    "hpiPluginId": "plugin-3",
+    "extensionCSS": "org/jenkins/ui/jsmodules/plugin-3/extensions.css"
   }
 ]

@@ -1,3 +1,3 @@
-
-exports.store = require('./dist/store.js');
-exports.ExtensionPoint = require('./dist/ExtensionPoint.js');
+// Provide an ExtensionStore & ExtensionRenderer react component
+exports.store = require('./dist/ExtensionStore.js').instance;
+exports.Renderer = require('./dist/ExtensionRenderer.js').ExtensionRenderer;
