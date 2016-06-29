@@ -34,6 +34,21 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest-impl</artifactId>
         </dependency>
+        
+        <!-- Test deps -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-rest-impl</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
     </dependencies>
 
     <build>

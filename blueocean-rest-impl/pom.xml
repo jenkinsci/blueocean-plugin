@@ -79,12 +79,6 @@
         </dependency>
 
         <!-- Test plugins -->
-        <!-- Random test failing bug due to an assertion in pipeline plugin. See https://github.com/jenkinsci/pipeline-stage-step-plugin/pull/1  -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-dashboard</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-stage-step</artifactId>
@@ -119,7 +113,6 @@
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
-            <version>1.4.9</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -185,6 +178,19 @@
                                 </rule>
                             </rules>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
