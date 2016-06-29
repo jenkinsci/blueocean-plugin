@@ -652,7 +652,7 @@ export const actions = {
                 let nodeModel;
                 let node;
                 if (!config.node) {
-                    const focused = information.model.filter((item) => item.isFocusedq)[0];
+                    const focused = information.model.filter((item) => item.isFocused)[0];
                     if (focused) {
                         nodeModel = focused;
                     } else {
