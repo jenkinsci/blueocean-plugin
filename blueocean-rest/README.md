@@ -1073,3 +1073,37 @@ Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
        "pipeline" : "pipeline1",
        "queuedTime" : 1465433910203
      } ]
+
+## GET queue for a MultiBranch pipeline
+
+    curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/bo2/queue/
+    
+    [
+       {
+          "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+          "id" : "64",
+          "expectedBuildNumber" : 10,
+          "pipeline" : "bug%2FUX-334",
+          "_links" : {
+             "self" : {
+                "_class" : "io.jenkins.blueocean.rest.hal.Link",
+                "href" : "/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/"
+             }
+          },
+          "queuedTime" : "2016-06-29T14:11:52.191-0700"
+       },
+       {
+          "id" : "63",
+          "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+          "queuedTime" : "2016-06-29T14:11:51.290-0700",
+          "pipeline" : "bug%2FUX-334",
+          "_links" : {
+             "self" : {
+                "_class" : "io.jenkins.blueocean.rest.hal.Link",
+                "href" : "/blue/rest/organizations/jenkins/pipelines/bo2/queue/63/"
+             }
+          },
+          "expectedBuildNumber" : 11
+       }
+    ]
+
