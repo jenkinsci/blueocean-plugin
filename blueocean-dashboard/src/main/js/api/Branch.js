@@ -10,13 +10,17 @@ import config from '../config';
 import Pipeline from './Pipeline';
 import * as urlUtils from '../util/UrlUtils';
 import * as sse from '@jenkins-cd/sse-gateway';
-import * as pushEventUtil from '../util/push-event-util';
 
 export default class Branch {
 
-    constructor(pipeline, name) {
+    constructor(pipeline, name, url) {
         this.pipeline = pipeline;
         this.name = name;
+        this.url = url;
+        if (!this.url) {
+            this.url = `/rest/organizations/${this.pipeline.organization}/pipelines/${this.pipeline.name}/branches/${this.name}`;
+        }
+
         this.sseListeners = [];
     }
 
@@ -31,7 +35,7 @@ export default class Branch {
     }
 
     restUrl() {
-        return `${config.blueoceanAppURL}/rest/organizations/${this.pipeline.organization}/pipelines/${this.pipeline.name}/branches/${this.name}`;
+        return `${config.blueoceanAppURL}${this.url}`;
     }
 
     onJobChannelEvent(callback) {
@@ -87,12 +91,11 @@ export default class Branch {
 }
 
 exports.fromSSEEvent = function (event) {
-    const eventCopy = pushEventUtil.enrichJobEvent(event);
-    if (!eventCopy.blueocean_is_multi_branch) {
+    if (event.job_ismultibranch === undefined || event.job_ismultibranch !== 'true') {
         return undefined;
     }
     return new Branch(
-        new Pipeline('jenkins', eventCopy.blueocean_job_name),
-        eventCopy.blueocean_branch_name
+        new Pipeline(event.jenkins_org, event.blueocean_job_pipeline_name),
+        event.blueocean_job_branch_name, event.blueocean_job_rest_url
     );
 };

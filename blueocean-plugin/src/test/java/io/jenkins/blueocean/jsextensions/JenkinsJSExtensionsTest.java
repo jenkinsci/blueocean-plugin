@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class JenkinsJSExtensionsTest extends BaseTest{
+public class JenkinsJSExtensionsTest extends BaseTest {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test

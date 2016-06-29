@@ -9,21 +9,22 @@ import {
     WeatherIcon,
     Favorite,
 } from '@jenkins-cd/design-language';
+import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
 
 const { object } = PropTypes;
 
 export default class PipelinePage extends Component {
     render() {
         const { pipeline } = this.context;
-        const { organization, name } = pipeline || {};
-        const orgUrl = `/organizations/${organization}`;
-        const activityUrl = `${orgUrl}/${name}/activity`;
+        const { organization, name, fullName } = pipeline || {};
+        const orgUrl = buildOrganizationUrl(organization);
+        const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
 
         if (!pipeline) {
             return null; // Loading...
         }
 
-        const baseUrl = `/organizations/${pipeline.organization}/${pipeline.name}`;
+        const baseUrl = buildPipelineUrl(organization, fullName);
 
         return (
             <Page>
