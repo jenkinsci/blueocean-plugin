@@ -4,7 +4,7 @@ import PipelineRowItem from './PipelineRowItem';
 import { PipelineRecord } from './records';
 
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
-import { ExtensionPoint } from '@jenkins-cd/js-extensions';
+import Extensions from '@jenkins-cd/js-extensions';
 
 const { array } = PropTypes;
 
@@ -56,7 +56,7 @@ export default class Pipelines extends Component {
                 </PageHeader>
                 <main>
                     <article>
-                        <ExtensionPoint name="jenkins.pipeline.list.top" />
+                        <Extensions.Renderer extensionPoint="jenkins.pipeline.list.top" />
                         <Table
                           className="pipelines-table fixed"
                           headers={headers}

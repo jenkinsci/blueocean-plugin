@@ -5,6 +5,8 @@ import { State } from '../components/records';
 
 import { getNodesInformation } from '../util/logDisplayHelper';
 
+import { buildUrl } from '../util/UrlUtils';
+
 // helper functions
 
 // helper to clean the path
@@ -78,6 +80,7 @@ export const ACTION_TYPES = keymirror({
     SET_BRANCHES_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
+    SET_TEST_RESULTS: null,
     UPDATE_BRANCH_DATA: null,
     SET_STEPS: null,
     SET_NODE: null,
@@ -140,6 +143,9 @@ export const actionHandlers = {
         const branches = { ...state.branches } || {};
         branches[id] = payload;
         return state.set('branches', branches);
+    },
+    [ACTION_TYPES.SET_TEST_RESULTS](state, { payload }): State {
+        return state.set('testResults', payload === undefined ? {} : payload);
     },
     [ACTION_TYPES.SET_STEPS](state, { payload }): State {
         const steps = { ...state.steps } || {};
@@ -563,7 +569,7 @@ export const actions = {
                 const url = `${config.getAppURLBase()}/rest/organizations/${branch.organization}` +
                     `/pipelines/${event.blueocean_job_name}/branches/${branch.name}`;
 
-                const processBranchData = function (branchData) {
+                const processBranchData = function processBranchData(branchData) {
                     const { latestRun } = branchData;
 
                     // same issue as in 'updateRunData'; see comment above
@@ -582,7 +588,7 @@ export const actions = {
                 };
 
                 exports.fetchJson(url, processBranchData, (error) => {
-                    console.log(error);
+                    console.log(error); // eslint-disable-line no-console
                 });
             }
         };
@@ -683,6 +689,11 @@ export const actions = {
                     payload: { type: 'ERROR', message: `${error.stack}` },
                     type: ACTION_TYPES.UPDATE_MESSAGES,
                 });
+                // call again with no payload so actions handle missing data
+                dispatch({
+                    ...optional,
+                    type: actionType,
+                });
             });
     },
     /*
@@ -733,7 +744,7 @@ export const actions = {
 
                         return getNodeAndSteps(information);
                     },
-                    (error) => console.error('error', error)
+                    (error) => console.error('error', error) // eslint-disable-line no-console
                 );
             }
             return getNodeAndSteps(data[nodesBaseUrl]);
@@ -772,16 +783,16 @@ export const actions = {
             const stepBaseUrl = calculateStepsBaseUrl(config);
             if (!data || !data[stepBaseUrl] || !data[stepBaseUrl]) {
                 return exports.fetchJson(
-                    stepBaseUrl,
-                    (json) => {
-                        const information = getNodesInformation(json);
-                        information.nodesBaseUrl = stepBaseUrl;
-                        return dispatch({
-                            type: ACTION_TYPES.SET_STEPS,
-                            payload: information,
-                        });
-                    },
-                    (error) => console.error('error', error)
+                  stepBaseUrl,
+                  (json) => {
+                      const information = getNodesInformation(json);
+                      information.nodesBaseUrl = stepBaseUrl;
+                      return dispatch({
+                          type: ACTION_TYPES.SET_STEPS,
+                          payload: information,
+                      });
+                  },
+                  (error) => console.error('error', error) // eslint-disable-line no-console
                 );
             }
             return null;
@@ -823,5 +834,32 @@ export const actions = {
             }
             return null;
         };
+    },
+    
+    fetchTestResults(config, runDetails) {
+        return (dispatch) => {
+            const baseUrl = `${config.getAppURLBase()}/rest/organizations/`;
+            let url;
+            if (runDetails.isMultiBranch) {
+                // eslint-disable-next-line max-len
+                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.pipeline, 'branches', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
+            } else {
+                // eslint-disable-next-line max-len
+                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
+            }
+
+            return dispatch(actions.generateData(
+                url,
+                ACTION_TYPES.SET_TEST_RESULTS
+            ));
+        };
+    },
+    
+    resetTestDetails() {
+        return (dispatch) =>
+            dispatch({
+                type: ACTION_TYPES.SET_TEST_RESULTS,
+                payload: null,
+            });
     },
 };
