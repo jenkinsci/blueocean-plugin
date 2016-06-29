@@ -38,9 +38,9 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     /*package*/ final MultiBranchProject mbp;
 
     private final Link self;
-    public MultiBranchPipelineImpl(MultiBranchProject mbp, Link parent) {
+    public MultiBranchPipelineImpl(MultiBranchProject mbp) {
         this.mbp = mbp;
-        this.self = parent.rel(mbp.getName());
+        this.self = OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
     }
 
     @Override
@@ -288,7 +288,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
             if (item instanceof MultiBranchProject) {
-                return new MultiBranchPipelineImpl((MultiBranchProject) item, parent.getLink());
+                return new MultiBranchPipelineImpl((MultiBranchProject) item);
             }
             return null;
         }
