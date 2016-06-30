@@ -29,6 +29,7 @@
     <url>https://github.com/jenkinsci/blueocean-plugin</url>
   </scm>
 
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
   <developers>
      <developer>
