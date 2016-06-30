@@ -69,6 +69,11 @@
             <artifactId>scm-api</artifactId>
             <version>1.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.jenkins.blueocean.rest.annotation</groupId>
+            <artifactId>capability-annotation</artifactId>
+            <version>1.2</version>
+        </dependency>
 
         <!-- Not needed by blueocean runtime but adds to blueocean experience -->
         <dependency>
