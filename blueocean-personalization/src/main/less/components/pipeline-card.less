@@ -2,6 +2,7 @@
     display: flex;
     align-items: center;
     color: white;
+    min-width: 400px;
     padding: 15px;
 
     .name, .branch, .commit {
@@ -12,6 +13,10 @@
     .branch, .commit {
         display: flex;
         align-items: center;
+
+        .svg-icon {
+            margin-right: 5px;
+        }
     }
 
     .commitId {
@@ -20,7 +25,18 @@
     }
 
     .actions {
+        display: flex;
+        justify-content: flex-end;
+        min-width: 60px;
         margin-left: 10px;
+    }
+
+    .run {
+        margin-right: 10px;
+    }
+
+    .svg-icon {
+        fill: white;
     }
 
     // remove empty space to attain centered vertical alignment

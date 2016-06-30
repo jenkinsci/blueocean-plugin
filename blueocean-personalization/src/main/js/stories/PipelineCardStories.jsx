@@ -6,12 +6,12 @@ import { action, storiesOf } from '@kadira/storybook';
 
 import { PipelineCard } from '../components/PipelineCard';
 
+const style = { padding: '10px' };
+const style2 = { paddingBottom: '10px' };
+
 storiesOf('PipelineCard', module)
     .add('all states', () => {
-        const style = { padding: '10px' };
-        const style2 = { paddingBottom: '10px' };
         const states = 'SUCCESS,QUEUED,RUNNING,FAILURE,ABORTED,UNSTABLE,NOT_BUILT,UNKNOWN'.split(',');
-
 
         return (
             <div style={style}>
@@ -23,7 +23,9 @@ storiesOf('PipelineCard', module)
                     />
                 </div>
             ) }
+                <PipelineCard status="RUNNING" organization="jenkinsci" pipeline="blueocean"
+                  commitId="447d8e1" onRunClick={action('run')} onFavoriteToggle={action('toggle')}
+                />
             </div>
         );
     });
-

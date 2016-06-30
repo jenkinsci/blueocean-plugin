@@ -69,8 +69,9 @@ export class PipelineCard extends Component {
     }
 
     render() {
-        const iconStyle = { fill: '#fff' };
-        const bgClass = PipelineCard._getBackgroundClass(this.props.status);
+        const { status } = this.props;
+        const bgClass = PipelineCard._getBackgroundClass(status);
+        const showRun = status && status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted';
 
         return (
             <div className={`pipeline-card ${bgClass}`}>
@@ -80,22 +81,25 @@ export class PipelineCard extends Component {
                     {this.props.organization} / {this.props.pipeline}
                 </span>
 
+                { this.props.branch &&
                 <span className="branch">
-                    <Icon size={24} icon="usb" style={iconStyle} />
+                    <Icon size={24} icon="usb" />
                     <span>{this.props.branch}</span>
                 </span>
+                }
 
                 <span className="commit">
-                    <Icon size={24} icon="link" style={iconStyle} />
+                    <Icon size={24} icon="link" />
                     <pre className="commitId">#{this.props.commitId}</pre>
                 </span>
 
-
-                <a className="run" title="Run Again" onClick={() => this._onRunClick()}>
-                    <Icon size={24} icon="replay" style={iconStyle} />
-                </a>
-
                 <span className="actions">
+                    { showRun &&
+                    <a className="run" title="Run Again" onClick={() => this._onRunClick()}>
+                        <Icon size={24} icon="replay"/>
+                    </a>
+                    }
+
                     <Favorite checked={this.state.favorite} darkTheme
                       onToggle={() => this._onFavoriteToggle()}
                     />
