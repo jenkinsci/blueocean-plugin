@@ -62,7 +62,7 @@ export default class Branch {
         this.sseListeners = [];
     }
 
-    run(onFail) {
+    run(onSuccess, onFail) {
         const url = `${this.restUrl()}/runs/`;
 
         fetch(url, {
@@ -72,7 +72,9 @@ export default class Branch {
                 'Content-Type': 'application/json',
             },
         }).then((response) => {
-            if (onFail && (response.status < 200 || response.status > 299)) {
+            if (onSuccess && response.status >= 200 && response.status < 300) {
+                onSuccess(response);
+            } else if (onFail && (response.status < 200 || response.status > 299)) {
                 onFail(response);
             }
         });
