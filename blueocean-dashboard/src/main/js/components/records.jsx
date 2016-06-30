@@ -4,6 +4,7 @@ since we would return a function, */
 /* eslint new-cap: [0] */
 const { Record } = Immutable;
 export class PipelineRecord extends Record({
+    _class: null,
     branchNames: null,
     displayName: '',
     estimatedDurationInMillis: 0,
