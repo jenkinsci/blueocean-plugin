@@ -1,3 +1,27 @@
 .pipeline-card {
-    background-color: blue;
+    display: flex;
+    align-items: center;
+    color: white;
+    padding: 15px;
+
+    .name, .branch, .commit {
+        flex: 1 1 auto;
+        margin-left: 10px;
+    }
+
+    .commit {
+        margin: 0;
+        height: 17px;
+    }
+
+    .actions {
+        margin-left: 10px;
+    }
+
+    // remove empty space to attain centered vertical alignment
+    .run, .actions {
+        > * {
+            vertical-align: bottom;
+        }
+    }
 }
