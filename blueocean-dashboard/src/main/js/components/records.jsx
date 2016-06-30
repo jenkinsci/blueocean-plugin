@@ -23,7 +23,7 @@ export class PipelineRecord extends Record({
     weatherScore: 0,
 }) {
     isFolder() {
-        return this.numberOfFolders !== null;
+        return this._class === 'io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl';
     }
 }
 
