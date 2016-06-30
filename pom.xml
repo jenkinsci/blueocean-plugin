@@ -22,75 +22,75 @@
     <node.version>5.8.0</node.version>
     <npm.version>3.7.3</npm.version>
   </properties>
-  
+
   <scm>
     <connection>scm:git:ssh://github.com/jenkinsci/blueocean-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/blueocean-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/blueocean-plugin</url>
-  </scm> 
-  
-  
+  </scm>
+
+
   <developers>
      <developer>
        <id>scherler</id>
-       <name>Thorsten Iberian Sumurai</name>      
+       <name>Thorsten Iberian Sumurai</name>
      </developer>
      <developer>
        <id>cliffmeyers</id>
-       <name>Cliff Meyers</name>      
+       <name>Cliff Meyers</name>
      </developer>
      <developer>
        <id>tfennelly</id>
-       <name>Tom Fennelly</name>      
-     </developer>    
+       <name>Tom Fennelly</name>
+     </developer>
      <developer>
        <id>vivek</id>
-       <name>Vivek Pandey</name>      
-     </developer>    
+       <name>Vivek Pandey</name>
+     </developer>
      <developer>
        <id>kohsuke</id>
-       <name>Kohsuke</name>      
-     </developer>   
+       <name>Kohsuke</name>
+     </developer>
      <developer>
        <id>sophistifunk</id>
-       <name>Josh McDonald</name>      
-     </developer>    
+       <name>Josh McDonald</name>
+     </developer>
      <developer>
        <id>imeredith</id>
-       <name>Ivan Meredith</name>      
-     </developer>    
+       <name>Ivan Meredith</name>
+     </developer>
      <developer>
        <id>michaelneale</id>
-       <name>Michael Neale</name>      
-     </developer>    
+       <name>Michael Neale</name>
+     </developer>
      <developer>
        <id>kzantow</id>
-       <name>Keith Zantow</name>      
-     </developer>    
+       <name>Keith Zantow</name>
+     </developer>
      <developer>
        <id>i386</id>
-       <name>James Dumay</name>      
-     </developer>    
+       <name>James Dumay</name>
+     </developer>
      <developer>
        <id>marcesher</id>
-       <name>Marc</name>      
+       <name>Marc</name>
      </developer>
      <developer>
        <id>dragoonis</id>
-       <name>Paul Dragoonis</name>      
-     </developer>   
+       <name>Paul Dragoonis</name>
+     </developer>
      <developer>
        <id>pragmaticivan</id>
-       <name>Ivan Santos</name>      
-     </developer> 
+       <name>Ivan Santos</name>
+     </developer>
      <developer>
        <id>PeterDaveHello</id>
-       <name>Peter Dave Hello</name>      
-     </developer> 
+       <name>Peter Dave Hello</name>
+     </developer>
      <developer>
        <id>alexsomai</id>
-       <name>Alexandru Somai</name>      
-     </developer>     
+       <name>Alexandru Somai</name>
+     </developer>
   </developers>
 
   <modules>
@@ -100,6 +100,7 @@
     <module>blueocean-rest-impl</module>
     <module>blueocean-events</module>
     <module>blueocean-dashboard</module>
+    <module>blueocean-personalization</module>
     <module>blueocean-plugin</module>
   </modules>
 
@@ -146,6 +147,12 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-personalization</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-events</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -153,12 +160,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-events</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -175,7 +176,7 @@
             <artifactId>sse-gateway</artifactId>
             <version>1.4</version>
         </dependency>
-      
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
@@ -264,7 +265,7 @@
                 <disabledTestInjection>true</disabledTestInjection>
             </configuration>
         </plugin>
-  
+
     </plugins>
   </build>
 </project>
