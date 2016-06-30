@@ -31,7 +31,7 @@ public class Query {
     }
 
     public String param(String key){
-        return params.get(key);
+        return params.get(key.toLowerCase());
     }
 
     public String param(String key, boolean required){
