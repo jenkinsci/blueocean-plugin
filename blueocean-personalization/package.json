@@ -26,6 +26,7 @@
     "enzyme": "^2.2.0",
     "eslint": "2.8.0",
     "eslint-plugin-react": "^5.0.1",
+    "eslint-to-editorconfig": "1.2.0",
     "gulp": "^3.9.1",
     "gulp-mocha": "^2.2.0",
     "mocha": "^2.4.5",
