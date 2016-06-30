@@ -58,7 +58,7 @@ export class PipelineCard extends Component {
     }
 
     _onFavoriteToggle() {
-        var value = !this.state.favorite;
+        const value = !this.state.favorite;
         this.setState({
             favorite: value,
         });
@@ -96,7 +96,7 @@ export class PipelineCard extends Component {
                 <span className="actions">
                     { showRun &&
                     <a className="run" title="Run Again" onClick={() => this._onRunClick()}>
-                        <Icon size={24} icon="replay"/>
+                        <Icon size={24} icon="replay" />
                     </a>
                     }
 
