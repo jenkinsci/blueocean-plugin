@@ -59,7 +59,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl(folder);
+        return new PipelineContainerImpl(folder, this);
     }
 
     @Override

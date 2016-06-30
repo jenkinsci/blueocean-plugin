@@ -18,7 +18,7 @@ public class BranchImpl extends PipelineImpl {
     private final Link parent;
 
     public BranchImpl(Job job, Link parent) {
-        super(job, parent);
+        super(job);
         this.parent = parent;
     }
 
