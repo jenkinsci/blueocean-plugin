@@ -22,7 +22,7 @@ describe("Store should work", () => {
     })
     it("create store with pipeline data", () => {
         var ruleId = '/rest/organizations/jenkins/pipelines/';
-        nock('http://example.com/')
+        nock('http://example.com')
             .get(ruleId)
             .reply(200, pipelines);
         const store = mockStore({ adminStore: {pipelines: [] }});
@@ -36,8 +36,8 @@ describe("Store should work", () => {
             });
     });
     it("create store with branch data", () => {
-        var ruleId = '/rest/organizations/jenkins/pipelines/xxx/runs';
-        var baseUrl = 'http://example.com/';
+        var ruleId = '/rest/organizations/jenkins/pipelines/xxx/runs/';
+        var baseUrl = 'http://example.com';
         nock(baseUrl)
             .get(ruleId)
             .reply(200, latestRuns);

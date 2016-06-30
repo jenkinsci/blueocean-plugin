@@ -4,6 +4,7 @@ since we would return a function, */
 /* eslint new-cap: [0] */
 const { Record } = Immutable;
 export class PipelineRecord extends Record({
+    _class: null,
     branchNames: null,
     displayName: '',
     estimatedDurationInMillis: 0,
@@ -23,7 +24,7 @@ export class PipelineRecord extends Record({
     weatherScore: 0,
 }) {
     isFolder() {
-        return this.numberOfFolders !== null;
+        return this._class === 'io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl';
     }
 }
 
@@ -89,4 +90,5 @@ export const State = Record({
     branches: null,
     steps: null,
     currentBranches: null,
+    testResults: null,
 });

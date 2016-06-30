@@ -1,0 +1,11 @@
+{"status":"ok",
+    "data": [
+        {
+            "hpiPluginId":"blueocean-dashboard",
+            "extensions":[
+                {"extensionPoint":"jenkins.logo.top","component":"AdminNavLink"}
+            ],
+            "extensionCSS":"org/jenkins/ui/jsmodules/blueocean_dashboard/extensions.css"
+        }
+    ]
+}

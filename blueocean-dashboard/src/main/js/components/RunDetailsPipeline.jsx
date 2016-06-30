@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { ExtensionPoint } from '@jenkins-cd/js-extensions';
+import Extensions from '@jenkins-cd/js-extensions';
 import LogConsole from './LogConsole';
+import * as sse from '@jenkins-cd/sse-gateway';
 
 import Steps from './Steps';
 import {
@@ -9,12 +10,11 @@ import {
     node as nodeSelector,
     nodes as nodesSelector,
     actions,
-    calculateRunLogURLObject,
-    calculateNodeBaseUrl,
-    calculateStepsBaseUrl,
     connect,
     createSelector,
 } from '../redux';
+
+import { calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl } from '../util/UrlUtils';
 
 import LogToolbar from './LogToolbar';
 
@@ -22,16 +22,44 @@ const { string, object, any, func } = PropTypes;
 
 export class RunDetailsPipeline extends Component {
     componentWillMount() {
-        const { fetchNodes, fetchLog, result } = this.props;
+        const { fetchNodes, fetchLog, result, fetchSteps } = this.props;
         const mergedConfig = this.generateConfig(this.props);
 
-        if (result && result._class === 'io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl') {
+        const supportsNode = result && result._class === 'io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl';
+        if (supportsNode) {
             fetchNodes(mergedConfig);
         } else {
             // console.log('fetch the log directly')
             const logGeneral = calculateRunLogURLObject(mergedConfig);
             fetchLog({ ...logGeneral });
         }
+
+        // Listen for pipeline flow node events.
+        // We filter them only for steps and the end event all other we let pass
+        this.pipelineListener = sse.subscribe('pipeline', (event) => {
+            const jenkinsEvent = event.jenkins_event;
+            // we turn on refetch so we always fetch a new Node result
+            const refetch = true;
+            switch (jenkinsEvent) {
+            case 'pipeline_step': {
+                // if the step_stage_id has changed we need to change the focus
+                if (event.pipeline_step_stage_id !== mergedConfig.node) {
+                    mergedConfig.node = event.pipeline_step_stage_id;
+                    fetchNodes({ ...mergedConfig, refetch });
+                } else {
+                    fetchSteps({ ...mergedConfig, refetch });
+                }
+                break;
+            }
+            case 'pipeline_end': {
+                fetchNodes({ ...mergedConfig, refetch });
+                break;
+            }
+            default: {
+                // console.log(event);
+            }
+            }
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -58,6 +86,10 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillUnmount() {
+        if (this.pipelineListener) {
+            sse.unsubscribe(this.pipelineListener);
+            delete this.pipelineListener;
+        }
         this.props.cleanNodePointer();
         clearTimeout(this.timeout);
     }
@@ -115,10 +147,10 @@ export class RunDetailsPipeline extends Component {
         }
         return (
             <div>
-                { nodes && nodes[nodeKey] && <ExtensionPoint
+                { nodes && nodes[nodeKey] && <Extensions.Renderer
+                  extensionPoint="jenkins.pipeline.run.result"
                   router={router}
                   location={location}
-                  name="jenkins.pipeline.run.result"
                   nodes={nodes[nodeKey].model}
                   pipelineName={name}
                   branchName={isMultiBranch ? branch : undefined}
