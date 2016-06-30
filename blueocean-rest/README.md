@@ -194,6 +194,74 @@ folders and nested pipelines inside them.
       "estimatedDurationInMillis": 280,
       } 
     ]
+ 
+### Exclude flattening of certain job types
+
+__excludedFromFlattening__ query parameter takes comma separated class names of Jenkins item that should not be flattened.    
+
+To exclude flattening multi branch project:
+     
+    GET http://localhost:8080/jenkins/blue/rest/search/?q=type:pipeline;organization:jenkins;excludedFromFlattening=jenkins.branch.MultiBranchProject
+
+To exclude flattening a folder:
+     
+    GET http://localhost:8080/jenkins/blue/rest/search/?q=type:pipeline;organization:jenkins;excludedFromFlattening=com.cloudbees.hudson.plugins.folder.AbstractFolder
+
+To exclude flattening both a folder and multi-branch projects:
+
+    GET http://localhost:8080/jenkins/blue/rest/search/?q=type:pipeline;organization:jenkins;excludedFromFlattening=jenkins.branch.MultiBranchProject,com.cloudbees.hudson.plugins.folder.AbstractFolder
+
+    
+### Get pipelines for specific organization
+
+Use __organization__ query parameter to get flattened pipelines in that organization. If given organization is not found a 400 BadRequest error is returned.
+    
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/search/?q=type:pipeline;organization:jenkins
+        
+      [
+         {
+            "numberOfFailingBranches" : 0,
+            "numberOfSuccessfulBranches" : 0,
+            "_links" : {
+               "queue" : {
+                  "href" : "/blue/rest/organizations/jenkins/pipelines/bo1/queue/",
+                  "_class" : "io.jenkins.blueocean.rest.hal.Link"
+               },
+               "actions" : {
+                  "href" : "/blue/rest/organizations/jenkins/pipelines/bo1/actions/",
+                  "_class" : "io.jenkins.blueocean.rest.hal.Link"
+               },
+               "runs" : {
+                  "_class" : "io.jenkins.blueocean.rest.hal.Link",
+                  "href" : "/blue/rest/organizations/jenkins/pipelines/bo1/runs/"
+               },
+               "self" : {
+                  "_class" : "io.jenkins.blueocean.rest.hal.Link",
+                  "href" : "/blue/rest/organizations/jenkins/pipelines/bo1/"
+               },
+               "branches" : {
+                  "href" : "/blue/rest/organizations/jenkins/pipelines/bo1/branches/",
+                  "_class" : "io.jenkins.blueocean.rest.hal.Link"
+               }
+            },
+            "organization" : "jenkins",
+            "estimatedDurationInMillis" : 1,
+            "numberOfFailingPullRequests" : 0,
+            "weatherScore" : 0,
+            "fullName" : "bo1",
+            "_class" : "io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl",
+            "totalNumberOfPullRequests" : 0,
+            "runs" : [],
+            "displayName" : "bo1",
+            "totalNumberOfBranches" : 0,
+            "numberOfPipelines" : 0,
+            "name" : "bo1",
+            "numberOfFolders" : 0,
+            "numberOfSuccessfulPullRequests" : 0,
+            "actions" : [],
+            "branchNames" : []
+         }
+      ]  
 
 ## Get a Folder
 
