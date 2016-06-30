@@ -53,7 +53,7 @@ export class ExtensionStore {
             extension.instance = instance;
             return;
         }
-        throw `Unable to locate plugin for ${extensionPointId} / ${pluginId} / ${component}`;
+        throw new Error(`Unable to locate plugin for ${extensionPointId} / ${pluginId} / ${component}`);
     }
     
     /**
@@ -76,34 +76,31 @@ export class ExtensionStore {
      * will call the onload callback with a list of exported extension
      * objects (e.g. React classes or otherwise).
      */
-    getExtensions(key, type, onload) {
-        if (!this.extensionDataProvider) {
-            throw "Must call ExtensionStore.init({ extensionDataProvider: (cb) => ..., typeInfoProvider: (type, cb) => ... }) first";
-        }
+    getExtensions(extensionPoint, filter, onload) {
         // Allow calls like: getExtensions('something', a => ...)
-        if (arguments.length === 2 && typeof(type) === 'function') {
-            onload = type;
-            type = undefined;
+        if (arguments.length === 2 && typeof(filter) === 'function') {
+            onload = filter;
+            filter = undefined;
         }
+        
         // And calls like: getExtensions(['a','b'], (a,b) => ...)
-        if (key instanceof Array) {
-            var keys = key;
+        if (extensionPoint instanceof Array) {
             var args = [];
             var nextArg = ext => {
                 if(ext) args.push(ext);
-                if (keys.length === 0) {
+                if (extensionPoint.length === 0) {
                     onload(...args);
                 } else {
-                    var arg = keys[0];
-                    keys = keys.slice(1);
-                    this.getExtensions(arg, null, nextArg);
+                    var arg = extensionPoint[0];
+                    extensionPoint = extensionPoint.slice(1);
+                    this.getExtensions(arg, filter, nextArg);
                 }
             };
             nextArg();
             return;
         }
         
-        this._loadBundles(key, extensions => this._filterExtensions(extensions, key, type, onload));
+        this._loadBundles(extensionPoint, extensions => this._filterExtensions(extensions, filter, onload));
     }
     
     /**
@@ -123,21 +120,58 @@ export class ExtensionStore {
             onload(ti);
         });
     }
-
-    _filterExtensions(extensions, key, currentDataType, onload) {
+    
+    /**
+     * Tries to determine if the objectToTest is of the given type.
+     * Will normalize things like String/'string' inconsistencies
+     * as well as ES6 class & traditional prototype inheritance.
+     * NOTE: This ALSO tests the prototype hierarchy if objectToTest
+     * is a Function.
+     */
+    isType(objectToTest, type) {
+        var o = objectToTest;
+        if (typeof o === type) {
+            return true;
+        }
+        if (type === String || type === 'string') {
+            return o instanceof String;
+        }
+        if (type === Function || type === 'function') {
+            return o instanceof Function;
+        }
+        if (type === Object || type === 'object') {
+            return o instanceof Object;
+        }
+        if (objectToTest instanceof Function) {
+            var proto = objectToTest;
+            while (proto) {
+                if (proto === type) {
+                    return true;
+                }
+                proto = Object.getPrototypeOf(proto);
+            }
+        }
+        return objectToTest instanceof type;
+    }
+    
+    _filterExtensions(extensions, filter, onload) {
+        if (extensions.length === 0) {
+            onload(extensions); // no extensions to filter
+            return;
+        }
+        
+        filter = filter || {};
+        
+        var currentDataType = filter.dataType;
         if (currentDataType && typeof(currentDataType) === 'object'
                 && '_class' in currentDataType) { // handle the common API incoming data
             currentDataType = currentDataType._class;
-        }
-        if (extensions.length === 0) {
-            onload(extensions); // no extensions for the given key
-            return;
         }
         if (currentDataType) {
             var currentTypeInfo = this.typeInfo[currentDataType];
             if (!currentTypeInfo) {
                 this.getTypeInfo(currentDataType, () => {
-                    this._filterExtensions(extensions, key, currentDataType, onload);
+                    this._filterExtensions(extensions, filter, onload);
                 });
                 return;
             }
@@ -165,6 +199,18 @@ export class ExtensionStore {
             // exclude typed extensions when types not requested
             extensions = extensions.filter(m => !('type' in m));
         }
+        
+        // Filter on component type
+        if (filter.componentType) {
+            extensions = extensions.filter(e => this.isType(e.instance, filter.componentType));
+        }
+        
+        // allow a custom filter function
+        if (filter.filter) {
+            extensions = extensions.filter(filter.filter);
+        }
+        
+        // Map to instances and proceed
         onload(extensions.map(m => m.instance));
     }
     
@@ -172,6 +218,9 @@ export class ExtensionStore {
      * Fetch all the extension data
      */
     _loadExtensionData(oncomplete) {
+        if (!this.extensionDataProvider) {
+            throw new Error("Must call ExtensionStore.init({ extensionDataProvider: (cb) => ..., typeInfoProvider: (type, cb) => ... }) first");
+        }
         if (this.extensionPointList) {
             onconplete(this.extensionPointList);
             return;

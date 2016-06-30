@@ -6,14 +6,14 @@ var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-01.json');
 // js modules calling console.debug
 console.debug = function(msg) { console.log('DEBUG: ' + msg); };
 
-var mockDataLoad = function(extensionStore, out) {
-    var jsModules = require('@jenkins-cd/js-modules');
+// Mock the calls to import
+var jsModules = require('@jenkins-cd/js-modules');
+var theRealImport = jsModules.import;
+
+var mockDataLoad = function(extensionStore, out, componentMap) {
     out.plugins = {};
     out.loadCount = 0;
     
-    // Mock the calls to import
-    var theRealImport = jsModules.import;
-
     jsModules.import = function(bundleId) {
         var internal = require('@jenkins-cd/js-modules/js/internal');
         var bundleModuleSpec = internal.parseResourceQName(bundleId);
@@ -25,7 +25,11 @@ var mockDataLoad = function(extensionStore, out) {
             if (pluginMetadata.hpiPluginId === pluginId) {
                 var extensions = pluginMetadata.extensions;
                 for(var i2 = 0; i2 < extensions.length; i2++) {
-                    extensionStore._registerComponentInstance(extensions[i2].extensionPoint, pluginMetadata.hpiPluginId, extensions[i2].component, extensions[i2].component);
+                    var component = extensions[i2].component;
+                    if (componentMap && component in componentMap) {
+                        component = componentMap[component];
+                    }
+                    extensionStore._registerComponentInstance(extensions[i2].extensionPoint, pluginMetadata.hpiPluginId, extensions[i2].component, component);
                 }
             }
         }
@@ -149,13 +153,14 @@ describe("ExtensionStore.js", function () {
             typeInfoProvider: function(type, cb) { cb(typeData[type]); }
         });
         
-        extensionStore.getExtensions('ept-1', 'type-1', function(extensions) {
+        extensionStore.getExtensions('ept-1', {dataType: 'type-1'}, function(extensions) {
             expect(extensionStore.typeInfo).to.not.be.undefined;
             expect(extensions.length).to.equal(1);
+            
             expect(extensions[0]).to.equal('typed-component-1.1');
         });
         
-        extensionStore.getExtensions('ept-2', 'type-2', function(extensions) {
+        extensionStore.getExtensions('ept-2', {dataType: 'type-2'}, function(extensions) {
             expect(extensions.length).to.equal(1);
             expect(extensions).to.include.members(["typed-component-1.2"]);
         });
@@ -224,6 +229,47 @@ describe("ExtensionStore.js", function () {
 
             expect(ep2.length).to.equal(3);
             expect(ep2).to.include.members(["component-1.3","component-2.2","component-2.3"]);
+        });
+        
+        done();
+    });
+
+    it("- handles componentType", function(done) {
+        var extensionStore = new ExtensionStore();
+        
+        class PretendReactClass {
+        }
+        
+        class PretendComponent1 extends PretendReactClass {
+        }
+        
+        class PretendComponent2 extends PretendReactClass {
+        }
+        
+        var plugins = {};
+        mockDataLoad(extensionStore, plugins, {
+            'component-1.3.1': PretendComponent1,
+            'component-2.3.1': PretendComponent2,
+        });
+        
+        extensionStore.init({
+            extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
+            typeInfoProvider: function(type, cb) { cb({}); }
+        });
+        
+        extensionStore.getExtensions('ep-3', {componentType: PretendComponent1}, function(extensions) {
+            expect(extensions.length).to.equal(1);
+            expect(extensions).to.include.members([PretendComponent1]);
+        });
+        
+        extensionStore.getExtensions('ep-3', {componentType: PretendComponent2}, function(extensions) {
+            expect(extensions.length).to.equal(1);
+            expect(extensions).to.include.members([PretendComponent2]);
+        });
+        
+        extensionStore.getExtensions('ep-3', {componentType: PretendReactClass}, function(extensions) {
+            expect(extensions.length).to.equal(2);
+            expect(extensions).to.include.members([PretendComponent1, PretendComponent2]);
         });
         
         done();

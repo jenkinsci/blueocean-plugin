@@ -62,7 +62,7 @@ export class ExtensionRenderer extends React.Component {
     }
     
     _setExtensions() {
-        ExtensionStore.instance.getExtensions(this.props.extensionPoint, this.props.dataType,
+        ExtensionStore.instance.getExtensions(this.props.extensionPoint, this.props,
             extensions => this.setState({extensions: extensions})
         );
     }

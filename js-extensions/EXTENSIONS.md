@@ -12,8 +12,8 @@ JSe `@jenkins-cd/js-extensions` module exports 2 things:
 
 The `ExtensionStore` API is very simple, all public methods are asynchronous:
 
-- `getExtensions(extensionPointName, [type,] onload)`
-    This method will async load data and type information as needed, and call the onload handler with a list of extension exports, e.g. the React classes or otherwise exported references.
+- `getExtensions(extensionPointName, [filter,] onload)`
+    This method will async load data and filter the information as needed, and call the onload handler with a list of extension exports, e.g. the React classes or otherwise exported references.
 
 - `getTypeInfo(type, onload)`
     This will return a list of type information, from the [classes API](../blueocean-rest/README.md#classes_API), this method also handles caching results locally.
@@ -51,12 +51,18 @@ Extensions are defined in a `jenkins-js-extensions.yaml` file in the javascript 
 Properties are:
 - `component`: a module from which the default export will be used
 - `extensionPoint`: the extension point name
-- `type`: an optional data type this extension handles
+- `dataType`: an optional data type this extension handles
 
 For example, the `AboutNavLink` might be defined as a default export:
 
     export default class NavLink extends React.Component {
         ...
     }
+
+#### Enforcing specific component types
+
+In order to ensure a specific component is returned, an extension point may also use the `componentType` filter - it accepts an object prototype (e.g. an ES6 class), e.g.:
+
+    <Extensions.Renderer extensionPoint="test-view" componentType={TestResults} ... />
 
 Although extensions are not limited to React components, this is the typical usage so far.
