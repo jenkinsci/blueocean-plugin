@@ -21,6 +21,12 @@ import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
  */
 export class PipelineCard extends Component {
 
+    static _getBackgroundClass(status) {
+        return status !== null && status.length > 0 ?
+            `${status.toLowerCase()}-bg-lite` :
+            '';
+    }
+
     constructor(props) {
         super(props);
 
@@ -62,15 +68,9 @@ export class PipelineCard extends Component {
         }
     }
 
-    _getBackgroundClass(status) {
-        return status !== null && status.length > 0 ?
-            `${status.toLowerCase()}-bg-lite` :
-            '';
-    }
-
     render() {
-        const iconStyle = { fill: '#fff', cursor: 'pointer' };
-        const bgClass = this._getBackgroundClass(this.props.status);
+        const iconStyle = { fill: '#fff' };
+        const bgClass = PipelineCard._getBackgroundClass(this.props.status);
 
         return (
             <div className={`pipeline-card ${bgClass}`}>
@@ -80,15 +80,25 @@ export class PipelineCard extends Component {
                     {this.props.organization} / {this.props.pipeline}
                 </span>
 
-                <span className="branch">{this.props.branch}</span>
-                <pre className="commit">#{this.props.commitId}</pre>
+                <span className="branch">
+                    <Icon size={24} icon="usb" style={iconStyle} />
+                    <span>{this.props.branch}</span>
+                </span>
+
+                <span className="commit">
+                    <Icon size={24} icon="link" style={iconStyle} />
+                    <pre className="commitId">#{this.props.commitId}</pre>
+                </span>
+
 
                 <a className="run" title="Run Again" onClick={() => this._onRunClick()}>
                     <Icon size={24} icon="replay" style={iconStyle} />
                 </a>
 
                 <span className="actions">
-                    <Favorite checked={this.state.favorite} darkTheme onToggle={() => this._onFavoriteToggle()} />
+                    <Favorite checked={this.state.favorite} darkTheme
+                      onToggle={() => this._onFavoriteToggle()}
+                    />
                 </span>
             </div>
         );
