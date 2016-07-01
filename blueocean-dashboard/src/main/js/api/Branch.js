@@ -7,10 +7,12 @@
 
 import Pipeline from './Pipeline';
 
+const TYPE = 'Branch';
 export default class Branch extends Pipeline {
 
     constructor(organization, pipelineName, branchName, url) {
         super(organization, pipelineName, url);
+        this._type = TYPE;
         this.branchName = branchName;
         if (!url) {
             this.url = `/rest/organizations/${this.organization}/pipelines/${this.pipelineName}/branches/${this.branchName}`;
@@ -18,9 +20,12 @@ export default class Branch extends Pipeline {
     }
 
     equals(branch) {
-        if (branch && branch.branchName === this.branchName) {
+        if (branch && branch._type === TYPE && branch.branchName === this.branchName) {
             // and it's the same pipeline...
-            return super.equals(branch);
+            return (
+                branch.organization === this.organization &&
+                branch.pipelineName === this.pipelineName
+            );
         }
         return false;
     }

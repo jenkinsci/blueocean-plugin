@@ -9,12 +9,18 @@ import fetch from 'isomorphic-fetch';
 import config from '../config';
 import * as urlUtils from '../util/UrlUtils';
 import * as sse from '@jenkins-cd/sse-gateway';
+import assert from 'assert';
 
 const MULTI_BRANCH_PIPELINE_CLASS_NAME = 'io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl';
 
+const TYPE = 'Pipeline';
 export default class Pipeline {
 
     constructor(organization, pipelineName, url) {
+        assert(typeof organization === 'string', '"organization" must be a string');
+        assert(typeof pipelineName === 'string', '"pipelineName" must be a string');
+
+        this._type = TYPE;
         this.organization = organization;
         this.pipelineName = pipelineName;
         this.branchName = pipelineName;
@@ -83,7 +89,7 @@ export default class Pipeline {
     }
 
     equals(pipeline) {
-        if (typeof pipeline === typeof this) {
+        if (pipeline && pipeline._type === TYPE) {
             return (
                 pipeline.organization === this.organization &&
                 pipeline.pipelineName === this.pipelineName
