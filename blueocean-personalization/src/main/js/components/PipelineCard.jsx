@@ -75,7 +75,7 @@ export class PipelineCard extends Component {
 
         return (
             <div className={`pipeline-card ${bgClass}`}>
-                <LiveStatusIndicator result={this.props.status} noBackground />
+                <LiveStatusIndicator result={this.props.status} width={'20px'} height={'20px'} noBackground />
 
                 <span className="name">
                     {this.props.organization} / {this.props.pipeline}
@@ -83,13 +83,13 @@ export class PipelineCard extends Component {
 
                 { this.props.branch &&
                 <span className="branch">
-                    <Icon size={24} icon="usb" />
-                    <span>{this.props.branch}</span>
+                    <span className="octicon octicon-git-branch"></span>
+                    <span className="branchText">{this.props.branch}</span>
                 </span>
                 }
 
                 <span className="commit">
-                    <Icon size={24} icon="link" />
+                    <span className="octicon octicon-git-commit"></span>
                     <pre className="commitId">#{this.props.commitId}</pre>
                 </span>
 

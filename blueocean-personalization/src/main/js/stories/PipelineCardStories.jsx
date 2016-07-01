@@ -17,8 +17,8 @@ storiesOf('PipelineCard', module)
             <div style={style}>
             { states.map(s =>
                 <div key={s} style={style2}>
-                    <PipelineCard status={s} organization="jenkinsci" pipeline="blueocean"
-                      branch="master" commitId="447d8e1" favorite
+                    <PipelineCard status={s} organization="Jenkins" pipeline="blueocean"
+                      branch="feature/JENKINS-123" commitId="447d8e1" favorite
                       onRunClick={action('run')} onFavoriteToggle={action('toggle')}
                     />
                 </div>
