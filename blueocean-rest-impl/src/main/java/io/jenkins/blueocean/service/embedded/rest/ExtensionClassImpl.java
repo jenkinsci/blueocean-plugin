@@ -1,9 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueExtensionClass;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,10 +30,24 @@ public class ExtensionClassImpl extends BlueExtensionClass {
     }
 
     private void collectSuperClasses(List<String> classes, Class base){
+        captureCapabilityAnnotation(classes,base);
         Class clz = base.getSuperclass();
         if(clz != null && !isBlackListed(clz.getName()) && !classes.contains(clz.getName())){
             classes.add(clz.getName());
+            captureCapabilityAnnotation(classes,clz);
             collectSuperClasses(classes,clz);
+        }
+    }
+
+    private void captureCapabilityAnnotation(List<String> classes, Class clz){
+        Annotation annotation = clz.getAnnotation(Capability.class);
+        if(annotation != null){
+            Capability capability = (Capability) annotation;
+            for(String c:capability.value()) {
+                if(!classes.contains(c)) {
+                    classes.add(c);
+                }
+            }
         }
     }
 
