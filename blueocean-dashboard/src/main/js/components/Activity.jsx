@@ -34,7 +34,7 @@ const EmptyState = ({ repoName, pipeline, showRunButton }) => (
 
 EmptyState.propTypes = {
     repoName: string,
-    pipeline: string,
+    pipeline: object,
     showRunButton: boolean,
 };
 
@@ -43,7 +43,7 @@ const RunNonMultiBranchPipeline = ({ pipeline, buttonText }) => (
 );
 
 RunNonMultiBranchPipeline.propTypes = {
-    pipeline: string,
+    pipeline: object,
     buttonText: string,
 };
 
