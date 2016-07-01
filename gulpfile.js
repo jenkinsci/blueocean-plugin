@@ -41,8 +41,8 @@ const config = {
             dest: "dist/assets/"
         },
         octicons: {
-            sources: "node_modules/octicons/octicons/octicons.{eot,woff,ttf,svg,css}",
-            dest: "dist/assets/"
+            sources: "node_modules/octicons/build/font/octicons.{eot,woff,ttf,svg,css}",
+            dest: "dist/assets/octicons/"
         },
         normalize: {
             sources: "node_modules/normalize.css/normalize.css",
@@ -176,7 +176,7 @@ gulp.task("copy-icons", () =>
 
 gulp.task("copy-octicons", () =>
     gulp.src(config.copy.octicons.sources)
-        .pipe(copy(config.copy.octicons.dest, {prefix: 2})));
+        .pipe(copy(config.copy.octicons.dest, {prefix: 4})));
 
 gulp.task("copy-normalize", () =>
     gulp.src(config.copy.normalize.sources)
