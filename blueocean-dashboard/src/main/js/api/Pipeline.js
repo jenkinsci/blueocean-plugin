@@ -106,7 +106,7 @@ export default class Pipeline {
  * @returns {boolean} True if the pipeline is a multi-branch pipeline, otherwise false.
  */
 Pipeline.isMultibranch = function (pipeline) {
-    // TODO: Use the new classes rest API to determine this.
+    // TODO: Use the new classes rest API to determine this ala https://issues.jenkins-ci.org/browse/JENKINS-36388
     if (typeof pipeline === 'string') {
         return (pipeline === MULTI_BRANCH_PIPELINE_CLASS_NAME);
     } else if (typeof pipeline === 'object' && pipeline._class) {
