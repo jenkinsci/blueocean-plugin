@@ -39,9 +39,9 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     /*package*/ final MultiBranchProject mbp;
 
     private final Link self;
-    public MultiBranchPipelineImpl(MultiBranchProject mbp, Link parent) {
+    public MultiBranchPipelineImpl(MultiBranchProject mbp) {
         this.mbp = mbp;
-        this.self = parent.rel(mbp.getName());
+        this.self = OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
     }
 
     @Override
@@ -110,6 +110,21 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
+    public BluePipelineContainer getPipelines() {
+        return new BranchContainerImpl(this, getLink().rel("pipelines"));
+    }
+
+    @Override
+    public Integer getNumberOfFolders() {
+        return 0;
+    }
+
+    @Override
+    public Integer getNumberOfPipelines() {
+        return getTotalNumberOfBranches();
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public Integer getWeatherScore(){
         /**
@@ -169,7 +184,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     @Navigable
     public BluePipelineContainer getBranches() {
-        return new BranchContainerImpl(this);
+        return new BranchContainerImpl(this, getLink().rel("branches"));
     }
 
     @Override
@@ -279,7 +294,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
             if (item instanceof MultiBranchProject) {
-                return new MultiBranchPipelineImpl((MultiBranchProject) item, parent.getLink());
+                return new MultiBranchPipelineImpl((MultiBranchProject) item);
             }
             return null;
         }

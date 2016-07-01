@@ -12,7 +12,6 @@ import hudson.model.CauseAction;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
@@ -26,7 +25,6 @@ import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
 import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.PipelineImpl;
@@ -560,7 +558,7 @@ public class PipelineApiTest extends BaseTest {
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
             if(item instanceof Job){
-                return new TestPipelineImpl(null, (Job)item, parent.getLink());
+                return new TestPipelineImpl((Job)item);
             }
             return null;
         }
@@ -568,8 +566,8 @@ public class PipelineApiTest extends BaseTest {
 
     public static class TestPipelineImpl extends PipelineImpl {
 
-        public TestPipelineImpl(ItemGroup folder, Job job, Link parent) {
-            super(folder, job, parent);
+        public TestPipelineImpl(Job job) {
+            super(job);
         }
 
         @Exported(name = "hello")

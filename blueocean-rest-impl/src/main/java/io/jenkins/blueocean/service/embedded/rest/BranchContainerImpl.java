@@ -15,11 +15,12 @@ import java.util.List;
  */
 public class BranchContainerImpl extends BluePipelineContainer {
     private final MultiBranchPipelineImpl pipeline;
+    private final Link self;
 
-    public BranchContainerImpl(MultiBranchPipelineImpl pipeline) {
+    public BranchContainerImpl(MultiBranchPipelineImpl pipeline, Link self) {
         this.pipeline = pipeline;
+        this.self = self;
     }
-
     //TODO: implement rest of the methods
     @Override
     public BluePipeline get(String name) {
@@ -42,6 +43,6 @@ public class BranchContainerImpl extends BluePipelineContainer {
 
     @Override
     public Link getLink() {
-        return pipeline.getLink().rel("branches");
+        return self;
     }
 }

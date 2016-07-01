@@ -6,10 +6,11 @@ import * as actions from '../../main/js/redux/actions';
 
 function newEvent(type) {
     return {
-        blueocean_branch_name: "quicker",
+        blueocean_job_branch_name: "quicker",
         blueocean_is_for_current_job: true,
-        blueocean_is_multi_branch: true,
-        blueocean_job_name: "PR-demo",
+        job_ismultibranch: 'true',
+        blueocean_job_pipeline_name: "PR-demo",
+        blueocean_job_rest_url: '/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker',
         jenkins_channel: "job",
         jenkins_event: type,
         jenkins_object_name: "CloudBeers/PR-demo/quicker",

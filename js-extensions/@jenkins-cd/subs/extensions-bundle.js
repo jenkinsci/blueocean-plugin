@@ -123,11 +123,11 @@ function transformToJSX() {
 
         // Add the js-modules import of the extensions and add the code to register all
         // of the extensions in the shared store.
-        jsxFileContent += "require('@jenkins-cd/js-modules').import('jenkins-cd:js-extensions').onFulfilled(function(extensions) {\n";
+        jsxFileContent += "require('@jenkins-cd/js-modules').import('jenkins-cd:js-extensions').onFulfilled(function(Extension) {\n";
         for (var i2 = 0; i2 < extensions.length; i2++) {
             var extension = extensions[i2];
 
-            jsxFileContent += "    extensions.store.addExtension('" + extension.extensionPoint + "', " + extension.importAs + ");\n";
+            jsxFileContent += "    Extension.store._registerComponentInstance('" + extension.extensionPoint + "', '" + maven.getArtifactId() + "', '" + extension.component + "', " + extension.importAs + ");\n";
         }
         jsxFileContent += "});";
 

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { ResultItem } from '@jenkins-cd/design-language';
-import { calculateLogUrl } from '../redux';
+import { calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 

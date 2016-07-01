@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0-alpha-1-SNAPSHOT</version>
+        <version>1.0-alpha-2-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
@@ -24,6 +24,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-personalization</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest</artifactId>
         </dependency>
         <dependency>
@@ -34,6 +38,21 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest-impl</artifactId>
         </dependency>
+        
+        <!-- Test deps -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-rest-impl</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
     </dependencies>
 
     <build>
@@ -60,7 +79,7 @@
                         //
                         // See the following closure and it's uses after.
                         //
-                        def linkHPI = {String pluginId, String pluginDir = pluginId ->
+                        def linkHPI = {String pluginId, String pluginDir = pluginId -&gt;
 
                             def workPluginsDir = new File(basedir, 'work/plugins');
                             def theHpl = new File(new File(basedir.parentFile, pluginDir), 'target/test-classes/the.hpl');

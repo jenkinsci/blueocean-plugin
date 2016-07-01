@@ -19,13 +19,9 @@ class OrganizationPipelines extends Component {
             pipelines,
         } = this.props;
 
-        // The specific pipeline we may be focused on
-        let pipeline;
 
-        if (pipelines && params && params.pipeline) {
-            const name = params.pipeline;
-            pipeline = pipelines.find(aPipeLine => aPipeLine.name === name);
-        }
+        // The specific pipeline we may be focused on
+        const pipeline = this._selectPipeline(pipelines, params);
 
         return {
             pipelines,
@@ -38,11 +34,7 @@ class OrganizationPipelines extends Component {
         if (config) {
             const { organization } = this.context.params;
             this.props.fetchPipelinesIfNeeded(this.context.config, organization);
-            if (this.props.params.pipeline) {
-                const { pipeline } = this.props.params;
-                config.pipeline = pipeline;
-                this.props.setPipeline(config);
-            }
+
             const _this = this;
 
             // Subscribe for job channel push events
@@ -94,12 +86,10 @@ class OrganizationPipelines extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.params.pipeline !== this.props.params.pipeline) {
-            const config = this.context.config;
-            const { pipeline } = nextProps.params;
-            config.pipeline = pipeline;
-            this.props.setPipeline(config);
-        }
+        const config = this.context.config;
+        const { pipeline } = nextProps.params;
+        config.pipeline = pipeline;
+        this.props.setPipeline(config);
     }
 
     componentWillUnmount() {
@@ -108,6 +98,16 @@ class OrganizationPipelines extends Component {
             delete this.jobListener;
         }
     }
+
+    _selectPipeline(pipelines, params) {
+        if (pipelines && params) {
+            const { pipeline } = params;
+            return pipelines.find(aPipeline => aPipeline.fullName === pipeline);
+        }
+
+        return null;
+    }
+
     /*
      FIXME we should use clone here, this way we could pass all actions and reducer down to all
      components and get rid of the seperate connect in each subcomponents -> see RunDetailsPipeline
