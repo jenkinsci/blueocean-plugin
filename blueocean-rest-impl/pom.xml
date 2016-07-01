@@ -70,11 +70,16 @@
             <version>1.1</version>
         </dependency>
         <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-durable-task-step</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
             <groupId>io.jenkins.blueocean.rest.annotation</groupId>
             <artifactId>capability-annotation</artifactId>
             <version>1.2</version>
         </dependency>
-
+        
         <!-- Not needed by blueocean runtime but adds to blueocean experience -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -89,13 +94,6 @@
             <version>2.1-beta-1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-durable-task-step</artifactId>
-            <version>2.0</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-basic-steps</artifactId>

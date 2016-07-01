@@ -11,14 +11,22 @@ import java.util.Date;
  * @author ivan Meredith
  */
 public class QueueItemImpl extends BlueQueueItem {
-    private Queue.Item item;
-    private BluePipeline pipeline;
-    private int expectedBuildNumber;
+    private final Queue.Item item;
+    private final String pipelineName;
+    private final Link self;
+    private final int expectedBuildNumber;
 
     public QueueItemImpl(Queue.Item item, BluePipeline pipeline, int expectedBuildNumber) {
+        this(item,
+            pipeline.getName(),expectedBuildNumber,
+            pipeline.getQueue().getLink().rel(Long.toString(item.getId())));
+    }
+
+    public QueueItemImpl(Queue.Item item, String name, int expectedBuildNumber, Link self) {
         this.item = item;
-        this.pipeline = pipeline;
+        this.pipelineName = name;
         this.expectedBuildNumber = expectedBuildNumber;
+        this.self = self;
     }
 
     @Override
@@ -28,7 +36,7 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public String getPipeline() {
-        return pipeline.getName();
+        return pipelineName;
     }
 
     @Override
@@ -43,6 +51,6 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public Link getLink() {
-        return pipeline.getQueue().getLink().rel(getId());
+        return self;
     }
 }
