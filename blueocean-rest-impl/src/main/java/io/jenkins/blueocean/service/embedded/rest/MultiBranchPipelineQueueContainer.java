@@ -36,13 +36,19 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
             if(item != null){
                 PipelineImpl pipeline = (PipelineImpl) multiBranchPipeline.getBranches().get(item.task.getOwnerTask().getName());
                 if(pipeline != null) {
-                    int runId=0;
+
                     if(item.task instanceof ExecutorStepExecution.PlaceholderTask) {
                         ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) item.task;
-                        runId = task.run().getNumber();
+                        int runNumber;
+                        if(task.run() == null){
+                            runNumber = pipeline.job.getNextBuildNumber();
+                        }else{
+                            runNumber = task.run().getNumber();
+                        }
+                        return new QueueItemImpl(item, item.task.getOwnerTask().getName(), runNumber,
+                            self.rel(String.valueOf(item.getId())));
                     }
-                    return new QueueItemImpl(item, item.task.getOwnerTask().getName(), runId,
-                        self.rel(String.valueOf(item.getId())));
+
                 }
             }
         }catch (NumberFormatException e){
@@ -86,12 +92,12 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
                     int runNumber;
                     if(task.run() == null){
                         runNumber = job.getNextBuildNumber() + count;
+                        count++;
                     }else{
                         runNumber = task.run().getNumber();
                     }
                     items.add(new QueueItemImpl(item,p.getName(),
                         runNumber, self.rel(String.valueOf(item.getId()))));
-                    count++;
                 }
             }
         }
