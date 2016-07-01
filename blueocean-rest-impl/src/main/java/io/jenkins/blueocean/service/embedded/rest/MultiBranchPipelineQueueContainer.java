@@ -79,11 +79,19 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
             if(its == null || its.isEmpty()){
                 continue;
             }
+            int count=0;
             for(Queue.Item item:its){
                 ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) item.task;
                 if(task != null){
+                    int runNumber;
+                    if(task.run() == null){
+                        runNumber = job.getNextBuildNumber() + count;
+                    }else{
+                        runNumber = task.run().getNumber();
+                    }
                     items.add(new QueueItemImpl(item,p.getName(),
-                        task.run().getNumber(), self.rel(String.valueOf(item.getId()))));
+                        runNumber, self.rel(String.valueOf(item.getId()))));
+                    count++;
                 }
             }
         }
