@@ -31,13 +31,22 @@ export function decodeResultValue(resultMaybe: any):Result {
 
 // Returns the correct <g> element for the result / progress percent
 export function getGroupForResult(result: Result, percentage: number, radius: number) {
+    if (usesSvgSpinner(result)) {
+        return <SvgSpinner radius={radius} result={result} percentage={percentage}/>;
+    } else {
+        return <SvgStatus radius={radius} result={result}/>;
+    }
+}
+
+// indicates whether result should use the Spinner (or Status)
+function usesSvgSpinner(result: Result) {
     switch (result) {
         case 'running':
         case 'queued':
         case 'not_built':
-            return <SvgSpinner radius={radius} result={result} percentage={percentage}/>;
+            return true;
         default:
-            return <SvgStatus radius={radius} result={result}/>;
+            return false;
     }
 }
 
@@ -50,12 +59,13 @@ class StatusIndicator extends Component {
             result,
             percentage,
             width = '24px',
-            height = '24px'
+            height = '24px',
+            noBackground,
         } = this.props;
 
         const groupClasses = [
             'svgResultStatus',
-            this.props.noBackground ?
+            noBackground ?
                 'no-background' : null
         ];
 
@@ -64,7 +74,7 @@ class StatusIndicator extends Component {
 
         const translate = `translate(${radius} ${radius})`;
         // SvgStatus needs to be scaled up to fill the available space when no bg is used
-        const scale = resultClean !== validResultValues.running && this.props.noBackground ?
+        const scale = noBackground && !usesSvgSpinner(resultClean) ?
             'scale(2,2)' : null;
 
         const transforms = [
