@@ -71,4 +71,10 @@
             stroke: white;
         }
     }
+
+    // force "favorite" checkbox to white when on unstable card
+    // FIXME: doesn't work in IE11
+    &.unstable-bg-lite .checkbox {
+        -webkit-filter: grayscale(100%) brightness(0%) invert(100%);
+    }
 }
