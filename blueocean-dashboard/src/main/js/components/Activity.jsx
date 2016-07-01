@@ -39,7 +39,7 @@ EmptyState.propTypes = {
 };
 
 const RunNonMultiBranchPipeline = ({ pipeline, buttonText }) => (
-    <RunPipeline organization={pipeline.organization} pipeline={pipeline.name} buttonClass="btn-secondary non-multi-branch" buttonText={buttonText} />
+    <RunPipeline organization={pipeline.organization} pipeline={pipeline.name} buttonClass="btn-primary inverse non-multi-branch" buttonText={buttonText} />
 );
 
 RunNonMultiBranchPipeline.propTypes = {
