@@ -25,6 +25,7 @@ import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
 import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.PipelineImpl;
@@ -564,6 +565,7 @@ public class PipelineApiTest extends BaseTest {
         }
     }
 
+    @Capability({"io.jenkins.blueocean.rest.annotation.test.TestPipeline", "io.jenkins.blueocean.rest.annotation.test.TestPipelineExample"})
     public static class TestPipelineImpl extends PipelineImpl {
 
         public TestPipelineImpl(Job job) {
@@ -575,5 +577,14 @@ public class PipelineApiTest extends BaseTest {
             return "hello world!";
         }
     }
+
+    @Test
+    public void testCapabilityAnnotation(){
+        Map resp = get("/classes/"+TestPipelineImpl.class.getName());
+        List<String> classes = (List<String>) resp.get("classes");
+        Assert.assertEquals("io.jenkins.blueocean.rest.annotation.test.TestPipeline", classes.get(0));
+        Assert.assertEquals("io.jenkins.blueocean.rest.annotation.test.TestPipelineExample", classes.get(1));
+    }
+
 
 }

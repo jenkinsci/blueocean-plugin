@@ -85,13 +85,11 @@ public abstract class BluePipelineFolder extends BluePipeline {
     }
 
     @Override
-    @Exported(skipNull = true)
     public BlueRunContainer getRuns() {
         return null;
     }
 
     @Override
-    @Exported(skipNull = true)
     public BlueQueueContainer getQueue() {
         return null;
     }
