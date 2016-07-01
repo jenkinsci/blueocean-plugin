@@ -1,8 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Runs from './Runs';
+import Pipeline from '../api/Pipeline';
 import { scrollToHash } from './ScrollToHash';
 import { ActivityRecord, ChangeSetRecord } from './records';
+import RunPipeline from './RunPipeline.jsx';
 import {
     actions,
     currentRuns as runsSelector,
@@ -10,9 +12,9 @@ import {
     connect,
 } from '../redux';
 
-const { object, array, func, string } = PropTypes;
+const { object, array, func, string, boolean } = PropTypes;
 
-const EmptyState = ({ repoName }) => (
+const EmptyState = ({ repoName, pipeline, showRunButton }) => (
     <main>
         <EmptyStateView iconName="shoes">
             <h1>Ready, get set...</h1>
@@ -25,13 +27,24 @@ const EmptyState = ({ repoName }) => (
                 Commit to the repository <em>{repoName}</em> or run the pipeline manually.
             </p>
 
-            <button>Run Now</button>
+            {showRunButton && <RunNonMultiBranchPipeline pipeline={pipeline} buttonText="Run Now" />}
         </EmptyStateView>
     </main>
 );
 
 EmptyState.propTypes = {
     repoName: string,
+    pipeline: string,
+    showRunButton: boolean,
+};
+
+const RunNonMultiBranchPipeline = ({ pipeline, buttonText }) => (
+    <RunPipeline organization={pipeline.organization} pipeline={pipeline.name} buttonClass="btn-secondary non-multi-branch" buttonText={buttonText} />
+);
+
+RunNonMultiBranchPipeline.propTypes = {
+    pipeline: string,
+    buttonText: string,
 };
 
 export class Activity extends Component {
@@ -50,14 +63,19 @@ export class Activity extends Component {
     }
 
     render() {
-        const { runs } = this.props;
+        const { runs, pipeline } = this.props;
         // early out
         if (!runs) {
             return null;
         }
 
+        // Only show the Run button for non multi-branch pipelines.
+        // Multi-branch pipelines have the Run/play button beside them on
+        // the Branches/PRs tab.
+        const showRunButton = (pipeline && !Pipeline.isMultibranch(pipeline));
+
         if (!runs.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} />);
+            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
         }
 
         const headers = [
@@ -71,7 +89,8 @@ export class Activity extends Component {
         ];
 
         return (<main>
-            <article>
+            <article className="activity">
+                {showRunButton && <RunNonMultiBranchPipeline pipeline={pipeline} buttonText="Run" />}
                 <Table className="activity-table fixed" headers={headers}>
                     { runs.map((run, index) => {
                         const changeset = run.changeSet;
@@ -102,6 +121,7 @@ Activity.contextTypes = {
 
 Activity.propTypes = {
     runs: array,
+    pipeline: object,
     fetchRunsIfNeeded: func,
 };
 
