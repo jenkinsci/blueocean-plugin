@@ -16,9 +16,9 @@ export default class RunPipeline extends Component {
         assert(props.pipeline, 'RunPipeline: "pipeline" not defined');
 
         if (props.branch) {
-            this.branch = new Branch(props.organization, props.pipeline, props.branch);
+            this.pipeline = new Branch(props.organization, props.pipeline, props.branch);
         } else {
-            this.branch = new Pipeline(props.organization, props.pipeline);
+            this.pipeline = new Pipeline(props.organization, props.pipeline);
         }
 
         this.state = {
@@ -32,17 +32,17 @@ export default class RunPipeline extends Component {
     componentDidMount() {
         const _this = this;
         const reactContext = this.context;
-        const theBranch = this.branch;
+        const thePipeline = this.pipeline;
 
-        this.branch.onJobChannelEvent((event) => {
+        this.pipeline.onJobChannelEvent((event) => {
             if (event.jenkins_event === 'job_run_started') {
                 _this.setState({
                     toast: {
-                        text: `Started "${theBranch.branchName}" #${event.jenkins_object_id}`,
+                        text: `Started "${thePipeline.branchName}" #${event.jenkins_object_id}`,
                         action: {
                             label: 'Open',
                             callback: () => {
-                                const runDetailsUrl = theBranch.runDetailsRouteUrl(event.jenkins_object_id);
+                                const runDetailsUrl = thePipeline.runDetailsRouteUrl(event.jenkins_object_id);
                                 reactContext.location.pathname = runDetailsUrl;
                                 reactContext.router.push(runDetailsUrl);
                             },
@@ -56,24 +56,24 @@ export default class RunPipeline extends Component {
     }
 
     componentWillUnmount() {
-        this.branch.clearEventListeners();
+        this.pipeline.clearEventListeners();
     }
 
     run(event) {
         const _this = this;
-        const theBranch = this.branch;
+        const thePipeline = this.pipeline;
 
-        this.branch.run(() => {
+        this.pipeline.run(() => {
             // Success...
             _this.setState({
-                toast: { text: `Queued "${theBranch.branchName}"` },
+                toast: { text: `Queued "${thePipeline.branchName}"` },
             });
         }, (error) => {
             // Fail...
-            console.error(`Unexpected error queuing a run of "${theBranch.branchName}". Response:`);
+            console.error(`Unexpected error queuing a run of "${thePipeline.branchName}". Response:`);
             console.error(error);
             _this.setState({
-                toast: { text: `Failed to queue "${theBranch.branchName}". Try reloading the page.` },
+                toast: { text: `Failed to queue "${thePipeline.branchName}". Try reloading the page.` },
             });
         });
         
