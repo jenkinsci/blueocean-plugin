@@ -48,7 +48,7 @@ class OrganizationPipelines extends Component {
                 case 'job_crud_created':
                 case 'job_crud_deleted':
                 case 'job_crud_renamed':
-                    // Just refetch and update the pipelines list.
+                    // Just refetch and update the pipelines and branches list.
                     // Yes, in some of these cases it would be possible to
                     // update the redux store state without making a REST call.
                     // Trading off for simplicity and view consistency here.
@@ -59,6 +59,7 @@ class OrganizationPipelines extends Component {
                     // benefit to be got from optimizing things here.
                     // TODO: fix https://issues.jenkins-ci.org/browse/JENKINS-35153 for delete
                     _this.props.fetchPipelines(_this.context.config, _this.props.organization);
+                    _this.props.updateBranchList(eventCopy, _this.context.config);
                     break;
                 case 'job_run_queue_buildable':
                 case 'job_run_queue_enter':
@@ -129,6 +130,7 @@ OrganizationPipelines.propTypes = {
     processJobQueuedEvent: func.isRequired,
     updateRunState: func.isRequired,
     updateBranchState: func.isRequired,
+    updateBranchList: func.isRequired,
     organization: string,
     params: object, // From react-router
     children: node, // From react-router
