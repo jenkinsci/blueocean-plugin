@@ -11,6 +11,8 @@
     <artifactId>blueocean-events</artifactId>
     <packaging>hpi</packaging>
 
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+
     <dependencies>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

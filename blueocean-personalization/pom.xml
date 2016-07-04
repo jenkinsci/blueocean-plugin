@@ -10,6 +10,8 @@
     <name>BlueOcean :: Personalization</name>
     <artifactId>blueocean-personalization</artifactId>
     <packaging>hpi</packaging>
+    
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
     <dependencies>
     </dependencies>
