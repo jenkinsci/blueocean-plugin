@@ -8,7 +8,7 @@ node {
                 sh "npm install"
 
             stage "Validate types"
-                sh "npm ./node_modules/.bin/flow"
+                sh "./node_modules/.bin/flow"
 
             stage "Test and validate"
                 sh "npm install gulp-cli && ./node_modules/.bin/gulp"
