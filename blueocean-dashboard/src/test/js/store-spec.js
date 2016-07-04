@@ -11,7 +11,7 @@ import {
     currentRuns as currentRunsSelector,
 } from '../../main/js/redux';
 import { pipelines } from './pipelines';
-import { latestRuns } from './latestRuns';
+import { latestRuns } from './data/runs/latestRuns';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
