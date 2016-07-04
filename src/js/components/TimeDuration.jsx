@@ -4,6 +4,16 @@ import React, {Component, PropTypes} from 'react';
 import moment from 'moment';
 require('moment-duration-format');
 
+type Props = {
+    millis: number,
+    hint?: string,
+    liveUpdate: bool
+};
+
+type State = {
+    elapsed: number
+};
+
 /**
  * Displays a millisecond duration as text in moment-duration-format's "humanize()" format,
  * e.g. "a few seconds", "2 hours", etc.
@@ -18,7 +28,12 @@ require('moment-duration-format');
  */
 export class TimeDuration extends Component {
 
-    constructor(props) {
+    props: Props;
+    state: State;
+    timerPeriodMillis: number;
+    clearIntervalId: number;
+
+    constructor(props: Props) {
         super(props);
         // track how much time has elapsed since live updating tracking started
         this.state = { elapsed: 0 };
@@ -32,11 +47,11 @@ export class TimeDuration extends Component {
         this._handleProps(this.props);
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: Props) {
         this._handleProps(nextProps);
     }
 
-    _handleProps(props) {
+    _handleProps(props: Props) {
         if (this.clearIntervalId) {
             clearInterval(this.clearIntervalId);
             this.clearIntervalId = 0;

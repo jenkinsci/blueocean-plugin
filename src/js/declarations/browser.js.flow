@@ -1,0 +1,4 @@
+// Browser functions missing from built-ins for some reason.
+
+declare function requestAnimationFrame(fun: Function): number;
+declare function cancelAnimationFrame(id: number): void;
