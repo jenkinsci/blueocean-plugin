@@ -2,6 +2,8 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -14,10 +16,27 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * Returns flattened view of pipelines
+ *
+ * To exclude flattening multi branch project:
+ *
+ * GET /rest/search/?q=type:pipeline;organization:jenkins;excludedFromFlattening=jenkins.branch.MultiBranchProject
+ *
+ * To exclude flattening a folder:
+ *
+ * GET /rest/search/?q=type:pipeline;organization:jenkins;excludedFromFlattening=com.cloudbees.hudson.plugins.folder.AbstractFolder
+ *
+ * To exclude flattening both a folder and multi-branch projects
+ *
+ * GET /rest/search/?q=type:pipeline;organization:jenkins;excludedFromFlattening=jenkins.branch.MultiBranchProject,com.cloudbees.hudson.plugins.folder.AbstractFolder
+ *
+ *
  * @author Vivek Pandey
  */
 @Extension
 public class PipelineSearch extends OmniSearch<BluePipeline>{
+    private static final String EXCLUDED_FROM_FLATTENING_PARAM ="excludedFromFlattening";
+    private static final String ORGANIZATION_PARAM="organization";
 
     @Override
     public String getType() {
@@ -26,8 +45,37 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
 
     @Override
     public Pageable<BluePipeline> search(Query q) {
+        String s = q.param(EXCLUDED_FROM_FLATTENING_PARAM);
+        String org = q.param(ORGANIZATION_PARAM);
+
+        if(org!=null && !OrganizationImpl.INSTANCE.getName().equals(org)){
+            throw new ServiceException.BadRequestExpception(
+                String.format("Organization %s not found. Query parameter %s value: %s is invalid. ", org,ORGANIZATION_PARAM,org));
+        }
+        List<Class> excludeList=new ArrayList<>();
+        if(s!=null){
+            for(String s1:s.split(",")){
+                try {
+                    Class c = Class.forName(s1);
+                    excludeList.add(c);
+                } catch (ClassNotFoundException e) {
+                    throw new ServiceException.BadRequestExpception(String.format("%s parameter has invalid value: %s", EXCLUDED_FROM_FLATTENING_PARAM, s1), e);
+                }
+            }
+        }
+
+        List<Item> items = new ArrayList<>();
+        if(!excludeList.isEmpty()) {
+            for (Item item : Jenkins.getActiveInstance().getAllItems(Item.class)) {
+                if (!exclude(item.getParent(), excludeList)) {
+                    items.add(item);
+                }
+            }
+        }else{
+            items = Jenkins.getActiveInstance().getAllItems(Item.class);
+        }
         final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl()
-            .getPipelines(Jenkins.getActiveInstance().getAllItems(Item.class));
+            .getPipelines(items);
         final List<BluePipeline> pipelines = new ArrayList<>();
         String pipeline = q.param(getType());
         if(pipeline == null) {
@@ -47,5 +95,14 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
             }
             return Pageables.wrap(pipelines);
         }
+    }
+
+    private boolean exclude(ItemGroup item, List<Class> excludeList){
+        for(Class c:excludeList){
+            if(c.isAssignableFrom(item.getClass())){
+                return true;
+            }
+        }
+        return false;
     }
 }

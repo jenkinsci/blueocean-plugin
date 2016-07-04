@@ -7,21 +7,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>BlueOcean :: Events</name>
-    <artifactId>blueocean-events</artifactId>
+    <name>BlueOcean :: Personalization</name>
+    <artifactId>blueocean-personalization</artifactId>
     <packaging>hpi</packaging>
-
+    
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
     <dependencies>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>sse-gateway</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-rest-impl</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

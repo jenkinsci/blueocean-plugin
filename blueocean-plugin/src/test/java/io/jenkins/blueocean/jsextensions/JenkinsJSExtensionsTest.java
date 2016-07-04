@@ -23,7 +23,6 @@
  */
 package io.jenkins.blueocean.jsextensions;
 
-import io.jenkins.blueocean.jsextensions.JenkinsJSExtensions;
 import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,18 +39,28 @@ public class JenkinsJSExtensionsTest extends BaseTest {
     @Test
     public void test() {
         // Simple test of the rest endpoint. It should find the "blueocean-dashboard"
-        // plugin ExtensionPoint contributions.
+        // and "blueocean-personalization" plugin ExtensionPoint contributions.
         Map response = get("/js-extensions", Map.class);
         List<Map> extensions = (List)response.get("data");
 
-        Assert.assertEquals(1, extensions.size());
-        Assert.assertEquals("blueocean-dashboard", extensions.get(0).get("hpiPluginId"));
+        Assert.assertEquals(2, extensions.size());
 
-        List<Map> ext = (List<Map>) extensions.get(0).get("extensions");
+        for (Map extension : extensions) {
+            List<Map> extensionPoints = (List<Map>) extension.get("extensions");
+            String pluginId = (String) extension.get("hpiPluginId");
 
-        Assert.assertEquals(5, ext.size());
-        Assert.assertEquals("AdminNavLink", ext.get(0).get("component"));
-        Assert.assertEquals("jenkins.logo.top", ext.get(0).get("extensionPoint"));
+            if ("blueocean-dashboard".equals(pluginId)) {
+                Assert.assertEquals(5, extensionPoints.size());
+                Assert.assertEquals("AdminNavLink", extensionPoints.get(0).get("component"));
+                Assert.assertEquals("jenkins.logo.top", extensionPoints.get(0).get("extensionPoint"));
+            } else if ("blueocean-personalization".equals(pluginId)) {
+                Assert.assertEquals(1, extensionPoints.size());
+                Assert.assertEquals("components/ActionLink", extensionPoints.get(0).get("component"));
+                Assert.assertEquals("jenkins.dashboard.item.action", extensionPoints.get(0).get("extensionPoint"));
+            } else {
+                Assert.fail("Found extensions from unknown pluginId: " + pluginId);
+            }
+        }
 
         // Calling JenkinsJSExtensions.getJenkinsJSExtensionData() multiple times should
         // result in the same object instance being returned because the list of plugin

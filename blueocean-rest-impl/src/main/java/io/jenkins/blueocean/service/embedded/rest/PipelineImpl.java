@@ -2,9 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
 import hudson.model.Action;
-import hudson.model.BuildableItem;
 import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
@@ -17,7 +15,6 @@ import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
-import jenkins.branch.MultiBranchProject;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -29,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl.isMultiBranchProjectJob;
-
 /**
  * @author Kohsuke Kawaguchi
  */
@@ -38,23 +33,10 @@ import static io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl.i
 public class PipelineImpl extends BluePipeline {
     /*package*/ final Job job;
 
-    private final ItemGroup folder;
-
-    private final Link parent;
-
-    protected PipelineImpl(ItemGroup folder, Job job, Link parent) {
+    protected PipelineImpl(Job job) {
         this.job = job;
-        this.folder = folder;
-        this.parent = null;
     }
 
-    public PipelineImpl(ItemGroup folder, Link parent) {
-        this(folder, null,parent);
-    }
-
-    public PipelineImpl(Job job, Link parent) {
-        this(null, job, parent);
-    }
     @Override
     public String getOrganization() {
         return OrganizationImpl.INSTANCE.getName();
@@ -111,7 +93,7 @@ public class PipelineImpl extends BluePipeline {
     @Override
     @Navigable
     public BlueQueueContainer getQueue() {
-        return new QueueContainerImpl(this, job);
+        return new QueueContainerImpl(this);
     }
 
     @WebMethod(name="") @DELETE
@@ -132,25 +114,6 @@ public class PipelineImpl extends BluePipeline {
     @Override
     public String getFullName(){
         return job.getFullName();
-    }
-
-    public BluePipeline getPipelines(String name){
-        assert folder != null;
-        return getPipeline(folder, name);
-    }
-
-    private  BluePipeline getPipeline(ItemGroup itemGroup, String name){
-        Item item = itemGroup.getItem(name);
-        if(item instanceof BuildableItem){
-            if(item instanceof MultiBranchProject){
-                return new MultiBranchPipelineImpl((MultiBranchProject) item, getLink());
-            }else if(!isMultiBranchProjectJob((BuildableItem) item) && item instanceof Job){
-                return new PipelineImpl(itemGroup, (Job) item, parent);
-            }
-        }else if(item instanceof ItemGroup){
-            return new PipelineImpl((ItemGroup) item, null);
-        }
-        throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", name));
     }
 
     @Override
@@ -183,7 +146,7 @@ public class PipelineImpl extends BluePipeline {
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
             if (item instanceof Job) {
-                return new PipelineImpl((Job) item, parent.getLink());
+                return new PipelineImpl((Job) item);
             }
             return null;
         }

@@ -1,11 +1,17 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.Extension;
 import hudson.Util;
+import hudson.model.Item;
 import hudson.model.Job;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -18,7 +24,7 @@ public class BranchImpl extends PipelineImpl {
     private final Link parent;
 
     public BranchImpl(Job job, Link parent) {
-        super(job, parent);
+        super(job);
         this.parent = parent;
     }
 
@@ -37,6 +43,18 @@ public class BranchImpl extends PipelineImpl {
     @Override
     public Link getLink() {
         return parent.rel(Util.rawEncode(getName()));
+    }
+
+    @Extension(ordinal = 4)
+    public static class PipelineFactoryImpl extends BluePipelineFactory {
+
+        @Override
+        public BluePipeline getPipeline(Item item, Reachable parent) {
+            if (item instanceof WorkflowJob) {
+                return new BranchImpl((Job) item, parent.getLink());
+            }
+            return null;
+        }
     }
 
     public static class PullRequest extends Resource {

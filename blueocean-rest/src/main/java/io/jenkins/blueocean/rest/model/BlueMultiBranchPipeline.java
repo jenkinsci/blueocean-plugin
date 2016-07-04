@@ -13,7 +13,7 @@ import java.util.Iterator;
  *
  * @author Vivek Pandey
  */
-public abstract class BlueMultiBranchPipeline extends BluePipeline{
+public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
     public static final String TOTAL_NUMBER_OF_BRANCHES="totalNumberOfBranches";
     public static final String NUMBER_OF_FAILING_BRANCHES="numberOfFailingBranches";
     public static final String NUMBER_OF_SUCCESSFULT_BRANCHES="numberOfSuccessfulBranches";
@@ -100,10 +100,5 @@ public abstract class BlueMultiBranchPipeline extends BluePipeline{
                 throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };
-    }
-
-    @Override
-    public BlueQueueContainer getQueue() {
-        return null; //noop
     }
 }

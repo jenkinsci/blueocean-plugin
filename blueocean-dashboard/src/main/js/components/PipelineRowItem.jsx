@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { WeatherIcon } from '@jenkins-cd/design-language';
-import { Favorite } from '@jenkins-cd/design-language';
+import { Favorite, WeatherIcon } from '@jenkins-cd/design-language';
+import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
 
 export default class PipelineRowItem extends Component {
@@ -85,7 +85,10 @@ export default class PipelineRowItem extends Component {
                 }
                 <td>{multiBranchLink}</td>
                 <td>{pullRequestsLink}</td>
-                <td><Favorite /></td>
+                <td>
+                    <Favorite />
+                    <Extensions.Renderer extensionPoint="jenkins.dashboard.item.action" />
+                </td>
             </tr>
         );
     }

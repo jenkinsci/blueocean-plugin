@@ -17,12 +17,9 @@ import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.jvnet.hudson.test.BuildWatcher;
+import org.jvnet.hudson.test.MockFolder;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -55,8 +52,19 @@ public class MultiBranchTest extends BaseTest{
         setupScm();
     }
 
+    /**
+     * Some of these tests can be problematic until:
+     * https://issues.jenkins-ci.org/browse/JENKINS-36290 is resolved
+     * Set an env var to any value to get these to run. 
+     */
+    private boolean runAllTests() {
+        return System.getenv("RUN_MULTIBRANCH_TESTS") != null;
+    }
+
+
     @Test
     public void getMultiBranchPipelines() throws IOException, ExecutionException, InterruptedException {
+        Assume.assumeTrue(runAllTests());
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         FreeStyleProject f = j.jenkins.createProject(FreeStyleProject.class, "f");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -76,7 +84,28 @@ public class MultiBranchTest extends BaseTest{
 
 
     @Test
+    public void getMultiBranchPipelineInsideFolder() throws IOException, ExecutionException, InterruptedException {
+        MockFolder folder1 = j.createFolder("folder1");
+        WorkflowMultiBranchProject mp = folder1.createProject(WorkflowMultiBranchProject.class, "p");
+
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+        Map r = get("/organizations/jenkins/pipelines/folder1/pipelines/p/");
+
+        validateMultiBranchPipeline(mp, r, 3);
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/p/",
+            ((Map)((Map)r.get("_links")).get("self")).get("href"));
+    }
+
+    @Test
     public void getBranchWithEncodedPath() throws IOException, ExecutionException, InterruptedException {
+        Assume.assumeTrue(runAllTests());
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         FreeStyleProject f = j.jenkins.createProject(FreeStyleProject.class, "f");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -121,8 +150,9 @@ public class MultiBranchTest extends BaseTest{
         Assert.assertNull(mp.getBranch("master"));
     }
 
-//    @Test
+    @Test
     public void getMultiBranchPipeline() throws IOException, ExecutionException, InterruptedException {
+        Assume.assumeTrue(runAllTests());
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
             new DefaultBranchPropertyStrategy(new BranchProperty[0])));
@@ -134,7 +164,7 @@ public class MultiBranchTest extends BaseTest{
 
 
         Map resp = get("/organizations/jenkins/pipelines/p/");
-        validateMultiBranchPipeline(mp,resp,3);
+        validateMultiBranchPipeline(mp, resp, 3);
 
         List<String> names = (List<String>) resp.get("branchNames");
 
@@ -144,16 +174,16 @@ public class MultiBranchTest extends BaseTest{
 
         List<String> branchNames = new ArrayList<>();
         List<Integer> weather = new ArrayList<>();
-        for(Map b: br){
+        for (Map b : br) {
             branchNames.add((String) b.get("name"));
             weather.add((int) b.get("weatherScore"));
         }
 
-        for(String n:branches){
+        for (String n : branches) {
             assertTrue(branchNames.contains(n));
         }
 
-        for(int s:weather){
+        for (int s : weather) {
             assertEquals(100, s);
         }
     }
@@ -440,6 +470,8 @@ public class MultiBranchTest extends BaseTest{
         }
 
         WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+
+
         j.waitUntilNoActivity();
         WorkflowRun b1 = p.getLastBuild();
         assertEquals(1, b1.getNumber());

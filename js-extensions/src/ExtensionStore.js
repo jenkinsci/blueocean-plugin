@@ -215,7 +215,6 @@ export class ExtensionStore {
         }
         
         extensionPointMetadatas = this.extensionPoints[extensionPointId] = this.extensionPoints[extensionPointId] || [];
-        extensionPointMetadatas.loaded = true;
         
         var jsModules = require('@jenkins-cd/js-modules');
         var loadCountMonitor = new LoadCountMonitor();
@@ -246,6 +245,7 @@ export class ExtensionStore {
         
         var checkLoading = () => {
             if (loadCountMonitor.counter === 0) {
+                extensionPointMetadatas.loaded = true;
                 onload(extensionPointMetadatas);
             }
         };
