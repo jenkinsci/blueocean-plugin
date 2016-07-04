@@ -4,7 +4,7 @@ import { calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 
-const { object, func, string } = PropTypes;
+const { object, func, string, bool } = PropTypes;
 
 export default class Node extends Component {
     componentWillMount() {
@@ -17,7 +17,11 @@ export default class Node extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const { node, logs, nodesBaseUrl, fetchLog } = nextProps;
+        const { node, logs, nodesBaseUrl, fetchLog, followAlong } = nextProps;
+        if (followAlong) {
+            // kill current timeout if any
+            this.clearThisTimeout();
+        }
         const { config = {} } = this.context;
         const mergedConfig = { ...config, node, nodesBaseUrl };
         if (logs !== this.props.logs) {
@@ -25,18 +29,26 @@ export default class Node extends Component {
             const log = logs ? logs[key] : null;
             if (log && log !== null) {
                 const number = Number(log.newStart);
-                if (number > 0) {
+                // kill current  timeout if any
+                this.clearThisTimeout();
+                if (number > 0 && followAlong) {
+                    // we turn on refetch so we always fetch a new Node result
+                    const refetch = true;
                     mergedConfig.newStart = log.newStart;
-                    // kill current  timeout if any
-                    clearTimeout(this.timeout);
-                    this.timeout = setTimeout(() => fetchLog(mergedConfig), 1000);
+                    this.timeout = setTimeout(() => fetchLog({ ...mergedConfig, refetch }), 1000);
                 }
             }
         }
     }
 
     componentWillUnmount() {
-        clearTimeout(this.timeout);
+        this.clearThisTimeout();
+    }
+
+    clearThisTimeout() {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
     }
 
     render() {
@@ -58,13 +70,19 @@ export default class Node extends Component {
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl })] : null;
         const getLogForNode = () => {
-            if (!log) {
-                fetchLog({ ...config, node, nodesBaseUrl });
+// console.log('ddd',followAlong, log)
+            if (!log || followAlong) {
+                // we turn on refetch so we always fetch a new Node result
+                const refetch = true;
+                fetchLog({ ...config, node, nodesBaseUrl, refetch });
             }
         };
         const runResult = resultRun.toLowerCase();
-        const scrollToBottom = runResult === 'failure' || runResult === 'running';
-console.log(followAlong, 'followAlong_step')
+        const scrollToBottom =
+            resultRun.toLowerCase() === 'failure'
+            || (resultRun.toLowerCase() === 'running' && followAlong)
+        ;
+        // console.log(followAlong, 'followAlong_step');
         return (<div>
             <ResultItem
               key={id}
@@ -82,6 +100,7 @@ console.log(followAlong, 'followAlong_step')
 
 Node.propTypes = {
     node: object.isRequired,
+    followAlong: bool,
     logs: object,
     fetchLog: func,
     nodesBaseUrl: string,
