@@ -5,9 +5,9 @@ import moment from 'moment';
 require('moment-duration-format');
 
 type Props = {
-    millis: number,
-    hint?: string,
-    liveUpdate: bool
+    // millis: number,
+    // hint?: string,
+    // liveUpdate: bool
 };
 
 type State = {
