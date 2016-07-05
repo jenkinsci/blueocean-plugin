@@ -27,7 +27,8 @@ public class AbstractRunImplTest extends BaseTest {
         super.setup();
         sampleRepo.init();
     }
-    @Test
+    //Disabled, see JENKINS-36453
+    //@Test
     public void replayRunTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         j.createOnlineSlave(Label.get("remote"));
