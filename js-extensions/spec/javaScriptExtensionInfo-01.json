@@ -46,22 +46,22 @@
       {
         "component": "typed-component-1.1",
         "extensionPoint": "ept-1",
-        "type": "supertype-1"
+        "dataType": "supertype-1"
       },
       {
         "component": "typed-component-1.2",
         "extensionPoint": "ept-2",
-        "type": "type-2"
+        "dataType": "type-2"
       },
       {
         "component": "typed-component-1.2.1",
         "extensionPoint": "ept-2",
-        "type": "subtype-2"
+        "dataType": "subtype-2"
       },
       {
         "component": "typed-component-1.2.2",
         "extensionPoint": "ept-2",
-        "type": "supertype-2"
+        "dataType": "supertype-2"
       }
     ],
     "hpiPluginId": "plugin-3",

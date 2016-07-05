@@ -15,8 +15,8 @@ export class ExtensionStore {
      *          ... // get the data
      *          callback(extensionData); // array of extensions
      *      },
-     *      typeInfoProvider: (type, callback) => {
-     *          ... // get the data based on 'type'
+     *      typeInfoProvider: (dataType, callback) => {
+     *          ... // get the data based on 'dataType'
      *          callback(typeInfo);
      *      }
      *  }
@@ -32,11 +32,11 @@ export class ExtensionStore {
         /**
          * Type info cache
          */
-        this.typeInfo = {};
+        this.dataTypeInfo = {};
         /**
          * Used to fetch type information
          */
-        this.typeInfoProvider = args.typeInfoProvider;
+        this.dataTypeInfoProvider = args.typeInfoProvider;
     }
     
     /**
@@ -107,12 +107,12 @@ export class ExtensionStore {
      * Gets the type/capability info for the given data type
      */
     getTypeInfo(type, onload) {
-        var ti = this.typeInfo[type];
+        var ti = this.dataTypeInfo[type];
         if (ti) {
             return onload(ti);
         }
-        this.typeInfoProvider(type, (data) => {
-            ti = this.typeInfo[type] = JSON.parse(JSON.stringify(data));
+        this.dataTypeInfoProvider(type, (data) => {
+            ti = this.dataTypeInfo[type] = JSON.parse(JSON.stringify(data));
             ti.classes = ti.classes || [];
             if (ti.classes.indexOf(type) < 0) {
                 ti.classes = [type, ...ti.classes];
@@ -168,7 +168,7 @@ export class ExtensionStore {
             currentDataType = currentDataType._class;
         }
         if (currentDataType) {
-            var currentTypeInfo = this.typeInfo[currentDataType];
+            var currentTypeInfo = this.dataTypeInfo[currentDataType];
             if (!currentTypeInfo) {
                 this.getTypeInfo(currentDataType, () => {
                     this._filterExtensions(extensions, filter, onload);
@@ -184,7 +184,7 @@ export class ExtensionStore {
                 var type = currentTypeInfo.classes[typeIndex];
                 for (var i = 0; i < extensions.length; i++) {
                     var extension = extensions[i];
-                    if (type === extension.type) {
+                    if (type === extension.dataType) {
                         matchingExtensions.push(extension);
                     }
                 }
@@ -197,7 +197,7 @@ export class ExtensionStore {
             extensions = matchingExtensions;
         } else {
             // exclude typed extensions when types not requested
-            extensions = extensions.filter(m => !('type' in m));
+            extensions = extensions.filter(m => !('dataType' in m));
         }
         
         // Filter on component type
