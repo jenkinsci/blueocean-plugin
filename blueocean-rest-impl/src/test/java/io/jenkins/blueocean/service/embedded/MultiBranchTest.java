@@ -489,14 +489,7 @@ public class MultiBranchTest extends BaseTest{
     private void setupScm() throws Exception {
         // create git repo
         sampleRepo.init();
-        sampleRepo.write("Jenkinsfile", "stage 'build'\n "+"node {echo 'Building'}\n"+
-            "stage 'test'\nnode { echo 'Testing'}\n"+
-            "stage 'deploy'\nnode { echo 'Deploying'}\n"
-        );
-        sampleRepo.write("file", "initial content");
-        sampleRepo.git("add", "Jenkinsfile");
-        sampleRepo.git("commit", "--all", "--message=flow");
-
+      ;
         //create feature branch
         sampleRepo.git("checkout", "-b", "feature/ux-1");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +

@@ -1,10 +1,12 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.json.JsonResponse;
+import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
 import java.text.SimpleDateFormat;
@@ -191,6 +193,8 @@ public abstract class BlueRun extends Resource {
     @Navigable
     public abstract Object getLog();
 
+    @POST @TreeResponse @WebMethod(name = "replay")
+    public abstract BlueQueueItem replay();
     public enum BlueRunState {
         QUEUED,
         RUNNING,
