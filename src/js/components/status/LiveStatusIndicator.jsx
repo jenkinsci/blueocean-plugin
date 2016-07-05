@@ -4,6 +4,22 @@ import React, {Component, PropTypes} from 'react';
 import moment from 'moment';
 import { StatusIndicator, decodeResultValue } from './StatusIndicator';
 
+import type Moment from 'moment';
+
+type Props = {
+    result: string,
+    percentage?: number,
+    width: string,
+    height: string,
+    noBackground: bool,
+    startTime: string,
+    estimatedDuration: number
+};
+
+type State = {
+    percentage: number
+};
+
 /**
  * LiveStatusIndicator is a wrapper around StatusIndicator that allows
  * for an in-progress status to self update.
@@ -14,7 +30,15 @@ import { StatusIndicator, decodeResultValue } from './StatusIndicator';
  */
 export class LiveStatusIndicator extends Component {
 
-    constructor(props) {
+    props: Props;
+    state: State;
+
+    percentage: number;
+    startTime: ?Moment;
+    clearIntervalId: number;
+    animationFrameId: number;
+
+    constructor(props: Props) {
         super(props);
 
         this.state = {
@@ -33,11 +57,11 @@ export class LiveStatusIndicator extends Component {
         this._initializeProgress(this.props);
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: Props) {
         this._initializeProgress(nextProps);
     }
 
-    _initializeProgress(props) {
+    _initializeProgress(props: Props) {
         // ensure we don't leak setInterval by proactively clearing it
         // the code will restart the interval if needed
         this._stopProgressUpdates();
