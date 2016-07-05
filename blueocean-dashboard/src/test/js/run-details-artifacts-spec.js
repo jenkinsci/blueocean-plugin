@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import React from 'react';
 import sd from 'skin-deep';
 
-import { latestRuns } from './latestRuns';
+import { latestRuns } from './data/runs/latestRuns';
 import RunDetailsArtifacts from '../../main/js/components/RunDetailsArtifacts';
 
 describe('RunDetailsArtifacts', () => {

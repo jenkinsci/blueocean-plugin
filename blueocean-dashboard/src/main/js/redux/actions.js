@@ -522,6 +522,39 @@ export const actions = {
         };
     },
 
+    updateBranchList(event, config) {
+        return (dispatch, getState) => {
+            if (event.job_ismultibranch) {
+                const multibranchPipelines = getState().adminStore.branches || {};
+                const pipelineName = event.blueocean_job_pipeline_name;
+
+                // We're only interested in this event if we're already managing branch state
+                // associated with this multi-branch job.
+                if (!multibranchPipelines[pipelineName]) {
+                    return;
+                }
+
+                // Fetch/refetch the latest set of branches for the pipeline.
+                const url = `${config.getAppURLBase()}/rest/organizations/${event.jenkins_org}` +
+                    `/pipelines/${pipelineName}/branches`;
+                exports.fetchJson(url, (latestPipelineBranches) => {
+                    if (event.blueocean_is_for_current_job) {
+                        dispatch({
+                            id: pipelineName,
+                            payload: latestPipelineBranches,
+                            type: ACTION_TYPES.SET_CURRENT_BRANCHES_DATA,
+                        });
+                    }
+                    dispatch({
+                        id: pipelineName,
+                        payload: latestPipelineBranches,
+                        type: ACTION_TYPES.SET_BRANCHES_DATA,
+                    });
+                });
+            }
+        };
+    },
+
     fetchRunsIfNeeded(config) {
         return (dispatch) => {
             const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
