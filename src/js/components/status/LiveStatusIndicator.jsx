@@ -4,6 +4,8 @@ import React, {Component, PropTypes} from 'react';
 import moment from 'moment';
 import { StatusIndicator, decodeResultValue } from './StatusIndicator';
 
+import type Moment from 'moment';
+
 type Props = {
     result: string,
     percentage?: number,
@@ -32,7 +34,7 @@ export class LiveStatusIndicator extends Component {
     state: State;
 
     percentage: number;
-    startTime: any; // TODO: Moment
+    startTime: ?Moment;
     clearIntervalId: number;
     animationFrameId: number;
 
