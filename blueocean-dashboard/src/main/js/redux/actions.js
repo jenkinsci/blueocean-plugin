@@ -61,7 +61,8 @@ export const actionHandlers = {
         return state.set('currentRuns', payload);
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
-        return state.set('node', payload);
+        console.log('nodeset the end', payload);
+        return state.set('node', { ...payload });
     },
     [ACTION_TYPES.SET_NODES](state, { payload }): State {
         const nodes = { ...state.nodes } || {};
@@ -93,6 +94,7 @@ export const actionHandlers = {
         return state.set('steps', steps);
     },
     [ACTION_TYPES.SET_LOGS](state, { payload }): State {
+        console.log('arbeit macht frei');
         const logs = { ...state.logs } || {};
         logs[payload.logUrl] = payload;
         return state.set('logs', logs);
@@ -157,7 +159,7 @@ function parseMoreDataHeader(response) {
  * @param onError
  */
 exports.fetchJson = function fetchJson(url, onSuccess, onError) {
-    fetch(url, fetchOptions)
+    return fetch(url, fetchOptions)
         .then(checkStatus)
         .then(parseJSON)
         .then(onSuccess)
@@ -188,7 +190,7 @@ exports.fetchLogsInjectStart = function fetchJson(url, start, onSuccess, onError
     } else {
         refetchUrl = `${url}?start=${start}`;
     }
-    fetch(refetchUrl, fetchOptions)
+    return fetch(refetchUrl, fetchOptions)
         .then(checkStatus)
         .then(parseMoreDataHeader)
         .then(onSuccess)
@@ -653,7 +655,7 @@ export const actions = {
                     node = config.node;
                 }
 
-                // console.log('stepsTrack node final', node)
+                console.log('stepsTrack node final', node);
                 dispatch({
                     type: ACTION_TYPES.SET_NODE,
                     payload: nodeModel,
@@ -769,6 +771,7 @@ export const actions = {
                     (error) => console.error('error', error)
                 );
             }
+            console.log('xxxxOUT');
             return null;
         };
     },

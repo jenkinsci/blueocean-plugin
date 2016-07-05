@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
 
-const { string, array, object, any } = PropTypes;
+const { string, array, object, any, func } = PropTypes;
 
 
 function badNode(jenkinsNode) {
@@ -165,6 +165,7 @@ export default class PipelineRunGraph extends Component {
                             pathArray.shift();
                             this.props.router.push(`${pathArray.join('/')}/${id}`);
                         }
+                        this.props.callback(id);
                     }
                   }
                 />
@@ -179,6 +180,7 @@ PipelineRunGraph.propTypes = {
     runId: string,
     nodes: array,
     node: any,
+    callback: func,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
 };

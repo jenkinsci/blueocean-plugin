@@ -47,27 +47,28 @@ export class RunDetailsPipeline extends Component {
         // We filter them only for steps and the end event all other we let pass
         const onSseEvent = (event) => {
             const jenkinsEvent = event.jenkins_event;
-            console.log('eventComing');
+            // console.log('eventComing');
             try {
-                if (!this.state.followAlong || event.pipeline_run_id !== this.props.result.id) {
-                    console.log('early out');
+                if (event.pipeline_run_id !== this.props.result.id) {
+                    // console.log('early out');
                     throw new Error('exit');
                 }
-            console.log('eventComing trhrough', event);
+                // console.log('eventComing trhrough', event);
                 // we turn on refetch so we always fetch a new Node result
                 const refetch = true;
                 switch (jenkinsEvent) {
                 case 'pipeline_step':
                     {
-                        console.log('???', this.mergedConfig.node, event);
-                        // if the step_stage_id has changed we need to change the focus
-                        if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
-                            delete this.mergedConfig.node;
-                            console.log('only nodes', this.mergedConfig.node);
-                            fetchNodes({ ...this.mergedConfig, refetch });
-                        } else {
-                            console.log('only steps');
-                            fetchSteps({ ...this.mergedConfig, refetch });
+                        if (this.state.followAlong) { // console.log('???', this.mergedConfig.node, event);
+                            // if the step_stage_id has changed we need to change the focus
+                            if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
+                                delete this.mergedConfig.node;
+                                console.log('only nodes', this.mergedConfig.node);
+                                fetchNodes({ ...this.mergedConfig, refetch });
+                            } else {
+                                // console.log('only steps');
+                                fetchSteps({ ...this.mergedConfig, refetch });
+                            }
                         }
                         break;
                     }
@@ -78,7 +79,7 @@ export class RunDetailsPipeline extends Component {
                     }
                 default:
                     {
-                        // console.log(event);
+                        // //console.log(event);
                     }
                 }
             } catch (e) {
@@ -89,7 +90,7 @@ export class RunDetailsPipeline extends Component {
             }
         };
 
-        console.log('?', this.state.followAlong);
+        // console.log('?', this.state.followAlong);
         this.pipelineListener = sse.subscribe('pipeline', onSseEvent);
     }
 
@@ -119,12 +120,12 @@ export class RunDetailsPipeline extends Component {
         const followAlong = this.state.followAlong;
         this.mergedConfig = this.generateConfig({ ...nextProps, followAlong });
 
-        console.log('       this.pipelineListener', this.mergedConfig, this.props);
+        // console.log('       this.pipelineListener', this.mergedConfig, this.props);
         if (!this.state.followAlong && this.timeout) {
-            console.log('clearTO');
+            // console.log('clearTO');
             clearTimeout(this.timeout);
         }
-        const nodeAction = calculateNode (this.props, nextProps, this.mergedConfig);
+        const nodeAction = calculateNode(this.props, nextProps, this.mergedConfig);
         if (nodeAction && nodeAction.action) {
             // use updated config
             this.mergedConfig = nodeAction.config;
@@ -134,19 +135,7 @@ export class RunDetailsPipeline extends Component {
             }
             this.props[nodeAction.action](this.mergedConfig);
         }
-/*
-        if (nextProps.params.node !== this.props.params.node) {
-            this.mergedConfig.node = nextProps.params.node;
-            // we turn on refetch so we always fetch a new Node result
-            const refetch = true;
-            delete this.mergedConfig.node;
-            console.log('hasta', this.mergedConfig);
-            this.props.fetchNodes({ ...this.mergedConfig, refetch });
-            if (!this.state.followAlong) {
-                this.setState({ followAlong: true });
-            }
-        }
-*/
+
         const { logs, fetchLog } = nextProps;
         if (logs !== this.props.logs) {
             const logGeneral = calculateRunLogURLObject(this.mergedConfig);
@@ -155,10 +144,10 @@ export class RunDetailsPipeline extends Component {
                 const newStart = log.newStart;
                 if (Number(newStart) > 0) {
                     // kill current  timeout if any
-                    console.log('prefollow', this.state.followAlong);
+                    // console.log('prefollow', this.state.followAlong);
                     clearTimeout(this.timeout);
                     if (this.state.followAlong) {
-                        console.log('follow', this.state.followAlong);
+                        // console.log('follow', this.state.followAlong);
                         this.timeout = setTimeout(() => fetchLog({ ...logGeneral, newStart }), 1000);
                     }
                 }
@@ -167,7 +156,7 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillUnmount() {
-        console.log('unmounting');
+        // console.log('unmounting');
         if (this.pipelineListener) {
             sse.unsubscribe(this.pipelineListener);
             delete this.pipelineListener;
@@ -178,12 +167,15 @@ export class RunDetailsPipeline extends Component {
 
     generateConfig(props) {
         const {
+            location,
             config = {},
         } = this.context;
         const followAlong = this.state.followAlong;
         const {
+            steps,
             isMultiBranch,
             params: { pipeline: name, branch, runId, node: nodeParam },
+            result,
         } = props;
         // we would use default properties however the node can be null so no default properties will be triggered
         let { nodeReducer } = props;
@@ -192,12 +184,40 @@ export class RunDetailsPipeline extends Component {
         }
         // if we have a node param we do not want the calculation of the focused node
         let node = nodeParam || nodeReducer.id;
+        if (followAlong) {
+            node = nodeReducer.id;
+        }
         // however if we follow along we actually do want to change the focus
-        // if (followAlong && nodeReducer.id > node) {
-        //     node = nodeReducer.id;
-        // }
+        if (result.state === 'RUNNING' && nodeReducer && nodeReducer.id > Number(node)) {
+            console.log('leo', nodeReducer, steps, followAlong, location);
+            const pathname = location.pathname;
+            // if path ends with pipeline we simply add the node id
+            let xxx;
+            if (pathname.endsWith('pipeline/')) {
+                // router.push(`${pathname}${node}`);
+                xxx = `${pathname}${nodeReducer.id}`;
+            } else if (pathname.endsWith('pipeline')) {
+                // router.push(`${pathname}/${node}`);
+                xxx = `${pathname}/${nodeReducer.id}`;
+            } else {
+                // remove last bit and replace it with node
+                const pathArray = pathname.split('/');
+                pathArray.pop();
+                if (pathname.endsWith('/')) {
+                    pathArray.pop();
+                }
+                pathArray.shift();
+                // router.push(`${pathArray.join('/')}/${node}`);
+                xxx = `${pathArray.join('/')}/${nodeReducer.id}`;
+            }
+            console.log('xxx', xxx);
+        }
         const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer, followAlong };
         return mergedConfig;
+    }
+
+    nodeInformation() {
+
     }
 
     render() {
@@ -229,25 +249,36 @@ export class RunDetailsPipeline extends Component {
         const key = calculateStepsBaseUrl(this.mergedConfig);
         const logGeneral = calculateRunLogURLObject(this.mergedConfig);
         const log = logs ? logs[logGeneral.url] : null;
-        console.log('merged', this.mergedConfig.node, key);
+        // console.log('merged', this.mergedConfig.node, key);
         let title = this.mergedConfig.nodeReducer.displayName;
         if (log) {
             title = 'Logs';
         } else if (this.mergedConfig.nodeReducer.id !== null) {
             title = `Steps - ${title}`;
         }
+        /*
         const stopFollowing = (event) => {
             console.log(this.refs, event, !followAlong);
             this.setState({ followAlong: !followAlong });
         };
-        // console.log('steps to render', key, steps, nodeKey)
-        // if(steps && steps[key]){
-        //     console.log('steps to render found', steps[key])
-        // }
+        */
+        const currentSteps = steps ? steps[key] : null;
+        console.log('steps to render', key, steps, nodeKey);
+        if (steps && steps[key]) {
+            console.log('steps to render found', steps[key]);
+        }
+        const afterClick = (id) => {
+            const nodeInfo = nodes[nodeKey].model.filter((item) => item.id === id)[0];
+            console.log('clickID', id, nodeInfo);
+            if (nodeInfo.state !== 'FINISHED' && !followAlong) {
+                this.setState({ followAlong: true });
+            }
+        };
         return (
             <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
+                  callback={afterClick}
                   router={router}
                   location={location}
                   nodes={nodes[nodeKey].model}
@@ -256,14 +287,13 @@ export class RunDetailsPipeline extends Component {
                   runId={runId}
                 />
                 }
-                <button onClick={stopFollowing}>noFollow</button>
                 <LogToolbar
                   fileName={logGeneral.fileName}
                   url={logGeneral.url}
                   title={title}
                 />
-                { steps && steps[key] && <Steps
-                  nodeInformation={steps[key]}
+                { currentSteps && <Steps
+                  nodeInformation={currentSteps}
                   followAlong={followAlong}
                   {...this.props}
                 />

@@ -12,7 +12,7 @@ export default class Nodes extends Component {
             model,
             nodesBaseUrl,
         } = nodeInformation;
-        console.log(model);
+        console.log('renderSteps', model, nodesBaseUrl);
         return (<div>
             {
               model.map((item, index) =>

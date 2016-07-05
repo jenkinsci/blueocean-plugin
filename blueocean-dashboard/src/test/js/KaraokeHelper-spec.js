@@ -4,7 +4,7 @@ import { assert } from 'chai';
 import {calculateNode } from '../../main/js/util/KaraokeHelper';
 
 
-describe.only('KaraokeHelper', () => {
+describe('KaraokeHelper', () => {
     describe('KaraokeHelper calculateNode', () => {
         const props = { params: {} };
         const nextProps = { params: { node: 21}, result:{} };
