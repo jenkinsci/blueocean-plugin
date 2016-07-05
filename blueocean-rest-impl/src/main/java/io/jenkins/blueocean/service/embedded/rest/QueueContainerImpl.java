@@ -21,9 +21,9 @@ public class QueueContainerImpl extends BlueQueueContainer {
     private PipelineImpl pipeline;
     private Job job;
 
-    public QueueContainerImpl(PipelineImpl pipeline, Job job) {
+    public QueueContainerImpl(PipelineImpl pipeline) {
         this.pipeline = pipeline;
-        this.job = job;
+        this.job = pipeline.job;
     }
 
     @Override

@@ -5,13 +5,14 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0-alpha-1-SNAPSHOT</version>
+        <version>1.0-alpha-3-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
     <packaging>hpi</packaging>
 
-    <name>(Alpha) BlueOcean :: Aggregator</name>
+    <name>(Alpha) BlueOcean :: UX</name>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
     <dependencies>
         <dependency>
@@ -79,7 +80,7 @@
                         //
                         // See the following closure and it's uses after.
                         //
-                        def linkHPI = {String pluginId, String pluginDir = pluginId ->
+                        def linkHPI = {String pluginId, String pluginDir = pluginId -&gt;
 
                             def workPluginsDir = new File(basedir, 'work/plugins');
                             def theHpl = new File(new File(basedir.parentFile, pluginDir), 'target/test-classes/the.hpl');

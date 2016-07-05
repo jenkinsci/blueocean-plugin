@@ -14,23 +14,27 @@
   .run-pipeline:hover {
     background-image: url('./icons/run-darkened.svg'); // TODO: nicer if it could be done via a data-uri transform
   }
+}
 
-  .run-pipeline-toast {
-    position: fixed;
-    left: 15px;
-    bottom: 15px;
+.run-pipeline-toast {
+  position: fixed;
+  left: 15px;
+  bottom: 15px;
 
-    // Need to set higher specificity rules for some of the
-    // Toast styles because they are being overridden by other
-    // styles in JDL (table styles).
-    // TODO: remove post https://issues.jenkins-ci.org/browse/JENKINS-36198
-    .toast {
-      a.action {
-        color: @blueocean-blue;
-      }
-      .text {
-        white-space: normal;
-      }
+  // Need to set higher specificity rules for some of the
+  // Toast styles because they are being overridden by other
+  // styles in JDL (table styles).
+  // TODO: remove post https://issues.jenkins-ci.org/browse/JENKINS-36198
+  .toast {
+    a.action {
+      color: @blueocean-blue;
+    }
+    .text {
+      white-space: normal;
     }
   }
+}
+
+.activity .run-pipeline.non-multi-branch {
+    margin-bottom: 10px;
 }

@@ -5,13 +5,14 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.0-alpha-1-SNAPSHOT</version>
+    <version>1.0-alpha-3-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-rest</artifactId>
   <packaging>hpi</packaging>
 
   <name>BlueOcean :: Rest module</name>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
   <dependencies>
     <dependency>

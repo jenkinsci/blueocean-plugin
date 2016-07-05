@@ -470,6 +470,8 @@ public class MultiBranchTest extends BaseTest{
         }
 
         WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+
+
         j.waitUntilNoActivity();
         WorkflowRun b1 = p.getLastBuild();
         assertEquals(1, b1.getNumber());
