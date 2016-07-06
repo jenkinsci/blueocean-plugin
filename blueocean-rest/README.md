@@ -337,6 +337,22 @@ Pipelines can be nested inside folder.
       "qeueudTime" : "2016-06-22T11:05:41.309+1200"
     }
 
+## Replay a pipeline run
+
+    curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/1/replay
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+      "id" : "64",
+      "expectedBuildNumber" : 10,
+      "pipeline" : "bug%2FUX-334",
+      "_links" : {
+         "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/"
+         }
+      },
+      "queuedTime" : "2016-06-29T14:11:52.191-0700"
+   }
 ## Get all runs in a pipeline
     
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs
