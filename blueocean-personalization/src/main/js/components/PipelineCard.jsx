@@ -22,7 +22,7 @@ import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 export class PipelineCard extends Component {
 
     static _getBackgroundClass(status) {
-        return status !== null && status.length > 0 ?
+        return status && status.length > 0 ?
             `${status.toLowerCase()}-bg-lite` :
             '';
     }
@@ -71,7 +71,7 @@ export class PipelineCard extends Component {
     render() {
         const { status } = this.props;
         const bgClass = PipelineCard._getBackgroundClass(status);
-        const showRun = status && status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted';
+        const showRun = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
 
         return (
             <div className={`pipeline-card ${bgClass}`}>
