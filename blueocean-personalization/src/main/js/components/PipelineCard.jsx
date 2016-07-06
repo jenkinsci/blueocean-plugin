@@ -100,7 +100,7 @@ export class PipelineCard extends Component {
                     </a>
                     }
 
-                    <Favorite checked={this.state.favorite} darkTheme
+                    <Favorite checked={this.state.favorite} className="dark-white"
                       onToggle={() => this._onFavoriteToggle()}
                     />
                 </span>

@@ -36,7 +36,7 @@ export default class PipelinePage extends Component {
                             <span> / </span>
                             <Link to={activityUrl}>{name}</Link>
                         </h1>
-                        <Favorite darkTheme />
+                        <Favorite className="dark-yellow" />
                     </Title>
                     <PageTabs base={baseUrl}>
                         <TabLink to="/activity">Activity</TabLink>
