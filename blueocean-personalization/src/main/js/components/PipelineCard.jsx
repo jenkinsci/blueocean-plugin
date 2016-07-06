@@ -24,7 +24,7 @@ export class PipelineCard extends Component {
     static _getBackgroundClass(status) {
         return status && status.length > 0 ?
             `${status.toLowerCase()}-bg-lite` :
-            '';
+            'unknown-bg-lite';
     }
 
     constructor(props) {
