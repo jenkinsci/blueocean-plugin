@@ -6,6 +6,7 @@ import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.RootAction;
 import io.jenkins.blueocean.BlueOceanUI;
+import io.jenkins.blueocean.rest.hal.LinkResolver;
 import org.kohsuke.stapler.StaplerProxy;
 
 /**
@@ -48,6 +49,7 @@ public class BlueOceanRootAction implements RootAction, StaplerProxy {
         @Override
         public void configure(Binder binder) {
             binder.bind(BlueOceanUI.class).toInstance(new BlueOceanUI(URL_BASE));
+            binder.bind(LinkResolver.class).to(LinkResolverImpl.class);
         }
     }
 }

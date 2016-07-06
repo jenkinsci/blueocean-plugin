@@ -10,10 +10,10 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
@@ -147,6 +147,14 @@ public class PipelineImpl extends BluePipeline {
         public BluePipeline getPipeline(Item item, Reachable parent) {
             if (item instanceof Job) {
                 return new PipelineImpl((Job) item);
+            }
+            return null;
+        }
+
+        @Override
+        public Resource resolve(Item context, Reachable parent, Item target) {
+            if(context == target.getParent()){
+                return getPipeline(target,parent);
             }
             return null;
         }

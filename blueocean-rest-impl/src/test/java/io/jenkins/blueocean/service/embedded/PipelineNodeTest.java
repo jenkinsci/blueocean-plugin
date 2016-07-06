@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -1007,27 +1006,4 @@ public class PipelineNodeTest extends BaseTest {
         Assert.assertNotNull(output);
         System.out.println(output);
     }
-
-    private List<FlowNode> getStages(FlowGraphTable nodeGraphTable){
-        List<FlowNode> nodes = new ArrayList<>();
-        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-            if(PipelineNodeUtil.isStage(row.getNode()) ||
-                PipelineNodeUtil.isParallelBranch(row.getNode())){
-                nodes.add(row.getNode());
-            }
-        }
-        return nodes;
-    }
-
-    private List<FlowNode> getParallelNodes(FlowGraphTable nodeGraphTable){
-        List<FlowNode> parallelNodes = new ArrayList<>();
-
-        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-            if(PipelineNodeUtil.isParallelBranch(row.getNode())){
-                parallelNodes.add(row.getNode());
-            }
-        }
-        return parallelNodes;
-    }
-
 }
