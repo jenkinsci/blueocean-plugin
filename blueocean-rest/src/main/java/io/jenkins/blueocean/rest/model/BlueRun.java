@@ -193,8 +193,14 @@ public abstract class BlueRun extends Resource {
     @Navigable
     public abstract Object getLog();
 
+    /**
+     * Replays a pipeline. Sam SCM commit/revision should be used. in the new run.
+     *
+     * @return The queued item.
+     */
     @POST @TreeResponse @WebMethod(name = "replay")
     public abstract BlueQueueItem replay();
+
     public enum BlueRunState {
         QUEUED,
         RUNNING,
