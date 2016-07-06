@@ -10,7 +10,7 @@ storiesOf('Favorite', module)
         return (
             <div>
                 <div style={style}>
-                    <Favorite checked={true} /> Checked
+                    <Favorite checked /> Checked
                 </div>
                 <div style={style}>
                     <Favorite onToggle={action('test')} /> With Callback
