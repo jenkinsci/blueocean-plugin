@@ -3,7 +3,7 @@ import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
 import Immutable from 'immutable';
-import { latestRuns as data } from './latestRuns';
+import { latestRuns as data } from './data/runs/latestRuns';
 import { RunsRecord } from '../../main/js/components/records.jsx';
 
 import Branches from '../../main/js/components/Branches.jsx';
