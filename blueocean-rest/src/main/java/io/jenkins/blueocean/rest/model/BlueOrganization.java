@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -8,6 +9,7 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @author Kohsuke Kawaguchi
  */
+@Capability("io.jenkins.blueocean.rest.model.BlueOrganization")
 public abstract class BlueOrganization extends Resource {
     public static final String NAME="name";
     public static final String PIPELINES="pipelines";
@@ -16,6 +18,7 @@ public abstract class BlueOrganization extends Resource {
     public abstract String getName();
 
     @Navigable
+    //   /organizations/jenkins/piplelines/f1
     public abstract BluePipelineContainer getPipelines();
 
     /**

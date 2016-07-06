@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -19,6 +20,7 @@ import java.util.Date;
  *
  * @author Vivek Pandey
  */
+@Capability("io.jenkins.blueocean.rest.model.BlueRun")
 public abstract class BlueRun extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String ID="id";
@@ -175,7 +177,6 @@ public abstract class BlueRun extends Resource {
      * interpreted as step as its StepAtomNode and implementation of this API must ensure not to include it.
      */
     @Navigable
-    @Exported(name = STEPS)
     public abstract BluePipelineStepContainer getSteps();
 
     /**

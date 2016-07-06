@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
@@ -18,6 +19,7 @@ import java.util.Map;
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
+@Capability("io.jenkins.blueocean.rest.model.GenericResource")
 public class GenericResource<T> extends Resource {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericResource.class);
 
