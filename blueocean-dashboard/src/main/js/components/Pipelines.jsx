@@ -56,7 +56,12 @@ export default class Pipelines extends Component {
                 </PageHeader>
                 <main>
                     <article>
-                        <Extensions.Renderer extensionPoint="jenkins.pipeline.list.top" />
+                        { /* TODO: need to adjust Extensions to make store available */ }
+                        <Extensions.Renderer
+                          extensionPoint="jenkins.pipeline.list.top"
+                          store={this.context.store}
+                          pipelines={pipelines}
+                        />
                         <Table
                           className="pipelines-table fixed"
                           headers={headers}
@@ -78,4 +83,5 @@ Pipelines.contextTypes = {
     config: PropTypes.object,
     params: PropTypes.object,
     pipelines: array,
+    store: PropTypes.object,
 };
