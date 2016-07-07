@@ -339,6 +339,8 @@ Pipelines can be nested inside folder.
 
 ## Replay a pipeline run
 
+This will quueue up a replay of the pipeline run with the same commit id as the run used
+
     curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/1/replay
     {
       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
