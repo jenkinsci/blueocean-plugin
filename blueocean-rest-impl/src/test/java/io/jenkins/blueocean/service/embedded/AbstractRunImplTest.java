@@ -101,7 +101,7 @@ public class AbstractRunImplTest extends BaseTest {
 
         sampleRepo.write("file1", "");
         sampleRepo.git("add", "file1");
-        sampleRepo.git("commit", "--me  ssage=init");
+        sampleRepo.git("commit", "--message=init");
 
         WorkflowRun b2 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b2);
