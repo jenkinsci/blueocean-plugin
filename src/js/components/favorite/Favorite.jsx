@@ -3,9 +3,9 @@
 import React, { Component, PropTypes } from 'react';
 
 type Props = {
-    darkTheme: boolean,
     checked: boolean,
-    onToggle: (checked: boolean) => void
+    onToggle: (checked: boolean) => void,
+    className: string
 }
 
 export class Favorite extends Component {
@@ -15,8 +15,8 @@ export class Favorite extends Component {
     };
 
     static defaultProps = {
-        darkTheme: false,
-        checked: false
+        checked: false,
+        className: ''
     };
 
     constructor(props: Props){
@@ -40,14 +40,8 @@ export class Favorite extends Component {
     }
 
     render() {
-        let classes = "checkbox";
-
-        if (this.props.darkTheme) {
-            classes += " dark";
-        }
-
         return (
-            <label className={classes}>
+            <label className={`checkbox ${this.props.className}`}>
                 <input type="checkbox"
                        onChange={this.toggle.bind(this)}
                        checked={this.state.checked} />
@@ -58,7 +52,7 @@ export class Favorite extends Component {
 }
 
 Favorite.propTypes = {
-    darkTheme: PropTypes.bool,
     checked: PropTypes.bool,
+    className: PropTypes.oneOf(['', 'dark-yellow', 'dark-white']),
     onToggle: PropTypes.func
 };

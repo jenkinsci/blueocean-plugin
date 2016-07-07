@@ -41,7 +41,7 @@ const config = {
             dest: "dist/assets/"
         },
         octicons: {
-            sources: "node_modules/octicons/build/font/octicons.{eot,woff,ttf,svg,css}",
+            sources: "node_modules/octicons/build/font/octicons.{eot,woff,woff2,ttf,svg,css}",
             dest: "dist/assets/octicons/"
         },
         normalize: {
