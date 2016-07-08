@@ -1,7 +1,7 @@
 import React from 'react';
 import { assert} from 'chai';
 import { shallow } from 'enzyme';
-import { latestRuns as branches } from './latestRuns';
+import { latestRuns as branches } from './data/runs/latestRuns';
 
 import {PullRequests} from '../../main/js/components/PullRequests.jsx';
 

@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
@@ -144,9 +145,9 @@ public abstract class BlueRun extends Resource {
     public abstract String getType();
 
     @PUT
-    @JsonResponse
+    @TreeResponse
     @WebMethod(name="stop")
-    public abstract BlueRunStopResponse stop();
+    public abstract BlueRun stop();
 
     /**
      *
@@ -195,28 +196,6 @@ public abstract class BlueRun extends Resource {
         QUEUED,
         RUNNING,
         FINISHED
-    }
-
-    @ExportedBean
-    public class BlueRunStopResponse {
-        private BlueRunState state;
-        private BlueRunResult result;
-
-        public BlueRunStopResponse(BlueRunState state, BlueRunResult result) {
-            this.state = state;
-            this.result = result;
-        }
-
-        @Exported(name=BlueRun.STATE)
-        public BlueRunState getState() {
-            return state;
-        }
-
-        @Exported(name=BlueRun.RESULT)
-        public BlueRunResult getResult() {
-            return result;
-        }
-
     }
 
     public enum BlueRunResult {

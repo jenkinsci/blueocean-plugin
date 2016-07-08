@@ -5,7 +5,7 @@ import sd from 'skin-deep';
 
 import PullRequest from '../../main/js/components/PullRequest.jsx';
 import { RunsRecord } from '../../main/js/components/records.jsx';
-import { latestRuns as data } from './latestRuns';
+import { latestRuns as data } from './data/runs/latestRuns';
 
 const pr = data.filter((run) => run.pullRequest);
 

@@ -14,6 +14,7 @@ import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -282,6 +283,7 @@ public class PipelineNodeGraphBuilder {
         return parentToChildrenMap.get(parent);
     }
 
+    @Nullable
     public Long getDurationInMillis(FlowNode node){
         long startTime = TimingAction.getStartTime(node);
         if( startTime == 0){

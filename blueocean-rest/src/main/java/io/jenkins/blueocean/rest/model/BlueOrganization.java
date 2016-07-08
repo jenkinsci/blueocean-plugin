@@ -25,5 +25,13 @@ public abstract class BlueOrganization extends Resource {
      */
     @Navigable
     public abstract BlueUserContainer getUsers();
+
+    /**
+     *  Gives currently authenticated user
+     *
+     * @return {@link BlueUser}
+     */
+    @Navigable
+    public abstract BlueUser getUser();
 }
 

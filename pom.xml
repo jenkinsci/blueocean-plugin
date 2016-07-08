@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.0-alpha-2-SNAPSHOT</version>
+  <version>1.0-alpha-3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean UI Parent</name>

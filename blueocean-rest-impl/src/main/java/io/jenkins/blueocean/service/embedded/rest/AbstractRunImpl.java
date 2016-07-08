@@ -203,7 +203,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public BlueRunStopResponse stop() {
+    public BlueRun stop() {
         throw new ServiceException.NotImplementedException("Stop should be implemented on a subclass");
     }
 
