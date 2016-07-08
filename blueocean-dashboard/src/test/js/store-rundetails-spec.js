@@ -18,7 +18,7 @@ import {
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe.only("Store should work", () => {
+describe("Store should work", () => {
     describe("Log Store should work", () => {
         afterEach(() => {
             nock.cleanAll()
