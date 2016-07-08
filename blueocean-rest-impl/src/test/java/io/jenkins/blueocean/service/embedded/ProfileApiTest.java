@@ -138,4 +138,41 @@ public class ProfileApiTest extends BaseTest{
 
     }
 
+
+    @Test
+    public void getAuthenticatedUser() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+        user.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
+
+        Map u = new RequestBuilder(baseUrl)
+            .get("/organizations/jenkins/user/")
+            .auth("alice","alice")
+            .status(200)
+            .build(Map.class);
+
+        Assert.assertEquals(user.getFullName(), u.get("fullName"));
+        Assert.assertEquals("alice@jenkins-ci.org", u.get("email"));
+        Assert.assertEquals(user.getId(), u.get("id"));
+    }
+
+
+    @Test
+    public void getAuthenticatedUserShouldFail() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+        user.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
+
+        hudson.model.User user1 = j.jenkins.getUser("bob");
+        user1.setFullName("Bob Cooper");
+        user1.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
+
+        new RequestBuilder(baseUrl)
+            .get("/organizations/jenkins/user/")
+            .status(404)
+            .build(Map.class);
+    }
+
 }
