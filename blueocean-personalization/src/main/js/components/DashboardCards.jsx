@@ -65,7 +65,7 @@ export default class DashboardCards extends Component {
         });
 
         return (
-            <div>
+            <div className="favorites-card-stack">
                 {favoriteCards}
             </div>
         );

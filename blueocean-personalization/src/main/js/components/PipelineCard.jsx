@@ -69,9 +69,10 @@ export class PipelineCard extends Component {
     }
 
     render() {
-        const { status } = this.props;
+        const { status, commitId } = this.props;
         const bgClass = PipelineCard._getBackgroundClass(status);
         const showRun = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
+        const commitText = commitId ? commitId.substr(0, 7) : '';
 
         return (
             <div className={`pipeline-card ${bgClass}`}>
@@ -90,7 +91,7 @@ export class PipelineCard extends Component {
 
                 <span className="commit">
                     <span className="octicon octicon-git-commit"></span>
-                    <pre className="commitId">#{this.props.commitId}</pre>
+                    <pre className="commitId">#{commitText}</pre>
                 </span>
 
                 <span className="actions">

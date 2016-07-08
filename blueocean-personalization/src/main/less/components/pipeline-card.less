@@ -7,13 +7,24 @@
     padding: 15px;
 
     .name, .branch, .commit {
-        flex: 1 1 auto;
         margin-left: 10px;
     }
 
     .branch, .commit {
         display: flex;
         align-items: center;
+    }
+
+    .name {
+        width: 55%;
+    }
+
+    .branch {
+        width: 45%;
+    }
+
+    .commit {
+        min-width: 100px;
     }
 
     .name, .branchText, .commitId {
