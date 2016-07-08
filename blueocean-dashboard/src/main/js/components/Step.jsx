@@ -76,7 +76,6 @@ export default class Node extends Component {
             resultRun.toLowerCase() === 'failure'
             || (resultRun.toLowerCase() === 'running' && followAlong)
         ;
-        // console.log(followAlong, 'followAlong_step');
         return (<div>
             <ResultItem
               key={id}

@@ -56,29 +56,32 @@ export class RunDetailsPipeline extends Component {
                 // we turn on refetch so we always fetch a new Node result
                 const refetch = true;
                 switch (jenkinsEvent) {
-                case 'pipeline_step': {
+                case 'pipeline_step':
+                    {
                         // we are not using an early out for the events since we want to refresh the node if we finished
-                    if (this.state.followAlong) { // if we do it means we want karaoke
-                        // if the step_stage_id has changed we need to change the focus
-                        if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
-                            // console.log('nodes fetching via sse triggered');
-                            delete this.mergedConfig.node;
-                            fetchNodes({ ...this.mergedConfig, refetch });
-                        } else {
-                            // console.log('only steps fetching via sse triggered');
-                            fetchSteps({ ...this.mergedConfig, refetch });
+                        if (this.state.followAlong) { // if we do it means we want karaoke
+                            // if the step_stage_id has changed we need to change the focus
+                            if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
+                                // console.log('nodes fetching via sse triggered');
+                                delete this.mergedConfig.node;
+                                fetchNodes({ ...this.mergedConfig, refetch });
+                            } else {
+                                // console.log('only steps fetching via sse triggered');
+                                fetchSteps({ ...this.mergedConfig, refetch });
+                            }
                         }
+                        break;
                     }
-                    break;
-                }
-                case 'pipeline_end': {
-                    // we always want to refresh if the run has finished
-                    fetchNodes({ ...this.mergedConfig, refetch });
-                    break;
-                }
-                default: {
+                case 'pipeline_end':
+                    {
+                        // we always want to refresh if the run has finished
+                        fetchNodes({ ...this.mergedConfig, refetch });
+                        break;
+                    }
+                default:
+                    {
                         // //console.log(event);
-                }
+                    }
                 }
             } catch (e) {
                 // we only ignore the exit error
@@ -99,7 +102,7 @@ export class RunDetailsPipeline extends Component {
                 this.setState({ followAlong: false });
             }
         };
-        // we bail out arrow_up key
+        // we bail out on arrow_up key
         const _handleKeys = (event) => {
             if (event.keyCode === 38 && this.state.followAlong) {
                 this.setState({ followAlong: false });
@@ -107,7 +110,7 @@ export class RunDetailsPipeline extends Component {
         };
         // determine scroll area
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
-        // add both listemer, one to the scrollarea and another to the whole document
+        // add both listemer, one to the scroll area and another to the whole document
         domNode.addEventListener('wheel', onScrollHandler, false);
         document.addEventListener('keydown', _handleKeys, false);
     }
@@ -204,9 +207,9 @@ export class RunDetailsPipeline extends Component {
         const followAlong = this.state.followAlong;
         // in certain cases we want that the log component will scroll to the end of a log
         const scrollToBottom =
-            resultRun.toLowerCase() === 'failure'
-            || (resultRun.toLowerCase() === 'running' && followAlong)
-        ;
+                resultRun.toLowerCase() === 'failure'
+                || (resultRun.toLowerCase() === 'running' && followAlong)
+            ;
 
         const nodeKey = calculateNodeBaseUrl(this.mergedConfig);
         const key = calculateStepsBaseUrl(this.mergedConfig);
