@@ -6,7 +6,10 @@ import keymirror from 'keymirror';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 
-const FavoritesState = Immutable.Record({
+/* eslint new-cap: [0] */
+const { Record } = Immutable;
+
+const FavoritesState = Record({
     favorites: null,
 });
 
