@@ -20,12 +20,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-rest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-multibranch</artifactId>
-            <version>2.0</version>
+            <artifactId>blueocean-rest-impl</artifactId>
         </dependency>
     </dependencies>
 
