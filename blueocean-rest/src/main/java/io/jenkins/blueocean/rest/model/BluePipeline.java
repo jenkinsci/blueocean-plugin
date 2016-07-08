@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
@@ -13,6 +14,7 @@ import java.util.Collection;
  *
  * @author Vivek Pandey
  */
+@Capability("io.jenkins.blueocean.rest.model.BluePipeline")
 public abstract class BluePipeline extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String NAME="name";

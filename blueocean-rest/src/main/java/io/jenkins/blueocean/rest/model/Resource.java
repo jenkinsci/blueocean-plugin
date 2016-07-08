@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Links;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
@@ -14,6 +15,7 @@ import org.kohsuke.stapler.verb.GET;
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
+@Capability("io.jenkins.blueocean.rest.model.Resource")
 public abstract class Resource implements Reachable{
     /**
      * Returns the DTO object that gets databound to Json/XML etc. for state transfer
