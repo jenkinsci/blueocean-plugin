@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -14,6 +15,7 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @see BluePipelineContainer
  */
+@Capability("io.jenkins.blueocean.rest.model.BluePipelineFolder")
 public abstract class BluePipelineFolder extends BluePipeline {
 
     private static final String NUMBER_OF_PIPELINES = "numberOfPipelines";

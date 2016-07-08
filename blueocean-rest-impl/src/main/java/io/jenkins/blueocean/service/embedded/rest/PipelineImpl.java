@@ -29,7 +29,6 @@ import java.util.List;
 /**
  * @author Kohsuke Kawaguchi
  */
-
 public class PipelineImpl extends BluePipeline {
     /*package*/ final Job job;
 
