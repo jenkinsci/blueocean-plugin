@@ -77,14 +77,4 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
         }
         return i == null ? target : i;
     }
-
-    private Reachable getParentModel(Item item){
-        for (BluePipelineFactory f : all()) {
-            Resource r = f.resolve(item, OrganizationImpl.INSTANCE.getPipelines(), item);
-            if(r!=null){
-                return r;
-            }
-        }
-        return OrganizationImpl.INSTANCE.getPipelines();
-    }
 }

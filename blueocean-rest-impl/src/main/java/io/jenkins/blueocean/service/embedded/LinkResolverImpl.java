@@ -8,8 +8,6 @@ import hudson.model.Run;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BluePipelineNode;
-import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
@@ -55,17 +53,11 @@ public class LinkResolverImpl extends LinkResolver {
             BlueRun r = resolveFlowNodeRun(flowNode);
             if(PipelineNodeUtil.isParallelBranch(flowNode) || PipelineNodeUtil.isStage(flowNode)){ // its Node
                 if(r != null){
-                    BluePipelineNode node = r.getNodes().get(flowNode.getId());
-                    if(node != null){
-                        return node.getLink();
-                    }
+                    return r.getLink().rel("nodes/"+flowNode.getId());
                 }
             }else if(flowNode instanceof StepAtomNode && !PipelineNodeUtil.isStage(flowNode)) {
                 if(r != null){
-                    BluePipelineStep step = r.getSteps().get(flowNode.getId());
-                    if(step != null){
-                        return step.getLink();
-                    }
+                    return r.getLink().rel("steps/"+flowNode.getId());
                 }
             }
         }
