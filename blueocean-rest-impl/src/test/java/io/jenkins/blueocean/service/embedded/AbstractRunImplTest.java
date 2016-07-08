@@ -95,7 +95,7 @@ public class AbstractRunImplTest extends BaseTest {
 
         mp.scheduleBuild2(0).getFuture().get();
         WorkflowJob job1 = mp.getItem("master");
-        WorkflowRun b1 = job1.getLastBuild();
+        WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
         j.waitForCompletion(b1);
         j.assertBuildStatusSuccess(b1);
 
