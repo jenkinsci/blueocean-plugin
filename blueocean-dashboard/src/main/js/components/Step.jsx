@@ -18,13 +18,9 @@ export default class Node extends Component {
 
     componentWillReceiveProps(nextProps) {
         const { node, logs, nodesBaseUrl, fetchLog, followAlong } = nextProps;
-        if (followAlong) {
-            // kill current timeout if any
-            this.clearThisTimeout();
-        }
         const { config = {} } = this.context;
         const mergedConfig = { ...config, node, nodesBaseUrl };
-        if (logs !== this.props.logs) {
+        if (logs && logs !== this.props.logs) {
             const key = calculateLogUrl(mergedConfig);
             const log = logs ? logs[key] : null;
             if (log && log !== null) {
@@ -32,10 +28,9 @@ export default class Node extends Component {
                 // kill current  timeout if any
                 this.clearThisTimeout();
                 if (number > 0 && followAlong) {
-                    // we turn on refetch so we always fetch a new Node result
-                    const refetch = true;
                     mergedConfig.newStart = log.newStart;
-                    this.timeout = setTimeout(() => fetchLog({ ...mergedConfig, refetch }), 1000);
+                    this.clearThisTimeout();
+                    this.timeout = setTimeout(() => fetchLog({ ...mergedConfig }), 1000);
                 }
             }
         }
@@ -70,11 +65,8 @@ export default class Node extends Component {
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl })] : null;
         const getLogForNode = () => {
-// console.log('ddd',followAlong, log)
-            if (!log || followAlong) {
-                // we turn on refetch so we always fetch a new Node result
-                const refetch = true;
-                fetchLog({ ...config, node, nodesBaseUrl, refetch });
+            if (!log || !log.logArray) {
+                fetchLog({ ...config, node, nodesBaseUrl });
             }
         };
         const runResult = resultRun.toLowerCase();

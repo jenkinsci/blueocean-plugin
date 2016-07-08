@@ -61,7 +61,6 @@ export const actionHandlers = {
         return state.set('currentRuns', payload);
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
-        console.log('nodeset the end', payload);
         return state.set('node', { ...payload });
     },
     [ACTION_TYPES.SET_NODES](state, { payload }): State {
@@ -94,7 +93,6 @@ export const actionHandlers = {
         return state.set('steps', steps);
     },
     [ACTION_TYPES.SET_LOGS](state, { payload }): State {
-        console.log('arbeit macht frei');
         const logs = { ...state.logs } || {};
         logs[payload.logUrl] = payload;
         return state.set('logs', logs);
@@ -641,7 +639,6 @@ export const actions = {
             function getNodeAndSteps(information) {
                 let nodeModel;
                 let node;
-                // console.log('stepsTrack', config.node)
                 if (!config.node) {
                     const focused = information.model.filter((item) => item.isFocused)[0];
                     if (focused) {
@@ -655,7 +652,6 @@ export const actions = {
                     node = config.node;
                 }
 
-                console.log('stepsTrack node final', node);
                 dispatch({
                     type: ACTION_TYPES.SET_NODE,
                     payload: nodeModel,
@@ -663,10 +659,8 @@ export const actions = {
                 const mergedConfig = { ...config, node };
                 return dispatch(actions.fetchSteps(mergedConfig));
             }
-            // console.log('refetch nodes action prior')
 
             if (!data || !data[nodesBaseUrl] || config.refetch) {
-                // console.log('refetch nodes action')
                 return exports.fetchJson(
                     nodesBaseUrl,
                     (json) => {
@@ -690,12 +684,10 @@ export const actions = {
         return (dispatch, getState) => {
             const data = getState().adminStore.nodes;
             const nodesBaseUrl = calculateNodeBaseUrl(config);
-            console.log(config.refetch, 'setNode', nodesBaseUrl);
             if (!data || !data[nodesBaseUrl] || config.refetch) {
                 return actions.fetchNodes(config);
             }
             const node = data[nodesBaseUrl].model.filter((item) => item.id === config.node)[0];
-            console.log('setNodeOld', node);
             return dispatch({
                 type: ACTION_TYPES.SET_NODE,
                 payload: node,
@@ -715,7 +707,6 @@ export const actions = {
      so we only fetch them once.
      */
     fetchSteps(config) {
-        console.log('rfetch');
         return (dispatch, getState) => {
             const data = getState().adminStore.steps;
             const stepBaseUrl = calculateStepsBaseUrl(config);
@@ -725,7 +716,6 @@ export const actions = {
                   (json) => {
                       const information = getNodesInformation(json);
                       information.nodesBaseUrl = stepBaseUrl;
-                      // console.log('steps final ', information)
                       return dispatch({
                           type: ACTION_TYPES.SET_STEPS,
                           payload: information,
@@ -748,7 +738,7 @@ export const actions = {
             if (
                 !data || !data[logUrl] ||
                 config.newStart > 0 ||
-                (data && data[logUrl] && data[logUrl].newStart > 0)
+                (data && data[logUrl] && data[logUrl].newStart > 0 || !data[logUrl].logArray)
             ) {
                 return exports.fetchLogsInjectStart(
                     logUrl,
@@ -771,7 +761,6 @@ export const actions = {
                     (error) => console.error('error', error)
                 );
             }
-            console.log('xxxxOUT');
             return null;
         };
     },
