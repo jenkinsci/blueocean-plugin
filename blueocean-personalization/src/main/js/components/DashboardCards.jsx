@@ -37,27 +37,21 @@ export default class DashboardCards extends Component {
     }
 
     render() {
-        if (!this.props.pipelines || !this.props.favorites) {
+        if (!this.props.favorites) {
             return null;
         }
 
         const favoriteCards = this.props.favorites.map(fav => {
-            const pipeline = this.props.pipelines.find((pipeline1) => {
-                const fullName = `/organizations/${pipeline1.organization}/pipelines/${pipeline1.fullName}`;
-                return fav.pipeline === fullName;
-            });
-
-            if (!pipeline) {
-                return null;
-            }
+            const branch = fav.data;
 
             return (
-                <div key={fav.pipeline}>
+                <div key={branch.fullName}>
                     <PipelineCard
-                      organization={pipeline.organization}
-                      pipeline={pipeline.fullName}
-                      branch={'a'}
-                      commitId={'b'}
+                      organization={branch.organization}
+                      pipeline={branch.fullName}
+                      status={branch.latestRun.result}
+                      branch={branch.name}
+                      commitId={branch.commitId}
                       favorite
                     />
                 </div>
@@ -74,7 +68,6 @@ export default class DashboardCards extends Component {
 
 DashboardCards.propTypes = {
     user: PropTypes.object,
-    pipelines: PropTypes.array,
     favorites: PropTypes.array,
     fetchUser: PropTypes.func,
     fetchFavorites: PropTypes.func,
