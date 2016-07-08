@@ -24,11 +24,12 @@ export default class Node extends Component {
             const key = calculateLogUrl(mergedConfig);
             const log = logs ? logs[key] : null;
             if (log && log !== null) {
+                // we may have a streaming log
                 const number = Number(log.newStart);
-                // kill current  timeout if any
-                this.clearThisTimeout();
+                // in case we doing karaoke we want to see more logs
                 if (number > 0 && followAlong) {
                     mergedConfig.newStart = log.newStart;
+                    // kill current  timeout if any
                     this.clearThisTimeout();
                     this.timeout = setTimeout(() => fetchLog({ ...mergedConfig }), 1000);
                 }
@@ -65,6 +66,7 @@ export default class Node extends Component {
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl })] : null;
         const getLogForNode = () => {
+            // in case we do not have logs, or the logs are have no information attached we refetch them
             if (!log || !log.logArray) {
                 fetchLog({ ...config, node, nodesBaseUrl });
             }

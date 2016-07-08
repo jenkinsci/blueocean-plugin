@@ -47,39 +47,38 @@ export class RunDetailsPipeline extends Component {
         // We filter them only for steps and the end event all other we let pass
         const onSseEvent = (event) => {
             const jenkinsEvent = event.jenkins_event;
-            // console.log('eventComing');
+            // we are using try/catch to throw an early out error
             try {
                 if (event.pipeline_run_id !== this.props.result.id) {
                     // console.log('early out');
                     throw new Error('exit');
                 }
-                // console.log('eventComing trhrough', event);
                 // we turn on refetch so we always fetch a new Node result
                 const refetch = true;
                 switch (jenkinsEvent) {
-                case 'pipeline_step':
-                    {
-                        if (this.state.followAlong) { // console.log('???', this.mergedConfig.node, event);
-                            // if the step_stage_id has changed we need to change the focus
-                            if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
-                                delete this.mergedConfig.node;
-                                fetchNodes({ ...this.mergedConfig, refetch });
-                            } else {
-                                // console.log('only steps');
-                                fetchSteps({ ...this.mergedConfig, refetch });
-                            }
+                case 'pipeline_step': {
+                        // we are not using an early out for the events since we want to refresh the node if we finished
+                    if (this.state.followAlong) { // if we do it means we want karaoke
+                        // if the step_stage_id has changed we need to change the focus
+                        if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
+                            // console.log('nodes fetching via sse triggered');
+                            delete this.mergedConfig.node;
+                            fetchNodes({ ...this.mergedConfig, refetch });
+                        } else {
+                            // console.log('only steps fetching via sse triggered');
+                            fetchSteps({ ...this.mergedConfig, refetch });
                         }
-                        break;
                     }
-                case 'pipeline_end':
-                    {
-                        fetchNodes({ ...this.mergedConfig, refetch });
-                        break;
-                    }
-                default:
-                    {
+                    break;
+                }
+                case 'pipeline_end': {
+                    // we always want to refresh if the run has finished
+                    fetchNodes({ ...this.mergedConfig, refetch });
+                    break;
+                }
+                default: {
                         // //console.log(event);
-                    }
+                }
                 }
             } catch (e) {
                 // we only ignore the exit error
@@ -89,23 +88,26 @@ export class RunDetailsPipeline extends Component {
             }
         };
 
-        // console.log('?', this.state.followAlong);
         this.pipelineListener = sse.subscribe('pipeline', onSseEvent);
     }
 
     componentDidMount() {
+        // need to register handler to step out of karaoke mode
+        // we bail out on scroll up
         const onScrollHandler = (elem) => {
             if (elem.deltaY < 0 && this.state.followAlong) {
                 this.setState({ followAlong: false });
             }
         };
-
+        // we bail out arrow_up key
         const _handleKeys = (event) => {
             if (event.keyCode === 38 && this.state.followAlong) {
                 this.setState({ followAlong: false });
             }
         };
+        // determine scroll area
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
+        // add both listemer, one to the scrollarea and another to the whole document
         domNode.addEventListener('wheel', onScrollHandler, false);
         document.addEventListener('keydown', _handleKeys, false);
     }
@@ -114,11 +116,11 @@ export class RunDetailsPipeline extends Component {
         const followAlong = this.state.followAlong;
         this.mergedConfig = this.generateConfig({ ...nextProps, followAlong });
 
+        // we do not want any timeouts if we are not doing karaoke
         if (!this.state.followAlong && this.timeout) {
-            // console.log('clearTO');
             clearTimeout(this.timeout);
         }
-
+        // calculate if we need to trigger any actions to get into the right state (is plain js for testing reasons)
         const nodeAction = calculateNode(this.props, nextProps, this.mergedConfig);
         if (nodeAction && nodeAction.action) {
             // use updated config
@@ -127,21 +129,23 @@ export class RunDetailsPipeline extends Component {
             if (this.state.followAlong !== nodeAction.state.followAlong) {
                 this.setState({ followAlong: nodeAction.state.followAlong });
             }
+            // if we have actions we fire them
             this.props[nodeAction.action](this.mergedConfig);
         }
-
+        // if we only interested in logs (in case of e.g. freestyle)
         const { logs, fetchLog } = nextProps;
         if (logs !== this.props.logs) {
             const logGeneral = calculateRunLogURLObject(this.mergedConfig);
             const log = logs ? logs[logGeneral.url] : null;
             if (log && log !== null) {
+                // we may have a streaming log
                 const newStart = log.newStart;
                 if (Number(newStart) > 0) {
-                    // kill current  timeout if any
-                    // console.log('prefollow', this.state.followAlong);
+                    // in case we doing karaoke we want to see more logs
                     if (this.state.followAlong) {
+                        // kill current  timeout if any
                         clearTimeout(this.timeout);
-                        // console.log('follow', this.state.followAlong);
+                        // we need to get mpre input from the log stream
                         this.timeout = setTimeout(() => fetchLog({ ...logGeneral, newStart }), 1000);
                     }
                 }
@@ -198,6 +202,7 @@ export class RunDetailsPipeline extends Component {
         } = resultMeta;
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const followAlong = this.state.followAlong;
+        // in certain cases we want that the log component will scroll to the end of a log
         const scrollToBottom =
             resultRun.toLowerCase() === 'failure'
             || (resultRun.toLowerCase() === 'running' && followAlong)
@@ -214,37 +219,32 @@ export class RunDetailsPipeline extends Component {
             title = `Steps - ${title}`;
         }
         const currentSteps = steps ? steps[key] : null;
+        // here we decide what to do next if somebody clicks on a flowNode
         const afterClick = (id) => {
+            // get some information about the node the user clicked
             const nodeInfo = nodes[nodeKey].model.filter((item) => item.id === id)[0];
             const pathname = location.pathname;
             let newPath;
-            // if path ends with pipeline we simply add the node id
+            // if path ends with pipeline we simply use it
             if (pathname.endsWith('pipeline/')) {
-                if (nodeInfo.state === 'FINISHED') {
-                    newPath = `${pathname}${id}`;
-                } else {
-                    newPath = pathname;
-                }
+                newPath = pathname;
             } else if (pathname.endsWith('pipeline')) {
-                if (nodeInfo.state === 'FINISHED') {
-                    newPath = `${pathname}/${id}`;
-                } else {
-                    newPath = pathname;
-                }
+                newPath = `${pathname}/`;
             } else {
-                // remove last bit and replace it with node
+                // remove last bits
                 const pathArray = pathname.split('/');
                 pathArray.pop();
                 if (pathname.endsWith('/')) {
                     pathArray.pop();
                 }
                 pathArray.shift();
-                if (nodeInfo.state !== 'FINISHED') {
-                    newPath = pathArray.join('/');
-                } else {
-                    newPath = `${pathArray.join('/')}/${id}`;
-                }
+                newPath = `${pathArray.join('/')}/`;
             }
+            // we only want to redirect to the node if the node is finished
+            if (nodeInfo.state === 'FINISHED') {
+                newPath = `${newPath}${id}`;
+            }
+            // see whether we need to update the state
             if (nodeInfo.state === 'FINISHED' && followAlong) {
                 this.setState({ followAlong: false });
             }
