@@ -15,7 +15,7 @@ import java.util.Date;
 public class PipelineStepImpl extends BluePipelineStep {
     private final FlowNode node;
     private final PipelineNodeGraphBuilder.NodeRunStatus status;
-    private final long durationInMillis;
+    private final Long durationInMillis;
     private final Link self;
 
     public PipelineStepImpl(FlowNode node, PipelineNodeGraphBuilder graphBuilder, Link parent) {
