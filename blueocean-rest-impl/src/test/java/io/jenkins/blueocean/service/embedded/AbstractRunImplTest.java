@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
 import hudson.model.Label;
+import hudson.model.Queue;
 import io.jenkins.blueocean.service.embedded.rest.PipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
@@ -108,13 +109,12 @@ public class AbstractRunImplTest extends BaseTest {
 
         Assert.assertNotEquals(new PipelineRunImpl(b1, null).getCommitId(), new PipelineRunImpl(b2, null).getCommitId());
 
-        request().post("/organizations/jenkins/pipelines/p/branches/master/runs/1/replay").build(String.class);
+        Map replayBuild = request().post("/organizations/jenkins/pipelines/p/branches/master/runs/"+ b1.getNumber()+"/replay").build(Map.class);
+        Queue.Item item = j.getInstance().getQueue().getItem(Long.parseLong((String)replayBuild.get("id")));
 
-        j.waitForCompletion(job1.getLastBuild());
+        WorkflowRun replayedRun = (WorkflowRun)item.getFuture().get();
 
-        request().get("/organizations/jenkins/pipelines/p/branches/master/runs/3/").build(Map.class);
-        request().get("/organizations/jenkins/pipelines/p/branches/master/runs/3/").build(Map.class);
-        Map r = request().get("/organizations/jenkins/pipelines/p/branches/master/runs/3/").build(Map.class);
+        Map r = request().get("/organizations/jenkins/pipelines/p/branches/master/runs/"+replayedRun.getNumber()+"/").build(Map.class);
         Assert.assertEquals(new PipelineRunImpl(b1,null).getCommitId(), r.get("commitId"));
     }
 }
