@@ -19,11 +19,18 @@ export class Favorite extends Component {
         className: ''
     };
 
-    constructor(props: Props){
-        super(props);
-        this.state = {
-            checked: this.props.checked
-        };
+    componentWillMount() {
+        this._updateState(this.props);
+    }
+
+    componentWillReceiveProps(props: Props) {
+        this._updateState(props);
+    }
+
+    _updateState(props: Props) {
+        this.setState({
+            checked: props.checked
+        });
     }
 
     toggle(e: Event) {
