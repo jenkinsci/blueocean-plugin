@@ -1,11 +1,13 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
@@ -67,6 +69,15 @@ public class OrganizationImpl extends BlueOrganization {
     @Override
     public BlueUserContainer getUsers() {
         return users;
+    }
+
+    @Override
+    public BlueUser getUser() {
+        User user =  User.current();
+        if(user == null){
+            throw new ServiceException.NotFoundException("No authenticated user found");
+        }
+        return new UserImpl(user,new UserContainerImpl(OrganizationImpl.INSTANCE));
     }
 
     @Override

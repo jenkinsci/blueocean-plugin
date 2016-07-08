@@ -114,7 +114,19 @@ Frontend can use _class in resource and classes API to serve UI based on class o
       } 
     ]
 
-$$
+## Get authenticated user
+
+Gives authenticated user, gives HTTP 404 error if there is no authenticated user found.
+
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/user/ 
+    
+    {
+      "id" : "alice",
+      "fullName" : "Alice"
+      "email" : "alice@example.com"
+    }
+
+
 ## Get organization details
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins
