@@ -5,7 +5,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { favoritesSelector } from '../redux/FavoritesStore';
+import { userSelector, favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 
 import { PipelineCard } from './PipelineCard';
@@ -16,10 +16,23 @@ import { PipelineCard } from './PipelineCard';
 export default class DashboardCards extends Component {
 
     componentWillMount() {
+        this._initialize();
+    }
+
+    componentWillReceiveProps() {
+        this._initialize();
+    }
+
+    _initialize() {
         const config = this.context.config;
+        const { user, favorites } = this.props;
 
         if (config) {
-            this.props.fetchFavorites(config);
+            if (!user) {
+                this.props.fetchUser(config);
+            } else if (!favorites) {
+                this.props.fetchFavorites(config, user);
+            }
         }
     }
 
@@ -60,8 +73,10 @@ export default class DashboardCards extends Component {
 }
 
 DashboardCards.propTypes = {
+    user: PropTypes.object,
     pipelines: PropTypes.array,
     favorites: PropTypes.array,
+    fetchUser: PropTypes.func,
     fetchFavorites: PropTypes.func,
 };
 
@@ -69,5 +84,9 @@ DashboardCards.contextTypes = {
     config: PropTypes.object,
 };
 
-const selectors = createSelector([favoritesSelector], (favorites) => ({ favorites }));
+const selectors = createSelector(
+    [userSelector, favoritesSelector],
+    (user, favorites) => ({ user, favorites })
+);
+
 export default connect(selectors, actions)(DashboardCards);

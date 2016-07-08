@@ -23,11 +23,22 @@ function parseJSON(response) {
 }
 
 export const actions = {
-    fetchFavorites(config) {
+    fetchUser(config) {
         return (dispatch) => {
             const baseUrl = config.getAppURLBase();
-            // TODO: pull real username value
-            const username = 'cmeyers';
+            const url = `${baseUrl}/rest/organizations/jenkins/user/`;
+
+            return dispatch(actions.generateData(
+                url,
+                ACTION_TYPES.SET_USER
+            ));
+        };
+    },
+
+    fetchFavorites(config, user) {
+        return (dispatch) => {
+            const baseUrl = config.getAppURLBase();
+            const username = user.id;
             const url = `${baseUrl}/rest/users/${username}/favorites/`;
 
             return dispatch(actions.generateData(
