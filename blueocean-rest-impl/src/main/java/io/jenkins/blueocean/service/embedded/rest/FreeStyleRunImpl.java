@@ -4,6 +4,7 @@ import hudson.model.FreeStyleBuild;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 
@@ -35,10 +36,10 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     }
 
     @Override
-    public BlueRunStopResponse stop() {
+    public BlueRun stop() {
         try {
             run.doStop();
-            return new BlueRunStopResponse(getStateObj(), getResult());
+            return this;
         } catch (Exception e) {
            throw new ServiceException.UnexpectedErrorException("Error while trying to stop run", e);
         }
