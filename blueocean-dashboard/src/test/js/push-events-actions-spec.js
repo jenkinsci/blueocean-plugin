@@ -1,6 +1,5 @@
 import React from 'react';
 import { assert} from 'chai';
-import { shallow } from 'enzyme';
 
 import * as actions from '../../main/js/redux/actions';
 
@@ -25,8 +24,8 @@ const CONFIG = {
     getAppURLBase: function() { return '/jenkins'; }
 };
 const originalFetchJson = actions.fetchJson;
-
-try {
+describe("Push events ", () => {
+    after(()=> actions.fetchJson = originalFetchJson);
     describe("push events - queued run tests", () => {
 
         // Test queued event for when the event is for the pipeline that
@@ -38,10 +37,10 @@ try {
             // mimic invocation of this action dispatcher and inspect the
             // actualDispatchObj passed to the dispatch function
             const dispatchedEvents = [];
-            dispatcher(function(actualDispatchObj) {
+            dispatcher(function (actualDispatchObj) {
                 //console.log(actualDispatchObj);
                 dispatchedEvents.push(actualDispatchObj);
-            }, function() {
+            }, function () {
                 return {
                     adminStore: {
                         runs: {
@@ -84,10 +83,10 @@ try {
             // mimic invocation of this action dispatcher and inspect the
             // actualDispatchObj passed to the dispatch function
             const dispatchedEvents = [];
-            dispatcher(function(actualDispatchObj) {
+            dispatcher(function (actualDispatchObj) {
                 // console.log(actualDispatchObj);
                 dispatchedEvents.push(actualDispatchObj);
-            }, function() {
+            }, function () {
                 return {
                     adminStore: {
                         runs: {
@@ -113,7 +112,7 @@ try {
 
             // mimic invocation of this action dispatcher and inspect the
             // actualDispatchObj passed to the dispatch function
-            const adminStore =  {runs: { 'PR-demo': [] } };
+            const adminStore = {runs: {'PR-demo': []}};
 
             function fireEvent() {
                 const event = newEvent('job_run_queue_enter');
@@ -165,7 +164,7 @@ try {
                 event.blueocean_is_for_current_job = false;
 
                 // Mock the fetchJson
-                actions.fetchJson = function(url, onSuccess, onError) {
+                actions.fetchJson = function (url, onSuccess, onError) {
                     assert.equal(url, '/jenkins/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12');
                     onSuccess({
                         "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
@@ -226,7 +225,7 @@ try {
                 event.blueocean_is_for_current_job = false;
 
                 // Mock the fetchJson
-                actions.fetchJson = function(url, onSuccess, onError) {
+                actions.fetchJson = function (url, onSuccess, onError) {
                     assert.equal(url, '/jenkins/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12');
                     onError({});
                 };
@@ -256,6 +255,5 @@ try {
         });
     });
 
-} finally {
-    actions.fetchJson = originalFetchJson;
-}
+
+});
