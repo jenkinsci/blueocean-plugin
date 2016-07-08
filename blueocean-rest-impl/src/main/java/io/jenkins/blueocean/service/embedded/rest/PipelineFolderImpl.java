@@ -7,6 +7,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFactory;
@@ -86,7 +87,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
 
     @Override
-    public void favorite(@JsonBody FavoriteAction favoriteAction) {
+    public void favorite(@JsonBody BlueFavoriteAction favoriteAction) {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }

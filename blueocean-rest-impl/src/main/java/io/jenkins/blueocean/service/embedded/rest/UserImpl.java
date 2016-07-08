@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.model.Item;
 import hudson.model.User;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.tasks.Mailer;
@@ -8,15 +7,9 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
-import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.model.Jenkins;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * {@link BlueUser} implementation backed by in-memory {@link User}
@@ -56,36 +49,15 @@ public class UserImpl extends BlueUser {
         return p != null ? p.getAddress() : null;
     }
 
-    public BlueFavorite getFavorite(final String name){
+    protected boolean isFavorite(final String name) {
         FavoriteUserProperty prop = user.getProperty(FavoriteUserProperty.class);
-        if(prop == null) {
-            return null;
-        }
-
-        if(prop.isJobFavorite(name)) {
-
-            return new BlueFavorite(name);
-        }
-
-        return null;
+        return prop != null && prop.isJobFavorite(name);
     }
 
-    public Iterator<BlueFavorite> getFavouriteIterator(){
-        FavoriteUserProperty prop = user.getProperty(FavoriteUserProperty.class);
-        List<BlueFavorite> pipelines = new ArrayList<BlueFavorite>();
-        Jenkins j = Jenkins.getInstance();
 
-        String org = j.getDisplayName().toLowerCase();
-        for(final String favorite: prop.getFavorites()){
-            Item i = j.getItem(favorite,j);
-            if(i == null) {
-                continue;
-            }
-            pipelines.add(new BlueFavorite(FavoriteUtil.generateBlueUrl(org,i)));
-        }
-        return pipelines.iterator();
+    protected FavoriteUserProperty getFavoriteProperty(){
+        return user.getProperty(FavoriteUserProperty.class);
     }
-
 
     @Override
     public BlueFavoriteContainer getFavorites() {
@@ -93,7 +65,7 @@ public class UserImpl extends BlueUser {
         if(!user.getId().equals(name)) {
             throw new ServiceException.ForbiddenException("You do not have access to this resource.");
         }
-        return new FavoriteImpl(this);
+        return new FavoriteContainerImpl(this, this);
     }
 
     @Override
