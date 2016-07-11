@@ -65,8 +65,6 @@ public class AbstractRunImplTest extends BaseTest {
 
         j.waitForCompletion(job1.getLastBuild());
 
-        request().get("/organizations/jenkins/pipelines/pipeline1/runs/1/").build(Map.class);
-        request().get("/organizations/jenkins/pipelines/pipeline1/runs/2/").build(Map.class);
         Map r = request().get("/organizations/jenkins/pipelines/pipeline1/runs/3/").build(Map.class);
         Assert.assertEquals(r.get("commitId"), new PipelineRunImpl(b2,null).getCommitId());
     }

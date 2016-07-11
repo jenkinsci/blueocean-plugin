@@ -194,7 +194,7 @@ public abstract class BlueRun extends Resource {
     public abstract Object getLog();
 
     /**
-     * Replays a pipeline. Sam SCM commit/revision should be used. in the new run.
+     * Replays a pipeline. The SCM commit/revision used in the existing and new runs should match.
      *
      * @return The queued item.
      */
