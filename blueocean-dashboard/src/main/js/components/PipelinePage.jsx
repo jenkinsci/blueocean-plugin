@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
+import fetch, { isFailure, isPending } from '../util/fetch';
+import NotFound from './NotFound';
 import {
     Page,
     PageHeader,
@@ -22,6 +24,14 @@ export default class PipelinePage extends Component {
 
         if (!pipeline) {
             return null; // Loading...
+        }
+
+        if (isPending(pipeline)) {
+            return null;
+        }
+        
+        if (isFailure(pipeline)) {
+            return <NotFound />;
         }
 
         const baseUrl = buildPipelineUrl(organization, fullName);
