@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -51,14 +52,14 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
 
     @Override
-    public void favorite(@JsonBody FavoriteAction favoriteAction) {
+    public void favorite(@JsonBody BlueFavoriteAction favoriteAction) {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
 
         Job job = mbp.getBranch("master");
         if(job == null) {
-            throw new ServiceException.UnexpectedErrorException("no master branch to favorite");
+            throw new ServiceException.BadRequestExpception("no master branch to favorite");
         }
 
         FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());

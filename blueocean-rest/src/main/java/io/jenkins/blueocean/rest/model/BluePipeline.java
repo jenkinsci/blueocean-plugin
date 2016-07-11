@@ -96,17 +96,5 @@ public abstract class BluePipeline extends Resource {
 
     @PUT
     @WebMethod(name="favorite")
-    public abstract void favorite(@JsonBody FavoriteAction favoriteAction);
-
-    public static class FavoriteAction {
-        private boolean favorite;
-
-        public void setFavorite(boolean favorite) {
-            this.favorite = favorite;
-        }
-
-        public boolean isFavorite() {
-            return favorite;
-        }
-    }
+    public abstract void favorite(@JsonBody BlueFavoriteAction favoriteAction);
 }

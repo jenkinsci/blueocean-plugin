@@ -1124,9 +1124,86 @@ Must be authenticated.
 
     curl -u bob:bob  http://localhost:8080/jenkins/blue/rest/users/bob/favorites/
 
-    [{
-        "pipeline":"/organizations/jenkins/pipelines/pipeline1"
-    }]
+    [ {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/users/alice/favorites/p%2Fmaster/"
+        }
+      },
+      "item" : {
+        "_class" : "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+        "_links" : {
+          "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/"
+          },
+          "actions" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/actions/"
+          },
+          "runs" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/"
+          },
+          "queue" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/queue/"
+          }
+        },
+        "actions" : [ ],
+        "displayName" : "master",
+        "estimatedDurationInMillis" : 953,
+        "fullName" : "p/master",
+        "lastSuccessfulRun" : "http://localhost:49669/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/",
+        "latestRun" : {
+          "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+          "_links" : {
+            "nodes" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/nodes/"
+            },
+            "log" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/log/"
+            },
+            "self" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/"
+            },
+            "actions" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/actions/"
+            },
+            "steps" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/steps/"
+            }
+          },
+          "actions" : [ ],
+          "artifacts" : [ ],
+          "changeSet" : [ ],
+          "durationInMillis" : 953,
+          "enQueueTime" : "2016-07-08T13:27:15.250-0700",
+          "endTime" : "2016-07-08T13:27:16.204-0700",
+          "estimatedDurationInMillis" : 953,
+          "id" : "1",
+          "organization" : "jenkins",
+          "pipeline" : "master",
+          "result" : "SUCCESS",
+          "runSummary" : "stable",
+          "startTime" : "2016-07-08T13:27:15.251-0700",
+          "state" : "FINISHED",
+          "type" : "WorkflowRun",
+          "commitId" : "0cd84cc9a1a62fbe636e5d1197ef7a5cc4c56b63"
+        },
+        "name" : "master",
+        "organization" : "jenkins",
+        "weatherScore" : 100,
+        "pullRequest" : null
+      }
+    } ]
 
 ## Stop a build
 Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
