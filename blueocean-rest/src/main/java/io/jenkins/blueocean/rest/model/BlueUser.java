@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -8,6 +9,7 @@ import org.kohsuke.stapler.export.Exported;
  * @author Kohsuke Kawaguchi
  * @author Vivek Pandey
  */
+@Capability("io.jenkins.blueocean.rest.model.BlueUser")
 public abstract class BlueUser extends Resource {
     public static final String ID="id";
     public static final String FULL_NAME="fullName";

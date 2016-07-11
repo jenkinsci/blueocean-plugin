@@ -55,7 +55,7 @@ public class MultiBranchTest extends BaseTest{
     /**
      * Some of these tests can be problematic until:
      * https://issues.jenkins-ci.org/browse/JENKINS-36290 is resolved
-     * Set an env var to any value to get these to run. 
+     * Set an env var to any value to get these to run.
      */
     private boolean runAllTests() {
         return System.getenv("RUN_MULTIBRANCH_TESTS") != null;
@@ -412,14 +412,15 @@ public class MultiBranchTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(l.size(), 1);
-        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/master");
+        Map branch = (Map)((Map)l.get(0)).get("item");
+
+        validatePipeline(p, branch);
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
             .auth("bob","bob")
             .status(403)
             .build(String.class);
-
     }
 
 
@@ -450,7 +451,11 @@ public class MultiBranchTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(l.size(), 1);
-        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/feature2");
+
+        WorkflowJob p1 = scheduleAndFindBranchProject(mp, "feature2");
+        Map branch = (Map)((Map)l.get(0)).get("item");
+
+        validatePipeline(p1, branch);
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")

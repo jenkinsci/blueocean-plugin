@@ -1,26 +1,24 @@
 package io.jenkins.blueocean.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 /**
+ * A favorite item. The item itself must be JSON serializable bean
+ *
  * @author Ivan Meredith
+ * @author Vivek Pandey
  */
 @ExportedBean
-public class BlueFavorite {
-    private static final String PIPELINE = "pipeline";
-    private final String pipeline;
+@Capability("io.jenkins.blueocean.rest.model.BlueFavorite")
+public abstract class BlueFavorite extends Resource{
+    private static final String ITEM = "item";
 
-    public BlueFavorite(String pipeline) {
-        this.pipeline = pipeline;
-    }
 
-    @Exported(name = PIPELINE)
-    @JsonProperty(PIPELINE)
-    public  String getPipeline(){
-        return pipeline;
-    }
+    /**
+     * @return Gives favorite item
+     */
+    @Exported(name = ITEM, inline = true)
+    public  abstract Object getItem();
 }
