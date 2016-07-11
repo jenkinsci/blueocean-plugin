@@ -428,11 +428,13 @@ public class MultiBranchTest extends BaseTest{
         WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
         j.waitUntilNoActivity();
 
-        new RequestBuilder(baseUrl)
+        Map m = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/p/favorite")
             .auth("alice", "alice")
             .data(ImmutableMap.of("favorite", true))
-            .build(String.class);
+            .build(Map.class);
+
+        validatePipeline(p, (Map) m.get("item"));
 
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -467,11 +469,16 @@ public class MultiBranchTest extends BaseTest{
         WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
         j.waitUntilNoActivity();
 
-        new RequestBuilder(baseUrl)
+        WorkflowJob p1 = scheduleAndFindBranchProject(mp, "feature2");
+
+        Map map = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/p/branches/feature2/favorite")
             .auth("alice", "alice")
             .data(ImmutableMap.of("favorite", true))
-            .build(String.class);
+            .build(Map.class);
+
+
+        validatePipeline(p1, (Map) map.get("item"));
 
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -480,7 +487,6 @@ public class MultiBranchTest extends BaseTest{
 
         Assert.assertEquals(l.size(), 1);
 
-        WorkflowJob p1 = scheduleAndFindBranchProject(mp, "feature2");
         Map branch = (Map)((Map)l.get(0)).get("item");
 
         validatePipeline(p1, branch);
