@@ -12,7 +12,7 @@ import {
     connect,
 } from '../redux';
 
-const { object, array, func, string, boolean } = PropTypes;
+const { object, array, func, string, bool } = PropTypes;
 
 const EmptyState = ({ repoName, pipeline, showRunButton }) => (
     <main>
@@ -35,7 +35,7 @@ const EmptyState = ({ repoName, pipeline, showRunButton }) => (
 EmptyState.propTypes = {
     repoName: string,
     pipeline: object,
-    showRunButton: boolean,
+    showRunButton: bool,
 };
 
 const RunNonMultiBranchPipeline = ({ pipeline, buttonText }) => (
