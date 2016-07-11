@@ -1,6 +1,7 @@
 var jsTest = require('@jenkins-cd/js-test');
 var expect = require('chai').expect;
 var ExtensionStore = require('../dist/ExtensionStore').ExtensionStore;
+var ClassMetadataStore = require('../dist/ClassMetadataStore').instance;
 var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-01.json');
 
 // js modules calling console.debug
@@ -9,6 +10,11 @@ console.debug = function(msg) { console.log('DEBUG: ' + msg); };
 // Mock the calls to import
 var jsModules = require('@jenkins-cd/js-modules');
 var theRealImport = jsModules.import;
+
+var makeClassMetadataStore = function(fn) {
+    ClassMetadataStore.init(fn);
+    return ClassMetadataStore;
+};
 
 var mockDataLoad = function(extensionStore, out, componentMap) {
     out.plugins = {};
@@ -72,7 +78,7 @@ describe("ExtensionStore.js", function () {
             
             extensionStore.init({
                 extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
-                typeInfoProvider: function(type, cb) { cb({}); }
+                classMetadataStore: makeClassMetadataStore(function(type, cb) { cb({}); })
             });
             
             extensionStore.getExtensions('ep-1', function(extensions) {
@@ -93,7 +99,7 @@ describe("ExtensionStore.js", function () {
             // this info will be loaded from <jenkins>/blue/js-extensions/
             extensionStore.init({
                 extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
-                typeInfoProvider: function(type, cb) { cb({}); }
+                classMetadataStore: makeClassMetadataStore(function(type, cb) { cb({}); })
             });
 
             // Call load for ExtensionPoint impls 'ep-1'. This should mimic
@@ -150,22 +156,21 @@ describe("ExtensionStore.js", function () {
         
         extensionStore.init({
             extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
-            typeInfoProvider: function(type, cb) { cb(typeData[type]); }
+            classMetadataStore: makeClassMetadataStore(function(type, cb) { cb(typeData[type]); })
         });
         
-        extensionStore.getExtensions('ept-1', {dataType: 'type-1'}, function(extensions) {
-            expect(extensionStore.typeInfo).to.not.be.undefined;
+        extensionStore.getExtensions('ept-1', [ClassMetadataStore.dataType('type-1')], function(extensions) {
             expect(extensions.length).to.equal(1);
             
             expect(extensions[0]).to.equal('typed-component-1.1');
         });
         
-        extensionStore.getExtensions('ept-2', {dataType: 'type-2'}, function(extensions) {
+        extensionStore.getExtensions('ept-2', [ClassMetadataStore.dataType('type-2')], function(extensions) {
             expect(extensions.length).to.equal(1);
             expect(extensions).to.include.members(["typed-component-1.2"]);
+            
+            done();
         });
-        
-        done();
     });
     
     it("- handles untyped extension points", function(done) {
@@ -196,20 +201,20 @@ describe("ExtensionStore.js", function () {
         
         extensionStore.init({
             extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
-            typeInfoProvider: function(type, cb) { cb(typeData[type]); }
+            classMetadataStore: makeClassMetadataStore(function(type, cb) { cb(typeData[type]); })
         });
         
-        extensionStore.getExtensions('ep-1', function(extensions) {
+        extensionStore.getExtensions('ep-1', [ClassMetadataStore.untyped()], function(extensions) {
             expect(extensions.length).to.equal(3);
             expect(extensions).to.include.members(["component-1.1","component-1.2","component-2.1"]);
         });
         
-        extensionStore.getExtensions('ept-2', function(extensions) {
+        extensionStore.getExtensions('ept-2', [ClassMetadataStore.untyped()], function(extensions) {
             expect(extensions.length).to.equal(0);
             expect(extensions).to.include.members([]);
+            
+            done();
         });
-        
-        done();
     });
 
     it("- handles multi-key requests", function(done) {
@@ -220,7 +225,7 @@ describe("ExtensionStore.js", function () {
         
         extensionStore.init({
             extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
-            typeInfoProvider: function(type, cb) { cb({}); }
+            classMetadataStore: makeClassMetadataStore(function(type, cb) { cb({}); })
         });
         
         extensionStore.getExtensions(['ep-1','ep-2'], function(ep1,ep2) {
@@ -254,22 +259,27 @@ describe("ExtensionStore.js", function () {
         
         extensionStore.init({
             extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
-            typeInfoProvider: function(type, cb) { cb({}); }
+            classMetadataStore: makeClassMetadataStore(function(type, cb) { cb({}); })
         });
         
-        extensionStore.getExtensions('ep-3', {componentType: PretendComponent1}, function(extensions) {
+        extensionStore.getExtensions('ep-3', [ClassMetadataStore.componentType(PretendComponent1)], function(extensions) {
             expect(extensions.length).to.equal(1);
             expect(extensions).to.include.members([PretendComponent1]);
         });
         
-        extensionStore.getExtensions('ep-3', {componentType: PretendComponent2}, function(extensions) {
+        extensionStore.getExtensions('ep-3', [ClassMetadataStore.componentType(PretendComponent2)], function(extensions) {
             expect(extensions.length).to.equal(1);
             expect(extensions).to.include.members([PretendComponent2]);
         });
         
-        extensionStore.getExtensions('ep-3', {componentType: PretendReactClass}, function(extensions) {
+        extensionStore.getExtensions('ep-3', [ClassMetadataStore.componentType(PretendReactClass)], function(extensions) {
             expect(extensions.length).to.equal(2);
             expect(extensions).to.include.members([PretendComponent1, PretendComponent2]);
+        });
+        
+        extensionStore.getExtensions('ep-3', [ClassMetadataStore.componentType(PretendReactClass), ClassMetadataStore.componentType(PretendComponent1)], function(extensions) {
+            expect(extensions.length).to.equal(1);
+            expect(extensions).to.include.members([PretendComponent1]);
         });
         
         done();

@@ -7,7 +7,9 @@ export class ExtensionStore {
      *  FIXME this is NOT a constructor, as there's no common way to
      *  pass around a DI singleton at the moment across everything
      *  that needs it (e.g. redux works for the app, not for other
-     *  things in this module)
+     *  things in this module).
+     *  
+     *  NOTE: this is currently called from `blueocean-web/src/main/js/init.jsx`
      *  
      *  Needs:
      *  args = {
@@ -15,9 +17,11 @@ export class ExtensionStore {
      *          ... // get the data
      *          callback(extensionData); // array of extensions
      *      },
-     *      typeInfoProvider: (dataType, callback) => {
-     *          ... // get the data based on 'dataType'
-     *          callback(typeInfo);
+     *      classMetadataStore: {
+     *          getClassMetadata(dataType, callback) => {
+     *              ... // get the data based on 'dataType'
+     *              callback(typeInfo);
+     *          }
      *      }
      *  }
      */
@@ -30,13 +34,9 @@ export class ExtensionStore {
          */
         this.extensionPoints = {};
         /**
-         * Type info cache
-         */
-        this.dataTypeInfo = {};
-        /**
          * Used to fetch type information
          */
-        this.dataTypeInfoProvider = args.typeInfoProvider;
+        this.classMetadataStore = args.classMetadataStore;
     }
     
     /**
@@ -103,115 +103,33 @@ export class ExtensionStore {
         this._loadBundles(extensionPoint, extensions => this._filterExtensions(extensions, filter, onload));
     }
     
-    /**
-     * Gets the type/capability info for the given data type
-     */
-    getTypeInfo(type, onload) {
-        var ti = this.dataTypeInfo[type];
-        if (ti) {
-            return onload(ti);
-        }
-        this.dataTypeInfoProvider(type, (data) => {
-            ti = this.dataTypeInfo[type] = JSON.parse(JSON.stringify(data));
-            ti.classes = ti.classes || [];
-            if (ti.classes.indexOf(type) < 0) {
-                ti.classes = [type, ...ti.classes];
-            }
-            onload(ti);
-        });
-    }
-    
-    /**
-     * Tries to determine if the objectToTest is of the given type.
-     * Will normalize things like String/'string' inconsistencies
-     * as well as ES6 class & traditional prototype inheritance.
-     * NOTE: This ALSO tests the prototype hierarchy if objectToTest
-     * is a Function.
-     */
-    isType(objectToTest, type) {
-        var o = objectToTest;
-        if (typeof o === type) {
-            return true;
-        }
-        if (type === String || type === 'string') {
-            return o instanceof String;
-        }
-        if (type === Function || type === 'function') {
-            return o instanceof Function;
-        }
-        if (type === Object || type === 'object') {
-            return o instanceof Object;
-        }
-        if (objectToTest instanceof Function) {
-            var proto = objectToTest;
-            while (proto) {
-                if (proto === type) {
-                    return true;
-                }
-                proto = Object.getPrototypeOf(proto);
-            }
-        }
-        return objectToTest instanceof type;
-    }
-    
-    _filterExtensions(extensions, filter, onload) {
+    _filterExtensions(extensions, filters, onload) {
         if (extensions.length === 0) {
             onload(extensions); // no extensions to filter
             return;
         }
         
-        filter = filter || {};
-        
-        var currentDataType = filter.dataType;
-        if (currentDataType && typeof(currentDataType) === 'object'
-                && '_class' in currentDataType) { // handle the common API incoming data
-            currentDataType = currentDataType._class;
-        }
-        if (currentDataType) {
-            var currentTypeInfo = this.dataTypeInfo[currentDataType];
-            if (!currentTypeInfo) {
-                this.getTypeInfo(currentDataType, () => {
-                    this._filterExtensions(extensions, filter, onload);
-                });
-                return;
+        if (filters) {
+            // allow calls like: getExtensions('abcd', dataType(something), ext => ...)
+            if (!filters.length) {
+                filters = [ filters ];
             }
-            // prevent returning extensions for the given type
-            // when a more specific extension is found
-            var matchingExtensions = [];
-            eachType: for (var typeIndex = 0; typeIndex < currentTypeInfo.classes.length; typeIndex++) {
-                // currentTypeInfo.classes is ordered by java hierarchy, including
-                // and beginning with the current data type
-                var type = currentTypeInfo.classes[typeIndex];
-                for (var i = 0; i < extensions.length; i++) {
-                    var extension = extensions[i];
-                    if (type === extension.dataType) {
-                        matchingExtensions.push(extension);
-                    }
+            var remaining = [].concat(filters);
+            var nextFilter = extensions => {
+                if (remaining.length === 0) {
+                    // Map to instances and proceed
+                    onload(extensions.map(m => m.instance));
+                } else {
+                    var filter = remaining[0];
+                    remaining = remaining.slice(1);
+                    filter(extensions, nextFilter);
                 }
-                // if we have this specific type handled, don't
-                // proceed to parent types
-                if (matchingExtensions.length > 0) {
-                    break eachType;
-                }
-            }
-            extensions = matchingExtensions;
+            };
+            nextFilter(extensions);
         } else {
-            // exclude typed extensions when types not requested
-            extensions = extensions.filter(m => !('dataType' in m));
+            // Map to instances and proceed
+            onload(extensions.map(m => m.instance));
         }
-        
-        // Filter on component type
-        if (filter.componentType) {
-            extensions = extensions.filter(e => this.isType(e.instance, filter.componentType));
-        }
-        
-        // allow a custom filter function
-        if (filter.filter) {
-            extensions = extensions.filter(filter.filter);
-        }
-        
-        // Map to instances and proceed
-        onload(extensions.map(m => m.instance));
     }
     
     /**

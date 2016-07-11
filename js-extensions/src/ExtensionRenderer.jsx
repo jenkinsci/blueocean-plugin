@@ -1,6 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var ExtensionStore = require('./ExtensionStore.js');
+var ExtensionStore = require('./ExtensionStore.js').instance;
 var ResourceLoadTracker = require('./ResourceLoadTracker').instance;
 
 /**
@@ -62,7 +62,7 @@ export class ExtensionRenderer extends React.Component {
     }
     
     _setExtensions() {
-        ExtensionStore.instance.getExtensions(this.props.extensionPoint, this.props,
+        ExtensionStore.getExtensions(this.props.extensionPoint, this.props.filter,
             extensions => this.setState({extensions: extensions})
         );
     }
@@ -164,7 +164,7 @@ ExtensionRenderer.defaultProps = {
 
 ExtensionRenderer.propTypes = {
     extensionPoint: React.PropTypes.string.isRequired,
-    dataType: React.PropTypes.any,
+    filter: React.PropTypes.any,
     wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element])
 };
 

@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { actions as selectorActions, testResults as testResultsSelector,
     connect, createSelector } from '../redux';
-import Extensions from '@jenkins-cd/js-extensions';
+import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 const EmptyState = () => (
     <EmptyStateView tightSpacing>
@@ -67,7 +67,7 @@ export class RunDetailsTests extends Component {
                 <div className="test-result-duration">Duration {testResults.duration}</div>
             </div>
             
-            <Extensions.Renderer extensionPoint="jenkins.test.result" dataType={testResults} testResults={testResults} />
+            <Extensions.Renderer extensionPoint="jenkins.test.result" filter={dataType(testResults)} testResults={testResults} />
         </div>);
     }
 }
