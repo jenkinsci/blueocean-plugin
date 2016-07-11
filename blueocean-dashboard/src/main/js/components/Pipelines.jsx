@@ -60,7 +60,6 @@ export default class Pipelines extends Component {
                         <Extensions.Renderer
                           extensionPoint="jenkins.pipeline.list.top"
                           store={this.context.store}
-                          pipelines={pipelines}
                         />
                         <Table
                           className="pipelines-table fixed"

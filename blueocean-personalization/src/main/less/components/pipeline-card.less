@@ -28,7 +28,7 @@
     }
 
     .name, .branchText, .commitId {
-        height: 18px;
+        min-height: 18px;
     }
 
     .commitId {
@@ -81,12 +81,5 @@
         circle {
             stroke: white;
         }
-    }
-
-    // force "favorite" checkbox to white when on unstable card
-    // FIXME: doesn't work in IE11
-    .checkbox {
-        filter: grayscale(100%) brightness(0%) invert(100%);
-        -webkit-filter: grayscale(100%) brightness(0%) invert(100%);
     }
 }

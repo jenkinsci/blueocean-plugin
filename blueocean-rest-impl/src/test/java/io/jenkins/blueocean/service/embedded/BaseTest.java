@@ -12,11 +12,13 @@ import hudson.Util;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.JsonConverter;
+import io.jenkins.blueocean.service.embedded.rest.PipelineNodeUtil;
 import jenkins.branch.MultiBranchProject;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,7 +29,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 
@@ -302,6 +306,29 @@ public abstract class BaseTest {
 
     private String getBaseUrl(String path){
         return baseUrl + path;
+    }
+
+
+    protected List<FlowNode> getStages(FlowGraphTable nodeGraphTable){
+        List<FlowNode> nodes = new ArrayList<>();
+        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
+            if(PipelineNodeUtil.isStage(row.getNode()) ||
+                PipelineNodeUtil.isParallelBranch(row.getNode())){
+                nodes.add(row.getNode());
+            }
+        }
+        return nodes;
+    }
+
+    protected List<FlowNode> getParallelNodes(FlowGraphTable nodeGraphTable){
+        List<FlowNode> parallelNodes = new ArrayList<>();
+
+        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
+            if(PipelineNodeUtil.isParallelBranch(row.getNode())){
+                parallelNodes.add(row.getNode());
+            }
+        }
+        return parallelNodes;
     }
 
     public RequestBuilder request() {

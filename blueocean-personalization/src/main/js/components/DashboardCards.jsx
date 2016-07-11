@@ -4,33 +4,55 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import { List } from 'immutable';
 
 import { userSelector, favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 
 import { PipelineCard } from './PipelineCard';
 
-
 /**
  */
-export default class DashboardCards extends Component {
+export class DashboardCards extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.fetchUserInProgress = false;
+        this.fetchFavoritesInProgress = false;
+    }
 
     componentWillMount() {
-        this._initialize();
+        this._initialize(this.props);
     }
 
-    componentWillReceiveProps() {
-        this._initialize();
+    componentWillReceiveProps(props) {
+        this._initialize(props);
     }
 
-    _initialize() {
+    _initialize(props) {
         const config = this.context.config;
-        const { user, favorites } = this.props;
+        const { user, favorites } = props;
+
+        if (user) {
+            this.fetchUserInProgress = false;
+        }
+
+        if (favorites) {
+            this.fetchFavoritesInProgress = false;
+        }
 
         if (config) {
-            if (!user) {
+            const shouldFetchUser = !user && !this.fetchUserInProgress;
+            const shouldFetchFavorites = user && !favorites && !this.fetchFavoritesInProgress;
+
+            if (shouldFetchUser) {
+                this.fetchUserInProgress = true;
                 this.props.fetchUser(config);
-            } else if (!favorites) {
+            }
+
+            if (shouldFetchFavorites) {
+                this.fetchFavoritesInProgress = true;
                 this.props.fetchFavorites(config, user);
             }
         }
@@ -42,16 +64,25 @@ export default class DashboardCards extends Component {
         }
 
         const favoriteCards = this.props.favorites.map(fav => {
-            const branch = fav.data;
+            const branch = fav.item;
+            const latestRun = branch.latestRun;
+
+            const commitId = latestRun ? latestRun.commitId : null;
+
+            let status = null;
+
+            if (latestRun && latestRun.result) {
+                status = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
+            }
 
             return (
-                <div key={branch.fullName}>
+                <div key={fav._links.self.href}>
                     <PipelineCard
+                      status={status}
                       organization={branch.organization}
                       pipeline={branch.fullName}
-                      status={branch.latestRun.result}
                       branch={branch.name}
-                      commitId={branch.commitId}
+                      commitId={commitId}
                       favorite
                     />
                 </div>
@@ -68,7 +99,7 @@ export default class DashboardCards extends Component {
 
 DashboardCards.propTypes = {
     user: PropTypes.object,
-    favorites: PropTypes.array,
+    favorites: PropTypes.instanceOf(List),
     fetchUser: PropTypes.func,
     fetchFavorites: PropTypes.func,
 };
