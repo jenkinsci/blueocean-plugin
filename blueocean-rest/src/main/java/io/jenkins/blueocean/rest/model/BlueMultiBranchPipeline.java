@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.export.Exported;
 
@@ -13,6 +14,7 @@ import java.util.Iterator;
  *
  * @author Vivek Pandey
  */
+@Capability("io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline")
 public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
     public static final String TOTAL_NUMBER_OF_BRANCHES="totalNumberOfBranches";
     public static final String NUMBER_OF_FAILING_BRANCHES="numberOfFailingBranches";

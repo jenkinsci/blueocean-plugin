@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -51,6 +52,7 @@ import java.util.List;
  *</pre>
  * @author Vivek Pandey
  */
+@Capability("io.jenkins.blueocean.rest.model.BluePipelineNode")
 public abstract class BluePipelineNode extends BluePipelineStep{
     /**
      * @return Steps inside a Pipeline Stage or Parallel branch

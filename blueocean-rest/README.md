@@ -114,7 +114,19 @@ Frontend can use _class in resource and classes API to serve UI based on class o
       } 
     ]
 
-$$
+## Get authenticated user
+
+Gives authenticated user, gives HTTP 404 error if there is no authenticated user found.
+
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/user/ 
+    
+    {
+      "id" : "alice",
+      "fullName" : "Alice"
+      "email" : "alice@example.com"
+    }
+
+
 ## Get organization details
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins
@@ -1121,9 +1133,28 @@ Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
 
     curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop
     {
-      "result" : "ABORTED",
-      "state" : "FINISHED"
-    }
+           "changeSet": [],
+           "artifacts": [
+             {
+                 "name": "fizz",
+                 "size": 8,
+                 "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+             }
+           ],
+           "durationInMillis": 841,
+           "estimatedDurationInMillis" : 567,
+           "enQueueTime": "2016-03-16T09:02:26.492-0700",
+           "endTime": "2016-03-16T09:02:27.339-0700",
+           "id": "1",
+           "organization": "jenkins",
+           "pipeline": "pipeline1",
+           "result": "ABORTED",
+           "runSummary": "stable",
+           "startTime": "2016-03-16T09:02:26.498-0700",
+           "state": "FINISHED",
+           "type": "WorkflowRun",
+           "commitId": null
+       }
 
 ## Fetch queue for an pipeline
 

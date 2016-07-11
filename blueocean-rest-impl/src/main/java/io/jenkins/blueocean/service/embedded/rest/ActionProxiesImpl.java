@@ -29,11 +29,6 @@ public class ActionProxiesImpl extends BlueActionProxy {
     }
 
     @Override
-    public String get_Class() {
-        return action.getClass().getName();
-    }
-
-    @Override
     public Link getLink() {
         if(getUrlName() != null) {
             return parent.getLink().rel(getUrlName());
