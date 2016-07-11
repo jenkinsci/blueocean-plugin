@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import hudson.model.BuildableItem;
 import hudson.model.Job;
@@ -10,7 +11,9 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.github.util.FluentIterableWrapper;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,7 +31,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
 
     @Override
     public BlueQueueItem get(String name) {
-        for (BlueQueueItem blueQueueItem : getQueuedItems(job, pipeline)) {
+        for (BlueQueueItem blueQueueItem : getQueuedItems(job)) {
             if(name.equals(blueQueueItem.getId())){
                 return blueQueueItem;
             }
@@ -39,7 +42,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
 
     @Override
     public Iterator<BlueQueueItem> iterator() {
-        return getQueuedItems(job, pipeline).iterator();
+        return getQueuedItems(job).iterator();
     }
 
     /**
@@ -50,7 +53,9 @@ public class QueueContainerImpl extends BlueQueueContainer {
      *
      * @return List of items newest first
      */
-    public static List<BlueQueueItem> getQueuedItems(Job job, BluePipeline pipeline) {
+    public static List<BlueQueueItem> getQueuedItems(Job job) {
+        BluePipeline pipeline = new PipelineImpl(job);
+
         if(job instanceof BuildableItem) {
             BuildableItem task = (BuildableItem)job;
             List<Queue.Item> items = Jenkins.getInstance().getQueue().getItems(task);
@@ -68,6 +73,15 @@ public class QueueContainerImpl extends BlueQueueContainer {
         }
     }
 
+    public static BlueQueueItem getQueuedItem(final Queue.Item item, Job job) {
+        return FluentIterableWrapper.from(QueueContainerImpl.getQueuedItems(job))
+            .firstMatch(new Predicate<BlueQueueItem>() {
+                @Override
+                public boolean apply(@Nullable BlueQueueItem input) {
+                    return input.getId().equalsIgnoreCase(Long.toString(item.getId()));
+                }
+            }).orNull();
+    }
     @Override
     public Link getLink() {
         return pipeline.getLink().rel("queue");
