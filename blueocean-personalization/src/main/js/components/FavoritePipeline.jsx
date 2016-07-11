@@ -4,6 +4,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import { List } from 'immutable';
 
 import { Favorite } from '@jenkins-cd/design-language';
 
@@ -71,8 +72,8 @@ export class FavoritePipeline extends Component {
         if (this.props.toggleFavorite) {
             this.props.toggleFavorite(
                 this.context.config,
+                value,
                 this.props.pipeline,
-                value
             );
         }
     }
@@ -89,7 +90,7 @@ export class FavoritePipeline extends Component {
 FavoritePipeline.propTypes = {
     className: PropTypes.string,
     pipeline: PropTypes.object,
-    favorites: PropTypes.array,
+    favorites: PropTypes.instanceOf(List),
     toggleFavorite: PropTypes.func,
 };
 

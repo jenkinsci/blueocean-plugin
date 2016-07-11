@@ -58,10 +58,10 @@ export const actions = {
         };
     },
 
-    toggleFavorite(config, pipeline, favorite) {
+    toggleFavorite(config, addFavorite, branch) {
         return (dispatch) => {
             const baseUrl = config.getRootURL();
-            const url = `${baseUrl}/${pipeline._links.self.href}/favorite`;
+            const url = `${baseUrl}/${branch._links.self.href}/favorite`;
             const fetchOptions = {
                 ...defaultFetchOptions,
                 method: 'PUT',
@@ -69,7 +69,7 @@ export const actions = {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(
-                    { favorite }
+                    { favorite: addFavorite }
                 ),
             };
 
@@ -77,7 +77,7 @@ export const actions = {
             return dispatch(actions.generateData(
                 { url, fetchOptions },
                 ACTION_TYPES.TOGGLE_FAVORITE,
-                { pipeline, favorite },
+                { addFavorite, branch },
             ));
         };
     },

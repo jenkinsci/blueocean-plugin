@@ -80,7 +80,7 @@ describe('favoritesStore', () => {
                 {
                     type: ACTION_TYPES.TOGGLE_FAVORITE,
                     addFavorite: false,
-                    branchToRemove: createBranch(
+                    branch: createBranch(
                         '/blue/rest/organizations/jenkins/pipelines/blueocean/branches/UX-301/'
                     ),
                     payload: null,
@@ -117,7 +117,7 @@ describe('favoritesStore', () => {
                 {
                     type: ACTION_TYPES.TOGGLE_FAVORITE,
                     addFavorite: true,
-                    branchToRemove: null,
+                    branch: null,
                     payload: favoriteToAdd,
                 }
             );

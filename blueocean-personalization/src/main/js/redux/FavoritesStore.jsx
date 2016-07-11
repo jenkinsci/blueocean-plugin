@@ -30,7 +30,7 @@ const actionHandlers = {
         const favoriteList = new List(payload);
         return state.set('favorites', favoriteList);
     },
-    [ACTION_TYPES.TOGGLE_FAVORITE](state, { addFavorite, branchToRemove, payload }) {
+    [ACTION_TYPES.TOGGLE_FAVORITE](state, { addFavorite, branch, payload }) {
         const favoritesList = state.get('favorites');
 
         if (addFavorite) {
@@ -38,7 +38,7 @@ const actionHandlers = {
             return state.set('favorites', appendedList);
         }
 
-        const toggledBranchHref = branchToRemove._links.self.href;
+        const toggledBranchHref = branch._links.self.href;
         const prunedList = favoritesList.filter(fav => {
             const favoritedBranch = fav.item;
             return favoritedBranch._links.self.href !== toggledBranchHref;
