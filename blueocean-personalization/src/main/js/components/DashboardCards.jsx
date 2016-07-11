@@ -4,16 +4,16 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import { List } from 'immutable';
 
 import { userSelector, favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 
 import { PipelineCard } from './PipelineCard';
 
-
 /**
  */
-export default class DashboardCards extends Component {
+export class DashboardCards extends Component {
 
     componentWillMount() {
         this._initialize();
@@ -42,16 +42,25 @@ export default class DashboardCards extends Component {
         }
 
         const favoriteCards = this.props.favorites.map(fav => {
-            const branch = fav.data;
+            const branch = fav.item;
+            const latestRun = branch.latestRun;
+
+            const commitId = latestRun ? latestRun.commitId : null;
+
+            let status = null;
+
+            if (latestRun && latestRun.result) {
+                status = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
+            }
 
             return (
-                <div key={branch.fullName}>
+                <div key={fav._links.self.href}>
                     <PipelineCard
+                      status={status}
                       organization={branch.organization}
                       pipeline={branch.fullName}
-                      status={branch.latestRun.result}
                       branch={branch.name}
-                      commitId={branch.commitId}
+                      commitId={commitId}
                       favorite
                     />
                 </div>
@@ -68,7 +77,7 @@ export default class DashboardCards extends Component {
 
 DashboardCards.propTypes = {
     user: PropTypes.object,
-    favorites: PropTypes.array,
+    favorites: PropTypes.instanceOf(List),
     fetchUser: PropTypes.func,
     fetchFavorites: PropTypes.func,
 };

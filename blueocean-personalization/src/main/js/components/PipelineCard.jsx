@@ -89,10 +89,14 @@ export class PipelineCard extends Component {
                 </span>
                 }
 
+                { commitId ?
                 <span className="commit">
                     <span className="octicon octicon-git-commit"></span>
                     <pre className="commitId">#{commitText}</pre>
                 </span>
+                :
+                <span className="commit"></span>
+                }
 
                 <span className="actions">
                     { showRun &&
