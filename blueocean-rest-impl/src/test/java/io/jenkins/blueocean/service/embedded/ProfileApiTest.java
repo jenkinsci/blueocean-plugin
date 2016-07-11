@@ -92,12 +92,13 @@ public class ProfileApiTest extends BaseTest{
         user.setFullName("Alice Cooper");
         Project p = j.createFreeStyleProject("pipeline1");
 
-        new RequestBuilder(baseUrl)
+        Map map = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/pipeline1/favorite")
             .auth("alice", "alice")
             .data(ImmutableMap.of("favorite", true))
-            .build(String.class);
+            .build(Map.class);
 
+        validatePipeline(p, (Map) map.get("item"));
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
             .auth("alice","alice")

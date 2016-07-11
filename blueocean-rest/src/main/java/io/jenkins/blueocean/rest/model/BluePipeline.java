@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.WebMethod;
@@ -96,5 +97,6 @@ public abstract class BluePipeline extends Resource {
 
     @PUT
     @WebMethod(name="favorite")
-    public abstract void favorite(@JsonBody BlueFavoriteAction favoriteAction);
+    @TreeResponse
+    public abstract BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction);
 }
