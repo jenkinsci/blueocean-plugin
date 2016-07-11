@@ -114,7 +114,19 @@ Frontend can use _class in resource and classes API to serve UI based on class o
       } 
     ]
 
-$$
+## Get authenticated user
+
+Gives authenticated user, gives HTTP 404 error if there is no authenticated user found.
+
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/user/ 
+    
+    {
+      "id" : "alice",
+      "fullName" : "Alice"
+      "email" : "alice@example.com"
+    }
+
+
 ## Get organization details
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins
@@ -1112,18 +1124,114 @@ Must be authenticated.
 
     curl -u bob:bob  http://localhost:8080/jenkins/blue/rest/users/bob/favorites/
 
-    [{
-        "pipeline":"/organizations/jenkins/pipelines/pipeline1"
-    }]
+    [ {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/users/alice/favorites/p%2Fmaster/"
+        }
+      },
+      "item" : {
+        "_class" : "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+        "_links" : {
+          "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/"
+          },
+          "actions" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/actions/"
+          },
+          "runs" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/"
+          },
+          "queue" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/queue/"
+          }
+        },
+        "actions" : [ ],
+        "displayName" : "master",
+        "estimatedDurationInMillis" : 953,
+        "fullName" : "p/master",
+        "lastSuccessfulRun" : "http://localhost:49669/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/",
+        "latestRun" : {
+          "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+          "_links" : {
+            "nodes" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/nodes/"
+            },
+            "log" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/log/"
+            },
+            "self" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/"
+            },
+            "actions" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/actions/"
+            },
+            "steps" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/steps/"
+            }
+          },
+          "actions" : [ ],
+          "artifacts" : [ ],
+          "changeSet" : [ ],
+          "durationInMillis" : 953,
+          "enQueueTime" : "2016-07-08T13:27:15.250-0700",
+          "endTime" : "2016-07-08T13:27:16.204-0700",
+          "estimatedDurationInMillis" : 953,
+          "id" : "1",
+          "organization" : "jenkins",
+          "pipeline" : "master",
+          "result" : "SUCCESS",
+          "runSummary" : "stable",
+          "startTime" : "2016-07-08T13:27:15.251-0700",
+          "state" : "FINISHED",
+          "type" : "WorkflowRun",
+          "commitId" : "0cd84cc9a1a62fbe636e5d1197ef7a5cc4c56b63"
+        },
+        "name" : "master",
+        "organization" : "jenkins",
+        "weatherScore" : 100,
+        "pullRequest" : null
+      }
+    } ]
 
 ## Stop a build
 Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
 
     curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop
     {
-      "result" : "ABORTED",
-      "state" : "FINISHED"
-    }
+           "changeSet": [],
+           "artifacts": [
+             {
+                 "name": "fizz",
+                 "size": 8,
+                 "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+             }
+           ],
+           "durationInMillis": 841,
+           "estimatedDurationInMillis" : 567,
+           "enQueueTime": "2016-03-16T09:02:26.492-0700",
+           "endTime": "2016-03-16T09:02:27.339-0700",
+           "id": "1",
+           "organization": "jenkins",
+           "pipeline": "pipeline1",
+           "result": "ABORTED",
+           "runSummary": "stable",
+           "startTime": "2016-03-16T09:02:26.498-0700",
+           "state": "FINISHED",
+           "type": "WorkflowRun",
+           "commitId": null
+       }
 
 ## Fetch queue for an pipeline
 

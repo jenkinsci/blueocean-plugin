@@ -8,12 +8,15 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
+import hudson.Util;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.service.embedded.rest.PipelineNodeUtil;
+import jenkins.branch.MultiBranchProject;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
@@ -261,8 +264,13 @@ public abstract class BaseTest {
         Assert.assertEquals(p.getBuildHealth().getScore(), resp.get("weatherScore"));
         if(p.getLastSuccessfulBuild() != null){
             Run b = p.getLastSuccessfulBuild();
-            Assert.assertEquals(baseUrl + "/organizations/jenkins/pipelines/" +
-                p.getName() + "/runs/" + b.getId()+"/", resp.get("lastSuccessfulRun"));
+            String s = baseUrl + "/organizations/jenkins/pipelines/" +
+                p.getName() + "/runs/" + b.getId()+"/";
+            if(p instanceof WorkflowJob && p.getParent() instanceof MultiBranchProject){
+                s = baseUrl + "/organizations/jenkins/pipelines/" +
+                    ((MultiBranchProject) p.getParent()).getName() +"/branches/"+ Util.rawEncode(p.getName())+"/runs/" + b.getId()+"/";
+            }
+            Assert.assertEquals(s, resp.get("lastSuccessfulRun"));
 
         }else{
             Assert.assertNull(resp.get("lastSuccessfulRun"));

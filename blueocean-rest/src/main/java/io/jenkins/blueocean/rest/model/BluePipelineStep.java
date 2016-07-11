@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
 import java.text.SimpleDateFormat;
@@ -12,6 +13,7 @@ import static io.jenkins.blueocean.rest.model.BlueRun.STATE;
  *
  * @author Vivek Pandey
  */
+@Capability("io.jenkins.blueocean.rest.model.BluePipelineStep")
 public abstract class BluePipelineStep extends Resource{
     public static final String DISPLAY_NAME="displayName";
     public static final String RESULT = "result";

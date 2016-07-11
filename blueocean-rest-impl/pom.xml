@@ -75,17 +75,12 @@
             <artifactId>workflow-durable-task-step</artifactId>
             <version>2.0</version>
         </dependency>
-        <dependency>
-            <groupId>io.jenkins.blueocean.rest.annotation</groupId>
-            <artifactId>capability-annotation</artifactId>
-            <version>1.2</version>
-        </dependency>
-        
+
         <!-- Not needed by blueocean runtime but adds to blueocean experience -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>1.6</version>
+            <version>1.8.1</version>
         </dependency>
 
         <!-- Test plugins -->

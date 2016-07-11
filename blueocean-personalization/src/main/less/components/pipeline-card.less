@@ -1,0 +1,81 @@
+.pipeline-card {
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    color: white;
+    min-width: 400px;
+    padding: 15px;
+
+    .name, .branch, .commit {
+        flex: 1 1 auto;
+        margin-left: 10px;
+    }
+
+    .branch, .commit {
+        display: flex;
+        align-items: center;
+    }
+
+    .name, .branchText, .commitId {
+        height: 18px;
+    }
+
+    .commitId {
+        margin: 0 0 0 5px;
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-width: 60px;
+        margin-left: 10px;
+    }
+
+    .run {
+        margin-right: 10px;
+    }
+
+    .svg-icon {
+        fill: white;
+    }
+
+    // remove empty space to attain centered vertical alignment
+    .run, .actions {
+        > * {
+            vertical-align: bottom;
+        }
+    }
+
+    .progress-spinner.running {
+        circle {
+            stroke: #bcd8f1;
+        }
+        path.running {
+            stroke: white;
+        }
+    }
+
+    .progress-spinner.queued {
+        circle {
+            stroke: white;
+        }
+        circle.inner {
+            stroke: white;
+            fill: white;
+        }
+    }
+
+    .progress-spinner.not_built {
+        circle {
+            stroke: white;
+        }
+    }
+
+    // force "favorite" checkbox to white when on unstable card
+    // FIXME: doesn't work in IE11
+    .checkbox {
+        filter: grayscale(100%) brightness(0%) invert(100%);
+        -webkit-filter: grayscale(100%) brightness(0%) invert(100%);
+    }
+}

@@ -440,14 +440,15 @@ public class MultiBranchTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(l.size(), 1);
-        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/master");
+        Map branch = (Map)((Map)l.get(0)).get("item");
+
+        validatePipeline(p, branch);
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
             .auth("bob","bob")
             .status(403)
             .build(String.class);
-
     }
 
 
@@ -478,7 +479,11 @@ public class MultiBranchTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(l.size(), 1);
-        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/feature2");
+
+        WorkflowJob p1 = scheduleAndFindBranchProject(mp, "feature2");
+        Map branch = (Map)((Map)l.get(0)).get("item");
+
+        validatePipeline(p1, branch);
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
