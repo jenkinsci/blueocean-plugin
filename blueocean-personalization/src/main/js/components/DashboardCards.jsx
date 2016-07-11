@@ -15,22 +15,44 @@ import { PipelineCard } from './PipelineCard';
  */
 export class DashboardCards extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.fetchUserInProgress = false;
+        this.fetchFavoritesInProgress = false;
+    }
+
     componentWillMount() {
-        this._initialize();
+        this._initialize(this.props);
     }
 
-    componentWillReceiveProps() {
-        this._initialize();
+    componentWillReceiveProps(props) {
+        this._initialize(props);
     }
 
-    _initialize() {
+    _initialize(props) {
         const config = this.context.config;
-        const { user, favorites } = this.props;
+        const { user, favorites } = props;
+
+        if (user) {
+            this.fetchUserInProgress = false;
+        }
+
+        if (favorites) {
+            this.fetchFavoritesInProgress = false;
+        }
 
         if (config) {
-            if (!user) {
+            const shouldFetchUser = !user && !this.fetchUserInProgress;
+            const shouldFetchFavorites = user && !favorites && !this.fetchFavoritesInProgress;
+
+            if (shouldFetchUser) {
+                this.fetchUserInProgress = true;
                 this.props.fetchUser(config);
-            } else if (!favorites) {
+            }
+
+            if (shouldFetchFavorites) {
+                this.fetchFavoritesInProgress = true;
                 this.props.fetchFavorites(config, user);
             }
         }
