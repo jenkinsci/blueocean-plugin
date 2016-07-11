@@ -10,6 +10,7 @@ import { Favorite } from '@jenkins-cd/design-language';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
+import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 
 /**
  */
@@ -39,22 +40,10 @@ export class FavoritePipeline extends Component {
 
         if (props.favorites) {
             favorite = props.favorites.find((fav) => {
-                // if a pipeline was favorited, then the self hrefs will match exactly
                 const favUrl = fav.item._links.self.href;
                 const pipelineUrl = pipeline._links.self.href;
-
-                if (favUrl === pipelineUrl) {
-                    return true;
-                }
-
-                // if a multi-branch pipeline was favorited, then master was implicitly favorited
-                // append the proper pathing on the end of the pipeline's URL
-                if (pipeline.branchNames) {
-                    return (favUrl === `${pipelineUrl}branches/master`) ||
-                        (favUrl === `${pipelineUrl}branches/master/`);
-                }
-
-                return false;
+                
+                return checkMatchingFavoriteUrls(favUrl, pipelineUrl);
             });
         }
 

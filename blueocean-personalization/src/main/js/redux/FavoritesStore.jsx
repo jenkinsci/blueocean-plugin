@@ -5,7 +5,9 @@
 import keymirror from 'keymirror';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
+
 import { User } from '../model/User';
+import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 
 /* eslint new-cap: [0] */
 const { Record, List } = Immutable;
@@ -39,9 +41,13 @@ const actionHandlers = {
         }
 
         const toggledBranchHref = branch._links.self.href;
+        // filter the list so that only favorites which didn't match the branch's href are returned
         const prunedList = favoritesList.filter(fav => {
             const favoritedBranch = fav.item;
-            return favoritedBranch._links.self.href !== toggledBranchHref;
+            return !checkMatchingFavoriteUrls(
+                favoritedBranch._links.self.href,
+                toggledBranchHref,
+            );
         });
 
         return state.set('favorites', prunedList);
