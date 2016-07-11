@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.util;
 
 import hudson.model.Item;
 import hudson.model.ItemGroup;
+import hudson.model.Job;
 import hudson.model.User;
 import hudson.plugins.favorite.FavoritePlugin;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
@@ -55,5 +56,9 @@ public class FavoriteUtil {
             url += i.getName();
         }
         return url;
+    }
+
+    public static boolean isFavorableItem(Item i){
+        return i!= null && (i instanceof Job || i instanceof ItemGroup);
     }
 }
