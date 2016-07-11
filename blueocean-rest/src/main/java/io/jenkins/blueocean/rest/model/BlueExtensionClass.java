@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
@@ -9,6 +10,7 @@ import java.util.Collection;
  *
  * @author Vivek Pandey
  */
+@Capability("io.jenkins.blueocean.rest.model.BlueExtensionClass")
 public abstract class BlueExtensionClass extends Resource {
     private static final String CLASSES="classes";
 
