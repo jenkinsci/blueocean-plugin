@@ -73,6 +73,7 @@ export const actions = {
                 ),
             };
 
+            // TODO: need to validate that payload is passing through after JENKINS-36580 is complete
             return dispatch(actions.generateData(
                 { url, fetchOptions },
                 ACTION_TYPES.TOGGLE_FAVORITE,

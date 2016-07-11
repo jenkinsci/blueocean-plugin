@@ -10,7 +10,7 @@ import { User } from '../model/User';
 /* eslint new-cap: [0] */
 const { Record, List } = Immutable;
 
-const FavoritesState = Record({
+export const FavoritesState = Record({
     user: null,
     favorites: null,
 });
@@ -30,16 +30,21 @@ const actionHandlers = {
         const favoriteList = new List(payload);
         return state.set('favorites', favoriteList);
     },
-    [ACTION_TYPES.TOGGLE_FAVORITE](state, { pipeline, favorite }) {
-        // TODO: handle add and remove of pipeline from List properly
-        if (pipeline) {
-            return state.set('favorites', []);
+    [ACTION_TYPES.TOGGLE_FAVORITE](state, { addFavorite, branchToRemove, payload }) {
+        const favoritesList = state.get('favorites');
+
+        if (addFavorite) {
+            const appendedList = favoritesList.push(payload);
+            return state.set('favorites', appendedList);
         }
 
-        return {
-            pipeline,
-            favorite,
-        };
+        const toggledBranchHref = branchToRemove._links.self.href;
+        const prunedList = favoritesList.filter(fav => {
+            const favoritedBranch = fav.item;
+            return favoritedBranch._links.self.href !== toggledBranchHref;
+        });
+
+        return state.set('favorites', prunedList);
     },
 };
 
