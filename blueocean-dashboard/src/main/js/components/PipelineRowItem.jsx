@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Favorite, WeatherIcon } from '@jenkins-cd/design-language';
+import { WeatherIcon } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
 
@@ -86,8 +86,11 @@ export default class PipelineRowItem extends Component {
                 <td>{multiBranchLink}</td>
                 <td>{pullRequestsLink}</td>
                 <td>
-                    <Favorite />
-                    <Extensions.Renderer extensionPoint="jenkins.dashboard.item.action" />
+                    <Extensions.Renderer
+                      extensionPoint="jenkins.pipeline.list.action"
+                      store={this.context.store}
+                      pipeline={this.props.pipeline}
+                    />
                 </td>
             </tr>
         );
@@ -101,4 +104,5 @@ PipelineRowItem.propTypes = {
 
 PipelineRowItem.contextTypes = {
     location: PropTypes.object,
+    store: PropTypes.object,
 };
