@@ -18,6 +18,7 @@ const FavoritesState = Record({
 export const ACTION_TYPES = keymirror({
     SET_USER: null,
     SET_FAVORITES: null,
+    TOGGLE_FAVORITE: null,
 });
 
 const augmentFavoritesData = (favorites) => (
@@ -47,6 +48,17 @@ const actionHandlers = {
     [ACTION_TYPES.SET_FAVORITES](state, { payload }) {
         const favorites = augmentFavoritesData(payload);
         return state.set('favorites', favorites);
+    },
+    [ACTION_TYPES.TOGGLE_FAVORITE](state, { pipeline, favorite }) {
+        // TODO: handle add and remove of pipeline from List properly
+        if (pipeline) {
+            return state.set('favorites', []);
+        }
+
+        return {
+            pipeline,
+            favorite,
+        };
     },
 };
 

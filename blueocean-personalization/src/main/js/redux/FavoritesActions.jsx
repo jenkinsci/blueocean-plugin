@@ -5,7 +5,7 @@ import fetch from 'isomorphic-fetch';
 
 import { ACTION_TYPES } from './FavoritesStore';
 
-const fetchOptions = {
+const defaultFetchOptions = {
     credentials: 'same-origin',
 };
 
@@ -19,7 +19,15 @@ function checkStatus(response) {
 }
 
 function parseJSON(response) {
-    return response.json();
+    return response.json()
+        // FIXME: workaround for empty response body for causes error in Chrome
+        // server should probably return HTTP 204 instead
+        .catch((error) => {
+            if (error.message === 'Unexpected end of JSON input') {
+                return {};
+            }
+            throw error;
+        });
 }
 
 export const actions = {
@@ -27,9 +35,10 @@ export const actions = {
         return (dispatch) => {
             const baseUrl = config.getAppURLBase();
             const url = `${baseUrl}/rest/organizations/jenkins/user/`;
+            const fetchOptions = { ...defaultFetchOptions };
 
             return dispatch(actions.generateData(
-                url,
+                { url, fetchOptions },
                 ACTION_TYPES.SET_USER
             ));
         };
@@ -40,15 +49,40 @@ export const actions = {
             const baseUrl = config.getAppURLBase();
             const username = user.id;
             const url = `${baseUrl}/rest/users/${username}/favorites/`;
+            const fetchOptions = { ...defaultFetchOptions };
 
             return dispatch(actions.generateData(
-                url,
+                { url, fetchOptions },
                 ACTION_TYPES.SET_FAVORITES
             ));
         };
     },
 
-    generateData(url, actionType, optional) {
+    toggleFavorite(config, pipeline, favorite) {
+        return (dispatch) => {
+            const baseUrl = config.getRootURL();
+            const url = `${baseUrl}/${pipeline._links.self.href}/favorite`;
+            const fetchOptions = {
+                ...defaultFetchOptions,
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(
+                    { favorite }
+                ),
+            };
+
+            return dispatch(actions.generateData(
+                { url, fetchOptions },
+                ACTION_TYPES.TOGGLE_FAVORITE,
+                { pipeline, favorite },
+            ));
+        };
+    },
+
+    generateData(request, actionType, optional) {
+        const { url, fetchOptions } = request;
         return (dispatch) => fetch(url, fetchOptions)
             .then(checkStatus)
             .then(parseJSON)
