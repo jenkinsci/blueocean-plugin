@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-
 import hudson.model.Project;
 import hudson.model.User;
 import hudson.tasks.Mailer;
