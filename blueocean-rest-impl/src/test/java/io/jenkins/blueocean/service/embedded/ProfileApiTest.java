@@ -105,7 +105,9 @@ public class ProfileApiTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(l.size(), 1);
-        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/pipeline1");
+        Map pipeline = (Map)((Map)l.get(0)).get("item");
+
+        validatePipeline(p, pipeline);
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")

@@ -7,7 +7,6 @@ import hudson.model.Job;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
@@ -52,6 +51,14 @@ public class BranchImpl extends PipelineImpl {
         public BluePipeline getPipeline(Item item, Reachable parent) {
             if (item instanceof WorkflowJob) {
                 return new BranchImpl((Job) item, parent.getLink());
+            }
+            return null;
+        }
+
+        @Override
+        public Resource resolve(Item context, Reachable parent, Item target) {
+            if (context==target.getParent()) {
+                return getPipeline(context,parent);
             }
             return null;
         }
