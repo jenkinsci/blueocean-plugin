@@ -1,10 +1,12 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
+import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
@@ -43,6 +45,9 @@ public class MultiBranchTest extends BaseTest{
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
 
+    @Inject
+    private LinkResolver linkResolver;
+
 
     private final String[] branches={"master", "feature%2Fux-1", "feature2"};
 
@@ -59,6 +64,29 @@ public class MultiBranchTest extends BaseTest{
      */
     private boolean runAllTests() {
         return System.getenv("RUN_MULTIBRANCH_TESTS") != null;
+    }
+
+
+    @Test
+    public void resolveMbpLink() throws Exception {
+        j.jenkins.getInjector().injectMembers(this);
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        FreeStyleProject f = j.jenkins.createProject(FreeStyleProject.class, "f");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+        j.waitUntilNoActivity();
+
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/",linkResolver.resolve(mp).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/master/",linkResolver.resolve(mp.getBranch("master")).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/",linkResolver.resolve(mp.getBranch("feature%2Fux-1")).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/",linkResolver.resolve(mp.getBranch("feature2")).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/f/",linkResolver.resolve(f).getHref());
     }
 
 

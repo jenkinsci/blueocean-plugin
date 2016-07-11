@@ -7,7 +7,6 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
-import io.jenkins.blueocean.rest.model.BluePipelineFactory;
 import jenkins.model.Jenkins;
 
 import javax.annotation.Nonnull;
