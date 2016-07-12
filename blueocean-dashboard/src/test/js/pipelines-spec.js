@@ -3,20 +3,15 @@ prepareMount();
 
 import React from 'react';
 import { assert } from 'chai';
-import { mount, render, shallow } from 'enzyme';
-import sd from 'skin-deep';
+import { mount, shallow } from 'enzyme';
 
 import Pipelines from '../../main/js/components/Pipelines.jsx';
-import { pipelines } from   './data/pipelines/pipelinesSingle';
+import { pipelines } from './data/pipelines/pipelinesSingle';
 import { pipelinesDupName } from './data/pipelines/pipelinesTwoJobsSameName';
 
-const
-  resultArrayHeaders = ['Name', 'Status', 'Branches', 'Pull Requests', '']
-  ;
+const resultArrayHeaders = ['Name', 'Status', 'Branches', 'Pull Requests', ''];
 
 describe('Pipelines', () => {
-    let tree;
-
     const config = {
         getRootURL: () => '/',
     };
@@ -24,25 +19,30 @@ describe('Pipelines', () => {
     const params = {};
 
     describe('basic table rendering', () => {
+        let wrapper;
+        let context;
+
         beforeEach(() => {
-            tree = sd.shallowRender(
-                () => React.createElement(Pipelines), // For some reason using a fn turns on context
+            context = {
+                pipelines,
+                params,
+                config,
+            };
+
+            wrapper = shallow(
+                <Pipelines />,
                 {
-                    pipelines,
-                    params,
-                    config,
+                    context,
                 }
             );
         });
 
         it('check header to be as expected', () => {
-            const header = tree.subTree('Table').getRenderOutput();
-            assert.equal(header.props.headers.length, resultArrayHeaders.length);
+            assert.equal(wrapper.find('Table').props().headers.length, resultArrayHeaders.length);
         });
 
         it('check rows number to be as expected', () => {
-            const row = tree.everySubTree('PipelineRowItem');
-            assert.equal(row.length, 2);
+            assert.equal(wrapper.find('PipelineRowItem').length, 2);
         });
     });
 
