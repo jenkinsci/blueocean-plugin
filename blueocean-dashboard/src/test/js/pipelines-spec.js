@@ -1,27 +1,10 @@
-var jsdom = require('jsdom').jsdom;
-
-var exposedProperties = ['window', 'navigator', 'document'];
-
-global.document = jsdom('');
-global.window = document.defaultView;
-Object.keys(document.defaultView).forEach((property) => {
-    if (typeof global[property] === 'undefined') {
-        exposedProperties.push(property);
-        global[property] = document.defaultView[property];
-    }
-});
-
-global.navigator = {
-    userAgent: 'node.js',
-};
-
+import { prepareMount } from './util/EnzymeUtils';
+prepareMount();
 
 import React from 'react';
 import { assert } from 'chai';
 import { mount, render, shallow } from 'enzyme';
 import sd from 'skin-deep';
-import Immutable from 'immutable';
-import { store as ExtensionStore } from '@jenkins-cd/js-extensions';
 
 import Pipelines from '../../main/js/components/Pipelines.jsx';
 import { pipelines } from   './data/pipelines/pipelinesSingle';
@@ -34,8 +17,6 @@ const
 describe('Pipelines', () => {
     let tree;
 
-    const pipelineList = Immutable.fromJS(pipelines);
-
     const config = {
         getRootURL: () => '/',
     };
@@ -47,7 +28,7 @@ describe('Pipelines', () => {
             tree = sd.shallowRender(
                 () => React.createElement(Pipelines), // For some reason using a fn turns on context
                 {
-                    pipelines: pipelineList,
+                    pipelines,
                     params,
                     config,
                 }
@@ -72,10 +53,6 @@ describe('Pipelines', () => {
                 params,
                 pipelines: pipelinesDupName,
             };
-
-            ExtensionStore.init({
-                extensionDataProvider: function () {},
-            });
 
             const wrapper = mount(
                 <Pipelines />,

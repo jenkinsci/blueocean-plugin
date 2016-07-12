@@ -1,6 +1,4 @@
-/**
- * Created by cmeyers on 7/12/16.
- */
+/* eslint-disable quotes,quote-props,comma-dangle */
 export const pipelinesDupName = [
     {
         "_class": "io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl",
