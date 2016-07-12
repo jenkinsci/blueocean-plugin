@@ -39,14 +39,12 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
 
                     if(item.task instanceof ExecutorStepExecution.PlaceholderTask) {
                         ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) item.task;
-                        int runNumber;
                         if(task.run() == null){
-                            runNumber = pipeline.job.getNextBuildNumber();
+                            return QueueContainerImpl.getQueuedItem(item, pipeline.job);
                         }else{
-                            runNumber = task.run().getNumber();
+                            return new QueueItemImpl(item, item.task.getOwnerTask().getName(), task.run().getNumber(),
+                                self.rel(String.valueOf(item.getId())));
                         }
-                        return new QueueItemImpl(item, item.task.getOwnerTask().getName(), runNumber,
-                            self.rel(String.valueOf(item.getId())));
                     }
 
                 }
