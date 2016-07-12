@@ -96,24 +96,11 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentDidMount() {
-        // need to register handler to step out of karaoke mode
-        // we bail out on scroll up
-        const onScrollHandler = (elem) => {
-            if (elem.deltaY < 0 && this.state.followAlong) {
-                this.setState({ followAlong: false });
-            }
-        };
-        // we bail out on arrow_up key
-        const _handleKeys = (event) => {
-            if (event.keyCode === 38 && this.state.followAlong) {
-                this.setState({ followAlong: false });
-            }
-        };
         // determine scroll area
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
         // add both listemer, one to the scroll area and another to the whole document
-        this.listener.scroll = domNode.addEventListener('wheel', onScrollHandler, false);
-        this.listener.up = document.addEventListener('keydown', _handleKeys, false);
+        domNode.addEventListener('wheel', this.onScrollHandler, false);
+        document.addEventListener('keydown', this._handleKeys, false);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -158,21 +145,29 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillUnmount() {
-        if (this.listener.scroll) {
-            const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
-            domNode.unsubscribe(this.listener.scroll);
-            delete this.listener.scroll;
-        }
-        if (this.listener.up) {
-            document.unsubscribe(this.listener.up);
-            delete this.listener.up;
-        }
+        const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
+        domNode.removeEventListener('wheel', this._onScrollHandler);
+        document.removeEventListener('keydown', this._handleKeys);
         if (this.listener.sse) {
             sse.unsubscribe(this.listener.sse);
             delete this.listener.sse;
         }
         this.props.cleanNodePointer();
         clearTimeout(this.timeout);
+    }
+
+    // need to register handler to step out of karaoke mode
+    // we bail out on scroll up
+    onScrollHandler(elem) {
+        if (elem.deltaY < 0 && this.state.followAlong) {
+            this.setState({ followAlong: false });
+        }
+    }
+    // we bail out on arrow_up key
+    _handleKeys(event) {
+        if (event.keyCode === 38 && this.state.followAlong) {
+            this.setState({ followAlong: false });
+        }
     }
 
     generateConfig(props) {
