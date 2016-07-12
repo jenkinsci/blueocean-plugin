@@ -104,7 +104,7 @@ class OrganizationPipelines extends Component {
     _selectPipeline(pipelines, params) {
         if (pipelines && params) {
             const { pipeline } = params;
-            var p = pipelines.find(aPipeline => aPipeline.fullName === pipeline);
+            const p = pipelines.find(aPipeline => aPipeline.fullName === pipeline);
             if (!p) {
                 return new Failure(`${pipeline} not found`);
             }

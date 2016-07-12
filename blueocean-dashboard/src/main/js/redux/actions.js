@@ -1,6 +1,6 @@
 import keymirror from 'keymirror';
 
-import fetch, { Pending } from '../util/fetch';
+import fetch from '../util/fetch';
 import { State } from '../components/records';
 
 import { getNodesInformation } from '../util/logDisplayHelper';

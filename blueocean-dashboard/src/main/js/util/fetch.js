@@ -17,18 +17,6 @@ export class FetchStatus {
     static isValue(result) {
         return !(result instanceof FetchStatus);
     }
-    
-    static isSuccess(result) {
-        return result instanceof Success;
-    }
-
-    static isPending(result) {
-        return result instanceof Pending;
-    }
-
-    static isFailure(result) {
-        return result instanceof Failure;
-    }
 }
 
 export class Success extends FetchStatus {
@@ -62,10 +50,9 @@ export class FetchStatusStore {
         this._active.push(id);
     }
     onComplete(id) {
-        let idx = this._active.indexOf(id);
+        const idx = this._active.indexOf(id);
         if (idx >= 0) {
-            let val = this._active[idx];
-            this._active.splice(idx,1);
+            this._active.splice(idx, 1);
             console.log('onComplete');
         } else {
             throw new Failure(`Invalid fetch id: ${id}`);
@@ -76,9 +63,9 @@ export class FetchStatusStore {
 export const store = new FetchStatusStore();
 
 export const isValue = FetchStatus.isValue;
-export const isSuccess = FetchStatus.isValue; // for now, non-status message is success
-export const isPending = FetchStatus.isPending;
-export const isFailure = FetchStatus.isFailure;
+export const isSuccess = isValue; // for now, non-status message is success
+export const isPending = v => v instanceof Pending;
+export const isFailure = v => v instanceof Failure;
 
 function checkStatus(response) {
     if (response.status >= 300 || response.status < 200) {
@@ -90,10 +77,10 @@ function checkStatus(response) {
 }
 
 const fetcher = (...args) => {
-    let fetchId = new Object();
+    const fetchId = {};
     store.onStart(fetchId);
     
-    let fetchPromise = fetch.apply(this, args);
+    const fetchPromise = fetch.apply(this, args);
     return fetchPromise
         .then(checkStatus)
         .then((response) => {

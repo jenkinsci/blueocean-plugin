@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import fetch, { isFailure, isPending } from '../util/fetch';
+import { isFailure, isPending } from '../util/fetch';
 import NotFound from './NotFound';
 import {
     Page,
