@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
 
-const { string, array, object, any } = PropTypes;
+const { string, array, any, func } = PropTypes;
 
 
 function badNode(jenkinsNode) {
@@ -150,22 +150,7 @@ export default class PipelineRunGraph extends Component {
                   selectedStage={selectedStage[0]}
                   onNodeClick={
                     (name, id) => {
-                        const pathname = this.props.location.pathname;
-                        // if path ends with pipeline we simply add the node id
-                        if (pathname.endsWith('pipeline/')) {
-                            this.props.router.push(`${pathname}${id}`);
-                        } else if (pathname.endsWith('pipeline')) {
-                            this.props.router.push(`${pathname}/${id}`);
-                        } else {
-                            // remove last bit and replace it with node
-                            const pathArray = pathname.split('/');
-                            pathArray.pop();
-                            if (pathname.endsWith('/')) {
-                                pathArray.pop();
-                            }
-                            pathArray.shift();
-                            this.props.router.push(`${pathArray.join('/')}/${id}`);
-                        }
+                        this.props.callback(id);
                     }
                   }
                 />
@@ -181,6 +166,5 @@ PipelineRunGraph.propTypes = {
     nodes: array,
     node: any,
     selectedStage: object,
-    router: object.isRequired, // From react-router
-    location: object.isRequired, // From react-router
+    callback: func,
 };
