@@ -228,7 +228,7 @@ export class RunDetailsPipeline extends Component {
         let title = this.mergedConfig.nodeReducer.displayName;
         if (log) {
             title = 'Logs';
-        } else if (this.mergedConfig.nodeReducer.id !== null) {
+        } else if (this.mergedConfig.nodeReducer.id !== null && title) {
             title = `Steps - ${title}`;
         }
         const currentSteps = steps ? steps[key] : null;
@@ -266,6 +266,7 @@ export class RunDetailsPipeline extends Component {
             }
             router.push(newPath);
         };
+        const shouldShowLogHeader = log !== null || (currentSteps && currentSteps.model && currentSteps.model.length > 0);
         return (
             <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
@@ -277,11 +278,13 @@ export class RunDetailsPipeline extends Component {
                   runId={runId}
                 />
                 }
-                <LogToolbar
-                  fileName={logGeneral.fileName}
-                  url={logGeneral.url}
-                  title={title}
-                />
+                { shouldShowLogHeader &&
+                    <LogToolbar
+                      fileName={logGeneral.fileName}
+                      url={logGeneral.url}
+                      title={title}
+                    />
+                }
                 { currentSteps && <Steps
                   nodeInformation={currentSteps}
                   followAlong={followAlong}
