@@ -8,8 +8,9 @@ const { object, func, string } = PropTypes;
 
 export default class Node extends Component {
     componentWillMount() {
-        const { node, nodesBaseUrl, fetchLog } = this.props;
+        const { nodesBaseUrl, fetchLog } = this.props;
         const { config = {} } = this.context;
+        const node = this.expandAnchor(this.props);
         if (node && node.isFocused) {
             const mergedConfig = { ...config, node, nodesBaseUrl };
             fetchLog(mergedConfig);
@@ -17,8 +18,9 @@ export default class Node extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const { node, logs, nodesBaseUrl, fetchLog } = nextProps;
+        const { logs, nodesBaseUrl, fetchLog } = nextProps;
         const { config = {} } = this.context;
+        const node = this.expandAnchor(nextProps);
         const mergedConfig = { ...config, node, nodesBaseUrl };
         if (logs !== this.props.logs) {
             const key = calculateLogUrl(mergedConfig);
@@ -38,13 +40,29 @@ export default class Node extends Component {
     componentWillUnmount() {
         clearTimeout(this.timeout);
     }
+    // Calculate whether we need to expand the step due to linking
+    expandAnchor(props) {
+        const { node, location: { hash: anchorName } } = props;
+        // e.g. #step-10-log-1
+        if (anchorName) {
+            const stepReg = /step-(.{1,})-log-.*/;
+            const match = stepReg.exec(anchorName);
+            if (match[1] && match[1] === node.id) {
+                const isFocused = true;
+                return { ...node, isFocused };
+            }
+        }
+        return { ...node };
+    }
 
     render() {
-        const { node, logs, nodesBaseUrl, fetchLog } = this.props;
+        const { logs, nodesBaseUrl, fetchLog } = this.props;
+        const node = this.expandAnchor(this.props);
         // Early out
         if (!node || !fetchLog) {
             return null;
         }
+        const { override } = this.state;
         const { config = {} } = this.context;
         const {
           title,
@@ -64,7 +82,6 @@ export default class Node extends Component {
         };
         const runResult = resultRun.toLowerCase();
         const scrollToBottom = runResult === 'failure' || runResult === 'running';
-
         return (<div>
             <ResultItem
               key={id}
@@ -74,7 +91,12 @@ export default class Node extends Component {
               onExpand={getLogForNode}
               durationMillis={durationInMillis}
             >
-                { log && <LogConsole key={id} logArray={log.logArray} scrollToBottom={scrollToBottom} /> } &nbsp;
+                { log && <LogConsole
+                  key={id}
+                  logArray={log.logArray}
+                  scrollToBottom={scrollToBottom}
+                  prefix={`step-${id}-`}
+                /> } &nbsp;
             </ResultItem>
       </div>);
     }
@@ -83,6 +105,7 @@ export default class Node extends Component {
 Node.propTypes = {
     node: object.isRequired,
     logs: object,
+    location: object,
     fetchLog: func,
     nodesBaseUrl: string,
 };
