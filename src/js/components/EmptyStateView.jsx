@@ -2,6 +2,7 @@
 
 import React, {Component, PropTypes} from 'react';
 import {EmptyStateIcon} from './EmptyStateIcon';
+import {Icon} from 'react-material-icons-blue';
 
 /**
  * Displays an "empty state" dialog with arbitrary child content and an optional icon.
@@ -13,7 +14,7 @@ import {EmptyStateIcon} from './EmptyStateIcon';
  * <button>Take Action!</button> *
  *
  * Properties:
- * iconName="branch|goat|shoes"
+ * iconName="branch|goat|shoes|<any-Icon-type>"
  * tightSpacing={true|false}
  */
 export class EmptyStateView extends Component {
@@ -24,10 +25,23 @@ export class EmptyStateView extends Component {
             layoutClasses = `${layoutClasses} tight-spacing`;
         }
 
+        let icon = null;
+        if (this.props.iconName) {
+            if (['branch', 'goat', 'shoes'].indexOf(this.props.iconName) >= 0) {
+                icon = <EmptyStateIcon name={this.props.iconName} />;
+            } else {
+                icon = (
+                    <div className="empty-state-icon" style={{ paddingLeft: 0 }}>
+                        <Icon size={150} icon={this.props.iconName} style={{fill: '#fff'}} />
+                    </div>
+                );
+            }
+        }
+
         return (
             <div className="empty-state">
                 <div className={layoutClasses}>
-                    { this.props.iconName ? <EmptyStateIcon name={this.props.iconName} /> : null }
+                    { icon }
                     <div className="empty-state-content">{this.props.children}</div>
                 </div>
             </div>
@@ -37,6 +51,6 @@ export class EmptyStateView extends Component {
 
 EmptyStateView.propTypes = {
     children: PropTypes.node,
-    iconName: PropTypes.oneOf(['branch','goat','shoes']),
+    iconName: PropTypes.string,
     tightSpacing: PropTypes.bool,
 };
