@@ -3,14 +3,16 @@
 /*********************************************************************************************
 **********************************************************************************************
 
-    Checks for version inconsistencies in top-level project dependencies.
+    Checks for version inconsistencies in PROD dependencies for top-level
+    projects, and a few first-party "blessed" deps like JDL etc.
 
     Usage:
 
         node checkdeps.js
 
-    If conflicting versions are detected, this will print them out as JSON on STDERR and
-    exit(1). If no conflicts are detected, there is no output and normal exit
+    Any conflicting PROD dependencies will be printed on STDERR, and it will exit(1)
+
+    If no conflicts, or only PEER/DEV conflicts, normal exit(0)
 
 **********************************************************************************************
 *********************************************************************************************/
@@ -40,11 +42,16 @@ var packageFiles = [];
 packageFiles.push(require("./blueocean-dashboard/package.json"));
 packageFiles.push(require("./blueocean-web/package.json"));
 
+// Add some expected dependencies, so we go another level deep just for these
+packageFiles.push(require("./blueocean-dashboard/node_modules/@jenkins-cd/design-language/package.json"));
+packageFiles.push(require("./blueocean-dashboard/node_modules/@jenkins-cd/sse-gateway/package.json"));
+packageFiles.push(require("./blueocean-dashboard/node_modules/@jenkins-cd/js-extensions/package.json"));
+
 packageFiles.forEach(packageFile => {
 
     addDependencies("prod", packageFile.dependencies);
-    addDependencies("dev", packageFile.devDependencies);
-    addDependencies("peer", packageFile.peerDependencies);
+    // addDependencies("dev", packageFile.devDependencies);
+    // addDependencies("peer", packageFile.peerDependencies);
 
     function addDependencies(kind, deps) {
         if (deps) {
@@ -73,5 +80,5 @@ Object.keys(allDependencies).forEach(dependency => {
 
 if (errs.length) {
     console.error(JSON.stringify(errs, null, 4));
-    process.exit(1);
+    process.exitCode = 1;
 }
