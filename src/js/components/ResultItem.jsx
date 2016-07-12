@@ -51,9 +51,6 @@ export class ResultItem extends Component {
             const statusGlyph = getGlyphFor(resultClean);
             this.setState({resultClean, statusGlyph});
         }
-        if (props.expanded!=this.props.expanded) {
-            this.toggleExpanded();
-        }
     }
 
     toggleExpanded: Function = (e) => {
