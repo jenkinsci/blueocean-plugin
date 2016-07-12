@@ -5,6 +5,7 @@ since we would return a function, */
 const { Record } = Immutable;
 export class PipelineRecord extends Record({
     _class: null,
+    _links: null,
     branchNames: null,
     displayName: '',
     estimatedDurationInMillis: 0,
