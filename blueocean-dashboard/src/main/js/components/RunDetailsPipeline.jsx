@@ -150,6 +150,7 @@ export class RunDetailsPipeline extends Component {
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
                   router={router}
+                  selectedStage={mergedConfig.nodeReducer}
                   location={location}
                   nodes={nodes[nodeKey].model}
                   pipelineName={name}

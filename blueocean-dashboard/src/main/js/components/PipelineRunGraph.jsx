@@ -142,11 +142,12 @@ export default class PipelineRunGraph extends Component {
             display: 'flex',
             justifyContent: 'center',
         };
-
+        const selectedStage = graphNodes.filter((item) => item.id === this.props.selectedStage.id);
         return (
             <div style={outerDivStyle}>
                 <PipelineGraph
                   stages={graphNodes}
+                  selectedStage={selectedStage[0]}
                   onNodeClick={
                     (name, id) => {
                         const pathname = this.props.location.pathname;
@@ -179,6 +180,7 @@ PipelineRunGraph.propTypes = {
     runId: string,
     nodes: array,
     node: any,
+    selectedStage: object,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
 };
