@@ -62,7 +62,6 @@ export default class Node extends Component {
         if (!node || !fetchLog) {
             return null;
         }
-        const { override } = this.state;
         const { config = {} } = this.context;
         const {
           title,
