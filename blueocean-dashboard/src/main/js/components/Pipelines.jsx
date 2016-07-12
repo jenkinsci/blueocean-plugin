@@ -62,10 +62,12 @@ export default class Pipelines extends Component {
                           headers={headers}
                         >
                             { pipelineRecords
-                                .map(pipeline => <PipelineRowItem
-                                  key={pipeline.name} pipeline={pipeline}
-                                  showOrganization={!organization}
-                                />)
+                                .map(pipeline => (
+                                    <PipelineRowItem
+                                      key={pipeline.name} pipeline={pipeline}
+                                      showOrganization={!organization}
+                                    />
+                                ))
                             }
                         </Table>
                     </article>
