@@ -10,7 +10,7 @@ import {
     pipelines as pipelinesSelector,
     currentRuns as currentRunsSelector,
 } from '../../main/js/redux';
-import { pipelines } from './pipelines';
+import { pipelines } from './data/pipelines/pipelinesSingle';
 import { latestRuns } from './data/runs/latestRuns';
 import job_crud_created_multibranch from './data/sse/job_crud_created_multibranch';
 import fetchedBranches from './data/branches/latestBranches';

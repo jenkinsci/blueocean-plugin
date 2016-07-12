@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
 import RunPipeline from './RunPipeline.jsx';
+import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 const { object } = PropTypes;
 
@@ -22,6 +23,7 @@ export default class Branches extends Component {
                 location,
                 pipeline: {
                     name: pipelineName,
+                    fullName,
                     organization,
                     },
                 },
@@ -29,23 +31,26 @@ export default class Branches extends Component {
         const {
             latestRun: { id, result, startTime, endTime, changeSet, state, commitId, estimatedDurationInMillis },
             weatherScore,
-            name,
+            name: branchName,
         } = data;
-        const url = `/organizations/${organization}/${pipelineName}/detail/${name}/${id}/pipeline`;
+
+        const cleanBranchName = decodeURIComponent(branchName);
+        const url = buildRunDetailsUrl(organization, fullName, cleanBranchName, id, 'pipeline');
+
         const open = () => {
             location.pathname = url;
             router.push(location);
         };
         const { msg } = changeSet[0] || {};
 
-        return (<tr key={name} onClick={open} id={`${name}-${id}`} >
+        return (<tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${id}`} >
             <td><WeatherIcon score={weatherScore} /></td>
             <td onClick={open}>
                 <LiveStatusIndicator result={result === 'UNKNOWN' ? state : result}
                   startTime={startTime} estimatedDuration={estimatedDurationInMillis}
                 />
             </td>
-            <td>{decodeURIComponent(name)}</td>
+            <td>{cleanBranchName}</td>
             <td><CommitHash commitId={commitId} /></td>
             <td>{msg || '-'}</td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
