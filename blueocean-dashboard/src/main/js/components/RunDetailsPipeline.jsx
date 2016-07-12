@@ -27,6 +27,7 @@ export class RunDetailsPipeline extends Component {
         super(props);
         // we do not want to follow any builds that are finished
         this.state = { followAlong: props && props.result && props.result.state !== 'FINISHED' };
+        this.listener = {};
     }
 
     componentWillMount() {
@@ -91,7 +92,7 @@ export class RunDetailsPipeline extends Component {
             }
         };
 
-        this.pipelineListener = sse.subscribe('pipeline', onSseEvent);
+        this.listener.sse = sse.subscribe('pipeline', onSseEvent);
     }
 
     componentDidMount() {
@@ -111,8 +112,8 @@ export class RunDetailsPipeline extends Component {
         // determine scroll area
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
         // add both listemer, one to the scroll area and another to the whole document
-        domNode.addEventListener('wheel', onScrollHandler, false);
-        document.addEventListener('keydown', _handleKeys, false);
+        this.listener.scroll = domNode.addEventListener('wheel', onScrollHandler, false);
+        this.listener.up = document.addEventListener('keydown', _handleKeys, false);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -157,9 +158,18 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillUnmount() {
-        if (this.pipelineListener) {
-            sse.unsubscribe(this.pipelineListener);
-            delete this.pipelineListener;
+        if (this.listener.scroll) {
+            const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
+            domNode.unsubscribe(this.listener.scroll);
+            delete this.listener.scroll;
+        }
+        if (this.listener.up) {
+            document.unsubscribe(this.listener.up);
+            delete this.listener.up;
+        }
+        if (this.listener.sse) {
+            sse.unsubscribe(this.listener.sse);
+            delete this.listener.sse;
         }
         this.props.cleanNodePointer();
         clearTimeout(this.timeout);
