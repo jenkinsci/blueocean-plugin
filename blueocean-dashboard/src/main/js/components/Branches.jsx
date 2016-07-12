@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
 import RunPipeline from './RunPipeline.jsx';
+import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 const { object } = PropTypes;
 
@@ -22,6 +23,7 @@ export default class Branches extends Component {
                 location,
                 pipeline: {
                     name: pipelineName,
+                    fullName,
                     organization,
                     },
                 },
@@ -31,7 +33,8 @@ export default class Branches extends Component {
             weatherScore,
             name,
         } = data;
-        const url = `/organizations/${organization}/${pipelineName}/detail/${name}/${id}/pipeline`;
+
+        const url = buildRunDetailsUrl(organization, fullName, name, id, 'pipeline');
         const open = () => {
             location.pathname = url;
             router.push(location);
