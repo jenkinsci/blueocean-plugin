@@ -117,7 +117,7 @@ export class LogConsole extends Component {
           className="block"
         >
             { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-                <a key={index + 1} href={`#${prefix}log-${index + 1}`} name={`${prefix}log-${index + 1}`}>{line}</a>
+                <a key={index + 1} href={`#${prefix||''}log-${index + 1}`} name={`${prefix}log-${index + 1}`}>{line}</a>
             </p>)}</code>);
     }
 }
