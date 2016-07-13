@@ -85,8 +85,11 @@ class RunDetails extends Component {
 
         const baseUrl = buildRunDetailsUrl(organization, name, branch, runId);
 
-        const currentRun = this.props.runs.filter(
-            (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
+        /* eslint-disable arrow-body-style */
+        const currentRun = this.props.runs.filter((run) => {
+            return run.id === runId &&
+                decodeURIComponent(run.pipeline) === branch;
+        })[0];
 
         currentRun.name = name;
 
