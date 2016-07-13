@@ -145,7 +145,7 @@ export default class PipelineRunGraph extends Component {
         const id = this.props.selectedStage.id;
         let selectedStage = graphNodes.filter((item) => {
             let matches = item.id === id;
-            if (!matches && item.children.length>0) {
+            if (!matches && item.children.length > 0) {
                 const childMatches = item.children.filter(child => child.id === id);
                 matches = childMatches.length === 1;
             }
@@ -160,8 +160,8 @@ export default class PipelineRunGraph extends Component {
                   stages={graphNodes}
                   selectedStage={selectedStage[0]}
                   onNodeClick={
-                    (name, id) => {
-                        this.props.callback(id);
+                    (name, stageId) => {
+                        this.props.callback(stageId);
                     }
                   }
                 />
