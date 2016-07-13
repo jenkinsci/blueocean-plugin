@@ -791,7 +791,7 @@ export const actions = {
                                 type: ACTION_TYPES.SET_LOGS,
                             });
                         }),
-                    (error) => console.error('error', error)
+                    (error) => console.error('error', error) // eslint-disable-line no-console
                 );
             }
             return null;

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
 
-const { string, array, any, func } = PropTypes;
+const { array, any, func, object, string } = PropTypes;
 
 
 function badNode(jenkinsNode) {
