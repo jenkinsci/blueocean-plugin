@@ -142,7 +142,18 @@ export default class PipelineRunGraph extends Component {
             display: 'flex',
             justifyContent: 'center',
         };
-        const selectedStage = graphNodes.filter((item) => item.id === this.props.selectedStage.id);
+        const id = this.props.selectedStage.id;
+        let selectedStage = graphNodes.filter((item) => {
+            let matches = item.id === id;
+            if (!matches && item.children.length>0) {
+                const childMatches = item.children.filter(child => child.id === id);
+                matches = childMatches.length === 1;
+            }
+            return matches;
+        });
+        if (selectedStage[0] && selectedStage[0].id !== id && selectedStage[0].children.length > 0) {
+            selectedStage = selectedStage[0].children.filter(item => item.id === id);
+        }
         return (
             <div style={outerDivStyle}>
                 <PipelineGraph
