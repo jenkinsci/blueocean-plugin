@@ -86,6 +86,7 @@ export class Activity extends Component {
             { label: 'Message', className: 'message' },
             { label: 'Duration', className: 'duration' },
             { label: 'Completed', className: 'completed' },
+            { label: '', className: 'actions' },
         ];
 
         return (<main>

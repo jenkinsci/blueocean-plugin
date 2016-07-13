@@ -3,6 +3,7 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
+import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
@@ -72,6 +73,9 @@ export default class Runs extends Component {
             <td>{changeset && changeset.comment || '-'}</td>
             <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
+            <td>
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
+            </td>
         </tr>);
     }
 }
