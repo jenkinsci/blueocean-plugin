@@ -80,7 +80,7 @@ export function calculateStepsBaseUrl(config) {
         `${_appURLBase}/rest/organizations/jenkins/` +
         `pipelines/${name}`;
     if (isMultiBranch) {
-        baseUrl = `${baseUrl}/branches/${branch}`;
+        baseUrl = `${baseUrl}/branches/${uriString(branch)}`;
     }
     if (node && node !== null) {
         return `${baseUrl}/runs/${runId}/nodes/${node}/steps/`;
