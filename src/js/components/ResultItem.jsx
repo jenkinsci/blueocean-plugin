@@ -51,7 +51,8 @@ export class ResultItem extends Component {
             const statusGlyph = getGlyphFor(resultClean);
             this.setState({resultClean, statusGlyph});
         }
-        if (props.expanded!=this.props.expanded) {
+        // check whether we want to change the state or whether we already are in the correct state
+        if (props.expanded !== this.state.expanded) {
             this.toggleExpanded();
         }
     }
