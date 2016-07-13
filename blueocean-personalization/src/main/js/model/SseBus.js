@@ -146,6 +146,11 @@ function parseJSON(response) {
         });
 }
 
+/**
+ * Trims duplicate forward slashes to a single slash and adds trailing slash if needed.
+ * @param url
+ * @returns {string}
+ */
 export const cleanSlashes = (url) => {
     if (url.indexOf('//') !== -1) {
         let cleanUrl = url.replace('//', '/');
