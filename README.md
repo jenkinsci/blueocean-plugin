@@ -1,5 +1,7 @@
 Blue Ocean is the next generation user experience for Jenkins.
 
+
+
 It is a multi-module maven project with a few Jenkins plugins. 
 
 Read it: 
