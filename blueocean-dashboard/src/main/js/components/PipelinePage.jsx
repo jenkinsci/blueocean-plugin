@@ -13,8 +13,6 @@ import {
 } from '@jenkins-cd/design-language';
 import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
 
-const { object } = PropTypes;
-
 export default class PipelinePage extends Component {
     render() {
         const { pipeline } = this.context;
@@ -54,17 +52,18 @@ export default class PipelinePage extends Component {
                         <TabLink to="/pr">Pull Requests</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {React.cloneElement(this.props.children, { pipeline })}
+                {this.props.children}
             </Page>
         );
     }
 }
 
 PipelinePage.propTypes = {
-    children: object,
+    children: PropTypes.any,
 };
 
 PipelinePage.contextTypes = {
-    location: object,
-    pipeline: object,
+    location: PropTypes.object,
+    pipeline: PropTypes.object,
 };
+
