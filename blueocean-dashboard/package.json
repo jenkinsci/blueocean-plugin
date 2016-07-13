@@ -35,7 +35,7 @@
     "skin-deep": "^0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.63-beta",
+    "@jenkins-cd/design-language": "0.0.62",
     "@jenkins-cd/js-extensions": "0.0.17-beta-1",
     "@jenkins-cd/js-modules": "0.0.5",
     "@jenkins-cd/sse-gateway": "0.0.5",
