@@ -23,7 +23,6 @@ export default class Branches extends Component {
                 router,
                 location,
                 pipeline: {
-                    name: pipelineName,
                     fullName,
                     organization,
                     },
@@ -56,7 +55,7 @@ export default class Branches extends Component {
             <td>{msg || '-'}</td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
             <td>
-                <RunPipeline organization={organization} pipeline={pipelineName} branch={name} />
+                <RunPipeline organization={organization} pipeline={fullName} branch={encodeURIComponent(branchName)} />
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.branches.list.action" />
             </td>
         </tr>);

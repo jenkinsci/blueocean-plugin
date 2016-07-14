@@ -155,7 +155,7 @@ public class PipelineImpl extends BluePipeline {
 
         @Override
         public Resource resolve(Item context, Reachable parent, Item target) {
-            if(context == target.getParent()){
+            if(context == target && target instanceof Job) {
                 return getPipeline(target,parent);
             }
             return null;
