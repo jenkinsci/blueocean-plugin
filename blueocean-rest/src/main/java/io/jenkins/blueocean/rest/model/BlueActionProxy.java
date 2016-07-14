@@ -33,7 +33,5 @@ public abstract class BlueActionProxy extends Resource {
      * _class is the class name of action.
      */
     @Exported(name = "_class")
-    public String get_Class(){
-        return getAction().getClass().getName();
-    }
+    public abstract String get_Class();
 }
