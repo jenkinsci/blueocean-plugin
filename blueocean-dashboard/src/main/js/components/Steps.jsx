@@ -12,7 +12,6 @@ export default class Nodes extends Component {
             model,
             nodesBaseUrl,
         } = nodeInformation;
-
         return (<div>
             {
               model.map((item, index) =>

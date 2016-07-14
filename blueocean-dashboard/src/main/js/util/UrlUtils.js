@@ -47,7 +47,7 @@ export const uriString = (input) => encodeURIComponent(input).replace(/%2F/g, '%
 export const calculateLogUrl = (config) => {
     if (config.node) {
         const { nodesBaseUrl, node } = config;
-        return `${nodesBaseUrl}/${node.id}/log`;
+        return `${nodesBaseUrl}/${node.id}/log/`;
     }
     return config.url;
 };
@@ -80,14 +80,13 @@ export function calculateStepsBaseUrl(config) {
         `${_appURLBase}/rest/organizations/jenkins/` +
         `pipelines/${name}`;
     if (isMultiBranch) {
-        baseUrl = `${baseUrl}/branches/${branch}`;
+        baseUrl = `${baseUrl}/branches/${uriString(branch)}`;
     }
     if (node && node !== null) {
-        return `${baseUrl}/runs/${runId}/nodes/${node}/steps`;
+        return `${baseUrl}/runs/${runId}/nodes/${node}/steps/`;
     }
     return `${baseUrl}/runs/${runId}/steps/`;
 }
-
 /*
  * helper to calculate general log url, includes filename.
  * If we have multibranch we generate a slightly different url

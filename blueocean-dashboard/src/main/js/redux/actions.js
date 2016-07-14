@@ -61,7 +61,7 @@ export const actionHandlers = {
         return state.set('currentRuns', payload);
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
-        return state.set('node', payload);
+        return state.set('node', { ...payload });
     },
     [ACTION_TYPES.SET_NODES](state, { payload }): State {
         const nodes = { ...state.nodes } || {};
@@ -157,7 +157,7 @@ function parseMoreDataHeader(response) {
  * @param onError
  */
 exports.fetchJson = function fetchJson(url, onSuccess, onError) {
-    fetch(url, fetchOptions)
+    return fetch(url, fetchOptions)
         .then(checkStatus)
         .then(parseJSON)
         .then(onSuccess)
@@ -188,7 +188,7 @@ exports.fetchLogsInjectStart = function fetchLogsInjectStart(url, start, onSucce
     } else {
         refetchUrl = `${url}?start=${start}`;
     }
-    fetch(refetchUrl, fetchOptions)
+    return fetch(refetchUrl, fetchOptions)
         .then(checkStatus)
         .then(parseMoreDataHeader)
         .then(onSuccess)
@@ -684,6 +684,7 @@ export const actions = {
                     nodeModel = information.model.filter((item) => item.id === config.node)[0];
                     node = config.node;
                 }
+
                 dispatch({
                     type: ACTION_TYPES.SET_NODE,
                     payload: nodeModel,
@@ -770,7 +771,7 @@ export const actions = {
             if (
                 !data || !data[logUrl] ||
                 config.newStart > 0 ||
-                (data && data[logUrl] && data[logUrl].newStart > 0)
+                (data && data[logUrl] && data[logUrl].newStart > 0 || !data[logUrl].logArray)
             ) {
                 return exports.fetchLogsInjectStart(
                     logUrl,
