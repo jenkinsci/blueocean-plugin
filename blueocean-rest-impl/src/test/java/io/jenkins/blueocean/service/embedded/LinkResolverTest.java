@@ -43,6 +43,24 @@ public class LinkResolverTest extends BaseTest {
         Project p2 = folder2.createProject(FreeStyleProject.class, "test2");
         Project p3 = folder3.createProject(FreeStyleProject.class, "test3");
 
+        WorkflowJob pipelineJob1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        pipelineJob1.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
+            "    node {\n" +
+            "       sh \"echo here\"\n" +
+            "    }\n" +
+            "\n"));
+
+        WorkflowJob pipelineJob2 = folder2.createProject(WorkflowJob.class, "pipeline2");
+        pipelineJob2.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
+            "    node {\n" +
+            "       sh \"echo here\"\n" +
+            "    }\n" +
+            "\n"));
+
+
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/",linkResolver.resolve(pipelineJob1).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/pipeline2/",linkResolver.resolve(pipelineJob2).getHref());
+
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/fstyle1/",linkResolver.resolve(f).getHref());
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/",linkResolver.resolve(folder1).getHref());
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/test1/",linkResolver.resolve(p1).getHref());
