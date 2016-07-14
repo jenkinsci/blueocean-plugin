@@ -39,7 +39,7 @@ EmptyState.propTypes = {
 };
 
 const RunNonMultiBranchPipeline = ({ pipeline, buttonText }) => (
-    <RunPipeline organization={pipeline.organization} pipeline={pipeline.name} buttonClass="btn-primary inverse non-multi-branch" buttonText={buttonText} />
+    <RunPipeline organization={pipeline.organization} pipeline={pipeline.fullName} buttonClass="btn-primary inverse non-multi-branch" buttonText={buttonText} />
 );
 
 RunNonMultiBranchPipeline.propTypes = {
@@ -87,6 +87,7 @@ export class Activity extends Component {
             { label: 'Duration', className: 'duration' },
             { label: 'Completed', className: 'completed' },
         ];
+        
 
         return (<main>
             <article className="activity">

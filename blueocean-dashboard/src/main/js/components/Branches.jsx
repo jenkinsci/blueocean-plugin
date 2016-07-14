@@ -22,7 +22,6 @@ export default class Branches extends Component {
                 router,
                 location,
                 pipeline: {
-                    name: pipelineName,
                     fullName,
                     organization,
                     },
@@ -34,9 +33,10 @@ export default class Branches extends Component {
             name: branchName,
         } = data;
 
+        
         const cleanBranchName = decodeURIComponent(branchName);
         const url = buildRunDetailsUrl(organization, fullName, cleanBranchName, id, 'pipeline');
-
+        
         const open = () => {
             location.pathname = url;
             router.push(location);
@@ -54,10 +54,11 @@ export default class Branches extends Component {
             <td><CommitHash commitId={commitId} /></td>
             <td>{msg || '-'}</td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
-            <td><RunPipeline organization={organization} pipeline={pipelineName} branch={encodeURIComponent(branchName)} /></td>
+            <td><RunPipeline organization={organization} pipeline={fullName} branch={encodeURIComponent(branchName)} /></td>
         </tr>);
     }
 }
+
 
 Branches.propTypes = {
     data: object.isRequired,

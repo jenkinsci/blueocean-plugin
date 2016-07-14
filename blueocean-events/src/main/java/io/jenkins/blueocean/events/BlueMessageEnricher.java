@@ -69,7 +69,7 @@ public class BlueMessageEnricher extends MessageEnricher {
             if (job instanceof WorkflowJob) {
                 ItemGroup<? extends Item> parent = job.getParent();
                 if (parent instanceof WorkflowMultiBranchProject) {
-                    String multiBranchProjectName = ((WorkflowMultiBranchProject) parent).getName();
+                    String multiBranchProjectName = parent.getFullName();
                     jobChannelMessage.set(EventProps.Job.job_ismultibranch, "true");
                     jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, multiBranchProjectName);
                     jobChannelMessage.set(BlueEventProps.blueocean_job_branch_name, job.getName());
@@ -85,7 +85,7 @@ public class BlueMessageEnricher extends MessageEnricher {
         if (job instanceof WorkflowJob) {
             ItemGroup<? extends Item> parent = job.getParent();
             if (parent instanceof WorkflowMultiBranchProject) {
-                String multiBranchProjectName = ((WorkflowMultiBranchProject) parent).getName();
+                String multiBranchProjectName = parent.getFullName();
                 //MN I hate everything about this. Branch names must be encoded, even if they are already URL encoded, they need to be twice endcode
                 // eg foo/bar -> foo%2Fbar -> foo%252F. The latter form is what is required by API and classic URIs.
                 return orgLink.rel("pipelines").rel(multiBranchProjectName).rel("branches").rel(URLEncoder.encode(job.getName()));
