@@ -96,9 +96,9 @@ class RunDetails extends Component {
         const status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
 
         const afterClose = () => {
-            const fallback = `/organizations/${organization}/${name}/`;
+            const fallbackUrl = buildPipelineUrl(organization, name);
 
-            location.pathname = this.opener || fallback;
+            location.pathname = this.opener || fallbackUrl;
             location.hash = `#${branch}-${runId}`;
 
             router.push(location);
