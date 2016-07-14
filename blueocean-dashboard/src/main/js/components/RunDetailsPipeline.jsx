@@ -28,6 +28,8 @@ export class RunDetailsPipeline extends Component {
         // we do not want to follow any builds that are finished
         this.state = { followAlong: props && props.result && props.result.state !== 'FINISHED' };
         this.listener = {};
+        this._handleKeys = this._handleKeys.bind(this);
+        this.onScrollHandler = this.onScrollHandler.bind(this);
     }
 
     componentWillMount() {
