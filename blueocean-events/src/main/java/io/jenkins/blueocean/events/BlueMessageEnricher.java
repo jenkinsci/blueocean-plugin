@@ -38,31 +38,32 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
 import javax.annotation.Nonnull;
+import java.net.URLEncoder;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Extension
 public class BlueMessageEnricher extends MessageEnricher {
-    
+
     enum BlueEventProps {
         blueocean_job_rest_url,
         blueocean_job_pipeline_name,
         blueocean_job_branch_name,
     }
-    
+
     @Override
     public void enrich(@Nonnull Message message) {
-        
+
         // TODO: Replace once https://issues.jenkins-ci.org/browse/JENKINS-36286 is done
         message.set(EventProps.Jenkins.jenkins_org, OrganizationImpl.INSTANCE.getName());
-        
+
         String channelName = message.getChannelName();
         if (channelName.equals(Events.JobChannel.NAME)) {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
             ParameterizedJobMixIn.ParameterizedJob job = jobChannelMessage.getJob();
             Link jobUrl = getLink(job);
-            
+
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
             jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, job.getName());
             if (job instanceof WorkflowJob) {
@@ -85,10 +86,12 @@ public class BlueMessageEnricher extends MessageEnricher {
             ItemGroup<? extends Item> parent = job.getParent();
             if (parent instanceof WorkflowMultiBranchProject) {
                 String multiBranchProjectName = ((WorkflowMultiBranchProject) parent).getName();
-                return orgLink.rel("pipelines").rel(multiBranchProjectName).rel("branches").rel(job.getName());
+                //MN I hate everything about this. Branch names must be encoded, even if they are already URL encoded, they need to be twice endcode
+                // eg foo/bar -> foo%2Fbar -> foo%252F. The latter form is what is required by API and classic URIs.
+                return orgLink.rel("pipelines").rel(multiBranchProjectName).rel("branches").rel(URLEncoder.encode(job.getName()));
             }
         }
-        
+
         return orgLink.rel("pipelines").rel(job.getName());
     }
 }
