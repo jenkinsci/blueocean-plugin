@@ -65,7 +65,7 @@ const config = {
             dest: "licenses/"
         }
     },
-    clean: ["dist", "licenses"],
+    clean: ["dist", "licenses", "reports"],
     test: {
         sources: "test/**/*-spec.{js,jsx}"
     }

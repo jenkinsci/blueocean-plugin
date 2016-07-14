@@ -12,10 +12,9 @@ node {
 
             stage "Test and validate"
                 sh "npm install gulp-cli && ./node_modules/.bin/gulp"
+                step([$class: 'JUnitResultArchiver', testResults: 'reports/**/*.xml'])
         }
 
     stage "Cleanup"
         deleteDir()
 }
-
-

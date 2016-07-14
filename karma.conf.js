@@ -9,6 +9,10 @@ module.exports = function (config) {
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['mocha', 'browserify'],
 
+        junitReporter: {
+            outputDir: 'reports'
+        },
+
         // include only tests here; browserify will find the rest
         files: [
             'test/**/*-spec.+(js|jsx)'
@@ -36,7 +40,7 @@ module.exports = function (config) {
         },
 
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['mocha'],
+        reporters: ['mocha','junit'],
 
         // web server port
         port: 9876,
