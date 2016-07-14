@@ -1,7 +1,10 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.strangeberry.jmdns.tools.Browser;
+import hudson.model.AbstractBuild;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
+import hudson.scm.RepositoryBrowser;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -10,6 +13,8 @@ import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 
 /**
@@ -50,6 +55,20 @@ public class ChangeSetResource extends Resource {
         }
     }
 
+    @Exported
+    public String getUrl() {
+        RepositoryBrowser browser = changeSet.getParent().getBrowser();
+        if(browser != null) {
+            try {
+                URL url =  browser.getChangeSetLink(changeSet);
+                return url == null ? null : url.toExternalForm();
+            } catch (IOException e) {
+                return null;
+            }
+        }
+
+        return null;
+    }
 
     @Override
     public Link getLink() {
