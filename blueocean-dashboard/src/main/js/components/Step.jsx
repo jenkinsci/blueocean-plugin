@@ -55,7 +55,7 @@ export default class Node extends Component {
         if (anchorName) {
             const stepReg = /step-(.{1,})-log-.*/;
             const match = stepReg.exec(anchorName);
-            if (match[1] && match[1] === node.id) {
+            if (match && match[1] && match[1] === node.id) {
                 const isFocused = true;
                 return { ...node, isFocused };
             }
