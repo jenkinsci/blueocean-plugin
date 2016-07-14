@@ -18,6 +18,7 @@ export class LogConsole extends Component {
         this.state = {
             lines: [],
         };
+        this.timeouts = {};
     }
 
     componentWillMount() {
@@ -44,7 +45,8 @@ export class LogConsole extends Component {
         }
         // if have a new logArray, simply add it to the queue and wait for next tick
         this.queuedLines = this.queuedLines.concat(newArray);
-        return setTimeout(() => {
+        clearTimeout(this.timeouts['render']);
+        this.timeouts['render'] = setTimeout(() => {
             this._processNextLines();
         }, INITIAL_RENDER_DELAY);
     }
@@ -55,9 +57,20 @@ export class LogConsole extends Component {
      */
     componentDidUpdate() {
         if (this.props.scrollToBottom) {
-            setTimeout(() => {
+            this.timeouts['scroll'] = setTimeout(() => {
                 this.updateScroll();
             }, INITIAL_RENDER_DELAY);
+        }
+    }
+
+    componentWillUnmount() {
+        this.clearThisTimeout();
+    }
+
+    clearThisTimeout() {
+        if (this.timeouts) {
+            clearTimeout(this.timeouts['scroll']);
+            clearTimeout(this.timeouts['render']);
         }
     }
 
@@ -77,7 +90,8 @@ export class LogConsole extends Component {
             // queue up all the lines and grab just the beginning to render for now
             this.queuedLines = this.queuedLines.concat(newLines);
             newLines = this.queuedLines.splice(0, INITIAL_RENDER_CHUNK_SIZE);
-            setTimeout(() => {
+            clearTimeout(this.timeouts['render']);
+            this.timeouts['render'] = setTimeout(() => {
                 this._processNextLines();
             }, INITIAL_RENDER_DELAY);
         }
@@ -100,7 +114,8 @@ export class LogConsole extends Component {
 
         // if more lines are queued, render again
         if (this.queuedLines.length) {
-            setTimeout(() => {
+            clearTimeout(this.timeouts['render']);
+            this.timeouts['render'] = setTimeout(() => {
                 this._processNextLines();
             }, RERENDER_DELAY);
         }
