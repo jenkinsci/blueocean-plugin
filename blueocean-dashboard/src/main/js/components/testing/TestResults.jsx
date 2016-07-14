@@ -63,6 +63,7 @@ export default class TestResult extends Component {
         
         // possible statuses: PASSED, FAILED, SKIPPED
         const failures = tests.filter(t => t.status === 'FAILED');
+        const fixed = tests.filter(t => t.status === 'FIXED');
         const skipped = tests.filter(t => t.status === 'SKIPPED');
         const newFailures = failures.filter(t => t.age === 1);
         const existingFailures = failures.filter(t => t.age > 1);
@@ -71,6 +72,31 @@ export default class TestResult extends Component {
         let newFailureBlock = null;
         let existingFailureBlock = null;
         let skippedBlock = null;
+        let summaryBlock = null;
+        summaryBlock = (
+            <div className="test-summary">
+                <div className={`new-passed count-${fixed.length}`}>
+                    <div className="count">{fixed.length}</div>
+                    <label>Fixed</label>
+                </div>
+                <div className={`new-failed count-${newFailures.length}`}>
+                    <div className="count">{newFailures.length}</div>
+                    <label>New Failures</label>
+                </div>
+                <div className={`failed count-${testResults.failCount}`}>
+                    <div className="count">{testResults.failCount}</div>
+                    <label>Failures</label>
+                </div>
+                <div className={`passed count-${testResults.passCount}`}>
+                    <div className="count">{testResults.passCount}</div>
+                    <label>Passing</label>
+                </div>
+                <div className={`skipped count-${testResults.skipCount}`}>
+                    <div className="count">{testResults.skipCount}</div>
+                    <label>Skipped</label>
+                </div>
+            </div>
+        );
         
         if (testResults.failCount === 0) {
             passBlock = [
@@ -84,18 +110,11 @@ export default class TestResult extends Component {
             ];
         }
 
-        if (newFailures.length > 0 || existingFailures.length > 0) {
-            if (newFailures.length === 0) {
-                newFailureBlock = [
-                    <h4>New failing - {newFailures.length}</h4>,
-                    <div className="">No new failures</div>,
-                ];
-            } else {
-                newFailureBlock = [
-                    <h4>New failing - {newFailures.length}</h4>,
-                    newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
-                ];
-            }
+        if (newFailures.length > 0) {
+            newFailureBlock = [
+                <h4>New failing - {newFailures.length}</h4>,
+                newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
+            ];
         }
 
         if (existingFailures.length > 0) {
@@ -113,6 +132,7 @@ export default class TestResult extends Component {
         }
 
         return (<div>
+            {summaryBlock}
             {newFailureBlock}
             {existingFailureBlock}
             {skippedBlock}
