@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.strangeberry.jmdns.tools.Browser;
-import hudson.model.AbstractBuild;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import hudson.scm.RepositoryBrowser;
