@@ -6,6 +6,7 @@ storiesOf('EmptyStateView', module)
     .add('One-Liner', oneLiner)
     .add('Content & Wide Image', contentWithWideImage)
     .add('Content & Narrow Image', contentWithNarrowImage)
+    .add('Content & Icon', contentWithIcon)
     .add('Content Only', contentOnly)
     .add('Image Only', imageOnly);
 
@@ -28,6 +29,14 @@ function contentWithWideImage() {
 function contentWithNarrowImage() {
     return (
         <EmptyStateView iconName="goat">
+            {defaultContent()}
+        </EmptyStateView>
+    );
+}
+
+function contentWithIcon() {
+    return (
+        <EmptyStateView iconName="done_all">
             {defaultContent()}
         </EmptyStateView>
     );
