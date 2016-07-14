@@ -268,6 +268,7 @@ export class RunDetailsPipeline extends Component {
             <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
+                  selectedStage={this.mergedConfig.nodeReducer}
                   callback={afterClick}
                   nodes={nodes[nodeKey].model}
                   pipelineName={name}

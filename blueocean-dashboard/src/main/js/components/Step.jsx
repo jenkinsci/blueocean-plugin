@@ -8,8 +8,9 @@ const { object, func, string, bool } = PropTypes;
 
 export default class Node extends Component {
     componentWillMount() {
-        const { node, nodesBaseUrl, fetchLog } = this.props;
+        const { nodesBaseUrl, fetchLog } = this.props;
         const { config = {} } = this.context;
+        const node = this.expandAnchor(this.props);
         if (node && node.isFocused) {
             const mergedConfig = { ...config, node, nodesBaseUrl };
             fetchLog(mergedConfig);
@@ -17,8 +18,9 @@ export default class Node extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const { node, logs, nodesBaseUrl, fetchLog, followAlong } = nextProps;
+        const { logs, nodesBaseUrl, fetchLog, followAlong } = nextProps;
         const { config = {} } = this.context;
+        const node = this.expandAnchor(nextProps);
         const mergedConfig = { ...config, node, nodesBaseUrl };
         if (logs && logs !== this.props.logs) {
             const key = calculateLogUrl(mergedConfig);
@@ -46,9 +48,24 @@ export default class Node extends Component {
             clearTimeout(this.timeout);
         }
     }
+    // Calculate whether we need to expand the step due to linking
+    expandAnchor(props) {
+        const { node, location: { hash: anchorName } } = props;
+        // e.g. #step-10-log-1
+        if (anchorName) {
+            const stepReg = /step-(.{1,})-log-.*/;
+            const match = stepReg.exec(anchorName);
+            if (match[1] && match[1] === node.id) {
+                const isFocused = true;
+                return { ...node, isFocused };
+            }
+        }
+        return { ...node };
+    }
 
     render() {
-        const { node, logs, nodesBaseUrl, fetchLog, followAlong } = this.props;
+        const { logs, nodesBaseUrl, fetchLog, followAlong } = this.props;
+        const node = this.expandAnchor(this.props);
         // Early out
         if (!node || !fetchLog) {
             return null;
@@ -85,7 +102,12 @@ export default class Node extends Component {
               onExpand={getLogForNode}
               durationMillis={durationInMillis}
             >
-                { log && <LogConsole key={id} logArray={log.logArray} scrollToBottom={scrollToBottom} /> } &nbsp;
+                { log && <LogConsole
+                  key={id}
+                  logArray={log.logArray}
+                  scrollToBottom={scrollToBottom}
+                  prefix={`step-${id}-`}
+                /> } &nbsp;
             </ResultItem>
       </div>);
     }
@@ -95,6 +117,7 @@ Node.propTypes = {
     node: object.isRequired,
     followAlong: bool,
     logs: object,
+    location: object,
     fetchLog: func,
     nodesBaseUrl: string,
 };
