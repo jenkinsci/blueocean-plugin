@@ -1,8 +1,6 @@
-package io.jenkins.blueocean.service.embedded;
+package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Result;
-import io.jenkins.blueocean.service.embedded.rest.PipelineNodeGraphBuilder;
-import io.jenkins.blueocean.service.embedded.rest.PipelineNodeUtil;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -22,7 +20,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Vivek Pandey
  */
-public class PipelineNodeTest extends BaseTest {
+public class PipelineNodeTest extends PipelineBaseTest {
 
     //TODO: Enable this test if there is way to determine when test starts running and not waiting till launched
 //    @Test

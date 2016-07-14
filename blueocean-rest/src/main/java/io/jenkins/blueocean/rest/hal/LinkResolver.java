@@ -1,5 +1,8 @@
 package io.jenkins.blueocean.rest.hal;
 
+import hudson.ExtensionList;
+import hudson.ExtensionPoint;
+
 /**
  *
  * Resolves a {@link Link} for a given model object
@@ -7,7 +10,7 @@ package io.jenkins.blueocean.rest.hal;
  * @author Kohsuke Kawaguchi
  * @author Vivek Pandey
  */
-public abstract class LinkResolver {
+public abstract class LinkResolver implements ExtensionPoint{
 
     /**
      *
@@ -19,4 +22,18 @@ public abstract class LinkResolver {
      *      to the given model object.
      */
     public abstract Link resolve(Object modelObject);
+
+    public static ExtensionList<LinkResolver> all(){
+        return ExtensionList.lookup(LinkResolver.class);
+    }
+
+    public static Link resolveLink(Object modeObject){
+        for(LinkResolver resolver:all()){
+            Link link = resolver.resolve(modeObject);
+            if(link != null){
+                return link;
+            }
+        }
+        return null;
+    }
 }

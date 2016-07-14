@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
+import hudson.Plugin;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -10,6 +11,8 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import jenkins.model.Jenkins;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -38,6 +41,8 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
     private static final String EXCLUDED_FROM_FLATTENING_PARAM ="excludedFromFlattening";
     private static final String ORGANIZATION_PARAM="organization";
 
+    private static final Logger logger = LoggerFactory.getLogger(PipelineSearch.class);
+
     @Override
     public String getType() {
         return "pipeline";
@@ -55,11 +60,27 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
         List<Class> excludeList=new ArrayList<>();
         if(s!=null){
             for(String s1:s.split(",")){
+                Class c = null;
                 try {
-                    Class c = Class.forName(s1);
-                    excludeList.add(c);
+                    c = Class.forName(s1);
                 } catch (ClassNotFoundException e) {
-                    throw new ServiceException.BadRequestExpception(String.format("%s parameter has invalid value: %s", EXCLUDED_FROM_FLATTENING_PARAM, s1), e);
+                    logger.error("excludedFromFlattening value " + s1 +" is not found: " + e.getMessage());
+                    try {
+                        //TODO: There should be better ways to find a class from a plugin.
+                        Plugin p = Jenkins.getInstance().getPlugin("blueocean-pipeline-api-impl");
+                        if(p != null){
+                            c = p.getWrapper().classLoader.loadClass(s1);
+                        }else{
+                            logger.error("blueocean-pipeline-api-impl plugin not found!");
+                        }
+                    } catch (ClassNotFoundException e1) {
+                        logger.error(e.getMessage(), e1);
+                    }
+                    //ignored, give other OmniSearch implementations chance, they might handle it
+                    //throw new ServiceException.BadRequestExpception(String.format("%s parameter has invalid value: %s", EXCLUDED_FROM_FLATTENING_PARAM, s1), e);
+                }
+                if(c!=null){
+                    excludeList.add(c);
                 }
             }
         }

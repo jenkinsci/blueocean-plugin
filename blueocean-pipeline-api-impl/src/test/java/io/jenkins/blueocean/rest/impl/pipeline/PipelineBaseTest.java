@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.service.embedded;
+package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
@@ -8,9 +8,16 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
+import hudson.Util;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.JsonConverter;
+import jenkins.branch.MultiBranchProject;
+import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
+import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,15 +28,17 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 
 /**
  * @author Vivek Pandey
  */
-public abstract class BaseTest {
-    private static  final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
+public abstract class PipelineBaseTest{
+    private static  final Logger LOGGER = LoggerFactory.getLogger(PipelineBaseTest.class);
 
     @Rule
     public JenkinsRule j = new JenkinsRule();
@@ -227,24 +236,24 @@ public abstract class BaseTest {
             throw new RuntimeException(e);
         }
     }
-//
-//    protected void validateMultiBranchPipeline(WorkflowMultiBranchProject p, Map resp, int numBranches){
-//        validateMultiBranchPipeline(p, resp, numBranches, -1, -1);
-//    }
-//    protected void validateMultiBranchPipeline(WorkflowMultiBranchProject p, Map resp, int numBranches, int numSuccBranches, int numOfFailingBranches){
-//        Assert.assertEquals("jenkins", resp.get("organization"));
-//        Assert.assertEquals(p.getName(), resp.get("name"));
-//        Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
-//        Assert.assertNull(resp.get("lastSuccessfulRun"));
-//        Assert.assertEquals(numBranches, resp.get("totalNumberOfBranches"));
-//        if(numOfFailingBranches >= 0) {
-//            Assert.assertEquals(numOfFailingBranches, resp.get("numberOfFailingBranches"));
-//        }
-//        if(numSuccBranches >= 0) {
-//            Assert.assertEquals(numSuccBranches, resp.get("numberOfSuccessfulBranches"));
-//        }
-//        Assert.assertEquals(p.getBuildHealth().getScore(), resp.get("weatherScore"));
-//    }
+
+    protected void validateMultiBranchPipeline(WorkflowMultiBranchProject p, Map resp, int numBranches){
+        validateMultiBranchPipeline(p, resp, numBranches, -1, -1);
+    }
+    protected void validateMultiBranchPipeline(WorkflowMultiBranchProject p, Map resp, int numBranches, int numSuccBranches, int numOfFailingBranches){
+        Assert.assertEquals("jenkins", resp.get("organization"));
+        Assert.assertEquals(p.getName(), resp.get("name"));
+        Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
+        Assert.assertNull(resp.get("lastSuccessfulRun"));
+        Assert.assertEquals(numBranches, resp.get("totalNumberOfBranches"));
+        if(numOfFailingBranches >= 0) {
+            Assert.assertEquals(numOfFailingBranches, resp.get("numberOfFailingBranches"));
+        }
+        if(numSuccBranches >= 0) {
+            Assert.assertEquals(numSuccBranches, resp.get("numberOfSuccessfulBranches"));
+        }
+        Assert.assertEquals(p.getBuildHealth().getScore(), resp.get("weatherScore"));
+    }
 
     protected void validatePipeline(Job p, Map resp){
         Assert.assertEquals("jenkins", resp.get("organization"));
@@ -256,7 +265,10 @@ public abstract class BaseTest {
             Run b = p.getLastSuccessfulBuild();
             String s = baseUrl + "/organizations/jenkins/pipelines/" +
                 p.getName() + "/runs/" + b.getId()+"/";
-
+            if(p instanceof WorkflowJob && p.getParent() instanceof MultiBranchProject){
+                s = baseUrl + "/organizations/jenkins/pipelines/" +
+                    ((MultiBranchProject) p.getParent()).getName() +"/branches/"+ Util.rawEncode(p.getName())+"/runs/" + b.getId()+"/";
+            }
             Assert.assertEquals(s, resp.get("lastSuccessfulRun"));
 
         }else{
@@ -285,38 +297,27 @@ public abstract class BaseTest {
         Assert.assertEquals(state, resp.get("state"));
     }
 
-//    protected String getNodeName(FlowNode n){
-//        return n.getAction(ThreadNameAction.class) != null
-//            ? n.getAction(ThreadNameAction.class).getThreadName()
-//            : n.getDisplayName();
-//    }
+    protected String getNodeName(FlowNode n){
+        return n.getAction(ThreadNameAction.class) != null
+            ? n.getAction(ThreadNameAction.class).getThreadName()
+            : n.getDisplayName();
+    }
 
     private String getBaseUrl(String path){
         return baseUrl + path;
     }
 
 
-//    protected List<FlowNode> getStages(FlowGraphTable nodeGraphTable){
-//        List<FlowNode> nodes = new ArrayList<>();
-//        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-//            if(PipelineNodeUtil.isStage(row.getNode()) ||
-//                PipelineNodeUtil.isParallelBranch(row.getNode())){
-//                nodes.add(row.getNode());
-//            }
-//        }
-//        return nodes;
-//    }
-
-//    protected List<FlowNode> getParallelNodes(FlowGraphTable nodeGraphTable){
-//        List<FlowNode> parallelNodes = new ArrayList<>();
-//
-//        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-//            if(PipelineNodeUtil.isParallelBranch(row.getNode())){
-//                parallelNodes.add(row.getNode());
-//            }
-//        }
-//        return parallelNodes;
-//    }
+    protected List<FlowNode> getStages(FlowGraphTable nodeGraphTable){
+        List<FlowNode> nodes = new ArrayList<>();
+        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
+            if(PipelineNodeUtil.isStage(row.getNode()) ||
+                PipelineNodeUtil.isParallelBranch(row.getNode())){
+                nodes.add(row.getNode());
+            }
+        }
+        return nodes;
+    }
 
     protected String getHrefFromLinks(Map resp, String link){
         Map links = (Map) resp.get("_links");
@@ -330,6 +331,18 @@ public abstract class BaseTest {
         }
         return (String) l.get("href");
     }
+
+    protected List<FlowNode> getParallelNodes(FlowGraphTable nodeGraphTable){
+        List<FlowNode> parallelNodes = new ArrayList<>();
+
+        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
+            if(PipelineNodeUtil.isParallelBranch(row.getNode())){
+                parallelNodes.add(row.getNode());
+            }
+        }
+        return parallelNodes;
+    }
+
     public RequestBuilder request() {
         return new RequestBuilder(baseUrl);
     }
