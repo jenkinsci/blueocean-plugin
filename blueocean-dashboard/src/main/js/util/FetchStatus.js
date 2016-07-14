@@ -4,8 +4,6 @@
  * fetches and dispatches status changes.
  */
 
-import fetch from 'isomorphic-fetch';
-
 /**
  * Holds fetch status during fetch operations
  */
@@ -46,14 +44,12 @@ export class FetchStatusStore {
         this._active = [];
     }
     onStart(id) {
-        console.log('onStart');
         this._active.push(id);
     }
     onComplete(id) {
         const idx = this._active.indexOf(id);
         if (idx >= 0) {
             this._active.splice(idx, 1);
-            console.log('onComplete');
         } else {
             throw new Failure(`Invalid fetch id: ${id}`);
         }
@@ -66,32 +62,3 @@ export const isValue = FetchStatus.isValue;
 export const isSuccess = isValue; // for now, non-status message is success
 export const isPending = v => v instanceof Pending;
 export const isFailure = v => v instanceof Failure;
-
-function checkStatus(response) {
-    if (response.status >= 300 || response.status < 200) {
-        const error = new Error(response.statusText);
-        error.response = response;
-        throw error;
-    }
-    return response;
-}
-
-const fetcher = (...args) => {
-    const fetchId = {};
-    store.onStart(fetchId);
-    
-    const fetchPromise = fetch.apply(this, args);
-    return fetchPromise
-        .then(checkStatus)
-        .then((response) => {
-            store.onComplete(fetchId);
-            return response;
-        })
-        .catch((err) => {
-            store.onComplete(fetchId);
-            console.error(err); // eslint-disable-line no-console
-            throw err;
-        });
-};
-
-export default fetcher;

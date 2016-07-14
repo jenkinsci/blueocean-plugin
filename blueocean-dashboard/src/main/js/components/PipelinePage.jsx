@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { isFailure, isPending } from '../util/fetch';
+import { isFailure, isPending } from '../util/FetchStatus';
 import NotFound from './NotFound';
 import {
     Page,
@@ -52,7 +52,7 @@ export default class PipelinePage extends Component {
                         <TabLink to="/pr">Pull Requests</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {this.props.children}
+                {React.cloneElement(this.props.children, { pipeline })}
             </Page>
         );
     }
@@ -66,4 +66,3 @@ PipelinePage.contextTypes = {
     location: PropTypes.object,
     pipeline: PropTypes.object,
 };
-

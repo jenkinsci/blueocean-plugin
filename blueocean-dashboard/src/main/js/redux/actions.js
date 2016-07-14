@@ -1,6 +1,6 @@
 import keymirror from 'keymirror';
 
-import fetch from '../util/fetch';
+import fetch from 'isomorphic-fetch';
 import { State } from '../components/records';
 
 import { getNodesInformation } from '../util/logDisplayHelper';

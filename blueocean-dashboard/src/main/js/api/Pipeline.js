@@ -5,7 +5,7 @@
  * interacting with pipelines, encapsulating REST API calls etc.
  */
 
-import fetch from '../util/fetch';
+import fetch from 'isomorphic-fetch';
 import config from '../config';
 import * as urlUtils from '../util/UrlUtils';
 import * as sse from '@jenkins-cd/sse-gateway';

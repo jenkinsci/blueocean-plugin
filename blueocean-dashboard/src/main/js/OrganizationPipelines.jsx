@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Failure } from './util/fetch';
+import { Failure } from './util/FetchStatus';
 import {
     actions,
     pipelines as pipelinesSelector,
