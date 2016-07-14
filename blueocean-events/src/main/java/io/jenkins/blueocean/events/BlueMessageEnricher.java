@@ -65,7 +65,7 @@ public class BlueMessageEnricher extends MessageEnricher {
             Link jobUrl = getLink(job);
 
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
-            jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, job.getName());
+            jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, job.getFullName());
             if (job instanceof WorkflowJob) {
                 ItemGroup<? extends Item> parent = job.getParent();
                 if (parent instanceof WorkflowMultiBranchProject) {
@@ -92,6 +92,6 @@ public class BlueMessageEnricher extends MessageEnricher {
             }
         }
 
-        return orgLink.rel("pipelines").rel(job.getName());
+        return orgLink.rel("pipelines").rel(job.getFullName());
     }
 }
