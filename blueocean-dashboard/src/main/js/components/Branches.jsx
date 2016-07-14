@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
+import Extensions from '@jenkins-cd/js-extensions';
 import RunPipeline from './RunPipeline.jsx';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
@@ -33,10 +34,9 @@ export default class Branches extends Component {
             name: branchName,
         } = data;
 
-        
         const cleanBranchName = decodeURIComponent(branchName);
         const url = buildRunDetailsUrl(organization, fullName, cleanBranchName, id, 'pipeline');
-        
+
         const open = () => {
             location.pathname = url;
             router.push(location);
@@ -54,11 +54,13 @@ export default class Branches extends Component {
             <td><CommitHash commitId={commitId} /></td>
             <td>{msg || '-'}</td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
-            <td><RunPipeline organization={organization} pipeline={fullName} branch={encodeURIComponent(branchName)} /></td>
+            <td>
+                <RunPipeline organization={organization} pipeline={fullName} branch={encodeURIComponent(branchName)} />
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.branches.list.action" />
+            </td>
         </tr>);
     }
 }
-
 
 Branches.propTypes = {
     data: object.isRequired,
