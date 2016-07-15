@@ -1,14 +1,15 @@
 package io.jenkins.blueocean.rest;
 
+import com.google.inject.Inject;
 import hudson.Extension;
 import hudson.ExtensionList;
+import io.jenkins.blueocean.BlueOceanUI;
 import io.jenkins.blueocean.RootRoutable;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
-import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -25,6 +26,9 @@ import java.util.Map;
  */
 @Extension
 public final class ApiHead implements RootRoutable, Reachable  {
+
+    @Inject
+    private BlueOceanUI blueOceanUI;
 
     private final Map<String,ApiRoutable> apis = new HashMap<>();
 
@@ -81,20 +85,19 @@ public final class ApiHead implements RootRoutable, Reachable  {
 
     @Override
     public Link getLink() {
-        Ancestor apiHead = Stapler.getCurrentRequest().findAncestor(ApiHead.class);
-
-        String contextPath = Stapler.getCurrentRequest().getContextPath();
-        String parentUrl = apiHead.getUrl();
-        if(!contextPath.isEmpty() && !contextPath.equals("/")){
-            int i = parentUrl.indexOf(contextPath);
-            if(i>=0 && i+contextPath.length() < parentUrl.length()){
-                parentUrl = parentUrl.substring(i+contextPath.length());
-            }
-        }
-        return new Link(parentUrl);
+        return new Link("/"+blueOceanUI.getUrlBase()).rel(getUrlName());
     }
 
+    /**
+     * Gives instance of ApiHead by looking in to Extensions. In some cases it might be null, such as when jenkins is
+     * booting up.
+     */
     public static ApiHead INSTANCE(){
-        return (ApiHead) Stapler.getCurrentRequest().findAncestor(ApiHead.class).getObject();
+        ExtensionList<ApiHead> extensionList = ExtensionList.lookup(ApiHead.class);
+        if(!extensionList.isEmpty()){
+            return extensionList.get(0); //ApiHead is singleton
+        }
+
+        return null;
     }
 }

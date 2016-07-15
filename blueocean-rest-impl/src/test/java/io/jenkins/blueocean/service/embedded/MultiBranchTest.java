@@ -1,10 +1,12 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
+import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
@@ -43,6 +45,9 @@ public class MultiBranchTest extends BaseTest{
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
 
+    @Inject
+    private LinkResolver linkResolver;
+
 
     private final String[] branches={"master", "feature%2Fux-1", "feature2"};
 
@@ -55,10 +60,33 @@ public class MultiBranchTest extends BaseTest{
     /**
      * Some of these tests can be problematic until:
      * https://issues.jenkins-ci.org/browse/JENKINS-36290 is resolved
-     * Set an env var to any value to get these to run. 
+     * Set an env var to any value to get these to run.
      */
     private boolean runAllTests() {
         return System.getenv("RUN_MULTIBRANCH_TESTS") != null;
+    }
+
+
+    @Test
+    public void resolveMbpLink() throws Exception {
+        j.jenkins.getInjector().injectMembers(this);
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        FreeStyleProject f = j.jenkins.createProject(FreeStyleProject.class, "f");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+        j.waitUntilNoActivity();
+
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/",linkResolver.resolve(mp).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/master/",linkResolver.resolve(mp.getBranch("master")).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/",linkResolver.resolve(mp.getBranch("feature%2Fux-1")).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/",linkResolver.resolve(mp.getBranch("feature2")).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/f/",linkResolver.resolve(f).getHref());
     }
 
 
@@ -400,11 +428,13 @@ public class MultiBranchTest extends BaseTest{
         WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
         j.waitUntilNoActivity();
 
-        new RequestBuilder(baseUrl)
+        Map m = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/p/favorite")
             .auth("alice", "alice")
             .data(ImmutableMap.of("favorite", true))
-            .build(String.class);
+            .build(Map.class);
+
+        validatePipeline(p, (Map) m.get("item"));
 
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -412,14 +442,15 @@ public class MultiBranchTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(l.size(), 1);
-        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/master");
+        Map branch = (Map)((Map)l.get(0)).get("item");
+
+        validatePipeline(p, branch);
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
             .auth("bob","bob")
             .status(403)
             .build(String.class);
-
     }
 
 
@@ -438,11 +469,16 @@ public class MultiBranchTest extends BaseTest{
         WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
         j.waitUntilNoActivity();
 
-        new RequestBuilder(baseUrl)
+        WorkflowJob p1 = scheduleAndFindBranchProject(mp, "feature2");
+
+        Map map = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/p/branches/feature2/favorite")
             .auth("alice", "alice")
             .data(ImmutableMap.of("favorite", true))
-            .build(String.class);
+            .build(Map.class);
+
+
+        validatePipeline(p1, (Map) map.get("item"));
 
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -450,7 +486,10 @@ public class MultiBranchTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(l.size(), 1);
-        Assert.assertEquals(((Map)l.get(0)).get("pipeline"),"/organizations/jenkins/pipelines/p/branches/feature2");
+
+        Map branch = (Map)((Map)l.get(0)).get("item");
+
+        validatePipeline(p1, branch);
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")

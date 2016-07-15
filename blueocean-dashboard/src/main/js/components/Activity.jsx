@@ -12,7 +12,7 @@ import {
     connect,
 } from '../redux';
 
-const { object, array, func, string, boolean } = PropTypes;
+const { object, array, func, string, bool } = PropTypes;
 
 const EmptyState = ({ repoName, pipeline, showRunButton }) => (
     <main>
@@ -35,11 +35,11 @@ const EmptyState = ({ repoName, pipeline, showRunButton }) => (
 EmptyState.propTypes = {
     repoName: string,
     pipeline: object,
-    showRunButton: boolean,
+    showRunButton: bool,
 };
 
 const RunNonMultiBranchPipeline = ({ pipeline, buttonText }) => (
-    <RunPipeline organization={pipeline.organization} pipeline={pipeline.name} buttonClass="btn-primary inverse non-multi-branch" buttonText={buttonText} />
+    <RunPipeline organization={pipeline.organization} pipeline={pipeline.fullName} buttonClass="btn-primary inverse non-multi-branch" buttonText={buttonText} />
 );
 
 RunNonMultiBranchPipeline.propTypes = {
@@ -86,7 +86,9 @@ export class Activity extends Component {
             { label: 'Message', className: 'message' },
             { label: 'Duration', className: 'duration' },
             { label: 'Completed', className: 'completed' },
+            { label: '', className: 'actions' },
         ];
+        
 
         return (<main>
             <article className="activity">

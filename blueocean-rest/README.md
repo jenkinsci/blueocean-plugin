@@ -349,6 +349,24 @@ Pipelines can be nested inside folder.
       "qeueudTime" : "2016-06-22T11:05:41.309+1200"
     }
 
+## Replay a pipeline run
+
+This will quueue up a replay of the pipeline run with the same commit id as the run used
+
+    curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/1/replay
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+      "id" : "64",
+      "expectedBuildNumber" : 10,
+      "pipeline" : "bug%2FUX-334",
+      "_links" : {
+         "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/"
+         }
+      },
+      "queuedTime" : "2016-06-29T14:11:52.191-0700"
+   }
 ## Get all runs in a pipeline
     
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs
@@ -1101,19 +1119,68 @@ This will show up as a download in the browser.
     Unit testing...
 
 
+## Favorite API
+
+Favorite API can be used to favorite a pipeline (Multi-branch, branch, pipeline or even folder) for a logged in user. 
+If favorite request is successful then the repsonse is favorited item.  
+
+    curl -u alice:xxx -H"Content-Type:application/json" -XPUT -d '{"favorite":true} ttp://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
+
+    {
+        "_class" : "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
+        "_links" : {
+                  "self" : {
+                     "_class" : "io.jenkins.blueocean.rest.hal.Link",
+                     "href" : "/blue/rest/users/alice/favorites/pipeline1/"
+                  }
+               },
+       "item" : {
+          "displayName" : "pipeline1",
+          "_links" : {
+             "runs" : {
+                "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/",
+                "_class" : "io.jenkins.blueocean.rest.hal.Link"
+             },
+             "self" : {
+                "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/",
+                "_class" : "io.jenkins.blueocean.rest.hal.Link"
+             },
+             "queue" : {
+                "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/queue/",
+                "_class" : "io.jenkins.blueocean.rest.hal.Link"
+             },
+             "actions" : {
+                "_class" : "io.jenkins.blueocean.rest.hal.Link",
+                "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/actions/"
+             }
+          },
+          "organization" : "jenkins",
+          "latestRun" : null,
+          "name" : "pipeline1",
+          "actions" : [],
+          "weatherScore" : 100,
+          "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineImpl",
+          "fullName" : "pipeline1",
+          "lastSuccessfulRun" : null,
+          "estimatedDurationInMillis" : -1
+       }
+    }
+
+
+
 ## Favorite a pipeline
 Returns 200 on success. Must be authenticated.
 
     curl -u bob:bob -H"Content-Type:application/json" -XPUT -d '{"favorite":true} ttp://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
 
-## Favorite a multibranch pipeline
+## Favorite a multi branch pipeline
 Must be authenticated.
 
 This favorites the master branch. Returns 200 on success. 500 if master does not exist
 
     curl -u bob:bob  -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
 
-## Favorite a multibranch pipeline branch
+## Favorite a multi branch pipeline branch
 Returns 200 on success. Must be authenticated.
 
     curl -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/favorite
@@ -1124,9 +1191,86 @@ Must be authenticated.
 
     curl -u bob:bob  http://localhost:8080/jenkins/blue/rest/users/bob/favorites/
 
-    [{
-        "pipeline":"/organizations/jenkins/pipelines/pipeline1"
-    }]
+    [ {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/users/alice/favorites/p%2Fmaster/"
+        }
+      },
+      "item" : {
+        "_class" : "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+        "_links" : {
+          "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/"
+          },
+          "actions" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/actions/"
+          },
+          "runs" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/"
+          },
+          "queue" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/queue/"
+          }
+        },
+        "actions" : [ ],
+        "displayName" : "master",
+        "estimatedDurationInMillis" : 953,
+        "fullName" : "p/master",
+        "lastSuccessfulRun" : "http://localhost:49669/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/",
+        "latestRun" : {
+          "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+          "_links" : {
+            "nodes" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/nodes/"
+            },
+            "log" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/log/"
+            },
+            "self" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/"
+            },
+            "actions" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/actions/"
+            },
+            "steps" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/steps/"
+            }
+          },
+          "actions" : [ ],
+          "artifacts" : [ ],
+          "changeSet" : [ ],
+          "durationInMillis" : 953,
+          "enQueueTime" : "2016-07-08T13:27:15.250-0700",
+          "endTime" : "2016-07-08T13:27:16.204-0700",
+          "estimatedDurationInMillis" : 953,
+          "id" : "1",
+          "organization" : "jenkins",
+          "pipeline" : "master",
+          "result" : "SUCCESS",
+          "runSummary" : "stable",
+          "startTime" : "2016-07-08T13:27:15.251-0700",
+          "state" : "FINISHED",
+          "type" : "WorkflowRun",
+          "commitId" : "0cd84cc9a1a62fbe636e5d1197ef7a5cc4c56b63"
+        },
+        "name" : "master",
+        "organization" : "jenkins",
+        "weatherScore" : 100,
+        "pullRequest" : null
+      }
+    } ]
 
 ## Stop a build
 Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.

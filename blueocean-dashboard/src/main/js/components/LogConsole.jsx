@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
+import { scrollToHash } from './ScrollToHash';
 
-const { bool, array } = PropTypes;
+const { array, bool, string } = PropTypes;
 
 const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
@@ -8,7 +9,7 @@ const RENDER_CHUNK_SIZE = 500;
 const RERENDER_DELAY = 17;
 
 
-export default class LogConsole extends Component {
+export class LogConsole extends Component {
 
     constructor(props) {
         super(props);
@@ -107,6 +108,7 @@ export default class LogConsole extends Component {
 
     render() {
         const lines = this.state.lines;
+        const { prefix } = this.props;
         if (!lines) {
             return null;
         }
@@ -114,8 +116,8 @@ export default class LogConsole extends Component {
         return (<code
           className="block"
         >
-            { lines.map((line, index) => <p key={index}>
-                <a key={index} name={index}>{line}</a>
+            { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
+                <a key={index + 1} href={`#${prefix || ''}log-${index + 1}`} name={`${prefix}log-${index + 1}`}>{line}</a>
             </p>)}</code>);
     }
 }
@@ -123,4 +125,8 @@ export default class LogConsole extends Component {
 LogConsole.propTypes = {
     scrollToBottom: bool, // in case of long logs you can scroll to the bottom
     logArray: array,
+    prefix: string,
 };
+
+export default scrollToHash(LogConsole);
+

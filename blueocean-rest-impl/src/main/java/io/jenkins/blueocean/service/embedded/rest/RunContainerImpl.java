@@ -88,13 +88,7 @@ public class RunContainerImpl extends BlueRunContainer {
             if(scheduleResult.isAccepted()) {
                 final Queue.Item item = scheduleResult.getItem();
 
-                BlueQueueItem queueItem = FluentIterableWrapper.from(QueueContainerImpl.getQueuedItems(job, pipeline))
-                    .firstMatch(new Predicate<BlueQueueItem>() {
-                        @Override
-                        public boolean apply(@Nullable BlueQueueItem input) {
-                            return input.getId().equalsIgnoreCase(Long.toString(item.getId()));
-                        }
-                    }).orNull();
+                BlueQueueItem queueItem = QueueContainerImpl.getQueuedItem(item, job);
 
                 if (queueItem == null) {
                     throw new ServiceException.UnexpectedErrorException("The queue item does not exist in the queue");

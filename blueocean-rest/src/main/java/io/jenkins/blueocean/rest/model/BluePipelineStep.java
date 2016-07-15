@@ -1,9 +1,11 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 import static io.jenkins.blueocean.rest.model.BlueRun.STATE;
@@ -21,6 +23,7 @@ public abstract class BluePipelineStep extends Resource{
     public static final String ID = "id";
     public static final String EDGES = "edges";
     public static final String DURATION_IN_MILLIS="durationInMillis";
+    public static final String ACTIONS = "actions";
 
     @Exported(name = ID)
     public abstract String getId();
@@ -51,5 +54,14 @@ public abstract class BluePipelineStep extends Resource{
      * @return Gives logs associated with this node
      */
     public abstract Object getLog();
+
+    /**
+     *
+     * @return Gives Actions associated with this pipeline node
+     */
+    @Navigable
+    @Exported(name = ACTIONS, inline = true)
+    public abstract Collection<BlueActionProxy> getActions();
+
 
 }

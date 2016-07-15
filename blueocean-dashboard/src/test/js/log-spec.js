@@ -66,7 +66,7 @@ describe("React component test of different runs", () => {
   });
   it("handles error node", () => {
     const wrapper = shallow(
-      <Step node={getNodesInformation(runNodesFail).model[2]}/>);
+      <Step location={{}} node={getNodesInformation(runNodesFail).model[2]}/>);
     assert.isNotNull(wrapper);
   });
 });

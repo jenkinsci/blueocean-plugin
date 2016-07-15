@@ -85,17 +85,20 @@ class RunDetails extends Component {
 
         const baseUrl = buildRunDetailsUrl(organization, name, branch, runId);
 
-        const currentRun = this.props.runs.filter(
-            (run) => run.id === runId && decodeURIComponent(run.pipeline) === branch)[0];
+        /* eslint-disable arrow-body-style */
+        const currentRun = this.props.runs.filter((run) => {
+            return run.id === runId &&
+                decodeURIComponent(run.pipeline) === branch;
+        })[0];
 
         currentRun.name = name;
 
         const status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
 
         const afterClose = () => {
-            const fallback = `/organizations/${organization}/${name}/`;
+            const fallbackUrl = buildPipelineUrl(organization, name);
 
-            location.pathname = this.opener || fallback;
+            location.pathname = this.opener || fallbackUrl;
             location.hash = `#${branch}-${runId}`;
 
             router.push(location);
