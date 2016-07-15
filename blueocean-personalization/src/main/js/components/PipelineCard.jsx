@@ -10,7 +10,8 @@ import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
  *
  * Properties:
  * status: 'result' or 'status' value e.g. 'success', 'failure', etc.
- * percentage: for status=running, the percent complete
+ * "estimatedDuration": time in millis over which the progress indicator will update.
+ * "startTime": ISO-8601 string indicating when tracking of progress begins from.
  * organization: name of org
  * pipeline: name of pipeline
  * branch: name of branch
@@ -69,14 +70,17 @@ export class PipelineCard extends Component {
     }
 
     render() {
-        const { status, commitId } = this.props;
+        const { status, commitId, startTime, estimatedDuration } = this.props;
         const bgClass = PipelineCard._getBackgroundClass(status);
         const showRun = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
         return (
             <div className={`pipeline-card ${bgClass}`}>
-                <LiveStatusIndicator result={this.props.status} width={'20px'} height={'20px'} noBackground />
+                <LiveStatusIndicator
+                  result={status} startTime={startTime} estimatedDuration={estimatedDuration}
+                  width={'24px'} height={'24px'} noBackground
+                />
 
                 <span className="name">
                     {this.props.organization} / {this.props.pipeline}
@@ -116,7 +120,8 @@ export class PipelineCard extends Component {
 
 PipelineCard.propTypes = {
     status: PropTypes.string,
-    percentage: PropTypes.number, // TODO: might need startTime and estimatedDuration
+    startTime: PropTypes.string,
+    estimatedDuration: PropTypes.number,
     organization: PropTypes.string,
     pipeline: PropTypes.string,
     branch: PropTypes.string,
