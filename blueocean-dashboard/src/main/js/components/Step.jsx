@@ -72,11 +72,11 @@ export default class Node extends Component {
         }
         const { config = {} } = this.context;
         const {
+          isFocused = false,
           title,
           durationInMillis,
           result,
           id,
-          isFocused,
           state,
         } = node;
 
