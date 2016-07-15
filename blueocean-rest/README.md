@@ -1,15 +1,74 @@
-# REST api for Blue Ocean components
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-This defines the http/REST like interface that Blue Ocean components use. 
+- [Run Blue Ocean plugin](#run-blue-ocean-plugin)
+- [Schema](#schema)
+  - [Media Type](#media-type)
+  - [Date Format](#date-format)
+  - [Crumbs](#crumbs)
+- [Navigability](#navigability)
+  - [Links](#links)
+- [Resource discovery](#resource-discovery)
+  - [classes API](#classes-api)
+    - [Get class details](#get-class-details)
+    - [Get detailed map of all given classes](#get-detailed-map-of-all-given-classes)
+- [User API](#user-api)
+  - [Get a user](#get-a-user)
+  - [Find users in an organization](#find-users-in-an-organization)
+  - [Get authenticated user](#get-authenticated-user)
+- [Organization API](#organization-api)
+  - [Get organization details](#get-organization-details)
+  - [Get all organizations](#get-all-organizations)
+- [Pipeline API](#pipeline-api)
+  - [Get a Pipeline](#get-a-pipeline)
+  - [Get Pipelines for an organization](#get-pipelines-for-an-organization)
+  - [Get Pipelines across organization](#get-pipelines-across-organization)
+    - [Exclude flattening of certain job types](#exclude-flattening-of-certain-job-types)
+    - [Get pipelines for specific organization](#get-pipelines-for-specific-organization)
+  - [Get a Folder](#get-a-folder)
+  - [Get Nested Pipeline Inside A Folder](#get-nested-pipeline-inside-a-folder)
+  - [Get nested Folder and Pipeline](#get-nested-folder-and-pipeline)
+  - [MultiBranch Pipeline API](#multibranch-pipeline-api)
+    - [Get MultiBranch pipeline](#get-multibranch-pipeline)
+    - [Get MultiBranch pipeline branches](#get-multibranch-pipeline-branches)
+- [Queue API](#queue-api)
+  - [Fetch queue for an pipeline](#fetch-queue-for-an-pipeline)
+  - [GET queue for a MultiBranch pipeline](#get-queue-for-a-multibranch-pipeline)
+- [Run API](#run-api)
+  - [Get all runs in a pipeline](#get-all-runs-in-a-pipeline)
+  - [Get a run details](#get-a-run-details)
+  - [Find latest run of a pipeline](#find-latest-run-of-a-pipeline)
+  - [Find latest run on all pipelines](#find-latest-run-on-all-pipelines)
+  - [Start a build](#start-a-build)
+  - [Stop a build](#stop-a-build)
+  - [Get MultiBranch job's branch run detail](#get-multibranch-jobs-branch-run-detail)
+  - [Get all runs for all branches on a multibranch pipeline (ordered by date)](#get-all-runs-for-all-branches-on-a-multibranch-pipeline-ordered-by-date)
+  - [Get change set for a run](#get-change-set-for-a-run)
+  - [Pipeline Node API](#pipeline-node-api)
+    - [Get Pipeline run nodes](#get-pipeline-run-nodes)
+    - [Get a Pipeline run node's detail](#get-a-pipeline-run-nodes-detail)
+  - [Pipeline Steps API](#pipeline-steps-api)
+    - [Get steps for a Pipeline node](#get-steps-for-a-pipeline-node)
+    - [Get a Pipeline step details](#get-a-pipeline-step-details)
+    - [Get Pipeline Steps](#get-pipeline-steps)
+  - [Replay a pipeline build](#replay-a-pipeline-build)
+- [Favorite API](#favorite-api)
+  - [Favorite a pipeline](#favorite-a-pipeline)
+  - [Favorite a multi branch pipeline](#favorite-a-multi-branch-pipeline)
+  - [Favorite a multi branch pipeline branch](#favorite-a-multi-branch-pipeline-branch)
+  - [Fetch user favorites](#fetch-user-favorites)
+- [Log API](#log-api)
+  - [Fetching logs](#fetching-logs)
+  - [Download a log for a Pipeline run](#download-a-log-for-a-pipeline-run)
+  - [Get log for a Pipeline run](#get-log-for-a-pipeline-run)
+  - [Get log for a Pipeline step](#get-log-for-a-pipeline-step)
 
-# Usage
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Crumbs
+This document defines REST API interface that front end UI or any HTTP client can use. 
 
-Jenkins usually requires a "crumb" with posted requests to prevent request forgery and other shenanigans. 
-To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
-
-## Run Blue Ocean plugin
+# Run Blue Ocean plugin
 
     cd bluecoean-plugin
     mvn hpi:run
@@ -24,9 +83,28 @@ BlueOcean UI is available at:
 BlueOcean rest API base URL is:
     
     http://localhost:8080/jenkins/blue/rest
-    
-## Links
 
+# Schema
+
+## Media Type
+
+* All responses are _application/json_ content type
+* All POST/PUT/PATCH methods must be _application/json_ content type
+
+## Date Format
+
+All date formats are in ISO 8601 format
+
+    YYYY-MM-DDTHH:MM:SSZ
+
+## Crumbs
+
+Jenkins usually requires a "crumb" with posted requests to prevent request forgery and other shenanigans. 
+To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
+    
+# Navigability
+
+## Links 
 Each BlueOcean JSON response object includes *_links" as defined by [HAL](https://tools.ietf.org/html/draft-kelly-json-hal-08) spec.
 *self* link references the reachable path to *this* resource. It may include other navigable resources as well. A resource can exponse it's methods as navigable by using [@Navigable](https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean-rest/src/main/java/io/jenkins/blueocean/rest/Navigable.java) annotation.   
 
@@ -48,7 +126,7 @@ Above, *self* references path to pipeline 'f', *runs* and *queue* resource are n
 href references path to them.
 
 
-## Class of resource discovery
+# Resource discovery
 
 Each resource provides _class field, it’s a fully qualified name and is an  identifier of the producer of this 
 resource's capability.
@@ -80,7 +158,10 @@ resource's capability.
 
 Above a multi-branch pipeline resource object's class is exposed using _class element: *io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl*.
 
-### classes API
+## classes API
+
+### Get class details
+
 To get list of what other classes or capabilities io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl class supports, use *classes* API:
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/classes/io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl
@@ -92,6 +173,43 @@ Above MultiBranchPipelineImpl supports capabilities: BlueMultiBranchPipeline, Bl
 
 Frontend can use _class in resource and classes API to serve UI based on class or capability this resource supports.
 
+### Get detailed map of all given classes
+
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/classes/?q=io.jenkins.blueocean.service.embedded.rest.PipelineImpl,io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl 
+
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.ExtensionClassContainerImpl$1",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/classes/?q=io.jenkins.blueocean.service.embedded.rest.PipelineImpl,io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl,io.jenkins.blueocean.service.embedded.PipelineApiTest$TestPipelineImpl/"
+        }
+      },
+      "map" : {
+        "io.jenkins.blueocean.service.embedded.rest.PipelineImpl" : {
+          "_class" : "io.jenkins.blueocean.service.embedded.rest.ExtensionClassImpl",
+          "_links" : {
+            "self" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/classes/io.jenkins.blueocean.service.embedded.rest.PipelineImpl/"
+            }
+          },
+          "classes" : [ "io.jenkins.blueocean.rest.model.BluePipeline", "io.jenkins.blueocean.rest.model.Resource" ]
+        },
+        "io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl" : {
+          "_class" : "io.jenkins.blueocean.service.embedded.rest.ExtensionClassImpl",
+          "_links" : {
+            "self" : {
+              "_class" : "io.jenkins.blueocean.rest.hal.Link",
+              "href" : "/blue/rest/classes/io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl/"
+            }
+          },
+          "classes" : [ "io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline", "io.jenkins.blueocean.rest.model.BluePipelineFolder", "io.jenkins.blueocean.rest.model.BluePipeline", "io.jenkins.blueocean.rest.model.Resource" ]
+        }
+      }
+    }
+
+# User API
 
 ## Get a user
 
@@ -126,6 +244,7 @@ Gives authenticated user, gives HTTP 404 error if there is no authenticated user
       "email" : "alice@example.com"
     }
 
+# Organization API
 
 ## Get organization details
 
@@ -134,6 +253,17 @@ Gives authenticated user, gives HTTP 404 error if there is no authenticated user
     {
       "name" : "jenkins"
     }
+
+## Get all organizations
+
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/
+    
+    [{
+      "name" : "jenkins"
+    }]
+
+
+# Pipeline API
 
 ## Get a Pipeline
 
@@ -332,41 +462,192 @@ Pipelines can be nested inside folder.
       "weatherScore" : 100
     } ]
 
-## Build a pipeline
+## MultiBranch Pipeline API
 
-    curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/
+Create MultiBranch build and set it up with your git repo. Your git repo must have Jenkinsfile with build script. 
+Each branch in the repo with Jenkins file will appear as a branch in this pipeline.
+
+### Get MultiBranch pipeline 
+
+    curl -v http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p/
+    
     {
-      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
-      "_links" : {
-        "self" : {
-          "_class" : "io.jenkins.blueocean.rest.hal.Link",
-          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline3/queue/3/"
-        }
-      },
-      "expectedBuildNumber" : 1,
-      "id" : "3",
-      "pipeline" : "pipeline3",
-      "qeueudTime" : "2016-06-22T11:05:41.309+1200"
+        "displayName": "p",
+        "estimatedDurationInMillis": 280,
+        "latestRun": null,
+        "name": "p",
+        "organization": "jenkins",
+        "weatherScore": 100,
+        "branchNames": [
+            "feature2",
+            "master",
+            "feature1"
+        ],
+        "numberOfFailingBranches": 0,
+        "numberOfFailingPullRequests": 0,
+        "numberOfSuccessfulBranches": 0,
+        "numberOfSuccessfulPullRequests": 0,
+        "totalNumberOfBranches": 3,
+        "totalNumberOfPullRequests": 0
     }
 
-## Replay a pipeline run
+    
+### Get MultiBranch pipeline branches 
 
-This will quueue up a replay of the pipeline run with the same commit id as the run used
+    curl -v http://localhost:56720/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches
+    
+    [
+        {
+            "displayName": "feature2",
+            "estimatedDurationInMillis": 1391,
+            "name": "master",
+            "weatherScore":100,
+             "lastSuccessfulRun": "http://localhost:63971/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1",
+            "latestRun": {
+                "changeSet": [
+                    
+                ],
+                "durationInMillis": 1391,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-04-15T19:59:28.717-0700",
+                "endTime": "2016-04-15T19:59:30.114-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature2",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.723-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "662766a80af35404c430240e6996598d5397471e"
+            },
+            "name": "feature2",
+            "organization": "jenkins",
+            "weatherScore": 100,
+            "pullRequest": null
+        },
+        {
+            "displayName": "master",
+            "estimatedDurationInMillis": 1468,
+            "name": "feature1",
+            "weatherScore":100,
+            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature1/runs/1",            
+            "latestRun": {
+                "changeSet": [
+                    
+                ],
+                "artifacts": [
+                  {
+                      "name": "fizz",
+                      "size": 8,
+                      "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+                  }
+                ],
+                "durationInMillis": 1468,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-04-15T19:59:28.730-0700",
+                "endTime": "2016-04-15T19:59:30.199-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "master",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.731-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "96e0a0f29d9e5b1381ebb1b7503b0be04ed19a5b"
+            },
+            "name": "master",
+            "organization": "jenkins",
+            "weatherScore": 100,
+            "pullRequest": null
+        },
+        {
+            "displayName": "feature1",
+            "estimatedDurationInMillis": 1443,
+            "name": "feature2",
+            "weatherScore":100,
+            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/runs/1",            
+            "latestRun": {
+                "changeSet": [
+                    
+                ],
+                "durationInMillis": 1443,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-04-15T19:59:28.723-0700",
+                "endTime": "2016-04-15T19:59:30.167-0700",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature1",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-04-15T19:59:28.724-0700",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "f436952a7de493603f4937ecb9dac3f79fd13c79"
+            },
+            "name": "feature1",
+            "organization": "jenkins",
+            "weatherScore": 100,
+            "pullRequest": null
+        }
+    ]
 
-    curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/1/replay
-    {
-      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
-      "id" : "64",
-      "expectedBuildNumber" : 10,
-      "pipeline" : "bug%2FUX-334",
-      "_links" : {
-         "self" : {
-            "_class" : "io.jenkins.blueocean.rest.hal.Link",
-            "href" : "/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/"
-         }
-      },
-      "queuedTime" : "2016-06-29T14:11:52.191-0700"
-   }
+
+# Queue API
+
+## Fetch queue for an pipeline
+
+     curl http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/queue
+     [ {
+       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+       "expectedBuildNumber" : 4,
+       "id" : "4",
+       "pipeline" : "pipeline1",
+       "queuedTime" : 1465433910205
+     }, {
+       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+       "expectedBuildNumber" : 3,
+       "id" : "3",
+       "pipeline" : "pipeline1",
+       "queuedTime" : 1465433910203
+     } ]
+
+## GET queue for a MultiBranch pipeline
+
+    curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/bo2/queue/
+    
+    [
+       {
+          "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+          "id" : "64",
+          "expectedBuildNumber" : 10,
+          "pipeline" : "bug%2FUX-334",
+          "_links" : {
+             "self" : {
+                "_class" : "io.jenkins.blueocean.rest.hal.Link",
+                "href" : "/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/"
+             }
+          },
+          "queuedTime" : "2016-06-29T14:11:52.191-0700"
+       },
+       {
+          "id" : "63",
+          "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+          "queuedTime" : "2016-06-29T14:11:51.290-0700",
+          "pipeline" : "bug%2FUX-334",
+          "_links" : {
+             "self" : {
+                "_class" : "io.jenkins.blueocean.rest.hal.Link",
+                "href" : "/blue/rest/organizations/jenkins/pipelines/bo2/queue/63/"
+             }
+          },
+          "expectedBuildNumber" : 11
+       }
+    ]
+
+# Run API
+
 ## Get all runs in a pipeline
     
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs
@@ -486,137 +767,50 @@ This will quueue up a replay of the pipeline run with the same commit id as the 
       }       
     ]
 
-# MultiBranch Pipeline
+## Start a build
 
-Create MultiBranch build and set it up with your git repo. Your git repo must have Jenkinsfile with build script. 
-Each branch in the repo with Jenkins file will appear as a branch in this pipeline.
-
-## Get MultiBranch pipeline 
-
-    curl -v http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p/
-    
+    curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/
     {
-        "displayName": "p",
-        "estimatedDurationInMillis": 280,
-        "latestRun": null,
-        "name": "p",
-        "organization": "jenkins",
-        "weatherScore": 100,
-        "branchNames": [
-            "feature2",
-            "master",
-            "feature1"
-        ],
-        "numberOfFailingBranches": 0,
-        "numberOfFailingPullRequests": 0,
-        "numberOfSuccessfulBranches": 0,
-        "numberOfSuccessfulPullRequests": 0,
-        "totalNumberOfBranches": 3,
-        "totalNumberOfPullRequests": 0
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline3/queue/3/"
+        }
+      },
+      "expectedBuildNumber" : 1,
+      "id" : "3",
+      "pipeline" : "pipeline3",
+      "qeueudTime" : "2016-06-22T11:05:41.309+1200"
     }
 
-    
-## Get MultiBranch pipeline branches 
+## Stop a build
+Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
 
-    curl -v http://localhost:56720/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches
-    
-    [
-        {
-            "displayName": "feature2",
-            "estimatedDurationInMillis": 1391,
-            "name": "master",
-            "weatherScore":100,
-             "lastSuccessfulRun": "http://localhost:63971/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1",
-            "latestRun": {
-                "changeSet": [
-                    
-                ],
-                "durationInMillis": 1391,
-                "estimatedDurationInMillis" : 567,
-                "enQueueTime": "2016-04-15T19:59:28.717-0700",
-                "endTime": "2016-04-15T19:59:30.114-0700",
-                "id": "1",
-                "organization": "jenkins",
-                "pipeline": "feature2",
-                "result": "SUCCESS",
-                "runSummary": "stable",
-                "startTime": "2016-04-15T19:59:28.723-0700",
-                "state": "FINISHED",
-                "type": "WorkflowRun",
-                "commitId": "662766a80af35404c430240e6996598d5397471e"
-            },
-            "name": "feature2",
-            "organization": "jenkins",
-            "weatherScore": 100,
-            "pullRequest": null
-        },
-        {
-            "displayName": "master",
-            "estimatedDurationInMillis": 1468,
-            "name": "feature1",
-            "weatherScore":100,
-            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature1/runs/1",            
-            "latestRun": {
-                "changeSet": [
-                    
-                ],
-                "artifacts": [
-                  {
-                      "name": "fizz",
-                      "size": 8,
-                      "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
-                  }
-                ],
-                "durationInMillis": 1468,
-                "estimatedDurationInMillis" : 567,
-                "enQueueTime": "2016-04-15T19:59:28.730-0700",
-                "endTime": "2016-04-15T19:59:30.199-0700",
-                "id": "1",
-                "organization": "jenkins",
-                "pipeline": "master",
-                "result": "SUCCESS",
-                "runSummary": "stable",
-                "startTime": "2016-04-15T19:59:28.731-0700",
-                "state": "FINISHED",
-                "type": "WorkflowRun",
-                "commitId": "96e0a0f29d9e5b1381ebb1b7503b0be04ed19a5b"
-            },
-            "name": "master",
-            "organization": "jenkins",
-            "weatherScore": 100,
-            "pullRequest": null
-        },
-        {
-            "displayName": "feature1",
-            "estimatedDurationInMillis": 1443,
-            "name": "feature2",
-            "weatherScore":100,
-            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/runs/1",            
-            "latestRun": {
-                "changeSet": [
-                    
-                ],
-                "durationInMillis": 1443,
-                "estimatedDurationInMillis" : 567,
-                "enQueueTime": "2016-04-15T19:59:28.723-0700",
-                "endTime": "2016-04-15T19:59:30.167-0700",
-                "id": "1",
-                "organization": "jenkins",
-                "pipeline": "feature1",
-                "result": "SUCCESS",
-                "runSummary": "stable",
-                "startTime": "2016-04-15T19:59:28.724-0700",
-                "state": "FINISHED",
-                "type": "WorkflowRun",
-                "commitId": "f436952a7de493603f4937ecb9dac3f79fd13c79"
-            },
-            "name": "feature1",
-            "organization": "jenkins",
-            "weatherScore": 100,
-            "pullRequest": null
-        }
-    ]
-    
+    curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop
+    {
+           "changeSet": [],
+           "artifacts": [
+             {
+                 "name": "fizz",
+                 "size": 8,
+                 "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+             }
+           ],
+           "durationInMillis": 841,
+           "estimatedDurationInMillis" : 567,
+           "enQueueTime": "2016-03-16T09:02:26.492-0700",
+           "endTime": "2016-03-16T09:02:27.339-0700",
+           "id": "1",
+           "organization": "jenkins",
+           "pipeline": "pipeline1",
+           "result": "ABORTED",
+           "runSummary": "stable",
+           "startTime": "2016-03-16T09:02:26.498-0700",
+           "state": "FINISHED",
+           "type": "WorkflowRun",
+           "commitId": null
+       }
     
 ## Get MultiBranch job's branch run detail
     
@@ -748,8 +942,9 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "status": "SUCCESS",
         "type": "WorkflowRun"
     }
+## Pipeline Node API
     
-# Get Pipeline run nodes
+### Get Pipeline run nodes
     curl -v  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/
     
     [ {
@@ -898,7 +1093,7 @@ From the above example, if build failed at parallel node *unit* then the respons
       "state" : null
     } ]
 
-# Get a Pipeline run node's detail
+### Get a Pipeline run node's detail
 
     curl -v  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/3
     
@@ -915,9 +1110,9 @@ From the above example, if build failed at parallel node *unit* then the respons
         "state": "FINISHED"
     }
 
-# Get Pipeline node's steps
+## Pipeline Steps API
 
-This API gives steps inside a pipeline node. For Stage, the steps will include all the steps defined inside Parallels as well as Nodes.
+This API gives steps inside a pipeline node. For a Stage, the steps will include all the steps defined inside Parallels as well as the stage.
 
         
 ### Get steps for a Pipeline node
@@ -1015,7 +1210,7 @@ Get steps of 'test' stage node:
       "state" : "FINISHED"
     }
     
-# Get Pipeline Steps
+### Get Pipeline Steps
 
     Gives all steps in a pipeline. Excludes stages and prallels/blocks.
 
@@ -1050,76 +1245,29 @@ Get steps of 'test' stage node:
       "result" : "SUCCESS",
       "startTime" : "2016-06-18T13:28:29.811+0900"
     } ]
-                       
-# Fetching logs
-
-Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response.
- 
- By default only last 150 KB log data is returned in the response. You can fetch full log by sending start=0 query 
- parameter. You can override default log size from 150KB to other values using thresholdInKB query parameter. 
-
-* X-More-Data Header
-
-If *X-More-Data* is true, then client should repeat the request after some delay. In the repeated request it should use 
-*X-TEXT-SIZE* header value with *start* query parameter.       
-
-* X-TEXT-SIZE Header
-
-X-TEXT-SIZE is the byte offset of the raw log file client should use in the next request as value of start query parameter.
-
-* start Query Parameter
-
-start query parameter tells API to send log starting from this offset in the log file. 
-
-* thresholdInKB Query Parameter
-
-Size of log to return in the response. Default value is 150 KB of log data.
 
 
-## Download a log for a Pipeline run
 
-This will show up as a download in the browser.
+## Replay a pipeline build
 
-    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0&download=true
+This will queue up a replay of the pipeline run with the same commit id as the run used
 
+    curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/1/replay
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+      "id" : "64",
+      "expectedBuildNumber" : 10,
+      "pipeline" : "bug%2FUX-334",
+      "_links" : {
+         "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/"
+         }
+      },
+      "queuedTime" : "2016-06-29T14:11:52.191-0700"
+   }
     
-## Get log for a Pipeline run
-
-    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0
-    
-    Content-Type: text/plain; charset=utf-8
-    X-Text-Size: 1835
-    X-More-Data: false
-
-    Started
-    [Pipeline] Allocate node : Start
-    Running on master in /var/folders/5q/51y3qf0x5t39d4c4c_c2l1s40000gn/T/hudson6188345779815397724test/workspace/pipeline1
-    [Pipeline] node {
-    [Pipeline] stage (Build1)
-    Entering stage Build1
-    Proceeding
-    [Pipeline] echo
-    Building
-    [Pipeline] stage (Test1)
-    Entering stage Test1
-    Proceeding
-    [Pipeline] echo
-    Testing
-    [Pipeline] } //node
-    [Pipeline] Allocate node : End
-    [Pipeline] End of Pipeline
-    Finished: SUCCESS
-
-> Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essetnailly a folder hence no logs.
-
-### Get log for a Pipeline step
-
-    GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/13/steps/21/log/
-    
-    Unit testing...
-
-
-## Favorite API
+# Favorite API
 
 Favorite API can be used to favorite a pipeline (Multi-branch, branch, pipeline or even folder) for a logged in user. 
 If favorite request is successful then the repsonse is favorited item.  
@@ -1271,82 +1419,73 @@ Must be authenticated.
         "pullRequest" : null
       }
     } ]
-
-## Stop a build
-Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
-
-    curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop
-    {
-           "changeSet": [],
-           "artifacts": [
-             {
-                 "name": "fizz",
-                 "size": 8,
-                 "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
-             }
-           ],
-           "durationInMillis": 841,
-           "estimatedDurationInMillis" : 567,
-           "enQueueTime": "2016-03-16T09:02:26.492-0700",
-           "endTime": "2016-03-16T09:02:27.339-0700",
-           "id": "1",
-           "organization": "jenkins",
-           "pipeline": "pipeline1",
-           "result": "ABORTED",
-           "runSummary": "stable",
-           "startTime": "2016-03-16T09:02:26.498-0700",
-           "state": "FINISHED",
-           "type": "WorkflowRun",
-           "commitId": null
-       }
-
-## Fetch queue for an pipeline
-
-     curl http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/queue
-     [ {
-       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
-       "expectedBuildNumber" : 4,
-       "id" : "4",
-       "pipeline" : "pipeline1",
-       "queuedTime" : 1465433910205
-     }, {
-       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
-       "expectedBuildNumber" : 3,
-       "id" : "3",
-       "pipeline" : "pipeline1",
-       "queuedTime" : 1465433910203
-     } ]
-
-## GET queue for a MultiBranch pipeline
-
-    curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/bo2/queue/
     
-    [
-       {
-          "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
-          "id" : "64",
-          "expectedBuildNumber" : 10,
-          "pipeline" : "bug%2FUX-334",
-          "_links" : {
-             "self" : {
-                "_class" : "io.jenkins.blueocean.rest.hal.Link",
-                "href" : "/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/"
-             }
-          },
-          "queuedTime" : "2016-06-29T14:11:52.191-0700"
-       },
-       {
-          "id" : "63",
-          "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
-          "queuedTime" : "2016-06-29T14:11:51.290-0700",
-          "pipeline" : "bug%2FUX-334",
-          "_links" : {
-             "self" : {
-                "_class" : "io.jenkins.blueocean.rest.hal.Link",
-                "href" : "/blue/rest/organizations/jenkins/pipelines/bo2/queue/63/"
-             }
-          },
-          "expectedBuildNumber" : 11
-       }
-    ]
 
+# Log API
+                       
+## Fetching logs
+
+Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response.
+ 
+ By default only last 150 KB log data is returned in the response. You can fetch full log by sending start=0 query 
+ parameter. You can override default log size from 150KB to other values using thresholdInKB query parameter. 
+
+* X-More-Data Header
+
+If *X-More-Data* is true, then client should repeat the request after some delay. In the repeated request it should use 
+*X-TEXT-SIZE* header value with *start* query parameter.       
+
+* X-TEXT-SIZE Header
+
+X-TEXT-SIZE is the byte offset of the raw log file client should use in the next request as value of start query parameter.
+
+* start Query Parameter
+
+start query parameter tells API to send log starting from this offset in the log file. 
+
+* thresholdInKB Query Parameter
+
+Size of log to return in the response. Default value is 150 KB of log data.
+
+
+## Download a log for a Pipeline run
+
+This will show up as a download in the browser.
+
+    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0&download=true
+
+    
+## Get log for a Pipeline run
+
+    curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0
+    
+    Content-Type: text/plain; charset=utf-8
+    X-Text-Size: 1835
+    X-More-Data: false
+
+    Started
+    [Pipeline] Allocate node : Start
+    Running on master in /var/folders/5q/51y3qf0x5t39d4c4c_c2l1s40000gn/T/hudson6188345779815397724test/workspace/pipeline1
+    [Pipeline] node {
+    [Pipeline] stage (Build1)
+    Entering stage Build1
+    Proceeding
+    [Pipeline] echo
+    Building
+    [Pipeline] stage (Test1)
+    Entering stage Test1
+    Proceeding
+    [Pipeline] echo
+    Testing
+    [Pipeline] } //node
+    [Pipeline] Allocate node : End
+    [Pipeline] End of Pipeline
+    Finished: SUCCESS
+
+> Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essetnailly a folder hence no logs.
+
+## Get log for a Pipeline step
+
+    GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/13/steps/21/log/
+    
+    Unit testing...

@@ -593,4 +593,32 @@ public class PipelineApiTest extends BaseTest {
     }
 
 
+    @Test
+    public void testClassesQuery(){
+        // get classes for given class
+        Map resp = get("/classes/"+TestPipelineImpl.class.getName());
+        Assert.assertNotNull(resp);
+        List<String> classes = (List<String>) resp.get("classes");
+        Assert.assertTrue(classes.contains("io.jenkins.blueocean.rest.model.BluePipeline"));
+
+
+        // get classes map for given classes in the query
+        resp = get("/classes/?q=io.jenkins.blueocean.service.embedded.rest.PipelineImpl,io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl,"+TestPipelineImpl.class.getName());
+        Assert.assertNotNull(resp);
+        Map m = (Map) resp.get("map");
+        Assert.assertNotNull(m);
+        Assert.assertEquals(3, m.size());
+
+        Map v = (Map) m.get("io.jenkins.blueocean.service.embedded.rest.PipelineImpl");
+        Assert.assertNotNull(v);
+
+        classes = (List<String>) v.get("classes");
+        Assert.assertTrue(classes.contains("io.jenkins.blueocean.rest.model.BluePipeline"));
+
+        v = (Map) m.get(TestPipelineImpl.class.getName());
+        Assert.assertNotNull(v);
+
+        classes = (List<String>) v.get("classes");
+        Assert.assertTrue(classes.contains("io.jenkins.blueocean.rest.model.BluePipeline"));
+    }
 }

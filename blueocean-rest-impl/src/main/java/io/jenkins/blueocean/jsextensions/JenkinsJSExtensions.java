@@ -67,7 +67,7 @@ import net.sf.json.JSONArray;
 public class JenkinsJSExtensions implements RootRoutable {
     private static  final Logger LOGGER = LoggerFactory.getLogger(JenkinsJSExtensions.class);
     private static final ObjectMapper mapper = new ObjectMapper();
-    
+
     /**
      * The list of active pluginCache "as we know it". Used to determine if pluginCache have
      * been installed, uninstalled, deactivated etc.
@@ -169,7 +169,7 @@ public class JenkinsJSExtensions implements RootRoutable {
             }
         }
     }
-    
+
     private static Object mergeObjects(Object incoming) {
         if (incoming instanceof Map) {
             Map m = new HashMap();
