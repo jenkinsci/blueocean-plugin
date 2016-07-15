@@ -19,7 +19,6 @@ export default class Runs extends Component {
         this.state = { isVisible: false };
     }
     render() {
-
         // early out
         if (!this.props.result || !this.context.pipeline) {
             return null;
