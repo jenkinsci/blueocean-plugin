@@ -567,9 +567,6 @@ public class PipelineApiTest extends BaseTest {
 
         @Override
         public Resource resolve(Item context, Reachable parent, Item target) {
-            if(context == target && target instanceof Job) {
-                return new TestPipelineImpl((Job) target);
-            }
             return  null;
         }
     }

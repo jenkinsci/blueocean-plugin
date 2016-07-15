@@ -15,6 +15,7 @@ public final class Link {
 
     public Link(String href) {
         this.href = Links.ensureTrailingSlash(href);
+        assert this.href.endsWith("/");
     }
 
     @Exported(name = "href")
@@ -27,5 +28,28 @@ public final class Link {
      */
     public Link rel(String name) {
         return new Link(href+name);
+    }
+
+
+    /**
+     * Gives ancestor Link, for example, for link("/a/b/c/d"), ancestor is "a/b/c/".
+     */
+    public Link ancestor(){
+        int i = href.lastIndexOf("/");
+
+        if(i>0) {
+            int j = href.substring(0, i).lastIndexOf("/");
+
+            if (j > 0) {
+                return new Link(href.substring(0, j));
+            }
+        }
+
+        return new Link("/");
+    }
+
+    @Override
+    public String toString() {
+        return href;
     }
 }

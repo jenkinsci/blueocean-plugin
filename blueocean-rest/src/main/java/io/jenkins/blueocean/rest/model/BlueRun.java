@@ -7,6 +7,7 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.json.JsonResponse;
+import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
 import java.text.SimpleDateFormat;
@@ -192,6 +193,14 @@ public abstract class BlueRun extends Resource {
      */
     @Navigable
     public abstract Object getLog();
+
+    /**
+     * Replays a pipeline. The SCM commit/revision used in the existing and new runs should match.
+     *
+     * @return The queued item.
+     */
+    @POST @TreeResponse @WebMethod(name = "replay")
+    public abstract BlueQueueItem replay();
 
     public enum BlueRunState {
         QUEUED,

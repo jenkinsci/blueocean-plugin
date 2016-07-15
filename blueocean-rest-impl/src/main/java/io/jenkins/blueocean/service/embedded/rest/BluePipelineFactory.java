@@ -77,4 +77,23 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
         }
         return i == null ? target : i;
     }
+
+    /**
+     * Gives {@link BluePipeline} instance from the first pipeline found.
+     *
+     * @param item {@link Item} for which corresponding BlueOcean API object needs to be found
+     * @param parent Parent {@link Reachable} object
+     * @return {@link BluePipeline} if a map of item to BlueOcean API found, null otherwise.
+     *
+     */
+    public static BluePipeline getPipelineInstance(Item item, final Reachable parent){
+        for(BluePipelineFactory factory:BluePipelineFactory.all()){
+            BluePipeline pipeline = factory.getPipeline(item, parent);
+
+            if(pipeline != null){
+                return pipeline;
+            }
+        }
+        return null;
+    }
 }

@@ -5,7 +5,7 @@ export const scrollToHash = ComposedComponent => class extends Component {
     componentDidMount() {
         setTimeout(() => {
             this.scrollToAnchor();
-        });
+        }, 1);
     }
 
     scrollToAnchor() {

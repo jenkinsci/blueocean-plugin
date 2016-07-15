@@ -1,11 +1,10 @@
 import keymirror from 'keymirror';
-
 import fetch from 'isomorphic-fetch';
+
 import { State } from '../components/records';
-
+import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
-
-import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, buildUrl } from '../util/UrlUtils';
+import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
 
 // main actin logic
 export const ACTION_TYPES = keymirror({
@@ -61,7 +60,7 @@ export const actionHandlers = {
         return state.set('currentRuns', payload);
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
-        return state.set('node', payload);
+        return state.set('node', { ...payload });
     },
     [ACTION_TYPES.SET_NODES](state, { payload }): State {
         const nodes = { ...state.nodes } || {};
@@ -157,7 +156,7 @@ function parseMoreDataHeader(response) {
  * @param onError
  */
 exports.fetchJson = function fetchJson(url, onSuccess, onError) {
-    fetch(url, fetchOptions)
+    return fetch(url, fetchOptions)
         .then(checkStatus)
         .then(parseJSON)
         .then(onSuccess)
@@ -188,7 +187,7 @@ exports.fetchLogsInjectStart = function fetchJson(url, start, onSuccess, onError
     } else {
         refetchUrl = `${url}?start=${start}`;
     }
-    fetch(refetchUrl, fetchOptions)
+    return fetch(refetchUrl, fetchOptions)
         .then(checkStatus)
         .then(parseMoreDataHeader)
         .then(onSuccess)
@@ -684,6 +683,7 @@ export const actions = {
                     nodeModel = information.model.filter((item) => item.id === config.node)[0];
                     node = config.node;
                 }
+
                 dispatch({
                     type: ACTION_TYPES.SET_NODE,
                     payload: nodeModel,
@@ -770,7 +770,7 @@ export const actions = {
             if (
                 !data || !data[logUrl] ||
                 config.newStart > 0 ||
-                (data && data[logUrl] && data[logUrl].newStart > 0)
+                (data && data[logUrl] && data[logUrl].newStart > 0 || !data[logUrl].logArray)
             ) {
                 return exports.fetchLogsInjectStart(
                     logUrl,
@@ -790,24 +790,17 @@ export const actions = {
                                 type: ACTION_TYPES.SET_LOGS,
                             });
                         }),
-                    (error) => console.error('error', error)
+                    (error) => console.error('error', error) // eslint-disable-line no-console
                 );
             }
             return null;
         };
     },
 
-    fetchTestResults(config, runDetails) {
+    fetchTestResults(run) {
         return (dispatch) => {
-            const baseUrl = `${config.getAppURLBase()}/rest/organizations/`;
-            let url;
-            if (runDetails.isMultiBranch) {
-                // eslint-disable-next-line max-len
-                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.pipeline, 'branches', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
-            } else {
-                // eslint-disable-next-line max-len
-                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
-            }
+            const baseUrl = UrlConfig.jenkinsRootURL;
+            const url = `${baseUrl}${run._links.self.href}testReport/result`;
 
             return dispatch(actions.generateData(
                 url,

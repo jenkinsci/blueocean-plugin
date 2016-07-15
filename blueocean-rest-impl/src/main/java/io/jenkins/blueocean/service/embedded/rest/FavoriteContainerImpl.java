@@ -26,7 +26,8 @@ public class FavoriteContainerImpl extends BlueFavoriteContainer {
     }
 
     @Override
-    public BlueFavorite get(final String name) {
+    public BlueFavorite get(String name) {
+        name = FavoriteUtil.decodeFullName(name);
         if(user.isFavorite(name)){
             Item item = Jenkins.getInstance().getItemByFullName(name);
             if(FavoriteUtil.isFavorableItem(item)) {

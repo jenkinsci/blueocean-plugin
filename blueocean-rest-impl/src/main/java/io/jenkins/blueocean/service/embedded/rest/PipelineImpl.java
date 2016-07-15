@@ -9,6 +9,7 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
@@ -18,7 +19,6 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
@@ -103,12 +103,13 @@ public class PipelineImpl extends BluePipeline {
 
 
     @Override
-    public void favorite(@JsonBody BlueFavoriteAction favoriteAction) {
+    public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
 
-        FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
+        Link link = FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
+        return new FavoriteImpl(this, link);
     }
 
     @Override
@@ -153,7 +154,7 @@ public class PipelineImpl extends BluePipeline {
 
         @Override
         public Resource resolve(Item context, Reachable parent, Item target) {
-            if(context == target.getParent()){
+            if(context == target && target instanceof Job) {
                 return getPipeline(target,parent);
             }
             return null;
@@ -163,7 +164,7 @@ public class PipelineImpl extends BluePipeline {
     public static Collection<BlueActionProxy> getActionProxies(List<? extends Action> actions, Reachable parent){
         List<BlueActionProxy> actionProxies = new ArrayList<>();
         for(Action action:actions){
-            if(action == null || !action.getClass().isAnnotationPresent(ExportedBean.class)){
+            if(action == null){
                 continue;
             }
             actionProxies.add(new ActionProxiesImpl(action, parent));
