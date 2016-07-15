@@ -6,6 +6,7 @@ import {
 import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
+import Pipeline from '../api/Pipeline';
 
 const { object, string, any } = PropTypes;
 
@@ -18,6 +19,7 @@ export default class Runs extends Component {
         this.state = { isVisible: false };
     }
     render() {
+
         // early out
         if (!this.props.result || !this.context.pipeline) {
             return null;
@@ -27,6 +29,7 @@ export default class Runs extends Component {
                 router,
                 location,
                 pipeline: {
+                    _class: pipelineClass,
                     fullName,
                     organization,
                 },
@@ -46,6 +49,9 @@ export default class Runs extends Component {
                 changeset,
             },
         } = this;
+
+        // We only want to show branch column for multibranch
+        const showBranchCol = (pipeline && Pipeline.isMultibranch(pipelineClass));
 
         const resultRun = result === 'UNKNOWN' ? state : result;
         const running = resultRun === 'RUNNING';
@@ -69,7 +75,7 @@ export default class Runs extends Component {
                 {id}
             </td>
             <td><CommitHash commitId={commitId} /></td>
-            <td>{decodeURIComponent(pipeline)}</td>
+            {showBranchCol && <td>{decodeURIComponent(pipeline)}</td>}
             <td>{changeset && changeset.comment || '-'}</td>
             <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
