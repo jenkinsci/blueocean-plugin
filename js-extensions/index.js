@@ -9,7 +9,9 @@ exports.dataType = function dataType(dataType) { return exports.classMetadataSto
 
 exports.untyped = function untyped() { return exports.classMetadataStore.untyped(); };
 
-exports.componentType = function componentType(componentType) { return exports.classMetadataStore.componentType(componentType); };
+exports.isType = require('./dist/ComponentTypeFilter.js').isType;
+
+exports.componentType = require('./dist/ComponentTypeFilter.js').componentType;
 
 exports.init = function init(args) {
     exports.classMetadataStore.init(args.classMetadataProvider);

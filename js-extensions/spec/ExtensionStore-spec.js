@@ -2,6 +2,7 @@ var jsTest = require('@jenkins-cd/js-test');
 var expect = require('chai').expect;
 var ExtensionStore = require('../dist/ExtensionStore').ExtensionStore;
 var ClassMetadataStore = require('../dist/ClassMetadataStore').instance;
+var componentType = require('../dist/ComponentTypeFilter').componentType;
 var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-01.json');
 
 // js modules calling console.debug
@@ -262,22 +263,22 @@ describe("ExtensionStore.js", function () {
             classMetadataStore: makeClassMetadataStore(function(type, cb) { cb({}); })
         });
         
-        extensionStore.getExtensions('ep-3', [ClassMetadataStore.componentType(PretendComponent1)], function(extensions) {
+        extensionStore.getExtensions('ep-3', [componentType(PretendComponent1)], function(extensions) {
             expect(extensions.length).to.equal(1);
             expect(extensions).to.include.members([PretendComponent1]);
         });
         
-        extensionStore.getExtensions('ep-3', [ClassMetadataStore.componentType(PretendComponent2)], function(extensions) {
+        extensionStore.getExtensions('ep-3', [componentType(PretendComponent2)], function(extensions) {
             expect(extensions.length).to.equal(1);
             expect(extensions).to.include.members([PretendComponent2]);
         });
         
-        extensionStore.getExtensions('ep-3', [ClassMetadataStore.componentType(PretendReactClass)], function(extensions) {
+        extensionStore.getExtensions('ep-3', [componentType(PretendReactClass)], function(extensions) {
             expect(extensions.length).to.equal(2);
             expect(extensions).to.include.members([PretendComponent1, PretendComponent2]);
         });
         
-        extensionStore.getExtensions('ep-3', [ClassMetadataStore.componentType(PretendReactClass), ClassMetadataStore.componentType(PretendComponent1)], function(extensions) {
+        extensionStore.getExtensions('ep-3', [componentType(PretendReactClass), componentType(PretendComponent1)], function(extensions) {
             expect(extensions.length).to.equal(1);
             expect(extensions).to.include.members([PretendComponent1]);
         });
