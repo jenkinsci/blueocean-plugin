@@ -67,9 +67,20 @@ export class DashboardCards extends Component {
             const branch = fav.item;
             const latestRun = branch.latestRun;
 
-            const commitId = latestRun ? latestRun.commitId : null;
-
             let status = null;
+            let startTime = null;
+            let estimatedDuration = null;
+            let commitId = null
+
+            if (latestRun) {
+                if (latestRun.result) {
+                    status = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
+                }
+
+                startTime = latestRun.startTime;
+                estimatedDuration = latestRun.estimatedDurationInMillis;
+                commitId = latestRun.commitId;
+            }
 
             if (latestRun && latestRun.result) {
                 status = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
@@ -79,6 +90,8 @@ export class DashboardCards extends Component {
                 <div key={fav._links.self.href}>
                     <PipelineCard
                       status={status}
+                      startTime={startTime}
+                      estimatedDuration={estimatedDuration}
                       organization={branch.organization}
                       pipeline={branch.fullName}
                       branch={branch.name}
