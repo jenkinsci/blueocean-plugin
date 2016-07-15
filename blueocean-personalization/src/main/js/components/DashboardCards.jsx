@@ -11,6 +11,60 @@ import { actions } from '../redux/FavoritesActions';
 
 import { PipelineCard } from './PipelineCard';
 
+const statesSortOrder = [
+    'UNKNOWN', 'FAILURE', 'ABORTED', 'NOT_BUILT',
+    'UNSTABLE', 'RUNNING', 'QUEUED', 'SUCCESS'
+];
+
+const extractStatus = (favorite) => {
+    try {
+        const latestRun = favorite.item.latestRun;
+        return latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result
+    } catch (error) {
+        return null;
+    }
+};
+
+const sortComparator = (favoriteA, favoriteB) => {
+    const statusA = extractStatus(favoriteA);
+    const statusB = extractStatus(favoriteB);
+    const orderA = statesSortOrder.indexOf(statusA);
+    const orderB = statesSortOrder.indexOf(statusB);
+
+    if (orderA < orderB) {
+        return -1;
+    } else if (orderA > orderB) {
+        return 1;
+    }
+
+    // TODO: make this better
+    const {
+        organization: orgA = '',
+        name: pipelineA = '',
+        branch: branchA = '',
+    } = favoriteA && favoriteA.item;
+
+    const {
+        organization: orgB = '',
+        name: pipelineB = '',
+        branch: branchB = '',
+    } = favoriteB && favoriteB.item;
+
+    const orgCompare = orgA.localeCompare(orgB);
+
+    if (orgCompare === 0) {
+        const pipelineCompare = pipelineA.localeCompare(pipelineB);
+
+        if (pipelineCompare === 0) {
+            return branchA.localeCompare(branchB);
+        }
+
+        return pipelineCompare;
+    }
+
+    return orgCompare;
+};
+
 /**
  */
 export class DashboardCards extends Component {
@@ -63,14 +117,18 @@ export class DashboardCards extends Component {
             return null;
         }
 
-        const favoriteCards = this.props.favorites.map(fav => {
+        const sortedFavorites = this.props.favorites.sort(sortComparator);
+
+        const favoriteCards = sortedFavorites.map(fav => {
             const branch = fav.item;
             const latestRun = branch.latestRun;
+            // TODO: make this better
+            const jobName = branch.fullName.split('/').slice(-2)[0];
 
             let status = null;
             let startTime = null;
             let estimatedDuration = null;
-            let commitId = null
+            let commitId = null;
 
             if (latestRun) {
                 if (latestRun.result) {
@@ -93,7 +151,7 @@ export class DashboardCards extends Component {
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
                       organization={branch.organization}
-                      pipeline={branch.fullName}
+                      pipeline={jobName}
                       branch={branch.name}
                       commitId={commitId}
                       favorite
