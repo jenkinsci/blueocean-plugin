@@ -18,18 +18,9 @@ const EmptyState = () => (
  */
 export class RunDetailsTests extends Component {
     componentWillMount() {
-        if (this.context.config) {
-            this.props.fetchTestResults(
-                this.context.config,
-                {
-                    isMultiBranch: this.props.isMultiBranch,
-                    organization: this.props.params.organization,
-                    pipeline: this.props.params.pipeline,
-                    branch: this.props.params.branch,
-                    runId: this.props.params.runId,
-                }
-            );
-        }
+        this.props.fetchTestResults(
+            this.props.result
+        );
     }
     
     componentWillUnmount() {
