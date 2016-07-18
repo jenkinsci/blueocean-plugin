@@ -25,7 +25,7 @@ export default class Node extends Component {
 
     componentWillReceiveProps(nextProps) {
         const { logs, nodesBaseUrl, fetchLog, followAlong } = nextProps;
-        // Changing state of the nod  we want to collapse automatic
+        // Changing state of the node  we want to collapse automatic
         if (nextProps.node.state !== this.props.node.state && nextProps.node.state === 'FINISHED') {
             if (this.state.isFocused) {
                 this.setState({ isFocused: false });
