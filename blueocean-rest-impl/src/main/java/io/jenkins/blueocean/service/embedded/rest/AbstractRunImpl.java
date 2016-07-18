@@ -8,6 +8,7 @@ import hudson.plugins.git.util.BuildData;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
@@ -52,7 +53,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     /**
      * Subtype should return
      */
-    public Container<?> getChangeSet() {
+    public Container<BlueChangeSetEntry> getChangeSet() {
         return null;
     }
 

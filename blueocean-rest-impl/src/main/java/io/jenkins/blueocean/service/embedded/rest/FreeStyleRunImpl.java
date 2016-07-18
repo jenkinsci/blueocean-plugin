@@ -4,6 +4,7 @@ import hudson.model.FreeStyleBuild;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
@@ -22,9 +23,9 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     }
 
     @Override
-    public Container<ChangeSetResource> getChangeSet() {
+    public Container<BlueChangeSetEntry> getChangeSet() {
 
-        Map<String, ChangeSetResource> m = new LinkedHashMap<>();
+        Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
         int cnt=0;
         for (ChangeLogSet.Entry e : run.getChangeSet()) {
             cnt++;
