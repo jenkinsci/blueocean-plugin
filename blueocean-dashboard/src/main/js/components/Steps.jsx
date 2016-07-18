@@ -16,7 +16,7 @@ export default class Nodes extends Component {
             {
               model.map((item, index) =>
                 <Step
-                  key={index}
+                  key={`${index}${item.id}`}
                   node={item}
                   nodesBaseUrl={nodesBaseUrl}
                   {...this.props}
