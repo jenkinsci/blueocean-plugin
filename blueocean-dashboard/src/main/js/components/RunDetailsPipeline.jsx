@@ -268,8 +268,7 @@ export class RunDetailsPipeline extends Component {
             <div>
             <Extensions.Renderer
               extensionPoint="jenkins.pipeline.run.details"
-              pipeline={this.context.pipeline ? this.context.pipeline : this.props.pipeline}
-              runId={runId}
+              currentRun={this.props.result}
             />
             <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
