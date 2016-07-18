@@ -60,7 +60,7 @@ export default (
                 ]},
 
                 DynamicRoutes,
-                
+                // TODO: need to convert this to onEnter - somehow?
                 //<Redirect from=":pipeline(/*)" to=":pipeline/activity" />
             ]}
         ]},
