@@ -14,6 +14,9 @@ import {
     RunDetailsArtifacts,
     RunDetailsTests,
 } from './components';
+import Extensions, { dataType } from '@jenkins-cd/js-extensions';
+
+// FIXME, this needs to fetch extensions iteself, like the app does
 
 export default (
     <Route path="/" component={Dashboard}>
@@ -26,6 +29,8 @@ export default (
                 <Route path=":pipeline/activity" component={Activity} />
                 <Route path=":pipeline/pr" component={PullRequests} />
 
+                <Extensions.Renderer extensionPoint="pipeline.routes" />
+                
                 <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
                     <IndexRedirect to="pipeline" />
                     <Route path="pipeline" component={RunDetailsPipeline} >

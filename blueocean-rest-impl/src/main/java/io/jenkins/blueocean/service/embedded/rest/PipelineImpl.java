@@ -19,6 +19,7 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
@@ -45,6 +46,11 @@ public class PipelineImpl extends BluePipeline {
     @Override
     public String getName() {
         return job.getName();
+    }
+
+    @Override
+    public String getJobClass() {
+        return job.getClass().getName();
     }
 
     @Override

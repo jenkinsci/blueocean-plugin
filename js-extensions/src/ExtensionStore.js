@@ -48,9 +48,11 @@ export class ExtensionStore {
             this._loadBundles(extensionPointId, () => this._registerComponentInstance(extensionPointId, pluginId, component, instance));
             return;
         }
-        var extension = this._findPlugin(extensionPointId, pluginId, component);
-        if (extension) {
-            extension.instance = instance;
+        extensions = this._findPlugins(extensionPointId, pluginId, component);
+        if (extensions) {
+            for (var extension of extensions) {
+                extension.instance = instance;
+            }
             return;
         }
         throw new Error(`Unable to locate plugin for ${extensionPointId} / ${pluginId} / ${component}`);
@@ -59,15 +61,10 @@ export class ExtensionStore {
     /**
      * Finds a plugin by extension point id, plugin id, component name
      */
-    _findPlugin(extensionPointId, pluginId, component) {
+    _findPlugins(extensionPointId, pluginId, component) {
         var extensions = this.extensionPoints[extensionPointId];
         if (extensions) {
-            for (var i = 0; i < extensions.length; i++) {
-                var extension = extensions[i];
-                if (extension.pluginId == pluginId && extension.component == component) {
-                    return extension;
-                }
-            }
+            return extensions.filter(extension => extension.pluginId == pluginId && extension.component == component);
         }
     }
     

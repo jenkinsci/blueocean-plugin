@@ -40,6 +40,12 @@ public abstract class BluePipeline extends Resource {
     public abstract String getName();
 
     /**
+     * Return the underlying job class
+     */
+    @Exported(name="_jobClass")
+    public abstract String getJobClass();
+
+    /**
      * @return human readable name of this pipeline
      */
     @Exported(name = DISPLAY_NAME)

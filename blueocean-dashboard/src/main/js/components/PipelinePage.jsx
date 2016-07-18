@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 import { Link } from 'react-router';
 import {
     Page,
@@ -30,6 +31,7 @@ export default class PipelinePage extends Component {
             <Page>
                 <PageHeader>
                     <Title>
+                        <div style={{display:'none'}}>{JSON.stringify(pipeline)}</div>
                         <WeatherIcon score={pipeline.weatherScore} size="large" />
                         <h1>
                             <Link to={orgUrl}>{organization}</Link>
@@ -39,9 +41,7 @@ export default class PipelinePage extends Component {
                         <Favorite className="dark-yellow" />
                     </Title>
                     <PageTabs base={baseUrl}>
-                        <TabLink to="/activity">Activity</TabLink>
-                        <TabLink to="/branches">Branches</TabLink>
-                        <TabLink to="/pr">Pull Requests</TabLink>
+                        <Extensions.Renderer extensionPoint="pipeline.main.navigation" filter={dataType(pipeline._jobClass)} pipeline={pipeline} baseLink={baseUrl} />
                     </PageTabs>
                 </PageHeader>
                 {React.cloneElement(this.props.children, { pipeline })}

@@ -42,6 +42,27 @@ export class ClassMetadataStore {
             }
             
             this.getClassMetadata(dataType, (currentTypeInfo) => {
+                // add all types that handle this data type
+                var matchingExtensions = [];
+                for (var i = 0; i < extensions.length; i++) {
+                    var extension = extensions[i];
+                    if (currentTypeInfo.classes.indexOf(extension.dataType) >= 0) {
+                        matchingExtensions.push(extension);
+                    }
+                }
+                onload(matchingExtensions);
+            });
+        };
+    }
+
+    mostSpecificDataType(dataType) {
+        return (extensions, onload) => {
+            if (dataType && typeof(dataType) === 'object'
+                    && '_class' in dataType) { // handle the common API incoming data
+                dataType = dataType._class;
+            }
+            
+            this.getClassMetadata(dataType, (currentTypeInfo) => {
                 // prevent returning extensions for the given type
                 // when a more specific extension is found
                 var matchingExtensions = [];
