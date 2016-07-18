@@ -48,4 +48,4 @@ extensions:
 
   - component: components/rundetails/RunDetailsArtifactsTab
     extensionPoint: rundetails.main.navigation
-    dataType: io.jenkins.blueocean.rest.model.BlueRun
+    dataType: io.jenkins.blueocean.rest.model.BlueArtifactProvider

@@ -9,3 +9,7 @@ extensions:
   - component: components/tabs/FreestyleDeploymentsTab
     extensionPoint: pipeline.main.navigation
     dataType: hudson.model.FreeStyleProject
+    
+  - component: components/tabs/FreestyleArtifactsTab
+    extensionPoint: rundetails.main.navigation
+    dataType: io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl

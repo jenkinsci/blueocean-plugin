@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -18,6 +19,7 @@ import java.util.Map;
  *
  * @author Vivek Pandey
  */
+@Capability("io.jenkins.blueocean.rest.model.BlueArtifactProvider")
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);
