@@ -265,6 +265,11 @@ export class RunDetailsPipeline extends Component {
         };
         const shouldShowLogHeader = log !== null || (currentSteps && currentSteps.model && currentSteps.model.length > 0);
         return (
+            <div>
+            <Extensions.Renderer
+              extensionPoint="jenkins.pipeline.run.details"
+              currentRun={this.props.result}
+            />
             <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
@@ -291,6 +296,7 @@ export class RunDetailsPipeline extends Component {
                 }
 
                 { log && <LogConsole key={logGeneral.url} logArray={log.logArray} scrollToBottom={scrollToBottom} /> }
+            </div>
             </div>
         );
     }
