@@ -29,9 +29,13 @@ const DynamicRoutes = {
 };
 
 export default (
-    {path: "/", component: Dashboard, childRoutes: [
-        {path: "organizations/:organization", component: OrganizationPipelines, childRoutes: [
-            //<IndexRedirect to="pipelines" />
+    {path: "", component: Dashboard, indexRoute:{
+        onEnter: ({ params }, replace) => replace('pipelines'),
+    },
+        childRoutes: [
+        {path: "organizations/:organization", component: OrganizationPipelines,
+            indexRoute:{ onEnter: ({ params }, replace) => replace(`/organizations/${params.organization}/pipelines`) },
+            childRoutes: [
             {path: "pipelines", component: Pipelines},
 
             {component: PipelinePage, childRoutes: [
