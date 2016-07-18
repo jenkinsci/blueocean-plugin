@@ -54,10 +54,8 @@ export default (
                 //<Redirect from=":pipeline(/*)" to=":pipeline/activity" />
             ]}
         ]},
-        
-        {path: "/pipelines", component: OrganizationPipelines, childRoutes: [
-            //<IndexRoute, component: Pipelines} />
-        ]}
-        //<IndexRedirect to="pipelines" />
+        {path: "/pipelines", component: OrganizationPipelines, indexRoute: {
+            component: Pipelines,
+        }}
     ]}
 );
