@@ -18,6 +18,37 @@ import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 // FIXME, this needs to fetch extensions iteself, like the app does
 
+let pipelinePluginRoutes = {};
+const DynamicRoutes = {
+    path: 'course/:courseId',
+
+    getChildRoutes(partialNextState, callback) {
+        require.ensure([], function (require) {
+            callback(null, [
+                require('./routes/Announcements'),
+            ])
+        })
+    },
+
+    getIndexRoute(partialNextState, callback) {
+        require.ensure([], function (require) {
+            callback(null, {
+                component: require('./components/Index'),
+            })
+        })
+    },
+
+    getComponents(nextState, callback) {
+        require.ensure([], function (require) {
+            callback(null, require('./components/Course'))
+        })
+    }
+};
+
+Extensions.store.getExtensions(['pipeline.routes'], (routes = []) => {
+    pipelinePluginRoutes = { ...pipelinePluginRoutes, routes };
+});
+
 export default (
     <Route path="/" component={Dashboard}>
         <Route path="organizations/:organization" component={OrganizationPipelines}>
@@ -29,7 +60,7 @@ export default (
                 <Route path=":pipeline/activity" component={Activity} />
                 <Route path=":pipeline/pr" component={PullRequests} />
 
-                <Extensions.Renderer extensionPoint="pipeline.routes" />
+                <DynamicRoutes />
                 
                 <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
                     <IndexRedirect to="pipeline" />
