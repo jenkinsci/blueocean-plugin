@@ -43,8 +43,14 @@ export default (
                 {path: ":pipeline/activity", component: Activity},
                 {path: ":pipeline/pr", component: PullRequests},
 
-                {path: ":pipeline/detail/:branch/:runId", component: RunDetails, childRoutes: [
-                    //<IndexRedirect to="pipeline" />
+                {path: ":pipeline/detail/:branch/:runId", component: RunDetails,
+                    indexRoute: {
+                        onEnter: ({ params }, replace) => replace(
+                            `/organizations/${params.organization}/${encodeURIComponent(params.pipeline)}/` +
+                            `detail/${params.branch}/${params.runId}/pipeline`
+                        ),
+                    },
+                    childRoutes: [
                     {path: "pipeline", component: RunDetailsPipeline, childRoutes: [
                         {path: ":node", component: RunDetailsPipeline},
                     ]},
