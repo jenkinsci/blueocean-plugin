@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 import LogConsole from './LogConsole';
 import * as sse from '@jenkins-cd/sse-gateway';
+import { EmptyStateView } from '@jenkins-cd/design-language';
 
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
@@ -263,7 +264,8 @@ export class RunDetailsPipeline extends Component {
             }
             router.push(newPath);
         };
-        const shouldShowLogHeader = log !== null || (currentSteps && currentSteps.model && currentSteps.model.length > 0);
+        const shouldShowLogHeader = log !== null || currentSteps;
+        const noSteps = !log && currentSteps && currentSteps.model && currentSteps.model.length === 0;
         return (
             <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
@@ -289,6 +291,10 @@ export class RunDetailsPipeline extends Component {
                   router={router}
                   {...this.props}
                 />
+                }
+                { noSteps && <EmptyStateView tightSpacing>
+                    <p>There are no steps.</p>
+                </EmptyStateView>
                 }
 
                 { log && <LogConsole key={logGeneral.url} logArray={log.logArray} scrollToBottom={scrollToBottom} /> }
