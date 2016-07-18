@@ -7,6 +7,7 @@ import {
     PageTabs,
     TabLink,
 } from '@jenkins-cd/design-language';
+import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import {
     actions,
@@ -120,10 +121,7 @@ class RunDetails extends Component {
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
                         <PageTabs base={baseUrl}>
-                            <TabLink to="/pipeline">Pipeline</TabLink>
-                            <TabLink to="/changes">Changes</TabLink>
-                            <TabLink to="/tests">Tests</TabLink>
-                            <TabLink to="/artifacts">Artifacts</TabLink>
+                            <Extensions.Renderer extensionPoint="rundetails.main.navigation" filter={dataType(currentRun)} currentRun={currentRun} baseLink={baseUrl} />
                         </PageTabs>
                     </div>
                 </ModalHeader>

@@ -41,3 +41,11 @@ extensions:
   - component: components/testing/TestResults
     extensionPoint: jenkins.test.result
     dataType: hudson.tasks.test.TestResult
+
+  - component: components/rundetails/RunDetailsTabs
+    extensionPoint: rundetails.main.navigation
+    dataType: io.jenkins.blueocean.rest.model.BlueRun
+
+  - component: components/rundetails/RunDetailsArtifactsTab
+    extensionPoint: rundetails.main.navigation
+    dataType: io.jenkins.blueocean.rest.model.BlueRun
