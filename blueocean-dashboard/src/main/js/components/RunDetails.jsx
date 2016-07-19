@@ -99,7 +99,6 @@ class RunDetails extends Component {
             const fallbackUrl = buildPipelineUrl(organization, name);
 
             location.pathname = this.opener || fallbackUrl;
-            location.hash = `#${branch}-${runId}`;
 
             router.push(location);
         };

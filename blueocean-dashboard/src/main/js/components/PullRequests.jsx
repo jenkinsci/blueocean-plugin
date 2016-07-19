@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import PullRequest from './PullRequest';
-import { scrollToHash } from './ScrollToHash';
 import { RunsRecord } from './records';
 import {
     actions,
@@ -133,4 +132,4 @@ PullRequests.propTypes = {
 
 const selectors = createSelector([branchSelector], (branches) => ({ branches }));
 
-export default connect(selectors, actions)(scrollToHash(PullRequests));
+export default connect(selectors, actions)(PullRequests);

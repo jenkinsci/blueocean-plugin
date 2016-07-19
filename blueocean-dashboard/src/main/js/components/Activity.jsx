@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Runs from './Runs';
 import Pipeline from '../api/Pipeline';
-import { scrollToHash } from './ScrollToHash';
 import { ActivityRecord, ChangeSetRecord } from './records';
 import RunPipeline from './RunPipeline.jsx';
 import {
@@ -88,7 +87,7 @@ export class Activity extends Component {
             { label: 'Completed', className: 'completed' },
             { label: '', className: 'actions' },
         ];
-        
+
 
         return (<main>
             <article className="activity">
@@ -129,4 +128,4 @@ Activity.propTypes = {
 
 const selectors = createSelector([runsSelector], (runs) => ({ runs }));
 
-export default connect(selectors, actions)(scrollToHash(Activity));
+export default connect(selectors, actions)(Activity);
