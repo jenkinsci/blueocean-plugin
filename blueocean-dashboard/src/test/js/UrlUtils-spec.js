@@ -98,7 +98,7 @@ describe('UrlUtils', () => {
                 }
             );
 
-            assert.equal(url, `${testUrl}/1/log`);
+            assert.equal(url, `${testUrl}/1/log/`);
         });
     });
     describe('calculate calculateNodeBaseUrl', () => {
@@ -133,7 +133,7 @@ describe('UrlUtils', () => {
             const node = 15;
             const url = calculateStepsBaseUrl({...testData, node});
             assert.equal(url, `${testData._appURLBase}/rest/organizations/jenkins/` +
-                `pipelines/${testData.name}/runs/${testData.runId}/nodes/${node}/steps`);
+                `pipelines/${testData.name}/runs/${testData.runId}/nodes/${node}/steps/`);
         });
         it('should build the url with mutibranch and no node', () => {
             const isMultiBranch = true;

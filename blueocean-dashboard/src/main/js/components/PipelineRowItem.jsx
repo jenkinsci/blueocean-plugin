@@ -87,7 +87,7 @@ export default class PipelineRowItem extends Component {
                 <td>{pullRequestsLink}</td>
                 <td>
                     <Favorite />
-                    <Extensions.Renderer extensionPoint="jenkins.dashboard.item.action" />
+                    <Extensions.Renderer extensionPoint="jenkins.pipeline.list.action" />
                 </td>
             </tr>
         );

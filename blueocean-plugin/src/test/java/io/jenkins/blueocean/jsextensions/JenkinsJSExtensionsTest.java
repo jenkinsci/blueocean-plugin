@@ -56,7 +56,7 @@ public class JenkinsJSExtensionsTest extends BaseTest {
             } else if ("blueocean-personalization".equals(pluginId)) {
                 Assert.assertEquals(1, extensionPoints.size());
                 Assert.assertEquals("components/ActionLink", extensionPoints.get(0).get("component"));
-                Assert.assertEquals("jenkins.dashboard.item.action", extensionPoints.get(0).get("extensionPoint"));
+                Assert.assertEquals("jenkins.pipeline.list.action", extensionPoints.get(0).get("extensionPoint"));
             } else {
                 Assert.fail("Found extensions from unknown pluginId: " + pluginId);
             }
