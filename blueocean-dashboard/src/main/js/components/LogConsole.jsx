@@ -1,7 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { scrollToHash } from './ScrollToHash';
-
-const { array, bool, string } = PropTypes;
+import { scrollHelper } from './ScrollHelper';
 
 const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
@@ -26,18 +24,6 @@ export class LogConsole extends Component {
         this._processLines(this.props.logArray);
     }
 
-    /*
-     * This will scroll to the bottom of the console diff
-     * React needs the timeout to have the dom ready
-     */
-    componentDidMount() {
-        if (this.props.scrollToBottom) {
-            clearTimeout(this.timeouts.scroll);
-            this.timeouts.scroll = setTimeout(() => {
-                this.updateScroll();
-            }, INITIAL_RENDER_DELAY);
-        }
-    }
 
     // componentWillReceiveProps does not return anything and return null is an early out, so disable lint complaining
     componentWillReceiveProps(nextProps) { // eslint-disable-line
@@ -54,18 +40,6 @@ export class LogConsole extends Component {
         }, INITIAL_RENDER_DELAY);
     }
 
-    /*
-     * This will scroll to the bottom of the console diff
-     * React needs the timeout to have the dom ready
-     */
-    componentDidUpdate() {
-        if (this.props.scrollToBottom) {
-            this.timeouts.scroll = setTimeout(() => {
-                this.updateScroll();
-            }, INITIAL_RENDER_DELAY);
-        }
-    }
-
     componentWillUnmount() {
         this.clearThisTimeout();
     }
@@ -73,15 +47,6 @@ export class LogConsole extends Component {
     clearThisTimeout() {
         clearTimeout(this.timeouts.scroll);
         clearTimeout(this.timeouts.render);
-    }
-
-    // Find the modal view container and adopt the scrollTop to focus the end
-    updateScroll() {
-        const nodes = document.getElementsByClassName('content');
-        const element = nodes[0];
-        if (element) {
-            element.scrollTop = element.scrollHeight - element.clientHeight;
-        }
     }
 
     // initial method to create lines to render
@@ -95,6 +60,8 @@ export class LogConsole extends Component {
             this.timeouts.render = setTimeout(() => {
                 this._processNextLines();
             }, INITIAL_RENDER_DELAY);
+        } else {
+            this.scroll();
         }
 
         this.setState({
@@ -119,12 +86,30 @@ export class LogConsole extends Component {
             this.timeouts.render = setTimeout(() => {
                 this._processNextLines();
             }, RERENDER_DELAY);
+        } else {
+            this.scroll();
+        }
+    }
+
+    scroll() {
+        const anchorName = window.location.hash;
+        const stepReg = /log-([0-9]{1,})$/;
+        const match = stepReg.exec(anchorName);
+        /*
+         * This will scroll to the bottom of the console diff
+         * React needs the timeout to have the dom ready
+         */
+        if (this.props.scrollToBottom && !match) {
+            this.timeouts.scroll = setTimeout(() => this.props.scrollBottom(), INITIAL_RENDER_DELAY + 1);
+        } else if (match) {
+            // we need to scroll to a certain line now
+            this.timeouts.scroll = this.props.scrollToAnchorTimeOut(RERENDER_DELAY + 1);
         }
     }
 
     render() {
         const lines = this.state.lines;
-        const { prefix } = this.props;
+        const { prefix = '' } = this.props;
         if (!lines) {
             return null;
         }
@@ -138,11 +123,14 @@ export class LogConsole extends Component {
     }
 }
 
+const { array, bool, string, func } = PropTypes;
 LogConsole.propTypes = {
     scrollToBottom: bool, // in case of long logs you can scroll to the bottom
     logArray: array,
+    scrollToAnchorTimeOut: func,
+    scrollBottom: func,
     prefix: string,
 };
 
-export default scrollToHash(LogConsole);
+export default scrollHelper(LogConsole);
 
