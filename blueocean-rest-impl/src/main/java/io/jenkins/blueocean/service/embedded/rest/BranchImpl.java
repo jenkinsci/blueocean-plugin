@@ -8,6 +8,7 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
+import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -49,7 +50,7 @@ public class BranchImpl extends PipelineImpl {
 
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
-            if (item instanceof WorkflowJob) {
+            if (item instanceof WorkflowJob && item.getParent() instanceof MultiBranchProject) {
                 return new BranchImpl((Job) item, parent.getLink());
             }
             return null;

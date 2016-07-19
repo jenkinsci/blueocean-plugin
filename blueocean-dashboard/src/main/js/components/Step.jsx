@@ -7,6 +7,12 @@ import LogConsole from './LogConsole';
 const { object, func, string, bool } = PropTypes;
 
 export default class Node extends Component {
+    constructor(props) {
+        super(props);
+        const node = this.expandAnchor(props);
+        this.state = { isFocused: node.isFocused };
+    }
+
     componentWillMount() {
         const { nodesBaseUrl, fetchLog } = this.props;
         const { config = {} } = this.context;
@@ -19,6 +25,12 @@ export default class Node extends Component {
 
     componentWillReceiveProps(nextProps) {
         const { logs, nodesBaseUrl, fetchLog, followAlong } = nextProps;
+        // Changing state of the node  we want to collapse automatic
+        if (nextProps.node.state !== this.props.node.state && nextProps.node.state === 'FINISHED') {
+            if (this.state.isFocused) {
+                this.setState({ isFocused: false });
+            }
+        }
         const { config = {} } = this.context;
         const node = this.expandAnchor(nextProps);
         const mergedConfig = { ...config, node, nodesBaseUrl };
@@ -51,14 +63,16 @@ export default class Node extends Component {
     // Calculate whether we need to expand the step due to linking
     expandAnchor(props) {
         const { node, location: { hash: anchorName } } = props;
-        // e.g. #step-10-log-1
+        const isFocused = true;
+        // e.g. #step-10-log-1 or #step-10
         if (anchorName) {
-            const stepReg = /step-(.{1,})-log-.*/;
+            const stepReg = /step-([0-9]{1,})?($|-log-([0-9]{1,})$)/;
             const match = stepReg.exec(anchorName);
-            if (match[1] && match[1] === node.id) {
-                const isFocused = true;
+            if (match && match[1] && match[1] === node.id) {
                 return { ...node, isFocused };
             }
+        } else if (this.state && this.state.isFocused) {
+            return { ...node, isFocused };
         }
         return { ...node };
     }
@@ -72,11 +86,11 @@ export default class Node extends Component {
         }
         const { config = {} } = this.context;
         const {
+          isFocused = false,
           title,
           durationInMillis,
           result,
           id,
-          isFocused,
           state,
         } = node;
 
@@ -87,6 +101,7 @@ export default class Node extends Component {
             if (!log || !log.logArray) {
                 fetchLog({ ...config, node, nodesBaseUrl });
             }
+            this.setState({ isFocused: true });
         };
         const runResult = resultRun.toLowerCase();
         const scrollToBottom =

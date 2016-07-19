@@ -1,11 +1,10 @@
 import keymirror from 'keymirror';
-
 import fetch from 'isomorphic-fetch';
+
 import { State } from '../components/records';
-
+import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
-
-import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, buildUrl } from '../util/UrlUtils';
+import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
 
 // main actin logic
 export const ACTION_TYPES = keymirror({
@@ -798,17 +797,10 @@ export const actions = {
         };
     },
 
-    fetchTestResults(config, runDetails) {
+    fetchTestResults(run) {
         return (dispatch) => {
-            const baseUrl = `${config.getAppURLBase()}/rest/organizations/`;
-            let url;
-            if (runDetails.isMultiBranch) {
-                // eslint-disable-next-line max-len
-                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.pipeline, 'branches', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
-            } else {
-                // eslint-disable-next-line max-len
-                url = `${baseUrl}${buildUrl(runDetails.organization, 'pipelines', runDetails.branch, 'runs', runDetails.runId)}/testReport/result`;
-            }
+            const baseUrl = UrlConfig.jenkinsRootURL;
+            const url = `${baseUrl}${run._links.self.href}testReport/result`;
 
             return dispatch(actions.generateData(
                 url,

@@ -307,6 +307,8 @@ public class PipelineApiTest extends BaseTest {
         for(int i=0; i<projects.length; i++){
             Map lr = resp.get(i);
             validatePipeline(projects[i], lr);
+            String cls = (String) lr.get("_class");
+            Assert.assertEquals(PipelineImpl.class.getName(), cls);
         }
     }
 
@@ -546,7 +548,7 @@ public class PipelineApiTest extends BaseTest {
     @Test
     public void getPipelinesExtensionTest() throws Exception {
 
-        Project p = j.createFreeStyleProject("pipeline1");
+        Project p = j.createProject(TestProject.class,"pipeline1");
 
         Map<String,Object> response = get("/organizations/jenkins/pipelines/pipeline1");
         validatePipeline(p, response);
@@ -559,7 +561,7 @@ public class PipelineApiTest extends BaseTest {
 
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
-            if(item instanceof Job){
+            if(item instanceof TestProject){
                 return new TestPipelineImpl((Job)item);
             }
             return null;
