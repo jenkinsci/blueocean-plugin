@@ -264,8 +264,8 @@ export class RunDetailsPipeline extends Component {
             }
             router.push(newPath);
         };
-        const shouldShowLogHeader = log !== null || currentSteps;
         const noSteps = !log && currentSteps && currentSteps.model && currentSteps.model.length === 0;
+        const shouldShowLogHeader = log !== null || !noSteps;
         return (
             <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
