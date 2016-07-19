@@ -11,25 +11,23 @@ import { actions } from '../redux/FavoritesActions';
 
 import { PipelineCard } from './PipelineCard';
 
-const statesSortOrder = [
+// the order the cards should be displayed based on their result/state (aka 'status')
+const statusSortOrder = [
     'UNKNOWN', 'FAILURE', 'ABORTED', 'NOT_BUILT',
     'UNSTABLE', 'RUNNING', 'QUEUED', 'SUCCESS',
 ];
 
 const extractStatus = (favorite) => {
-    try {
-        const latestRun = favorite.item.latestRun;
-        return latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
-    } catch (error) {
-        return null;
-    }
+    const latestRun = favorite && favorite.item && favorite.item.latestRun || {};
+    return latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
 };
 
+// sorts the cards based on 1. status 2. endTime, startTime or enQueueTime (descending)
 const sortComparator = (favoriteA, favoriteB) => {
     const statusA = extractStatus(favoriteA);
     const statusB = extractStatus(favoriteB);
-    const orderA = statesSortOrder.indexOf(statusA);
-    const orderB = statesSortOrder.indexOf(statusB);
+    const orderA = statusSortOrder.indexOf(statusA);
+    const orderB = statusSortOrder.indexOf(statusB);
 
     if (orderA < orderB) {
         return -1;
@@ -37,32 +35,40 @@ const sortComparator = (favoriteA, favoriteB) => {
         return 1;
     }
 
-    // TODO: make this better
-    const {
-        organization: orgA = '',
-        name: pipelineA = '',
-        branch: branchA = '',
-    } = favoriteA && favoriteA.item;
+    const endTimeA = favoriteA && favoriteA.item && favoriteA.item.latestRun && favoriteA.item.latestRun.endTime;
+    const endTimeB = favoriteB && favoriteB.item && favoriteB.item.latestRun && favoriteB.item.latestRun.endTime;
 
-    const {
-        organization: orgB = '',
-        name: pipelineB = '',
-        branch: branchB = '',
-    } = favoriteB && favoriteB.item;
+    if (endTimeA && endTimeB) {
+        const endCompare = endTimeA.localeCompare(endTimeB);
 
-    const orgCompare = orgA.localeCompare(orgB);
-
-    if (orgCompare === 0) {
-        const pipelineCompare = pipelineA.localeCompare(pipelineB);
-
-        if (pipelineCompare === 0) {
-            return branchA.localeCompare(branchB);
+        if (endCompare !== 0) {
+            return -endCompare;
         }
-
-        return pipelineCompare;
     }
 
-    return orgCompare;
+    const startTimeA = favoriteA && favoriteA.item && favoriteA.item.latestRun && favoriteA.item.latestRun.startTime;
+    const startTimeB = favoriteB && favoriteB.item && favoriteB.item.latestRun && favoriteB.item.latestRun.startTime;
+
+    if (startTimeA && startTimeB) {
+        const startCompare = startTimeA.localeCompare(startTimeB);
+
+        if (startCompare !== 0) {
+            return -startCompare;
+        }
+    }
+
+    const queuedTimeA = favoriteA && favoriteA.item && favoriteA.item.latestRun && favoriteA.item.latestRun.enQueueTime;
+    const queuedTimeB = favoriteB && favoriteB.item && favoriteB.item.latestRun && favoriteB.item.latestRun.enQueueTime;
+
+    if (queuedTimeA && queuedTimeB) {
+        const queueCompare = queuedTimeA.localeCompare(queuedTimeB);
+
+        if (queueCompare !== 0) {
+            return -queueCompare;
+        }
+    }
+
+    return 0;
 };
 
 /**

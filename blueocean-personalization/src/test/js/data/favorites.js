@@ -323,7 +323,7 @@ export const favorites = [
                 "artifacts": [],
                 "changeSet": [],
                 "durationInMillis": 0,
-                "enQueueTime": "2016-07-15T13:44:52.771-0400",
+                "enQueueTime": "2016-07-10T13:44:52.771+0400",
                 "endTime": null,
                 "estimatedDurationInMillis": 390126,
                 "id": "4",
@@ -331,7 +331,7 @@ export const favorites = [
                 "pipeline": "docker-test",
                 "result": "UNKNOWN",
                 "runSummary": "?",
-                "startTime": "2016-07-15T13:44:52.775-0400",
+                "startTime": "2016-07-10T13:44:52.771+0400",
                 "state": "RUNNING",
                 "type": "WorkflowRun",
                 "commitId": "83725791b8ddcd58fc1753417c8ac40bfc4db7cd"
@@ -873,6 +873,177 @@ export const favorites = [
             },
             "name": "docker-test",
             "organization": "jankins",
+            "weatherScore": 100,
+            "pullRequest": null
+        }
+    },
+    {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/users/cmeyers/favorites/test6%252Fmaster/"
+            }
+        },
+        "item": {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/test6/branches/master/"
+                },
+                "actions": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/test6/branches/master/actions/"
+                },
+                "runs": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/test6/branches/master/runs/"
+                },
+                "queue": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/test6/branches/master/queue/"
+                }
+            },
+            "actions": [],
+            "displayName": "master",
+            "estimatedDurationInMillis": 105302,
+            "fullName": "test6/master",
+            "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test6/branches/master/runs/95/",
+            "latestRun": {
+                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_links": {
+                    "nodes": {
+                        "_class": "io.jenkins.blueocean.rest.hal.Link",
+                        "href": "/blue/rest/organizations/jenkins/pipelines/test6/branches/master/runs/95/nodes/"
+                    },
+                    "log": {
+                        "_class": "io.jenkins.blueocean.rest.hal.Link",
+                        "href": "/blue/rest/organizations/jenkins/pipelines/test6/branches/master/runs/95/log/"
+                    },
+                    "self": {
+                        "_class": "io.jenkins.blueocean.rest.hal.Link",
+                        "href": "/blue/rest/organizations/jenkins/pipelines/test6/branches/master/runs/95/"
+                    },
+                    "actions": {
+                        "_class": "io.jenkins.blueocean.rest.hal.Link",
+                        "href": "/blue/rest/organizations/jenkins/pipelines/test6/branches/master/runs/95/actions/"
+                    },
+                    "steps": {
+                        "_class": "io.jenkins.blueocean.rest.hal.Link",
+                        "href": "/blue/rest/organizations/jenkins/pipelines/test6/branches/master/runs/95/steps/"
+                    }
+                },
+                "actions": [],
+                "artifacts": [{
+                    "_class": "io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl$1",
+                    "_links": {
+                        "self": {
+                            "_class": "io.jenkins.blueocean.rest.hal.Link",
+                            "href": "/jenkins/job/test6/job/master/95/artifact/hey/"
+                        }
+                    },
+                    "name": "hey",
+                    "size": 4,
+                    "url": "/jenkins/job/test6/job/master/95/artifact/hey"
+                }],
+                "changeSet": [],
+                "durationInMillis": 0,
+                "enQueueTime": "2016-06-10T01:31:03.829-0400",
+                "endTime": null,
+                "estimatedDurationInMillis": 105302,
+                "id": "95",
+                "organization": "jenkins",
+                "pipeline": "master",
+                "result": "UNKNOWN",
+                "runSummary": "stable",
+                "startTime": null,
+                "state": "QUEUED",
+                "type": "WorkflowRun",
+                "commitId": "63b8d981ff5ff8507559fc42ad3aa5f8cf9ec137"
+            },
+            "name": "master",
+            "organization": "jenkins",
+            "weatherScore": 100,
+            "pullRequest": null
+        }
+    },
+    {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/users/cmeyers/favorites/jdl2%252Fdocker-test/"
+            }
+        },
+        "item": {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/"
+                },
+                "actions": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/actions/"
+                },
+                "runs": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/runs/"
+                },
+                "queue": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/queue/"
+                }
+            },
+            "actions": [],
+            "displayName": "docker-test",
+            "estimatedDurationInMillis": 390126,
+            "fullName": "jdl2/docker-test",
+            "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/runs/3/",
+            "latestRun": {
+                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_links": {
+                    "nodes": {
+                        "_class": "io.jenkins.blueocean.rest.hal.Link",
+                        "href": "/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/runs/4/nodes/"
+                    },
+                    "log": {
+                        "_class": "io.jenkins.blueocean.rest.hal.Link",
+                        "href": "/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/runs/4/log/"
+                    },
+                    "self": {
+                        "_class": "io.jenkins.blueocean.rest.hal.Link",
+                        "href": "/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/runs/4/"
+                    },
+                    "actions": {
+                        "_class": "io.jenkins.blueocean.rest.hal.Link",
+                        "href": "/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/runs/4/actions/"
+                    },
+                    "steps": {
+                        "_class": "io.jenkins.blueocean.rest.hal.Link",
+                        "href": "/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/runs/4/steps/"
+                    }
+                },
+                "actions": [],
+                "artifacts": [],
+                "changeSet": [],
+                "durationInMillis": 0,
+                "enQueueTime": "2016-07-10T13:44:52.771-0400",
+                "endTime": null,
+                "estimatedDurationInMillis": 390126,
+                "id": "4",
+                "organization": "jenkins",
+                "pipeline": "docker-test",
+                "result": "UNKNOWN",
+                "runSummary": "?",
+                "startTime": "2016-07-10T13:44:52.775-0400",
+                "state": "RUNNING",
+                "type": "WorkflowRun",
+                "commitId": "83725791b8ddcd58fc1753417c8ac40bfc4db7cd"
+            },
+            "name": "docker-test",
+            "organization": "jenkins",
             "weatherScore": 100,
             "pullRequest": null
         }
