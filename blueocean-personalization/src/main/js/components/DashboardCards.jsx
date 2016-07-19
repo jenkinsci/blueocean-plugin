@@ -13,13 +13,13 @@ import { PipelineCard } from './PipelineCard';
 
 const statesSortOrder = [
     'UNKNOWN', 'FAILURE', 'ABORTED', 'NOT_BUILT',
-    'UNSTABLE', 'RUNNING', 'QUEUED', 'SUCCESS'
+    'UNSTABLE', 'RUNNING', 'QUEUED', 'SUCCESS',
 ];
 
 const extractStatus = (favorite) => {
     try {
         const latestRun = favorite.item.latestRun;
-        return latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result
+        return latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
     } catch (error) {
         return null;
     }
