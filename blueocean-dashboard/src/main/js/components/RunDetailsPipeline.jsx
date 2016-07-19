@@ -291,6 +291,7 @@ export class RunDetailsPipeline extends Component {
                 { currentSteps && <Steps
                   nodeInformation={currentSteps}
                   followAlong={followAlong}
+                  router={router}
                   {...this.props}
                 />
                 }
