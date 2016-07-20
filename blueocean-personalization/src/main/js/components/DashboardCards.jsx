@@ -126,10 +126,19 @@ export class DashboardCards extends Component {
         const sortedFavorites = this.props.favorites.sort(sortComparator);
 
         const favoriteCards = sortedFavorites.map(fav => {
-            const branch = fav.item;
-            const latestRun = branch.latestRun;
-            // TODO: make this better
-            const jobName = branch.fullName.split('/').slice(-2)[0];
+            const pipeline = fav.item;
+            const latestRun = pipeline.latestRun;
+
+            let pipelineName;
+            let branchName;
+
+            if (pipeline._class === 'io.jenkins.blueocean.service.embedded.rest.BranchImpl') {
+                // branch.fullName is in the form folder1/folder2/pipeline/branch, so grab "pipeline"
+                pipelineName = pipeline.fullName.split('/').slice(-2)[0];
+                branchName = pipeline.name;
+            } else {
+                pipelineName = pipeline.name;
+            }
 
             let status = null;
             let startTime = null;
@@ -156,9 +165,9 @@ export class DashboardCards extends Component {
                       status={status}
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
-                      organization={branch.organization}
-                      pipeline={jobName}
-                      branch={branch.name}
+                      organization={pipeline.organization}
+                      pipeline={pipelineName}
+                      branch={branchName}
                       commitId={commitId}
                       favorite
                     />
