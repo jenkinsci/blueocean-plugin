@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -52,7 +53,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
 
     @Override
-    public void favorite(@JsonBody BlueFavoriteAction favoriteAction) {
+    public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
@@ -62,7 +63,8 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             throw new ServiceException.BadRequestExpception("no master branch to favorite");
         }
 
-        FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
+        Link link = FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
+        return new FavoriteImpl(new BranchImpl(job, getLink().rel("branches")), link);
     }
 
     @Override
@@ -131,24 +133,39 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         /**
          * TODO: this code need cleanup once MultiBranchProject exposes default branch. At present
          *
-         * At present we look for master as primary branch, if not found we find the latest build and return
-         * its score.
+         * At present we look for master as primary branch, if not found we find the latest build across all branches and
+         * return its score.
          *
          * If there are no builds taken place 0 score is returned.
          */
 
-        Job j = mbp.getBranch("master");
+        Job j = mbp.getItem("master");
         if(j == null) {
-            j = mbp.getBranch("production");
-            if(j == null){ //get latest
+            j = mbp.getItem("production");
+            /**
+             * If there are no master or production branch then we return weather score of
+             *
+             * - Sort latest build of all branches in ascending order
+             * - Return the latest
+             *
+             */
+            if(j == null){
                 Collection<Job>  jbs = mbp.getAllJobs();
                 if(jbs.size() > 0){
                     Job[] jobs = jbs.toArray(new Job[jbs.size()]);
                     Arrays.sort(jobs, new Comparator<Job>() {
                         @Override
                         public int compare(Job o1, Job o2) {
-                            long t1 = o1.getLastBuild().getTimeInMillis() + o1.getLastBuild().getDuration();
-                            long t2 = o2.getLastBuild().getTimeInMillis() + o2.getLastBuild().getDuration();
+                            long t1 = 0;
+                            if(o1.getLastBuild() != null){
+                                t1 = o1.getLastBuild().getTimeInMillis() + o1.getLastBuild().getDuration();
+                            }
+
+                            long t2 = 0;
+                            if(o2.getLastBuild() != null){
+                                t2 = o2.getLastBuild().getTimeInMillis() + o2.getLastBuild().getDuration();
+                            }
+
                             if(t1<2){
                                 return -1;
                             }else if(t1 > t2){

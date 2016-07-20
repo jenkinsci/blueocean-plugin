@@ -11,4 +11,56 @@
   .stack-trace {
     white-space: pre;
   }
+  .count {
+    font-size: 4rem;
+    padding-bottom: 0.1em;
+  }
+  .new-passed, .passed {
+    .count {
+      color: #4A9900; // @brand-success;
+    }
+  }
+  .count-0.count-0 {
+    .count {
+      color: #949393; // @brand-grey-lite;
+    }
+  }
+  .new-failed, .failed {
+    .count {
+      color: #C4000A; // @brand-danger;
+    }
+  }
+  .skipped {
+    .count {
+      color: #F5A623; // @branding-warning;
+    }
+  }
+  .test-summary {
+    width: 80%;
+    margin: 1.5em auto 2.5em auto;
+    display: table;
+    position: relative;
+    
+    > div {
+      display: table-cell;
+      text-align: center;
+      position: relative;
+      padding: .5em 1em;
+      width: 1%;
+    }
+    .failed:before {
+      content: '';
+      position: absolute;
+      height: 100%;
+      width: 1px;
+      display: inline-block;
+      border-left: 1px solid #949393; // @brand-grey-lite;
+      right: 100%;
+      top: 0;
+      margin-right: -0.4rem;
+    }
+    .skipped.count-0 {
+      display: none;
+    }
+  }
 }
