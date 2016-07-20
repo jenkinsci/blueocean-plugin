@@ -14,34 +14,56 @@ import {
     RunDetailsArtifacts,
     RunDetailsTests,
 } from './components';
+import Extensions, { dataType } from '@jenkins-cd/js-extensions';
+
+const DynamicRoutes = {
+    path: ':pipeline/(.*)',
+
+    getChildRoutes(partialNextState, callback) {
+        Extensions.store.getExtensions('pipeline.routes', routes => {
+            callback(null, routes); // routes is array
+        });
+    },
+};
 
 export default (
-    <Route path="/" component={Dashboard}>
-        <Route path="organizations/:organization" component={OrganizationPipelines}>
-            <IndexRedirect to="pipelines" />
-            <Route path="pipelines" component={Pipelines} />
+    {path: "", component: Dashboard, indexRoute:{
+        onEnter: ({ params }, replace) => replace('pipelines'),
+    },
+        childRoutes: [
+        {path: "organizations/:organization", component: OrganizationPipelines,
+            indexRoute:{ onEnter: ({ params }, replace) => replace(`/organizations/${params.organization}/pipelines`) },
+            childRoutes: [
+            {path: "pipelines", component: Pipelines},
 
-            <Route component={PipelinePage}>
-                <Route path=":pipeline/branches" component={MultiBranch} />
-                <Route path=":pipeline/activity" component={Activity} />
-                <Route path=":pipeline/pr" component={PullRequests} />
+            {component: PipelinePage, childRoutes: [
+                {path: ":pipeline/branches", component: MultiBranch},
+                {path: ":pipeline/activity", component: Activity},
+                {path: ":pipeline/pr", component: PullRequests},
 
-                <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
-                    <IndexRedirect to="pipeline" />
-                    <Route path="pipeline" component={RunDetailsPipeline} >
-                        <Route path=":node" component={RunDetailsPipeline} />
-                    </Route>
-                    <Route path="changes" component={RunDetailsChanges} />
-                    <Route path="tests" component={RunDetailsTests} />
-                    <Route path="artifacts" component={RunDetailsArtifacts} />
-                </Route>
+                {path: ":pipeline/detail/:branch/:runId", component: RunDetails,
+                    indexRoute: {
+                        onEnter: ({ params }, replace) => replace(
+                            `/organizations/${params.organization}/${encodeURIComponent(params.pipeline)}/` +
+                            `detail/${params.branch}/${params.runId}/pipeline`
+                        ),
+                    },
+                    childRoutes: [
+                    {path: "pipeline", component: RunDetailsPipeline, childRoutes: [
+                        {path: ":node", component: RunDetailsPipeline},
+                    ]},
+                    {path: "changes", component: RunDetailsChanges},
+                    {path: "tests", component: RunDetailsTests},
+                    {path: "artifacts", component: RunDetailsArtifacts},
+                ]},
 
-                <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
-            </Route>
-        </Route>
-        <Route path="/pipelines" component={OrganizationPipelines}>
-            <IndexRoute component={Pipelines} />
-        </Route>
-        <IndexRedirect to="pipelines" />
-    </Route>
+                DynamicRoutes,
+                // TODO: need to convert this to onEnter - somehow?
+                //<Redirect from=":pipeline(/*)" to=":pipeline/activity" />
+            ]}
+        ]},
+        {path: "/pipelines", component: OrganizationPipelines, indexRoute: {
+            component: Pipelines,
+        }}
+    ]}
 );

@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 import { Link } from 'react-router';
 import { isFailure, isPending } from '../util/FetchStatus';
 import NotFound from './NotFound';
@@ -47,9 +48,7 @@ export default class PipelinePage extends Component {
                         <Favorite className="dark-yellow" />
                     </Title>
                     <PageTabs base={baseUrl}>
-                        <TabLink to="/activity">Activity</TabLink>
-                        <TabLink to="/branches">Branches</TabLink>
-                        <TabLink to="/pr">Pull Requests</TabLink>
+                        <Extensions.Renderer extensionPoint="pipeline.main.navigation" filter={dataType(pipeline._jobClass)} pipeline={pipeline} baseLink={baseUrl} />
                     </PageTabs>
                 </PageHeader>
                 {React.cloneElement(this.props.children, { pipeline })}

@@ -45,6 +45,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     }
 
     @Override
+    public String getJobClass() {
+        return folder.getClass().getName();
+    }
+
+    @Override
     public String getDisplayName() {
         return folder.getDisplayName();
     }

@@ -118,6 +118,10 @@ export class ExtensionRenderer extends React.Component {
 
     /** Actually render an individual extension */
     _renderExtension(element, extension) {
+        if (extension.type && React.Component.isPrototypeOf(extension.type)) { // already instantiated, just use it
+            ReactDOM.render(extension, element); // should probably bridge this
+            return;
+        }
         var component = React.createElement(extension, this.props);
         try {
             var contextValuesAsProps = {
@@ -169,6 +173,7 @@ ExtensionRenderer.propTypes = {
 };
 
 ExtensionRenderer.contextTypes = {
+    pipeline: React.PropTypes.any,
     router: React.PropTypes.object,
     config: React.PropTypes.object
 };
