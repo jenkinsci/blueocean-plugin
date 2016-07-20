@@ -86,11 +86,13 @@ export class PipelineCard extends Component {
                     {this.props.organization} / {this.props.pipeline}
                 </span>
 
-                { this.props.branch &&
+                { this.props.branch ?
                 <span className="branch">
                     <span className="octicon octicon-git-branch"></span>
                     <span className="branchText">{this.props.branch}</span>
                 </span>
+                :
+                <span className="branch"></span>
                 }
 
                 { commitId ?
