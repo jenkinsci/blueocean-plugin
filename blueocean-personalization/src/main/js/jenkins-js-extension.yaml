@@ -8,3 +8,5 @@ extensions:
     extensionPoint: jenkins.pipeline.list.top
   - component: components/FavoritePipeline
     extensionPoint: jenkins.pipeline.list.action
+  - component: components/FavoritePipelineHeader
+    extensionPoint: jenkins.pipeline.detail.header.action

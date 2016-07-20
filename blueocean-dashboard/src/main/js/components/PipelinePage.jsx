@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
+import Extensions from '@jenkins-cd/js-extensions';
 import { isFailure, isPending } from '../util/FetchStatus';
 import NotFound from './NotFound';
 import {
@@ -44,7 +45,11 @@ export default class PipelinePage extends Component {
                             <span> / </span>
                             <Link to={activityUrl}>{name}</Link>
                         </h1>
-                        <Favorite className="dark-yellow" />
+                        <Extensions.Renderer
+                          extensionPoint="jenkins.pipeline.detail.header.action"
+                          store={this.context.store}
+                          pipeline={this.context.pipeline}
+                        />
                     </Title>
                     <PageTabs base={baseUrl}>
                         <TabLink to="/activity">Activity</TabLink>
@@ -65,4 +70,5 @@ PipelinePage.propTypes = {
 PipelinePage.contextTypes = {
     location: PropTypes.object,
     pipeline: PropTypes.object,
+    store: PropTypes.object,
 };
