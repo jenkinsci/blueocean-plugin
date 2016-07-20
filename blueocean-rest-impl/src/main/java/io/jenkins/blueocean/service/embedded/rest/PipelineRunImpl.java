@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -24,8 +25,8 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
-    public Container<ChangeSetResource> getChangeSet() {
-        Map<String, ChangeSetResource> m = new LinkedHashMap<>();
+    public Container<BlueChangeSetEntry> getChangeSet() {
+        Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
         int cnt = 0;
         for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
             for (ChangeLogSet.Entry e : cs) {
