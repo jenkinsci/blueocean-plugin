@@ -180,7 +180,7 @@ exports.fetchJson = function fetchJson(url, onSuccess, onError) {
  * @param onError Error callback
  */
 
-exports.fetchLogsInjectStart = function fetchJson(url, start, onSuccess, onError) {
+exports.fetchLogsInjectStart = function fetchLogsInjectStart(url, start, onSuccess, onError) {
     let refetchUrl;
     if (start === null) {
         refetchUrl = url;
