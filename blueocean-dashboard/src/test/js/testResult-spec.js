@@ -1,13 +1,10 @@
 import React from 'react';
-import {createRenderer} from 'react-addons-test-utils';
-import { assert} from 'chai';
+import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
 import TestResults from '../../main/js/components/testing/TestResults.jsx';
 
 describe("TestResults", () => {
-  const renderer = createRenderer();
-
   const testResults1 = {
         "_class":"hudson.tasks.junit.TestResult",
         "duration":0.008,
