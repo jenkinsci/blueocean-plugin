@@ -3,6 +3,7 @@
 **Submitter checklist**
 - [ ] Change is code complete and matches issue description
 - [ ] Apppropriate unit or acceptance tests or explaination to why this change has no tests
+- [ ] Reviewer's manual test instructions provided in PR description. See Reviewer's first task below.
 
 **Reviewer checklist**
 - [ ] Run the changes and verified the change matches the issue description

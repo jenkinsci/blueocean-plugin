@@ -331,6 +331,18 @@ public abstract class BaseTest {
         return parallelNodes;
     }
 
+    protected String getHrefFromLinks(Map resp, String link){
+        Map links = (Map) resp.get("_links");
+        if(links == null){
+            return null;
+        }
+
+        Map l = (Map)links.get(link);
+        if(l == null){
+            return null;
+        }
+        return (String) l.get("href");
+    }
     public RequestBuilder request() {
         return new RequestBuilder(baseUrl);
     }

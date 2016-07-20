@@ -28,6 +28,8 @@ export class RunDetailsPipeline extends Component {
         // we do not want to follow any builds that are finished
         this.state = { followAlong: props && props.result && props.result.state !== 'FINISHED' };
         this.listener = {};
+        this._handleKeys = this._handleKeys.bind(this);
+        this.onScrollHandler = this.onScrollHandler.bind(this);
     }
 
     componentWillMount() {
@@ -266,6 +268,7 @@ export class RunDetailsPipeline extends Component {
             <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
+                  selectedStage={this.mergedConfig.nodeReducer}
                   callback={afterClick}
                   nodes={nodes[nodeKey].model}
                   pipelineName={name}
@@ -283,6 +286,7 @@ export class RunDetailsPipeline extends Component {
                 { currentSteps && <Steps
                   nodeInformation={currentSteps}
                   followAlong={followAlong}
+                  router={router}
                   {...this.props}
                 />
                 }

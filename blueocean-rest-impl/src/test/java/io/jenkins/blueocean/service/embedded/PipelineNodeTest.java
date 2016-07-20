@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
 import hudson.model.Result;
+import io.jenkins.blueocean.service.embedded.rest.PipelineNodeGraphBuilder;
 import io.jenkins.blueocean.service.embedded.rest.PipelineNodeUtil;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -14,6 +15,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Vivek Pandey
@@ -539,10 +543,10 @@ public class PipelineNodeTest extends BaseTest {
 
         Map step = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+parallelNodes.get(0).getId()+"/steps/"+resp.get(0).get("id"), Map.class);
 
-        Assert.assertNotNull(step);
+        assertNotNull(step);
 
         String stepLog = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+parallelNodes.get(0).getId()+"/steps/"+resp.get(0).get("id")+"/log", String.class);
-        Assert.assertNotNull(stepLog);
+        assertNotNull(stepLog);
     }
 
     @Test
@@ -622,7 +626,7 @@ public class PipelineNodeTest extends BaseTest {
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
         Assert.assertEquals(4,resp.size());
         String log = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/"+resp.get(0).get("id")+"/log/", String.class);
-        Assert.assertNotNull(log);
+        assertNotNull(log);
     }
 
 
@@ -1003,7 +1007,70 @@ public class PipelineNodeTest extends BaseTest {
         Assert.assertEquals(3, parallelNodes.size());
 
         String output = get("/organizations/jenkins/pipelines/pipeline1/runs/1/log", String.class);
-        Assert.assertNotNull(output);
+        assertNotNull(output);
         System.out.println(output);
     }
+
+    @Test
+    public void getPipelineJobRunStepLogTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+
+        job1.setDefinition(new CpsFlowDefinition("stage 'build'\n" +
+            "node{\n" +
+            "  echo \"Building...\"\n" +
+            "}\n" +
+            "\n" +
+            "stage 'test'\n" +
+            "parallel 'unit':{\n" +
+            "  node{\n" +
+            "    echo \"Unit testing...\"\n" +
+            "  }\n" +
+            "},'integration':{\n" +
+            "  node{\n" +
+            "    echo \"Integration testing...\"\n" +
+            "  }\n" +
+            "}, 'ui':{\n" +
+            "  node{\n" +
+            "    echo \"UI testing...\"\n" +
+            "  }\n" +
+            "}\n" +
+            "\n" +
+            "stage 'deploy'\n" +
+            "node{\n" +
+            "  echo \"Deploying\"\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        PipelineNodeGraphBuilder graphBuilder = new PipelineNodeGraphBuilder(b1);
+        List<FlowNode> flowNodes = graphBuilder.getAllSteps();
+
+        Map resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/"+flowNodes.get(0).getId()+"/");
+
+        String linkToLog = getActionLink(resp, "org.jenkinsci.plugins.workflow.actions.LogAction");
+
+        assertNotNull(linkToLog);
+        assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/6/log/", linkToLog);
+        String output = get(linkToLog.substring("/blue/rest".length()), String.class);
+        Assert.assertNotNull(output);
+    }
+
+    private String getActionLink(Map resp, String capability){
+        List<Map> actions = (List<Map>) resp.get("actions");
+        assertNotNull(actions);
+        for(Map a: actions){
+            String _class = (String) a.get("_class");
+            Map r = get("/classes/"+_class+"/");
+            List<String> classes = (List<String>) r.get("classes");
+            for(String c:classes){
+                if(c.equals(capability)){
+                    return getHrefFromLinks(a,"self");
+                }
+            }
+        }
+        return null;
+    }
+
 }

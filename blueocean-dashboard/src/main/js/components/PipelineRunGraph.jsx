@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
 
-const { string, array, any, func } = PropTypes;
+const { array, any, func, object, string } = PropTypes;
 
 
 function badNode(jenkinsNode) {
@@ -142,14 +142,26 @@ export default class PipelineRunGraph extends Component {
             display: 'flex',
             justifyContent: 'center',
         };
-
+        const id = this.props.selectedStage.id;
+        let selectedStage = graphNodes.filter((item) => {
+            let matches = item.id === id;
+            if (!matches && item.children.length > 0) {
+                const childMatches = item.children.filter(child => child.id === id);
+                matches = childMatches.length === 1;
+            }
+            return matches;
+        });
+        if (selectedStage[0] && selectedStage[0].id !== id && selectedStage[0].children.length > 0) {
+            selectedStage = selectedStage[0].children.filter(item => item.id === id);
+        }
         return (
             <div style={outerDivStyle}>
                 <PipelineGraph
                   stages={graphNodes}
+                  selectedStage={selectedStage[0]}
                   onNodeClick={
-                    (name, id) => {
-                        this.props.callback(id);
+                    (name, stageId) => {
+                        this.props.callback(stageId);
                     }
                   }
                 />
@@ -164,5 +176,6 @@ PipelineRunGraph.propTypes = {
     runId: string,
     nodes: array,
     node: any,
+    selectedStage: object,
     callback: func,
 };

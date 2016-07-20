@@ -25,7 +25,11 @@
     "zombie": "^4.2.1"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@jenkins-cd/design-language": "0.0.63-beta-1",
+=======
+    "@jenkins-cd/design-language": "0.0.63",
+>>>>>>> primary/master
     "@jenkins-cd/js-extensions": "0.0.17-beta-1",
     "@jenkins-cd/js-modules": "0.0.5",
     "history": "2.0.2",

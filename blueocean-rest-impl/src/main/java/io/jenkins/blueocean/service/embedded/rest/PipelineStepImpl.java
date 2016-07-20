@@ -1,12 +1,14 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -63,6 +65,12 @@ public class PipelineStepImpl extends BluePipelineStep {
             return new LogResource(node.getAction(LogAction.class).getLogText());
         }
         return null;
+    }
+
+    @Override
+    public Collection<BlueActionProxy> getActions() {
+
+        return PipelineImpl.getActionProxies(node.getActions(), this);
     }
 
     @Override

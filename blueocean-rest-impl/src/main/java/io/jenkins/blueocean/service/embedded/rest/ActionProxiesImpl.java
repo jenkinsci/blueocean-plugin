@@ -4,6 +4,7 @@ import hudson.model.Action;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * @author Vivek Pandey
@@ -20,12 +21,21 @@ public class ActionProxiesImpl extends BlueActionProxy {
 
     @Override
     public Object getAction() {
-        return action;
+        if(action.getClass().isAnnotationPresent(ExportedBean.class)){
+            return action;
+        }else{
+            return null;
+        }
     }
 
     @Override
     public String getUrlName() {
         return action.getUrlName();
+    }
+
+    @Override
+    public String get_Class() {
+        return action.getClass().getName();
     }
 
     @Override

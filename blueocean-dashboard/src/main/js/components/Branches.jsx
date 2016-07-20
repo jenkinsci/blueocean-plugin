@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
+import Extensions from '@jenkins-cd/js-extensions';
 import RunPipeline from './RunPipeline.jsx';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
@@ -22,7 +23,6 @@ export default class Branches extends Component {
                 router,
                 location,
                 pipeline: {
-                    name: pipelineName,
                     fullName,
                     organization,
                     },
@@ -54,7 +54,10 @@ export default class Branches extends Component {
             <td><CommitHash commitId={commitId} /></td>
             <td>{msg || '-'}</td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
-            <td><RunPipeline organization={organization} pipeline={pipelineName} branch={name} /></td>
+            <td>
+                <RunPipeline organization={organization} pipeline={fullName} branch={encodeURIComponent(branchName)} />
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.branches.list.action" />
+            </td>
         </tr>);
     }
 }

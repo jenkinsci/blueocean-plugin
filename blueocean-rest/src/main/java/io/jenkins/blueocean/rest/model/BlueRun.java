@@ -74,7 +74,7 @@ public abstract class BlueRun extends Resource {
      * @return Gives change set of a run
      */
     @Exported(inline = true)
-    public abstract Container<?> getChangeSet();
+    public abstract Container<BlueChangeSetEntry> getChangeSet();
 
     /**
      * @return run start time

@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
@@ -10,6 +11,7 @@ import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -110,6 +112,12 @@ public class PipelineNodeImpl extends BluePipelineNode {
     public Link getLink() {
         return self;
     }
+
+    @Override
+    public Collection<BlueActionProxy> getActions() {
+        return PipelineImpl.getActionProxies(node.getAllActions(), this);
+    }
+
 
     public static class EdgeImpl extends Edge{
         private final FlowNode node;
