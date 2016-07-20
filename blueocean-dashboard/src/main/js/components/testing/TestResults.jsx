@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { ResultItem, StatusIndicator } from '@jenkins-cd/design-language';
+import { ResultItem, StatusIndicator, EmptyStateView } from '@jenkins-cd/design-language';
 import moment from 'moment';
 
 /* eslint-disable max-len */
@@ -106,15 +106,13 @@ export default class TestResult extends Component {
         );
         
         if (testResults.failCount === 0) {
-            passBlock = [
-                <h4>Passing - {testResults.passCount}</h4>,
-                suites.map((t, i) => <TestCaseResultRow key={i} testCase={{
-                    className: `${t.cases.filter(c => c.status === 'PASSED').length} Passing`, // this shows second
-                    name: t.name,
-                    duration: t.duration,
-                    status: 'PASSED',
-                }} />),
-            ];
+            passBlock = (
+                <EmptyStateView iconName="done_all">
+                    <h1 style={{ marginTop: '2.4rem' }}>All tests are passing</h1>
+                    <p>Nice one! All {testResults.passCount} tests for this pipeline are passing.</p>
+                    <p>How's the serenity?</p>
+                </EmptyStateView>
+            );
         }
 
         if (newFailures.length > 0) {
