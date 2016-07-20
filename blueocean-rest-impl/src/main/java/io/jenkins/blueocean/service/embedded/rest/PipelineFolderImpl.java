@@ -93,8 +93,8 @@ public class PipelineFolderImpl extends BluePipelineFolder {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
 
-        Link link = FavoriteUtil.favoriteJob(folder.getFullName(), favoriteAction.isFavorite());
-        return new FavoriteImpl(this, link);
+        FavoriteUtil.favoriteJob(folder.getFullName(), favoriteAction.isFavorite());
+        return FavoriteUtil.getFavorite(folder.getFullName(), this);
     }
 
     @Override

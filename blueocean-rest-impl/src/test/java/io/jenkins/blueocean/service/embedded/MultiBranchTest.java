@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
+import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
+import io.jenkins.blueocean.service.embedded.rest.BranchImpl;
 import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
@@ -19,7 +21,12 @@ import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.test.BuildWatcher;
 import org.jvnet.hudson.test.MockFolder;
 
@@ -434,7 +441,11 @@ public class MultiBranchTest extends BaseTest{
             .data(ImmutableMap.of("favorite", true))
             .build(Map.class);
 
-        validatePipeline(p, (Map) m.get("item"));
+        Map branch = (Map) m.get("item");
+        validatePipeline(p, branch);
+        String c = (String) branch.get("_class");
+        Assert.assertEquals(BranchImpl.class.getName(), c);
+
 
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -442,9 +453,12 @@ public class MultiBranchTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(l.size(), 1);
-        Map branch = (Map)((Map)l.get(0)).get("item");
+        branch = (Map)((Map)l.get(0)).get("item");
 
         validatePipeline(p, branch);
+
+        c = (String) branch.get("_class");
+        Assert.assertEquals(BranchImpl.class.getName(), c);
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -491,11 +505,63 @@ public class MultiBranchTest extends BaseTest{
 
         validatePipeline(p1, branch);
 
+        String c = (String) branch.get("_class");
+        Assert.assertEquals(BranchImpl.class.getName(), c);
+
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
             .auth("bob","bob")
             .status(403)
             .build(String.class);
+
+    }
+
+
+    @Test
+    public void favoritedFromClassicTest() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+
+        FavoriteUserProperty fup = user.getProperty(FavoriteUserProperty.class);
+        if (fup == null) {
+            user.addProperty(new FavoriteUserProperty());
+            fup = user.getProperty(FavoriteUserProperty.class);
+        }
+        fup.toggleFavorite(mp.getFullName());
+        user.save();
+
+        List l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(1, l.size());
+
+        Map branch = (Map)((Map)l.get(0)).get("item");
+
+        validatePipeline(p, branch);
+
+        String c = (String) branch.get("_class");
+        Assert.assertEquals(BranchImpl.class.getName(), c);
+
+        String ref = getHrefFromLinks((Map)l.get(0), "self");
+
+        Map r = new RequestBuilder(baseUrl)
+            .get(ref.substring("/blue/rest".length()))
+            .auth("alice","alice")
+            .build(Map.class);
+
+        validatePipeline(p, (Map)r.get("item"));
 
     }
 
