@@ -11,6 +11,7 @@ import { Favorite } from '@jenkins-cd/design-language';
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
+import FavoritesProvider from './FavoritesProvider';
 
 /**
  */
@@ -65,9 +66,11 @@ export class FavoritePipeline extends Component {
 
     render() {
         return (
-            <Favorite checked={this.state.favorite} className={this.props.className}
-              onToggle={() => this._onFavoriteToggle()}
-            />
+            <FavoritesProvider store={this.props.store}>
+                <Favorite checked={this.state.favorite} className={this.props.className}
+                  onToggle={() => this._onFavoriteToggle()}
+                />
+            </FavoritesProvider>
         );
     }
 }
@@ -77,6 +80,7 @@ FavoritePipeline.propTypes = {
     pipeline: PropTypes.object,
     favorites: PropTypes.instanceOf(List),
     toggleFavorite: PropTypes.func,
+    store: PropTypes.object,
 };
 
 FavoritePipeline.defaultProps = {
