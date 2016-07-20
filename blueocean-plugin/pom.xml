@@ -98,6 +98,7 @@
                         //
                         linkHPI('blueocean-web');
                         linkHPI('blueocean-dashboard');
+                        linkHPI('blueocean-personalization')
                         linkHPI('blueocean-rest');
                         linkHPI('blueocean-commons');
                         linkHPI('blueocean-rest-impl');

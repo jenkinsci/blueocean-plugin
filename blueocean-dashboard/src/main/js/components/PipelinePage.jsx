@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
+import { isFailure, isPending } from '../util/FetchStatus';
+import NotFound from './NotFound';
 import {
     Page,
     PageHeader,
@@ -11,8 +13,6 @@ import {
 } from '@jenkins-cd/design-language';
 import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
 
-const { object } = PropTypes;
-
 export default class PipelinePage extends Component {
     render() {
         const { pipeline } = this.context;
@@ -22,6 +22,14 @@ export default class PipelinePage extends Component {
 
         if (!pipeline) {
             return null; // Loading...
+        }
+
+        if (isPending(pipeline)) {
+            return null;
+        }
+        
+        if (isFailure(pipeline)) {
+            return <NotFound />;
         }
 
         const baseUrl = buildPipelineUrl(organization, fullName);
@@ -51,10 +59,10 @@ export default class PipelinePage extends Component {
 }
 
 PipelinePage.propTypes = {
-    children: object,
+    children: PropTypes.any,
 };
 
 PipelinePage.contextTypes = {
-    location: object,
-    pipeline: object,
+    location: PropTypes.object,
+    pipeline: PropTypes.object,
 };

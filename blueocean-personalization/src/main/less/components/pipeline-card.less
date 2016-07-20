@@ -7,7 +7,6 @@
     padding: 15px;
 
     .name, .branch, .commit {
-        flex: 1 1 auto;
         margin-left: 10px;
     }
 
@@ -16,8 +15,20 @@
         align-items: center;
     }
 
+    .name {
+        width: 55%;
+    }
+
+    .branch {
+        width: 45%;
+    }
+
+    .commit {
+        min-width: 100px;
+    }
+
     .name, .branchText, .commitId {
-        height: 18px;
+        min-height: 18px;
     }
 
     .commitId {
@@ -70,12 +81,5 @@
         circle {
             stroke: white;
         }
-    }
-
-    // force "favorite" checkbox to white when on unstable card
-    // FIXME: doesn't work in IE11
-    .checkbox {
-        filter: grayscale(100%) brightness(0%) invert(100%);
-        -webkit-filter: grayscale(100%) brightness(0%) invert(100%);
     }
 }

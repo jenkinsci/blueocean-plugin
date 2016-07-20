@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { action, storiesOf } from '@kadira/storybook';
+import moment from 'moment';
 
 import { PipelineCard } from '../components/PipelineCard';
 
@@ -12,6 +13,8 @@ const style2 = { paddingBottom: '10px' };
 storiesOf('PipelineCard', module)
     .add('all states', () => {
         const states = 'SUCCESS,QUEUED,RUNNING,FAILURE,ABORTED,UNSTABLE,NOT_BUILT,UNKNOWN'.split(',');
+        const startTime = moment().subtract(30, 'seconds').toISOString();
+        const estimatedDuration = 60000;
 
         return (
             <div style={style}>
@@ -23,8 +26,9 @@ storiesOf('PipelineCard', module)
                     />
                 </div>
             ) }
-                <PipelineCard status="RUNNING" organization="jenkinsci" pipeline="blueocean"
-                  commitId="447d8e1" onRunClick={action('run')} onFavoriteToggle={action('toggle')}
+                <PipelineCard status="RUNNING" startTime={startTime} estimatedDuration={estimatedDuration}
+                  organization="jenkinsci" pipeline="blueocean" commitId="447d8e1"
+                  onRunClick={action('run')} onFavoriteToggle={action('toggle')}
                 />
             </div>
         );

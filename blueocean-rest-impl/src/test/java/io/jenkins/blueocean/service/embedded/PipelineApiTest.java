@@ -307,6 +307,8 @@ public class PipelineApiTest extends BaseTest {
         for(int i=0; i<projects.length; i++){
             Map lr = resp.get(i);
             validatePipeline(projects[i], lr);
+            String cls = (String) lr.get("_class");
+            Assert.assertEquals(PipelineImpl.class.getName(), cls);
         }
     }
 
@@ -546,7 +548,7 @@ public class PipelineApiTest extends BaseTest {
     @Test
     public void getPipelinesExtensionTest() throws Exception {
 
-        Project p = j.createFreeStyleProject("pipeline1");
+        Project p = j.createProject(TestProject.class,"pipeline1");
 
         Map<String,Object> response = get("/organizations/jenkins/pipelines/pipeline1");
         validatePipeline(p, response);
@@ -559,7 +561,7 @@ public class PipelineApiTest extends BaseTest {
 
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
-            if(item instanceof Job){
+            if(item instanceof TestProject){
                 return new TestPipelineImpl((Job)item);
             }
             return null;
@@ -593,4 +595,38 @@ public class PipelineApiTest extends BaseTest {
     }
 
 
+    @Test
+    public void testClassesQuery(){
+        // get classes for given class
+        Map resp = get("/classes/"+TestPipelineImpl.class.getName());
+        Assert.assertNotNull(resp);
+        List<String> classes = (List<String>) resp.get("classes");
+        Assert.assertTrue(classes.contains("io.jenkins.blueocean.rest.model.BluePipeline"));
+
+
+        // should return empty map
+        resp = get("/classes/");
+        Assert.assertNotNull(resp);
+        Map m = (Map) resp.get("map");
+        Assert.assertTrue(m.isEmpty());
+
+        // get classes map for given classes in the query
+        resp = get("/classes/?q=io.jenkins.blueocean.service.embedded.rest.PipelineImpl,io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl,"+TestPipelineImpl.class.getName());
+        Assert.assertNotNull(resp);
+        m = (Map) resp.get("map");
+        Assert.assertNotNull(m);
+        Assert.assertEquals(3, m.size());
+
+        Map v = (Map) m.get("io.jenkins.blueocean.service.embedded.rest.PipelineImpl");
+        Assert.assertNotNull(v);
+
+        classes = (List<String>) v.get("classes");
+        Assert.assertTrue(classes.contains("io.jenkins.blueocean.rest.model.BluePipeline"));
+
+        v = (Map) m.get(TestPipelineImpl.class.getName());
+        Assert.assertNotNull(v);
+
+        classes = (List<String>) v.get("classes");
+        Assert.assertTrue(classes.contains("io.jenkins.blueocean.rest.model.BluePipeline"));
+    }
 }
