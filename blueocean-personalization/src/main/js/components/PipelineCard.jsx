@@ -10,7 +10,8 @@ import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
  *
  * Properties:
  * status: 'result' or 'status' value e.g. 'success', 'failure', etc.
- * percentage: for status=running, the percent complete
+ * "estimatedDuration": time in millis over which the progress indicator will update.
+ * "startTime": ISO-8601 string indicating when tracking of progress begins from.
  * organization: name of org
  * pipeline: name of pipeline
  * branch: name of branch
@@ -22,9 +23,9 @@ import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 export class PipelineCard extends Component {
 
     static _getBackgroundClass(status) {
-        return status !== null && status.length > 0 ?
+        return status && status.length > 0 ?
             `${status.toLowerCase()}-bg-lite` :
-            '';
+            'unknown-bg-lite';
     }
 
     constructor(props) {
@@ -69,29 +70,39 @@ export class PipelineCard extends Component {
     }
 
     render() {
-        const { status } = this.props;
+        const { status, commitId, startTime, estimatedDuration } = this.props;
         const bgClass = PipelineCard._getBackgroundClass(status);
-        const showRun = status && status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted';
+        const showRun = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
+        const commitText = commitId ? commitId.substr(0, 7) : '';
 
         return (
             <div className={`pipeline-card ${bgClass}`}>
-                <LiveStatusIndicator result={this.props.status} width={'20px'} height={'20px'} noBackground />
+                <LiveStatusIndicator
+                  result={status} startTime={startTime} estimatedDuration={estimatedDuration}
+                  width={'24px'} height={'24px'} noBackground
+                />
 
                 <span className="name">
-                    {this.props.organization} / {this.props.pipeline}
+                    {this.props.organization} / <span title={this.props.fullName}>{this.props.pipeline}</span>
                 </span>
 
-                { this.props.branch &&
+                { this.props.branch ?
                 <span className="branch">
                     <span className="octicon octicon-git-branch"></span>
                     <span className="branchText">{this.props.branch}</span>
                 </span>
+                :
+                <span className="branch"></span>
                 }
 
+                { commitId ?
                 <span className="commit">
                     <span className="octicon octicon-git-commit"></span>
-                    <pre className="commitId">#{this.props.commitId}</pre>
+                    <pre className="commitId">#{commitText}</pre>
                 </span>
+                :
+                <span className="commit"></span>
+                }
 
                 <span className="actions">
                     { showRun &&
@@ -111,8 +122,10 @@ export class PipelineCard extends Component {
 
 PipelineCard.propTypes = {
     status: PropTypes.string,
-    percentage: PropTypes.number, // TODO: might need startTime and estimatedDuration
+    startTime: PropTypes.string,
+    estimatedDuration: PropTypes.number,
     organization: PropTypes.string,
+    fullName: PropTypes.string,
     pipeline: PropTypes.string,
     branch: PropTypes.string,
     commitId: PropTypes.string,

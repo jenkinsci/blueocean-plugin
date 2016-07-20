@@ -8,6 +8,14 @@ import { shallow } from 'enzyme';
 import { PipelineCard } from '../../../main/js/components/PipelineCard';
 
 describe('PipelineCard', () => {
+    it('renders without error for empty props', () => {
+        const wrapper = shallow(
+            <PipelineCard />
+        );
+
+        assert.isOk(wrapper);
+    });
+
     it('renders basic child elements', () => {
         const status = 'SUCCESS';
         const wrapper = shallow(
