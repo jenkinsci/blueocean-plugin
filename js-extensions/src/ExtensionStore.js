@@ -7,7 +7,9 @@ export class ExtensionStore {
      *  FIXME this is NOT a constructor, as there's no common way to
      *  pass around a DI singleton at the moment across everything
      *  that needs it (e.g. redux works for the app, not for other
-     *  things in this module)
+     *  things in this module).
+     *  
+     *  NOTE: this is currently called from `blueocean-web/src/main/js/init.jsx`
      *  
      *  Needs:
      *  args = {
@@ -15,9 +17,11 @@ export class ExtensionStore {
      *          ... // get the data
      *          callback(extensionData); // array of extensions
      *      },
-     *      typeInfoProvider: (type, callback) => {
-     *          ... // get the data based on 'type'
-     *          callback(typeInfo);
+     *      classMetadataStore: {
+     *          getClassMetadata(dataType, callback) => {
+     *              ... // get the data based on 'dataType'
+     *              callback(typeInfo);
+     *          }
      *      }
      *  }
      */
@@ -30,13 +34,9 @@ export class ExtensionStore {
          */
         this.extensionPoints = {};
         /**
-         * Type info cache
-         */
-        this.typeInfo = {};
-        /**
          * Used to fetch type information
          */
-        this.typeInfoProvider = args.typeInfoProvider;
+        this.classMetadataStore = args.classMetadataStore;
     }
     
     /**
@@ -53,7 +53,7 @@ export class ExtensionStore {
             extension.instance = instance;
             return;
         }
-        throw `Unable to locate plugin for ${extensionPointId} / ${pluginId} / ${component}`;
+        throw new Error(`Unable to locate plugin for ${extensionPointId} / ${pluginId} / ${component}`);
     }
     
     /**
@@ -76,102 +76,69 @@ export class ExtensionStore {
      * will call the onload callback with a list of exported extension
      * objects (e.g. React classes or otherwise).
      */
-    getExtensions(key, type, onload) {
-        if (!this.extensionDataProvider) {
-            throw "Must call ExtensionStore.init({ extensionDataProvider: (cb) => ..., typeInfoProvider: (type, cb) => ... }) first";
-        }
+    getExtensions(extensionPoint, filter, onload) {
         // Allow calls like: getExtensions('something', a => ...)
-        if (arguments.length === 2 && typeof(type) === 'function') {
-            onload = type;
-            type = undefined;
+        if (arguments.length === 2 && typeof(filter) === 'function') {
+            onload = filter;
+            filter = undefined;
         }
+        
         // And calls like: getExtensions(['a','b'], (a,b) => ...)
-        if (key instanceof Array) {
-            var keys = key;
+        if (extensionPoint instanceof Array) {
             var args = [];
             var nextArg = ext => {
                 if(ext) args.push(ext);
-                if (keys.length === 0) {
+                if (extensionPoint.length === 0) {
                     onload(...args);
                 } else {
-                    var arg = keys[0];
-                    keys = keys.slice(1);
-                    this.getExtensions(arg, null, nextArg);
+                    var arg = extensionPoint[0];
+                    extensionPoint = extensionPoint.slice(1);
+                    this.getExtensions(arg, filter, nextArg);
                 }
             };
             nextArg();
             return;
         }
         
-        this._loadBundles(key, extensions => this._filterExtensions(extensions, key, type, onload));
+        this._loadBundles(extensionPoint, extensions => this._filterExtensions(extensions, filter, onload));
     }
     
-    /**
-     * Gets the type/capability info for the given data type
-     */
-    getTypeInfo(type, onload) {
-        var ti = this.typeInfo[type];
-        if (ti) {
-            return onload(ti);
-        }
-        this.typeInfoProvider(type, (data) => {
-            ti = this.typeInfo[type] = JSON.parse(JSON.stringify(data));
-            ti.classes = ti.classes || [];
-            if (ti.classes.indexOf(type) < 0) {
-                ti.classes = [type, ...ti.classes];
-            }
-            onload(ti);
-        });
-    }
-
-    _filterExtensions(extensions, key, currentDataType, onload) {
-        if (currentDataType && typeof(currentDataType) === 'object'
-                && '_class' in currentDataType) { // handle the common API incoming data
-            currentDataType = currentDataType._class;
-        }
+    _filterExtensions(extensions, filters, onload) {
         if (extensions.length === 0) {
-            onload(extensions); // no extensions for the given key
+            onload(extensions); // no extensions to filter
             return;
         }
-        if (currentDataType) {
-            var currentTypeInfo = this.typeInfo[currentDataType];
-            if (!currentTypeInfo) {
-                this.getTypeInfo(currentDataType, () => {
-                    this._filterExtensions(extensions, key, currentDataType, onload);
-                });
-                return;
+        
+        if (filters) {
+            // allow calls like: getExtensions('abcd', dataType(something), ext => ...)
+            if (!filters.length) {
+                filters = [ filters ];
             }
-            // prevent returning extensions for the given type
-            // when a more specific extension is found
-            var matchingExtensions = [];
-            eachType: for (var typeIndex = 0; typeIndex < currentTypeInfo.classes.length; typeIndex++) {
-                // currentTypeInfo.classes is ordered by java hierarchy, including
-                // and beginning with the current data type
-                var type = currentTypeInfo.classes[typeIndex];
-                for (var i = 0; i < extensions.length; i++) {
-                    var extension = extensions[i];
-                    if (type === extension.type) {
-                        matchingExtensions.push(extension);
-                    }
+            var remaining = [].concat(filters);
+            var nextFilter = extensions => {
+                if (remaining.length === 0) {
+                    // Map to instances and proceed
+                    onload(extensions.map(m => m.instance));
+                } else {
+                    var filter = remaining[0];
+                    remaining = remaining.slice(1);
+                    filter(extensions, nextFilter);
                 }
-                // if we have this specific type handled, don't
-                // proceed to parent types
-                if (matchingExtensions.length > 0) {
-                    break eachType;
-                }
-            }
-            extensions = matchingExtensions;
+            };
+            nextFilter(extensions);
         } else {
-            // exclude typed extensions when types not requested
-            extensions = extensions.filter(m => !('type' in m));
+            // Map to instances and proceed
+            onload(extensions.map(m => m.instance));
         }
-        onload(extensions.map(m => m.instance));
     }
     
     /**
      * Fetch all the extension data
      */
     _loadExtensionData(oncomplete) {
+        if (!this.extensionDataProvider) {
+            throw new Error("Must call ExtensionStore.init({ extensionDataProvider: (cb) => ..., typeInfoProvider: (type, cb) => ... }) first");
+        }
         if (this.extensionPointList) {
             onconplete(this.extensionPointList);
             return;
