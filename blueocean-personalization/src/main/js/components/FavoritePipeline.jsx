@@ -42,7 +42,7 @@ export class FavoritePipeline extends Component {
             favorite = props.favorites.find((fav) => {
                 const favUrl = fav.item._links.self.href;
                 const pipelineUrl = pipeline._links.self.href;
-                
+
                 return checkMatchingFavoriteUrls(favUrl, pipelineUrl);
             });
         }
@@ -53,17 +53,13 @@ export class FavoritePipeline extends Component {
     }
 
     _onFavoriteToggle() {
-        const value = !this.state.favorite;
+        const isFavorite = !this.state.favorite;
         this.setState({
-            favorite: value,
+            favorite: isFavorite,
         });
 
         if (this.props.toggleFavorite) {
-            this.props.toggleFavorite(
-                this.context.config,
-                value,
-                this.props.pipeline,
-            );
+            this.props.toggleFavorite(isFavorite, this.props.pipeline);
         }
     }
 
@@ -85,10 +81,6 @@ FavoritePipeline.propTypes = {
 
 FavoritePipeline.defaultProps = {
     favorite: false,
-};
-
-FavoritePipeline.contextTypes = {
-    config: PropTypes.object,
 };
 
 const selectors = createSelector(

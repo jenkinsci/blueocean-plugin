@@ -4,6 +4,9 @@
 import fetch from 'isomorphic-fetch';
 
 import { ACTION_TYPES } from './FavoritesStore';
+import urlConfig from '../config';
+
+urlConfig.loadConfig();
 
 const defaultFetchOptions = {
     credentials: 'same-origin',
@@ -20,7 +23,7 @@ function checkStatus(response) {
 
 function parseJSON(response) {
     return response.json()
-        // FIXME: workaround for empty response body for causes error in Chrome
+        // FIXME: workaround for status=200 w/ empty response body that causes error in Chrome
         // server should probably return HTTP 204 instead
         .catch((error) => {
             if (error.message === 'Unexpected end of JSON input') {
@@ -58,10 +61,10 @@ export const actions = {
         };
     },
 
-    toggleFavorite(config, addFavorite, branch) {
+    toggleFavorite(addFavorite, branch) {
         return (dispatch) => {
-            const baseUrl = config.getRootURL();
-            const url = `${baseUrl}/${branch._links.self.href}/favorite`;
+            const baseUrl = urlConfig.jenkinsRootURL;
+            const url = `${baseUrl}${branch._links.self.href}/favorite`;
             const fetchOptions = {
                 ...defaultFetchOptions,
                 method: 'PUT',
@@ -73,7 +76,6 @@ export const actions = {
                 ),
             };
 
-            // TODO: need to validate that payload is passing through after JENKINS-36580 is complete
             return dispatch(actions.generateData(
                 { url, fetchOptions },
                 ACTION_TYPES.TOGGLE_FAVORITE,
