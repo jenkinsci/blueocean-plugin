@@ -17,7 +17,7 @@ public class ExtensionClassImpl extends BlueExtensionClass {
     private final Class baseClass;
     private final Reachable parent;
 
-    public ExtensionClassImpl(Reachable parent, Class baseClass) {
+    public ExtensionClassImpl(Class baseClass, Reachable parent) {
         this.baseClass = baseClass;
         this.parent = parent;
     }
@@ -62,7 +62,7 @@ public class ExtensionClassImpl extends BlueExtensionClass {
 
     private static final String[] BLACK_LISTED_CLASSES={"java.", "javax.", "com.sun."};
 
-    @Override
+
     public Link getLink() {
         return parent.getLink().rel(baseClass.getName());
     }

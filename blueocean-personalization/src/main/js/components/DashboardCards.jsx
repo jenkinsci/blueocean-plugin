@@ -82,7 +82,7 @@ const extractPath = (path, begin, end) => {
     try {
         return path.split('/').slice(begin, end).join('/');
     } catch (error) {
-        return '';
+        return path;
     }
 };
 
