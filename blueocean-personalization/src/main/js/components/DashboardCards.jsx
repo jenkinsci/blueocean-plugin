@@ -144,7 +144,7 @@ export class DashboardCards extends Component {
             const pipeline = fav.item;
             const latestRun = pipeline.latestRun;
 
-            let fullName
+            let fullName;
             let pipelineName;
             let branchName;
 
