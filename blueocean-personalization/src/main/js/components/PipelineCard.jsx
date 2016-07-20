@@ -83,7 +83,7 @@ export class PipelineCard extends Component {
                 />
 
                 <span className="name">
-                    {this.props.organization} / {this.props.pipeline}
+                    {this.props.organization} / <span title={this.props.fullName}>{this.props.pipeline}</span>
                 </span>
 
                 { this.props.branch ?
@@ -125,6 +125,7 @@ PipelineCard.propTypes = {
     startTime: PropTypes.string,
     estimatedDuration: PropTypes.number,
     organization: PropTypes.string,
+    fullName: PropTypes.string,
     pipeline: PropTypes.string,
     branch: PropTypes.string,
     commitId: PropTypes.string,

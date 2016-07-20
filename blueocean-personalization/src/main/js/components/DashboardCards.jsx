@@ -72,6 +72,21 @@ const sortComparator = (favoriteA, favoriteB) => {
 };
 
 /**
+ * Extract elements from a path string deliminted with forward slashes
+ * @param path
+ * @param begin
+ * @param end
+ * @returns {string}
+ */
+const extractPath = (path, begin, end) => {
+    try {
+        return path.split('/').slice(begin, end).join('/');
+    } catch (error) {
+        return '';
+    }
+};
+
+/**
  */
 export class DashboardCards extends Component {
 
@@ -129,15 +144,20 @@ export class DashboardCards extends Component {
             const pipeline = fav.item;
             const latestRun = pipeline.latestRun;
 
+            let fullName
             let pipelineName;
             let branchName;
 
             if (pipeline._class === 'io.jenkins.blueocean.service.embedded.rest.BranchImpl') {
-                // branch.fullName is in the form folder1/folder2/pipeline/branch, so grab "pipeline"
-                pipelineName = pipeline.fullName.split('/').slice(-2)[0];
+                // branch.fullName is in the form folder1/folder2/pipeline/branch ...
+                // "pipeline"
+                pipelineName = extractPath(pipeline.fullName, -2, -1);
+                // everything up to "branch"
+                fullName = extractPath(pipeline.fullName, 0, -1);
                 branchName = pipeline.name;
             } else {
                 pipelineName = pipeline.name;
+                fullName = pipeline.fullName;
             }
 
             let status = null;
@@ -165,6 +185,7 @@ export class DashboardCards extends Component {
                       status={status}
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
+                      fullName={fullName}
                       organization={pipeline.organization}
                       pipeline={pipelineName}
                       branch={branchName}
