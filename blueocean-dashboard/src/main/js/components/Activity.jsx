@@ -60,11 +60,22 @@ export class Activity extends Component {
             this.props.fetchRunsIfNeeded(config);
         }
     }
+    
+    fetchNextRuns() {
+        this.props.runs.currentPage++;
+        this.props.fetchRunsIfNeeded(this.context.config);
+    }
 
     render() {
         const { runs, pipeline } = this.props;
         // early out
         if (!runs) {
+            return null;
+        }
+        
+        const currentRunData = runs.currentData;
+        
+        if (!currentRunData) {
             return null;
         }
 
@@ -73,7 +84,7 @@ export class Activity extends Component {
         // the Branches/PRs tab.
         const showRunButton = (pipeline && !Pipeline.isMultibranch(pipeline));
 
-        if (!runs.length) {
+        if (!currentRunData.length) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
         }
 
@@ -93,7 +104,7 @@ export class Activity extends Component {
             <article className="activity">
                 {showRunButton && <RunNonMultiBranchPipeline pipeline={pipeline} buttonText="Run" />}
                 <Table className="activity-table fixed" headers={headers}>
-                    { runs.map((run, index) => {
+                    { currentRunData.map((run, index) => {
                         const changeset = run.changeSet;
                         let latestRecord = {};
                         if (changeset && changeset.length > 0) {
@@ -109,9 +120,12 @@ export class Activity extends Component {
                         return (<Runs {...props} />);
                     })}
                 </Table>
+                <button onClick={() => this.fetchNextRuns()}>Show More</button>
             </article>
         </main>);
     }
+    
+    
 }
 
 Activity.contextTypes = {
@@ -121,7 +135,7 @@ Activity.contextTypes = {
 };
 
 Activity.propTypes = {
-    runs: array,
+    runs: object,
     pipeline: object,
     fetchRunsIfNeeded: func,
 };

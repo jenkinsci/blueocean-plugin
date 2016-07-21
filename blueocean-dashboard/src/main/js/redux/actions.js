@@ -5,6 +5,7 @@ import { State } from '../components/records';
 import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
 import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
+import PaginationHolder from '../util/PaginationHolder';
 
 // main actin logic
 export const ACTION_TYPES = keymirror({
@@ -56,8 +57,17 @@ export const actionHandlers = {
     [ACTION_TYPES.CLEAR_CURRENT_RUN_DATA](state) {
         return state.set('currentRuns', null);
     },
-    [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
-        return state.set('currentRuns', payload);
+    [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload, id, pageStart }): State {
+        const runs = state.runs || {};
+        
+        let runData = runs[id];
+        if(!runData) {
+            runData = runs[id] = new PaginationHolder();
+        }
+        if (runData.currentData.length < pageStart)
+            runData.appendData(pageStart, payload);
+        
+        return state.set('currentRuns', runData);
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
         return state.set('node', { ...payload });
@@ -67,9 +77,16 @@ export const actionHandlers = {
         nodes[payload.nodesBaseUrl] = payload;
         return state.set('nodes', nodes);
     },
-    [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
-        const runs = { ...state.runs } || {};
-        runs[id] = payload;
+    [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id, pageStart }): State {
+        const runs = state.runs || {};
+        
+        let runData = runs[id];
+        if(!runData) {
+            runData = runs[id] = new PaginationHolder();
+        }
+        if (runData.currentData.length < pageStart)
+            runData.appendData(pageStart, payload);
+        
         return state.set('runs', runs);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
@@ -555,18 +572,23 @@ export const actions = {
     },
 
     fetchRunsIfNeeded(config) {
-        return (dispatch) => {
+        return (dispatch, getState) => {
+            const id = config.pipeline;
+            const alwaysFetch = true;
+            const runsData = getState().adminStore['runs'];
+            const pagination = !runsData ? new PaginationHolder() : (runsData[id] || new PaginationHolder());
             const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                `/pipelines/${config.pipeline}/runs/`;
+                `/pipelines/${config.pipeline}/runs/?start=${pagination.getCurrentPageStart()}&limit=${pagination.pageSize}`;
             return dispatch(actions.fetchIfNeeded({
                 url: baseUrl,
                 id: config.pipeline,
+                pageStart: pagination.getCurrentPageStart(),
                 type: 'runs',
             }, {
                 current: ACTION_TYPES.SET_CURRENT_RUN_DATA,
                 general: ACTION_TYPES.SET_RUNS_DATA,
                 clear: ACTION_TYPES.CLEAR_CURRENT_RUN_DATA,
-            }));
+            }, alwaysFetch));
         };
     },
 
@@ -592,14 +614,14 @@ export const actions = {
      * @param types TODO: what's this and what's in it?
      * @returns {Function}
      */
-    fetchIfNeeded(general, types) {
+    fetchIfNeeded(general, types, alwaysFetch = false) {
         return (dispatch, getState) => {
             const data = getState().adminStore[general.type];
             dispatch({ type: types.clear });
 
             const id = general.id;
 
-            if (!data || !data[id]) {
+            if (alwaysFetch || !data || !data[id]) {
                 return fetch(general.url, fetchOptions)
                     .then(checkStatus)
                     .then(parseJSON)
