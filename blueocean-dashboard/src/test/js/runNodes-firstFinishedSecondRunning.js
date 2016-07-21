@@ -1,11 +1,11 @@
 export const firstFinishedSecondRunning = [
   {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
     "displayName": "Stage 1",
     "durationInMillis": 10264,
     "edges": [
       {
-        "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl$EdgeImpl",
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
         "id": "12"
       }
     ],
@@ -15,20 +15,20 @@ export const firstFinishedSecondRunning = [
     "state": "FINISHED"
   },
   {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
     "displayName": "Stage 2",
     "durationInMillis": 7271,
     "edges": [
       {
-        "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl$EdgeImpl",
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
         "id": "16"
       },
       {
-        "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl$EdgeImpl",
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
         "id": "17"
       },
       {
-        "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl$EdgeImpl",
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
         "id": "18"
       }
     ],
@@ -38,7 +38,7 @@ export const firstFinishedSecondRunning = [
     "state": "RUNNING"
   },
   {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
     "displayName": "firstBranch",
     "durationInMillis": 7269,
     "edges": [],
@@ -48,7 +48,7 @@ export const firstFinishedSecondRunning = [
     "state": "RUNNING"
   },
   {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
     "displayName": "secondBranch",
     "durationInMillis": 7268,
     "edges": [],
@@ -58,7 +58,7 @@ export const firstFinishedSecondRunning = [
     "state": "RUNNING"
   },
   {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
     "displayName": "thirdBranch",
     "durationInMillis": 7267,
     "edges": [],

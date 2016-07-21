@@ -1,5 +1,5 @@
 export const nodes = [{
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -16,9 +16,9 @@ export const nodes = [{
     "result": "SUCCESS",
     "startTime": "2016-07-01T14:02:38.829+0200",
     "state": "FINISHED",
-    "edges": [{"_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl$EdgeImpl", "id": "23"}]
+    "edges": [{"_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl", "id": "23"}]
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -36,11 +36,11 @@ export const nodes = [{
     "startTime": "2016-07-01T14:03:09.608+0200",
     "state": "FINISHED",
     "edges": [{
-        "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl$EdgeImpl",
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
         "id": "26"
-    }, {"_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl$EdgeImpl", "id": "27"}]
+    }, {"_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl", "id": "27"}]
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -57,9 +57,9 @@ export const nodes = [{
     "result": "SUCCESS",
     "startTime": "2016-07-01T14:03:09.609+0200",
     "state": "FINISHED",
-    "edges": [{"_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl$EdgeImpl", "id": "45"}]
+    "edges": [{"_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl", "id": "45"}]
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -76,9 +76,9 @@ export const nodes = [{
     "result": "SUCCESS",
     "startTime": "2016-07-01T14:03:09.609+0200",
     "state": "FINISHED",
-    "edges": [{"_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl$EdgeImpl", "id": "45"}]
+    "edges": [{"_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl", "id": "45"}]
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineNodeImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -98,7 +98,7 @@ export const nodes = [{
     "edges": []
 }];
 export const stepsNode5 = [{
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -112,7 +112,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:02:38.830+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -126,7 +126,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:02:43.219+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -140,7 +140,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:02:43.221+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -154,7 +154,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:02:47.611+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -168,7 +168,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:02:47.612+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -182,7 +182,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:02:52.003+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -196,7 +196,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:02:52.005+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -210,7 +210,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:02:56.394+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -224,7 +224,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:02:56.396+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -238,7 +238,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:03:00.782+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -252,7 +252,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:03:00.784+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -266,7 +266,7 @@ export const stepsNode5 = [{
     "startTime": "2016-07-01T14:03:05.168+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -282,7 +282,7 @@ export const stepsNode5 = [{
 }];
 
 export const stepsNode45 = [{
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -296,7 +296,7 @@ export const stepsNode45 = [{
     "startTime": "2016-07-01T14:03:29.844+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -310,7 +310,7 @@ export const stepsNode45 = [{
     "startTime": "2016-07-01T14:03:36.571+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -324,7 +324,7 @@ export const stepsNode45 = [{
     "startTime": "2016-07-01T14:03:36.572+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -338,7 +338,7 @@ export const stepsNode45 = [{
     "startTime": "2016-07-01T14:03:43.298+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -352,7 +352,7 @@ export const stepsNode45 = [{
     "startTime": "2016-07-01T14:03:43.299+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -366,7 +366,7 @@ export const stepsNode45 = [{
     "startTime": "2016-07-01T14:03:43.300+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -380,7 +380,7 @@ export const stepsNode45 = [{
     "startTime": "2016-07-01T14:03:50.037+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -394,7 +394,7 @@ export const stepsNode45 = [{
     "startTime": "2016-07-01T14:03:50.037+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -408,7 +408,7 @@ export const stepsNode45 = [{
     "startTime": "2016-07-01T14:03:50.038+0200",
     "state": "FINISHED"
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
