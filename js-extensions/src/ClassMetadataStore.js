@@ -13,6 +13,13 @@ export class ClassMetadataStore {
          * Fetch function for the classMetadata
          */
         this.classMetadataProvider = classMetadataProvider;
+
+        /**
+         * Onload callbacks cache. Used to ensure we don't
+         * issue multiple in-parallel requests for the same
+         * class metadata.
+         */
+        this.classMetadataOnloadCallbacks = {};
     }
     
     /**
@@ -23,15 +30,36 @@ export class ClassMetadataStore {
         if (classMeta) {
             return onload(classMeta);
         }
-        this.classMetadataProvider(type, (data) => {
-            classMeta = this.classMetadata[type] = JSON.parse(JSON.stringify(data));
-            classMeta.classes = classMeta.classes || [];
-            // Make sure the type itself is in the list
-            if (classMeta.classes.indexOf(type) < 0) {
-                classMeta.classes = [type, ...classMeta.classes];
-            }
-            onload(classMeta);
-        });
+        
+        var callbacks = this.classMetadataOnloadCallbacks[type];
+        if (!callbacks) {
+            // This is the first request for this type. Initialise the
+            // callback cache and then issue the request to
+            // the classMetadataProvider.
+            callbacks = this.classMetadataOnloadCallbacks[type] = [];
+            this.classMetadataProvider(type, (data) => {
+                classMeta = this.classMetadata[type] = JSON.parse(JSON.stringify(data));
+                classMeta.classes = classMeta.classes || [];
+                // Make sure the type itself is in the list
+                if (classMeta.classes.indexOf(type) < 0) {
+                    classMeta.classes = [type, ...classMeta.classes];
+                }
+                delete this.classMetadataOnloadCallbacks[type];
+
+                // Notify all callbacks
+                for (var i = 0; i < callbacks.length; i++) {
+                    try {
+                        callbacks[i](classMeta);
+                    } catch (e) {
+                        console.error('Unexpected Error in ClassMetadataStore onload callback function.', e);
+                    }
+                }
+            });
+        } else {
+            // We already have an inflight request to get class metadata info about
+            // the requested type, so nothing to do except store the onload callback.
+        }
+        callbacks.push(onload);
     }
     
     dataType(dataType) {
