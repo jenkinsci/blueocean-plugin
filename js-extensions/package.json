@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/js-extensions",
-  "version": "0.0.19",
+  "version": "0.0.20-beta1",
   "description": "Jenkins Extension Store",
   "main": "index.js",
   "files": [
