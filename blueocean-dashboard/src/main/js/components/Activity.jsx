@@ -58,6 +58,8 @@ export class Activity extends Component {
 
             config.pipeline = pipeline;
             this.props.fetchRunsIfNeeded(config);
+
+            this.props.fetchCapabilitiesIfNeeded(this.props.pipeline._class);
         }
     }
 

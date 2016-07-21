@@ -26,6 +26,7 @@ export const isMultiBranch = createSelector(
         return null;
     }
 );
+export const capabilities = createSelector([adminStore], store => store.capabilities);
 
 // reducer
 export function reducer(state = new State(), action:Object):State {

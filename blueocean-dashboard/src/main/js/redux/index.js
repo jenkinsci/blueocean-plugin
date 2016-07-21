@@ -15,6 +15,7 @@ export {
     isMultiBranch,
     currentBranches,
     testResults,
+    capabilities,
 } from './reducer';
 export {
   ACTION_TYPES,
