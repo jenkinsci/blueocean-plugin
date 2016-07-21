@@ -14,6 +14,9 @@ import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 import FavoritesProvider from './FavoritesProvider';
 
 /**
+ * A toggle button to favorite or unfavorite the provided item (pipeline or branch)
+ * Contains all logic for rendering the current favorite status of that item
+ * and toggling favorited state on the server.
  */
 export class FavoritePipeline extends Component {
 
