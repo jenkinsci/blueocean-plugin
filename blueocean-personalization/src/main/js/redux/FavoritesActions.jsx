@@ -101,7 +101,7 @@ export const actions = {
         };
     },
 
-    generateData(request, actionType, optional, ) {
+    generateData(request, actionType, optional) {
         const { url, fetchOptions } = request;
         return (dispatch) => fetch(url, fetchOptions)
             .then(checkStatus)
