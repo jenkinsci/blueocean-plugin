@@ -7,6 +7,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import Pipeline from '../api/Pipeline';
+import IfCapibility from './IfCapability'
 
 const { object, string, any } = PropTypes;
 
@@ -74,7 +75,9 @@ export default class Runs extends Component {
                 {id}
             </td>
             <td><CommitHash commitId={commitId} /></td>
-            {showBranchCol && <td>{decodeURIComponent(pipeline)}</td>}
+            <IfCapibility dataClass={pipelineClass} capability="io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline" >
+                <td>{decodeURIComponent(pipeline)}</td>
+            </IfCapibility>
             <td>{changeset && changeset.comment || '-'}</td>
             <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
