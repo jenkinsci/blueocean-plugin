@@ -10,7 +10,6 @@ import {
     PageTabs,
     TabLink,
     WeatherIcon,
-    Favorite,
 } from '@jenkins-cd/design-language';
 import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
 
@@ -28,7 +27,7 @@ export default class PipelinePage extends Component {
         if (isPending(pipeline)) {
             return null;
         }
-        
+
         if (isFailure(pipeline)) {
             return <NotFound />;
         }
