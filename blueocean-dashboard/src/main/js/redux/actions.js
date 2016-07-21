@@ -799,7 +799,7 @@ export const actions = {
 
     fetchTestResults(run) {
         return (dispatch) => {
-            const baseUrl = UrlConfig.jenkinsRootURL;
+            const baseUrl = UrlConfig.getJenkinsRootURL();
             const url = `${baseUrl}${run._links.self.href}testReport/result`;
 
             return dispatch(actions.generateData(
