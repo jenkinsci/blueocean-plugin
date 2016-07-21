@@ -59,12 +59,11 @@ export const actionHandlers = {
     },
     [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload, id, pageStart }): State {
         const runs = state.runs || {};
-        
+
         let runData = runs[id];
         if(!runData) {
             runData = runs[id] = new PaginationHolder();
         }
-        //if (!runData.currentData || runData.currentData.length < pageStart)
         runData.appendData(pageStart, payload);
 
         return state.set('currentRuns', runData);
@@ -79,12 +78,11 @@ export const actionHandlers = {
     },
     [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id, pageStart }): State {
         const runs = state.runs || {};
-        
+
         let runData = runs[id];
         if(!runData) {
             runData = runs[id] = new PaginationHolder();
         }
-        //if (!runData.currentData || runData.currentData.length < pageStart)
         runData.appendData(pageStart, payload);
 
         return state.set('runs', runs);
@@ -631,11 +629,13 @@ export const actions = {
                             id,
                             payload: json,
                             type: types.current,
+                            pageStart: general.pageStart,
                         });
                         return dispatch({
                             id,
                             payload: json,
                             type: types.general,
+                            pageStart: general.pageStart,
                         });
                     })
                     .catch((error) => {
