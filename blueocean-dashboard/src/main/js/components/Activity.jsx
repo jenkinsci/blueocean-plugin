@@ -6,7 +6,8 @@ import { ActivityRecord, ChangeSetRecord } from './records';
 import RunPipeline from './RunPipeline.jsx';
 import {
     actions,
-    currentRuns as runsSelector,
+    currentRuns as currentRunsSelector,
+    runs as allRunsSelector,
     createSelector,
     connect,
 } from '../redux';
@@ -62,7 +63,8 @@ export class Activity extends Component {
     }
     
     fetchNextRuns() {
-        this.props.runs.currentPage++;
+        const pagination = this.props.allRuns[this.context.params.pipeline];
+        pagination.currentPage++;
         this.props.fetchRunsIfNeeded(this.context.config);
     }
 
@@ -136,10 +138,14 @@ Activity.contextTypes = {
 
 Activity.propTypes = {
     runs: object,
+    allRuns: object,
     pipeline: object,
     fetchRunsIfNeeded: func,
 };
 
-const selectors = createSelector([runsSelector], (runs) => ({ runs }));
+const selectors = createSelector(
+    [currentRunsSelector, allRunsSelector],
+    (runs, allRuns) => ({ runs, allRuns })
+);
 
 export default connect(selectors, actions)(Activity);

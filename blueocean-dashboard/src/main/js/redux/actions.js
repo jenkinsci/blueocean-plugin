@@ -64,9 +64,9 @@ export const actionHandlers = {
         if(!runData) {
             runData = runs[id] = new PaginationHolder();
         }
-        if (runData.currentData.length < pageStart)
-            runData.appendData(pageStart, payload);
-        
+        //if (!runData.currentData || runData.currentData.length < pageStart)
+        runData.appendData(pageStart, payload);
+
         return state.set('currentRuns', runData);
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
@@ -84,9 +84,9 @@ export const actionHandlers = {
         if(!runData) {
             runData = runs[id] = new PaginationHolder();
         }
-        if (runData.currentData.length < pageStart)
-            runData.appendData(pageStart, payload);
-        
+        //if (!runData.currentData || runData.currentData.length < pageStart)
+        runData.appendData(pageStart, payload);
+
         return state.set('runs', runs);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
