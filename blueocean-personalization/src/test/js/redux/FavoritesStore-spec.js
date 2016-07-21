@@ -7,46 +7,44 @@ import Store from '../../../main/js/redux/FavoritesStore';
 import { ACTION_TYPES, FavoritesState } from '../../../main/js/redux/FavoritesStore';
 
 const getDefaultFavorites = () =>
-    JSON.parse(`
-        [
-            {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
-                "_links": {
-                    "self": {
-                        "_class": "io.jenkins.blueocean.rest.hal.Link",
-                        "href": "/blue/rest/users/cmeyers/favorites/blueocean%2FUX-301/"
-                    }
+    [
+        {
+            _class: 'io.jenkins.blueocean.service.embedded.rest.FavoriteImpl',
+            _links: {
+                self: {
+                    _class: 'io.jenkins.blueocean.rest.hal.Link',
+                    href: '/blue/rest/users/cmeyers/favorites/blueocean%2FUX-301/',
                 },
-                "item": {
-                    "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
-                    "_links": {
-                        "self": {
-                            "_class": "io.jenkins.blueocean.rest.hal.Link",
-                            "href": "/blue/rest/organizations/jenkins/pipelines/blueocean/branches/UX-301/"
-                        }
-                    }
-                }
             },
-            {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
-                "_links": {
-                    "self": {
-                        "_class": "io.jenkins.blueocean.rest.hal.Link",
-                        "href": "/blue/rest/users/cmeyers/favorites/jenkinsfile-experiments%2Fmaster/"
-                    }
+            item: {
+                _class: 'io.jenkins.blueocean.service.embedded.rest.BranchImpl',
+                _links: {
+                    self: {
+                        _class: 'io.jenkins.blueocean.rest.hal.Link',
+                        href: '/blue/rest/organizations/jenkins/pipelines/blueocean/branches/UX-301/',
+                    },
                 },
-                "item": {
-                    "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
-                    "_links": {
-                        "self": {
-                            "_class": "io.jenkins.blueocean.rest.hal.Link",
-                            "href": "/blue/rest/organizations/jenkins/pipelines/jenkinsfile-experiments/branches/master/"
-                        }
-                    }
-                }
-            }
-        ]
-    `);
+            },
+        },
+        {
+            _class: 'io.jenkins.blueocean.service.embedded.rest.FavoriteImpl',
+            _links: {
+                self: {
+                    _class: 'io.jenkins.blueocean.rest.hal.Link',
+                    href: '/blue/rest/users/cmeyers/favorites/jenkinsfile-experiments%2Fmaster/',
+                },
+            },
+            item: {
+                _class: 'io.jenkins.blueocean.service.embedded.rest.BranchImpl',
+                _links: {
+                    self: {
+                        _class: 'io.jenkins.blueocean.rest.hal.Link',
+                        href: '/blue/rest/organizations/jenkins/pipelines/jenkinsfile-experiments/branches/master/',
+                    },
+                },
+            },
+        },
+    ];
 
 const createBranch = (selfHref) => {
     return {
