@@ -64,7 +64,6 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
                 try {
                     c = Class.forName(s1);
                 } catch (ClassNotFoundException e) {
-                    logger.error("excludedFromFlattening value " + s1 +" is not found: " + e.getMessage());
                     try {
                         //TODO: There should be better ways to find a class from a plugin.
                         Plugin p = Jenkins.getInstance().getPlugin("blueocean-pipeline-api-impl");
