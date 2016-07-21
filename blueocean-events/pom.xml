@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-rest-impl</artifactId>
+            <artifactId>blueocean-pipeline-api-impl</artifactId>
         </dependency>
     </dependencies>
 

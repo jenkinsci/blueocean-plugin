@@ -84,9 +84,7 @@ public class FavoriteUtil {
     }
 
     public static BlueFavorite getFavorite(Item item){
-        LinkResolver linkResolver = Jenkins.getInstance().getInjector().getInstance(LinkResolver.class);
-
-        final Link l = linkResolver.resolve(item);
+        final Link l = LinkResolver.resolveLink(item);
         if(l !=null) {
             return getFavorite(item, new Reachable() {
                 @Override

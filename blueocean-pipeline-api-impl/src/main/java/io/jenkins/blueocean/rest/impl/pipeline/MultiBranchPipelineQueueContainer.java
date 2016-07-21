@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.service.embedded.rest;
+package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Job;
 import hudson.model.Queue;
@@ -7,6 +7,8 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
+import io.jenkins.blueocean.service.embedded.rest.QueueContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 
@@ -34,7 +36,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
         try {
             Queue.Item item = Jenkins.getActiveInstance().getQueue().getItem(Long.parseLong(name));
             if(item != null){
-                PipelineImpl pipeline = (PipelineImpl) multiBranchPipeline.getBranches().get(item.task.getOwnerTask().getName());
+                BranchImpl pipeline = (BranchImpl) multiBranchPipeline.getBranches().get(item.task.getOwnerTask().getName());
                 if(pipeline != null) {
 
                     if(item.task instanceof ExecutorStepExecution.PlaceholderTask) {
@@ -78,7 +80,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
             }
         }
         for(final BluePipeline p:multiBranchPipeline.getBranches()){
-            Job job =  ((PipelineImpl)p).job;
+            Job job =  ((BranchImpl)p).job;
             List<Queue.Item> its = queueMap.get(job.getName());
             if(its == null || its.isEmpty()){
                 continue;

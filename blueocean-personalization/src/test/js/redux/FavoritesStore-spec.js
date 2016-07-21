@@ -18,7 +18,7 @@ const getDefaultFavorites = () =>
                     }
                 },
                 "item": {
-                    "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+                    "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
                     "_links": {
                         "self": {
                             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -36,7 +36,7 @@ const getDefaultFavorites = () =>
                     }
                 },
                 "item": {
-                    "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+                    "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
                     "_links": {
                         "self": {
                             "_class": "io.jenkins.blueocean.rest.hal.Link",

@@ -152,7 +152,7 @@ export class DashboardCards extends Component {
             let pipelineName;
             let branchName;
 
-            if (pipeline._class === 'io.jenkins.blueocean.service.embedded.rest.BranchImpl') {
+            if (pipeline._class === 'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl') {
                 // branch.fullName is in the form folder1/folder2/pipeline/branch ...
                 // "pipeline"
                 pipelineName = extractPath(pipeline.fullName, -2, -1);

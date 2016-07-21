@@ -100,6 +100,7 @@
     <module>blueocean-web</module>
     <module>blueocean-rest</module>
     <module>blueocean-rest-impl</module>
+    <module>blueocean-pipeline-api-impl</module>
     <module>blueocean-events</module>
     <module>blueocean-dashboard</module>
     <module>blueocean-personalization</module>
@@ -162,6 +163,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-pipeline-api-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
 

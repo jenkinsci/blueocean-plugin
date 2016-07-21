@@ -1,5 +1,5 @@
 export default [{
-    "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -34,7 +34,7 @@ export default [{
     "fullName": "tfprdemo/master",
     "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/tfprdemo/branches/master/runs/3/",
     "latestRun": {
-        "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {
             "nodes": {
                 "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -211,7 +211,7 @@ export default [{
         "startTime": "2016-07-02T18:25:06.063+0100",
         "state": "FINISHED",
         "steps": [{
-            "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -219,7 +219,7 @@ export default [{
                 }
             }
         }, {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -227,7 +227,7 @@ export default [{
                 }
             }
         }, {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -235,7 +235,7 @@ export default [{
                 }
             }
         }, {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -243,7 +243,7 @@ export default [{
                 }
             }
         }, {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -259,7 +259,7 @@ export default [{
     "weatherScore": 100,
     "pullRequest": null
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -294,7 +294,7 @@ export default [{
     "fullName": "tfprdemo/quicker",
     "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/tfprdemo/branches/quicker/runs/1/",
     "latestRun": {
-        "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {
             "nodes": {
                 "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -443,7 +443,7 @@ export default [{
         "startTime": "2016-07-01T17:20:23.071+0100",
         "state": "FINISHED",
         "steps": [{
-            "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -451,7 +451,7 @@ export default [{
                 }
             }
         }, {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -459,7 +459,7 @@ export default [{
                 }
             }
         }, {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -467,7 +467,7 @@ export default [{
                 }
             }
         }, {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -475,7 +475,7 @@ export default [{
                 }
             }
         }, {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineStepImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -491,7 +491,7 @@ export default [{
     "weatherScore": 100,
     "pullRequest": null
 }, {
-    "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
     "_links": {
         "self": {
             "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -526,7 +526,7 @@ export default [{
     "fullName": "tfprdemo/tfennelly-patch-1",
     "lastSuccessfulRun": null,
     "latestRun": {
-        "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {
             "nodes": {
                 "_class": "io.jenkins.blueocean.rest.hal.Link",

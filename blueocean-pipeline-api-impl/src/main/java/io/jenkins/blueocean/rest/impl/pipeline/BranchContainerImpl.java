@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.service.embedded.rest;
+package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Job;
 import io.jenkins.blueocean.rest.hal.Link;
