@@ -54,7 +54,7 @@ public class JenkinsJSExtensionsTest extends BaseTest {
                 Assert.assertEquals("AdminNavLink", extensionPoints.get(0).get("component"));
                 Assert.assertEquals("jenkins.logo.top", extensionPoints.get(0).get("extensionPoint"));
             } else if ("blueocean-personalization".equals(pluginId)) {
-                Assert.assertEquals(4, extensionPoints.size());
+                Assert.assertEquals(5, extensionPoints.size());
                 Assert.assertEquals("redux/FavoritesStore", extensionPoints.get(0).get("component"));
                 Assert.assertEquals("jenkins.main.stores", extensionPoints.get(0).get("extensionPoint"));
                 Assert.assertEquals("components/DashboardCards", extensionPoints.get(1).get("component"));
@@ -63,6 +63,8 @@ public class JenkinsJSExtensionsTest extends BaseTest {
                 Assert.assertEquals("jenkins.pipeline.list.action", extensionPoints.get(2).get("extensionPoint"));
                 Assert.assertEquals("components/FavoritePipeline", extensionPoints.get(3).get("component"));
                 Assert.assertEquals("jenkins.pipeline.detail.header.action", extensionPoints.get(3).get("extensionPoint"));
+                Assert.assertEquals("components/FavoritePipeline", extensionPoints.get(4).get("component"));
+                Assert.assertEquals("jenkins.pipeline.branches.list.action", extensionPoints.get(4).get("extensionPoint"));
             } else {
                 Assert.fail("Found extensions from unknown pluginId: " + pluginId);
             }

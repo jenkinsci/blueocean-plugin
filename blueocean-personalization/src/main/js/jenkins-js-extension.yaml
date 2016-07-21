@@ -10,3 +10,5 @@ extensions:
     extensionPoint: jenkins.pipeline.list.action
   - component: components/FavoritePipelineHeader
     extensionPoint: jenkins.pipeline.detail.header.action
+  - component: components/FavoritePipeline
+    extensionPoint: jenkins.pipeline.branches.list.action
