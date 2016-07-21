@@ -61,7 +61,7 @@ export class Activity extends Component {
             this.props.fetchRunsIfNeeded(config);
         }
     }
-    
+
     fetchNextRuns() {
         const pagination = this.props.allRuns[this.context.params.pipeline];
         pagination.currentPage++;
@@ -74,9 +74,9 @@ export class Activity extends Component {
         if (!runs) {
             return null;
         }
-        
+
         const currentRunData = runs.currentData;
-        
+
         if (!currentRunData) {
             return null;
         }
@@ -122,12 +122,10 @@ export class Activity extends Component {
                         return (<Runs {...props} />);
                     })}
                 </Table>
-                <button onClick={() => this.fetchNextRuns()}>Show More</button>
+                <button className="btn-show-more btn-secondary" onClick={() => this.fetchNextRuns()}>Show More</button>
             </article>
         </main>);
     }
-    
-    
 }
 
 Activity.contextTypes = {
