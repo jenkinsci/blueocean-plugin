@@ -61,7 +61,7 @@ public class JenkinsJSExtensionsTest extends BaseTest {
                 Assert.assertEquals("jenkins.pipeline.list.top", extensionPoints.get(1).get("extensionPoint"));
                 Assert.assertEquals("components/FavoritePipeline", extensionPoints.get(2).get("component"));
                 Assert.assertEquals("jenkins.pipeline.list.action", extensionPoints.get(2).get("extensionPoint"));
-                Assert.assertEquals("components/FavoritePipeline", extensionPoints.get(3).get("component"));
+                Assert.assertEquals("components/FavoritePipelineHeader", extensionPoints.get(3).get("component"));
                 Assert.assertEquals("jenkins.pipeline.detail.header.action", extensionPoints.get(3).get("extensionPoint"));
                 Assert.assertEquals("components/FavoritePipeline", extensionPoints.get(4).get("component"));
                 Assert.assertEquals("jenkins.pipeline.branches.list.action", extensionPoints.get(4).get("extensionPoint"));
