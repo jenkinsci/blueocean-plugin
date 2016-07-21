@@ -17,3 +17,10 @@ exports.loadConfig = function () {
 
     exports.jenkinsRootURL = headElement.getAttribute('data-rooturl');
 };
+
+exports.getJenkinsRootURL = function getJenkinsRootURL() {
+    if (!exports.jenkinsRootURL) {
+        exports.loadConfig();
+    }
+    return exports.jenkinsRootURL;
+};

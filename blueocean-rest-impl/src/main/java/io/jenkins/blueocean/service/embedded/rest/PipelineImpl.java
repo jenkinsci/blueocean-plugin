@@ -108,8 +108,14 @@ public class PipelineImpl extends BluePipeline {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
 
-        Link link = FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
-        return new FavoriteImpl(this, link);
+        FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
+        return FavoriteUtil.getFavorite(job, new Reachable() {
+            @Override
+            public Link getLink() {
+                return PipelineImpl.this.getLink().ancestor();
+            }
+        });
+
     }
 
     @Override

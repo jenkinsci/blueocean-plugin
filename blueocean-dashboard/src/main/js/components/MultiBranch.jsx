@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Branches from './Branches';
 import { RunsRecord } from './records';
-import { scrollToHash } from './ScrollToHash';
 import {
     actions,
     currentBranches as branchSelector,
@@ -138,4 +137,4 @@ MultiBranch.propTypes = {
 
 const selectors = createSelector([branchSelector], (branches) => ({ branches }));
 
-export default connect(selectors, actions)(scrollToHash(MultiBranch));
+export default connect(selectors, actions)(MultiBranch);

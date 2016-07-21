@@ -12,4 +12,4 @@ extensions:
     extensionPoint: jenkins.pipeline.run.result
   - component: components/testing/TestResults
     extensionPoint: jenkins.test.result
-    type: hudson.tasks.test.TestResult
+    dataType: hudson.tasks.test.TestResult

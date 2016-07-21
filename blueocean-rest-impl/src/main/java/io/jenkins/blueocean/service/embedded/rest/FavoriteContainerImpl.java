@@ -30,8 +30,8 @@ public class FavoriteContainerImpl extends BlueFavoriteContainer {
         name = FavoriteUtil.decodeFullName(name);
         if(user.isFavorite(name)){
             Item item = Jenkins.getInstance().getItemByFullName(name);
-            if(FavoriteUtil.isFavorableItem(item)) {
-                return new FavoriteImpl(item, this);
+            if(item != null){
+                return FavoriteUtil.getFavorite(item, this);
             }
         }
         return null;
@@ -40,17 +40,23 @@ public class FavoriteContainerImpl extends BlueFavoriteContainer {
     @Override
     public Iterator<BlueFavorite> iterator() {
         FavoriteUserProperty prop = user.getFavoriteProperty();
-        List<BlueFavorite> pipelines = new ArrayList<>();
+        List<BlueFavorite> favorites = new ArrayList<>();
         Jenkins j = Jenkins.getInstance();
 
         for(final String favorite: prop.getFavorites()){
             Item i = j.getItemByFullName(favorite, Item.class);
-            if(FavoriteUtil.isFavorableItem(i)){
-                pipelines.add(new FavoriteImpl(i, this));
+            if(i == null){
+                continue;
+            }
+            BlueFavorite blueFavorite = FavoriteUtil.getFavorite(i);
+            if(blueFavorite != null){
+                favorites.add(blueFavorite);
             }
         }
-        return pipelines.iterator();
+        return favorites.iterator();
     }
+
+
 
     @Override
     public Link getLink() {

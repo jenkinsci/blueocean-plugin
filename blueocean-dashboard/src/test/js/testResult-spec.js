@@ -1,17 +1,11 @@
 import React from 'react';
-import {createRenderer} from 'react-addons-test-utils';
-import { assert} from 'chai';
+import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
 import TestResults from '../../main/js/components/testing/TestResults.jsx';
 
 describe("TestResults", () => {
-  let wrapper;
-  const
-    renderer = createRenderer();
-
-  beforeEach(() => {
-    const testResults = {
+  const testResults1 = {
         "_class":"hudson.tasks.junit.TestResult",
         "duration":0.008,
         "empty":false,
@@ -51,10 +45,10 @@ describe("TestResults", () => {
             }
         ]
     };
-    wrapper = shallow(<TestResults testResults={testResults} />);
-  });
 
   it("Test fixed included", () => {
+      let wrapper = shallow(<TestResults testResults={testResults1} />);
+      
       const fixed = wrapper.find('.new-passed .count').text();
       assert.equal(fixed, 1);
 
@@ -66,5 +60,25 @@ describe("TestResults", () => {
 
       const newFailed = wrapper.find('.new-failed .count').text();
       assert.equal(newFailed, 1);
+  });
+
+  it("All passing shown", () => {
+      let wrapper = shallow(<TestResults testResults={testResults1} />);
+      let isDone = wrapper.html().indexOf('done_all') > 0;
+      assert(!isDone, "Done all found, when shouldn't have been");
+      
+      var success = {
+              "_class":"hudson.tasks.junit.TestResult",
+              "duration":0.008, "empty":false, "failCount":0, "passCount":3, "skipCount":0, "suites":[
+                { "duration":0, "id":null, "name":"failure.TestThisWontFail", "stderr":null, "stdout":null, "timestamp":null, "cases": [
+                {"age":0,"className":"failure.TestThisWontFail","duration":0,"errorDetails":null,"errorStackTrace":null,"failedSince":0,"name":"aPassingTest2","skipped":false,"skippedMessage":null,"status":"PASSED","stderr":null,"stdout":null},
+                {"age":0,"className":"failure.TestThisWontFail","duration":0,"errorDetails":null,"errorStackTrace":null,"failedSince":0,"name":"aPassingTest3","skipped":false,"skippedMessage":null,"status":"PASSED","stderr":null,"stdout":null},
+                {"age":0,"className":"failure.TestThisWontFail","duration":0,"errorDetails":null,"errorStackTrace":null,"failedSince":0,"name":"aPassingTest4","skipped":false,"skippedMessage":null,"status":"PASSED","stderr":null,"stdout":null},
+                ],
+            }]};
+      
+      wrapper = shallow(<TestResults testResults={success} />);
+      isDone = wrapper.html().indexOf('done_all') > 0;
+      assert(isDone, "Done all not found, when should be");
   });
 });
