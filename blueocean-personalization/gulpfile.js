@@ -13,7 +13,7 @@ builder.defineTask('test', function() {
     var mocha = require('gulp-mocha');
     var babel = require('babel-core/register');
 
-    builder.gulp.src('src/test/js/**/*-spec.jsx')
+    builder.gulp.src('src/test/js/**/*-spec.{js,jsx}')
         .pipe(mocha({
             compilers: { js: babel },
         })).on('error', function(e) {
