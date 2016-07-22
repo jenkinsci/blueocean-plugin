@@ -38,7 +38,7 @@ export default class Pipelines extends Component {
         ];
 
         const baseUrl = config.getRootURL();
-        const newJobUrl = `${baseUrl}view/All/newJob`;
+        const newJobUrl = `${baseUrl}/view/All/newJob`;
 
         return (
             <Page>
