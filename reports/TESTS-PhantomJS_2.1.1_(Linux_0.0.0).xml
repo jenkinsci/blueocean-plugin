@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<testsuite name="PhantomJS 2.1.1 (Linux 0.0.0)" package="" timestamp="2016-07-22T13:09:00" id="0" hostname="mysterion" tests="26" errors="0" failures="0" time="0.037">
+  <properties>
+    <property name="browser.fullName" value="Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1"/>
+  </properties>
+  <testcase name="CommitHash renders dash with no data" time="0.01" classname="PhantomJS_2_1_1_(Linux_0_0_0).CommitHash"/>
+  <testcase name="CommitHash renders dash with invalid data" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).CommitHash"/>
+  <testcase name="CommitHash renders sha-1 char hash with proper length" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).CommitHash"/>
+  <testcase name="FileSize renders dash with no data" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).FileSize"/>
+  <testcase name="FileSize renders dash with invalid data" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).FileSize"/>
+  <testcase name="FileSize renders 4 bytes" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).FileSize"/>
+  <testcase name="FileSize renders 1.5 MB" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).FileSize"/>
+  <testcase name="FileSize renders very large values reasonably" time="0" classname="PhantomJS_2_1_1_(Linux_0_0_0).FileSize"/>
+  <testcase name="ReadableDate renders dash with no data" time="0.002" classname="PhantomJS_2_1_1_(Linux_0_0_0).ReadableDate"/>
+  <testcase name="ReadableDate renders dash with non-ISO-8601 date string" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).ReadableDate"/>
+  <testcase name="ReadableDate renders 'a few seconds ago' with current date" time="0.004" classname="PhantomJS_2_1_1_(Linux_0_0_0).ReadableDate"/>
+  <testcase name="ReadableDate renders 'an hour ago' with current date minus 60m" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).ReadableDate"/>
+  <testcase name="ReadableDate renders proper tooltip without year for same year date" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).ReadableDate"/>
+  <testcase name="ReadableDate renders proper tooltip with year for other year dates" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).ReadableDate"/>
+  <testcase name="ReadableDate renders proper tooltip with TZ info for non-UTC dates" time="0.002" classname="PhantomJS_2_1_1_(Linux_0_0_0).ReadableDate"/>
+  <testcase name="ReadableDate renders proper tooltip as UTC for dates without TZ" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).ReadableDate"/>
+  <testcase name="ResultItem visible by default" time="0.002" classname="PhantomJS_2_1_1_(Linux_0_0_0).ResultItem"/>
+  <testcase name="ResultItem hidden by default" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).ResultItem"/>
+  <testcase name="TimeDuration renders dash with no data" time="0" classname="PhantomJS_2_1_1_(Linux_0_0_0).TimeDuration"/>
+  <testcase name="TimeDuration renders dash with invalid data" time="0" classname="PhantomJS_2_1_1_(Linux_0_0_0).TimeDuration"/>
+  <testcase name="TimeDuration renders 'a few seconds' with 1ms" time="0.002" classname="PhantomJS_2_1_1_(Linux_0_0_0).TimeDuration"/>
+  <testcase name="TimeDuration renders 'a few seconds' with 1ms as string" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).TimeDuration"/>
+  <testcase name="TimeDuration renders '3 hours' with 3.25h" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).TimeDuration"/>
+  <testcase name="TimeDuration renders a tooltip of '5m, 5s' when supplied value" time="0" classname="PhantomJS_2_1_1_(Linux_0_0_0).TimeDuration"/>
+  <testcase name="TimeDuration renders a tooltip of '2h, 0m, 5s' when supplied value" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).TimeDuration"/>
+  <testcase name="TimeDuration renders a custom tooltip" time="0" classname="PhantomJS_2_1_1_(Linux_0_0_0).TimeDuration"/>
+  <system-out>
+    <![CDATA[
+]]>
+  </system-out>
+  <system-err/>
+</testsuite>
