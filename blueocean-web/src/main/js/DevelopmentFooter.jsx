@@ -5,14 +5,6 @@ import revisionInfo from '../../../target/classes/io/jenkins/blueocean/revisionI
 
 export class DevelopmentFooter extends Component {
     render() {
-        if (!revisionInfo || !revisionInfo.name) {
-            var blueOceanVersion = document.getElementsByTagName('head')[0].getAttribute('data-blue-ocean-version');
-            return (
-                <div className="development-footer">
-                    <span>Blue Ocean UI v{blueOceanVersion}</span>
-                </div>
-            );
-        }
         return (
           <div className="development-footer">
               <span>Built at {moment(revisionInfo.timestamp).format('Do MMMM YYYY hh:mm A')}&nbsp;</span>
