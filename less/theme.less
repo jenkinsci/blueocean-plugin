@@ -553,12 +553,10 @@ code {
     font-family: @font-family-monospace;
     width: 100%;
     min-height: 12px;
-    white-space: normal;
     border: 1px solid @pre-border-color;
     border-radius: 4px;
     position: relative;
     counter-reset: line;
-    overflow-x: auto;
     font-size: 1.1rem;
 }
 
@@ -569,6 +567,8 @@ code p:hover {
 code p {
     counter-increment: line;
     margin: 0;
+    display: flex;
+    align-items: baseline;
 }
 
 code p::nth-line {
@@ -578,7 +578,7 @@ code p::nth-line {
 code p a {
     margin: 0;
     padding: 0 15px 0 20px;
-    word-wrap: break-word;
+    word-break: break-all;
     display: inline;
     color: @pre-color;
 }
@@ -588,7 +588,7 @@ code a:hover {
     text-decoration: none;
 }
 
-code p a::before {
+code p::before {
     color: @gray-light;
     content: counter(line);
     float: left;
@@ -605,7 +605,6 @@ code.block {
     color: @pre-color;
     display: block;
     padding: 0.5rem;
-    white-space: pre;
     //max-height: @pre-scrollable-max-height;
     border: solid 1px darken(@pre-bg, 20%);;
 }
