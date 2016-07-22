@@ -92,7 +92,7 @@ export const actionHandlers = {
     },
     [ACTION_TYPES.SET_CAPABILITIES](state, { payload }): State {
         const caps = { ...state.caps } || {};
-        for(const clzz of Object.keys(payload.map)) {
+        for (const clzz of Object.keys(payload.map)) {
             const entry = payload.map[clzz];
             caps[clzz] = entry.classes;
         }
@@ -861,21 +861,22 @@ export const actions = {
 
     fetchCapabilitiesIfNeeded(_class) {
         return (dispatch, getState) => {
-            if(!_class) return;
+            if (!_class) {
+                return null;
+            }
             const caps = getState().adminStore.capabilities;
             const baseUrl = UrlConfig.jenkinsRootURL;
             const url = `${baseUrl}blue/rest/classes/?q=${_class}`;
 
-            if(caps && caps[_class]) {
+            if (caps && caps[_class]) {
                 return null;
-            } else {
-                return dispatch(actions.generateData(
-                    url,
-                    ACTION_TYPES.SET_CAPABILITIES
-                ))
             }
 
-        }
+            return dispatch(actions.generateData(
+                url,
+                ACTION_TYPES.SET_CAPABILITIES
+            ));
+        };
     },
 
     resetTestDetails() {

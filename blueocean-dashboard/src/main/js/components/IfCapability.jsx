@@ -11,10 +11,10 @@ export default class IfCapability extends Component {
             capabilities: undefined,
         };
     }
-    
+
     componentDidMount() {
         const self = this;
-        classMetadataStore.getClassMetadata(this.props.dataClass, (classMeta) => {
+        classMetadataStore.getClassMetadata(this.props._class, (classMeta) => {
             self._setState({
                 capabilities: classMeta.classes,
             });
@@ -24,34 +24,34 @@ export default class IfCapability extends Component {
     componentWillUnmount() {
         this.unmounted = true;
     }
-    
-    _setState (stateObj) {
+
+    _setState(stateObj) {
         // Block calls to setState for components that are
         // not in a mounted state.
         if (!this.unmounted) {
             this.setState(stateObj);
         }
     }
- 
+
     render() {
         const { capabilities } = this.state;
         const { capability } = this.props;
 
-        //Exit early, we havent fetched the caps yet.
-        if(!capabilities ) {
+        // Exit early, we havent fetched the caps yet.
+        if (!capabilities) {
             return null;
         }
 
-        //console.log("caps",caps);
-        if(capabilities.find((cap => cap === capability))) {
+        if (capabilities.find(cap => cap === capability)) {
             return this.props.children;
-        } else {
-            return null;
         }
+
+        return null;
     }
-};
+}
 
 IfCapability.propTypes = {
-    dataClass: string,
+    _class: string,
     capability: string,
+    children: React.PropTypes.node,
 };

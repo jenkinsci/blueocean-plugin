@@ -61,7 +61,7 @@ exports.initialize = function (oncomplete) {
     const appRoot = document.getElementsByTagName("head")[0].getAttribute("data-appurl");
     Extensions.init({
         extensionDataProvider: cb => getURL(`${appRoot}/js-extensions`, rsp => cb(rsp.data)),
-        classMetadataProvider: (type, cb) => getURL(`${appRoot}/rest/classes/${type}`, cb)
+        classMetadataProvider: (type, cb) => getURL(`${appRoot}/rest/classes/${type}/`, cb)
     });
     oncomplete();
 };

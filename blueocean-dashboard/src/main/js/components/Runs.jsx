@@ -3,11 +3,13 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
+
+import { MULTIBRANCH_PIPELINE } from '../Capibilities';
+
 import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
-import Pipeline from '../api/Pipeline';
-import IfCapibility from './IfCapability'
+import IfCapibility from './IfCapability';
 
 const { object, string, any } = PropTypes;
 
@@ -50,9 +52,6 @@ export default class Runs extends Component {
             },
         } = this;
 
-        // We only want to show branch column for multibranch
-        const showBranchCol = (pipeline && Pipeline.isMultibranch(pipelineClass));
-
         const resultRun = result === 'UNKNOWN' ? state : result;
         const running = resultRun === 'RUNNING';
         const durationMillis = !running ?
@@ -75,7 +74,7 @@ export default class Runs extends Component {
                 {id}
             </td>
             <td><CommitHash commitId={commitId} /></td>
-            <IfCapibility dataClass={pipelineClass} capability="io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline" >
+            <IfCapibility _class={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
                 <td>{decodeURIComponent(pipeline)}</td>
             </IfCapibility>
             <td>{changeset && changeset.comment || '-'}</td>

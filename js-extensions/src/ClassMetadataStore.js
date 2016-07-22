@@ -8,7 +8,7 @@ export class ClassMetadataStore {
          * Type info cache
          */
         this.classMetadata = {};
-        
+
         /**
          * Fetch function for the classMetadata
          */
@@ -21,7 +21,7 @@ export class ClassMetadataStore {
          */
         this.classMetadataOnloadCallbacks = {};
     }
-    
+
     /**
      * Gets the type/capability info for the given data type
      */
@@ -30,7 +30,7 @@ export class ClassMetadataStore {
         if (classMeta) {
             return onload(classMeta);
         }
-        
+
         var callbacks = this.classMetadataOnloadCallbacks[type];
         if (!callbacks) {
             // This is the first request for this type. Initialise the
@@ -61,14 +61,14 @@ export class ClassMetadataStore {
         }
         callbacks.push(onload);
     }
-    
+
     dataType(dataType) {
         return (extensions, onload) => {
             if (dataType && typeof(dataType) === 'object'
                     && '_class' in dataType) { // handle the common API incoming data
                 dataType = dataType._class;
             }
-            
+
             this.getClassMetadata(dataType, (currentTypeInfo) => {
                 // prevent returning extensions for the given type
                 // when a more specific extension is found
