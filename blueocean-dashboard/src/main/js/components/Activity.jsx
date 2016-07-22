@@ -106,8 +106,8 @@ export class Activity extends Component {
             return null;
         }
 
-        const isMultiBranchPipeline = capabilities.find(cap => cap === MULTIBRANCH_PIPELINE) !== null;
-
+        const isMultiBranchPipeline = capabilities.find(cap => cap === MULTIBRANCH_PIPELINE) !== undefined;
+        
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
         // the Branches/PRs tab.

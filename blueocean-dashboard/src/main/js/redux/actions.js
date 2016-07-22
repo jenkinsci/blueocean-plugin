@@ -51,8 +51,6 @@ export const ACTION_TYPES = keymirror({
     SET_NODE: null,
     SET_NODES: null,
     SET_LOGS: null,
-    SET_CAPABILITIES: null,
-
 });
 
 export const actionHandlers = {
@@ -89,14 +87,6 @@ export const actionHandlers = {
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
         return state.set('node', { ...payload });
-    },
-    [ACTION_TYPES.SET_CAPABILITIES](state, { payload }): State {
-        const caps = { ...state.caps } || {};
-        for (const clzz of Object.keys(payload.map)) {
-            const entry = payload.map[clzz];
-            caps[clzz] = entry.classes;
-        }
-        return state.set('capabilities', caps);
     },
     [ACTION_TYPES.SET_NODES](state, { payload }): State {
         const nodes = { ...state.nodes } || {};
@@ -858,27 +848,7 @@ export const actions = {
             ));
         };
     },
-
-    fetchCapabilitiesIfNeeded(_class) {
-        return (dispatch, getState) => {
-            if (!_class) {
-                return null;
-            }
-            const caps = getState().adminStore.capabilities;
-            const baseUrl = UrlConfig.jenkinsRootURL;
-            const url = `${baseUrl}blue/rest/classes/?q=${_class}`;
-
-            if (caps && caps[_class]) {
-                return null;
-            }
-
-            return dispatch(actions.generateData(
-                url,
-                ACTION_TYPES.SET_CAPABILITIES
-            ));
-        };
-    },
-
+    
     resetTestDetails() {
         return (dispatch) =>
             dispatch({
