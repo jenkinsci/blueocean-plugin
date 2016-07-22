@@ -10,7 +10,7 @@ import {
     createSelector,
     connect,
 } from '../redux';
-import { MULTIBRANCH_PIPELINE } from '../Capibilities';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { classMetadataStore } from '@jenkins-cd/js-extensions';
 
 const { object, array, func, string, bool } = PropTypes;

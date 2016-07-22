@@ -4,7 +4,7 @@ import {
 }
     from '@jenkins-cd/design-language';
 
-import { MULTIBRANCH_PIPELINE } from '../Capibilities';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 
 import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
