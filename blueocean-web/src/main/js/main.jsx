@@ -84,7 +84,7 @@ function startApp(routes, stores) {
     let appURLBase = headElement.getAttribute("data-appurl");
 
     if (typeof appURLBase !== "string") {
-        appURLBase = "/";
+        appURLBase = '';
     }
 
     // Look up some other URLs we may need
