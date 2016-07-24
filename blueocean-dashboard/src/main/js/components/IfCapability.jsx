@@ -5,10 +5,9 @@ const { string, object } = PropTypes;
 
 class IfCapability extends Component {
     render() {
-        const { capabilities } = this.props;
-        const { capability } = this.props;
+        const { _class, capability, capabilities } = this.props;
        
-        if (capabilities.has(capability)) {
+        if (capabilities[_class].has(capability)) {
             return this.props.children;
         }
 

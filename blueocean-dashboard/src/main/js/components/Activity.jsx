@@ -71,7 +71,7 @@ export class Activity extends Component {
         }
 
         const { capabilities } = this.props;
-        const isMultiBranchPipeline = capabilities.has(MULTIBRANCH_PIPELINE);
+        const isMultiBranchPipeline = capabilities[pipeline._class].has(MULTIBRANCH_PIPELINE);
         
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on

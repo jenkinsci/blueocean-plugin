@@ -1,24 +1,29 @@
 import React, { Component } from 'react';
+import update from 'react-addons-update';
 import { classMetadataStore } from '@jenkins-cd/js-extensions';
 
-export const capabilityStore = pipelineClass => ComposedComponent => class extends Component {
+export const capabilityStore = classes => ComposedComponent => class extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            capabilities: {
-                has: () => false,
-            },
+            capabilities: {},
         };
     }
 
     componentDidMount() {
         const self = this;
-        classMetadataStore.getClassMetadata(pipelineClass(this.props), (classMeta) => {
-            self._setState({
-                capabilities: self._classesToObj(classMeta.classes),
+        let _classes = classes(this.props);
+
+        if(typeof _classes === "string") {
+            _classes = [_classes];
+        }
+
+        for(let _class of _classes) {
+            classMetadataStore.getClassMetadata(_class, (classMeta) => {
+                self._setState(_class, self._classesToObj(classMeta.classes));
             });
-        });
+        }
     }
 
     componentWillUnmount() {
@@ -37,11 +42,14 @@ export const capabilityStore = pipelineClass => ComposedComponent => class exten
             has: capability => classes.find(_class => _class === capability) !== undefined,
         };
     }
-    _setState(stateObj) {
+    _setState(key, value) {
+
         // Block calls to setState for components that are
         // not in a mounted state.
         if (!this.unmounted) {
-            this.setState(stateObj);
+            let newData = { capabilities : {}};
+            newData.capabilities[key] = { $set: value };
+            this.setState(previousState => update(previousState, newData));     
         }
     }
 
@@ -50,8 +58,15 @@ export const capabilityStore = pipelineClass => ComposedComponent => class exten
        
         // Early out. Doing it here means we don't have to do it in
         // the composed componenet
-        if (!capabilities.classes) {
-            return null;
+        let _classes = classes(this.props);
+
+        if(typeof _classes === "string") {
+            _classes = [_classes];
+        }
+        for(let _class of _classes) {
+            if (!capabilities[_class] || !capabilities[_class].classes) {
+                return null;
+            }
         }
 
         // This passes all props and state to ComposedComponent where
