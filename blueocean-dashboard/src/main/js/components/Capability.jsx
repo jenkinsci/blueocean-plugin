@@ -15,11 +15,11 @@ export const capabilityStore = classes => ComposedComponent => class extends Com
         const self = this;
         let _classes = classes(this.props);
 
-        if(typeof _classes === "string") {
+        if (typeof _classes === 'string') {
             _classes = [_classes];
         }
 
-        for(let _class of _classes) {
+        for (const _class of _classes) {
             classMetadataStore.getClassMetadata(_class, (classMeta) => {
                 self._setState(_class, self._classesToObj(classMeta.classes));
             });
@@ -30,26 +30,25 @@ export const capabilityStore = classes => ComposedComponent => class extends Com
         this.unmounted = true;
     }
     
-    _classesToObj(classes) {
-        if (!classes) {
+    _classesToObj(_classes) {
+        if (!_classes) {
             return {
                 has: () => false,
             };
         }
 
         return {
-            classes,
-            has: capability => classes.find(_class => _class === capability) !== undefined,
+            _classes,
+            has: capability => _classes.find(_class => _class === capability) !== undefined,
         };
     }
     _setState(key, value) {
-
         // Block calls to setState for components that are
         // not in a mounted state.
         if (!this.unmounted) {
-            let newData = { capabilities : {}};
+            const newData = { capabilities: {} };
             newData.capabilities[key] = { $set: value };
-            this.setState(previousState => update(previousState, newData));     
+            this.setState(previousState => update(previousState, newData));
         }
     }
 
@@ -60,10 +59,10 @@ export const capabilityStore = classes => ComposedComponent => class extends Com
         // the composed componenet
         let _classes = classes(this.props);
 
-        if(typeof _classes === "string") {
+        if (typeof _classes === 'string') {
             _classes = [_classes];
         }
-        for(let _class of _classes) {
+        for (const _class of _classes) {
             if (!capabilities[_class] || !capabilities[_class].classes) {
                 return null;
             }
