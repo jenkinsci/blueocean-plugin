@@ -9,7 +9,7 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
-import IfCapibility from './IfCapability';
+import IfCapability from './IfCapability';
 
 const { object, string, any } = PropTypes;
 
@@ -74,9 +74,9 @@ export default class Runs extends Component {
                 {id}
             </td>
             <td><CommitHash commitId={commitId} /></td>
-            <IfCapibility _class={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
+            <IfCapability _class={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
                 <td>{decodeURIComponent(pipeline)}</td>
-            </IfCapibility>
+            </IfCapability>
             <td>{changeset && changeset.comment || '-'}</td>
             <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
