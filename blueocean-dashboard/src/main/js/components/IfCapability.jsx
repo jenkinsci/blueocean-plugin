@@ -1,48 +1,14 @@
 import React, { Component, PropTypes } from 'react';
-import { classMetadataStore } from '@jenkins-cd/js-extensions';
+import { capabilityStore } from './Capability';
 
-const { string } = PropTypes;
+const { string, object } = PropTypes;
 
-export default class IfCapability extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            capabilities: undefined,
-        };
-    }
-
-    componentDidMount() {
-        const self = this;
-        classMetadataStore.getClassMetadata(this.props._class, (classMeta) => {
-            self._setState({
-                capabilities: classMeta.classes,
-            });
-        });
-    }
-
-    componentWillUnmount() {
-        this.unmounted = true;
-    }
-
-    _setState(stateObj) {
-        // Block calls to setState for components that are
-        // not in a mounted state.
-        if (!this.unmounted) {
-            this.setState(stateObj);
-        }
-    }
-
+class IfCapability extends Component {
     render() {
-        const { capabilities } = this.state;
+        const { capabilities } = this.props;
         const { capability } = this.props;
-
-        // Exit early, we havent fetched the caps yet.
-        if (!capabilities) {
-            return null;
-        }
-
-        if (capabilities.find(cap => cap === capability)) {
+       
+        if (capabilities.has(capability)) {
             return this.props.children;
         }
 
@@ -53,5 +19,9 @@ export default class IfCapability extends Component {
 IfCapability.propTypes = {
     _class: string,
     capability: string,
+    capabilities: object,
     children: React.PropTypes.node,
 };
+
+export default capabilityStore(props => props._class)(IfCapability);
+
