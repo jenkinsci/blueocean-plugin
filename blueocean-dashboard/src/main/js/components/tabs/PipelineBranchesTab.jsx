@@ -5,4 +5,9 @@ export default class PipelineBranchesTab extends React.Component {
     render() {
         return <TabLink to={`${this.props.baseLink}/branches`}>Branches</TabLink>;
     }
+}
+
+PipelineBranchesTab.propTypes = {
+    pipeline: React.PropTypes.any,
+    baseLink: React.PropTypes.string,
 };

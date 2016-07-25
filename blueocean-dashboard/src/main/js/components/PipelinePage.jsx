@@ -8,7 +8,6 @@ import {
     PageHeader,
     Title,
     PageTabs,
-    TabLink,
     WeatherIcon,
     Favorite,
 } from '@jenkins-cd/design-language';

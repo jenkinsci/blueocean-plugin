@@ -7,8 +7,9 @@ export default class RunDetailsArtifactsTab extends React.Component {
             <TabLink to={`${this.props.baseLink}/artifacts`}>Artifacts</TabLink>
         );
     }
-};
+}
 
 RunDetailsArtifactsTab.propTypes = {
     pipeline: React.PropTypes.any,
+    baseLink: React.PropTypes.string,
 };

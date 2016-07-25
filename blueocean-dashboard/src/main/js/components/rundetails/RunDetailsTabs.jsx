@@ -11,8 +11,9 @@ export default class RunDetailsTabs extends React.Component {
             </span>
         );
     }
-};
+}
 
 RunDetailsTabs.propTypes = {
     pipeline: React.PropTypes.any,
+    baseLink: React.PropTypes.string,
 };

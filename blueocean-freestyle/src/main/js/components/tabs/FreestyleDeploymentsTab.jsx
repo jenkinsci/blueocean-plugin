@@ -7,4 +7,8 @@ export default class FreestyleDeploymentsTab extends React.Component {
             <TabLink to={`${this.props.baseLink}/deployments`}>Deployments</TabLink>
         );
     }
+}
+
+FreestyleDeploymentsTab.propTypes = {
+    baseLink: React.PropTypes.string,
 };
