@@ -2,6 +2,8 @@ package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
 
+import java.util.List;
+
 /**
  * Root of Blue Ocean UI
  *
@@ -33,5 +35,9 @@ public class BlueOceanUI {
      */
     public String getUrlBase() {
         return urlBase;
+    }
+
+    public List<BluePageDecorator> getPageDecorators(){
+        return BluePageDecorator.all();
     }
 }

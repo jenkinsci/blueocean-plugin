@@ -105,6 +105,7 @@
     <module>blueocean-dashboard</module>
     <module>blueocean-personalization</module>
     <module>blueocean-plugin</module>
+    <module>blueocean-analytics-tools</module>
   </modules>
 
   <repositories>
@@ -169,6 +170,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-pipeline-api-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-analytics-tools</artifactId>
             <version>${project.version}</version>
         </dependency>
 
