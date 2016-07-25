@@ -104,6 +104,7 @@
     <module>blueocean-events</module>
     <module>blueocean-dashboard</module>
     <module>blueocean-personalization</module>
+    <module>blueocean-freestyle</module>
     <module>blueocean-plugin</module>
   </modules>
 
@@ -151,6 +152,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-personalization</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-freestyle</artifactId>
             <version>${project.version}</version>
         </dependency>
 

@@ -1,0 +1,15 @@
+# Extensions in this plugin
+extensions:
+  - component: PipelineRoutes
+    extensionPoint: pipeline.routes
+    
+  - component: Routes
+    extensionPoint: jenkins.main.routes
+    
+  - component: components/tabs/FreestyleDeploymentsTab
+    extensionPoint: pipeline.main.navigation
+    dataType: hudson.model.FreeStyleProject
+    
+  - component: components/tabs/FreestyleArtifactsTab
+    extensionPoint: rundetails.main.navigation
+    dataType: io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl

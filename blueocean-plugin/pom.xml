@@ -29,6 +29,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-freestyle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest</artifactId>
         </dependency>
         <dependency>
@@ -106,6 +110,7 @@
                         linkHPI('blueocean-rest');
                         linkHPI('blueocean-commons');
                         linkHPI('blueocean-rest-impl');
+                        linkHPI('blueocean-freestyle');
                         linkHPI('blueocean-pipeline-api-impl')
                     </source>
                 </configuration>

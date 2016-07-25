@@ -56,6 +56,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         return OrganizationImpl.INSTANCE.getName();
     }
 
+    @Override
+    public String getJobClass() {
+        return mbp.getClass().getName();
+    }
 
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {

@@ -10,6 +10,24 @@ extensions:
     extensionPoint: jenkins.main.stores
   - component: components/PipelineRunGraph
     extensionPoint: jenkins.pipeline.run.result
+  - component: components/tabs/PipelineActivityTab
+    extensionPoint: pipeline.main.navigation
+    dataType: hudson.model.Job
+  - component: components/tabs/PipelineBranchesTab
+    extensionPoint: pipeline.main.navigation
+    dataType: org.jenkinsci.plugins.workflow.job.WorkflowJob
+  - component: components/tabs/PipelinePullRequestsTab
+    extensionPoint: pipeline.main.navigation
+    dataType: org.jenkinsci.plugins.workflow.job.WorkflowJob
+  - component: components/tabs/PipelineActivityTab
+    extensionPoint: pipeline.main.navigation
+    dataType: jenkins.branch.MultiBranchProject
+  - component: components/tabs/PipelineBranchesTab
+    extensionPoint: pipeline.main.navigation
+    dataType: jenkins.branch.MultiBranchProject
+  - component: components/tabs/PipelinePullRequestsTab
+    extensionPoint: pipeline.main.navigation
+    dataType: jenkins.branch.MultiBranchProject
   - component: components/testing/TestResults
     extensionPoint: jenkins.test.result
     dataType: hudson.tasks.test.TestResult
