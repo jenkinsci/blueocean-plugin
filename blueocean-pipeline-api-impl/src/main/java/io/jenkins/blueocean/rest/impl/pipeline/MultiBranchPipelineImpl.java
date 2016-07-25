@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.service.embedded.rest;
+package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.Extension;
 import hudson.model.Item;
@@ -20,6 +20,11 @@ import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
+import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
+import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
+import io.jenkins.blueocean.service.embedded.rest.PipelineImpl;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
@@ -312,7 +317,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Extension(ordinal = 2)
-    public static class PipelineFactoryImpl extends BluePipelineFactory{
+    public static class PipelineFactoryImpl extends BluePipelineFactory {
 
         @Override
         public MultiBranchPipelineImpl getPipeline(Item item, Reachable parent) {

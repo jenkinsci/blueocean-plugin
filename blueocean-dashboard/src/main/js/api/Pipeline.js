@@ -11,7 +11,7 @@ import * as urlUtils from '../util/UrlUtils';
 import * as sse from '@jenkins-cd/sse-gateway';
 import assert from 'assert';
 
-const MULTI_BRANCH_PIPELINE_CLASS_NAME = 'io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl';
+const MULTI_BRANCH_PIPELINE_CLASS_NAME = 'io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl';
 
 const TYPE = 'Pipeline';
 export default class Pipeline {

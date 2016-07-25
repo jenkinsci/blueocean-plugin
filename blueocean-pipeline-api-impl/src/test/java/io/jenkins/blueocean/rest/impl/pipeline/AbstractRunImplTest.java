@@ -1,17 +1,14 @@
-package io.jenkins.blueocean.service.embedded;
+package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Label;
 import hudson.model.Queue;
-import io.jenkins.blueocean.service.embedded.rest.PipelineImpl;
-import io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl;
-import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
-import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
@@ -27,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Ivan Meredith
  */
-public class AbstractRunImplTest extends BaseTest {
+public class AbstractRunImplTest extends PipelineBaseTest {
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
 
@@ -66,7 +63,7 @@ public class AbstractRunImplTest extends BaseTest {
         j.waitForCompletion(job1.getLastBuild());
 
         Map r = request().get("/organizations/jenkins/pipelines/pipeline1/runs/3/").build(Map.class);
-        Assert.assertEquals(r.get("commitId"), new PipelineRunImpl(b2,null).getCommitId());
+        assertEquals(r.get("commitId"), new PipelineRunImpl(b2,null).getCommitId());
     }
 
     @Test
@@ -113,6 +110,6 @@ public class AbstractRunImplTest extends BaseTest {
         WorkflowRun replayedRun = (WorkflowRun)item.getFuture().get();
 
         Map r = request().get("/organizations/jenkins/pipelines/p/branches/master/runs/"+replayedRun.getNumber()+"/").build(Map.class);
-        Assert.assertEquals(new PipelineRunImpl(b1,null).getCommitId(), r.get("commitId"));
+        assertEquals(new PipelineRunImpl(b1,null).getCommitId(), r.get("commitId"));
     }
 }

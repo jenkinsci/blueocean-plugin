@@ -133,6 +133,10 @@ export class DashboardCards extends Component {
         }
     }
 
+    _onFavoriteToggle(isFavorite, favorite) {
+        this.props.toggleFavorite(isFavorite, favorite.item);
+    }
+
     render() {
         if (!this.props.favorites) {
             return null;
@@ -140,15 +144,15 @@ export class DashboardCards extends Component {
 
         const sortedFavorites = this.props.favorites.sort(sortComparator);
 
-        const favoriteCards = sortedFavorites.map(fav => {
-            const pipeline = fav.item;
+        const favoriteCards = sortedFavorites.map(favorite => {
+            const pipeline = favorite.item;
             const latestRun = pipeline.latestRun;
 
             let fullName;
             let pipelineName;
             let branchName;
 
-            if (pipeline._class === 'io.jenkins.blueocean.service.embedded.rest.BranchImpl') {
+            if (pipeline._class === 'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl') {
                 // branch.fullName is in the form folder1/folder2/pipeline/branch ...
                 // "pipeline"
                 pipelineName = extractPath(pipeline.fullName, -2, -1);
@@ -180,7 +184,7 @@ export class DashboardCards extends Component {
             }
 
             return (
-                <div key={fav._links.self.href}>
+                <div key={favorite._links.self.href}>
                     <PipelineCard
                       status={status}
                       startTime={startTime}
@@ -191,6 +195,7 @@ export class DashboardCards extends Component {
                       branch={branchName}
                       commitId={commitId}
                       favorite
+                      onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                     />
                 </div>
             );
@@ -209,6 +214,7 @@ DashboardCards.propTypes = {
     favorites: PropTypes.instanceOf(List),
     fetchUser: PropTypes.func,
     fetchFavorites: PropTypes.func,
+    toggleFavorite: PropTypes.func,
 };
 
 DashboardCards.contextTypes = {

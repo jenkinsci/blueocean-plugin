@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.service.embedded.rest;
+package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.Extension;
 import hudson.Util;
@@ -9,6 +9,8 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.branch.MultiBranchProject;
+import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
+import io.jenkins.blueocean.service.embedded.rest.PipelineImpl;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -22,9 +24,11 @@ public class BranchImpl extends PipelineImpl {
     private static final String PULL_REQUEST = "pullRequest";
 
     private final Link parent;
+    protected final Job job;
 
     public BranchImpl(Job job, Link parent) {
         super(job);
+        this.job = job;
         this.parent = parent;
     }
 
