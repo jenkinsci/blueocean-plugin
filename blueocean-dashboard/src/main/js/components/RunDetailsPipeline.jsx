@@ -38,7 +38,8 @@ export class RunDetailsPipeline extends Component {
 
         this.mergedConfig = this.generateConfig(this.props);
 
-        const supportsNode = result && result._class === 'io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl';
+        // It should really be using capability using /rest/classes API
+        const supportsNode = result && result._class === 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl';
         if (supportsNode) {
             fetchNodes(this.mergedConfig);
         } else {

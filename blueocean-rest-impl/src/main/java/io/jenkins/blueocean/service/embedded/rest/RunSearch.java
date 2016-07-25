@@ -9,6 +9,7 @@ import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.pageable.Pageable;
@@ -58,7 +59,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
         }
         return Pageables.wrap(findRuns(null));
     }
-    public static Iterable<BlueRun> findRuns(Job job, Link parent){
+    public static Iterable<BlueRun> findRuns(Job job, final Link parent){
         final List<BlueRun> runs = new ArrayList<>();
         Iterable<Job> pipelines;
         if(job != null){
@@ -70,7 +71,12 @@ public class RunSearch extends OmniSearch<BlueRun> {
             RunList<? extends Run> runList = p.getBuilds();
 
             for (Run r : runList) {
-                runs.add(AbstractRunImpl.getBlueRun(r,parent));
+                runs.add(AbstractRunImpl.getBlueRun(r, new Reachable() {
+                    @Override
+                    public Link getLink() {
+                        return parent;
+                    }
+                }));
             }
         }
 
@@ -85,7 +91,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
         if(job != null){
             Run r = job.getLastBuild();
             if(r != null) {
-                AbstractRunImpl.getBlueRun(r, new PipelineContainerImpl().get(job.getFullName()).getLink());
+                AbstractRunImpl.getBlueRun(r, new PipelineContainerImpl().get(job.getFullName()));
             }
         }
         return null;

@@ -6,10 +6,10 @@
 export default class Config {
 
     constructor(options) {
-        this._appURLBase = options.appURLBase || "/";
-        this._rootURL = options.rootURL || "/";
-        this._resourceURL = options.resourceURL || "/";
-        this._adjunctURL = options.adjunctURL || "/";
+        this._appURLBase = options.appURLBase || '';
+        this._rootURL = options.rootURL || '';
+        this._resourceURL = options.resourceURL || '';
+        this._adjunctURL = options.adjunctURL || '';
     }
 
     getAppURLBase() {

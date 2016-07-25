@@ -80,30 +80,6 @@ export default class TestResult extends Component {
         let fixedBlock = null;
         let skippedBlock = null;
         let summaryBlock = null;
-        summaryBlock = (
-            <div className="test-summary">
-                <div className={`new-passed count-${fixed.length}`}>
-                    <div className="count">{fixed.length}</div>
-                    <label>Fixed</label>
-                </div>
-                <div className={`new-failed count-${newFailures.length}`}>
-                    <div className="count">{newFailures.length}</div>
-                    <label>New Failures</label>
-                </div>
-                <div className={`failed count-${testResults.failCount}`}>
-                    <div className="count">{testResults.failCount}</div>
-                    <label>Failures</label>
-                </div>
-                <div className={`passed count-${testResults.passCount}`}>
-                    <div className="count">{testResults.passCount}</div>
-                    <label>Passing</label>
-                </div>
-                <div className={`skipped count-${testResults.skipCount}`}>
-                    <div className="count">{testResults.skipCount}</div>
-                    <label>Skipped</label>
-                </div>
-            </div>
-        );
         
         if (testResults.failCount === 0) {
             passBlock = (
@@ -113,44 +89,71 @@ export default class TestResult extends Component {
                     <p>How's the serenity?</p>
                 </EmptyStateView>
             );
+        } else {
+            summaryBlock = (
+                <div className="test-summary">
+                    <div className={`new-passed count-${fixed.length}`}>
+                        <div className="count">{fixed.length}</div>
+                        <label>Fixed</label>
+                    </div>
+                    <div className={`new-failed count-${newFailures.length}`}>
+                        <div className="count">{newFailures.length}</div>
+                        <label>New Failures</label>
+                    </div>
+                    <div className={`failed count-${testResults.failCount}`}>
+                        <div className="count">{testResults.failCount}</div>
+                        <label>Failures</label>
+                    </div>
+                    <div className={`passed count-${testResults.passCount}`}>
+                        <div className="count">{testResults.passCount}</div>
+                        <label>Passing</label>
+                    </div>
+                    <div className={`skipped count-${testResults.skipCount}`}>
+                        <div className="count">{testResults.skipCount}</div>
+                        <label>Skipped</label>
+                    </div>
+                </div>
+            );
+
+            if (newFailures.length > 0) {
+                newFailureBlock = [
+                    <h4>New failing - {newFailures.length}</h4>,
+                    newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
+                ];
+            }
+
+            if (existingFailures.length > 0) {
+                existingFailureBlock = [
+                    <h4>Existing failures - {existingFailures.length}</h4>,
+                    existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
+                ];
+            }
+
+            if (fixed.length > 0) {
+                fixedBlock = [
+                    <h4>Fixed</h4>,
+                    fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
+                ];
+            }
+
+            if (skipped.length > 0) {
+                skippedBlock = [
+                    <h4>Skipped - {skipped.length}</h4>,
+                    skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
+                ];
+            }
         }
 
-        if (newFailures.length > 0) {
-            newFailureBlock = [
-                <h4>New failing - {newFailures.length}</h4>,
-                newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
-            ];
-        }
-
-        if (existingFailures.length > 0) {
-            existingFailureBlock = [
-                <h4>Existing failures - {existingFailures.length}</h4>,
-                existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
-            ];
-        }
-
-        if (fixed.length > 0) {
-            fixedBlock = [
-                <h4>Fixed</h4>,
-                fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
-            ];
-        }
-
-        if (skipped.length > 0) {
-            skippedBlock = [
-                <h4>Skipped - {skipped.length}</h4>,
-                skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
-            ];
-        }
-
-        return (<div>
-            {summaryBlock}
-            {newFailureBlock}
-            {existingFailureBlock}
-            {fixedBlock}
-            {skippedBlock}
-            {passBlock}
-        </div>);
+        return (
+            <div>
+                {summaryBlock}
+                {newFailureBlock}
+                {existingFailureBlock}
+                {fixedBlock}
+                {skippedBlock}
+                {passBlock}
+            </div>
+        );
     }
 }
 

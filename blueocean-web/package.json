@@ -25,7 +25,7 @@
     "zombie": "^4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.63",
+    "@jenkins-cd/design-language": "0.0.64",
     "@jenkins-cd/js-extensions": "0.0.20-beta-1",
     "@jenkins-cd/js-modules": "0.0.5",
     "history": "2.0.2",

@@ -5,12 +5,14 @@
 import keymirror from 'keymirror';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
+
 import { User } from '../model/User';
+import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 
 /* eslint new-cap: [0] */
 const { Record, List } = Immutable;
 
-const FavoritesState = Record({
+export const FavoritesState = Record({
     user: null,
     favorites: null,
 });
@@ -18,6 +20,7 @@ const FavoritesState = Record({
 export const ACTION_TYPES = keymirror({
     SET_USER: null,
     SET_FAVORITES: null,
+    TOGGLE_FAVORITE: null,
 });
 
 const actionHandlers = {
@@ -28,6 +31,26 @@ const actionHandlers = {
     [ACTION_TYPES.SET_FAVORITES](state, { payload }) {
         const favoriteList = new List(payload);
         return state.set('favorites', favoriteList);
+    },
+    [ACTION_TYPES.TOGGLE_FAVORITE](state, { addFavorite, branch, payload }) {
+        const favoritesList = state.get('favorites');
+
+        if (addFavorite) {
+            const appendedList = favoritesList.push(payload);
+            return state.set('favorites', appendedList);
+        }
+
+        const toggledBranchHref = branch._links.self.href;
+        // filter the list so that only favorites which didn't match the branch's href are returned
+        const prunedList = favoritesList.filter(fav => {
+            const favoritedBranch = fav.item;
+            return !checkMatchingFavoriteUrls(
+                favoritedBranch._links.self.href,
+                toggledBranchHref,
+            );
+        });
+
+        return state.set('favorites', prunedList);
     },
 };
 

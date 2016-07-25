@@ -9,7 +9,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -34,7 +34,7 @@ export const favorites = [
             "fullName": "blueocean/UX-301",
             "lastSuccessfulRun": null,
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -89,7 +89,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -114,7 +114,7 @@ export const favorites = [
             "fullName": "jenkinsfile-experiments/master",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/jenkinsfile-experiments/branches/master/runs/95/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -180,7 +180,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -205,7 +205,7 @@ export const favorites = [
             "fullName": "jenkinsfile-experiments/test-branch-1",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/53/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -271,7 +271,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -296,7 +296,7 @@ export const favorites = [
             "fullName": "jdl1/docker-test",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/jdl1/branches/docker-test/runs/3/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -351,7 +351,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -376,7 +376,7 @@ export const favorites = [
             "fullName": "test1/master",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test1/branches/master/runs/95/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -442,7 +442,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -467,7 +467,7 @@ export const favorites = [
             "fullName": "test2/master",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test2/branches/master/runs/95/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -533,7 +533,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -558,7 +558,7 @@ export const favorites = [
             "fullName": "test3/master",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test3/branches/master/runs/95/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -624,7 +624,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -649,7 +649,7 @@ export const favorites = [
             "fullName": "test4/master",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test4/branches/master/runs/95/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -715,7 +715,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -740,7 +740,7 @@ export const favorites = [
             "fullName": "test5/master",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test5/branches/master/runs/95/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -806,7 +806,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -831,7 +831,7 @@ export const favorites = [
             "fullName": "jdl1/docker-test",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jankins/pipelines/jdl1/branches/docker-test/runs/4/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -886,7 +886,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -911,7 +911,7 @@ export const favorites = [
             "fullName": "test6/master",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/test6/branches/master/runs/95/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -977,7 +977,7 @@ export const favorites = [
             }
         },
         "item": {
-            "_class": "io.jenkins.blueocean.service.embedded.rest.BranchImpl",
+            "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
             "_links": {
                 "self": {
                     "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -1002,7 +1002,7 @@ export const favorites = [
             "fullName": "jdl2/docker-test",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/runs/3/",
             "latestRun": {
-                "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                 "_links": {
                     "nodes": {
                         "_class": "io.jenkins.blueocean.rest.hal.Link",

@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import hudson.model.BuildableItem;
 import hudson.model.Job;
@@ -11,9 +10,7 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.github.util.FluentIterableWrapper;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -74,13 +71,13 @@ public class QueueContainerImpl extends BlueQueueContainer {
     }
 
     public static BlueQueueItem getQueuedItem(final Queue.Item item, Job job) {
-        return FluentIterableWrapper.from(QueueContainerImpl.getQueuedItems(job))
-            .firstMatch(new Predicate<BlueQueueItem>() {
-                @Override
-                public boolean apply(@Nullable BlueQueueItem input) {
-                    return input.getId().equalsIgnoreCase(Long.toString(item.getId()));
-                }
-            }).orNull();
+
+        for(BlueQueueItem qi:QueueContainerImpl.getQueuedItems(job)){
+            if(qi.getId().equalsIgnoreCase(Long.toString(item.getId()))){
+                return qi;
+            }
+        }
+        return null;
     }
     @Override
     public Link getLink() {

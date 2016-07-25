@@ -1,11 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Action;
-import hudson.model.FreeStyleBuild;
-import hudson.model.Queue;
 import hudson.model.Run;
-import hudson.plugins.git.util.BuildData;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
@@ -16,10 +14,7 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
-import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
-import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
 import java.util.Date;
@@ -134,20 +129,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueQueueItem replay() {
-        ReplayAction replayAction = run.getAction(ReplayAction.class);
-        if(replayAction == null) {
-            throw new ServiceException.BadRequestExpception("This run does not support replay");
-        }
-
-        Queue.Item item = replayAction.run2(replayAction.getOriginalScript(), replayAction.getOriginalLoadedScripts());
-
-        BlueQueueItem queueItem = QueueContainerImpl.getQueuedItem(item, run.getParent());
-
-        if(queueItem == null) {
-            throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
-        } else {
-            return queueItem;
-        }
+        return null;
     }
 
     @Override
@@ -200,28 +182,14 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return PipelineImpl.getActionProxies(run.getAllActions(), this);
     }
 
-    protected static BlueRun getBlueRun(Run r, Link parent){
-        //TODO: We need to take care several other job types
-        if (r instanceof FreeStyleBuild) {
-            return new FreeStyleRunImpl((FreeStyleBuild)r, parent);
-        }else if(r instanceof WorkflowRun){
-            return new PipelineRunImpl((WorkflowRun)r, parent);
-        }else{
-            return new AbstractRunImpl<>(r, parent);
+    protected static BlueRun getBlueRun(Run r, Reachable parent){
+        for(BlueRunFactory runFactory:BlueRunFactory.all()){
+            BlueRun blueRun = runFactory.getRun(r,parent);
+            if(blueRun != null){
+                return blueRun;
+            }
         }
-    }
-
-    @Exported(name = "commitId")
-    public String getCommitId(){
-        BuildData data = run.getAction(BuildData.class);
-
-        if(data == null
-            || data.getLastBuiltRevision() == null
-            || data.getLastBuiltRevision().getSha1String() == null) {
-            return null;
-        } else {
-            return data.getLastBuiltRevision().getSha1String();
-        }
+        return new AbstractRunImpl<>(r, parent.getLink());
     }
 
     @Override

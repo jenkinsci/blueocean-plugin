@@ -8,6 +8,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
@@ -16,7 +17,6 @@ import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
@@ -68,7 +68,7 @@ public class PipelineImpl extends BluePipeline {
         if(job.getLastBuild() == null){
             return null;
         }
-        return AbstractRunImpl.getBlueRun(job.getLastBuild(), this.getLink());
+        return AbstractRunImpl.getBlueRun(job.getLastBuild(), this);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class PipelineImpl extends BluePipeline {
         return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
 
-    protected static String getRecursivePathFromFullName(BluePipeline pipeline){
+    public static String getRecursivePathFromFullName(BluePipeline pipeline){
         StringBuilder pipelinePath = new StringBuilder();
         String[] names = pipeline.getFullName().split("/");
         int count = 1;

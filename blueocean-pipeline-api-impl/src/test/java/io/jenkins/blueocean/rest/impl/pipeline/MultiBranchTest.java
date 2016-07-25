@@ -1,15 +1,13 @@
-package io.jenkins.blueocean.service.embedded;
+package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.inject.Inject;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
-import io.jenkins.blueocean.service.embedded.rest.BranchImpl;
-import io.jenkins.blueocean.service.embedded.scm.GitSampleRepoRule;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
@@ -44,16 +42,13 @@ import static org.junit.Assert.*;
 /**
  * @author Vivek Pandey
  */
-public class MultiBranchTest extends BaseTest{
+public class MultiBranchTest extends PipelineBaseTest {
 
     @ClassRule
     public static BuildWatcher buildWatcher = new BuildWatcher();
 
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
-
-    @Inject
-    private LinkResolver linkResolver;
 
 
     private final String[] branches={"master", "feature%2Fux-1", "feature2"};
@@ -76,7 +71,6 @@ public class MultiBranchTest extends BaseTest{
 
     @Test
     public void resolveMbpLink() throws Exception {
-        j.jenkins.getInjector().injectMembers(this);
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         FreeStyleProject f = j.jenkins.createProject(FreeStyleProject.class, "f");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -89,11 +83,11 @@ public class MultiBranchTest extends BaseTest{
 
         j.waitUntilNoActivity();
 
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/",linkResolver.resolve(mp).getHref());
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/master/",linkResolver.resolve(mp.getBranch("master")).getHref());
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/",linkResolver.resolve(mp.getBranch("feature%2Fux-1")).getHref());
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/",linkResolver.resolve(mp.getBranch("feature2")).getHref());
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/f/",linkResolver.resolve(f).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/",LinkResolver.resolveLink(mp).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/master/",LinkResolver.resolveLink(mp.getBranch("master")).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/",LinkResolver.resolveLink(mp.getBranch("feature%2Fux-1")).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/",LinkResolver.resolveLink(mp.getBranch("feature2")).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/f/",LinkResolver.resolveLink(f).getHref());
     }
 
 
@@ -589,6 +583,25 @@ public class MultiBranchTest extends BaseTest{
         Assert.assertEquals(3, nodes.size());
     }
 
+
+    @Test
+    public void getPipelinesTest() throws Exception {
+
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+
+
+        j.waitUntilNoActivity();
+
+        List<Map> responses = get("/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject", List.class);
+        Assert.assertEquals(1, responses.size());
+    }
 
 
     private void setupScm() throws Exception {

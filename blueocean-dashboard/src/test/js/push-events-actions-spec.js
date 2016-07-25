@@ -173,7 +173,7 @@ describe("push events - started run tests", () => {
             actions.fetchJson = function(url, onSuccess, onError) {
                 assert.equal(url, '/jenkins/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12');
                 onSuccess({
-                    "_class": "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
+                    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                     "artifacts": [],
                     "changeSet": [],
                     "durationInMillis": 0,
