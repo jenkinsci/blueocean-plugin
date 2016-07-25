@@ -129,13 +129,6 @@ export default class TestResult extends Component {
                 ];
             }
 
-            if (fixed.length > 0) {
-                fixedBlock = [
-                    <h4>Fixed</h4>,
-                    fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
-                ];
-            }
-
             if (skipped.length > 0) {
                 skippedBlock = [
                     <h4>Skipped - {skipped.length}</h4>,
@@ -144,14 +137,22 @@ export default class TestResult extends Component {
             }
         }
 
+        // always show fixed, whether showing totals or the encouraging message
+        if (fixed.length > 0) {
+            fixedBlock = [
+                <h4>Fixed</h4>,
+                fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
+            ];
+        }
+
         return (
             <div>
+                {passBlock}
                 {summaryBlock}
                 {newFailureBlock}
                 {existingFailureBlock}
                 {fixedBlock}
                 {skippedBlock}
-                {passBlock}
             </div>
         );
     }
