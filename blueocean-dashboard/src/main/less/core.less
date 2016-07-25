@@ -10,10 +10,10 @@
     height: 100%;
     box-sizing: border-box;
     z-index: 1000;
-    
+
     &.not-found {
         background: @blueocean-blue;
-        
+
         &:before {
             content: '';
             background: url('./icons/kanagawa.svg') no-repeat bottom left;
@@ -29,7 +29,7 @@
             height: 100%;
         }
     }
-    
+
     .message-box {
         position: absolute;
         top: 50%;
@@ -40,7 +40,7 @@
         padding: 2em;
         border-radius: .2em;
         box-shadow: 2px 2px 8px rgba(0, 0, 0, .1);
-        
+
         .message {
             margin: 1em 0 2em 0;
         }
@@ -157,4 +157,10 @@
 .nodes__section {
   display: flex;
   align-items: center;
+}
+
+.logConsole .result-item-children {
+    background-color: @pre-bg;
+    border: none;
+    padding: 0;
 }

@@ -108,7 +108,7 @@ export default class Node extends Component {
             resultRun.toLowerCase() === 'failure'
             || (resultRun.toLowerCase() === 'running' && followAlong)
         ;
-        return (<div>
+        return (<div className="logConsole">
             <ResultItem
               key={id}
               result={runResult}
@@ -122,7 +122,11 @@ export default class Node extends Component {
                   logArray={log.logArray}
                   scrollToBottom={scrollToBottom}
                   prefix={`step-${id}-`}
-                /> } &nbsp;
+                /> }
+
+                { !log && <span>
+                    &nbsp;
+                </span> }
             </ResultItem>
       </div>);
     }
