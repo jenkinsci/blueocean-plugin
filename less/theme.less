@@ -592,7 +592,7 @@ code p::before {
     color: @gray-light;
     content: counter(line);
     float: left;
-    min-width: 20px;
+    min-width: 30px; // scales < 10k then you will see an offset
     white-space: nowrap;
     padding-right: 1em;
     padding-left: 10px;
