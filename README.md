@@ -29,7 +29,13 @@ Java interfaces and classes that specify the definition of the REST API. See the
 
 ## blueocean-rest-impl
 
-Provides the default implementation of the REST Api defined in the `blueocean-rest` plugin.
+Provides the default implementation of the core REST Apis defined in the `blueocean-rest` plugin. It comes with only free style job support.
+
+
+## blueocean-pipeline-api-impl
+
+Provides implementation of Pipeline apis for Jenkins pipeline and multi-branch job types support
+
 
 ## blueocean-web
 

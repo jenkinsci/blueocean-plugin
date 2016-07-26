@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Predicate;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Job;
@@ -14,10 +13,8 @@ import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.github.util.FluentIterableWrapper;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Iterator;
 
 /**
@@ -58,7 +55,7 @@ public class RunContainerImpl extends BlueRunContainer {
         } else {
             run = runList.getLastBuild();
         }
-        return  AbstractRunImpl.getBlueRun(run, pipeline.getLink());
+        return  AbstractRunImpl.getBlueRun(run, pipeline);
     }
 
     @Override

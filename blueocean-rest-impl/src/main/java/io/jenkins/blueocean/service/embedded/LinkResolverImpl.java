@@ -1,24 +1,17 @@
 package io.jenkins.blueocean.service.embedded;
 
+import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
-import hudson.model.Queue;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
-import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
-import io.jenkins.blueocean.service.embedded.rest.PipelineNodeUtil;
-import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
-import org.jenkinsci.plugins.workflow.graph.FlowNode;
-import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * Implementation of {@link LinkResolver}
@@ -26,6 +19,7 @@ import java.io.IOException;
  * @author Kohsuke Kawaguchi
  * @author Vivek Pandey
  */
+@Extension
 public class LinkResolverImpl extends LinkResolver {
 
     private final Logger logger = LoggerFactory.getLogger(LinkResolverImpl.class);
@@ -48,18 +42,6 @@ public class LinkResolverImpl extends LinkResolver {
             if(resource != null){
                 return resource.getLink();
             }
-        }else if(modelObject instanceof FlowNode){
-            FlowNode flowNode = (FlowNode) modelObject;
-            BlueRun r = resolveFlowNodeRun(flowNode);
-            if(PipelineNodeUtil.isParallelBranch(flowNode) || PipelineNodeUtil.isStage(flowNode)){ // its Node
-                if(r != null){
-                    return r.getLink().rel("nodes/"+flowNode.getId());
-                }
-            }else if(flowNode instanceof StepAtomNode && !PipelineNodeUtil.isStage(flowNode)) {
-                if(r != null){
-                    return r.getLink().rel("steps/"+flowNode.getId());
-                }
-            }
         }
         return null;
     }
@@ -77,20 +59,6 @@ public class LinkResolverImpl extends LinkResolver {
         if(resource instanceof BluePipeline){
             BluePipeline pipeline = (BluePipeline) resource;
             return pipeline.getRuns().get(run.getId());
-        }
-        return null;
-    }
-
-    private BlueRun resolveFlowNodeRun(FlowNode flowNode){
-        try {
-            Queue.Executable executable = flowNode.getExecution().getOwner().getExecutable();
-            if(executable!= null && executable instanceof WorkflowRun){
-                WorkflowRun run = (WorkflowRun) executable;
-                return (BlueRun) resolveRun(run);
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            return null;
         }
         return null;
     }

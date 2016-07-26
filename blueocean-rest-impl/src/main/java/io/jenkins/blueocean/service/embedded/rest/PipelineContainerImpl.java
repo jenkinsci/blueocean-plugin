@@ -60,7 +60,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         return getPipelines(itemGroup.getItems());
     }
 
-    protected  Iterator<BluePipeline> getPipelines(Collection<? extends Item> items){
+    public  Iterator<BluePipeline> getPipelines(Collection<? extends Item> items){
         List<BluePipeline> pipelines = new ArrayList<>();
         for (Item item : items) {
             BluePipeline pipeline  = get(item);

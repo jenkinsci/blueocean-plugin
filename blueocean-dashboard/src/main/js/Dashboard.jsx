@@ -4,12 +4,16 @@ import appConfig from './config';
 
 const { object, node } = PropTypes;
 
+appConfig.loadConfig();
+
 // Connect to the SSE Gateway and allocate a
 // dispatcher for blueocean.
 // TODO: We might want to move this code to a local SSE util module.
-sse.connect('jenkins_blueocean');
-
-appConfig.loadConfig();
+sse.connect({
+    clientId: 'jenkins_blueocean',
+    onConnect: undefined,
+    jenkinsUrl: `${appConfig.getJenkinsRootURL()}/`, // FIXME sse should not require this to end with a /
+});
 
 class Dashboard extends Component {
 

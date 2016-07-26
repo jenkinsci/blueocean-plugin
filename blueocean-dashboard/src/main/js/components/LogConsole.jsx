@@ -86,9 +86,8 @@ export class LogConsole extends Component {
             this.timeouts.render = setTimeout(() => {
                 this._processNextLines();
             }, RERENDER_DELAY);
-        } else {
-            this.scroll();
         }
+        this.scroll();
     }
 
     scroll() {
@@ -100,7 +99,7 @@ export class LogConsole extends Component {
          * React needs the timeout to have the dom ready
          */
         if (this.props.scrollToBottom && !match) {
-            this.timeouts.scroll = setTimeout(() => this.props.scrollBottom(), INITIAL_RENDER_DELAY + 1);
+            this.timeouts.scroll = setTimeout(() => this.props.scrollBottom(), RERENDER_DELAY + 1);
         } else if (match) {
             // we need to scroll to a certain line now
             this.timeouts.scroll = this.props.scrollToAnchorTimeOut(RERENDER_DELAY + 1);

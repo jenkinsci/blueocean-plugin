@@ -1,7 +1,7 @@
 /* eslint-disable quotes,quote-props,comma-dangle */
 export const pipelinesDupName = [
     {
-        "_class": "io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl",
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl",
         "_links": {
             "self": {
                 "_class": "io.jenkins.blueocean.rest.hal.Link",
@@ -42,7 +42,7 @@ export const pipelinesDupName = [
         "totalNumberOfPullRequests": 0
     },
     {
-        "_class": "io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl",
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl",
         "_links": {
             "self": {
                 "_class": "io.jenkins.blueocean.rest.hal.Link",
