@@ -5,7 +5,8 @@ import revisionInfo from '../../../target/classes/io/jenkins/blueocean/revisionI
 
 export class DevelopmentFooter extends Component {
     render() {
-        if (!revisionInfo || !revisionInfo.name) {
+        // testing basic integrity
+        if (!revisionInfo || !revisionInfo.sha) {
             // TODO: At minimum we should return Jenkins version. Jenkins version is always present
              // in X-Hudson HTTP header. Something to be handled elsewhere during load time by
              // inspecting HTTP response headers
