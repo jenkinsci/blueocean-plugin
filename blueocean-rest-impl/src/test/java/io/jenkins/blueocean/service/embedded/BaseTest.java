@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -227,24 +228,6 @@ public abstract class BaseTest {
             throw new RuntimeException(e);
         }
     }
-//
-//    protected void validateMultiBranchPipeline(WorkflowMultiBranchProject p, Map resp, int numBranches){
-//        validateMultiBranchPipeline(p, resp, numBranches, -1, -1);
-//    }
-//    protected void validateMultiBranchPipeline(WorkflowMultiBranchProject p, Map resp, int numBranches, int numSuccBranches, int numOfFailingBranches){
-//        Assert.assertEquals("jenkins", resp.get("organization"));
-//        Assert.assertEquals(p.getName(), resp.get("name"));
-//        Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
-//        Assert.assertNull(resp.get("lastSuccessfulRun"));
-//        Assert.assertEquals(numBranches, resp.get("totalNumberOfBranches"));
-//        if(numOfFailingBranches >= 0) {
-//            Assert.assertEquals(numOfFailingBranches, resp.get("numberOfFailingBranches"));
-//        }
-//        if(numSuccBranches >= 0) {
-//            Assert.assertEquals(numSuccBranches, resp.get("numberOfSuccessfulBranches"));
-//        }
-//        Assert.assertEquals(p.getBuildHealth().getScore(), resp.get("weatherScore"));
-//    }
 
     protected void validatePipeline(Job p, Map resp){
         Assert.assertEquals("jenkins", resp.get("organization"));
@@ -271,6 +254,17 @@ public abstract class BaseTest {
         }
     }
 
+
+    protected void validateFolder(MockFolder folder, Map resp){
+        Assert.assertEquals("jenkins", resp.get("organization"));
+        Assert.assertEquals(folder.getName(), resp.get("name"));
+        Assert.assertEquals(folder.getDisplayName(), resp.get("displayName"));
+        Assert.assertEquals(folder.getFullName(), resp.get("fullName"));
+        Assert.assertNull(resp.get("lastSuccessfulRun"));
+        Assert.assertEquals(folder.getAllJobs().size(), resp.get("numberOfPipelines"));
+        Assert.assertEquals(folder.getAllJobs().size(), resp.get("numberOfPipelines"));
+    }
+
     protected void validateRun(Run r, Map resp){
         validateRun(r,resp, "FINISHED");
     }
@@ -285,38 +279,11 @@ public abstract class BaseTest {
         Assert.assertEquals(state, resp.get("state"));
     }
 
-//    protected String getNodeName(FlowNode n){
-//        return n.getAction(ThreadNameAction.class) != null
-//            ? n.getAction(ThreadNameAction.class).getThreadName()
-//            : n.getDisplayName();
-//    }
 
     private String getBaseUrl(String path){
         return baseUrl + path;
     }
 
-
-//    protected List<FlowNode> getStages(FlowGraphTable nodeGraphTable){
-//        List<FlowNode> nodes = new ArrayList<>();
-//        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-//            if(PipelineNodeUtil.isStage(row.getNode()) ||
-//                PipelineNodeUtil.isParallelBranch(row.getNode())){
-//                nodes.add(row.getNode());
-//            }
-//        }
-//        return nodes;
-//    }
-
-//    protected List<FlowNode> getParallelNodes(FlowGraphTable nodeGraphTable){
-//        List<FlowNode> parallelNodes = new ArrayList<>();
-//
-//        for(FlowGraphTable.Row row: nodeGraphTable.getRows()){
-//            if(PipelineNodeUtil.isParallelBranch(row.getNode())){
-//                parallelNodes.add(row.getNode());
-//            }
-//        }
-//        return parallelNodes;
-//    }
 
     protected String getHrefFromLinks(Map resp, String link){
         Map links = (Map) resp.get("_links");

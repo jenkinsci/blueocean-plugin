@@ -9,6 +9,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
@@ -69,12 +70,8 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         }
 
         FavoriteUtil.favoriteJob(mbp.getFullName(), favoriteAction.isFavorite());
-        return FavoriteUtil.getFavorite(mbp, new Reachable() {
-            @Override
-            public Link getLink() {
-                return getLink().rel("branches");
-            }
-        });
+
+        return new FavoriteImpl(new BranchImpl(job,getLink().rel("branches")), getLink().rel("favorite"));
     }
 
     @Override
@@ -351,7 +348,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 Job job = project.getItem("master");
                 if(job != null){
                     Resource resource = BluePipelineFactory.resolve(job);
-                    return new FavoriteImpl(resource, FavoriteUtil.getFavoriteLink(item.getFullName()));
+                    Link l = LinkResolver.resolveLink(project);
+                    if(l != null) {
+                        return new FavoriteImpl(resource, l.rel("favorite"));
+                    }
                 }
             }
             return null;
