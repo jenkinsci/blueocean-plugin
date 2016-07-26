@@ -32,6 +32,7 @@ const TestCaseResultRow = (props) => {
     
     let statusIndicator = null;
     switch (t.status) {
+    case 'REGRESSION':
     case 'FAILED':
         statusIndicator = StatusIndicator.validResultValues.failure;
         break;
@@ -67,12 +68,11 @@ export default class TestResult extends Component {
         const suites = this.props.testResults.suites;
         const tests = [].concat.apply([], suites.map(t => t.cases));
         
-        // possible statuses: PASSED, FAILED, SKIPPED
-        const failures = tests.filter(t => t.status === 'FAILED');
+        // one of 5 possible statuses: PASSED, FIXED, SKIPPED, FAILED, REGRESSION  see: hudson.tasks.junit.CaseResult$Status :(
         const fixed = tests.filter(t => t.status === 'FIXED');
         const skipped = tests.filter(t => t.status === 'SKIPPED');
-        const newFailures = failures.filter(t => t.age === 1);
-        const existingFailures = failures.filter(t => t.age > 1);
+        const newFailures = tests.filter(t => (t.age <= 1 && t.status === 'FAILED') || t.status === 'REGRESSION');
+        const existingFailures = tests.filter(t => t.age > 1 && t.status === 'FAILED');
 
         let passBlock = null;
         let newFailureBlock = null;
