@@ -45,11 +45,16 @@ export const uriString = (input) => encodeURIComponent(input).replace(/%2F/g, '%
  * @param config { nodesBaseUrl, node, url}
  */
 export const calculateLogUrl = (config) => {
+    let returnUrl = config.url;
     if (config.node) {
         const { nodesBaseUrl, node } = config;
-        return `${nodesBaseUrl}/${node.id}/log/`;
+        returnUrl = `${nodesBaseUrl}/${node.id}/log/`;
     }
-    return config.url;
+    // if we pass fetchAll means we want the full log -> start=0 will trigger that on the server
+    if (config.fetchAll) {
+        returnUrl += '?start=0';
+    }
+    return returnUrl;
 };
 
 /*

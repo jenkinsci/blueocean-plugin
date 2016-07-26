@@ -94,6 +94,7 @@ export const actionHandlers = {
     [ACTION_TYPES.SET_LOGS](state, { payload }): State {
         const logs = { ...state.logs } || {};
         logs[payload.logUrl] = payload;
+
         return state.set('logs', logs);
     },
 
@@ -766,18 +767,13 @@ export const actions = {
     fetchLog(config) {
         return (dispatch, getState) => {
             const data = getState().adminStore.logs;
-            let logUrl = calculateLogUrl(config);
-            if (config.fetchAll) {
-                logUrl += '?start=0';
-            }
-            console.log("fetchAll", config.fetchAll, logUrl)
+            const logUrl = calculateLogUrl(config);
             if (
                 config.fetchAll ||
                 !data || !data[logUrl] ||
                 config.newStart > 0 ||
                 (data && data[logUrl] && data[logUrl].newStart > 0 || !data[logUrl].logArray)
             ) {
-                console.log('invoke fetch')
                 return exports.fetchLogsInjectStart(
                     logUrl,
                     config.newStart || null,
@@ -786,7 +782,12 @@ export const actions = {
                             // By default only last 150 KB log data is returned in the response.
                             const maxLength = 150000;
                             const contentLength = Number(response.response.headers.get('X-Text-Size'));
-                            const hasMore = contentLength > maxLength;
+                            // set flag that there are more logs then we deliver
+                            let hasMore = contentLength > maxLength;
+                            // when we came from ?start=0, hasMore has to be false since there is no more
+                            if (config.fetchAll) {
+                                hasMore = false;
+                            }
                             const { newStart } = response;
                             const payload = {
                                 logUrl,

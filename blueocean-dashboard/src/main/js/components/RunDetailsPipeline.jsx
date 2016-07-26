@@ -150,14 +150,14 @@ export class RunDetailsPipeline extends Component {
 
     componentWillUnmount() {
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
-        domNode.removeEventListener('wheel', this._onScrollHandler);
-        document.removeEventListener('keydown', this._handleKeys);
         if (this.listener.sse) {
             sse.unsubscribe(this.listener.sse);
             delete this.listener.sse;
         }
         this.props.cleanNodePointer();
         clearTimeout(this.timeout);
+        domNode.removeEventListener('wheel', this._onScrollHandler);
+        document.removeEventListener('keydown', this._handleKeys);
     }
 
     // need to register handler to step out of karaoke mode
