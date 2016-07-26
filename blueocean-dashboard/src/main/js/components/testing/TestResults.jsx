@@ -116,24 +116,24 @@ export default class TestResult extends Component {
             );
 
             if (newFailures.length > 0) {
-                newFailureBlock = [
-                    <h4>New failing - {newFailures.length}</h4>,
-                    newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
-                ];
+                newFailureBlock = (<div className="test-result-block new-failure-block">
+                    <h4>New failing - {newFailures.length}</h4>
+                    {newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
+                </div>);
             }
 
             if (existingFailures.length > 0) {
-                existingFailureBlock = [
-                    <h4>Existing failures - {existingFailures.length}</h4>,
-                    existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
-                ];
+                existingFailureBlock = (<div className="test-result-block existing-failure-block">
+                    <h4>Existing failures - {existingFailures.length}</h4>
+                    {existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
+                </div>);
             }
 
             if (skipped.length > 0) {
-                skippedBlock = [
-                    <h4>Skipped - {skipped.length}</h4>,
-                    skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
-                ];
+                skippedBlock = (<div className="test-result-block skipped-block">
+                    <h4>Skipped - {skipped.length}</h4>
+                    {skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
+                </div>);
             }
         }
 
