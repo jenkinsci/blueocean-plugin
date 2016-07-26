@@ -139,10 +139,10 @@ export default class TestResult extends Component {
 
         // always show fixed, whether showing totals or the encouraging message
         if (fixed.length > 0) {
-            fixedBlock = [
-                <h4>Fixed</h4>,
-                fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} />),
-            ];
+            fixedBlock = (<div className="test-result-block fixed-block">
+                <h4>Fixed</h4>
+                {fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
+            </div>);
         }
 
         return (

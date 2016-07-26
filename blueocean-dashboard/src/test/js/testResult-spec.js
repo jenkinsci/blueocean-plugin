@@ -78,7 +78,26 @@ describe("TestResults", () => {
             }]};
       
       wrapper = shallow(<TestResults testResults={success} />);
-      isDone = wrapper.html().indexOf('done_all') > 0;
-      assert(isDone, "Done all not found, when should be");
+      let html = wrapper.html();
+      assert(html.indexOf('done_all') > 0, "Done all not found, when should be");
+      assert(html.indexOf('fixed-block') < 0, "No fixed tests!");
+  });
+
+
+  it("All passing and fixed shown", () => {
+      var successWithFixed = {
+              "_class":"hudson.tasks.junit.TestResult",
+              "duration":0.008, "empty":false, "failCount":0, "passCount":3, "skipCount":0, "suites":[
+                { "duration":0, "id":null, "name":"failure.TestThisWontFail", "stderr":null, "stdout":null, "timestamp":null, "cases": [
+                {"age":0,"className":"failure.TestThisWontFail","duration":0,"errorDetails":null,"errorStackTrace":null,"failedSince":0,"name":"aPassingTest2","skipped":false,"skippedMessage":null,"status":"FIXED","stderr":null,"stdout":null},
+                {"age":0,"className":"failure.TestThisWontFail","duration":0,"errorDetails":null,"errorStackTrace":null,"failedSince":0,"name":"aPassingTest3","skipped":false,"skippedMessage":null,"status":"PASSED","stderr":null,"stdout":null},
+                {"age":0,"className":"failure.TestThisWontFail","duration":0,"errorDetails":null,"errorStackTrace":null,"failedSince":0,"name":"aPassingTest4","skipped":false,"skippedMessage":null,"status":"PASSED","stderr":null,"stdout":null},
+                ],
+            }]};
+      
+      let wrapper = shallow(<TestResults testResults={successWithFixed} />);
+      let html = wrapper.html();
+      assert(html.indexOf('done_all') > 0, "Done all not found, when should be");
+      assert(html.indexOf('fixed-block') > 0, "Should have fixed tests!");
   });
 });
