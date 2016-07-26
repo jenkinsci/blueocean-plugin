@@ -18,7 +18,9 @@ export default class Node extends Component {
         const { config = {} } = this.context;
         const node = this.expandAnchor(this.props);
         if (node && node.isFocused) {
-            const mergedConfig = { ...config, node, nodesBaseUrl };
+            const fetchAll = node.fetchAll;
+            console.log(fetchAll, '????')
+            const mergedConfig = { ...config, node, nodesBaseUrl, fetchAll };
             fetchLog(mergedConfig);
         }
     }
@@ -33,7 +35,8 @@ export default class Node extends Component {
         }
         const { config = {} } = this.context;
         const node = this.expandAnchor(nextProps);
-        const mergedConfig = { ...config, node, nodesBaseUrl };
+        const fetchAll = node.fetchAll;
+        const mergedConfig = { ...config, node, nodesBaseUrl, fetchAll };
         if (logs && logs !== this.props.logs) {
             const key = calculateLogUrl(mergedConfig);
             const log = logs ? logs[key] : null;
@@ -66,10 +69,17 @@ export default class Node extends Component {
         const isFocused = true;
         // e.g. #step-10-log-1 or #step-10
         if (anchorName) {
+            console.log('anchorName', anchorName)
             const stepReg = /step-([0-9]{1,})?($|-log-([0-9]{1,})$)/;
             const match = stepReg.exec(anchorName);
+            console.log('MATCH', match)
+
             if (match && match[1] && match[1] === node.id) {
-                return { ...node, isFocused };
+                const newVar = { ...node, isFocused };
+                if (match[3] && Number(match[3]) === 0) {
+                    newVar.fetchAll = true;
+                }
+                return newVar;
             }
         } else if (this.state && this.state.isFocused) {
             return { ...node, isFocused };
@@ -108,6 +118,15 @@ export default class Node extends Component {
             resultRun.toLowerCase() === 'failure'
             || (resultRun.toLowerCase() === 'running' && followAlong)
         ;
+        const logProps = {
+            scrollToBottom,
+            key: id,
+            prefix: `step-${id}-`,
+        };
+        if (log) {
+            logProps.hasMore = log.hasMore;
+            logProps.logArray = log.logArray;
+        }
         return (<div>
             <ResultItem
               key={id}
@@ -117,12 +136,7 @@ export default class Node extends Component {
               onExpand={getLogForNode}
               durationMillis={durationInMillis}
             >
-                { log && <LogConsole
-                  key={id}
-                  logArray={log.logArray}
-                  scrollToBottom={scrollToBottom}
-                  prefix={`step-${id}-`}
-                /> } &nbsp;
+                { log && <LogConsole {...logProps} /> } &nbsp;
             </ResultItem>
       </div>);
     }

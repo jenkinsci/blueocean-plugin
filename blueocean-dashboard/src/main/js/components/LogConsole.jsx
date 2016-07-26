@@ -108,7 +108,7 @@ export class LogConsole extends Component {
 
     render() {
         const lines = this.state.lines;
-        const { prefix = '' } = this.props;
+        const { prefix = '', hasMore = false } = this.props;
         if (!lines) {
             return null;
         }
@@ -117,7 +117,18 @@ export class LogConsole extends Component {
           className="block"
         >
             { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-                <a key={index + 1} href={`#${prefix || ''}log-${index + 1}`} name={`${prefix}log-${index + 1}`}>{line}</a>
+                { hasMore && index === 0 && <a
+                  key={index + 1}
+                  href={`#${prefix || ''}log-${index}`}
+                >
+                    href to fullLog
+                </a>}
+                { index > 0 && <a
+                  key={index + 1}
+                  href={`#${prefix || ''}log-${index + 1}`}
+                  name={`${prefix}log-${index + 1}`}
+                >{line}
+                </a>}
             </p>)}</code>);
     }
 }
@@ -129,6 +140,7 @@ LogConsole.propTypes = {
     scrollToAnchorTimeOut: func,
     scrollBottom: func,
     prefix: string,
+    hasMore: bool,
 };
 
 export default scrollHelper(LogConsole);

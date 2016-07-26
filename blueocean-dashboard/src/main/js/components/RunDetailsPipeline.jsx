@@ -298,7 +298,12 @@ export class RunDetailsPipeline extends Component {
                 </EmptyStateView>
                 }
 
-                { log && <LogConsole key={logGeneral.url} logArray={log.logArray} scrollToBottom={scrollToBottom} /> }
+                { log && <LogConsole
+                  hasMore={log.hasMore}
+                  key={logGeneral.url}
+                  logArray={log.logArray}
+                  scrollToBottom={scrollToBottom}
+                /> }
             </div>
         );
     }

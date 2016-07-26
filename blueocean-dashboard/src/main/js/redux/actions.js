@@ -766,24 +766,32 @@ export const actions = {
     fetchLog(config) {
         return (dispatch, getState) => {
             const data = getState().adminStore.logs;
-            const logUrl = calculateLogUrl(config);
+            let logUrl = calculateLogUrl(config);
+            if (config.fetchAll) {
+                logUrl += '?start=0';
+            }
+            console.log("fetchAll", config.fetchAll, logUrl)
             if (
+                config.fetchAll ||
                 !data || !data[logUrl] ||
                 config.newStart > 0 ||
                 (data && data[logUrl] && data[logUrl].newStart > 0 || !data[logUrl].logArray)
             ) {
+                console.log('invoke fetch')
                 return exports.fetchLogsInjectStart(
                     logUrl,
                     config.newStart || null,
                     response => response.response.text()
                         .then(text => {
-                            const maxLength = 19200;
-                            const contentLength = Number(response.response.headers.get('Content-Length'));
-                            console.log('response', contentLength > maxLength)
+                            // By default only last 150 KB log data is returned in the response.
+                            const maxLength = 150000;
+                            const contentLength = Number(response.response.headers.get('X-Text-Size'));
+                            const hasMore = contentLength > maxLength;
                             const { newStart } = response;
                             const payload = {
                                 logUrl,
                                 newStart,
+                                hasMore,
                             };
                             if (text && !!text.trim()) {
                                 payload.logArray = text.trim().split('\n');
