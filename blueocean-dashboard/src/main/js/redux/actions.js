@@ -777,6 +777,9 @@ export const actions = {
                     config.newStart || null,
                     response => response.response.text()
                         .then(text => {
+                            const maxLength = 19200;
+                            const contentLength = Number(response.response.headers.get('Content-Length'));
+                            console.log('response', contentLength > maxLength)
                             const { newStart } = response;
                             const payload = {
                                 logUrl,
