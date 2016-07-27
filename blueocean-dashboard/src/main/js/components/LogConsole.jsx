@@ -119,7 +119,7 @@ export class LogConsole extends Component {
             { hasMore && <p key={0} id={`${prefix}log-${0}`}>
                 <a
                   key={0}
-                  href={`#${prefix || ''}log-${0}`}
+                  href={`?start=0#${prefix || ''}log-${1}`}
                 >
                 Full Log
             </a>

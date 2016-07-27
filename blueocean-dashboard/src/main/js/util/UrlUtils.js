@@ -40,14 +40,30 @@ export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabNam
  */
 export const uriString = (input) => encodeURIComponent(input).replace(/%2F/g, '%252F');
 
+// general fetchAllTrigger
 export const fetchAllSuffix = '?start=0';
 
+// Add fetchAllSuffix in case it is needed
 export const applyFetchAll = function (config, url) {
 // if we pass fetchAll means we want the full log -> start=0 will trigger that on the server
     if (config.fetchAll && !url.includes(fetchAllSuffix)) {
         return `${url}${fetchAllSuffix}`;
     }
     return url;
+};
+
+// using the hook 'location.search'.includes('start=0') to trigger fetchAll
+export const calculateFetchAll = function (props) {
+    const { location: { search } } = props;
+
+    if (search) {
+        const stepReg = /start=([0-9]{1,})/;
+        const match = stepReg.exec(search);
+        if (match && match[1] && Number(match[1]) === 0) {
+            return true;
+        }
+    }
+    return false;
 };
 
 /*

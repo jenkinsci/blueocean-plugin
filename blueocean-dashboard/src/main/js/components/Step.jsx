@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { ResultItem } from '@jenkins-cd/design-language';
-import { calculateLogUrl } from '../util/UrlUtils';
+import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 
@@ -72,22 +72,20 @@ export default class Node extends Component {
     expandAnchor(props) {
         const { node, location: { hash: anchorName } } = props;
         const isFocused = true;
+        const fetchAll = calculateFetchAll(props);
+        const general = { ...node, fetchAll };
         // e.g. #step-10-log-1 or #step-10
         if (anchorName) {
             const stepReg = /step-([0-9]{1,})?($|-log-([0-9]{1,})$)/;
             const match = stepReg.exec(anchorName);
 
             if (match && match[1] && match[1] === node.id) {
-                const newVar = { ...node, isFocused };
-                if (match[3] && Number(match[3]) === 0) {
-                    newVar.fetchAll = true;
-                }
-                return newVar;
+                return { ...general, isFocused };
             }
         } else if (this.state && this.state.isFocused) {
-            return { ...node, isFocused };
+            return { ...general, isFocused };
         }
-        return { ...node };
+        return general;
     }
 
     render() {

@@ -17,7 +17,7 @@ import {
     createSelector,
 } from '../redux';
 
-import { calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl } from '../util/UrlUtils';
+import { calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl, calculateFetchAll } from '../util/UrlUtils';
 import { calculateNode } from '../util/KaraokeHelper';
 
 
@@ -184,20 +184,6 @@ export class RunDetailsPipeline extends Component {
             this.setState({ followAlong: false });
         }
     }
-    // using the hook 'location.hash' === #log-0 to trigger fetchAll
-    calculateFetchAll(props) {
-        const { location: { hash: anchorName } } = props;
-        //console.log(location)
-        if (anchorName) {
-            const stepReg = /log-([0-9]{1,}$)/;
-            const match = stepReg.exec(anchorName);
-            if (match && match[1] && Number(match[1]) === 0) {
-                console.log(true)
-                return true;
-            }
-        }
-        return false;
-    }
 
     generateConfig(props) {
         const {
@@ -208,7 +194,7 @@ export class RunDetailsPipeline extends Component {
             isMultiBranch,
             params: { pipeline: name, branch, runId, node: nodeParam },
         } = props;
-        const fetchAll = this.calculateFetchAll(props);
+        const fetchAll = calculateFetchAll(props);
         // we would use default properties however the node can be null so no default properties will be triggered
         let { nodeReducer } = props;
         if (!nodeReducer) {
