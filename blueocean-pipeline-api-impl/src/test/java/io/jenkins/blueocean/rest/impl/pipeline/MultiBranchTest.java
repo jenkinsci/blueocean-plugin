@@ -446,13 +446,37 @@ public class MultiBranchTest extends PipelineBaseTest {
             .auth("alice","alice")
             .build(List.class);
 
-        Assert.assertEquals(l.size(), 1);
+        Assert.assertEquals(1,l.size());
         branch = (Map)((Map)l.get(0)).get("item");
 
         validatePipeline(p, branch);
 
         c = (String) branch.get("_class");
         Assert.assertEquals(BranchImpl.class.getName(), c);
+
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/favorite/", getHrefFromLinks((Map)l.get(0), "self"));
+
+        String ref = getHrefFromLinks((Map)l.get(0), "self");
+
+        m = new RequestBuilder(baseUrl)
+            .put(getUrlFromHref(ref))
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", false))
+            .build(Map.class);
+
+        branch = (Map) m.get("item");
+        validatePipeline(p, branch);
+        c = (String) branch.get("_class");
+        Assert.assertEquals(BranchImpl.class.getName(), c);
+
+
+        l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(0,l.size());
+
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -488,19 +512,43 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         validatePipeline(p1, (Map) map.get("item"));
 
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/favorite/", getHrefFromLinks(map, "self"));
+
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
             .auth("alice","alice")
             .build(List.class);
 
-        Assert.assertEquals(l.size(), 1);
+        Assert.assertEquals(1, l.size());
 
         Map branch = (Map)((Map)l.get(0)).get("item");
+
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/favorite/", getHrefFromLinks((Map)l.get(0), "self"));
 
         validatePipeline(p1, branch);
 
         String c = (String) branch.get("_class");
         Assert.assertEquals(BranchImpl.class.getName(), c);
+
+
+        map = new RequestBuilder(baseUrl)
+            .put(getUrlFromHref(getHrefFromLinks((Map)l.get(0), "self")))
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", false))
+            .build(Map.class);
+
+
+        validatePipeline(p1, (Map) map.get("item"));
+
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/favorite/", getHrefFromLinks(map, "self"));
+
+        l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(0, l.size());
+
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -548,15 +596,28 @@ public class MultiBranchTest extends PipelineBaseTest {
         String c = (String) branch.get("_class");
         Assert.assertEquals(BranchImpl.class.getName(), c);
 
-        String ref = getHrefFromLinks((Map)l.get(0), "self");
+        String href = getHrefFromLinks((Map)l.get(0), "self");
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/favorite/", href);
 
-        Map r = new RequestBuilder(baseUrl)
-            .get(ref.substring("/blue/rest".length()))
-            .auth("alice","alice")
+
+
+        Map m = new RequestBuilder(baseUrl)
+            .put(getUrlFromHref(getUrlFromHref(href)))
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", false))
             .build(Map.class);
 
-        validatePipeline(p, (Map)r.get("item"));
+        branch = (Map) m.get("item");
+        validatePipeline(p, branch);
+        c = (String) branch.get("_class");
+        Assert.assertEquals(BranchImpl.class.getName(), c);
 
+        l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(0,l.size());
     }
 
     @Test
