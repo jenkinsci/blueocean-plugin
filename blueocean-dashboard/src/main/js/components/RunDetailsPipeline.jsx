@@ -45,7 +45,9 @@ export class RunDetailsPipeline extends Component {
         } else {
             // console.log('fetch the log directly')
             const logGeneral = calculateRunLogURLObject(this.mergedConfig);
-            fetchLog({ ...logGeneral });
+            // fetchAll indicates whether we want all logs
+            const fetchAll = this.mergedConfig.fetchAll;
+            fetchLog({ ...logGeneral, fetchAll });
         }
 
         // Listen for pipeline flow node events.
@@ -127,10 +129,13 @@ export class RunDetailsPipeline extends Component {
             // if we have actions we fire them
             this.props[nodeAction.action](this.mergedConfig);
         }
+        const fetchAll = this.mergedConfig.fetchAll;
+        // console.log('this.mergedConfig.fetchAll', fetchAll)
         // if we only interested in logs (in case of e.g. freestyle)
         const { logs, fetchLog } = nextProps;
-        if (logs !== this.props.logs) {
+        if (logs !== this.props.logs || fetchAll) {
             const logGeneral = calculateRunLogURLObject(this.mergedConfig);
+            // console.log('logGenralReceive', logGeneral)
             const log = logs ? logs[logGeneral.url] : null;
             if (log && log !== null) {
                 // we may have a streaming log
@@ -144,9 +149,15 @@ export class RunDetailsPipeline extends Component {
                         this.timeout = setTimeout(() => fetchLog({ ...logGeneral, newStart }), 1000);
                     }
                 }
+            } else if (fetchAll) {
+                // kill current  timeout if any
+                clearTimeout(this.timeout);
+                // we need to get mpre input from the log stream
+                this.timeout = setTimeout(() => fetchLog({ ...logGeneral, fetchAll }), 1000);
             }
         }
     }
+
 
     componentWillUnmount() {
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
@@ -173,6 +184,20 @@ export class RunDetailsPipeline extends Component {
             this.setState({ followAlong: false });
         }
     }
+    // using the hook 'location.hash' === #log-0 to trigger fetchAll
+    calculateFetchAll(props) {
+        const { location: { hash: anchorName } } = props;
+        //console.log(location)
+        if (anchorName) {
+            const stepReg = /log-([0-9]{1,}$)/;
+            const match = stepReg.exec(anchorName);
+            if (match && match[1] && Number(match[1]) === 0) {
+                console.log(true)
+                return true;
+            }
+        }
+        return false;
+    }
 
     generateConfig(props) {
         const {
@@ -183,6 +208,7 @@ export class RunDetailsPipeline extends Component {
             isMultiBranch,
             params: { pipeline: name, branch, runId, node: nodeParam },
         } = props;
+        const fetchAll = this.calculateFetchAll(props);
         // we would use default properties however the node can be null so no default properties will be triggered
         let { nodeReducer } = props;
         if (!nodeReducer) {
@@ -191,7 +217,7 @@ export class RunDetailsPipeline extends Component {
         // if we have a node param we do not want the calculation of the focused node
         const node = nodeParam || nodeReducer.id;
 
-        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer, followAlong };
+        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer, followAlong, fetchAll };
         return mergedConfig;
     }
 

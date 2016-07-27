@@ -785,6 +785,7 @@ export const actions = {
                             // set flag that there are more logs then we deliver
                             let hasMore = contentLength > maxLength;
                             // when we came from ?start=0, hasMore has to be false since there is no more
+                            // console.log(config.fetchAll, 'inner')
                             if (config.fetchAll) {
                                 hasMore = false;
                             }

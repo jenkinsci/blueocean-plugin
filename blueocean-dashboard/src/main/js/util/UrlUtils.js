@@ -40,6 +40,16 @@ export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabNam
  */
 export const uriString = (input) => encodeURIComponent(input).replace(/%2F/g, '%252F');
 
+export const fetchAllSuffix = '?start=0';
+
+export const applyFetchAll = function (config, url) {
+// if we pass fetchAll means we want the full log -> start=0 will trigger that on the server
+    if (config.fetchAll && !url.includes(fetchAllSuffix)) {
+        return `${url}${fetchAllSuffix}`;
+    }
+    return url;
+};
+
 /*
  * helper to calculate log url. When we have a node we get create a special url, otherwise we use the url passed to us
  * @param config { nodesBaseUrl, node, url}
@@ -50,11 +60,7 @@ export const calculateLogUrl = (config) => {
         const { nodesBaseUrl, node } = config;
         returnUrl = `${nodesBaseUrl}/${node.id}/log/`;
     }
-    // if we pass fetchAll means we want the full log -> start=0 will trigger that on the server
-    if (config.fetchAll) {
-        returnUrl += '?start=0';
-    }
-    return returnUrl;
+    return applyFetchAll(config, returnUrl);
 };
 
 /*
@@ -110,6 +116,7 @@ export function calculateRunLogURLObject(config) {
         url = `${baseUrl}/runs/${runId}/log/`;
         fileName = `${runId}.txt`;
     }
+    url = applyFetchAll(config, url);
     return {
         url,
         fileName,
