@@ -126,6 +126,7 @@ export class DashboardCards extends Component {
             let startTime = null;
             let estimatedDuration = null;
             let commitId = null;
+            let runId = null;
 
             if (latestRun) {
                 if (latestRun.result) {
@@ -135,6 +136,7 @@ export class DashboardCards extends Component {
                 startTime = latestRun.startTime;
                 estimatedDuration = latestRun.estimatedDurationInMillis;
                 commitId = latestRun.commitId;
+                runId = latestRun.id;
             }
 
             if (latestRun && latestRun.result) {
@@ -152,6 +154,7 @@ export class DashboardCards extends Component {
                       pipeline={pipelineName}
                       branch={branchName}
                       commitId={commitId}
+                      runId={runId}
                       favorite
                       onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                     />
