@@ -129,7 +129,7 @@ export default class Node extends Component {
             logProps.hasMore = log.hasMore;
             logProps.logArray = log.logArray;
         }
-        return (<div>
+        return (<div className="logConsole">
             <ResultItem
               key={id}
               result={runResult}
@@ -138,7 +138,11 @@ export default class Node extends Component {
               onExpand={getLogForNode}
               durationMillis={durationInMillis}
             >
-                { log && <LogConsole {...logProps} /> } &nbsp;
+                { log && <LogConsole {...logProps} /> }
+
+                { !log && <span>
+                    &nbsp;
+                </span> }
             </ResultItem>
       </div>);
     }

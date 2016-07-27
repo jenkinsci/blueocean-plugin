@@ -1,9 +1,6 @@
 package io.jenkins.blueocean.service.embedded.util;
 
-import hudson.Util;
 import hudson.model.Item;
-import hudson.model.ItemGroup;
-import hudson.model.Job;
 import hudson.model.User;
 import hudson.plugins.favorite.FavoritePlugin;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
@@ -16,7 +13,6 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
-import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.Stapler;
 
@@ -51,22 +47,6 @@ public class FavoriteUtil {
                 throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
             }
         }
-    }
-
-    public static Link getFavoriteLink(String fullName){
-        User user = User.current();
-        if(user != null) {
-            return new UserImpl(user).getLink().rel("favorites/"+ FavoriteUtil.encodeFullName(fullName));
-        }
-        return null;
-    }
-
-    public static boolean isFavorableItem(Item i){
-        return i!= null && (i instanceof Job || i instanceof ItemGroup);
-    }
-
-    public static String encodeFullName(String name){
-        return Util.rawEncode(Util.rawEncode(name));
     }
 
     public static String decodeFullName(String name){
@@ -119,15 +99,9 @@ public class FavoriteUtil {
             }
         }
 
-        //otherwise, default
-        Link favouriteLink = getFavoriteLink(item.getFullName());
-        if(favouriteLink == null){
-            return null;
-        }
-
         BluePipeline pipeline = BluePipelineFactory.getPipelineInstance(item, parent);
         if(pipeline != null){
-            return new FavoriteImpl(pipeline,favouriteLink);
+            return new FavoriteImpl(pipeline,pipeline.getLink().rel("favorite"));
         }
 
         return null;
