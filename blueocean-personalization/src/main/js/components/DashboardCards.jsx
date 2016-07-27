@@ -92,7 +92,7 @@ const extractPath = (path, begin, end) => {
 export class DashboardCards extends Component {
 
     _onFavoriteToggle(isFavorite, favorite) {
-        this.props.toggleFavorite(isFavorite, favorite.item);
+        this.props.toggleFavorite(isFavorite, favorite.item, favorite);
     }
 
     _renderCardStack() {

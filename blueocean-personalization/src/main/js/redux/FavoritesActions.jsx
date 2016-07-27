@@ -78,10 +78,14 @@ export const actions = {
         };
     },
 
-    toggleFavorite(addFavorite, branch) {
+    toggleFavorite(addFavorite, branch, favoriteToRemove) {
         return (dispatch) => {
             const baseUrl = urlConfig.jenkinsRootURL;
-            const url = `${baseUrl}${branch._links.self.href}/favorite`;
+
+            const url = addFavorite ?
+                `${baseUrl}${branch._links.self.href}/favorite` :
+                `${baseUrl}${favoriteToRemove._links.self.href}`;
+
             const fetchOptions = {
                 ...defaultFetchOptions,
                 method: 'PUT',

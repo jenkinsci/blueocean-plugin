@@ -38,18 +38,21 @@ export class FavoritePipeline extends Component {
         }
     }
 
+    _findMatchingFavorite(pipeline, favorites) {
+        if (!pipeline || !favorites) {
+            return null;
+        }
+
+        return favorites.find((fav) => {
+            const favUrl = fav.item._links.self.href;
+            const pipelineUrl = pipeline._links.self.href;
+            return checkMatchingFavoriteUrls(favUrl, pipelineUrl);
+        });
+    }
+
     _updateState(props) {
         const { pipeline } = props;
-        let favorite = null;
-
-        if (props.favorites) {
-            favorite = props.favorites.find((fav) => {
-                const favUrl = fav.item._links.self.href;
-                const pipelineUrl = pipeline._links.self.href;
-
-                return checkMatchingFavoriteUrls(favUrl, pipelineUrl);
-            });
-        }
+        const favorite = this._findMatchingFavorite(pipeline, props.favorites);
 
         this.setState({
             favorite: !!favorite,
@@ -62,8 +65,10 @@ export class FavoritePipeline extends Component {
             favorite: isFavorite,
         });
 
+        const favorite = this._findMatchingFavorite(this.props.pipeline, this.props.favorites);
+
         if (this.props.toggleFavorite) {
-            this.props.toggleFavorite(isFavorite, this.props.pipeline);
+            this.props.toggleFavorite(isFavorite, this.props.pipeline, favorite);
         }
     }
 
