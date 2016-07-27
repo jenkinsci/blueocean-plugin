@@ -2,11 +2,13 @@ package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import org.junit.Assert;
 import org.junit.Test;
+import org.jvnet.hudson.test.MockFolder;
 
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +92,9 @@ public class ProfileApiTest extends BaseTest{
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         hudson.model.User user = j.jenkins.getUser("alice");
         user.setFullName("Alice Cooper");
+
         Project p = j.createFreeStyleProject("pipeline1");
+
 
         Map map = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/pipeline1/favorite")
@@ -104,10 +108,120 @@ public class ProfileApiTest extends BaseTest{
             .auth("alice","alice")
             .build(List.class);
 
-        Assert.assertEquals(l.size(), 1);
+        Assert.assertEquals(1, l.size());
         Map pipeline = (Map)((Map)l.get(0)).get("item");
 
         validatePipeline(p, pipeline);
+
+        String href = getHrefFromLinks((Map)l.get(0),"self");
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite/", href);
+        map = new RequestBuilder(baseUrl)
+            .put(href.substring("/blue/rest".length()))
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", false))
+            .build(Map.class);
+
+        validatePipeline(p, (Map) map.get("item"));
+
+        l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(0, l.size());
+
+
+        new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("bob","bob")
+            .status(403)
+            .build(String.class);
+
+    }
+
+    @Test
+    public void createUserFavouriteFolderTest() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+
+        MockFolder folder1 = j.createFolder("folder1");
+        Project p = folder1.createProject(FreeStyleProject.class, "pipeline1");
+
+        Map map = new RequestBuilder(baseUrl)
+            .put("/organizations/jenkins/pipelines/folder1/pipelines/pipeline1/favorite/")
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", true))
+            .build(Map.class);
+
+        validatePipeline(p, (Map) map.get("item"));
+        List l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(1, l.size());
+        Map pipeline = (Map)((Map)l.get(0)).get("item");
+
+        validatePipeline(p, pipeline);
+
+        String href = getHrefFromLinks((Map)l.get(0),"self");
+
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/pipeline1/favorite/", href);
+
+        map = new RequestBuilder(baseUrl)
+            .put(href.substring("/blue/rest".length()))
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", false))
+            .build(Map.class);
+
+        validatePipeline(p, (Map) map.get("item"));
+
+        l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(0, l.size());
+
+
+        map = new RequestBuilder(baseUrl)
+            .put("/organizations/jenkins/pipelines/folder1/favorite/")
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", true))
+            .build(Map.class);
+
+        validateFolder(folder1, (Map) map.get("item"));
+        l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(1, l.size());
+        Map folder = (Map)((Map)l.get(0)).get("item");
+
+        validateFolder(folder1, folder);
+
+        href = getHrefFromLinks((Map)l.get(0),"self");
+
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/favorite/", href);
+
+        map = new RequestBuilder(baseUrl)
+            .put(href.substring("/blue/rest".length()))
+            .auth("alice", "alice")
+            .data(ImmutableMap.of("favorite", false))
+            .build(Map.class);
+
+        validateFolder(folder1, (Map) map.get("item"));
+
+        l = new RequestBuilder(baseUrl)
+            .get("/users/"+user.getId()+"/favorites/")
+            .auth("alice","alice")
+            .build(List.class);
+
+        Assert.assertEquals(0, l.size());
+
+
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
