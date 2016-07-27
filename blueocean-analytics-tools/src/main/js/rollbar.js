@@ -34,10 +34,9 @@ var _rollbarConfig = {
     transform: transformer
 };
 
-var rollbar = require('rollbar');
-var Rollbar = rollbar.init(_rollbarConfig);
+var rollbarBrowser = require('rollbar-browser');
+var Rollbar = rollbarBrowser.init(_rollbarConfig);
 
-// Question for Vivek .... how is this used?
 // Looking at docs (https://github.com/rollbar/rollbar.js/tree/master/examples/browserify)
 // it seems like they stuff it into a global. We are trying hard not to do that
 // under any circumstances, but maybe this is an exception if it's only going to be

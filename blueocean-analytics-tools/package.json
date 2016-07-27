@@ -1,7 +1,7 @@
 {
   "name": "blueocean-analytics-tools",
   "version": "0.0.1",
-  "description": "TODO by vivek",
+  "description": "Analytics tools that gets injected in BlueOcean UI",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,6 +14,7 @@
   "devDependencies": {
     "@jenkins-cd/js-builder": "0.0.35",
     "babel-eslint": "^6.1.2",
-    "gulp": "3.9.1"
+    "gulp": "3.9.1",
+    "eslint-plugin-react": "^5.0.1"
   }
 }
