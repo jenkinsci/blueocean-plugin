@@ -3,6 +3,7 @@ import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import RunPipeline from './RunPipeline.jsx';
+import { StopPropagation } from './StopPropagation';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 const { object } = PropTypes;
@@ -55,13 +56,15 @@ export default class Branches extends Component {
                 <td><CommitHash commitId={commitId} /></td>
                 <td>{msg || '-'}</td>
                 <td><ReadableDate date={endTime} liveUpdate /></td>
-                <td className="actions">
-                    <RunPipeline organization={organization} pipeline={fullName} branch={encodeURIComponent(branchName)} />
-                    <Extensions.Renderer
-                      extensionPoint="jenkins.pipeline.branches.list.action"
-                      pipeline={data}
-                      store={this.context.store}
-                    />
+                <td>
+                    <StopPropagation className="actions">
+                        <RunPipeline organization={organization} pipeline={fullName} branch={encodeURIComponent(branchName)} />
+                        <Extensions.Renderer
+                          extensionPoint="jenkins.pipeline.branches.list.action"
+                          pipeline={data}
+                          store={this.context.store}
+                        />
+                    </StopPropagation>
                 </td>
             </tr>
         );
