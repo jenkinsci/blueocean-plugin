@@ -56,7 +56,9 @@
 - [Favorite API](#favorite-api)
   - [Favorite a pipeline](#favorite-a-pipeline)
   - [Favorite a multi branch pipeline](#favorite-a-multi-branch-pipeline)
+  - [Un-favorite a multi branch pipeline](#un-favorite-a-multi-branch-pipeline)
   - [Favorite a multi branch pipeline branch](#favorite-a-multi-branch-pipeline-branch)
+  - [Un-favorite a multi branch pipeline branch](#un-favorite-a-multi-branch-pipeline-branch)
   - [Fetch user favorites](#fetch-user-favorites)
 - [Log API](#log-api)
   - [Fetching logs](#fetching-logs)
@@ -1279,7 +1281,7 @@ If favorite request is successful then the repsonse is favorited item.
         "_links" : {
                   "self" : {
                      "_class" : "io.jenkins.blueocean.rest.hal.Link",
-                     "href" : "/blue/rest/users/alice/favorites/pipeline1/"
+                     "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite/"
                   }
                },
        "item" : {
@@ -1319,19 +1321,32 @@ If favorite request is successful then the repsonse is favorited item.
 ## Favorite a pipeline
 Returns 200 on success. Must be authenticated.
 
-    curl -u bob:bob -H"Content-Type:application/json" -XPUT -d '{"favorite":true} ttp://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
+    curl -u bob:bob -H"Content-Type:application/json" -XPUT -d '{"favorite":true} ttp://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite/
 
 ## Favorite a multi branch pipeline
 Must be authenticated.
 
-This favorites the master branch. Returns 200 on success. 500 if master does not exist
+Favorited multi-branch pipeline returns master branch as favorited item. Returns 200 on success. 400 if master does not exist
 
-    curl -u bob:bob  -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
+    curl -u bob:bob  -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite/
+
+## Un-favorite a multi branch pipeline
+Must be authenticated.
+
+This un-favorites the master branch. Returns 200 on success. 400 if master does not exist
+
+    curl -u bob:bob  -H"Content-Type:application/json" -XPUT -d '{"favorite":false} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite/
+
 
 ## Favorite a multi branch pipeline branch
 Returns 200 on success. Must be authenticated.
 
-    curl -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/favorite
+    curl -H"Content-Type:application/json" -XPUT -d '{"favorite":true} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/favorite/
+
+## Un-favorite a multi branch pipeline branch
+Returns 200 on success. Must be authenticated.
+
+    curl -H"Content-Type:application/json" -XPUT -d '{"favorite":false} http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/favorite/
 
 
 ## Fetch user favorites

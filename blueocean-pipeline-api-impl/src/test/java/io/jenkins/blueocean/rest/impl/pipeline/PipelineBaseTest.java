@@ -332,6 +332,13 @@ public abstract class PipelineBaseTest{
         return (String) l.get("href");
     }
 
+    protected String getUrlFromHref(String href){
+        if(href.startsWith("/blue/rest")){
+            return href.substring("/blue/rest".length());
+        }
+        return href;
+    }
+
     protected List<FlowNode> getParallelNodes(FlowGraphTable nodeGraphTable){
         List<FlowNode> parallelNodes = new ArrayList<>();
 
