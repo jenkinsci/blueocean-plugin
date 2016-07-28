@@ -13,23 +13,23 @@
 }
 
 .vertical-expand-collapse-enter {
-    transition: all ease-out 0.3s;
-    height: 0;
+    transition: all linear 0.15s;
+    max-height: 0;
     opacity: 0.01;
 
     &.vertical-expand-collapse-enter-active {
-        height: auto;
+        max-height: 60px;
         opacity: 1;
     }
 }
 
 .vertical-expand-collapse-leave {
-    transition: all ease-out 0.3s;
-    height: auto;
+    transition: all linear 0.15s;
+    max-height: 60px;
     opacity: 1;
 
     &.vertical-expand-collapse-leave-active {
-        height: 0;
+        max-height: 0;
         opacity: 0.01;
     }
 }
