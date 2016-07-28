@@ -6,9 +6,10 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
-import { userSelector, favoritesSelector } from '../redux/FavoritesStore';
+import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 
+import FavoritesProvider from './FavoritesProvider';
 import { PipelineCard } from './PipelineCard';
 
 // the order the cards should be displayed based on their result/state (aka 'status')
@@ -90,54 +91,11 @@ const extractPath = (path, begin, end) => {
  */
 export class DashboardCards extends Component {
 
-    constructor(props) {
-        super(props);
-
-        this.fetchUserInProgress = false;
-        this.fetchFavoritesInProgress = false;
-    }
-
-    componentWillMount() {
-        this._initialize(this.props);
-    }
-
-    componentWillReceiveProps(props) {
-        this._initialize(props);
-    }
-
-    _initialize(props) {
-        const config = this.context.config;
-        const { user, favorites } = props;
-
-        if (user) {
-            this.fetchUserInProgress = false;
-        }
-
-        if (favorites) {
-            this.fetchFavoritesInProgress = false;
-        }
-
-        if (config) {
-            const shouldFetchUser = !user && !this.fetchUserInProgress;
-            const shouldFetchFavorites = user && !favorites && !this.fetchFavoritesInProgress;
-
-            if (shouldFetchUser) {
-                this.fetchUserInProgress = true;
-                this.props.fetchUser(config);
-            }
-
-            if (shouldFetchFavorites) {
-                this.fetchFavoritesInProgress = true;
-                this.props.fetchFavorites(config, user);
-            }
-        }
-    }
-
     _onFavoriteToggle(isFavorite, favorite) {
-        this.props.toggleFavorite(isFavorite, favorite.item);
+        this.props.toggleFavorite(isFavorite, favorite.item, favorite);
     }
 
-    render() {
+    _renderCardStack() {
         if (!this.props.favorites) {
             return null;
         }
@@ -168,6 +126,7 @@ export class DashboardCards extends Component {
             let startTime = null;
             let estimatedDuration = null;
             let commitId = null;
+            let runId = null;
 
             if (latestRun) {
                 if (latestRun.result) {
@@ -177,6 +136,7 @@ export class DashboardCards extends Component {
                 startTime = latestRun.startTime;
                 estimatedDuration = latestRun.estimatedDurationInMillis;
                 commitId = latestRun.commitId;
+                runId = latestRun.id;
             }
 
             if (latestRun && latestRun.result) {
@@ -194,6 +154,7 @@ export class DashboardCards extends Component {
                       pipeline={pipelineName}
                       branch={branchName}
                       commitId={commitId}
+                      runId={runId}
                       favorite
                       onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                     />
@@ -207,23 +168,25 @@ export class DashboardCards extends Component {
             </div>
         );
     }
+
+    render() {
+        return (
+            <FavoritesProvider store={this.props.store}>
+                { this._renderCardStack() }
+            </FavoritesProvider>
+        );
+    }
 }
 
 DashboardCards.propTypes = {
-    user: PropTypes.object,
+    store: PropTypes.object,
     favorites: PropTypes.instanceOf(List),
-    fetchUser: PropTypes.func,
-    fetchFavorites: PropTypes.func,
     toggleFavorite: PropTypes.func,
 };
 
-DashboardCards.contextTypes = {
-    config: PropTypes.object,
-};
-
 const selectors = createSelector(
-    [userSelector, favoritesSelector],
-    (user, favorites) => ({ user, favorites })
+    [favoritesSelector],
+    (favorites) => ({ favorites })
 );
 
 export default connect(selectors, actions)(DashboardCards);

@@ -1,0 +1,25 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
+  <j:if test="${it.rollBarEnabled}">
+
+    <!--
+      Still use a small bit of JS to inject the Rollbar access token.
+
+      I think this is ok for now because we're setting a global anyway - see
+      comment at the end of src/main/js/rollbar.js
+    -->
+    <script>
+        (function () {
+          window.$$blueocean_pluginVersion = '${it.blueOceanPluginVersion}';
+        })();
+    </script>
+
+    <!--
+     Running the plugin build (or just "gulp" from the command line) will
+     generate a browser bundle of what's in src/main/js/rollbar.js and we
+     can load that using an adjunct as follows.
+
+     See gulpfile.js and see the output from running the "gulp" command.
+    -->
+    <st:adjunct includes="org.jenkins.ui.jsmodules.blueocean_analytics_tools.rollbar"/>
+  </j:if>
+</j:jelly>

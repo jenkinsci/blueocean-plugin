@@ -3,6 +3,7 @@ import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import RunPipeline from './RunPipeline.jsx';
+import { StopPropagation } from './StopPropagation';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 const { object } = PropTypes;
@@ -43,22 +44,30 @@ export default class Branches extends Component {
         };
         const { msg } = changeSet[0] || {};
 
-        return (<tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${id}`} >
-            <td><WeatherIcon score={weatherScore} /></td>
-            <td onClick={open}>
-                <LiveStatusIndicator result={result === 'UNKNOWN' ? state : result}
-                  startTime={startTime} estimatedDuration={estimatedDurationInMillis}
-                />
-            </td>
-            <td>{cleanBranchName}</td>
-            <td><CommitHash commitId={commitId} /></td>
-            <td>{msg || '-'}</td>
-            <td><ReadableDate date={endTime} liveUpdate /></td>
-            <td>
-                <RunPipeline organization={organization} pipeline={fullName} branch={encodeURIComponent(branchName)} />
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.branches.list.action" />
-            </td>
-        </tr>);
+        return (
+            <tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${id}`} >
+                <td><WeatherIcon score={weatherScore} /></td>
+                <td onClick={open}>
+                    <LiveStatusIndicator result={result === 'UNKNOWN' ? state : result}
+                      startTime={startTime} estimatedDuration={estimatedDurationInMillis}
+                    />
+                </td>
+                <td>{cleanBranchName}</td>
+                <td><CommitHash commitId={commitId} /></td>
+                <td>{msg || '-'}</td>
+                <td><ReadableDate date={endTime} liveUpdate /></td>
+                <td>
+                    <StopPropagation className="actions">
+                        <RunPipeline organization={organization} pipeline={fullName} branch={encodeURIComponent(branchName)} />
+                        <Extensions.Renderer
+                          extensionPoint="jenkins.pipeline.branches.list.action"
+                          pipeline={data}
+                          store={this.context.store}
+                        />
+                    </StopPropagation>
+                </td>
+            </tr>
+        );
     }
 }
 
@@ -66,8 +75,8 @@ Branches.propTypes = {
     data: object.isRequired,
 };
 
-
 Branches.contextTypes = {
+    store: object,
     pipeline: object,
     router: object.isRequired, // From react-router
     location: object,

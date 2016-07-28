@@ -53,113 +53,145 @@
 }
 
 .pipelines-table {
-  th {
-    width: 10%;
-    min-width: 100px;
-  }
+    th {
+        width: 10%;
+        min-width: 100px;
+    }
 
-  .name {
-    width: auto;
-  }
+    .name {
+        width: auto;
+    }
 
-  .favorite {
-    width: 30px;
-  }
+    .favorite {
+        width: 30px;
+    }
 }
 
 .activity-table {
-  th {
-    width: 75px;
-  }
+    th {
+        width: 75px;
+    }
 
-  .branch {
-    width: 175px;
-  }
+    .branch {
+        width: 175px;
+    }
 
-  .message {
-    width: 50%;
-  }
+    .message {
+        width: 50%;
+    }
 
-  .duration, .completed {
-    width: 125px;
-  }
+    .duration, .completed {
+        width: 125px;
+    }
 
-  .status-link {
-    cursor: pointer;
-  }
+    .status-link {
+        cursor: pointer;
+    }
 }
 
 .multibranch-table {
-  th {
-    width: 75px;
-  }
+    th {
+        width: 75px;
+    }
 
-  .branch {
-    width: 200px;
-  }
+    .branch {
+        width: 200px;
+    }
 
-  .message {
-    width: 50%;
-  }
+    .message {
+        width: 50%;
+    }
 
-  .lastcommit, .completed {
-    width: 125px;
-  }
+    .lastcommit, .completed {
+        width: 125px;
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+    }
 }
 
 .pr-table {
-  th {
-    width: 75px;
-  }
+    th {
+        width: 75px;
+    }
 
-  .summary {
-    width: 100%;
-  }
+    .summary {
+        width: 100%;
+    }
 
-  .build, .completed {
-    width: 125px;
-  }
+    .build, .completed {
+        width: 125px;
+    }
 }
 
 .changeset-table {
-  th {
-    width: 100px;
-  }
+    th {
+        width: 100px;
+    }
 
-  .author {
-    width: 150px;
-  }
+    .author {
+        width: 150px;
+    }
 
-  .message {
-    width: 100%;
-  }
+    .message {
+        width: 100%;
+    }
 
-  .date {
-    width: 125px;
-  }
+    .date {
+        width: 125px;
+    }
 }
 
 .artifacts-table {
-  th {
-    width: 100px;
-  }
+    th {
+        width: 100px;
+    }
 
-  .name {
-    width: 100%;
-  }
+    .name {
+        width: 100%;
+    }
 
-  .download {
-    text-align: right;
-  }
+    .download {
+        text-align: right;
+    }
 }
 
 .nodes {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
 }
+
 .nodes__section {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
+
+.logConsole .result-item-children {
+    background-color: @pre-bg;
+    border: none;
+    padding: 0;
+}
+
+code div {
+    font-size: 12px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+code div a{
+    border: solid 1px @pre-color;
+    padding: 3px 10px;
+    margin: 5px;
+    color: @pre-color;
+}
+
+code div a:hover{
+    background-color: @pre-color-hover;
+}
+
