@@ -47,7 +47,6 @@
       "immutable",
       "react-router",
       "keymirror",
-      "react-addons-css-transition-group",
       "react-redux",
       "react-router",
       "redux",
