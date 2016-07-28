@@ -72,6 +72,8 @@ export const PullRequestRecord = Record({
 });
 
 export const RunsRecord = Record({
+    _class: null,
+    _links: null,
     latestRun: ActivityRecord,
     name: null,
     weatherScore: 0,

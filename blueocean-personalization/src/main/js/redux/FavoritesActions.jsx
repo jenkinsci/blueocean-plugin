@@ -33,12 +33,23 @@ function parseJSON(response) {
         });
 }
 
+const fetchFlags = {
+    [ACTION_TYPES.SET_USER]: false,
+    [ACTION_TYPES.SET_FAVORITES]: false,
+};
+
 export const actions = {
-    fetchUser(config) {
+    fetchUser() {
         return (dispatch) => {
-            const baseUrl = config.getAppURLBase();
+            const baseUrl = urlConfig.blueoceanAppURL;
             const url = `${baseUrl}/rest/organizations/jenkins/user/`;
             const fetchOptions = { ...defaultFetchOptions };
+
+            if (fetchFlags[ACTION_TYPES.SET_USER]) {
+                return null;
+            }
+
+            fetchFlags[ACTION_TYPES.SET_USER] = true;
 
             return dispatch(actions.generateData(
                 { url, fetchOptions },
@@ -47,12 +58,18 @@ export const actions = {
         };
     },
 
-    fetchFavorites(config, user) {
+    fetchFavorites(user) {
         return (dispatch) => {
-            const baseUrl = config.getAppURLBase();
+            const baseUrl = urlConfig.blueoceanAppURL;
             const username = user.id;
             const url = `${baseUrl}/rest/users/${username}/favorites/`;
             const fetchOptions = { ...defaultFetchOptions };
+
+            if (fetchFlags[ACTION_TYPES.SET_FAVORITES]) {
+                return null;
+            }
+
+            fetchFlags[ACTION_TYPES.SET_FAVORITES] = true;
 
             return dispatch(actions.generateData(
                 { url, fetchOptions },
@@ -61,10 +78,14 @@ export const actions = {
         };
     },
 
-    toggleFavorite(addFavorite, branch) {
+    toggleFavorite(addFavorite, branch, favoriteToRemove) {
         return (dispatch) => {
             const baseUrl = urlConfig.jenkinsRootURL;
-            const url = `${baseUrl}${branch._links.self.href}/favorite`;
+
+            const url = addFavorite ?
+                `${baseUrl}${branch._links.self.href}/favorite` :
+                `${baseUrl}${favoriteToRemove._links.self.href}`;
+
             const fetchOptions = {
                 ...defaultFetchOptions,
                 method: 'PUT',
@@ -89,12 +110,16 @@ export const actions = {
         return (dispatch) => fetch(url, fetchOptions)
             .then(checkStatus)
             .then(parseJSON)
-            .then(json => dispatch({
-                ...optional,
-                type: actionType,
-                payload: json,
-            }))
+            .then((json) => {
+                fetchFlags[actionType] = false;
+                return dispatch({
+                    ...optional,
+                    type: actionType,
+                    payload: json,
+                });
+            })
             .catch((error) => {
+                fetchFlags[actionType] = false;
                 console.error(error); // eslint-disable-line no-console
                 // call again with no payload so actions handle missing data
                 dispatch({

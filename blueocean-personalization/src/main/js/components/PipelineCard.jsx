@@ -2,6 +2,7 @@
  * Created by cmeyers on 6/28/16.
  */
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import { Icon } from 'react-material-icons-blue';
 import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 
@@ -75,6 +76,10 @@ export class PipelineCard extends Component {
         const showRun = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
+        const runUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
+            `${encodeURIComponent(this.props.fullName)}/detail/` +
+            `${encodeURIComponent(this.props.branch || this.props.pipeline)}/${encodeURIComponent(this.props.runId)}/pipeline`;
+
         return (
             <div className={`pipeline-card ${bgClass}`}>
                 <LiveStatusIndicator
@@ -83,7 +88,9 @@ export class PipelineCard extends Component {
                 />
 
                 <span className="name">
-                    {this.props.organization} / <span title={this.props.fullName}>{this.props.pipeline}</span>
+                    <Link to={runUrl}>
+                        {this.props.organization} / <span title={this.props.fullName}>{this.props.pipeline}</span>
+                    </Link>
                 </span>
 
                 { this.props.branch ?
@@ -129,6 +136,7 @@ PipelineCard.propTypes = {
     pipeline: PropTypes.string,
     branch: PropTypes.string,
     commitId: PropTypes.string,
+    runId: PropTypes.string,
     favorite: PropTypes.bool,
     onRunClick: PropTypes.func,
     onFavoriteToggle: PropTypes.func,

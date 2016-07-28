@@ -91,6 +91,12 @@ class RunDetails extends Component {
                 decodeURIComponent(run.pipeline) === branch;
         })[0];
 
+        // deep-linking across RunDetails for different pipelines yields 'runs' data for the wrong pipeline
+        // during initial render. when runs are refetched the screen will render again with 'currentRun' correctly set
+        if (!currentRun) {
+            return null;
+        }
+
         currentRun.name = name;
 
         const status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
