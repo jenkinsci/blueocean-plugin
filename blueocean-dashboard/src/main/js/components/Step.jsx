@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { ResultItem } from '@jenkins-cd/design-language';
-import { calculateLogUrl } from '../util/UrlUtils';
+import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 
@@ -18,7 +18,8 @@ export default class Node extends Component {
         const { config = {} } = this.context;
         const node = this.expandAnchor(this.props);
         if (node && node.isFocused) {
-            const mergedConfig = { ...config, node, nodesBaseUrl };
+            const fetchAll = node.fetchAll;
+            const mergedConfig = { ...config, node, nodesBaseUrl, fetchAll };
             fetchLog(mergedConfig);
         }
     }
@@ -33,8 +34,9 @@ export default class Node extends Component {
         }
         const { config = {} } = this.context;
         const node = this.expandAnchor(nextProps);
-        const mergedConfig = { ...config, node, nodesBaseUrl };
-        if (logs && logs !== this.props.logs) {
+        const fetchAll = node.fetchAll;
+        const mergedConfig = { ...config, node, nodesBaseUrl, fetchAll };
+        if (logs && logs !== this.props.logs || fetchAll) {
             const key = calculateLogUrl(mergedConfig);
             const log = logs ? logs[key] : null;
             if (log && log !== null) {
@@ -47,6 +49,9 @@ export default class Node extends Component {
                     this.clearThisTimeout();
                     this.timeout = setTimeout(() => fetchLog({ ...mergedConfig }), 1000);
                 }
+            } else if (!log && fetchAll) { // in case the link "full log" is clicked we need to trigger a refetch
+                this.clearThisTimeout();
+                this.timeout = setTimeout(() => fetchLog({ ...mergedConfig }), 1000);
             }
         }
     }
@@ -60,26 +65,33 @@ export default class Node extends Component {
             clearTimeout(this.timeout);
         }
     }
-    // Calculate whether we need to expand the step due to linking
+    /*
+     * Calculate whether we need to expand the step due to linking.
+     * When we trigger a log-0 that means we want to see the full log
+      */
     expandAnchor(props) {
         const { node, location: { hash: anchorName } } = props;
         const isFocused = true;
+        const fetchAll = calculateFetchAll(props);
+        const general = { ...node, fetchAll };
         // e.g. #step-10-log-1 or #step-10
         if (anchorName) {
             const stepReg = /step-([0-9]{1,})?($|-log-([0-9]{1,})$)/;
             const match = stepReg.exec(anchorName);
+
             if (match && match[1] && match[1] === node.id) {
-                return { ...node, isFocused };
+                return { ...general, isFocused };
             }
         } else if (this.state && this.state.isFocused) {
-            return { ...node, isFocused };
+            return { ...general, isFocused };
         }
-        return { ...node };
+        return general;
     }
 
     render() {
         const { logs, nodesBaseUrl, fetchLog, followAlong } = this.props;
         const node = this.expandAnchor(this.props);
+        const fetchAll = node.fetchAll;
         // Early out
         if (!node || !fetchLog) {
             return null;
@@ -95,7 +107,7 @@ export default class Node extends Component {
         } = node;
 
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
-        const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl })] : null;
+        const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl, fetchAll })] : null;
         const getLogForNode = () => {
             // in case we do not have logs, or the logs are have no information attached we refetch them
             if (!log || !log.logArray) {
@@ -108,7 +120,21 @@ export default class Node extends Component {
             resultRun.toLowerCase() === 'failure'
             || (resultRun.toLowerCase() === 'running' && followAlong)
         ;
-        return (<div>
+        const logProps = {
+            scrollToBottom,
+            key: id,
+            prefix: `step-${id}-`,
+        };
+        if (log) {
+            // in follow along the Full Log button should not be shown, since you see everything already
+            if (followAlong) {
+                logProps.hasMore = false;
+            } else {
+                logProps.hasMore = log.hasMore;
+            }
+            logProps.logArray = log.logArray;
+        }
+        return (<div className="logConsole">
             <ResultItem
               key={id}
               result={runResult}
@@ -117,12 +143,11 @@ export default class Node extends Component {
               onExpand={getLogForNode}
               durationMillis={durationInMillis}
             >
-                { log && <LogConsole
-                  key={id}
-                  logArray={log.logArray}
-                  scrollToBottom={scrollToBottom}
-                  prefix={`step-${id}-`}
-                /> } &nbsp;
+                { log && <LogConsole {...logProps} /> }
+
+                { !log && <span>
+                    &nbsp;
+                </span> }
             </ResultItem>
       </div>);
     }

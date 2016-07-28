@@ -17,7 +17,7 @@ import {
     createSelector,
 } from '../redux';
 
-import { calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl } from '../util/UrlUtils';
+import { calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl, calculateFetchAll } from '../util/UrlUtils';
 import { calculateNode } from '../util/KaraokeHelper';
 
 
@@ -45,7 +45,9 @@ export class RunDetailsPipeline extends Component {
         } else {
             // console.log('fetch the log directly')
             const logGeneral = calculateRunLogURLObject(this.mergedConfig);
-            fetchLog({ ...logGeneral });
+            // fetchAll indicates whether we want all logs
+            const fetchAll = this.mergedConfig.fetchAll;
+            fetchLog({ ...logGeneral, fetchAll });
         }
 
         // Listen for pipeline flow node events.
@@ -127,10 +129,13 @@ export class RunDetailsPipeline extends Component {
             // if we have actions we fire them
             this.props[nodeAction.action](this.mergedConfig);
         }
+        const fetchAll = this.mergedConfig.fetchAll;
+        // console.log('this.mergedConfig.fetchAll', fetchAll)
         // if we only interested in logs (in case of e.g. freestyle)
         const { logs, fetchLog } = nextProps;
-        if (logs !== this.props.logs) {
+        if (logs !== this.props.logs || fetchAll) {
             const logGeneral = calculateRunLogURLObject(this.mergedConfig);
+            // console.log('logGenralReceive', logGeneral)
             const log = logs ? logs[logGeneral.url] : null;
             if (log && log !== null) {
                 // we may have a streaming log
@@ -144,20 +149,26 @@ export class RunDetailsPipeline extends Component {
                         this.timeout = setTimeout(() => fetchLog({ ...logGeneral, newStart }), 1000);
                     }
                 }
+            } else if (fetchAll) {
+                // kill current  timeout if any
+                clearTimeout(this.timeout);
+                // we need to get mpre input from the log stream
+                this.timeout = setTimeout(() => fetchLog({ ...logGeneral, fetchAll }), 1000);
             }
         }
     }
 
+
     componentWillUnmount() {
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
-        domNode.removeEventListener('wheel', this._onScrollHandler);
-        document.removeEventListener('keydown', this._handleKeys);
         if (this.listener.sse) {
             sse.unsubscribe(this.listener.sse);
             delete this.listener.sse;
         }
         this.props.cleanNodePointer();
         clearTimeout(this.timeout);
+        domNode.removeEventListener('wheel', this._onScrollHandler);
+        document.removeEventListener('keydown', this._handleKeys);
     }
 
     // need to register handler to step out of karaoke mode
@@ -183,6 +194,7 @@ export class RunDetailsPipeline extends Component {
             isMultiBranch,
             params: { pipeline: name, branch, runId, node: nodeParam },
         } = props;
+        const fetchAll = calculateFetchAll(props);
         // we would use default properties however the node can be null so no default properties will be triggered
         let { nodeReducer } = props;
         if (!nodeReducer) {
@@ -191,7 +203,7 @@ export class RunDetailsPipeline extends Component {
         // if we have a node param we do not want the calculation of the focused node
         const node = nodeParam || nodeReducer.id;
 
-        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer, followAlong };
+        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer, followAlong, fetchAll };
         return mergedConfig;
     }
 
@@ -267,6 +279,19 @@ export class RunDetailsPipeline extends Component {
         };
         const noSteps = !log && currentSteps && currentSteps.model && currentSteps.model.length === 0;
         const shouldShowLogHeader = log !== null || !noSteps;
+        const logProps = {
+            scrollToBottom,
+            key: logGeneral.url,
+        };
+        if (log) {
+            // in follow along the Full Log button should not be shown, since you see everything already
+            if (followAlong) {
+                logProps.hasMore = false;
+            } else {
+                logProps.hasMore = log.hasMore;
+            }
+            logProps.logArray = log.logArray;
+        }
         return (
             <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
@@ -298,7 +323,7 @@ export class RunDetailsPipeline extends Component {
                 </EmptyStateView>
                 }
 
-                { log && <LogConsole key={logGeneral.url} logArray={log.logArray} scrollToBottom={scrollToBottom} /> }
+                { log && <LogConsole {...logProps} /> }
             </div>
         );
     }

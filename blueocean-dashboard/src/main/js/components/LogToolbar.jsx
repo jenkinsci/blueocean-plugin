@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
 import { Icon } from 'react-material-icons-blue';
+import { fetchAllSuffix as suffix } from '../util/UrlUtils';
 
 const { string } = PropTypes;
 
@@ -12,6 +13,7 @@ export default class LogToolbar extends Component {
         if (!url) {
             return null;
         }
+        const logUrl = url.includes(suffix) ? url : `${url}${suffix}`;
         const style = { fill: '#4a4a4a' };
         return (<div className="log-header">
             <div className="log-header__section">
@@ -21,13 +23,13 @@ export default class LogToolbar extends Component {
                 <a {...{
                     title: 'Display the log in new window',
                     target: '_blank',
-                    href: `${url}?start=0`,
+                    href: logUrl,
                 }}>
                     <Icon size={24} {...{ style, icon: 'launch' }} />
                 </a>
                 <a {...{
                     title: 'Download the log file',
-                    href: `${url}?start=0&download=true`,
+                    href: `${logUrl}&download=true`,
                 }}>
                     <Icon size={24} {...{ style, icon: 'file_download' }} />
                 </a>
