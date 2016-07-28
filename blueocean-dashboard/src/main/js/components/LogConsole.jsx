@@ -116,14 +116,14 @@ export class LogConsole extends Component {
         return (<code
           className="block"
         >
-            { hasMore && <p key={0} id={`${prefix}log-${0}`}>
+            { hasMore && <div key={0} id={`${prefix}log-${0}`}>
                 <a
                   key={0}
                   href={`?start=0#${prefix || ''}log-${1}`}
                 >
-                Full Log
+                Show complete log
             </a>
-            </p>}
+            </div>}
             { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
                 <a
                   key={index + 1}
