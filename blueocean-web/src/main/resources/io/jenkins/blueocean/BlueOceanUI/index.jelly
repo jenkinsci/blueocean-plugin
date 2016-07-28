@@ -1,6 +1,11 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:x="jelly:xml">
     <st:contentType value="text/html;charset=UTF-8"/>
+
+    <!-- Add HTTP headers from extensions. See BluePageDecorator.java -->
+    <j:forEach var="pd" items="${it.pageDecorators}">
+      <st:include it="${pd}" page="httpHeaders.jelly" optional="true"/>
+    </j:forEach>
     <x:doctype name="html"/>
     <html>
 
@@ -29,6 +34,11 @@
             <link rel="stylesheet"
                   href="${resURL}/plugin/blueocean-web/assets/css/jenkins-design-language.css"
                   type="text/css"/>
+
+            <!-- Inject headers from other extensions. See BluePageDecorator.java -->
+            <j:forEach var="pd" items="${it.pageDecorators}">
+                <st:include it="${pd}" page="header.jelly" optional="true" />
+            </j:forEach>
         </head>
 
         <body>
