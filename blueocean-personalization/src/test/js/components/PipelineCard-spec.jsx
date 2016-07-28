@@ -26,7 +26,7 @@ describe('PipelineCard', () => {
 
         assert.equal(wrapper.find('LiveStatusIndicator').length, 1);
         assert.equal(wrapper.find('.name').length, 1);
-        assert.equal(wrapper.find('.name').text(), 'Jenkins / blueocean');
+        assert.equal(wrapper.find('.name').text(), '<Link />');
         assert.equal(wrapper.find('.branch').length, 1);
         assert.equal(wrapper.find('.branchText').text(), 'feature/JENKINS-123');
         assert.equal(wrapper.find('.commit').length, 1);
