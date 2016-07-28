@@ -126,7 +126,12 @@ export default class Node extends Component {
             prefix: `step-${id}-`,
         };
         if (log) {
-            logProps.hasMore = log.hasMore;
+            // in follow along the Full Log button should not be shown, since you see everything already
+            if (followAlong) {
+                logProps.hasMore = false;
+            } else {
+                logProps.hasMore = log.hasMore;
+            }
             logProps.logArray = log.logArray;
         }
         return (<div className="logConsole">

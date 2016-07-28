@@ -279,6 +279,19 @@ export class RunDetailsPipeline extends Component {
         };
         const noSteps = !log && currentSteps && currentSteps.model && currentSteps.model.length === 0;
         const shouldShowLogHeader = log !== null || !noSteps;
+        const logProps = {
+            scrollToBottom,
+            key: logGeneral.url,
+        };
+        if (log) {
+            // in follow along the Full Log button should not be shown, since you see everything already
+            if (followAlong) {
+                logProps.hasMore = false;
+            } else {
+                logProps.hasMore = log.hasMore;
+            }
+            logProps.logArray = log.logArray;
+        }
         return (
             <div ref="scrollArea">
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
@@ -310,12 +323,7 @@ export class RunDetailsPipeline extends Component {
                 </EmptyStateView>
                 }
 
-                { log && <LogConsole
-                  hasMore={log.hasMore}
-                  key={logGeneral.url}
-                  logArray={log.logArray}
-                  scrollToBottom={scrollToBottom}
-                /> }
+                { log && <LogConsole {...logProps} /> }
             </div>
         );
     }
