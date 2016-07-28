@@ -116,7 +116,7 @@ export class LogConsole extends Component {
         return (<code
           className="block"
         >
-            { hasMore && <div key={0} id={`${prefix}log-${0}`}>
+            { hasMore && <div key={0} id={`${prefix}log-${0}`} className='fullLog'>
                 <a
                   key={0}
                   href={`?start=0#${prefix || ''}log-${1}`}
