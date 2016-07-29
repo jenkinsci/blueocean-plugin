@@ -166,8 +166,8 @@ export class DashboardCards extends Component {
         return (
             <div className="favorites-card-stack">
                 <TransitionGroup transitionName="vertical-expand-collapse"
-                  transitionEnterTimeout={150}
-                  transitionLeaveTimeout={150}
+                  transitionEnterTimeout={300}
+                  transitionLeaveTimeout={300}
                 >
                     {favoriteCards}
                 </TransitionGroup>
