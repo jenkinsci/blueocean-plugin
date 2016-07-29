@@ -146,6 +146,7 @@ function createBundle(jsxFile) {
         .withExternalModuleMapping('@jenkins-cd/design-language', 'jenkins-cd:jdl')
         .withExternalModuleMapping('react', 'react:react')
         .withExternalModuleMapping('react-dom', 'react:react-dom')
+        .withExternalModuleMapping('react-addons-css-transition-group', 'react:react-addons-css-transition-group')
         .inDir('target/classes/org/jenkins/ui/jsmodules/' + maven.getArtifactId());
 }
 
