@@ -6,6 +6,8 @@ import { Link } from 'react-router';
 import { Icon } from 'react-material-icons-blue';
 import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 
+import { stopProp } from './StopPropagation';
+
 /**
  * PipelineCard displays an informational card about a Pipeline and its status.
  *
@@ -76,19 +78,28 @@ export class PipelineCard extends Component {
         const showRun = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
-        const runUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
-            `${encodeURIComponent(this.props.fullName)}/detail/` +
-            `${encodeURIComponent(this.props.branch || this.props.pipeline)}/${encodeURIComponent(this.props.runId)}/pipeline`;
+        const activityUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
+        `${encodeURIComponent(this.props.fullName)}/activity`;
+
+        const navigateToRunDetails = () => {
+            const runUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
+                `${encodeURIComponent(this.props.fullName)}/detail/` +
+                `${this.props.branch || this.props.pipeline}/${encodeURIComponent(this.props.runId)}/pipeline`;
+
+            this.props.router.push({
+                pathname: runUrl,
+            });
+        };
 
         return (
-            <div className={`pipeline-card ${bgClass}`}>
+            <div className={`pipeline-card ${bgClass}`} onClick={() => navigateToRunDetails()}>
                 <LiveStatusIndicator
                   result={status} startTime={startTime} estimatedDuration={estimatedDuration}
                   width={'24px'} height={'24px'} noBackground
                 />
 
                 <span className="name">
-                    <Link to={runUrl}>
+                    <Link to={activityUrl} onClick={(event) => stopProp(event)}>
                         {this.props.organization} / <span title={this.props.fullName}>{this.props.pipeline}</span>
                     </Link>
                 </span>
@@ -113,7 +124,7 @@ export class PipelineCard extends Component {
 
                 <span className="actions">
                     { showRun &&
-                    <a className="run" title="Run Again" onClick={() => this._onRunClick()}>
+                    <a className="run" title="Run Again" onClick={(event) => {stopProp(event); this._onRunClick();}}>
                         <Icon size={24} icon="replay" />
                     </a>
                     }
