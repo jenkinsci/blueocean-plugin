@@ -128,6 +128,7 @@ export class PipelineCard extends Component {
 }
 
 PipelineCard.propTypes = {
+    router: PropTypes.object,
     status: PropTypes.string,
     startTime: PropTypes.string,
     estimatedDuration: PropTypes.number,
