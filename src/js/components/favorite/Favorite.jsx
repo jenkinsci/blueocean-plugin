@@ -48,7 +48,9 @@ export class Favorite extends Component {
 
     render() {
         return (
-            <label className={`checkbox ${this.props.className}`}>
+            <label className={`checkbox ${this.props.className}`}
+              onClick={(event) => event.stopPropagation()}
+            >
                 <input type="checkbox"
                        onChange={this.toggle.bind(this)}
                        checked={this.state.checked} />
