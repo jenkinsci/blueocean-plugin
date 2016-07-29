@@ -5,6 +5,8 @@
  */
 
 const gulp = require('gulp');
+const gutil = require('gulp-util');
+const fs = require('fs');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const concat = require('gulp-concat');
@@ -87,12 +89,12 @@ gulp.task("watch-styles", ["clean-build"], () => {
 // Default to all
 
 gulp.task("default", () =>
-    runSequence("clean", "lint", "test", "build"));
+    runSequence("clean", "lint", "test", "build", "validate"));
 
 // Clean and build only, for watching
 
 gulp.task("clean-build", () =>
-    runSequence("clean", "build"));
+    runSequence("clean", "build", "validate"));
 
 // Clean
 
@@ -197,3 +199,22 @@ gulp.task("copy-licenses-octicons", () =>
 gulp.task("copy-licenses-ofl", () =>
     gulp.src(config.copy.licenses_ofl.sources)
         .pipe(copy(config.copy.licenses_ofl.dest, {prefix: 1})));
+
+// Validate contents
+
+gulp.task("validate", () => {
+    const paths = [
+        config.less.dest,
+        config.copy.fonts.dest,
+        config.copy.octicons.dest,
+    ];
+
+    for (const path of paths) {
+        try {
+            fs.statSync(path);
+        } catch (err) {
+            gutil.log('Error occurred during validation; see stack trace for details');
+            throw err;
+        }
+    }
+});
