@@ -83,14 +83,15 @@ export class LiveStatusIndicator extends Component {
                 this._updateProgress();
             }, 1000);
 
-            this._updateProgress();
+            this._updateProgress(props);
         }
     }
 
-    _updateProgress() {
+    _updateProgress(props) {
         const now = moment();
         const elapsed = now.diff(this.startTime);
-        this.percentage = Math.floor(elapsed / this.props.estimatedDuration * 100);
+        const estimatedDuration = props && props.estimatedDuration || this.props.estimatedDuration;
+        this.percentage = Math.floor(elapsed / estimatedDuration * 100);
 
         if (0 <= this.percentage && this.percentage <= 100) {
             this._drawProgress();
