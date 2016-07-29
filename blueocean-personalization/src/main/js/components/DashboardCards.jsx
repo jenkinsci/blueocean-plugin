@@ -2,6 +2,7 @@
  * Created by cmeyers on 7/6/16.
  */
 import React, { Component, PropTypes } from 'react';
+import TransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
@@ -165,7 +166,12 @@ export class DashboardCards extends Component {
 
         return (
             <div className="favorites-card-stack">
-                {favoriteCards}
+                <TransitionGroup transitionName="vertical-expand-collapse"
+                  transitionEnterTimeout={150}
+                  transitionLeaveTimeout={150}
+                >
+                    {favoriteCards}
+                </TransitionGroup>
             </div>
         );
     }

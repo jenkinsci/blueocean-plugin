@@ -107,7 +107,7 @@ export class PipelineCard extends Component {
                 { this.props.branch ?
                 <span className="branch">
                     <span className="octicon octicon-git-branch"></span>
-                    <span className="branchText">{this.props.branch}</span>
+                    <span className="branchText">{decodeURIComponent(this.props.branch)}</span>
                 </span>
                 :
                 <span className="branch"></span>

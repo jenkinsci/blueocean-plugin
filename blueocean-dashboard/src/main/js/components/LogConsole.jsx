@@ -118,6 +118,7 @@ export class LogConsole extends Component {
         >
             { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
                 <a
+                  className="btn-secondary inverse"
                   key={0}
                   href={`?start=0#${prefix || ''}log-${1}`}
                 >
