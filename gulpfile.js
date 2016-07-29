@@ -5,6 +5,7 @@
  */
 
 const gulp = require('gulp');
+const gutil = require('gulp-util');
 const fs = require('fs');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
@@ -209,10 +210,11 @@ gulp.task("validate", () => {
     ];
 
     for (const path of paths) {
-        fs.stat(path, (err) => {
-            if (err != null) {
-                throw err;
-            }
-        });
+        try {
+            fs.statSync(path);
+        } catch (err) {
+            gutil.log('Error occurred during validation; see stack trace for details');
+            throw err;
+        }
     }
 });
