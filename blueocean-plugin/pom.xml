@@ -44,6 +44,11 @@
             <artifactId>blueocean-pipeline-api-impl</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-analytics-tools</artifactId>
+        </dependency>
+
         <!-- Test deps -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -107,6 +112,7 @@
                         linkHPI('blueocean-commons');
                         linkHPI('blueocean-rest-impl');
                         linkHPI('blueocean-pipeline-api-impl')
+                        linkHPI('blueocean-analytics-tools')
                     </source>
                 </configuration>
             </plugin>

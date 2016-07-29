@@ -55,4 +55,17 @@ describe('PipelineCard', () => {
 
         assert.equal(wrapper.find('.actions .run').length, 0);
     });
+
+    it('escapes the branch name', () => {
+        const branchName = 'feature/JENKINS-667';
+        const wrapper = shallow(
+            <PipelineCard status="SUCCESS" organization="Jenkins" pipeline="blueocean"
+              branch={encodeURIComponent(branchName)} commitId="447d8e1"
+            />
+        );
+
+        const elements = wrapper.find('.branchText');
+        assert.equal(elements.length, 1);
+        assert.equal(elements.at(0).text(), branchName);
+    });
 });

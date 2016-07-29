@@ -105,6 +105,7 @@
     <module>blueocean-dashboard</module>
     <module>blueocean-personalization</module>
     <module>blueocean-plugin</module>
+    <module>blueocean-analytics-tools</module>
   </modules>
 
   <repositories>
@@ -174,6 +175,12 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-analytics-tools</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -183,7 +190,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sse-gateway</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
         </dependency>
 
         <dependency>

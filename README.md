@@ -39,8 +39,11 @@ Provides implementation of Pipeline apis for Jenkins pipeline and multi-branch j
 
 ## blueocean-web
 
-Web infrastructure that glues Jenkins and Blue Ocean plugin together on the /blue endpoint. 
+Core Web infrastructure that bootstraps BlueOcean UI and integrates REST API core blueocean-rest.  
 
+## blueocean-analytics-tools
+
+Plugin to inject analytics tools as HTML header in blueocean UI.
     
 # Building and running
 
