@@ -11,3 +11,25 @@
         margin-bottom: 10px;
     }
 }
+
+.vertical-expand-collapse-enter {
+    transition: all linear 0.15s;
+    max-height: 0;
+    opacity: 0.01;
+
+    &.vertical-expand-collapse-enter-active {
+        max-height: 60px;
+        opacity: 1;
+    }
+}
+
+.vertical-expand-collapse-leave {
+    transition: all linear 0.15s;
+    max-height: 60px;
+    opacity: 1;
+
+    &.vertical-expand-collapse-leave-active {
+        max-height: 0;
+        opacity: 0.01;
+    }
+}

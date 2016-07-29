@@ -51,8 +51,10 @@ exports.initialize = function (oncomplete) {
     // Load and export the react modules, allowing them to be imported by other bundles.
     const react = require('react');
     const reactDOM = require('react-dom');
+    const reactCSSTransitions = require('react-addons-css-transition-group');
     jenkinsMods.export('react', 'react', react);
     jenkinsMods.export('react', 'react-dom', reactDOM);
+    jenkinsMods.export('react', 'react-addons-css-transition-group', reactCSSTransitions);
 
     // Get the extension list metadata from Jenkins.
     // Might want to do some flux fancy-pants stuff for this.
