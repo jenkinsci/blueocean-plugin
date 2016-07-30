@@ -80,14 +80,14 @@ export class LiveStatusIndicator extends Component {
 
             // update the progress each second
             this.clearIntervalId = setInterval(() => {
-                this._updateProgress();
+                this._updateProgress(this.props);
             }, 1000);
 
             this._updateProgress(props);
         }
     }
 
-    _updateProgress(props) {
+    _updateProgress(props: Props) {
         const now = moment();
         const elapsed = now.diff(this.startTime);
         const estimatedDuration = props && props.estimatedDuration || this.props.estimatedDuration;
