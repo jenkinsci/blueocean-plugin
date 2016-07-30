@@ -105,6 +105,15 @@ export const actions = {
         };
     },
 
+    updateRun(jobRun) {
+        return (dispatch) => {
+            dispatch({
+                type: ACTION_TYPES.UPDATE_RUN,
+                jobRun,
+            });
+        };
+    },
+
     generateData(request, actionType, optional) {
         const { url, fetchOptions } = request;
         return (dispatch) => fetch(url, fetchOptions)

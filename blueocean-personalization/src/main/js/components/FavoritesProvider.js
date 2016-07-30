@@ -9,6 +9,8 @@ import { List } from 'immutable';
 import { userSelector, favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 
+import favoritesSseListener from '../model/FavoritesSseListener';
+
 /**
  * FavoritesProvider ensures that the current user's favorites
  * are loaded for any components which may need it.
@@ -20,10 +22,15 @@ export class FavoritesProvider extends Component {
 
     componentWillMount() {
         this._initialize(this.props);
+        favoritesSseListener.initialize(this.props.updateRun);
     }
 
     componentWillReceiveProps(props) {
         this._initialize(props);
+    }
+
+    componentWillUnmount() {
+        favoritesSseListener.dispose();
     }
 
     _initialize(props) {
@@ -54,6 +61,7 @@ FavoritesProvider.propTypes = {
     favorites: PropTypes.instanceOf(List),
     fetchUser: PropTypes.func,
     fetchFavorites: PropTypes.func,
+    updateRun: PropTypes.func,
 };
 
 const selectors = createSelector(
