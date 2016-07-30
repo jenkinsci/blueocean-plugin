@@ -89,6 +89,7 @@ const extractPath = (path, begin, end) => {
 };
 
 /**
+ * Renders a stack of "favorites cards" including current most recent status.
  */
 export class DashboardCards extends Component {
 
@@ -112,7 +113,7 @@ export class DashboardCards extends Component {
             let branchName;
 
             if (pipeline._class === 'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl') {
-                // branch.fullName is in the form folder1/folder2/pipeline/branch ...
+                // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
                 // "pipeline"
                 pipelineName = extractPath(pipeline.fullName, -2, -1);
                 // everything up to "branch"
