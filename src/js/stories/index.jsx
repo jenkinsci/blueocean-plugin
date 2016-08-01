@@ -13,3 +13,4 @@ require('./timeduration.jsx');
 require('./toast.jsx');
 require('./resultItemStories.jsx');
 require('./typography.jsx');
+require('./progressBarStories');
