@@ -90,8 +90,14 @@ export class LiveStatusIndicator extends Component {
     _updateProgress(props: Props) {
         const now = moment();
         const elapsed = now.diff(this.startTime);
-        const estimatedDuration = props && props.estimatedDuration || this.props.estimatedDuration;
-        this.percentage = Math.floor(elapsed / estimatedDuration * 100);
+        const estimatedDuration = props.estimatedDuration;
+
+        if (elapsed > 0 && estimatedDuration > 0) {
+            this.percentage = Math.floor(elapsed / estimatedDuration * 100);
+        } else {
+            // if both aren't available, set to 'indeterminate' state 
+            this.percentage = 101;
+        }
 
         if (0 <= this.percentage && this.percentage <= 100) {
             this._drawProgress();
