@@ -12,7 +12,7 @@ appConfig.loadConfig();
 sse.connect({
     clientId: 'jenkins_blueocean',
     onConnect: undefined,
-    jenkinsUrl: `${appConfig.getJenkinsRootURL()}/`, // FIXME sse should not require this to end with a /
+    jenkinsUrl: appConfig.getJenkinsRootURL(),
 });
 
 class Dashboard extends Component {
