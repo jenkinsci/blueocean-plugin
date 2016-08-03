@@ -15,7 +15,6 @@ import {
     RunDetailsTests,
 } from './components';
 
-
 export default (
     <Route path="/" component={Dashboard}>
         <Route path="organizations/:organization" component={OrganizationPipelines}>
@@ -27,12 +26,6 @@ export default (
                 <Route path=":pipeline/activity" component={Activity} />
                 <Route path=":pipeline/pr" component={PullRequests} />
 
-                <Route path=":pipeline/queue/:branch/:queueId" component={RunDetails}>
-                    <IndexRedirect to="pipeline" />
-                    <Route path="pipeline" component={RunDetailsQueueItem} >
-                        <Route path=":node" component={RunDetailsQueueItem} />
-                    </Route>
-                </Route>
                 <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
                     <IndexRedirect to="pipeline" />
                     <Route path="pipeline" component={RunDetailsPipeline} >
