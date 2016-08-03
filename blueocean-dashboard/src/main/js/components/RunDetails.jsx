@@ -98,13 +98,14 @@ class RunDetails extends Component {
             router.push(location);
         };
 
-        return ( 
+        return (
             <ModalView
               isVisible
               transitionClass="expand-in"
               transitionDuration={150}
               result={status}
-              {...{ afterClose }}>
+              {...{ afterClose }}
+            >
                 <ModalHeader>
                     <div>
                         <RunDetailsHeader data={currentRun}
