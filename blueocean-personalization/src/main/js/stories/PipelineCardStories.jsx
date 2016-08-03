@@ -13,8 +13,8 @@ const style2 = { paddingBottom: '10px' };
 storiesOf('PipelineCard', module)
     .add('all states', () => {
         const states = 'SUCCESS,QUEUED,RUNNING,FAILURE,ABORTED,UNSTABLE,NOT_BUILT,UNKNOWN'.split(',');
-        const startTime = moment().subtract(30, 'seconds').toISOString();
-        const estimatedDuration = 60000;
+        const startTime = moment().subtract(60, 'seconds').toISOString();
+        const estimatedDuration = 1000 * 60 * 5; // 5 mins
 
         return (
             <div style={style}>
