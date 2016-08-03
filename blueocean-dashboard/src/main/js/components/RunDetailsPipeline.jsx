@@ -23,6 +23,14 @@ import { calculateNode } from '../util/KaraokeHelper';
 
 const { string, object, any, func } = PropTypes;
 
+const queuedState = () => (
+    <EmptyStateView tightSpacing>
+        <p>
+            This run is current queued.
+        </p>
+    </EmptyStateView>
+);
+
 export class RunDetailsPipeline extends Component {
     constructor(props) {
         super(props);
@@ -38,16 +46,18 @@ export class RunDetailsPipeline extends Component {
 
         this.mergedConfig = this.generateConfig(this.props);
 
-        // It should really be using capability using /rest/classes API
-        const supportsNode = result && result._class === 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl';
-        if (supportsNode) {
-            fetchNodes(this.mergedConfig);
-        } else {
-            // console.log('fetch the log directly')
-            const logGeneral = calculateRunLogURLObject(this.mergedConfig);
-            // fetchAll indicates whether we want all logs
-            const fetchAll = this.mergedConfig.fetchAll;
-            fetchLog({ ...logGeneral, fetchAll });
+        if (result.state !== 'QUEUED') {
+            // It should really be using capability using /rest/classes API
+            const supportsNode = result && result._class === 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl';
+            if (supportsNode) {
+                fetchNodes(this.mergedConfig);
+            } else {
+                // console.log('fetch the log directly')
+                const logGeneral = calculateRunLogURLObject(this.mergedConfig);
+                // fetchAll indicates whether we want all logs
+                const fetchAll = this.mergedConfig.fetchAll;
+                fetchLog({ ...logGeneral, fetchAll });
+            }
         }
 
         // Listen for pipeline flow node events.
@@ -102,14 +112,21 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentDidMount() {
-        // determine scroll area
-        const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
-        // add both listemer, one to the scroll area and another to the whole document
-        domNode.addEventListener('wheel', this.onScrollHandler, false);
-        document.addEventListener('keydown', this._handleKeys, false);
+        const { result } = this.props;
+
+        if (result.state !== 'QUEUED') {
+            // determine scroll area
+            const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
+            // add both listemer, one to the scroll area and another to the whole document
+            domNode.addEventListener('wheel', this.onScrollHandler, false);
+            document.addEventListener('keydown', this._handleKeys, false);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
+        if (this.props.result.state === 'QUEUED') {
+            return;
+        }
         const followAlong = this.state.followAlong;
         this.mergedConfig = this.generateConfig({ ...nextProps, followAlong });
 
@@ -160,11 +177,15 @@ export class RunDetailsPipeline extends Component {
 
 
     componentWillUnmount() {
-        const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
         if (this.listener.sse) {
             sse.unsubscribe(this.listener.sse);
             delete this.listener.sse;
         }
+
+        if (this.props.result.state === 'QUEUED') {
+            return;
+        }
+        const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
         this.props.cleanNodePointer();
         clearTimeout(this.timeout);
         domNode.removeEventListener('wheel', this._onScrollHandler);
@@ -220,10 +241,15 @@ export class RunDetailsPipeline extends Component {
             isMultiBranch, steps, nodes, logs, result: resultMeta,
         } = this.props;
 
+
         const {
             result,
             state,
         } = resultMeta;
+        
+        if (state === 'QUEUED') {
+            return queuedState();
+        }
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const followAlong = this.state.followAlong;
         // in certain cases we want that the log component will scroll to the end of a log

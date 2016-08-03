@@ -3,7 +3,6 @@ import {
     ModalView,
     ModalBody,
     ModalHeader,
-    PipelineResult,
     PageTabs,
     TabLink,
 } from '@jenkins-cd/design-language';
@@ -22,6 +21,8 @@ import {
     buildPipelineUrl,
     buildRunDetailsUrl,
 } from '../util/UrlUtils';
+
+import { RunDetailsHeader } from './RunDetailsHeader';
 
 const { func, object, array, any, string } = PropTypes;
 
@@ -72,44 +73,33 @@ class RunDetails extends Component {
             return null;
         }
 
-        const {
-            router,
-            location,
-            params: {
-                organization,
-                branch,
-                runId,
-                pipeline: name,
-            },
-        } = this.context;
-
-        const baseUrl = buildRunDetailsUrl(organization, name, branch, runId);
-
-        /* eslint-disable arrow-body-style */
-        const currentRun = this.props.runs.filter((run) => {
-            return run.id === runId &&
-                decodeURIComponent(run.pipeline) === branch;
-        })[0];
+        const { router, location, params } = this.context;
+        
+        const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
+          
+        let currentRun = this.props.runs.filter((run) =>
+            run.id === params.runId &&
+                decodeURIComponent(run.pipeline) === params.branch
+        )[0];
+        let status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
+        
+        currentRun.name = params.pipeline;
 
         // deep-linking across RunDetails for different pipelines yields 'runs' data for the wrong pipeline
         // during initial render. when runs are refetched the screen will render again with 'currentRun' correctly set
         if (!currentRun) {
             return null;
         }
-
-        currentRun.name = name;
-
-        const status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
-
+        
         const afterClose = () => {
-            const fallbackUrl = buildPipelineUrl(organization, name);
-
+            const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
             location.pathname = this.opener || fallbackUrl;
 
             router.push(location);
         };
 
         return (
+            
             <ModalView
               isVisible
               transitionClass="expand-in"
@@ -119,7 +109,7 @@ class RunDetails extends Component {
             >
                 <ModalHeader>
                     <div>
-                        <PipelineResult data={currentRun}
+                        <RunDetailsHeader data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}

@@ -26,6 +26,8 @@ public abstract class BlueQueueItem extends Resource {
     @Exported
     public abstract String getId();
 
+    @Exported
+    public abstract String getOrganization();
     /**
      *
      * @return pipeline this queued item belongs too

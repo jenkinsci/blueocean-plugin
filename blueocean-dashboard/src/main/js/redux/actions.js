@@ -57,7 +57,23 @@ export const actionHandlers = {
         return state.set('currentRuns', null);
     },
     [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
-        return state.set('currentRuns', payload);
+        return state.set('currentRuns', payload.map((run) => {
+            if (run._class === 'io.jenkins.blueocean.service.embedded.rest.QueueItemImpl') {
+                return {
+                    id: String(run.expectedBuildNumber),
+                    state: 'QUEUED',
+                    pipeline: run.pipeline,
+                    type: 'QueuedItem',
+                    result: 'UNKNOWN',
+                    job_run_queueId: run.id,
+                    enQueueTime: run.queuedTime,
+                    organization: run.organization,
+                    changeSet: [],
+                    _item: run,
+                };
+            }
+            return run;
+        }));
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
         return state.set('node', { ...payload });
@@ -69,7 +85,24 @@ export const actionHandlers = {
     },
     [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
         const runs = { ...state.runs } || {};
-        runs[id] = payload;
+
+        runs[id] = payload.map((run) => {
+            if (run._class === 'io.jenkins.blueocean.service.embedded.rest.QueueItemImpl') {
+                return {
+                    id: String(run.expectedBuildNumber),
+                    state: 'QUEUED',
+                    pipeline: run.pipeline,
+                    type: 'QueuedItem',
+                    result: 'UNKNOWN',
+                    job_run_queueId: run.id,
+                    enQueueTime: run.queuedTime,
+                    organization: run.organization,
+                    changeSet: [],
+                    _item: run,
+                };
+            }
+            return run;
+        });
         return state.set('runs', runs);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
@@ -558,7 +591,7 @@ export const actions = {
     fetchRunsIfNeeded(config) {
         return (dispatch) => {
             const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                `/pipelines/${config.pipeline}/runs/`;
+                `/pipelines/${config.pipeline}/activities/`;
             return dispatch(actions.fetchIfNeeded({
                 url: baseUrl,
                 id: config.pipeline,
