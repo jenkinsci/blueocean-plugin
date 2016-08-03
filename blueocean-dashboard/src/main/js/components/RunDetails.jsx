@@ -81,6 +81,7 @@ class RunDetails extends Component {
             run.id === params.runId &&
                 decodeURIComponent(run.pipeline) === params.branch
         )[0];
+        
         let status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
         
         currentRun.name = params.pipeline;
@@ -94,19 +95,16 @@ class RunDetails extends Component {
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
             location.pathname = this.opener || fallbackUrl;
-
             router.push(location);
         };
 
-        return (
-            
+        return ( 
             <ModalView
               isVisible
               transitionClass="expand-in"
               transitionDuration={150}
               result={status}
-              {...{ afterClose }}
-            >
+              {...{ afterClose }}>
                 <ModalHeader>
                     <div>
                         <RunDetailsHeader data={currentRun}
