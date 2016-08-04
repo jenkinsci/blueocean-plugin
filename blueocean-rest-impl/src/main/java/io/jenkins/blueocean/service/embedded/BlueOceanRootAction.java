@@ -4,16 +4,22 @@ import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import hudson.Extension;
-import hudson.model.RootAction;
+import hudson.model.UnprotectedRootAction;
 import io.jenkins.blueocean.BlueOceanUI;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 @Extension
-public class BlueOceanRootAction implements RootAction, StaplerProxy {
+public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy {
     private static final String URL_BASE="blue";
+
+    private final boolean disableJWT = Boolean.getBoolean("DISABLE_BLUEOCEAN_JWT_AUTHENTICATION");
 
     @Inject
     private BlueOceanUI app;
@@ -38,6 +44,14 @@ public class BlueOceanRootAction implements RootAction, StaplerProxy {
 
     @Override
     public Object getTarget() {
+
+        StaplerRequest request = Stapler.getCurrentRequest();
+
+        if(!disableJWT && request.getOriginalRestOfPath().startsWith("/rest/")) {
+            JwtAuthenticationToken tokenAuthentication = new JwtAuthenticationToken(request);
+            SecurityContext holder = SecurityContextHolder.getContext();
+            holder.setAuthentication(tokenAuthentication);
+        }
         return app;
     }
 

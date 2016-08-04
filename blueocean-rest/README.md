@@ -103,7 +103,20 @@ All date formats are in ISO 8601 format
 
 Jenkins usually requires a "crumb" with posted requests to prevent request forgery and other shenanigans. 
 To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
-    
+
+# Security
+
+BlueOcean REST APIs requires JWT token for authentication. JWT APIs are provided by blueocean-jwt plugin. See 
+[JWT APIs](../blueocean-jwt/README.md) to get JWT token and to get public key needed to verify the claims.
+  
+JWT token must be sent as bearer token as value of HTTP 'Authorization' header:
+  
+    curl -H 'Authorization: Bearer eyJraWQ...' http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/
+
+To disable JWT authentication use DISABLE_BLUEOCEAN_JWT_AUTHENTICATION=true system property.
+
+    mvn hpi:run -DDISABLE_BLUEOCEAN_JWT_AUTHENTICATION=true 
+
 # Navigability
 
 ## Links 
