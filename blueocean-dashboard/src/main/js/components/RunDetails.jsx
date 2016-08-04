@@ -97,7 +97,6 @@ class RunDetails extends Component {
             location.pathname = this.opener || fallbackUrl;
             router.push(location);
         };
-
         return (
             <ModalView
               isVisible

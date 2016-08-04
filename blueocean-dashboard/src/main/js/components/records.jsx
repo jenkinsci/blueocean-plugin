@@ -46,6 +46,7 @@ export const ChangeSetRecord = Record({
 });
 
 export class RunRecord extends Record({
+    _class: null,
     changeSet: ChangeSetRecord,
     durationInMillis: null,
     enQueueTime: null,

@@ -234,7 +234,7 @@ export class RunDetailsPipeline extends Component {
     render() {
         const { location, router } = this.context;
 
-        const { isMultiBranch, steps, nodes, logs, result: run } = this.props;
+        const { isMultiBranch, steps, nodes, logs, result: run, } = this.props;
         
         if (run.isQueued()) {
             return queuedState();
@@ -316,7 +316,7 @@ export class RunDetailsPipeline extends Component {
                   nodes={nodes[nodeKey].model}
                   pipelineName={name}
                   branchName={isMultiBranch ? branch : undefined}
-                  runId={runId}
+                  runId={run.id}
                 />
                 }
                 { shouldShowLogHeader &&
