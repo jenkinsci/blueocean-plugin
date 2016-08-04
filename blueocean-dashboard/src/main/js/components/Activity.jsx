@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Runs from './Runs';
 import Pipeline from '../api/Pipeline';
-import { ActivityRecord, ChangeSetRecord } from './records';
+import { RunRecord, ChangeSetRecord } from './records';
 import RunPipeline from './RunPipeline.jsx';
 import {
     actions,
@@ -106,7 +106,7 @@ export class Activity extends Component {
                             return (<Runs {...{
                                 key: index,
                                 changeset: latestRecord,
-                                result: new ActivityRecord(run) }} />);
+                                result: new RunRecord(run) }} />);
                         })
                     }
                 </Table>

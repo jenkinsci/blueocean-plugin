@@ -46,7 +46,7 @@ export class RunDetailsPipeline extends Component {
 
         this.mergedConfig = this.generateConfig(this.props);
 
-        if (result.state !== 'QUEUED') {
+        if (!result.isQueued()) {
             // It should really be using capability using /rest/classes API
             const supportsNode = result && result._class === 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl';
             if (supportsNode) {
@@ -56,65 +56,64 @@ export class RunDetailsPipeline extends Component {
                 const logGeneral = calculateRunLogURLObject(this.mergedConfig);
                 // fetchAll indicates whether we want all logs
                 const fetchAll = this.mergedConfig.fetchAll;
-                fetchLog({ ...logGeneral, fetchAll });
+                fetchLog({...logGeneral, fetchAll });
             }
         }
 
-        // Listen for pipeline flow node events.
+        this.listener.sse = sse.subscribe('pipeline', this._onSseEvent);
+    }
+      // Listen for pipeline flow node events.
         // We filter them only for steps and the end event all other we let pass
-        const onSseEvent = (event) => {
-            const jenkinsEvent = event.jenkins_event;
-            // we are using try/catch to throw an early out error
-            try {
-                if (event.pipeline_run_id !== this.props.result.id) {
-                    // console.log('early out');
-                    throw new Error('exit');
-                }
-                // we turn on refetch so we always fetch a new Node result
-                const refetch = true;
-                switch (jenkinsEvent) {
-                case 'pipeline_step':
-                    {
-                        // we are not using an early out for the events since we want to refresh the node if we finished
-                        if (this.state.followAlong) { // if we do it means we want karaoke
-                            // if the step_stage_id has changed we need to change the focus
-                            if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
-                                // console.log('nodes fetching via sse triggered');
-                                delete this.mergedConfig.node;
-                                fetchNodes({ ...this.mergedConfig, refetch });
-                            } else {
-                                // console.log('only steps fetching via sse triggered');
-                                fetchSteps({ ...this.mergedConfig, refetch });
-                            }
+    _onSseEvent(event) {
+        const jenkinsEvent = event.jenkins_event;
+        // we are using try/catch to throw an early out error
+        try {
+            if (event.pipeline_run_id !== this.props.result.id) {
+                // console.log('early out');
+                throw new Error('exit');
+            }
+            // we turn on refetch so we always fetch a new Node result
+            const refetch = true;
+            switch (jenkinsEvent) {
+            case 'pipeline_step':
+                {
+                    // we are not using an early out for the events since we want to refresh the node if we finished
+                    if (this.state.followAlong) { // if we do it means we want karaoke
+                        // if the step_stage_id has changed we need to change the focus
+                        if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
+                            // console.log('nodes fetching via sse triggered');
+                            delete this.mergedConfig.node;
+                            fetchNodes({ ...this.mergedConfig, refetch });
+                        } else {
+                            // console.log('only steps fetching via sse triggered');
+                            fetchSteps({ ...this.mergedConfig, refetch });
                         }
-                        break;
                     }
-                case 'pipeline_end':
-                    {
-                        // we always want to refresh if the run has finished
-                        fetchNodes({ ...this.mergedConfig, refetch });
-                        break;
-                    }
-                default:
-                    {
-                        // //console.log(event);
-                    }
+                    break;
                 }
-            } catch (e) {
-                // we only ignore the exit error
-                if (e.message !== 'exit') {
-                    throw e;
+            case 'pipeline_end':
+                {
+                    // we always want to refresh if the run has finished
+                    fetchNodes({ ...this.mergedConfig, refetch });
+                    break;
+                }
+            default:
+                {
+                    // //console.log(event);
                 }
             }
-        };
-
-        this.listener.sse = sse.subscribe('pipeline', onSseEvent);
+        } catch (e) {
+            // we only ignore the exit error
+            if (e.message !== 'exit') {
+                throw e;
+            }
+        }
     }
 
     componentDidMount() {
         const { result } = this.props;
 
-        if (result.state !== 'QUEUED') {
+        if (!result.isQueued()) {
             // determine scroll area
             const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
             // add both listemer, one to the scroll area and another to the whole document
@@ -124,7 +123,7 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.result.state === 'QUEUED') {
+        if (this.props.result.isQueued()) {
             return;
         }
         const followAlong = this.state.followAlong;
@@ -175,14 +174,13 @@ export class RunDetailsPipeline extends Component {
         }
     }
 
-
     componentWillUnmount() {
         if (this.listener.sse) {
             sse.unsubscribe(this.listener.sse);
             delete this.listener.sse;
         }
 
-        if (this.props.result.state === 'QUEUED') {
+        if (this.props.result.isQueued()) {
             return;
         }
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
@@ -207,14 +205,9 @@ export class RunDetailsPipeline extends Component {
     }
 
     generateConfig(props) {
-        const {
-            config = {},
-        } = this.context;
+        const { config = {} } = this.context;
         const followAlong = this.state.followAlong;
-        const {
-            isMultiBranch,
-            params: { pipeline: name, branch, runId, node: nodeParam },
-        } = props;
+        const { isMultiBranch, params } = props;
         const fetchAll = calculateFetchAll(props);
         // we would use default properties however the node can be null so no default properties will be triggered
         let { nodeReducer } = props;
@@ -222,35 +215,31 @@ export class RunDetailsPipeline extends Component {
             nodeReducer = { id: null, displayName: 'Steps' };
         }
         // if we have a node param we do not want the calculation of the focused node
-        const node = nodeParam || nodeReducer.id;
+        const node = params.node || nodeReducer.id;
 
-        const mergedConfig = { ...config, name, branch, runId, isMultiBranch, node, nodeReducer, followAlong, fetchAll };
-        return mergedConfig;
+        // Merge config
+        return {
+            ...config,
+            name: params.pipeline,
+            branch: params.branch,
+            runId: params.runId,
+            isMultiBranch,
+            node,
+            nodeReducer,
+            followAlong,
+            fetchAll,
+        };
     }
 
     render() {
-        const {
-            location,
-            router,
-        } = this.context;
+        const { location, router } = this.context;
 
-        const {
-            params: {
-                pipeline: name, branch, runId,
-            },
-            isMultiBranch, steps, nodes, logs, result: resultMeta,
-        } = this.props;
-
-
-        const {
-            result,
-            state,
-        } = resultMeta;
+        const { isMultiBranch, steps, nodes, logs, result: run } = this.props;
         
-        if (state === 'QUEUED') {
+        if (run.isQueued()) {
             return queuedState();
         }
-        const resultRun = result === 'UNKNOWN' || !result ? state : result;
+        const resultRun = run.isCompleted() ? run.state : run.result;
         const followAlong = this.state.followAlong;
         // in certain cases we want that the log component will scroll to the end of a log
         const scrollToBottom =

@@ -23,6 +23,7 @@ import {
 } from '../util/UrlUtils';
 
 import { RunDetailsHeader } from './RunDetailsHeader';
+import { RunRecord } from './records';
 
 const { func, object, array, any, string } = PropTypes;
 
@@ -77,21 +78,20 @@ class RunDetails extends Component {
         
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
           
-        let currentRun = this.props.runs.filter((run) =>
+        const currentRun = this.props.runs.filter((run) =>
             run.id === params.runId &&
                 decodeURIComponent(run.pipeline) === params.branch
         )[0];
-        
-        let status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
-        
-        currentRun.name = params.pipeline;
-
         // deep-linking across RunDetails for different pipelines yields 'runs' data for the wrong pipeline
         // during initial render. when runs are refetched the screen will render again with 'currentRun' correctly set
         if (!currentRun) {
             return null;
         }
-        
+
+        currentRun.name = params.pipeline;
+
+        const status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
+       
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
             location.pathname = this.opener || fallbackUrl;
@@ -125,7 +125,7 @@ class RunDetails extends Component {
                     <div>
                         {React.cloneElement(
                             this.props.children,
-                            { baseUrl, result: currentRun, ...this.props }
+                            { baseUrl, result: new RunRecord(currentRun), ...this.props }
                         )}
                     </div>
                 </ModalBody>
