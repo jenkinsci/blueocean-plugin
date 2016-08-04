@@ -292,8 +292,11 @@ export class RunDetailsPipeline extends Component {
             }
             logProps.logArray = log.logArray;
         }
+
+        const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
+
         return (
-            <div ref="scrollArea">
+            <div ref="scrollArea" className={stepScrollAreaClass}>
                 { nodes && nodes[nodeKey] && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
                   selectedStage={this.mergedConfig.nodeReducer}
