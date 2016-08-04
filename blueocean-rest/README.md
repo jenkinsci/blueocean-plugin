@@ -7,6 +7,7 @@
   - [Media Type](#media-type)
   - [Date Format](#date-format)
   - [Crumbs](#crumbs)
+- [Security](#security)
 - [Navigability](#navigability)
   - [Links](#links)
 - [Resource discovery](#resource-discovery)
