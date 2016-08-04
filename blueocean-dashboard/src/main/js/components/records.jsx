@@ -63,12 +63,12 @@ export class RunRecord extends Record({
     commitId: null,
 }) {
     isQueued() {
-        return this.state === "QUEUED";
+        return this.state === 'QUEUED';
     }
 
     // We have a result
     isCompleted() {
-        return this.state !== "UNKNOWN";
+        return this.state !== 'UNKNOWN';
     }
 }
 

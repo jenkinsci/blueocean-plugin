@@ -42,7 +42,7 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillMount() {
-        const { fetchNodes, fetchLog, result, fetchSteps } = this.props;
+        const { fetchNodes, fetchLog, result } = this.props;
 
         this.mergedConfig = this.generateConfig(this.props);
 
@@ -56,60 +56,13 @@ export class RunDetailsPipeline extends Component {
                 const logGeneral = calculateRunLogURLObject(this.mergedConfig);
                 // fetchAll indicates whether we want all logs
                 const fetchAll = this.mergedConfig.fetchAll;
-                fetchLog({...logGeneral, fetchAll });
+                fetchLog({ ...logGeneral, fetchAll });
             }
         }
 
         this.listener.sse = sse.subscribe('pipeline', this._onSseEvent);
     }
-      // Listen for pipeline flow node events.
-        // We filter them only for steps and the end event all other we let pass
-    _onSseEvent(event) {
-        const jenkinsEvent = event.jenkins_event;
-        // we are using try/catch to throw an early out error
-        try {
-            if (event.pipeline_run_id !== this.props.result.id) {
-                // console.log('early out');
-                throw new Error('exit');
-            }
-            // we turn on refetch so we always fetch a new Node result
-            const refetch = true;
-            switch (jenkinsEvent) {
-            case 'pipeline_step':
-                {
-                    // we are not using an early out for the events since we want to refresh the node if we finished
-                    if (this.state.followAlong) { // if we do it means we want karaoke
-                        // if the step_stage_id has changed we need to change the focus
-                        if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
-                            // console.log('nodes fetching via sse triggered');
-                            delete this.mergedConfig.node;
-                            fetchNodes({ ...this.mergedConfig, refetch });
-                        } else {
-                            // console.log('only steps fetching via sse triggered');
-                            fetchSteps({ ...this.mergedConfig, refetch });
-                        }
-                    }
-                    break;
-                }
-            case 'pipeline_end':
-                {
-                    // we always want to refresh if the run has finished
-                    fetchNodes({ ...this.mergedConfig, refetch });
-                    break;
-                }
-            default:
-                {
-                    // //console.log(event);
-                }
-            }
-        } catch (e) {
-            // we only ignore the exit error
-            if (e.message !== 'exit') {
-                throw e;
-            }
-        }
-    }
-
+    
     componentDidMount() {
         const { result } = this.props;
 
@@ -197,6 +150,56 @@ export class RunDetailsPipeline extends Component {
             this.setState({ followAlong: false });
         }
     }
+
+      // Listen for pipeline flow node events.
+        // We filter them only for steps and the end event all other we let pass
+    _onSseEvent(event) {
+        const { fetchNodes, fetchSteps } = this.props;
+        const jenkinsEvent = event.jenkins_event;
+        // we are using try/catch to throw an early out error
+        try {
+            if (event.pipeline_run_id !== this.props.result.id) {
+                // console.log('early out');
+                throw new Error('exit');
+            }
+            // we turn on refetch so we always fetch a new Node result
+            const refetch = true;
+            switch (jenkinsEvent) {
+            case 'pipeline_step':
+                {
+                    // we are not using an early out for the events since we want to refresh the node if we finished
+                    if (this.state.followAlong) { // if we do it means we want karaoke
+                        // if the step_stage_id has changed we need to change the focus
+                        if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
+                            // console.log('nodes fetching via sse triggered');
+                            delete this.mergedConfig.node;
+                            fetchNodes({ ...this.mergedConfig, refetch });
+                        } else {
+                            // console.log('only steps fetching via sse triggered');
+                            fetchSteps({ ...this.mergedConfig, refetch });
+                        }
+                    }
+                    break;
+                }
+            case 'pipeline_end':
+                {
+                    // we always want to refresh if the run has finished
+                    fetchNodes({ ...this.mergedConfig, refetch });
+                    break;
+                }
+            default:
+                {
+                    // //console.log(event);
+                }
+            }
+        } catch (e) {
+            // we only ignore the exit error
+            if (e.message !== 'exit') {
+                throw e;
+            }
+        }
+    }
+
     // we bail out on arrow_up key
     _handleKeys(event) {
         if (event.keyCode === 38 && this.state.followAlong) {
@@ -234,7 +237,7 @@ export class RunDetailsPipeline extends Component {
     render() {
         const { location, router } = this.context;
 
-        const { isMultiBranch, steps, nodes, logs, result: run, } = this.props;
+        const { isMultiBranch, steps, nodes, logs, result: run, params } = this.props;
         
         if (run.isQueued()) {
             return queuedState();
@@ -315,7 +318,7 @@ export class RunDetailsPipeline extends Component {
                   callback={afterClick}
                   nodes={nodes[nodeKey].model}
                   pipelineName={name}
-                  branchName={isMultiBranch ? branch : undefined}
+                  branchName={isMultiBranch ? params.branch : undefined}
                   runId={run.id}
                 />
                 }
