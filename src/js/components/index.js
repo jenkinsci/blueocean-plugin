@@ -19,7 +19,6 @@ export {
 export {
     LiveStatusIndicator,
 } from './status/LiveStatusIndicator';
-export {PipelineResult} from './pipeResult/Result';
 export {Favorite} from './favorite/Favorite';
 export {ReadableDate} from './ReadableDate';
 export {CommitHash} from './CommitHash';
