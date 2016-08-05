@@ -36,7 +36,6 @@ class RunDetailsHeader extends Component {
         const status = run.getComputedResult();
         const durationMillis = run.isRunning() ?
             moment().diff(moment(run.startTime)) : run.durationInMillis;
-
         return (
         <div className="pipeline-result">
             <section className="status inverse">

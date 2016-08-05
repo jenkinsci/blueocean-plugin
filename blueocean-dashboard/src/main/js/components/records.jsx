@@ -68,7 +68,7 @@ export class RunRecord extends Record({
 
     // We have a result
     isCompleted() {
-        return this.state !== 'UNKNOWN';
+        return this.result !== 'UNKNOWN';
     }
 
     isRunning() {
@@ -76,7 +76,7 @@ export class RunRecord extends Record({
     }
 
     getComputedResult() {
-        return this.isCompleted ? this.result : this.state;
+        return this.isCompleted() ? this.result : this.state;
     }
 }
 

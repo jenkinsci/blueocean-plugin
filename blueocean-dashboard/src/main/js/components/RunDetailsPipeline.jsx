@@ -26,7 +26,7 @@ const { string, object, any, func } = PropTypes;
 const queuedState = () => (
     <EmptyStateView tightSpacing>
         <p>
-            This run is current queued.
+            This pipeline run is currently queued waiting for an executor.
         </p>
     </EmptyStateView>
 );
