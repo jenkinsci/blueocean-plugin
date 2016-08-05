@@ -35,7 +35,7 @@ export default (
                     <Route path="tests" component={RunDetailsTests} />
                     <Route path="artifacts" component={RunDetailsArtifacts} />
                 </Route>
-               
+
                 <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
             </Route>
         </Route>
