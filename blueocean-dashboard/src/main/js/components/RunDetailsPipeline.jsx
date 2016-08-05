@@ -4,6 +4,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import LogConsole from './LogConsole';
 import * as sse from '@jenkins-cd/sse-gateway';
 import { EmptyStateView } from '@jenkins-cd/design-language';
+import { Icon } from 'react-material-icons-blue';
 
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
@@ -26,7 +27,12 @@ const { string, object, any, func } = PropTypes;
 const queuedState = () => (
     <EmptyStateView tightSpacing>
         <p>
-            This pipeline run is currently queued waiting for an executor.
+            <Icon {...{
+                size: 20,
+                icon: 'timer',
+                style: { fill: '#fff' },
+            }} />
+            <span>Waiting for run to start.</span>
         </p>
     </EmptyStateView>
 );
