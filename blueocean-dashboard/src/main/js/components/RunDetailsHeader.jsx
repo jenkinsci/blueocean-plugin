@@ -29,61 +29,42 @@ class RunDetailsHeader extends Component {
     }
 
     render() {
-        const {
-            data: {
-                id,
-                name,
-                organization,
-                pipeline,
-                changeSet,
-                result,
-                state,
-                durationInMillis,
-                endTime,
-                startTime,
-                estimatedDurationInMillis,
-                commitId,
-
-            },
-        } = this.props;
-
+        const { data: run } = this.props;
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
-        const authors = [...(new Set(changeSet.map(change => change.author.fullName)):any)];
-        const status = result === 'UNKNOWN' ? state : result;
-        const running = status === 'RUNNING';
-        const durationMillis = !running ?
-            durationInMillis :
-            moment().diff(moment(startTime));
+        const authors = [...(new Set(run.changeSet.map(change => change.author.fullName)):any)];
+        const status = run.getComputedResult();
+        const durationMillis = run.isRunning() ?
+            moment().diff(moment(run.startTime)) : run.durationInMillis;
 
         return (
         <div className="pipeline-result">
             <section className="status inverse">
-                <LiveStatusIndicator result={status} startTime={startTime}
-                  estimatedDuration={estimatedDurationInMillis}
+                <LiveStatusIndicator result={status} startTime={run.startTime}
+                  estimatedDuration={run.estimatedDurationInMillis}
                   width="70px" height="70px" noBackground
                 />
             </section>
             <section className="table">
                 <h4>
-                    <a onClick={() => this.handleOrganizationClick()}>{organization}</a>
+                    <a onClick={() => this.handleOrganizationClick()}>{run.organization}</a>
                     &nbsp;/&nbsp;
-                    <a onClick={() => this.handleNameClick()}>{name}</a>
+                    <a onClick={() => this.handleNameClick()}>{run.pipeline}</a>
                     &nbsp;
-                    #{id}
+                    #{run.id}
                 </h4>
 
                 <div className="row">
                     <div className="commons">
                         <div>
                             <label>Branch</label>
-                            <span>{decodeURIComponent(pipeline)}</span>
+                            <span>{decodeURIComponent(run.pipeline)}</span>
                         </div>
-                        { commitId ?
+                        { run.commitId ?
                         <div>
                             <label>Commit</label>
                             <span className="commit">
-                                #{commitId.substring(0, 8)}
+                                #{run.commitId.substring(0, 8)}
                             </span>
                         </div>
                         : null }
@@ -103,7 +84,7 @@ class RunDetailsHeader extends Component {
                                 icon: 'timelapse',
                                 style: { fill: '#fff' },
                             }} />
-                            <TimeDuration millis={durationMillis} liveUpdate={running} />
+                            <TimeDuration millis={durationMillis} liveUpdate={run.isRunning()} />
                         </div>
                         <div>
                             <Icon {...{
@@ -111,7 +92,7 @@ class RunDetailsHeader extends Component {
                                 icon: 'access_time',
                                 style: { fill: '#fff' },
                             }} />
-                            <ReadableDate date={endTime} liveUpdate />
+                            <ReadableDate date={run.endTime} liveUpdate />
                         </div>
                     </div>
                 </div>

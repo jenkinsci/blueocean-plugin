@@ -78,19 +78,19 @@ class RunDetails extends Component {
         
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
           
-        const currentRun = this.props.runs.filter((run) =>
+        const foundRun = this.props.runs.find((run) =>
             run.id === params.runId &&
                 decodeURIComponent(run.pipeline) === params.branch
-        )[0];
-        // deep-linking across RunDetails for different pipelines yields 'runs' data for the wrong pipeline
+        );
+       // deep-linking across RunDetails for different pipelines yields 'runs' data for the wrong pipeline
         // during initial render. when runs are refetched the screen will render again with 'currentRun' correctly set
-        if (!currentRun) {
+        if (!foundRun) {
             return null;
         }
 
-        currentRun.name = params.pipeline;
-
-        const status = currentRun.result === 'UNKNOWN' ? currentRun.state : currentRun.result;
+        const currentRun = new RunRecord(foundRun);
+    
+        const status = currentRun.getComputedResult();
        
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
@@ -124,7 +124,7 @@ class RunDetails extends Component {
                     <div>
                         {React.cloneElement(
                             this.props.children,
-                            { baseUrl, result: new RunRecord(currentRun), ...this.props }
+                            { baseUrl, result: currentRun, ...this.props }
                         )}
                     </div>
                 </ModalBody>

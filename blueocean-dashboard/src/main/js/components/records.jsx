@@ -70,6 +70,14 @@ export class RunRecord extends Record({
     isCompleted() {
         return this.state !== 'UNKNOWN';
     }
+
+    isRunning() {
+        return this.state === 'RUNNING';
+    }
+
+    getComputedResult() {
+        return this.isCompleted ? this.result : this.state;
+    }
 }
 
 export const PullRequestRecord = Record({
