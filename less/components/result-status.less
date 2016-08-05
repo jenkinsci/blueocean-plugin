@@ -113,13 +113,12 @@
 .pipeline-result {
     .progress-spinner.queued circle {
         fill: none;
-        stroke: @brand-grey;
+        stroke: #fff;
     }
-
     .progress-spinner.queued circle.inner {
         display: block;
-        fill: @brand-grey;
-        stroke: @brand-grey;
+        fill: #fff;
+        stroke: #fff;
     }
 
     .svgResultStatus {
@@ -128,6 +127,9 @@
     }
 }
 
+.empty-state-content svg {
+    vertical-align: middle;
+}
 .progress-spinner.queued path {
     fill: none;
     stroke: none;
@@ -142,7 +144,6 @@
     fill: none;
     stroke: none;
 }
-
 
 .result-bg.success {
     background:@brand-success-lite;
