@@ -14,8 +14,10 @@ import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.hamcrest.collection.IsArrayContainingInAnyOrder;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
@@ -49,6 +51,9 @@ public class MultiBranchTest extends PipelineBaseTest {
 
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
+
+    @Rule
+    public GitSampleRepoRule sampleRepo1 = new GitSampleRepoRule();
 
 
     private final String[] branches={"master", "feature%2Fux-1", "feature2"};
@@ -721,6 +726,53 @@ public class MultiBranchTest extends PipelineBaseTest {
             fail(name + " project not found");
         }
         return p;
+    }
+
+    @Test
+    public void getPipelineJobActivities() throws Exception {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        sampleRepo1.init();
+        sampleRepo1.write("Jenkinsfile", "stage 'build'\n "+"node {echo 'Building'}\n"+
+            "stage 'test'\nnode { echo 'Testing'}\n" +
+            "sleep 10000 \n"+
+            "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        );
+        sampleRepo1.write("file", "initial content");
+        sampleRepo1.git("add", "Jenkinsfile");
+        sampleRepo1.git("commit", "--all", "--message=flow");
+
+        //create feature branch
+        sampleRepo1.git("checkout", "-b", "abc");
+        sampleRepo1.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
+            "   stage ('Build'); " +
+            "   echo ('Building'); " +
+            "   stage ('Test'); sleep 10000; " +
+            "   echo ('Testing'); " +
+            "   stage ('Deploy'); " +
+            "   echo ('Deploying'); " +
+            "}");
+        ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
+        sampleRepo1.write("file", "subsequent content1");
+        sampleRepo1.git("commit", "--all", "--message=tweaked1");
+
+
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo1.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+        scheduleAndFindBranchProject(mp);
+
+        for(WorkflowJob job : mp.getItems()) {
+            job.setConcurrentBuild(false);
+            job.scheduleBuild2(0);
+            job.scheduleBuild2(0);
+        }
+        List l = request().get("/organizations/jenkins/pipelines/p/activities").build(List.class);
+
+        Assert.assertEquals(4, l.size());
+        Assert.assertEquals("io.jenkins.blueocean.service.embedded.rest.QueueItemImpl", ((Map) l.get(0)).get("_class"));
+        Assert.assertEquals("io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl", ((Map) l.get(2)).get("_class"));
     }
 
 }
