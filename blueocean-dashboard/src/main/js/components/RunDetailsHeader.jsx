@@ -42,7 +42,7 @@ class RunDetailsHeader extends Component {
             <section className="status inverse">
                 <LiveStatusIndicator result={status} startTime={run.startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
-                  width="70px" height="70px" noBackground
+                  noBackground
                 />
             </section>
             <section className="table">
