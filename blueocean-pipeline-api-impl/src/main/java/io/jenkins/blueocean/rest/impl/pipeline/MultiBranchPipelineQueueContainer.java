@@ -32,7 +32,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
             Queue.Item item = Jenkins.getInstance().getQueue().getItem(Long.parseLong(name));
             if(item != null && item.task instanceof Job){
                 Job job = ((Job) item.task);
-                if(job.getParent() != null && job.getParent().getFullName().equals(multiBranchPipeline.mbp.getFullName()) {
+                if(job.getParent() != null && job.getParent().getFullName().equals(multiBranchPipeline.mbp.getFullName())) {
                     return QueueContainerImpl.getQueuedItem(item, job);
                 }
             }
