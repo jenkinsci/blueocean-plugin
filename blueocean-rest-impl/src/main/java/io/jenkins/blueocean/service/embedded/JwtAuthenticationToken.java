@@ -3,7 +3,11 @@ package io.jenkins.blueocean.service.embedded;
 import hudson.model.User;
 import io.jenkins.blueocean.auth.jwt.JwtToken;
 import io.jenkins.blueocean.commons.ServiceException;
+import jenkins.model.Jenkins;
+import org.acegisecurity.GrantedAuthority;
+import org.acegisecurity.GrantedAuthorityImpl;
 import org.acegisecurity.providers.AbstractAuthenticationToken;
+import org.acegisecurity.userdetails.UserDetails;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.NumericDate;
@@ -31,6 +35,7 @@ public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
 
 
     private final String name;
+    private final GrantedAuthority[] grantedAuthorities;
 
     public JwtAuthenticationToken(StaplerRequest request) {
         String authHeader = request.getHeader("Authorization");
@@ -81,13 +86,19 @@ public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
                     throw new ServiceException.UnauthorizedException("Invalid JWT token: expired");
                 }
                 String subject = claims.getSubject();
+
                 if(!subject.equals("anonymous")) { //if anonymous, we don't look in user db
                     User user = User.get(subject, false, Collections.emptyMap());
                     if (user == null) {
                         throw new ServiceException.UnauthorizedException("Invalid JWT token: subject " + subject + " not found");
                     }
+                    UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(user.getId());
+                    this.grantedAuthorities = d.getAuthorities();
+                }else{
+                    this.grantedAuthorities = new GrantedAuthority[] {new GrantedAuthorityImpl("anonymous")};
                 }
                 this.name = subject;
+
             } catch (InvalidJwtException e) {
                 logger.error("Invalid JWT token: "+e.getMessage(), e);
                 throw new ServiceException.UnauthorizedException("Invalid JWT token");
@@ -99,6 +110,7 @@ public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
             logger.error("Error parsing JWT token: "+e.getMessage(), e);
             throw new ServiceException.UnexpectedErrorException("Unexpected error");
         }
+        super.setAuthenticated(true);
     }
 
     @Override
@@ -114,5 +126,10 @@ public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public GrantedAuthority[] getAuthorities() {
+        return grantedAuthorities;
     }
 }
