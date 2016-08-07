@@ -110,6 +110,30 @@
     stroke: @brand-grey-lite;
 }
 
+.pipeline-result {
+    .progress-spinner.queued circle {
+        fill: none;
+        stroke: #fff;
+    }
+    .progress-spinner.queued circle.inner {
+        display: block;
+        fill: #fff;
+        stroke: #fff;
+    }
+
+    .svgResultStatus {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+.empty-state-content svg {
+    vertical-align: middle;
+}
+
+.empty-state-content span {
+    padding-left: 15px;
+}
 .progress-spinner.queued path {
     fill: none;
     stroke: none;
