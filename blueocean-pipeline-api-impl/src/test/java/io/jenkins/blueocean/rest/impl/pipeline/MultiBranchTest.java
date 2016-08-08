@@ -764,6 +764,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         scheduleAndFindBranchProject(mp);
 
         for(WorkflowJob job : mp.getItems()) {
+            job.getQueueItem().getFuture().waitForStart();
             job.setConcurrentBuild(false);
             job.scheduleBuild2(0);
             job.scheduleBuild2(0);
