@@ -43,7 +43,17 @@
 
         <body>
             <!-- App root -->
-            <div id="root" class="container-fluid">Loading...</div>
+            <div id="root" class="container-fluid">
+                Loading...
+                <noscript>
+                    <div>
+                        <a href="https://jenkins.io/projects/blueocean" target="_blank">
+                            Blue Ocean
+                        </a>
+                        requires JavaScript to function properly, please enable JavaScript or use a browser which supports it.
+                    </div>
+                </noscript>
+            </div>
             <!--
             The following Stapler adjunct adds the blueocean JavaScript bundle, as well
             as the blueocean CSS. See gulpfile.js.
