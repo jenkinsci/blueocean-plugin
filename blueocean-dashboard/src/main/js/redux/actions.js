@@ -6,6 +6,32 @@ import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
 import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
 
+/**
+ * This function maps a queue item into a run instancce.
+ *
+ * We do this because the api returns us queued items as well
+ * as runs and its easier to deal with them if they are modeled
+ * as the same thing. If the raw data is needed if can be fetched
+ * from _item.
+ */
+function _mapQueueToPsuedoRun(run) {
+    if (run._class === 'io.jenkins.blueocean.service.embedded.rest.QueueItemImpl') {
+        return {
+            id: String(run.expectedBuildNumber),
+            state: 'QUEUED',
+            pipeline: run.pipeline,
+            type: 'QueuedItem',
+            result: 'UNKNOWN',
+            job_run_queueId: run.id,
+            enQueueTime: run.queuedTime,
+            organization: run.organization,
+            changeSet: [],
+            _item: run,
+        };
+    }
+    return run;
+}
+
 // main actin logic
 export const ACTION_TYPES = keymirror({
     UPDATE_MESSAGES: null,
@@ -57,7 +83,7 @@ export const actionHandlers = {
         return state.set('currentRuns', null);
     },
     [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
-        return state.set('currentRuns', payload);
+        return state.set('currentRuns', payload.map((run) => _mapQueueToPsuedoRun(run)));
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
         return state.set('node', { ...payload });
@@ -69,7 +95,8 @@ export const actionHandlers = {
     },
     [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
         const runs = { ...state.runs } || {};
-        runs[id] = payload;
+
+        runs[id] = payload.map(run => _mapQueueToPsuedoRun(run));
         return state.set('runs', runs);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
@@ -558,7 +585,7 @@ export const actions = {
     fetchRunsIfNeeded(config) {
         return (dispatch) => {
             const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                `/pipelines/${config.pipeline}/runs/`;
+                `/pipelines/${config.pipeline}/activities/`;
             return dispatch(actions.fetchIfNeeded({
                 url: baseUrl,
                 id: config.pipeline,
