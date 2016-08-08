@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.collect.ImmutableMap;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
+import hudson.model.Queue;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
@@ -764,7 +765,10 @@ public class MultiBranchTest extends PipelineBaseTest {
         scheduleAndFindBranchProject(mp);
 
         for(WorkflowJob job : mp.getItems()) {
-            job.getQueueItem().getFuture().waitForStart();
+            Queue.Item item =  job.getQueueItem();
+            if(item != null ) {
+                item.getFuture().waitForStart();
+            }
             job.setConcurrentBuild(false);
             job.scheduleBuild2(0);
             job.scheduleBuild2(0);
