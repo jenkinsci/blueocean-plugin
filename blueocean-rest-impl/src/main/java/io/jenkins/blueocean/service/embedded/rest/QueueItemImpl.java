@@ -35,6 +35,11 @@ public class QueueItemImpl extends BlueQueueItem {
     }
 
     @Override
+    public String getOrganization() {
+        return OrganizationImpl.INSTANCE.getName();
+    }
+
+    @Override
     public String getPipeline() {
         return pipelineName;
     }

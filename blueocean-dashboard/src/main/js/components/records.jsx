@@ -45,7 +45,8 @@ export const ChangeSetRecord = Record({
     timestamp: null,
 });
 
-export const ActivityRecord = Record({
+export class RunRecord extends Record({
+    _class: null,
     changeSet: ChangeSetRecord,
     durationInMillis: null,
     enQueueTime: null,
@@ -60,7 +61,24 @@ export const ActivityRecord = Record({
     state: null,
     type: null,
     commitId: null,
-});
+}) {
+    isQueued() {
+        return this.state === 'QUEUED';
+    }
+
+    // We have a result
+    isCompleted() {
+        return this.result !== 'UNKNOWN';
+    }
+
+    isRunning() {
+        return this.state === 'RUNNING';
+    }
+
+    getComputedResult() {
+        return this.isCompleted() ? this.result : this.state;
+    }
+}
 
 export const PullRequestRecord = Record({
     pullRequest: {
@@ -74,7 +92,7 @@ export const PullRequestRecord = Record({
 export const RunsRecord = Record({
     _class: null,
     _links: null,
-    latestRun: ActivityRecord,
+    latestRun: RunRecord,
     name: null,
     weatherScore: 0,
     pullRequest: PullRequestRecord,
