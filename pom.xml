@@ -246,7 +246,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mailer</artifactId>
-            <version>1.13</version>
+            <version>1.16</version>
         </dependency>
 
         <dependency>
@@ -292,4 +292,13 @@
 
     </plugins>
   </build>
+
+    <profiles>
+        <profile>
+            <id>docker-dev-image</id>
+            <modules>
+                <module>blueocean-docker-dev-image</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
