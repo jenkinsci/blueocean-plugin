@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, Table, Progress } from '@jenkins-cd/design-language';
+import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Runs from './Runs';
 import Pipeline from '../api/Pipeline';
 import { RunRecord, ChangeSetRecord } from './records';
@@ -65,10 +65,10 @@ export class Activity extends Component {
     }
 
     render() {
-        const { currentRuns, pipeline } = this.props;
+        const { runs, pipeline } = this.props;
 
-        if (!currentRuns || pipeline.$pending) {
-            return <PageLoading />;
+        if (!runs || !pipeline || pipeline.$pending) {
+            return null;
         }
 
         // Only show the Run button for non multi-branch pipelines.
@@ -76,7 +76,7 @@ export class Activity extends Component {
         // the Branches/PRs tab.
         const showRunButton = (pipeline && !Pipeline.isMultibranch(pipeline));
 
-        if (currentRuns.$success && !currentRuns.length) {
+        if (runs.$success && !runs.length) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
         }
 
@@ -91,14 +91,13 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ];
 
-        
         return (<main>
-            {currentRuns.$pending && <Progress />}
+            {runs.$pending && <PageLoading />}
             <article className="activity">
                 {showRunButton && <RunNonMultiBranchPipeline pipeline={pipeline} buttonText="Run" />}
                 <Table className="activity-table fixed" headers={headers}>
                     {
-                        currentRuns.map((run, index) => {
+                        runs.map((run, index) => {
                             const changeset = run.changeSet;
                             let latestRecord = {};
                             if (changeset && changeset.length > 0) {
@@ -114,9 +113,9 @@ export class Activity extends Component {
                         })
                     }
                 </Table>
-                {currentRuns.$pager &&
-                    <button disabled={!currentRuns.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => currentRuns.$pager.fetchMore()}>
-                        {currentRuns.$pending ? 'Loading...' : 'Show More'}
+                {runs.$pager &&
+                    <button disabled={!runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
+                        {runs.$pending ? 'Loading...' : 'Show More'}
                     </button>
                 }
             </article>
@@ -133,12 +132,12 @@ Activity.contextTypes = {
 };
 
 Activity.propTypes = {
-    currentRuns: array,
+    runs: array,
     pipeline: object,
     fetchRuns: func,
     children: any,
 };
 
-const selectors = createSelector([runsSelector], (currentRuns) => ({ currentRuns }));
+const selectors = createSelector([runsSelector], (runs) => ({ runs }));
 
 export default connect(selectors, actions)(Activity);

@@ -1,9 +1,8 @@
 import React from 'react';
-import Fullscreen from './Fullscreen';
 import { Progress } from '@jenkins-cd/design-language';
 
 /**
- * Simple component to render a fullscreen loading animation
+ * Simple component to render a loading animation
  */
 export default class PageLoading extends React.Component {
     constructor(props) {
@@ -16,7 +15,7 @@ export default class PageLoading extends React.Component {
     
     componentWillMount() {
         if (this.props.duration) {
-            this.state.percentage = 0;
+            this.setState({ percentage: 0 });
             const updateSpeed = 10;
             let total = 0;
             this.update = () => {
@@ -45,9 +44,9 @@ export default class PageLoading extends React.Component {
     
     render() {
         return (
-            <Fullscreen className="page-loading">
+            <div className="page-loading">
                 <Progress percentage={this.state.percentage} />
-            </Fullscreen>
+            </div>
         );
     }
 }

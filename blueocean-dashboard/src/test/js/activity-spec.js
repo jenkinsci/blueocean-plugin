@@ -129,19 +129,18 @@ const
     }
   ];
 
-describe("Activity should render", () => {
+data.$success = true; // fetch flag
 
-  it("does renders the Activity with data", () => {
-    const wrapper =  shallow(<Activity runs={data} />);
+describe("Activity", () => {
+
+  it("render the Activity with data", () => {
+    const wrapper =  shallow(<Activity runs={data} pipeline={{}} />);
     // does data renders?
     assert.isNotNull(wrapper)
     assert.equal(wrapper.find('Runs').length, data.length)
   });
 
-});
-
-describe("Activity should not render", () => {
-  it("does not renders the Activity without data", () => {
+  it("does not render without data", () => {
     const wrapper =  shallow(<Activity />).node;
     assert.isNull(wrapper);
   });
@@ -149,7 +148,7 @@ describe("Activity should not render", () => {
 
 describe('Pipeline -> Activity List', () => {
     it('should not duplicate changeset messages', () => {
-        const wrapper =  shallow(<Activity runs={data} />);
+        const wrapper =  shallow(<Activity runs={data} pipeline={{}} />);
         assert.isNotNull(wrapper);
 
         const runs = wrapper.find('Runs');

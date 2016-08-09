@@ -50,10 +50,11 @@ describe("Redux Store - ", () => {
 
         const store = mockStore({ adminStore: {}});
         return store.dispatch(
-            actions.fetchRunsIfNeeded({
+            actions.fetchRuns({
                 getAppURLBase() {
                     return baseUrl;
                 },
+                organization: 'orgg',
                 pipeline: 'xxx'
             }))
             .then(() => { // return of async actions
