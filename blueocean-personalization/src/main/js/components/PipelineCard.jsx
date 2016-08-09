@@ -6,7 +6,9 @@ import { Link } from 'react-router';
 import { Icon } from 'react-material-icons-blue';
 import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 
-import { stopProp } from './StopPropagation';
+const stopProp = (event) => {
+    event.stopPropagation();
+};
 
 /**
  * PipelineCard displays an informational card about a Pipeline and its status.
