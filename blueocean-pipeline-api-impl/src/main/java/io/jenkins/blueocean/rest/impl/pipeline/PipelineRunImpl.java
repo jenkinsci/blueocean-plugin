@@ -20,8 +20,10 @@ import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.BlueRunFactory;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.LinkedHashMap;
@@ -83,9 +85,13 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
-    public BlueRun stop() {
-        run.doStop();
-        return this;
+    public BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs){
+        return stop(blocking, timeOutInSecs, new StoppableRun() {
+            @Override
+            public void stop() {
+                run.doStop();
+            }
+        });
     }
 
 
