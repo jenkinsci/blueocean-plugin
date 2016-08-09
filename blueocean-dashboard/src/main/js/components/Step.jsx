@@ -134,7 +134,10 @@ export default class Node extends Component {
             }
             logProps.logArray = log.logArray;
         }
-        return (<div className="logConsole">
+
+        const logConsoleClass = `logConsole step-${id}`;
+
+        return (<div className={logConsoleClass}>
             <ResultItem
               key={id}
               result={runResult}
