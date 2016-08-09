@@ -13,14 +13,14 @@ export class DeDupeCallTracker {
 
     /**
      * Generalization of duplicate request consolidation:
-     * 
+     *
      * @key: key to use to track the duplicate requests
      * @promiseCreator: function that will return an initial promise, e.g. () => fetch(...)
      * @return a Promise
      */
     dedupe(key, promiseCreator) {
         // get active or create
-        return this.promises[key] || (this.promises[key] = 
+        return this.promises[key] || (this.promises[key] =
             promiseCreator()
             .then((data) => {
                 delete this.promises[key];
@@ -38,7 +38,7 @@ const deDupeCallTracker = new DeDupeCallTracker();
 
 /**
  * Generalization of duplicate request consolidation:
- * 
+ *
  * @key: key to use to track the duplicate requests
  * @promiseCreator: function that will return an initial promise, e.g. () => fetch(...)
  * @return a Promise

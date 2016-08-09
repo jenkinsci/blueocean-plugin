@@ -165,7 +165,7 @@ class Pager {
                     currentData: outData,
                     startIndex: existingData.length > 0 ? this.startIndex : first,
                 });
-                Object.freeze(outData); // already deep frozen, only need to shallow freeze here
+                Object.freeze(outData); // children are already frozen, only shallow freeze here
                 onData(outData);
             })
             .catch(err => onData(assignObj(concatenator(this, existingData), { $failed: err })));

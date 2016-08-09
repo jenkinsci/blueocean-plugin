@@ -244,7 +244,6 @@ function clone(json) {
     return JSON.parse(JSON.stringify(json));
 }
 
-// FIXME: Ignoring isFetching for now
 export const actions = {
     clearPipelinesData: () => ({ type: ACTION_TYPES.CLEAR_PIPELINES_DATA }),
     clearPipelineData() {
@@ -277,18 +276,16 @@ export const actions = {
     /**
      * Fetch a specific pipeline, sets as current
      */
-    fetchPipeline(config, organizationName, pipelineName) {
-        return (dispatch) => {
-            const baseUrl = config.getAppURLBase();
-            return smartFetch(
-                `${baseUrl}/rest/organizations/${organizationName}/pipelines/${pipelineName}`,
+    fetchPipeline(organizationName, pipelineName) {
+        return (dispatch) =>
+            smartFetch(
+                getRestUrl({ organization: organizationName, pipeline: pipelineName }),
                 data => dispatch({
                     id: pipelineName,
                     type: ACTION_TYPES.SET_PIPELINE,
                     payload: data,
                 })
             );
-        };
     },
 
     processJobQueuedEvent(event) {

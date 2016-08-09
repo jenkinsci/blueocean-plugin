@@ -13,7 +13,6 @@ import {
     PageHeader,
     Title,
     PageTabs,
-    Progress,
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
@@ -28,13 +27,15 @@ export class PipelinePage extends Component {
     }
     
     componentWillMount() {
-        this.props.fetchPipeline(this.context.config, this.props.params.organization, this.props.params.pipeline);
+        if (this.props.params) {
+            this.props.fetchPipeline(this.props.params.organization, this.props.params.pipeline);
+        }
     }
     
     _componentWillReceiveProps(nextProps) {
         if (this.props.params.organziation !== nextProps.params.organization
         || this.props.params.pipeline !== nextProps.params.pipeline) {
-            nextProps.fetchPipeline(this.context.confige);
+            nextProps.fetchPipeline(nextProps.params.organization, nextProps.params.pipeline);
         }
     }
     
@@ -43,11 +44,8 @@ export class PipelinePage extends Component {
         const { organization, name, fullName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
+        const isReady = pipeline && !pipeline.$pending;
         
-        if (!pipeline) {
-            return <PageLoading duration={500} />;
-        }
-
         if (pipeline && pipeline.$failed) {
             return <NotFound />;
         }
@@ -57,7 +55,13 @@ export class PipelinePage extends Component {
         return (
             <Page>
                 <PageHeader>
-                    {!pipeline || pipeline.$pending && <Progress />}
+                    {!isReady && <PageLoading duration={2000} />}
+                    {!isReady &&
+                    <Title>
+                        <h1><Link to={orgUrl}>{organization}</Link>
+                        <span> / </span></h1>
+                    </Title>}
+                    {isReady &&
                     <Title>
                         <WeatherIcon score={pipeline.weatherScore} size="large" />
                         <h1>
@@ -71,13 +75,14 @@ export class PipelinePage extends Component {
                           pipeline={this.context.pipeline}
                         />
                     </Title>
+                    }
                     <PageTabs base={baseUrl}>
                         <TabLink to="/activity">Activity</TabLink>
                         <TabLink to="/branches">Branches</TabLink>
                         <TabLink to="/pr">Pull Requests</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {React.cloneElement(this.props.children, { pipeline })}
+                {isReady && React.cloneElement(this.props.children, { pipeline })}
             </Page>
         );
     }
