@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Runs from './Runs';
 import Pipeline from '../api/Pipeline';
-import { ActivityRecord, ChangeSetRecord } from './records';
+import { RunRecord, ChangeSetRecord } from './records';
 import RunPipeline from './RunPipeline.jsx';
 import {
     actions,
@@ -88,26 +88,27 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ];
 
-
+        
         return (<main>
             <article className="activity">
                 {showRunButton && <RunNonMultiBranchPipeline pipeline={pipeline} buttonText="Run" />}
                 <Table className="activity-table fixed" headers={headers}>
-                    { runs.map((run, index) => {
-                        const changeset = run.changeSet;
-                        let latestRecord = {};
-                        if (changeset && changeset.length > 0) {
-                            latestRecord = new ChangeSetRecord(changeset[
-                                Object.keys(changeset)[0]
-                            ]);
-                        }
-                        const props = {
-                            key: index,
-                            changeset: latestRecord,
-                            result: new ActivityRecord(run),
-                        };
-                        return (<Runs {...props} />);
-                    })}
+                    {
+                        runs.map((run, index) => {
+                            const changeset = run.changeSet;
+                            let latestRecord = {};
+                            if (changeset && changeset.length > 0) {
+                                latestRecord = new ChangeSetRecord(changeset[
+                                    Object.keys(changeset)[0]
+                                ]);
+                            }
+
+                            return (<Runs {...{
+                                key: index,
+                                changeset: latestRecord,
+                                result: new RunRecord(run) }} />);
+                        })
+                    }
                 </Table>
             </article>
         </main>);

@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Action;
 import hudson.model.Item;
@@ -8,7 +10,6 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
@@ -16,9 +17,13 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
@@ -95,6 +100,7 @@ public class PipelineImpl extends BluePipeline {
     public BlueQueueContainer getQueue() {
         return new QueueContainerImpl(this);
     }
+
 
     @WebMethod(name="") @DELETE
     public void delete() throws IOException, InterruptedException {
@@ -179,4 +185,8 @@ public class PipelineImpl extends BluePipeline {
 
     }
 
+    @Navigable
+    public Container<Resource> getActivities() {
+        return Containers.fromResource(getLink(),Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+    }
 }

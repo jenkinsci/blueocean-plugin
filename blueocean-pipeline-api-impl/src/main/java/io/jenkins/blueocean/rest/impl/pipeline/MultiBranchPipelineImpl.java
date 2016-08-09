@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Job;
@@ -10,17 +12,7 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
-import io.jenkins.blueocean.rest.model.BlueActionProxy;
-import io.jenkins.blueocean.rest.model.BlueFavorite;
-import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
-import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
-import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BluePipelineContainer;
-import io.jenkins.blueocean.rest.model.BlueQueueContainer;
-import io.jenkins.blueocean.rest.model.BlueQueueItem;
-import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.BlueRunContainer;
-import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.rest.model.*;
 import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
@@ -30,6 +22,7 @@ import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
+import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.ArrayList;
@@ -356,5 +349,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             }
             return null;
         }
+    }
+
+    @Navigable
+    public Container<Resource> getActivities() {
+        return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
     }
 }
