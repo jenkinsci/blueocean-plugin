@@ -120,8 +120,7 @@ export class SseBus {
             event.blueocean_job_branch_name :
             event.blueocean_job_pipeline_name;
 
-        const baseUrl = '/blue';
-        const runUrl = cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.job_run_queueId}`);
+        const runUrl = cleanSlashes(`${event.blueocean_job_rest_url}/runs/${event.job_run_queueId}`);
 
         newRun._links = {
             self: {
