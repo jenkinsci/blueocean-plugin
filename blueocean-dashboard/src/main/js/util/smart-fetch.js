@@ -158,9 +158,24 @@ export function fetch(url, options, onData) {
     };
 }
 
+/**
+ * Copy paging and fetch data
+ */
+export function applyFetchMarkers(toObj, fromObj) {
+    if (fromObj) {
+        for (const k in fromObj) {
+            if (k && k.indexOf && k.indexOf('$') === 0) {
+                toObj[k] = fromObj[k]; // eslint-disable-line no-param-reassign
+            }
+        }
+    }
+    assignObj(toObj); // eslint-disable-line no-use-before-define
+    return toObj;
+}
+
 function assignObj(obj, vals) {
-    obj.map = function () {
-        var out = Array.prototype.map.apply(this, arguments);
+    obj.map = function map(...args) { // eslint-disable-line no-param-reassign
+        const out = Array.prototype.map.apply(this, args);
         applyFetchMarkers(out, this);
         return out;
     };
@@ -230,21 +245,6 @@ export function arrayConcatenator(pager, existing, incoming) {
         return [].concat(existing);
     }
     return existing.concat(incoming.length > pager.pageSize ? incoming.slice(0, -1) : incoming);
-}
-
-/**
- * Copy paging and fetch data
- */
-export function applyFetchMarkers(toObj, fromObj) {
-    if (fromObj) {
-        for (var k in fromObj) {
-            if (k && k.indexOf && k.indexOf('$') === 0) {
-                toObj[k] = fromObj[k];
-            }
-        }
-    }
-    assignObj(toObj);
-    return toObj;
 }
 
 /**

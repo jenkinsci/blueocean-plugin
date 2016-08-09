@@ -21,6 +21,12 @@ import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
 
 export class PipelinePage extends Component {
+    getChildContext() {
+        return {
+            pipeline: this.props.pipeline,
+        };
+    }
+    
     componentWillMount() {
         this.props.fetchPipeline(this.context.config, this.props.params.organization, this.props.params.pipeline);
     }
@@ -28,14 +34,8 @@ export class PipelinePage extends Component {
     _componentWillReceiveProps(nextProps) {
         if (this.props.params.organziation !== nextProps.params.organization
         || this.props.params.pipeline !== nextProps.params.pipeline) {
-            nextProps.fetchPipeline(this.context.confige);  
+            nextProps.fetchPipeline(this.context.confige);
         }
-    }
-    
-    getChildContext() {
-        return {
-            pipeline: this.props.pipeline,
-        };
     }
     
     render() {

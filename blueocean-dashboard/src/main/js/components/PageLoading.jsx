@@ -3,7 +3,7 @@ import Fullscreen from './Fullscreen';
 import { Progress } from '@jenkins-cd/design-language';
 
 /**
- * Simple component to render a fullscreen 404 page
+ * Simple component to render a fullscreen loading animation
  */
 export default class PageLoading extends React.Component {
     constructor(props) {
@@ -17,8 +17,8 @@ export default class PageLoading extends React.Component {
     componentWillMount() {
         if (this.props.duration) {
             this.state.percentage = 0;
-            var updateSpeed = 10;
-            var total = 0;
+            const updateSpeed = 10;
+            let total = 0;
             this.update = () => {
                 if (this.running) {
                     if (total >= 1) {
@@ -51,3 +51,7 @@ export default class PageLoading extends React.Component {
         );
     }
 }
+
+PageLoading.propTypes = {
+    duration: React.PropTypes.number,
+};

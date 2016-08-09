@@ -9,7 +9,7 @@ import {
     connect,
 } from '../redux';
 
-const { object, array, func, string } = PropTypes;
+const { object, array, func, string, any } = PropTypes;
 
 const EmptyState = ({ repoName }) => (
     <main>
@@ -134,6 +134,7 @@ MultiBranch.contextTypes = {
 MultiBranch.propTypes = {
     branches: array,
     fetchBranchesIfNeeded: func,
+    children: any,
 };
 
 const selectors = createSelector([branchSelector], (branches) => ({ branches }));

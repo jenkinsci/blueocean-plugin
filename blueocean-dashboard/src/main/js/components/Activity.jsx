@@ -12,7 +12,7 @@ import {
 } from '../redux';
 import PageLoading from './PageLoading';
 
-const { object, array, func, string, bool } = PropTypes;
+const { object, array, func, string, bool, any } = PropTypes;
 
 const EmptyState = ({ repoName, pipeline, showRunButton }) => (
     <main>
@@ -62,12 +62,6 @@ export class Activity extends Component {
             config.organization = organization;
             this.props.fetchRuns(config);
         }
-    }
-
-    fetchNextRuns() {
-        const pagination = this.props.allRuns[this.context.params.pipeline];
-        pagination.currentPage++;
-        this.props.fetchRuns(this.context.config);
     }
 
     render() {
@@ -142,6 +136,7 @@ Activity.propTypes = {
     currentRuns: array,
     pipeline: object,
     fetchRuns: func,
+    children: any,
 };
 
 const selectors = createSelector([runsSelector], (currentRuns) => ({ currentRuns }));

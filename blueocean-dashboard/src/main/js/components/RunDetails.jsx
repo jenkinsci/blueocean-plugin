@@ -20,7 +20,7 @@ import { getLocation } from '../util/UrlUtils';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 
-const { func, object, array, any, string } = PropTypes;
+const { func, object, any, string } = PropTypes;
 
 class RunDetails extends Component {
     componentWillMount() {
@@ -130,6 +130,7 @@ RunDetails.contextTypes = {
 
 RunDetails.propTypes = {
     children: PropTypes.node,
+    params: any,
     pipeline: object,
     run: object,
     isMultiBranch: any,

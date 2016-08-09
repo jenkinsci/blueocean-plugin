@@ -568,29 +568,26 @@ export const actions = {
     },
     
     fetchRuns(config) {
-        // actions.dispatchCache('runs', (dispatch) => {
-        return (dispatch, getState) =>
-         paginate({
-             urlProvider: paginateUrl(
+        return (dispatch) => paginate({
+            urlProvider: paginateUrl(
                 `${config.getAppURLBase()}/rest/organizations/${config.organization}/pipelines/${config.pipeline}/activities/`),
-             onData: data => {
-                 const general = {
-                     id: config.pipeline,
-                     type: 'runs',
-                     payload: data,
-                 };
-                // dispatch(general);
-                 actions.dispatchToMultiple(dispatch, general.id, general.payload, {
-                     current: ACTION_TYPES.SET_CURRENT_RUN_DATA,
-                     general: ACTION_TYPES.SET_RUNS_DATA,
-                     clear: ACTION_TYPES.CLEAR_CURRENT_RUN_DATA,
-                 });
-             },
-         });
+            onData: data => {
+                const general = {
+                    id: config.pipeline,
+                    type: 'runs',
+                    payload: data,
+                };
+                actions.dispatchToMultiple(dispatch, general.id, general.payload, {
+                    current: ACTION_TYPES.SET_CURRENT_RUN_DATA,
+                    general: ACTION_TYPES.SET_RUNS_DATA,
+                    clear: ACTION_TYPES.CLEAR_CURRENT_RUN_DATA,
+                });
+            },
+        });
     },
 
     fetchRun(config) {
-        return (dispatch, getState) =>
+        return (dispatch) =>
         smartFetch(
             getRestUrl(config),
             data => dispatch({
@@ -867,8 +864,8 @@ export const actions = {
             return smartFetch(url, data =>
                 dispatch({
                     type: ACTION_TYPES.SET_TEST_RESULTS,
-                    payload: data
-                }))
+                    payload: data,
+                }));
         };
     },
 

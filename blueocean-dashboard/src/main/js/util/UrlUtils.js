@@ -44,16 +44,16 @@ export const uriString = (input) => encodeURIComponent(input).replace(/%2F/g, '%
 export const fetchAllSuffix = '?start=0';
 
 // Add fetchAllSuffix in case it is needed
-export const applyFetchAll = function (config, url) {
+export function applyFetchAll(config, url) {
 // if we pass fetchAll means we want the full log -> start=0 will trigger that on the server
     if (config.fetchAll && !url.includes(fetchAllSuffix)) {
         return `${url}${fetchAllSuffix}`;
     }
     return url;
-};
+}
 
 // using the hook 'location.search'.includes('start=0') to trigger fetchAll
-export const calculateFetchAll = function (props) {
+export function calculateFetchAll(props) {
     const { location: { search } } = props;
 
     if (search) {
@@ -64,7 +64,7 @@ export const calculateFetchAll = function (props) {
         }
     }
     return false;
-};
+}
 
 /*
  * helper to calculate log url. When we have a node we get create a special url, otherwise we use the url passed to us
@@ -157,8 +157,8 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
     const pipelineName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
     const organizationName = organization ||
         (typeof pipeline === 'object' ? pipeline.organization : '');
-    var jenkinsUrl = require('../config').getJenkinsRootURL();
-    var url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
+    const jenkinsUrl = require('../config').getJenkinsRootURL();
+    let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
     if (pipelineName) {
         url += `/pipelines/${encodeURIComponent(pipelineName)}`;
     }
@@ -183,6 +183,7 @@ export function getLocation({ location, organization, pipeline, branch, runId, t
         (typeof pipeline === 'object' ? pipeline.organization : '');
     const basePageName = basePage || location &&
         (location.pathname ? location.pathname : location).split('/')[4];
+    /* eslint-disable prefer-template */
     let url = '/organizations/' +
         encodeURIComponent(organizationName) +
         '/' + encodeURIComponent(pipelineName) +
@@ -193,6 +194,7 @@ export function getLocation({ location, organization, pipeline, branch, runId, t
         '/' + encodeURIComponent(runId) +
         (tab ? ('/' + tab) : '');
     }
+    /* eslint-enable prefer-template */
     return url;
 }
 
@@ -205,23 +207,16 @@ export function endSlash(str) {
         return str;
     }
     if (str.charAt(str.length - 1) !== '/') {
-        return str + '/';
+        return `${str}/`;
     }
     return str;
-}
-
-/**
- * Returns a relative URL based on the current location
- */
-export function relativeUrl(location, ...args) {
-    return endSlash(location.pathname) + buildUrl.apply(null, args);
 }
 
 /**
  * Constructs an escaped url based on the arguments, with forward slashes between them
  * e.g. buildURL('organizations', orgName, 'runs', runId) => organizations/my%20org/runs/34
  */
-export const buildUrl = (...args) => {
+export function buildUrl(...args) {
     let url = '';
     for (let i = 0; i < args.length; i++) {
         if (i > 0) {
@@ -230,4 +225,11 @@ export const buildUrl = (...args) => {
         url += encodeURIComponent(args[i]);
     }
     return url;
-};
+}
+
+/**
+ * Returns a relative URL based on the current location
+ */
+export function relativeUrl(location, ...args) {
+    return endSlash(location.pathname) + buildUrl.apply(null, args);
+}

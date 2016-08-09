@@ -9,7 +9,7 @@ import {
     connect,
 } from '../redux';
 
-const { func, object, array, string } = PropTypes;
+const { func, object, array, string, any } = PropTypes;
 
 const EmptyState = ({ repoName }) => (
     <main>
@@ -52,7 +52,7 @@ export class PullRequests extends Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps() {
         if (this.context.config && this.context.params) {
             const {
                 config = {},
@@ -127,6 +127,7 @@ PullRequests.contextTypes = {
 };
 
 PullRequests.propTypes = {
+    children: any,
     branches: array,
     fetchBranchesIfNeeded: func,
 };

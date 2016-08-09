@@ -1,5 +1,3 @@
-import { Route, Redirect, IndexRoute, IndexRedirect } from 'react-router';
-import React from 'react';
 import Dashboard from './Dashboard';
 import OrganizationPipelines from './OrganizationPipelines';
 import {
@@ -27,8 +25,8 @@ const DynamicRoutes = {
     },
 };
 
-function GoTo(path) {
-    var next = path;
+function goTo(path) {
+    let next = path;
     while (next.charAt(0) === '/') {
         next = next.substring(1);
     }
@@ -41,8 +39,8 @@ function GoTo(path) {
 
 // multibranch-pr-github/detail/test-pass-fail-stage/1/pipeline
 // :pipeline/detail/:branch/:runId/pipeline
-const RunDetailRoutes = { path: 'detail(/branch/:branch)/:runId', component: RunDetails,
-    indexRoute: GoTo('pipeline'),
+const runDetailRoutes = { path: 'detail(/branch/:branch)/:runId', component: RunDetails,
+    indexRoute: goTo('pipeline'),
     childRoutes: [
         { path: 'pipeline', component: RunDetailsPipeline, childRoutes: [
             { path: ':node', component: RunDetailsPipeline },
@@ -54,36 +52,26 @@ const RunDetailRoutes = { path: 'detail(/branch/:branch)/:runId', component: Run
 };
 
 export default (
-    { path: '', component: Dashboard, indexRoute: GoTo('pipelines'),
+    { path: '', component: Dashboard, indexRoute: goTo('pipelines'),
         childRoutes: [
         { path: 'organizations/:organization', component: OrganizationPipelines,
-            indexRoute: GoTo('pipelines'),
+            indexRoute: goTo('pipelines'),
             childRoutes: [
 
             { path: 'pipelines', component: Pipelines },
 
             { path: ':pipeline', component: PipelinePage,
-                indexRoute: GoTo('activity'),
+                indexRoute: goTo('activity'),
                 childRoutes: [
 
                 { path: 'branches', component: MultiBranch,
-                    childRoutes: [{ path: 'detail(/branch/:branch)/:runId', component: RunDetails,
-    indexRoute: GoTo('pipeline'),
-    childRoutes: [
-        { path: 'pipeline', component: RunDetailsPipeline, childRoutes: [
-            { path: ':node', component: RunDetailsPipeline },
-        ] },
-        { path: 'changes', component: RunDetailsChanges },
-        { path: 'tests', component: RunDetailsTests },
-        { path: 'artifacts', component: RunDetailsArtifacts },
-    ],
-}] },
+                    childRoutes: [runDetailRoutes] },
 
                 { path: 'activity', component: Activity,
-                    childRoutes: [RunDetailRoutes] },
+                    childRoutes: [runDetailRoutes] },
 
                 { path: 'pr', component: PullRequests,
-                    childRoutes: [RunDetailRoutes] },
+                    childRoutes: [runDetailRoutes] },
 
                     DynamicRoutes,
                 ] },

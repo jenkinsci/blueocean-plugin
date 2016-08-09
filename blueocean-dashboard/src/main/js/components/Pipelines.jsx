@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import PipelineRowItem from './PipelineRowItem';
-import { PipelineRecord } from './records';
 
 import { Page, PageHeader, Table, Title, Progress } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
