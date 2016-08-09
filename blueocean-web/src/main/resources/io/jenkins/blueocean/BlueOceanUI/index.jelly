@@ -55,7 +55,16 @@
                 lb('go',10);lb('long',1000);lb('longer',6000);
             </script>
             <!-- App root -->
-            <div id="root" class="container-fluid"></div>
+            <div id="root" class="container-fluid">
+                <noscript>
+                    <div>
+                        <a href="https://jenkins.io/projects/blueocean" target="_blank">
+                            Blue Ocean
+                        </a>
+                        requires JavaScript to function properly, please enable JavaScript or use a browser which supports it.
+                    </div>
+                </noscript>
+            </div>
             <!--
             The following Stapler adjunct adds the blueocean JavaScript bundle, as well
             as the blueocean CSS. See gulpfile.js.
