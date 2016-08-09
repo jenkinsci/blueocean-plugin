@@ -4,6 +4,49 @@
 import defaultFetch from 'isomorphic-fetch';
 
 /**
+ * Trims duplicate forward slashes to a single slash and adds trailing slash if needed.
+ * @param url
+ * @returns {string}
+ */
+export const cleanSlashes = (url) => {
+    if (url.indexOf('//') !== -1) {
+        let cleanUrl = url.replace('//', '/');
+        cleanUrl = cleanUrl.substr(-1) === '/' ?
+            cleanUrl : `${cleanUrl}/`;
+
+        return cleanSlashes(cleanUrl);
+    }
+
+    return url;
+};
+
+// TODO: migrate all this code down to 'fetch'
+function checkStatus(response) {
+    if (response.status >= 300 || response.status < 200) {
+        const error = new Error(response.statusText);
+        error.response = response;
+        throw error;
+    }
+    return response;
+}
+
+function parseJSON(response) {
+    return response.json()
+    // FIXME: workaround for status=200 w/ empty response body that causes error in Chrome
+    // server should probably return HTTP 204 instead
+        .catch((error) => {
+            if (error.message === 'Unexpected end of JSON input') {
+                return {};
+            }
+            throw error;
+        });
+}
+
+function clone(json) {
+    return JSON.parse(JSON.stringify(json));
+}
+
+/**
  * Wraps the SSE Gateway and fetches data related to events from REST API.
  * TODO: should probably send additional data *and* the original event to callback
  */
@@ -36,30 +79,31 @@ export class SseBus {
     }
 
     _handleJobEvent(event) {
+        console.log('job event', event.jenkins_event, event.blueocean_job_rest_url, event);
         switch (event.jenkins_event) {
-            case 'job_crud_created':
-            case 'job_crud_deleted':
-            case 'job_crud_renamed':
-                this._refetchPipelines();
-                break;
-            case 'job_run_queue_buildable':
-            case 'job_run_queue_enter':
-                this._enqueueJob(event);
-                break;
-            case 'job_run_queue_left':
-            case 'job_run_queue_blocked': {
-                break;
-            }
-            case 'job_run_started': {
-               this._updateJob(event);
-                break;
-            }
-            case 'job_run_ended': {
-                this._updateJob(event);
-                break;
-            }
-            default :
-            // Else ignore the event.
+        case 'job_crud_created':
+        case 'job_crud_deleted':
+        case 'job_crud_renamed':
+            this._refetchPipelines();
+            break;
+        case 'job_run_queue_buildable':
+        case 'job_run_queue_enter':
+            this._enqueueJob(event);
+            break;
+        case 'job_run_queue_left':
+        case 'job_run_queue_blocked': {
+            break;
+        }
+        case 'job_run_started': {
+            this._updateJob(event);
+            break;
+        }
+        case 'job_run_ended': {
+            this._updateJob(event);
+            break;
+        }
+        default :
+        // Else ignore the event.
         }
     }
 
@@ -88,8 +132,6 @@ export class SseBus {
         newRun.state = 'QUEUED';
         newRun.result = 'UNKNOWN';
 
-        console.log('enqueueJob', event);
-
         if (this.jobListenerExternal) {
             this.jobListenerExternal(newRun);
         }
@@ -103,16 +145,16 @@ export class SseBus {
             .then(checkStatus)
             .then(parseJSON)
             .then((data) => {
-                console.log('updateJob', event, data);
+                const copy = clone(data);
 
                 if (event.jenkins_event === 'job_run_ended') {
-                    data.state = 'FINISHED';
+                    copy.state = 'FINISHED';
                 } else {
-                    data.state = 'RUNNING';
+                    copy.state = 'RUNNING';
                 }
 
                 if (this.jobListenerExternal) {
-                    this.jobListenerExternal(data);
+                    this.jobListenerExternal(copy);
                 }
             });
     }
@@ -120,45 +162,4 @@ export class SseBus {
     _updateMultiBranchPipelineBranches() {
         // TODO: implement once migration into commons JS
     }
-
-
 }
-
-// TODO: migrate all this code down to 'fetch'
-function checkStatus(response) {
-    if (response.status >= 300 || response.status < 200) {
-        const error = new Error(response.statusText);
-        error.response = response;
-        throw error;
-    }
-    return response;
-}
-
-function parseJSON(response) {
-    return response.json()
-    // FIXME: workaround for status=200 w/ empty response body that causes error in Chrome
-    // server should probably return HTTP 204 instead
-        .catch((error) => {
-            if (error.message === 'Unexpected end of JSON input') {
-                return {};
-            }
-            throw error;
-        });
-}
-
-/**
- * Trims duplicate forward slashes to a single slash and adds trailing slash if needed.
- * @param url
- * @returns {string}
- */
-export const cleanSlashes = (url) => {
-    if (url.indexOf('//') !== -1) {
-        let cleanUrl = url.replace('//', '/');
-        cleanUrl = cleanUrl.substr(-1) === '/' ?
-            cleanUrl : `${cleanUrl}/`;
-
-        return cleanSlashes(cleanUrl);
-    }
-
-    return url;
-};
