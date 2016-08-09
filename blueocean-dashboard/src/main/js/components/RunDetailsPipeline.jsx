@@ -44,7 +44,8 @@ export class RunDetailsPipeline extends Component {
         this.state = { followAlong: props && props.result && props.result.state !== 'FINISHED' };
         this.listener = {};
         this._handleKeys = this._handleKeys.bind(this);
-        this.onScrollHandler = this.onScrollHandler.bind(this);
+        this._onScrollHandler = this._onScrollHandler.bind(this);
+        this._onSseEvent = this._onSseEvent.bind(this);
     }
 
     componentWillMount() {
@@ -151,14 +152,14 @@ export class RunDetailsPipeline extends Component {
 
     // need to register handler to step out of karaoke mode
     // we bail out on scroll up
-    onScrollHandler(elem) {
+    _onScrollHandler(elem) {
         if (elem.deltaY < 0 && this.state.followAlong) {
             this.setState({ followAlong: false });
         }
     }
 
-      // Listen for pipeline flow node events.
-        // We filter them only for steps and the end event all other we let pass
+    // Listen for pipeline flow node events.
+    // We filter them only for steps and the end event all other we let pass
     _onSseEvent(event) {
         const { fetchNodes, fetchSteps } = this.props;
         const jenkinsEvent = event.jenkins_event;

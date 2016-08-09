@@ -185,7 +185,6 @@ public class PipelineImpl extends BluePipeline {
 
     }
 
-    @Exported(inline = true)
     @Navigable
     public Container<Resource> getActivities() {
         return Containers.fromResource(getLink(),Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
