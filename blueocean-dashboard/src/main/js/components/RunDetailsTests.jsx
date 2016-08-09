@@ -42,7 +42,11 @@ export class RunDetailsTests extends Component {
             return null;
         }
         
-        if (!testResults.suites) {
+        if (testResults.$pending) {
+            return <div>PENDING</div>;
+        }
+        
+        if (testResults.$failed) {
             return <EmptyState />;
         }
         

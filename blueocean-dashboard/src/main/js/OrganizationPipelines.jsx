@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { Failure } from './util/FetchStatus';
 import {
     actions,
     pipelines as pipelinesSelector,
@@ -15,18 +14,8 @@ class OrganizationPipelines extends Component {
 
     // FIXME: IMO the following should be dropped
     getChildContext() {
-        const {
-            params,
-            pipelines,
-        } = this.props;
-
-
-        // The specific pipeline we may be focused on
-        const pipeline = this._selectPipeline(pipelines, params);
-
         return {
-            pipelines,
-            pipeline,
+            pipelines: this.props.pipelines,
         };
     }
 
@@ -34,7 +23,7 @@ class OrganizationPipelines extends Component {
         const config = this.context.config;
         if (config) {
             const { organization } = this.context.params;
-            this.props.fetchPipelinesIfNeeded(this.context.config, organization);
+            this.props.fetchPipelines(this.context.config, organization);
 
             const _this = this;
 
@@ -87,38 +76,21 @@ class OrganizationPipelines extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        const config = this.context.config;
-        const { pipeline } = nextProps.params;
-        config.pipeline = pipeline;
-        this.props.setPipeline(config);
-    }
-
     componentWillUnmount() {
         if (this.jobListener) {
             sse.unsubscribe(this.jobListener);
             delete this.jobListener;
         }
     }
-
-    _selectPipeline(pipelines, params) {
-        if (pipelines && params) {
-            const { pipeline } = params;
-            const p = pipelines.find(aPipeline => aPipeline.fullName === pipeline);
-            if (!p) {
-                return new Failure(`${pipeline} not found`);
-            }
-            return p;
-        }
-
-        return null;
-    }
-
+    
     /*
      FIXME we should use clone here, this way we could pass all actions and reducer down to all
      components and get rid of the seperate connect in each subcomponents -> see RunDetailsPipeline
      */
     render() {
+        if (!this.props.pipelines) {
+            return null;
+        }
         return this.props.children;
     }
 }
@@ -130,8 +102,6 @@ OrganizationPipelines.contextTypes = {
 
 OrganizationPipelines.propTypes = {
     fetchPipelines: func.isRequired,
-    fetchPipelinesIfNeeded: func.isRequired,
-    setPipeline: func,
     processJobQueuedEvent: func.isRequired,
     updateRunState: func.isRequired,
     updateBranchState: func.isRequired,
@@ -145,7 +115,6 @@ OrganizationPipelines.propTypes = {
 
 OrganizationPipelines.childContextTypes = {
     pipelines: array,
-    pipeline: object,
 };
 
 const selectors = createSelector([pipelinesSelector],

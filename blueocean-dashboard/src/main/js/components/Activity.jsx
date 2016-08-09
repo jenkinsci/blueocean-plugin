@@ -1,16 +1,16 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, Table } from '@jenkins-cd/design-language';
+import { EmptyStateView, Table, Progress } from '@jenkins-cd/design-language';
 import Runs from './Runs';
 import Pipeline from '../api/Pipeline';
 import { RunRecord, ChangeSetRecord } from './records';
 import RunPipeline from './RunPipeline.jsx';
 import {
     actions,
-    currentRuns as currentRunsSelector,
-    runs as allRunsSelector,
+    currentRuns as runsSelector,
     createSelector,
     connect,
 } from '../redux';
+import PageLoading from './PageLoading';
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -53,32 +53,28 @@ export class Activity extends Component {
             const {
                 params: {
                     pipeline,
+                    organization,
                 },
                 config = {},
             } = this.context;
 
             config.pipeline = pipeline;
-            this.props.fetchRunsIfNeeded(config);
+            config.organization = organization;
+            this.props.fetchRuns(config);
         }
     }
 
     fetchNextRuns() {
         const pagination = this.props.allRuns[this.context.params.pipeline];
         pagination.currentPage++;
-        this.props.fetchRunsIfNeeded(this.context.config);
+        this.props.fetchRuns(this.context.config);
     }
 
     render() {
-        const { runs, pipeline } = this.props;
-        // early out
-        if (!runs) {
-            return null;
-        }
+        const { currentRuns, pipeline } = this.props;
 
-        const currentRunData = runs.currentData;
-
-        if (!currentRunData) {
-            return null;
+        if (!currentRuns || pipeline.$pending) {
+            return <PageLoading />;
         }
 
         // Only show the Run button for non multi-branch pipelines.
@@ -86,7 +82,7 @@ export class Activity extends Component {
         // the Branches/PRs tab.
         const showRunButton = (pipeline && !Pipeline.isMultibranch(pipeline));
 
-        if (!currentRunData.length) {
+        if (currentRuns.$success && !currentRuns.length) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
         }
 
@@ -103,11 +99,12 @@ export class Activity extends Component {
 
         
         return (<main>
+            {currentRuns.$pending && <Progress />}
             <article className="activity">
                 {showRunButton && <RunNonMultiBranchPipeline pipeline={pipeline} buttonText="Run" />}
                 <Table className="activity-table fixed" headers={headers}>
                     {
-                        runs.map((run, index) => {
+                        currentRuns.map((run, index) => {
                             const changeset = run.changeSet;
                             let latestRecord = {};
                             if (changeset && changeset.length > 0) {
@@ -123,8 +120,13 @@ export class Activity extends Component {
                         })
                     }
                 </Table>
-                <button className="btn-show-more btn-secondary" onClick={() => this.fetchNextRuns()}>Show More</button>
+                {currentRuns.$pager &&
+                    <button disabled={!currentRuns.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => currentRuns.$pager.fetchMore()}>
+                        {currentRuns.$pending ? 'Loading...' : 'Show More'}
+                    </button>
+                }
             </article>
+            {this.props.children}
         </main>);
     }
 }
@@ -132,19 +134,16 @@ export class Activity extends Component {
 Activity.contextTypes = {
     params: object.isRequired,
     location: object.isRequired,
+    pipeline: object,
     config: object.isRequired,
 };
 
 Activity.propTypes = {
-    runs: object,
-    allRuns: object,
+    currentRuns: array,
     pipeline: object,
-    fetchRunsIfNeeded: func,
+    fetchRuns: func,
 };
 
-const selectors = createSelector(
-    [currentRunsSelector, allRunsSelector],
-    (runs, allRuns) => ({ runs, allRuns })
-);
+const selectors = createSelector([runsSelector], (currentRuns) => ({ currentRuns }));
 
 export default connect(selectors, actions)(Activity);

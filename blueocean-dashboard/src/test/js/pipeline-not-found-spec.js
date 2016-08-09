@@ -3,7 +3,6 @@ import ReactTest from 'react-addons-test-utils';
 import { Route } from 'react-router';
 import { expect } from 'chai';
 import { shallow } from 'enzyme';
-import { Failure } from '../../main/js/util/FetchStatus.js';
 
 import PipelinePage from '../../main/js/components/PipelinePage.jsx';
 import NotFound from '../../main/js/components/NotFound.jsx';
@@ -37,7 +36,7 @@ describe("PipelinePage", () => {
     //wrapper = ReactTest.createRenderer().render(<PipelinePage />, { ...ctx, pipeline: new Failure() });
     //expect(wrapper.type).to.equal(NotFound);
     
-    wrapper = shallow(<PipelinePage />, { context: {...ctx, pipeline: new Failure() } });
+    wrapper = shallow(<PipelinePage />, { context: {...ctx, pipeline: { $failed: true } }});
     expect(wrapper.html()).to.contain("404");
   });
 });

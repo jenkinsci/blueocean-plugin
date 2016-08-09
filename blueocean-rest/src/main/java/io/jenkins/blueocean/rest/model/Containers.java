@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.model;
 import hudson.util.AdaptedIterator;
 import io.jenkins.blueocean.rest.hal.Link;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,14 @@ public class Containers {
 
             @Override
             public Iterator<T> iterator(int start, int limit) {
-                return base.subList(start,start+limit).iterator();
+                if (start >= base.size()) {
+                    return Collections.<T>emptyList().iterator();
+                }
+                int end = start+limit;
+                if (end > base.size()) {
+                    end = base.size();
+                }
+                return base.subList(start,end).iterator();
             }
         };
     }

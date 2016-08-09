@@ -1,11 +1,10 @@
 import keymirror from 'keymirror';
 import fetch from 'isomorphic-fetch';
-
+import { fetch as smartFetch, paginate } from '../util/smart-fetch';
 import { State } from '../components/records';
 import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
-import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
-import PaginationHolder from '../util/PaginationHolder';
+import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, paginateUrl, getRestUrl } from '../util/UrlUtils';
 
 /**
  * This function maps a queue item into a run instancce.
@@ -43,6 +42,7 @@ export const ACTION_TYPES = keymirror({
     SET_RUNS_DATA: null,
     SET_CURRENT_RUN_DATA: null,
     CLEAR_CURRENT_RUN_DATA: null,
+    SET_CURRENT_RUN: null,
     SET_BRANCHES_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
@@ -71,20 +71,17 @@ export const actionHandlers = {
     [ACTION_TYPES.CLEAR_PIPELINE_DATA](state) {
         return state.set('pipeline', null);
     },
-    [ACTION_TYPES.SET_PIPELINE](state, { id }): State {
-        const pipelines = state.pipelines;
-        if (!pipelines) {
-            return state.set('pipeline', null);
-        }
-        // [].slice(0) returns a clone, we do need it for uniqueness
-        const pipeline = pipelines.slice(0).filter(item => item.fullName === id);
-        return state.set('pipeline', pipeline[0] ? pipeline[0] : null);
+    [ACTION_TYPES.SET_PIPELINE](state, { payload }): State {
+        return state.set('pipeline', payload);
     },
     [ACTION_TYPES.CLEAR_CURRENT_RUN_DATA](state) {
         return state.set('currentRuns', null);
     },
     [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
         return state.set('currentRuns', payload.map((run) => _mapQueueToPsuedoRun(run)));
+    },
+    [ACTION_TYPES.SET_CURRENT_RUN](state, { payload }): State {
+        return state.set('currentRun', payload);
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
         return state.set('node', { ...payload });
@@ -96,8 +93,11 @@ export const actionHandlers = {
     },
     [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
         const runs = { ...state.runs } || {};
-
         runs[id] = payload.map(run => _mapQueueToPsuedoRun(run));
+        runs[id].$pager = payload.$pager;
+        runs[id].$pending = payload.$pending;
+        runs[id].$success = payload.$success;
+        runs[id].$failed = payload.$failed;
         return state.set('runs', runs);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
@@ -261,49 +261,33 @@ export const actions = {
         return (dispatch) => {
             const baseUrl = config.getAppURLBase();
             // TODO: update this code to call /search with organizationName once JENKINS-36273 is ready
-            const url = `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject`;
-
-            return dispatch(actions.generateData(
-                url,
-                ACTION_TYPES.SET_PIPELINES_DATA
-            ));
+            const urlProvider = !organizationName
+                ? `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject`
+                : `${baseUrl}/rest/organizations/${encodeURIComponent(organizationName)}/pipelines/`;
+            return paginate({ urlProvider: paginateUrl(urlProvider) })
+            .then(data => {
+                dispatch({
+                    type: ACTION_TYPES.SET_PIPELINES_DATA,
+                    payload: data,
+                });
+            });
         };
     },
 
     /**
-     * Fetch and update the pipelines list if the store doesn't already have
-     * a list of the pipelines.
-     * @param config Application configuration.
-     * @param organizationName (optional)
+     * Fetch a specific pipeline, sets as current
      */
-    // eslint-disable-next-line no-unused-vars
-    fetchPipelinesIfNeeded(config, organizationName) {
-        return (dispatch, getState) => {
-            const pipelines = getState().adminStore.pipelines;
+    fetchPipeline(config, organizationName, pipelineName) {
+        return (dispatch) => {
             const baseUrl = config.getAppURLBase();
-            // TODO: update this code to call /search with organizationName once JENKINS-36273 is ready
-            const url = `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject`;
-
-            if (!pipelines) {
-                return dispatch(actions.generateData(
-                    url,
-                    ACTION_TYPES.SET_PIPELINES_DATA
-                ));
-            }
-            return pipelines;
-        };
-    },
-
-    setPipeline(config) {
-        return (dispatch, getState) => {
-            dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
-            const pipelines = getState().adminStore.pipelines;
-
-            if (!pipelines) {
-                return dispatch(actions.fetchPipelinesIfNeeded(config))
-                    .then(() => dispatch({ id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE }));
-            }
-            return dispatch({ id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE });
+            return smartFetch(
+                `${baseUrl}/rest/organizations/${organizationName}/pipelines/${pipelineName}`,
+                data => dispatch({
+                    id: pipelineName,
+                    type: ACTION_TYPES.SET_PIPELINE,
+                    payload: data,
+                })
+            );
         };
     },
 
@@ -582,26 +566,39 @@ export const actions = {
             }
         };
     },
+    
+    fetchRuns(config) {
+        // actions.dispatchCache('runs', (dispatch) => {
+        return (dispatch, getState) =>
+         paginate({
+             urlProvider: paginateUrl(
+                `${config.getAppURLBase()}/rest/organizations/${config.organization}/pipelines/${config.pipeline}/activities/`),
+             onData: data => {
+                 const general = {
+                     id: config.pipeline,
+                     type: 'runs',
+                     payload: data,
+                 };
+                // dispatch(general);
+                 actions.dispatchToMultiple(dispatch, general.id, general.payload, {
+                     current: ACTION_TYPES.SET_CURRENT_RUN_DATA,
+                     general: ACTION_TYPES.SET_RUNS_DATA,
+                     clear: ACTION_TYPES.CLEAR_CURRENT_RUN_DATA,
+                 });
+             },
+         });
+    },
 
-    fetchRunsIfNeeded(config) {
-        return (dispatch, getState) => {
-            const id = config.pipeline;
-            const alwaysFetch = true;
-            const runsData = getState().adminStore['runs'];
-            const pagination = !runsData ? new PaginationHolder() : (runsData[id] || new PaginationHolder());
-            const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                `/pipelines/${config.pipeline}/activities/`;
-            return dispatch(actions.fetchIfNeeded({
-                url: baseUrl,
+    fetchRun(config) {
+        return (dispatch, getState) =>
+        smartFetch(
+            getRestUrl(config),
+            data => dispatch({
                 id: config.pipeline,
-                pageStart: pagination.getCurrentPageStart(),
-                type: 'runs',
-            }, {
-                current: ACTION_TYPES.SET_CURRENT_RUN_DATA,
-                general: ACTION_TYPES.SET_RUNS_DATA,
-                clear: ACTION_TYPES.CLEAR_CURRENT_RUN_DATA,
-            }, alwaysFetch));
-        };
+                type: ACTION_TYPES.SET_CURRENT_RUN,
+                payload: data,
+            })
+        );
     },
 
     fetchBranchesIfNeeded(config) {
@@ -668,6 +665,23 @@ export const actions = {
             }
             return null;
         };
+    },
+
+    /**
+     * types[current,general,clear]
+     */
+    dispatchToMultiple(dispatch, id, data, types) {
+        dispatch({ type: types.clear });
+        dispatch({
+            id,
+            payload: data,
+            type: types.current,
+        });
+        dispatch({
+            id,
+            payload: data,
+            type: types.general,
+        });
     },
 
     generateData(url, actionType, optional) {
@@ -850,10 +864,11 @@ export const actions = {
             const baseUrl = UrlConfig.getJenkinsRootURL();
             const url = `${baseUrl}${run._links.self.href}testReport/result`;
 
-            return dispatch(actions.generateData(
-                url,
-                ACTION_TYPES.SET_TEST_RESULTS
-            ));
+            return smartFetch(url, data =>
+                dispatch({
+                    type: ACTION_TYPES.SET_TEST_RESULTS,
+                    payload: data
+                }))
         };
     },
 

@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import PipelineRowItem from './PipelineRowItem';
 import { PipelineRecord } from './records';
 
-import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
+import { Page, PageHeader, Table, Title, Progress } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 
 const { array } = PropTypes;
@@ -14,20 +14,14 @@ export default class Pipelines extends Component {
         const { pipelines, config } = this.context;
         const { organization } = this.context.params;
 
-        // Early out
-        if (!pipelines) {
-            return <div>No pipelines found.</div>;
-        }
-
         const orgLink = organization ?
             <Link to={`organizations/${organization}`} className="inverse">
                 {organization}
             </Link> : '';
 
+        // Don't sort this here, it's paginated!
         const pipelineRecords = pipelines
-            .map(data => new PipelineRecord(data))
-            .filter(data => !data.isFolder())
-            .sort(pipeline => !!pipeline.branchNames);
+            .filter(p => p._class !== 'io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl');
 
         const headers = [
             { label: 'Name', className: 'name' },
@@ -43,6 +37,7 @@ export default class Pipelines extends Component {
         return (
             <Page>
                 <PageHeader>
+                    {!pipelines || pipelines.$pending && <Progress />}
                     <Title>
                         <h1>
                             <Link to="/" className="inverse">Dashboard</Link>
@@ -77,6 +72,12 @@ export default class Pipelines extends Component {
                                 })
                             }
                         </Table>
+                        
+                        {pipelines.$pager &&
+                            <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
+                                {pipelines.$pending ? 'Loading...' : 'Show More'}
+                            </button>
+                        }
                     </article>
                 </main>
             </Page>);

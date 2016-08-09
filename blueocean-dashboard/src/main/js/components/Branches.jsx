@@ -4,7 +4,7 @@ import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import RunPipeline from './RunPipeline.jsx';
 import { StopPropagation } from './StopPropagation';
-import { buildRunDetailsUrl } from '../util/UrlUtils';
+import { getLocation } from '../util/UrlUtils';
 
 const { object } = PropTypes;
 
@@ -36,11 +36,15 @@ export default class Branches extends Component {
         } = data;
 
         const cleanBranchName = decodeURIComponent(branchName);
-        const url = buildRunDetailsUrl(organization, fullName, cleanBranchName, id, 'pipeline');
 
         const open = () => {
-            location.pathname = url;
-            router.push(location);
+            const url = getLocation({
+                location,
+                pipeline: this.context.pipeline,
+                branch: cleanBranchName,
+                runId: id,
+            });
+            router.push(url);
         };
         const { msg } = changeSet[0] || {};
 

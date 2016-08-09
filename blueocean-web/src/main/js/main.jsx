@@ -62,8 +62,8 @@ function makeRoutes(routes) {
     const appRoutes = [
         ...routes,
         // FIXME: Not sure best how to set this up without the hardcoded IndexRedirect :-/
-        <IndexRedirect to="/pipelines" />,
-        <Route path="*" component={NotFound}/>
+        //<IndexRedirect to="/pipelines" />,
+        //<Route path="*" component={NotFound}/>
     ];
 
     const routeProps = {
@@ -71,7 +71,13 @@ function makeRoutes(routes) {
         component: App
     };
 
-    return React.createElement(Route, routeProps, ...appRoutes);
+    //return React.createElement(Route, routeProps, ...appRoutes);
+    
+    return {
+        path: "/",
+        component: App,
+        childRoutes: routes
+    };
 }
 
 
@@ -138,7 +144,7 @@ function startApp(routes, stores) {
     // Start React
     render(
         <Provider store={store}>
-            <Router history={history}>{ makeRoutes(routes) }</Router>
+            <Router history={history} routes={ makeRoutes(routes) }/>
         </Provider>
       , rootElement);
 }

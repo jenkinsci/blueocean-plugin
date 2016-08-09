@@ -4,24 +4,19 @@ import {
     ModalBody,
     ModalHeader,
     PageTabs,
+    Progress,
     TabLink,
 } from '@jenkins-cd/design-language';
 
 import {
     actions,
-    currentRuns as runsSelector,
+    currentRun as runSelector,
     isMultiBranch as isMultiBranchSelector,
     previous as previousSelector,
     createSelector,
     connect,
 } from '../redux';
-
-import {
-    buildOrganizationUrl,
-    buildPipelineUrl,
-    buildRunDetailsUrl,
-} from '../util/UrlUtils';
-
+import { getLocation } from '../util/UrlUtils';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 
@@ -30,72 +25,61 @@ const { func, object, array, any, string } = PropTypes;
 class RunDetails extends Component {
     componentWillMount() {
         if (this.context.config && this.context.params) {
-            const {
-                params: {
-                    pipeline,
-                    },
-                config = {},
-                } = this.context;
-
-            config.pipeline = pipeline;
-
-            this.props.fetchRunsIfNeeded(config);
+            this.props.fetchRun(this.props.params);
             this.opener = this.props.previous;
         }
     }
     navigateToOrganization() {
-        const { organization } = this.props.pipeline;
-        const organizationUrl = buildOrganizationUrl(organization);
+        const organizationUrl = getLocation({ location: this.context.location, organization: this.props.pipeline.organization });
         this.context.router.push(organizationUrl);
     }
     navigateToPipeline() {
-        const { organization, fullName } = this.props.pipeline;
-        const pipelineUrl = buildPipelineUrl(organization, fullName);
+        const pipelineUrl = getLocation({
+            location: this.context.location,
+            pipeline: this.props.pipeline,
+        });
         this.context.router.push(pipelineUrl);
     }
     navigateToChanges() {
-        const {
-            params: {
-                organization,
-                pipeline,
-                branch,
-                runId,
-            },
-        } = this.context;
-
-        const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
+        const changesUrl = getLocation({
+            location: this.context.location,
+            pipeline: this.props.pipeline,
+            runId: this.props.run.id,
+            tab: 'changes',
+        });
         this.context.router.push(changesUrl);
     }
     render() {
         // early out
         if (!this.context.params
-            || !this.props.runs
+            || !this.props.run
             || this.props.isMultiBranch === null) {
             return null;
         }
 
         const { router, location, params } = this.context;
         
-        const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
-          
-        const foundRun = this.props.runs.find((run) =>
-            run.id === params.runId &&
-                decodeURIComponent(run.pipeline) === params.branch
-        );
-       // deep-linking across RunDetails for different pipelines yields 'runs' data for the wrong pipeline
-        // during initial render. when runs are refetched the screen will render again with 'currentRun' correctly set
-        if (!foundRun) {
-            return null;
-        }
+        const baseUrl = getLocation({
+            location,
+            organization: params.organization,
+            pipeline: params.pipeline,
+            branch: params.branch,
+            runId: params.runId,
+        });
 
-        const currentRun = new RunRecord(foundRun);
+        const currentRun = this.props.run;
+        
+        const runRecord = new RunRecord(currentRun);
     
-        const status = currentRun.getComputedResult();
+        const status = runRecord.getComputedResult() || '';
        
         const afterClose = () => {
-            const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
-            location.pathname = this.opener || fallbackUrl;
-            router.push(location);
+            const url = getLocation({
+                location,
+                organization: params.organization,
+                pipeline: params.pipeline,
+            });
+            router.push(url);
         };
         return (
             <ModalView
@@ -107,11 +91,13 @@ class RunDetails extends Component {
             >
                 <ModalHeader>
                     <div>
-                        <RunDetailsHeader data={currentRun}
+                        {!currentRun.$pending &&
+                        <RunDetailsHeader data={runRecord}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
+                        }
                         <PageTabs base={baseUrl}>
                             <TabLink to="/pipeline">Pipeline</TabLink>
                             <TabLink to="/changes">Changes</TabLink>
@@ -122,9 +108,10 @@ class RunDetails extends Component {
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {React.cloneElement(
+                        {currentRun.$pending && <Progress />}
+                        {currentRun.$success && React.cloneElement(
                             this.props.children,
-                            { baseUrl, result: currentRun, ...this.props }
+                            { baseUrl, result: runRecord, ...this.props }
                         )}
                     </div>
                 </ModalBody>
@@ -138,22 +125,21 @@ RunDetails.contextTypes = {
     params: object,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
+    pipeline: object,
 };
 
 RunDetails.propTypes = {
     children: PropTypes.node,
     pipeline: object,
-    runs: array,
+    run: object,
     isMultiBranch: any,
-    fetchIfNeeded: func,
-    fetchRunsIfNeeded: func,
-    setPipeline: func,
+    fetchRun: func,
     getPipeline: func,
     previous: string,
 };
 
 const selectors = createSelector(
-    [runsSelector, isMultiBranchSelector, previousSelector],
-    (runs, isMultiBranch, previous) => ({ runs, isMultiBranch, previous }));
+    [runSelector, isMultiBranchSelector, previousSelector],
+    (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
 
 export default connect(selectors, actions)(RunDetails);

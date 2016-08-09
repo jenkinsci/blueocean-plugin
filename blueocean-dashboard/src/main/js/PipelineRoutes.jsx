@@ -14,34 +14,82 @@ import {
     RunDetailsArtifacts,
     RunDetailsTests,
 } from './components';
+import { relativeUrl } from './util/UrlUtils';
+import Extensions from '@jenkins-cd/js-extensions';
+
+const DynamicRoutes = {
+    path: ':pipeline/(.*)',
+
+    getChildRoutes(partialNextState, callback) {
+        Extensions.store.getExtensions('pipeline.routes', routes => {
+            callback(null, routes); // routes is array
+        });
+    },
+};
+
+function GoTo(path) {
+    var next = path;
+    while (next.charAt(0) === '/') {
+        next = next.substring(1);
+    }
+    return {
+        onEnter: ({ location, params }, replace) => {
+            replace(relativeUrl(location, next));
+        },
+    };
+}
+
+// multibranch-pr-github/detail/test-pass-fail-stage/1/pipeline
+// :pipeline/detail/:branch/:runId/pipeline
+const RunDetailRoutes = { path: 'detail(/branch/:branch)/:runId', component: RunDetails,
+    indexRoute: GoTo('pipeline'),
+    childRoutes: [
+        { path: 'pipeline', component: RunDetailsPipeline, childRoutes: [
+            { path: ':node', component: RunDetailsPipeline },
+        ] },
+        { path: 'changes', component: RunDetailsChanges },
+        { path: 'tests', component: RunDetailsTests },
+        { path: 'artifacts', component: RunDetailsArtifacts },
+    ],
+};
 
 export default (
-    <Route path="/" component={Dashboard}>
-        <Route path="organizations/:organization" component={OrganizationPipelines}>
-            <IndexRedirect to="pipelines" />
-            <Route path="pipelines" component={Pipelines} />
+    { path: '', component: Dashboard, indexRoute: GoTo('pipelines'),
+        childRoutes: [
+        { path: 'organizations/:organization', component: OrganizationPipelines,
+            indexRoute: GoTo('pipelines'),
+            childRoutes: [
 
-            <Route component={PipelinePage}>
-                <Route path=":pipeline/branches" component={MultiBranch} />
-                <Route path=":pipeline/activity" component={Activity} />
-                <Route path=":pipeline/pr" component={PullRequests} />
+            { path: 'pipelines', component: Pipelines },
 
-                <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
-                    <IndexRedirect to="pipeline" />
-                    <Route path="pipeline" component={RunDetailsPipeline} >
-                        <Route path=":node" component={RunDetailsPipeline} />
-                    </Route>
-                    <Route path="changes" component={RunDetailsChanges} />
-                    <Route path="tests" component={RunDetailsTests} />
-                    <Route path="artifacts" component={RunDetailsArtifacts} />
-                </Route>
+            { path: ':pipeline', component: PipelinePage,
+                indexRoute: GoTo('activity'),
+                childRoutes: [
 
-                <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
-            </Route>
-        </Route>
-        <Route path="/pipelines" component={OrganizationPipelines}>
-            <IndexRoute component={Pipelines} />
-        </Route>
-        <IndexRedirect to="pipelines" />
-    </Route>
+                { path: 'branches', component: MultiBranch,
+                    childRoutes: [{ path: 'detail(/branch/:branch)/:runId', component: RunDetails,
+    indexRoute: GoTo('pipeline'),
+    childRoutes: [
+        { path: 'pipeline', component: RunDetailsPipeline, childRoutes: [
+            { path: ':node', component: RunDetailsPipeline },
+        ] },
+        { path: 'changes', component: RunDetailsChanges },
+        { path: 'tests', component: RunDetailsTests },
+        { path: 'artifacts', component: RunDetailsArtifacts },
+    ],
+}] },
+
+                { path: 'activity', component: Activity,
+                    childRoutes: [RunDetailRoutes] },
+
+                { path: 'pr', component: PullRequests,
+                    childRoutes: [RunDetailRoutes] },
+
+                    DynamicRoutes,
+                ] },
+            ] },
+        { path: '/pipelines', component: OrganizationPipelines, indexRoute: {
+            component: Pipelines,
+        } },
+        ] }
 );

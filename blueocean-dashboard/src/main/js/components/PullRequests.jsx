@@ -52,7 +52,7 @@ export class PullRequests extends Component {
         };
     }
 
-    componentWillMount() {
+    componentWillReceiveProps(nextProps) {
         if (this.context.config && this.context.params) {
             const {
                 config = {},
@@ -114,6 +114,7 @@ export class PullRequests extends Component {
                         })}
                     </Table>
                 </article>
+                {this.props.children}
             </main>
         );
     }

@@ -36,10 +36,13 @@ export default class Pipeline {
         if (runId === undefined) {
             throw new Error('Branch.runDetailsRouteUrl must be supplied with a "runId" parameter.');
         }
-        return urlUtils.buildRunDetailsUrl(
-            this.organization,
-            this.pipelineName,
-            this.branchName, runId, 'pipeline');
+        return urlUtils.getLocation({
+            basePage: 'activity',
+            organization: this.organization,
+            pipeline: this.pipelineName,
+            branch: this.branchName,
+            runId,
+            tab: 'pipeline' });
     }
 
     restUrl() {

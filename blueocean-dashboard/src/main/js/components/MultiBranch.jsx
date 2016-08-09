@@ -119,6 +119,7 @@ export class MultiBranch extends Component {
                         }
                     </Table>
                 </article>
+                {this.props.children}
             </main>
         );
     }

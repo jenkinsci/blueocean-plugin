@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import RunPipeline from './RunPipeline.jsx';
+import { getLocation } from '../util/UrlUtils';
 
 const { object } = PropTypes;
 
@@ -37,10 +38,15 @@ export default class PullRequest extends Component {
             },
                 },
         } = this;
-        const url = `organizations/${organization}/${pipelineName}/detail/${name}/${id}/pipeline`;
+        
         const open = () => {
-            location.pathname = url;
-            router.push(location);
+            const url = getLocation({
+                location,
+                pipeline: this.context.pipeline,
+                branch: name,
+                runId: id,
+            });
+            router.push(url);
         };
 
         return (<tr key={id} onClick={open} id={`${name}-${id}`} >

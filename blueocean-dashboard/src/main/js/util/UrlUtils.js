@@ -140,6 +140,84 @@ export function calculateRunLogURLObject(config) {
 }
 
 /**
+ * Provide a pagination function for the generic
+ * blueocean pagination
+ */
+export function paginateUrl(url) {
+    const sep = url.indexOf('?') >= 0 ? '&' : '?';
+    return (start, limit) => `${url}${sep}start=${start}&limit=${limit}`;
+}
+
+/**
+ * Examines the provided object for:
+ * organization, pipeline, branch, runId
+ * and builds a path to the thing as best it can...
+ */
+export function getRestUrl({ organization, pipeline, branch, runId }) {
+    const pipelineName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
+    const organizationName = organization ||
+        (typeof pipeline === 'object' ? pipeline.organization : '');
+    var jenkinsUrl = require('../config').getJenkinsRootURL();
+    var url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
+    if (pipelineName) {
+        url += `/pipelines/${encodeURIComponent(pipelineName)}`;
+    }
+    if (branch) {
+        url += `/branches/${encodeURIComponent(branch)}`;
+    }
+    if (runId) {
+        url += `/runs/${encodeURIComponent(runId)}`;
+    }
+    return url;
+}
+
+/**
+ * Examines the provided object for:
+ * organization, pipeline, branch, runId
+ * and builds a path to the GUI as best it can...
+ * TODO: we could probably figure this out more accurately from the routes
+ */
+export function getLocation({ location, organization, pipeline, branch, runId, tab, basePage }) {
+    const pipelineName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
+    const organizationName = organization ||
+        (typeof pipeline === 'object' ? pipeline.organization : '');
+    const basePageName = basePage || location &&
+        (location.pathname ? location.pathname : location).split('/')[4];
+    let url = '/organizations/' +
+        encodeURIComponent(organizationName) +
+        '/' + encodeURIComponent(pipelineName) +
+        (basePageName ? ('/' + basePageName) : '/activity');
+    if (runId) {
+        url += '/detail' +
+        (branch ? ('/branch/' + branch) : '') +
+        '/' + encodeURIComponent(runId) +
+        (tab ? ('/' + tab) : '');
+    }
+    return url;
+}
+
+/**
+ * Returns a new string which ends with a slash, or the
+ * original if it already does
+ */
+export function endSlash(str) {
+    if (!str) {
+        return str;
+    }
+    if (str.charAt(str.length - 1) !== '/') {
+        return str + '/';
+    }
+    return str;
+}
+
+/**
+ * Returns a relative URL based on the current location
+ */
+export function relativeUrl(location, ...args) {
+    return endSlash(location.pathname) + buildUrl.apply(null, args);
+}
+
+/**
  * Constructs an escaped url based on the arguments, with forward slashes between them
  * e.g. buildURL('organizations', orgName, 'runs', runId) => organizations/my%20org/runs/34
  */

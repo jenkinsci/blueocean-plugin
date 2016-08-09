@@ -11,6 +11,7 @@ export const pipelines = createSelector([adminStore], store => store.pipelines);
 export const pipeline = createSelector([adminStore], store => store.pipeline);
 export const runs = createSelector([adminStore], store => store.runs);
 export const currentRuns = createSelector([adminStore], store => store.currentRuns);
+export const currentRun = createSelector([adminStore], store => store.currentRun);
 export const branches = createSelector([adminStore], store => store.branches);
 export const logs = createSelector([adminStore], store => store.logs);
 export const node = createSelector([adminStore], store => store.node);

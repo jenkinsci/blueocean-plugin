@@ -11,6 +11,7 @@ export {
     nodes,
     steps,
     currentRuns,
+    currentRun,
     branches,
     isMultiBranch,
     currentBranches,

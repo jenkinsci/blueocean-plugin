@@ -39,11 +39,23 @@
             <j:forEach var="pd" items="${it.pageDecorators}">
                 <st:include it="${pd}" page="header.jelly" optional="true" />
             </j:forEach>
+            <style type="text/css">
+                #loadbar{background:#4A90E2;height:5px;width:0;position:fixed;top:0;left:0;opacity:1}
+                #loadbar.go{transition:all 1s ease-in;width:50%}
+                #loadbar.go.long{transition:all 5s ease-out;width:80%}
+                #loadbar.go.longer{transition:all 20s linear;width:95%}
+                #loadbar.go.complete{transition:all .25s ease-out;width:100%;opacity:0;}
+            </style>
         </head>
 
         <body>
+            <div id="loadbar"></div>
+            <script>
+                function lb(c,t){setTimeout(function(){document.getElementById('loadbar').classList.add(c)},t)}
+                lb('go',10);lb('long',1000);lb('longer',6000);
+            </script>
             <!-- App root -->
-            <div id="root" class="container-fluid">Loading...</div>
+            <div id="root" class="container-fluid"></div>
             <!--
             The following Stapler adjunct adds the blueocean JavaScript bundle, as well
             as the blueocean CSS. See gulpfile.js.
