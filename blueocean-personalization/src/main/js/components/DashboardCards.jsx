@@ -147,6 +147,7 @@ export class DashboardCards extends Component {
             return (
                 <div key={favorite._links.self.href}>
                     <PipelineCard
+                      router={this.props.router}
                       status={status}
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
@@ -186,6 +187,7 @@ export class DashboardCards extends Component {
 
 DashboardCards.propTypes = {
     store: PropTypes.object,
+    router: PropTypes.object,
     favorites: PropTypes.instanceOf(List),
     toggleFavorite: PropTypes.func,
 };
