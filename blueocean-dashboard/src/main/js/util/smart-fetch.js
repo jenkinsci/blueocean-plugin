@@ -77,7 +77,7 @@ export function fetch(url, options, onData) {
     if (_onData) {
         _onData({ $pending: true });
         return dedupe(url, () =>
-            isoFetch(url, _onData || fetchOptions) // Fetch data
+            isoFetch(url, _options || fetchOptions) // Fetch data
             .then(checkStatus) // Validate success
             .then(parseJSON) // transfer to json
             .then(successAndFreeze) // add success field & freeze graph
