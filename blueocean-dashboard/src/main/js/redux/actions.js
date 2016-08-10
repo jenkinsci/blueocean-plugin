@@ -848,7 +848,7 @@ export const actions = {
             ));
         };
     },
-
+    
     resetTestDetails() {
         return (dispatch) =>
             dispatch({

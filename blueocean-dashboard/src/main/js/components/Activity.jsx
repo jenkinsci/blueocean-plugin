@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Runs from './Runs';
-import Pipeline from '../api/Pipeline';
 import { RunRecord, ChangeSetRecord } from './records';
 import RunPipeline from './RunPipeline.jsx';
 import {
@@ -10,6 +9,8 @@ import {
     createSelector,
     connect,
 } from '../redux';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { capabilityStore } from './Capability';
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -68,16 +69,20 @@ export class Activity extends Component {
             return null;
         }
 
+        const { capabilities } = this.props;
+        const isMultiBranchPipeline = capabilities[pipeline._class].contains(MULTIBRANCH_PIPELINE);
+        
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
         // the Branches/PRs tab.
-        const showRunButton = (pipeline && !Pipeline.isMultibranch(pipeline));
+        const showRunButton = !isMultiBranchPipeline;
+
 
         if (!runs.length) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
         }
 
-        const headers = [
+        const headers = isMultiBranchPipeline ? [
             'Status',
             'Build',
             'Commit',
@@ -86,9 +91,17 @@ export class Activity extends Component {
             { label: 'Duration', className: 'duration' },
             { label: 'Completed', className: 'completed' },
             { label: '', className: 'actions' },
+        ] : [
+            'Status',
+            'Build',
+            'Commit',
+            { label: 'Message', className: 'message' },
+            { label: 'Duration', className: 'duration' },
+            { label: 'Completed', className: 'completed' },
+            { label: '', className: 'actions' },
         ];
 
-        
+
         return (<main>
             <article className="activity">
                 {showRunButton && <RunNonMultiBranchPipeline pipeline={pipeline} buttonText="Run" />}
@@ -124,9 +137,10 @@ Activity.contextTypes = {
 Activity.propTypes = {
     runs: array,
     pipeline: object,
+    capabilities: object,
     fetchRunsIfNeeded: func,
 };
 
 const selectors = createSelector([runsSelector], (runs) => ({ runs }));
 
-export default connect(selectors, actions)(Activity);
+export default connect(selectors, actions)(capabilityStore(props => props.pipeline._class)(Activity));
