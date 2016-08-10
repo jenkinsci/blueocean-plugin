@@ -74,7 +74,7 @@ export default class Runs extends Component {
                 {id}
             </td>
             <td><CommitHash commitId={commitId} /></td>
-            <IfCapability _class={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
+            <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
                 <td>{decodeURIComponent(pipeline)}</td>
             </IfCapability>
             <td>{changeset && changeset.comment || '-'}</td>
