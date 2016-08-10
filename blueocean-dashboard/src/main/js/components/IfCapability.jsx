@@ -7,7 +7,7 @@ class IfCapability extends Component {
     render() {
         const { className, capability, capabilities } = this.props;
        
-        if (capabilities[className].has(capability)) {
+        if (capabilities[className].contains(capability)) {
             return this.props.children;
         }
 
@@ -22,5 +22,5 @@ IfCapability.propTypes = {
     children: React.PropTypes.node,
 };
 
-export default capabilityStore(props => props._class)(IfCapability);
+export default capabilityStore(props => props.className)(IfCapability);
 

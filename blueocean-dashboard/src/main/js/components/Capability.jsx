@@ -5,7 +5,7 @@ import { Record } from 'immutable';
 
 /* eslint new-cap: [0] */
 class CapabilityRecord extends Record({ classNames: [] }) {
-    has(capability) {
+    contains(capability) {
         if (this.classNames) {
             return this.classNames.find(className => className === capability) !== undefined;
         }
@@ -64,7 +64,7 @@ export const capabilityStore = classesFunction => ComposedComponent => class ext
 
         for (const className of classesMap) {
             classMetadataStore.getClassMetadata(className, (classMeta) => {
-                self._setState(className, new CapabilityRecord(classMeta.classes));
+                self._setState(className, new CapabilityRecord({ classNames: classMeta.classes }));
             });
         }
     }
@@ -85,16 +85,20 @@ export const capabilityStore = classesFunction => ComposedComponent => class ext
 
     render() {
         const { capabilities } = this.state;
-
+        
         // Early out. Doing it here means we don't have to do it in
         // the composed componenet
         let classesMap = classesFunction(this.props);
+        if (classesMap === undefined || classesMap === null) {
+            throw new Error('capabilityStore function did not find class in props.');
+        }
 
         if (typeof classesMap === 'string') {
             classesMap = [classesMap];
         }
+        
         for (const className of classesMap) {
-            if (!capabilities[className] || !capabilities[className].classes) {
+            if (!capabilities[className] || !capabilities[className].classNames) {
                 return null;
             }
         }
