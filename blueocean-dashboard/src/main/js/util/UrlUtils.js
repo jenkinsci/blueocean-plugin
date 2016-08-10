@@ -160,7 +160,8 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
     const jenkinsUrl = require('../config').getJenkinsRootURL();
     let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
     if (pipelineName) {
-        url += `/pipelines/${encodeURIComponent(pipelineName)}`;
+        // pipelineName might include a folder path, don't escape it
+        url += `/pipelines/${pipelineName}`;
     }
     if (branch) {
         url += `/branches/${encodeURIComponent(branch)}`;
@@ -190,7 +191,7 @@ export function getLocation({ location, organization, pipeline, branch, runId, t
         (basePageName ? ('/' + basePageName) : '/activity');
     if (runId) {
         url += '/detail' +
-        (branch ? ('/branch/' + branch) : '') +
+        (branch ? ('/branch/' + uriString(branch)) : '') +
         '/' + encodeURIComponent(runId) +
         (tab ? ('/' + tab) : '');
     }
