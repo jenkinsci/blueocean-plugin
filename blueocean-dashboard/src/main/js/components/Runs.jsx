@@ -3,10 +3,15 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
+
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+
 import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { getLocation } from '../util/UrlUtils';
 import Pipeline from '../api/Pipeline';
+import IfCapability from './IfCapability';
+
 const { object, string, any } = PropTypes;
 
 /*
@@ -29,6 +34,15 @@ export default class Runs extends Component {
             return null;
         }
         const {
+            context: {
+                router,
+                location,
+                pipeline: {
+                    _class: pipelineClass,
+                    fullName,
+                    organization,
+                },
+            },
             props: {
                 result: {
                     durationInMillis,
@@ -61,7 +75,9 @@ export default class Runs extends Component {
                 {id}
             </td>
             <td><CommitHash commitId={commitId} /></td>
-            <td>{decodeURIComponent(pipeline)}</td>
+            <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
+                <td>{decodeURIComponent(pipeline)}</td>
+            </IfCapability>
             <td>{changeset && changeset.comment || '-'}</td>
             <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
             <td><ReadableDate date={endTime} liveUpdate /></td>

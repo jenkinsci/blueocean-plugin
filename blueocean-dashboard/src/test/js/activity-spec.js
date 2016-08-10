@@ -1,12 +1,13 @@
 import React from 'react';
-import { assert} from 'chai';
+import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
-import {Activity} from '../../main/js/components/Activity.jsx';
+import { Activity } from '../../main/js/components/Activity.jsx';
+import { CapabilityRecord } from '../../main/js/components/Capability.jsx';
 
 const
   data = [
-    {
+      {
       "changeSet": [],
       "durationInMillis": 64617,
       "enQueueTime": "2016-03-04T13:59:53.272+0100",
@@ -129,26 +130,33 @@ const
     }
   ];
 
+const pipeline = {
+  _class: "some.class"
+}
+
+const capabilities = {
+  'some.class': new CapabilityRecord({})
+}
 data.$success = true; // fetch flag
 
 describe("Activity", () => {
 
   it("render the Activity with data", () => {
-    const wrapper =  shallow(<Activity runs={data} pipeline={{}} />);
+    const wrapper =  shallow(<Activity runs={data} pipeline={pipeline}  capabilities={capabilities}/>);
     // does data renders?
     assert.isNotNull(wrapper)
     assert.equal(wrapper.find('Runs').length, data.length)
   });
 
   it("does not render without data", () => {
-    const wrapper =  shallow(<Activity />).node;
+    const wrapper =  shallow(<Activity pipeline={pipeline} capabilities={capabilities}/>).node;
     assert.isNull(wrapper);
   });
 });
 
 describe('Pipeline -> Activity List', () => {
     it('should not duplicate changeset messages', () => {
-        const wrapper =  shallow(<Activity runs={data} pipeline={{}} />);
+        const wrapper =  shallow(<Activity runs={data} pipeline={pipeline} capabilities={capabilities} />);
         assert.isNotNull(wrapper);
 
         const runs = wrapper.find('Runs');
