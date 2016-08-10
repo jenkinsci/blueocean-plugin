@@ -185,11 +185,17 @@ export function getLocation({ location, organization, pipeline, branch, runId, t
     const basePageName = basePage || location &&
         (location.pathname ? location.pathname : location).split('/')[4];
     /* eslint-disable prefer-template */
-    let url = '/organizations/' +
-        encodeURIComponent(organizationName) +
-        '/' + encodeURIComponent(pipelineName) +
-        (basePageName ? ('/' + basePageName) : '/activity');
+    let url = '/organizations/' + encodeURIComponent(organizationName);
+    if (pipelineName) {
+        url += '/' + encodeURIComponent(pipelineName);
+    }
+    if (basePageName) {
+        url += '/' + basePageName;
+    }
     if (runId) {
+        if (!basePageName) {
+            url += '/activity';
+        }
         url += '/detail' +
         (branch ? ('/branch/' + uriString(branch)) : '') +
         '/' + encodeURIComponent(runId) +

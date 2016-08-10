@@ -30,13 +30,15 @@ class RunDetails extends Component {
         }
     }
     navigateToOrganization() {
-        const organizationUrl = getLocation({ location: this.context.location, organization: this.props.pipeline.organization });
+        const organizationUrl = getLocation({
+            organization: this.props.params.organization,
+        });
         this.context.router.push(organizationUrl);
     }
     navigateToPipeline() {
         const pipelineUrl = getLocation({
-            location: this.context.location,
-            pipeline: this.props.pipeline,
+            organization: this.props.params.organization,
+            pipeline: this.props.params.pipeline,
         });
         this.context.router.push(pipelineUrl);
     }
