@@ -7,7 +7,7 @@
 /**
  * Install the js-builder plugin. This function will be called by js-builder.
  */
-exports.install = function() {
+exports.install = function(builder) {
     var jsBundle = require('./subs/extensions-bundle');
     var cssBundle = require('./subs/css-bundle');
 
@@ -19,4 +19,22 @@ exports.install = function() {
         // Save extensions JSON again.
         jsBundle.setJSExtensionsJSON(extensionsJSON);
     }
+    
+    //
+    // Defaulting the NODE_ENV to "production" so as to optimize
+    // bundle generation. This ensures that e.g. the react dev tools are
+    // disabled by default.
+    //
+    // If you need a "development" bundle then build the bundle by hand,
+    // supplying a "NODE_ENV" arg e.g.
+    //
+    //   $ gulp bundle --NODE_ENV development
+    // 
+    // We can build this into the mvn build later if this proves to be
+    // a bit painful.
+    //
+    process.env.NODE_ENV = builder.args.argvValue('--NODE_ENV', 'production');
+    builder.onPreBundle(function (bundler) { // See https://github.com/jenkinsci/js-builder#onprebundle-listeners
+        bundler.transform(require('envify'));
+    });
 };
