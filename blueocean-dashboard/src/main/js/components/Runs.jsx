@@ -24,7 +24,11 @@ export default class Runs extends Component {
     }
 
     openRunDetails() {
-        const location = getLocation({ ...this.context, branch: (Pipeline.isMultibranch(this.context.pipeline) && this.props.result.pipeline), runId: this.props.result.id });
+        const location = getLocation({
+            ...this.context,
+            branch: (Pipeline.isMultibranch(this.context.pipeline) && this.props.result.pipeline),
+            runId: this.props.result.id,
+        });
         this.context.router.push(location);
     }
 
@@ -35,12 +39,8 @@ export default class Runs extends Component {
         }
         const {
             context: {
-                router,
-                location,
                 pipeline: {
                     _class: pipelineClass,
-                    fullName,
-                    organization,
                 },
             },
             props: {

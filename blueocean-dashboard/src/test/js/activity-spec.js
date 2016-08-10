@@ -142,7 +142,7 @@ data.$success = true; // fetch flag
 describe("Activity", () => {
 
   it("render the Activity with data", () => {
-    const wrapper =  shallow(<Activity runs={data} pipeline={pipeline}  capabilities={capabilities}/>);
+    const wrapper =  shallow(<Activity runs={data} pipeline={pipeline} capabilities={capabilities}/>);
     // does data renders?
     assert.isNotNull(wrapper)
     assert.equal(wrapper.find('Runs').length, data.length)
