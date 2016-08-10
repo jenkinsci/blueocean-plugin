@@ -2,12 +2,7 @@ import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
-<<<<<<< Updated upstream
 import { Activity } from '../../main/js/components/Activity.jsx';
-=======
-import { Activity }  from '../../main/js/components/Activity.jsx';
-import { capabilityStore } from '../../main/js/components/Capability.jsx'
->>>>>>> Stashed changes
 
 const
   data = [
