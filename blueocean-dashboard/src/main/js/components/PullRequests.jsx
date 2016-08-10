@@ -4,7 +4,7 @@ import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
 import {
     actions,
-    currentBranches as branchSelector,
+    pullRequests as pullRequestSelector,
     createSelector,
     connect,
 } from '../redux';
@@ -51,6 +51,15 @@ export class PullRequests extends Component {
             unsupportedJob: false,
         };
     }
+    
+    componentWillMount() {
+        if (this.context.config && this.context.params) {
+            this.props.fetchPullRequests({
+                organizationName: this.context.params.organization,
+                pipelineName: this.context.params.pipeline,
+            });
+        }
+    }
 
     componentWillReceiveProps() {
         if (this.context.config && this.context.params) {
@@ -70,26 +79,31 @@ export class PullRequests extends Component {
             }
 
             config.pipeline = pipelineName;
-            this.props.fetchBranchesIfNeeded(config);
         }
     }
 
     render() {
-        const { branches } = this.props;
-
         if (this.state.unsupportedJob) {
             return (<NotSupported />);
         }
 
+        const { pullRequests } = this.props;
+
         // early out
-        if (!branches) {
+        if (!pullRequests) {
+            return null;
+        }
+        
+        if (pullRequests.$pending) {
             return null;
         }
 
-        const pullRequests = branches.filter((run) => run.pullRequest);
-
         if (!pullRequests.length) {
             return (<EmptyState repoName={this.context.params.pipeline} />);
+        }
+        
+        if (pullRequests.$failed) {
+            return <div>Error: {pullRequests.$failed}</div>;
         }
 
         const headers = [
@@ -113,6 +127,11 @@ export class PullRequests extends Component {
                             />);
                         })}
                     </Table>
+                    {pullRequests.$pager &&
+                        <button disabled={!pullRequests.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pullRequests.$pager.fetchMore()}>
+                            {pullRequests.$pending ? 'Loading...' : 'Show More'}
+                        </button>
+                    }
                 </article>
                 {this.props.children}
             </main>
@@ -128,10 +147,10 @@ PullRequests.contextTypes = {
 
 PullRequests.propTypes = {
     children: any,
-    branches: array,
-    fetchBranchesIfNeeded: func,
+    pullRequests: array,
+    fetchPullRequests: func,
 };
 
-const selectors = createSelector([branchSelector], (branches) => ({ branches }));
+const selectors = createSelector([pullRequestSelector], (pullRequests) => ({ pullRequests }));
 
 export default connect(selectors, actions)(PullRequests);

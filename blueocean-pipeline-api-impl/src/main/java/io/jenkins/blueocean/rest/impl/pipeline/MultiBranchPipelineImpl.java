@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
@@ -22,6 +23,8 @@ import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
+
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 
@@ -30,8 +33,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -206,6 +211,16 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
+    @Navigable
+    public BluePipelineContainer getFindBranches(final String type) {
+        final Predicate<Job> filter = JOB_FILTERS.get(type);
+        if (filter == null) {
+            throw new IllegalArgumentException("Invalid branch type, available types are: " + JOB_FILTERS.keySet());
+        }
+        return new BranchContainerImpl(this, getLink().rel("findBranches/"+type), filter);
+    }
+
+    @Override
     public Collection<String> getBranchNames() {
         Collection<Job> jobs =  mbp.getAllJobs();
         List<String> branches = new ArrayList<>();
@@ -242,7 +257,8 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
         return counter;
     }
-    private boolean isPullRequest(Job job) {
+    
+    public static boolean isPullRequest(Job job) {
         SCMHead head = SCMHead.HeadByItem.findHead(job);
         return head != null && head.getAction(ChangeRequestAction.class) != null;
     }
@@ -354,5 +370,32 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Navigable
     public Container<Resource> getActivities() {
         return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+    }
+    
+    /**
+     * Simple filters for branches by keywords
+     */
+    public static final Map<String,Predicate<Job>> JOB_FILTERS;
+    static {
+        Map<String,Predicate<Job>> filters = new HashMap<>();
+        filters.put("pr", new Predicate<Job>() {
+            @Override
+            public boolean apply(Job j) {
+                if (isPullRequest(j)) {
+                    return true;
+                }
+                return false;
+            }
+        });
+        filters.put("origin", new Predicate<Job>() {
+            @Override
+            public boolean apply(Job j) {
+                if (!isPullRequest(j)) {
+                    return true;
+                }
+                return false;
+            }
+        });
+        JOB_FILTERS = Collections.unmodifiableMap(filters);
     }
 }

@@ -58,10 +58,6 @@ export class MultiBranch extends Component {
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const {
-                config = {},
-                params: {
-                    pipeline: pipelineName,
-                },
                 pipeline,
             } = this.context;
 
@@ -72,8 +68,10 @@ export class MultiBranch extends Component {
                 return;
             }
 
-            config.pipeline = pipelineName;
-            this.props.fetchBranchesIfNeeded(config);
+            this.props.fetchBranches({
+                organizationName: this.context.params.organization,
+                pipelineName: this.context.params.pipeline,
+            });
         }
     }
 
@@ -87,6 +85,14 @@ export class MultiBranch extends Component {
         // early out
         if (!branches) {
             return null;
+        }
+
+        if (branches.$pending) {
+            return null;
+        }
+
+        if (branches.$failed) {
+            return <div>ERROR: {branches.$failed}</div>;
         }
 
         if (!branches.length) {
@@ -118,6 +124,11 @@ export class MultiBranch extends Component {
                         })
                         }
                     </Table>
+                    {branches.$pager &&
+                        <button disabled={!branches.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => branches.$pager.fetchMore()}>
+                            {branches.$pending ? 'Loading...' : 'Show More'}
+                        </button>
+                    }
                 </article>
                 {this.props.children}
             </main>
@@ -133,7 +144,7 @@ MultiBranch.contextTypes = {
 
 MultiBranch.propTypes = {
     branches: array,
-    fetchBranchesIfNeeded: func,
+    fetchBranches: func,
     children: any,
 };
 

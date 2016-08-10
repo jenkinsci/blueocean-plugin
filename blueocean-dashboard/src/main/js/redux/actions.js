@@ -44,6 +44,7 @@ export const ACTION_TYPES = keymirror({
     CLEAR_CURRENT_RUN_DATA: null,
     SET_CURRENT_RUN: null,
     SET_BRANCHES_DATA: null,
+    SET_PULL_REQUEST_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
     SET_TEST_RESULTS: null,
@@ -110,6 +111,9 @@ export const actionHandlers = {
         const branches = { ...state.branches } || {};
         branches[id] = payload;
         return state.set('branches', branches);
+    },
+    [ACTION_TYPES.SET_PULL_REQUEST_DATA](state, { payload }): State {
+        return state.set('pullRequests', payload);
     },
     [ACTION_TYPES.SET_TEST_RESULTS](state, { payload }): State {
         return state.set('testResults', payload === undefined ? {} : payload);
@@ -267,6 +271,34 @@ export const actions = {
             .then(data => {
                 dispatch({
                     type: ACTION_TYPES.SET_PIPELINES_DATA,
+                    payload: data,
+                });
+            });
+        };
+    },
+
+    fetchBranches({ organizationName, pipelineName }) {
+        return (dispatch) => {
+            const urlProvider =
+                `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/findBranches/origin`;
+            return paginate({ urlProvider: paginateUrl(urlProvider) })
+            .then(data => {
+                dispatch({
+                    type: ACTION_TYPES.SET_CURRENT_BRANCHES_DATA,
+                    payload: data,
+                });
+            });
+        };
+    },
+
+    fetchPullRequests({ organizationName, pipelineName }) {
+        return (dispatch) => {
+            const urlProvider =
+                `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/findBranches/pr`;
+            return paginate({ urlProvider: paginateUrl(urlProvider) })
+            .then(data => {
+                dispatch({
+                    type: ACTION_TYPES.SET_PULL_REQUEST_DATA,
                     payload: data,
                 });
             });
@@ -593,72 +625,6 @@ export const actions = {
                 payload: data,
             })
         );
-    },
-
-    fetchBranchesIfNeeded(config) {
-        return (dispatch) => {
-            const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                `/pipelines/${config.pipeline}/branches`;
-            return dispatch(actions.fetchIfNeeded({
-                url: baseUrl,
-                id: config.pipeline,
-                type: 'branches',
-            }, {
-                current: ACTION_TYPES.SET_CURRENT_BRANCHES_DATA,
-                general: ACTION_TYPES.SET_BRANCHES_DATA,
-                clear: ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA,
-            }));
-        };
-    },
-
-    /**
-     * Check the redux store for data and fetch from the REST API if needed.
-     * @param general TODO: what's this and what's in it?
-     * @param types TODO: what's this and what's in it?
-     * @returns {Function}
-     */
-    fetchIfNeeded(general, types, alwaysFetch = false) {
-        return (dispatch, getState) => {
-            const data = getState().adminStore[general.type];
-            dispatch({ type: types.clear });
-
-            const id = general.id;
-
-            if (alwaysFetch || !data || !data[id]) {
-                return fetch(general.url, fetchOptions)
-                    .then(checkStatus)
-                    .then(parseJSON)
-                    .then(json => {
-                        // TODO: Why call dispatch twice here?
-                        dispatch({
-                            id,
-                            payload: json,
-                            type: types.current,
-                            pageStart: general.pageStart,
-                        });
-                        return dispatch({
-                            id,
-                            payload: json,
-                            type: types.general,
-                            pageStart: general.pageStart,
-                        });
-                    })
-                    .catch((error) => {
-                        console.error(error); // eslint-disable-line no-console
-                        dispatch({
-                            payload: { type: 'ERROR', message: `${error.stack}` },
-                            type: ACTION_TYPES.UPDATE_MESSAGES,
-                        });
-                    });
-            } else if (data && data[id]) {
-                dispatch({
-                    id,
-                    payload: data[id],
-                    type: types.current,
-                });
-            }
-            return null;
-        };
     },
 
     /**

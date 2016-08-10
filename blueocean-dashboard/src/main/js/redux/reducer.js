@@ -13,6 +13,7 @@ export const runs = createSelector([adminStore], store => store.runs);
 export const currentRuns = createSelector([adminStore], store => store.currentRuns);
 export const currentRun = createSelector([adminStore], store => store.currentRun);
 export const branches = createSelector([adminStore], store => store.branches);
+export const pullRequests = createSelector([adminStore], store => store.pullRequests);
 export const logs = createSelector([adminStore], store => store.logs);
 export const node = createSelector([adminStore], store => store.node);
 export const nodes = createSelector([adminStore], store => store.nodes);

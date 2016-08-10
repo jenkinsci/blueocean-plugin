@@ -13,6 +13,7 @@ export {
     currentRuns,
     currentRun,
     branches,
+    pullRequests,
     isMultiBranch,
     currentBranches,
     testResults,

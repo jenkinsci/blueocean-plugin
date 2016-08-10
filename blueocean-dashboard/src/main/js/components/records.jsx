@@ -111,6 +111,7 @@ export const State = Record({
     currentRuns: null,
     currentRun: null,
     branches: null,
+    pullRequests: null,
     steps: null,
     currentBranches: null,
     testResults: null,
