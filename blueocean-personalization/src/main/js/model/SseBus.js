@@ -3,6 +3,9 @@
  */
 import defaultFetch from 'isomorphic-fetch';
 
+import urlConfig from '../config';
+urlConfig.loadConfig();
+
 /**
  * Trims duplicate forward slashes to a single slash and adds trailing slash if needed.
  * @param url
@@ -137,7 +140,7 @@ export class SseBus {
     }
 
     _updateJob(event) {
-        const baseUrl = '/jenkins/blue';
+        const baseUrl = urlConfig.blueoceanAppURL;
         const url = cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
         this.fetch(url)
