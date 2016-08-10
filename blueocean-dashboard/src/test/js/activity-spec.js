@@ -3,6 +3,7 @@ import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
 import { Activity } from '../../main/js/components/Activity.jsx';
+import { CapabilityRecord } from '../../main/js/components/Capability.jsx';
 
 const
   data = [
@@ -134,9 +135,7 @@ const pipeline = {
 }
 
 const capabilities = {
-  'some.class':{
-    has: () => true
-  }
+  'some.class': new CapabilityRecord({})
 }
 describe("Activity should render", () => {
 

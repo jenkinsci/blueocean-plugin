@@ -4,7 +4,7 @@ import { classMetadataStore } from '@jenkins-cd/js-extensions';
 import { Record } from 'immutable';
 
 /* eslint new-cap: [0] */
-class CapabilityRecord extends Record({ classNames: [] }) {
+export class CapabilityRecord extends Record({ classNames: [] }) {
     contains(capability) {
         if (this.classNames) {
             return this.classNames.find(className => className === capability) !== undefined;
