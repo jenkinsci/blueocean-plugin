@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.ContainerFilter;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -61,6 +62,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
     }
 
     public  Iterator<BluePipeline> getPipelines(Collection<? extends Item> items){
+        items = ContainerFilter.filter(items);
         List<BluePipeline> pipelines = new ArrayList<>();
         for (Item item : items) {
             BluePipeline pipeline  = get(item);

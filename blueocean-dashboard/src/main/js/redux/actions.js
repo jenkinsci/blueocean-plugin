@@ -265,8 +265,8 @@ export const actions = {
             const baseUrl = config.getAppURLBase();
             // TODO: update this code to call /search with organizationName once JENKINS-36273 is ready
             const urlProvider = !organizationName
-                ? `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject`
-                : `${baseUrl}/rest/organizations/${encodeURIComponent(organizationName)}/pipelines/`;
+                ? `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject&filter=no-folders`
+                : `${baseUrl}/rest/organizations/${encodeURIComponent(organizationName)}/pipelines/?filter=no-folders`;
             return paginate({ urlProvider: paginateUrl(urlProvider) })
             .then(data => {
                 dispatch({
