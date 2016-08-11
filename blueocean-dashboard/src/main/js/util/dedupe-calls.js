@@ -1,3 +1,5 @@
+var Promise = require('es6-promise').Promise;
+
 /**
  * DuplicateCallTracker maintains active calls against a particular key
  */

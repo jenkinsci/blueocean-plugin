@@ -41,6 +41,7 @@
     "@jenkins-cd/sse-gateway": "0.0.7",
     "immutable": "3.8.1",
     "isomorphic-fetch": "2.2.1",
+    "es6-promise": "3.2.1",
     "keymirror": "0.1.1",
     "moment": "2.13.0",
     "moment-duration-format": "1.3.0",
