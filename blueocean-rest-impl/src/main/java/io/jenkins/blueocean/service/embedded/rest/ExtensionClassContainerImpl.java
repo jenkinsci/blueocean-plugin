@@ -8,7 +8,6 @@ import io.jenkins.blueocean.rest.model.BlueExtensionClass;
 import io.jenkins.blueocean.rest.model.BlueExtensionClassContainer;
 import io.jenkins.blueocean.rest.model.BlueExtensionClassMap;
 import jenkins.model.Jenkins;
-
 import org.kohsuke.stapler.QueryParameter;
 
 import java.util.Collections;
