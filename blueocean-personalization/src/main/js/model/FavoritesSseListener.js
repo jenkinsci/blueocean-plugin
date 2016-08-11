@@ -8,10 +8,10 @@ import fetch from 'isomorphic-fetch';
 import * as sse from '@jenkins-cd/sse-gateway';
 
 class FavoritesSseListener {
-    initialize(listener) {
+    initialize(listener, filter) {
         if (!this.sseBus) {
             this.sseBus = new SseBus(sse, fetch);
-            this.sseBus.subscribeToJob(listener);
+            this.sseBus.subscribeToJob(listener, filter);
         }
     }
 

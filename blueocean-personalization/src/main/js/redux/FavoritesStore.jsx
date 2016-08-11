@@ -64,7 +64,8 @@ const actionHandlers = {
             const runsBaseUrl = `${fav.item._links.self.href}runs`;
             const runUrl = jobRun._links.self.href;
 
-            // TODO; this might be broken for non-multibranch as the URL structures are different
+            // if the job's run URL starts with the favorited item's '/runs' URL,
+            // then the run applies to that item, so update the 'latestRun' property
             if (runUrl.indexOf(runsBaseUrl) === 0) {
                 const index = favorites.indexOf(fav);
                 const updatedFavorite = clone(fav);

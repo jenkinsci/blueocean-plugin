@@ -51,7 +51,6 @@ function clone(json) {
 
 /**
  * Wraps the SSE Gateway and fetches data related to events from REST API.
- * TODO: should probably send additional data *and* the original event to callback
  */
 export class SseBus {
 
@@ -60,6 +59,7 @@ export class SseBus {
         this.fetch = fetch || defaultFetch;
         this.jobListenerSse = null;
         this.jobListenerExternal = null;
+        this.jobFilter = null;
     }
 
     dispose() {
@@ -71,18 +71,31 @@ export class SseBus {
         if (this.jobListenerExternal) {
             this.jobListenerExternal = null;
         }
+
+        if (this.jobFilter) {
+            this.jobFilter = null;
+        }
     }
 
-    subscribeToJob(callback) {
-        console.log('subscribeToJob with ', callback);
+    /**
+     * Subscribe to job events.
+     * @param callback func to invoke with job data
+     * @param jobFilter func invoked for each job event, return false to suppress callback invocation
+     */
+    subscribeToJob(callback, jobFilter) {
         this.jobListenerExternal = callback;
         this.jobListenerSse = this.sse.subscribe('job', (event) => {
             this._handleJobEvent(event);
         });
+        this.jobFilter = jobFilter;
     }
 
     _handleJobEvent(event) {
-        console.log('job event', event.jenkins_event, event.blueocean_job_rest_url, event);
+        // if the filter is not interested in the event, bail
+        if (this.jobFilter && !this.jobFilter(event)) {
+            return;
+        }
+
         switch (event.jenkins_event) {
         case 'job_crud_created':
         case 'job_crud_deleted':
@@ -115,27 +128,27 @@ export class SseBus {
     }
 
     _enqueueJob(event) {
-        const newRun = {
+        const queuedRun = {
             event,
         };
 
-        newRun.pipeline = event.job_ismultibranch ?
+        queuedRun.pipeline = event.job_ismultibranch ?
             event.blueocean_job_branch_name :
             event.blueocean_job_pipeline_name;
 
         const runUrl = cleanSlashes(`${event.blueocean_job_rest_url}/runs/${event.job_run_queueId}`);
 
-        newRun._links = {
+        queuedRun._links = {
             self: {
                 href: runUrl,
             },
         };
 
-        newRun.state = 'QUEUED';
-        newRun.result = 'UNKNOWN';
+        queuedRun.state = 'QUEUED';
+        queuedRun.result = 'UNKNOWN';
 
         if (this.jobListenerExternal) {
-            this.jobListenerExternal(newRun);
+            this.jobListenerExternal(queuedRun);
         }
     }
 
@@ -147,16 +160,18 @@ export class SseBus {
             .then(checkStatus)
             .then(parseJSON)
             .then((data) => {
-                const copy = clone(data);
+                const updatedRun = clone(data);
 
+                // in many cases the SSE and subsequent REST call occur so quickly
+                // that the run's state is stale. force the state to the correct value.
                 if (event.jenkins_event === 'job_run_ended') {
-                    copy.state = 'FINISHED';
+                    updatedRun.state = 'FINISHED';
                 } else {
-                    copy.state = 'RUNNING';
+                    updatedRun.state = 'RUNNING';
                 }
 
                 if (this.jobListenerExternal) {
-                    this.jobListenerExternal(copy);
+                    this.jobListenerExternal(updatedRun);
                 }
             });
     }

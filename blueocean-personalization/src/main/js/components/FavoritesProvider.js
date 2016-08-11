@@ -10,6 +10,7 @@ import { userSelector, favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 
 import favoritesSseListener from '../model/FavoritesSseListener';
+import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 
 /**
  * FavoritesProvider ensures that the current user's favorites
@@ -22,7 +23,10 @@ export class FavoritesProvider extends Component {
 
     componentWillMount() {
         this._initialize(this.props);
-        favoritesSseListener.initialize(this.props.updateRun);
+        favoritesSseListener.initialize(
+            this.props.updateRun,
+            (event) => this._filterJobs(event)
+        );
     }
 
     componentWillReceiveProps(props) {
@@ -46,6 +50,22 @@ export class FavoritesProvider extends Component {
         if (shouldFetchFavorites) {
             this.props.fetchFavorites(user);
         }
+    }
+
+    _filterJobs(event) {
+        // suppress processing of any events whose job URL doesn't match the favorited item's URL
+        if (this.props.favorites && this.props.favorites.size > 0) {
+            for (const favorite of this.props.favorites) {
+                const favoriteUrl = favorite.item._links.self.href;
+                const pipelineOrBranchUrl = event.blueocean_job_rest_url;
+
+                if (checkMatchingFavoriteUrls(favoriteUrl, pipelineOrBranchUrl)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     render() {
