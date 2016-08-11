@@ -280,7 +280,7 @@ export const actions = {
     fetchBranches({ organizationName, pipelineName }) {
         return (dispatch) => {
             const urlProvider =
-                `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/findBranches/origin`;
+                `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/branches/?filter=origin`;
             return paginate({ urlProvider: paginateUrl(urlProvider) })
             .then(data => {
                 dispatch({
@@ -294,7 +294,7 @@ export const actions = {
     fetchPullRequests({ organizationName, pipelineName }) {
         return (dispatch) => {
             const urlProvider =
-                `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/findBranches/pr`;
+                `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/branches/?filter=pull-requests`;
             return paginate({ urlProvider: paginateUrl(urlProvider) })
             .then(data => {
                 dispatch({

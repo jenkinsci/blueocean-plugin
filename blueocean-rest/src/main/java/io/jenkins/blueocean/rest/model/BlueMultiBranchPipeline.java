@@ -65,11 +65,6 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
     public abstract BluePipelineContainer getBranches();
 
     /**
-     * @return Gives {@link BluePipelineContainer}
-     */
-    public abstract BluePipelineContainer getFindBranches(String type);
-
-    /**
      * @return Gives array of branch names
      */
     @Exported(name = BRANCH_NAMES)
