@@ -1,4 +1,4 @@
-var Promise = require('es6-promise').Promise;
+import { Promise } from 'es6-promise';
 
 /**
  * DuplicateCallTracker maintains active calls against a particular key

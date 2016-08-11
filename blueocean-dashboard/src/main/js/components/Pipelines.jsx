@@ -18,10 +18,6 @@ export default class Pipelines extends Component {
                 {organization}
             </Link> : '';
 
-        // Don't sort this here, it's paginated!
-        const pipelineRecords = pipelines
-            .filter(p => p._class !== 'io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl');
-
         const headers = [
             { label: 'Name', className: 'name' },
             'Health',
@@ -60,7 +56,7 @@ export default class Pipelines extends Component {
                           className="pipelines-table fixed"
                           headers={headers}
                         >
-                            { pipelineRecords
+                            { pipelines && pipelines
                                 .map(pipeline => {
                                     const key = pipeline._links.self.href;
                                     return (
@@ -73,7 +69,7 @@ export default class Pipelines extends Component {
                             }
                         </Table>
                         
-                        {pipelines.$pager &&
+                        { pipelines && pipelines.$pager &&
                             <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
                                 {pipelines.$pending ? 'Loading...' : 'Show More'}
                             </button>

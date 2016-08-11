@@ -7,7 +7,7 @@ import nock from 'nock';
 import {
     actions,
     ACTION_TYPES,
-    pipelines as pipelinesSelector,
+    allPipelines as pipelinesSelector,
     currentRuns as currentRunsSelector,
 } from '../../main/js/redux';
 import { pipelines } from './data/pipelines/pipelinesSingle';
@@ -31,14 +31,14 @@ describe("Redux Store - ", () => {
         nock('http://example.com')
             .get(ruleId)
             .reply(200, pipelines);
-        const store = mockStore({ adminStore: {pipelines: [] }});
+        const store = mockStore({ adminStore: {allPipelines: [] }});
 
         return store.dispatch(
-            actions.generateData('http://example.com' + ruleId, ACTION_TYPES.SET_PIPELINES_DATA))
+            actions.generateData('http://example.com' + ruleId, ACTION_TYPES.SET_ALL_PIPELINES_DATA))
             .then(() => { // return of async actions
-                assert.equal(store.getActions()[0].type, 'SET_PIPELINES_DATA');
+                assert.equal(store.getActions()[0].type, 'SET_ALL_PIPELINES_DATA');
                 assert.equal(store.getActions()[0].payload.length, pipelines.length);
-                assert.equal(pipelinesSelector({adminStore: {pipelines}}).length, pipelines.length);
+                assert.equal(pipelinesSelector({adminStore: {allPipelines: pipelines}}).length, pipelines.length);
             });
     });
     it("create store with branch data", () => {

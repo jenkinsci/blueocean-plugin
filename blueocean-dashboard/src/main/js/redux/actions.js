@@ -36,7 +36,8 @@ function _mapQueueToPsuedoRun(run) {
 export const ACTION_TYPES = keymirror({
     UPDATE_MESSAGES: null,
     CLEAR_PIPELINES_DATA: null,
-    SET_PIPELINES_DATA: null,
+    SET_ALL_PIPELINES_DATA: null,
+    SET_ORG_PIPELINES_DATA: null,
     SET_PIPELINE: null,
     CLEAR_PIPELINE_DATA: null,
     SET_RUNS_DATA: null,
@@ -64,10 +65,14 @@ export const actionHandlers = {
         return state.set('messages', messages);
     },
     [ACTION_TYPES.CLEAR_PIPELINES_DATA](state) {
-        return state.set('pipelines', null);
+        return state.set('allPipelines', null)
+            .set('organizationPipelines', null);
     },
-    [ACTION_TYPES.SET_PIPELINES_DATA](state, { payload }): State {
-        return state.set('pipelines', payload);
+    [ACTION_TYPES.SET_ALL_PIPELINES_DATA](state, { payload }): State {
+        return state.set('allPipelines', payload);
+    },
+    [ACTION_TYPES.SET_ORG_PIPELINES_DATA](state, { payload }): State {
+        return state.set('organizationPipelines', payload);
     },
     [ACTION_TYPES.CLEAR_PIPELINE_DATA](state) {
         return state.set('pipeline', null);
@@ -260,17 +265,30 @@ export const actions = {
      * @param organizationName (optional)
      */
     // eslint-disable-next-line no-unused-vars
-    fetchPipelines(config, organizationName) {
+    fetchAllPipelines() {
         return (dispatch) => {
-            const baseUrl = config.getAppURLBase();
-            // TODO: update this code to call /search with organizationName once JENKINS-36273 is ready
-            const urlProvider = !organizationName
-                ? `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject&filter=no-folders`
-                : `${baseUrl}/rest/organizations/${encodeURIComponent(organizationName)}/pipelines/?filter=no-folders`;
-            return paginate({ urlProvider: paginateUrl(urlProvider) })
+            // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
+            const url =
+                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject&filter=no-folders`;
+            return paginate({ urlProvider: paginateUrl(url) })
             .then(data => {
                 dispatch({
-                    type: ACTION_TYPES.SET_PIPELINES_DATA,
+                    type: ACTION_TYPES.SET_ALL_PIPELINES_DATA,
+                    payload: data,
+                });
+            });
+        };
+    },
+
+    fetchOrganizationPipelines({ organizationName }) {
+        return (dispatch) => {
+            // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
+            const url =
+                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(organizationName)};excludedFromFlattening:jenkins.branch.MultiBranchProject&filter=no-folders`;
+            return paginate({ urlProvider: paginateUrl(url) })
+            .then(data => {
+                dispatch({
+                    type: ACTION_TYPES.SET_ORG_PIPELINES_DATA,
                     payload: data,
                 });
             });
@@ -279,9 +297,9 @@ export const actions = {
 
     fetchBranches({ organizationName, pipelineName }) {
         return (dispatch) => {
-            const urlProvider =
+            const url =
                 `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/branches/?filter=origin`;
-            return paginate({ urlProvider: paginateUrl(urlProvider) })
+            return paginate({ urlProvider: paginateUrl(url) })
             .then(data => {
                 dispatch({
                     type: ACTION_TYPES.SET_CURRENT_BRANCHES_DATA,
@@ -293,9 +311,9 @@ export const actions = {
 
     fetchPullRequests({ organizationName, pipelineName }) {
         return (dispatch) => {
-            const urlProvider =
+            const url =
                 `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/branches/?filter=pull-requests`;
-            return paginate({ urlProvider: paginateUrl(urlProvider) })
+            return paginate({ urlProvider: paginateUrl(url) })
             .then(data => {
                 dispatch({
                     type: ACTION_TYPES.SET_PULL_REQUEST_DATA,
