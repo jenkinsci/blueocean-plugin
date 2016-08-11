@@ -1,7 +1,8 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
- import io.jenkins.blueocean.rest.OmniSearch;
+import hudson.model.ItemGroup;
+import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.pageable.Pageable;
