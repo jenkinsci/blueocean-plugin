@@ -67,6 +67,30 @@ public class PipelineApiTest extends PipelineBaseTest {
     }
 
 
+    @Test
+    public void getPipelineRunblockingStopTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition("" +
+            "node {" +
+            "   stage ('Build1'); " +
+            "   sh('sleep 60') " +
+            "   stage ('Test1'); " +
+            "   echo ('Testing'); " +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
+
+        Map r = request().put("/organizations/jenkins/pipelines/pipeline1/runs/1/stop/?blocking=true") //default timeOutInSecs=10 sec
+            .build(Map.class);
+
+        Assert.assertEquals(r.get("state"), "FINISHED");
+        Assert.assertEquals(r.get("result"), "ABORTED");
+
+        j.assertBuildStatus(Result.ABORTED, b1);
+
+    }
+
 
 
     @Test

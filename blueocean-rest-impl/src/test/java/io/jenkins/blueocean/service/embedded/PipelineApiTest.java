@@ -244,6 +244,22 @@ public class PipelineApiTest extends BaseTest {
         validateRun(b, lr);
     }
 
+    @Test
+    public void getPipelineRunsStopTest() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("p1");
+        p.getBuildersList().add(new Shell("sleep 60"));
+        FreeStyleBuild b = p.scheduleBuild2(0).waitForStart();
+
+        //wait till its running
+        do{
+            Thread.sleep(10); //sleep for 10ms
+        }while(b.hasntStartedYet());
+
+        Map resp = put("/organizations/jenkins/pipelines/p1/runs/"+b.getId()+"/stop/?blocking=true&timeOutInSecs=2", Map.class);
+        Assert.assertEquals("ABORTED", resp.get("result"));
+        Assert.assertEquals("FINISHED", resp.get("state"));
+    }
+
 
     @Test
     public void findPipelineRunsForAPipelineTest() throws Exception {

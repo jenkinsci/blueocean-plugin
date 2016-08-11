@@ -787,7 +787,8 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     }
 
 ## Stop a build
-Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
+
+> Note: it takes a while to stop, so you may get a state of RUNNING or QUEUED.
 
     curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop
     {
@@ -813,6 +814,42 @@ Note it takes a while to stop, so you may get a state of RUNNING or QUEUED.
            "type": "WorkflowRun",
            "commitId": null
        }
+
+### Stop a build as blocking call
+
+You can pass blocking=true (default false) with optional timeOutInSecs parameter (Default 10 sec). This API tries to
+stop running job and between each retries does a sleep for 10% of timeOutInSecs value.
+
+Client should check the state and if its not FINISHED they may issue another stop API call to ensure the build is stopped.
+
+> Note: There is no guarantee, after timeout build build might still be running.
+
+    curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop/?blocking=true&timeOutInSecs=5
+
+    {
+           "changeSet": [],
+           "artifacts": [
+             {
+                 "name": "fizz",
+                 "size": 8,
+                 "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+             }
+           ],
+           "durationInMillis": 841,
+           "estimatedDurationInMillis" : 567,
+           "enQueueTime": "2016-03-16T09:02:26.492-0700",
+           "endTime": "2016-03-16T09:02:27.339-0700",
+           "id": "1",
+           "organization": "jenkins",
+           "pipeline": "pipeline1",
+           "result": "ABORTED",
+           "runSummary": "stable",
+           "startTime": "2016-03-16T09:02:26.498-0700",
+           "state": "FINISHED",
+           "type": "WorkflowRun",
+           "commitId": null
+       }
+
     
 ## Get MultiBranch job's branch run detail
     
