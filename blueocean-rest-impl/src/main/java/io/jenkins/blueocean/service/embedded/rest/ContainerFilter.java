@@ -47,19 +47,25 @@ public abstract class ContainerFilter implements ExtensionPoint {
     /**
      * Filters the item list based on the supplied filter name
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Item> Collection<T> filter(Collection<T> items, String ... filterNames) {
-        if (filterNames != null) {
+        if (filterNames != null && filterNames.length > 0) {
+            Predicate<Item>[] filters = new Predicate[filterNames.length];
+            for (int i = 0; i < filterNames.length; i++) {
+                final Predicate<Item> f = getItemFilter(filterNames[i]);
+                if (f == null) {
+                    throw new IllegalArgumentException("Invalid filter type specified.");
+                }
+                filters[i] = f;
+            }
             Collection<T> out = new ArrayList<>();
-            for (T item : items) {
-                for (String filterName : filterNames) {
-                    final Predicate<Item> f = getItemFilter(filterName);
-                    if (f == null) {
-                        throw new IllegalArgumentException("Invalid filter type specified.");
-                    }
-                    if (f.apply(item)) {
-                        out.add(item);
+            nextItem: for (T item : items) {
+                for (int i = 0; i < filters.length; i++) {
+                    if (!filters[i].apply(item)) {
+                        continue nextItem;
                     }
                 }
+                out.add(item);
             }
             return out;
         }
