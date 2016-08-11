@@ -5,7 +5,6 @@ import hudson.Plugin;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.ContainerFilter;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.model.BluePipeline;

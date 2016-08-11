@@ -2,9 +2,9 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Job;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.ContainerFilter;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;

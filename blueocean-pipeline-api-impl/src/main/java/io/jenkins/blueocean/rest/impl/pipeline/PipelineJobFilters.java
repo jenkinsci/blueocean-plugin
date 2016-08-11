@@ -10,7 +10,7 @@ import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
-import io.jenkins.blueocean.rest.ContainerFilter;
+import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
 

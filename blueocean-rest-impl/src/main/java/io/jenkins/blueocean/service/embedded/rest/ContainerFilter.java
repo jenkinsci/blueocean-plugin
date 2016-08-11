@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest;
+package io.jenkins.blueocean.service.embedded.rest;
 
 import java.util.ArrayList;
 import java.util.Collection;
