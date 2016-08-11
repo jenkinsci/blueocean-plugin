@@ -7,6 +7,8 @@ import hudson.model.Queue;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
+import hudson.security.HudsonPrivateSecurityRealm;
+import hudson.security.LegacyAuthorizationStrategy;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
@@ -15,10 +17,8 @@ import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.hamcrest.collection.IsArrayContainingInAnyOrder;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
-import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
@@ -137,6 +137,79 @@ public class MultiBranchTest extends PipelineBaseTest {
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/p/",
             ((Map)((Map)r.get("_links")).get("self")).get("href"));
     }
+
+    @Test
+    public void testMultiBranchPipelineBranchUnsecurePermissions() throws IOException, ExecutionException, InterruptedException {
+        MockFolder folder1 = j.createFolder("folder1");
+        WorkflowMultiBranchProject mp = folder1.createProject(WorkflowMultiBranchProject.class, "p");
+
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+
+        Map r = get("/organizations/jenkins/pipelines/folder1/pipelines/p/");
+
+
+        Map<String,Boolean> permissions = (Map<String, Boolean>) r.get("permissions");
+        Assert.assertTrue(permissions.get("create"));
+        Assert.assertTrue(permissions.get("read"));
+        Assert.assertNull(permissions.get("start"));
+        Assert.assertNull(permissions.get("stop"));
+
+
+
+        r = get("/organizations/jenkins/pipelines/folder1/pipelines/p/branches/master/");
+
+        permissions = (Map<String, Boolean>) r.get("permissions");
+        Assert.assertTrue(permissions.get("create"));
+        Assert.assertTrue(permissions.get("start"));
+        Assert.assertTrue(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("read"));
+    }
+
+
+    @Test
+    public void testMultiBranchPipelineBranchSecurePermissions() throws IOException, ExecutionException, InterruptedException {
+        j.jenkins.setSecurityRealm(new HudsonPrivateSecurityRealm(false));
+        j.jenkins.setAuthorizationStrategy(new LegacyAuthorizationStrategy());
+
+        MockFolder folder1 = j.createFolder("folder1");
+        WorkflowMultiBranchProject mp = folder1.createProject(WorkflowMultiBranchProject.class, "p");
+
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+
+        Map r = get("/organizations/jenkins/pipelines/folder1/pipelines/p/");
+
+
+        Map<String,Boolean> permissions = (Map<String, Boolean>) r.get("permissions");
+        Assert.assertFalse(permissions.get("create"));
+        Assert.assertTrue(permissions.get("read"));
+        Assert.assertNull(permissions.get("start"));
+        Assert.assertNull(permissions.get("stop"));
+
+
+
+        r = get("/organizations/jenkins/pipelines/folder1/pipelines/p/branches/master/");
+
+        permissions = (Map<String, Boolean>) r.get("permissions");
+        Assert.assertFalse(permissions.get("create"));
+        Assert.assertFalse(permissions.get("start"));
+        Assert.assertFalse(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("read"));
+    }
+
 
     @Test
     public void getBranchWithEncodedPath() throws IOException, ExecutionException, InterruptedException {

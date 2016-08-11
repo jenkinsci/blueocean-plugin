@@ -1,8 +1,10 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
+import hudson.model.AbstractItem;
 import hudson.model.Action;
 import hudson.model.Item;
 import hudson.model.Job;
@@ -23,7 +25,6 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -188,5 +190,20 @@ public class PipelineImpl extends BluePipeline {
     @Navigable
     public Container<Resource> getActivities() {
         return Containers.fromResource(getLink(),Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+    }
+
+
+    @Override
+    public Map<String, Boolean> getPermissions(){
+        return getPermissions(job);
+    }
+
+    public static Map<String, Boolean> getPermissions(AbstractItem item){
+        return ImmutableMap.of(
+            BluePipeline.CREATE_PERMISSION, item.getACL().hasPermission(Item.CREATE),
+            BluePipeline.READ_PERMISSION, item.getACL().hasPermission(Item.READ),
+            BluePipeline.START_PERMISSION, item.getACL().hasPermission(Item.BUILD),
+            BluePipeline.STOP_PERMISSION, item.getACL().hasPermission(Item.CANCEL)
+        );
     }
 }
