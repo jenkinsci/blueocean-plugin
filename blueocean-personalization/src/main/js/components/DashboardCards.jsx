@@ -6,9 +6,13 @@ import TransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
+import fetch from 'isomorphic-fetch';
+import * as sse from '@jenkins-cd/sse-gateway';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
+import { SseBus } from '../model/SseBus';
+import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 
 import FavoritesProvider from './FavoritesProvider';
 import { PipelineCard } from './PipelineCard';
@@ -92,6 +96,39 @@ const extractPath = (path, begin, end) => {
  * Renders a stack of "favorites cards" including current most recent status.
  */
 export class DashboardCards extends Component {
+
+    componentWillMount() {
+        if (!this.sseBus) {
+            this.sseBus = new SseBus(sse, fetch);
+            this.sseBus.subscribeToJob(
+                this.props.updateRun,
+                (event) => this._filterJobs(event)
+            );
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.sseBus) {
+            this.sseBus.dispose();
+            this.sseBus = null;
+        }
+    }
+
+    _filterJobs(event) {
+        // suppress processing of any events whose job URL doesn't match the favorited item's URL
+        if (this.props.favorites && this.props.favorites.size > 0) {
+            for (const favorite of this.props.favorites) {
+                const favoriteUrl = favorite.item._links.self.href;
+                const pipelineOrBranchUrl = event.blueocean_job_rest_url;
+
+                if (checkMatchingFavoriteUrls(favoriteUrl, pipelineOrBranchUrl)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     _onFavoriteToggle(isFavorite, favorite) {
         this.props.toggleFavorite(isFavorite, favorite.item, favorite);
@@ -191,6 +228,7 @@ DashboardCards.propTypes = {
     router: PropTypes.object,
     favorites: PropTypes.instanceOf(List),
     toggleFavorite: PropTypes.func,
+    updateRun: PropTypes.func,
 };
 
 const selectors = createSelector(
