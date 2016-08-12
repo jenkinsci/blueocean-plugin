@@ -92,11 +92,8 @@ gulp.task("compile-react", () =>
 
 // Validate contents
 gulp.task("validate", () => {
-    /*
     const paths = [
-        config.less.dest,
-        config.copy.fonts.dest,
-        config.copy.octicons.dest,
+        config.react.dest,
     ];
 
     for (const path of paths) {
@@ -107,5 +104,4 @@ gulp.task("validate", () => {
             throw err;
         }
     }
-    */
 });
