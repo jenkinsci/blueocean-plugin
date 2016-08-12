@@ -676,7 +676,7 @@ export const actions = {
             const id = general.id;
 
             if (!data || !data[id]) {
-                return getToken
+                return getToken()
                     .then(token => fetch(general.url, fetchOptions(token)))
                     .then(checkStatus)
                     .then(parseJSON)
