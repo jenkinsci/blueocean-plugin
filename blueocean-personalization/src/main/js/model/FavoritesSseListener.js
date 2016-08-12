@@ -7,9 +7,15 @@ import * as sse from '@jenkins-cd/sse-gateway';
 import { SseBus } from '../model/SseBus';
 import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 
+/**
+ * Class that acts as a bridge between SSE and the store/actions.
+ * Needs to be a "Singleton" so the subscription can be maintained across route changes.
+ * TODO: should cleaner way of registering a long-lived component which can easily access stores, services, etc.
+ */
 class FavoritesSseListener {
 
     initialize(store, jobListener) {
+        // prevent more than one registration
         if (this.store && this.sseBus) {
             return;
         }
