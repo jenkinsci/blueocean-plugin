@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Action;
+import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -14,6 +15,7 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 
 import java.util.Collection;
@@ -134,7 +136,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public Container<BlueArtifact> getArtifacts() {
-        Map<String, BlueArtifact> m = new HashMap<String, BlueArtifact>();
+        Map<String, BlueArtifact> m = new HashMap<>();
         List<Run.Artifact> artifacts = run.getArtifacts();
         for (final Run.Artifact artifact: artifacts) {
             m.put(artifact.getFileName(), new BlueArtifact() {
@@ -193,8 +195,41 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public BlueRun stop() {
+    public BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs){
         throw new ServiceException.NotImplementedException("Stop should be implemented on a subclass");
+    }
+
+    protected BlueRun stop(Boolean blocking, Integer timeOutInSecs, StoppableRun stoppableRun){
+            if(blocking == null){
+                blocking = false;
+            }
+            try {
+                long start = System.currentTimeMillis();
+                if(timeOutInSecs == null){
+                    timeOutInSecs = DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS;
+                }
+                if(timeOutInSecs < 0){
+                    throw new ServiceException.BadRequestExpception("timeOutInSecs must be >= 0");
+                }
+
+                long timeOutInMillis = timeOutInSecs*1000;
+
+                long sleepingInterval = timeOutInMillis/10; //one tenth of timeout
+                do{
+                    if(isCompletedOrAborted()){
+                        return this;
+                    }
+                    stoppableRun.stop();
+                    if(isCompletedOrAborted()){
+                        return this;
+                    }
+                    Thread.sleep(sleepingInterval);
+                }while(blocking && (System.currentTimeMillis() - start) < timeOutInMillis);
+
+            } catch (Exception e) {
+                throw new ServiceException.UnexpectedErrorException(String.format("Failed to stop run %s: %s", run.getId(), e.getMessage()), e);
+            }
+        return this;
     }
 
     /**
@@ -219,5 +254,9 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
             return OrganizationImpl.INSTANCE.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
         }
         return parent.rel("runs/"+getId());
+    }
+
+    private boolean isCompletedOrAborted(){
+        return run.getResult()!= null && (run.getResult() == Result.ABORTED || run.getResult().isCompleteBuild());
     }
 }

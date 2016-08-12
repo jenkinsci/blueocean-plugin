@@ -7,6 +7,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueExtensionClass;
 import io.jenkins.blueocean.rest.model.BlueExtensionClassContainer;
 import io.jenkins.blueocean.rest.model.BlueExtensionClassMap;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.QueryParameter;
 
 import java.util.Collections;
@@ -67,7 +68,7 @@ public class ExtensionClassContainerImpl extends BlueExtensionClassContainer {
 
     private Class getClazz(String name){
         try {
-            return this.getClass().getClassLoader().loadClass(name);
+            return Jenkins.getInstance().getPluginManager().uberClassLoader.loadClass(name);
         } catch (ClassNotFoundException e) {
             throw new ServiceException.NotFoundException(String.format("Class %s is not known", name));
         }
