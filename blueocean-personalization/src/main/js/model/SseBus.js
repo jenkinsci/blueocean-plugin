@@ -153,7 +153,7 @@ export class SseBus {
     }
 
     _updateJob(event) {
-        const baseUrl = urlConfig.blueoceanAppURL;
+        const baseUrl = urlConfig.jenkinsRootURL;
         const url = cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
         this.fetch(url)
