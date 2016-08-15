@@ -6,6 +6,7 @@ import TransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
+import { classMetadataStore } from '@jenkins-cd/js-extensions';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
@@ -94,11 +95,42 @@ const extractPath = (path, begin, end) => {
  */
 export class DashboardCards extends Component {
 
+    constructor() {
+        super();
+        this.state = {
+            capabilities: {},
+        };
+    }
+
     componentWillMount() {
         favoritesSseListener.initialize(
             this.props.store,
             this.props.updateRun
         );
+
+        this._initializeCapabilities(this.props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this._initializeCapabilities(nextProps);
+    }
+
+    _initializeCapabilities(props) {
+        if (props.favorites && props.favorites.size) {
+            for (const favorite of props.favorites) {
+                const className = favorite.item._class;
+                classMetadataStore.getClassMetadata(className, (classMeta) => {
+                    const capabilities = this.state.capabilities;
+                    if (!capabilities[className]) {
+                        capabilities[className] = classMeta;
+
+                        this.setState({
+                            capabilities,
+                        });
+                    }
+                });
+            }
+        }
     }
 
     _onRunAgainClick(pipeline) {
