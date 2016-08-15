@@ -59,7 +59,13 @@ export class PipelineCard extends Component {
 
     _onRunClick() {
         if (this.props.onRunClick) {
-            this.props.onRunClick();
+            this.props.onRunClick(this.props.item);
+        }
+    }
+
+    _onRunAgainClick() {
+        if (this.props.onRunAgainClick) {
+            this.props.onRunAgainClick(this.props.item);
         }
     }
 
@@ -77,7 +83,8 @@ export class PipelineCard extends Component {
     render() {
         const { status, commitId, startTime, estimatedDuration } = this.props;
         const bgClass = PipelineCard._getBackgroundClass(status);
-        const showRun = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
+        const showRun = status && (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
+        const showRunAgain = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
         const activityUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
@@ -125,9 +132,15 @@ export class PipelineCard extends Component {
                 }
 
                 <span className="actions">
-                    { showRun &&
-                    <a className="run" title="Run Again" onClick={(event) => {stopProp(event); this._onRunClick();}}>
+                    { showRunAgain &&
+                    <a className="action-item" title="Run Again" onClick={(event) => {stopProp(event); this._onRunAgainClick();}}>
                         <Icon size={24} icon="replay" />
+                    </a>
+                    }
+
+                    { showRun &&
+                    <a className="action-item" title="Run" onClick={(event) => {stopProp(event); this._onRunClick();}}>
+                        <Icon size={24} icon="play_arrow" />
                     </a>
                     }
 
@@ -142,6 +155,7 @@ export class PipelineCard extends Component {
 
 PipelineCard.propTypes = {
     router: PropTypes.object,
+    item: PropTypes.object,
     status: PropTypes.string,
     startTime: PropTypes.string,
     estimatedDuration: PropTypes.number,
@@ -153,6 +167,7 @@ PipelineCard.propTypes = {
     runId: PropTypes.string,
     favorite: PropTypes.bool,
     onRunClick: PropTypes.func,
+    onRunAgainClick: PropTypes.func,
     onFavoriteToggle: PropTypes.func,
 };
 
