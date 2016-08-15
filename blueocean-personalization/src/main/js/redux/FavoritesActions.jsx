@@ -127,7 +127,7 @@ export const actions = {
     },
 
     replayPipeline(pipeline) {
-        return() => {
+        return () => {
             const baseUrl = urlConfig.blueoceanAppURL;
             const pipelineUrl = pipeline.latestRun._links.self.href;
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
@@ -142,7 +142,7 @@ export const actions = {
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
             fetch(runPipelineUrl, fetchOptions);
-        }
+        };
     },
 
     updateRun(jobRun) {
