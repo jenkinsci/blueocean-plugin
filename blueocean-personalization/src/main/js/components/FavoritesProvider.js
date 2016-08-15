@@ -30,7 +30,7 @@ export class FavoritesProvider extends Component {
         const { user, favorites } = props;
 
         const shouldFetchUser = !user;
-        const shouldFetchFavorites = user && !favorites;
+        const shouldFetchFavorites = user && !user.isAnonymous() && !favorites;
 
         if (shouldFetchUser) {
             this.props.fetchUser();
@@ -42,9 +42,13 @@ export class FavoritesProvider extends Component {
     }
 
     render() {
-        return this.props.children ?
-            React.cloneElement(this.props.children, { ...this.props }) :
-            null;
+        if (this.props.user && !this.props.user.isAnonymous()) {
+            if (this.props.children) {
+                return React.cloneElement(this.props.children, {...this.props});
+            }
+        }
+
+        return null;
     }
 }
 
