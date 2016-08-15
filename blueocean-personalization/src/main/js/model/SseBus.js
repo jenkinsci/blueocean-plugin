@@ -3,25 +3,9 @@
  */
 import defaultFetch from 'isomorphic-fetch';
 
+import { cleanSlashes } from '../util/UrlUtils';
 import urlConfig from '../config';
 urlConfig.loadConfig();
-
-/**
- * Trims duplicate forward slashes to a single slash and adds trailing slash if needed.
- * @param url
- * @returns {string}
- */
-export const cleanSlashes = (url) => {
-    if (url.indexOf('//') !== -1) {
-        let cleanUrl = url.replace('//', '/');
-        cleanUrl = cleanUrl.substr(-1) === '/' ?
-            cleanUrl : `${cleanUrl}/`;
-
-        return cleanSlashes(cleanUrl);
-    }
-
-    return url;
-};
 
 // TODO: migrate all this code down to 'fetch'
 function checkStatus(response) {
