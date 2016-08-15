@@ -208,8 +208,8 @@ export class DashboardCards extends Component {
                       commitId={commitId}
                       runId={runId}
                       favorite
-                      onRunAgainClick={(pipeline) => this._onRunAgainClick(pipeline)}
-                      onRunClick={(pipeline) => this._onRunClick(pipeline)}
+                      onRunAgainClick={(pipeline1) => this._onRunAgainClick(pipeline1)}
+                      onRunClick={(pipeline2) => this._onRunClick(pipeline2)}
                       onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                     />
                 </div>
@@ -243,6 +243,7 @@ DashboardCards.propTypes = {
     favorites: PropTypes.instanceOf(List),
     toggleFavorite: PropTypes.func,
     runPipeline: PropTypes.func,
+    replayPipeline: PropTypes.func,
     updateRun: PropTypes.func,
 };
 
