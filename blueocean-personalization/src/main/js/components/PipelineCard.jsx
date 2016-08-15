@@ -69,6 +69,10 @@ export class PipelineCard extends Component {
         }
     }
 
+    _onStopClick() {
+
+    }
+
     _onFavoriteToggle() {
         const value = !this.state.favorite;
         this.setState({
@@ -142,6 +146,10 @@ export class PipelineCard extends Component {
                     <a className="action-item" title="Run" onClick={(event) => {stopProp(event); this._onRunClick();}}>
                         <Icon size={24} icon="play_arrow" />
                     </a>
+                    }
+
+                    { !showRun &&
+                    <a className="action-item stop-button" title="Stop" onClick={(event) => {stopProp(event); this._onStopClick();}}></a>
                     }
 
                     <Favorite checked={this.state.favorite} className="dark-white"
