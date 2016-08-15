@@ -44,7 +44,7 @@ export class FavoritesProvider extends Component {
     render() {
         if (this.props.user && !this.props.user.isAnonymous()) {
             if (this.props.children) {
-                return React.cloneElement(this.props.children, {...this.props});
+                return React.cloneElement(this.props.children, { ...this.props });
             }
         }
 

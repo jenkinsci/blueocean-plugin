@@ -8,11 +8,11 @@ const { Record } = Immutable;
 
 export class User extends Record(
     {
-    _class: null,
-    _links: null,
-    email: null,
-    fullName: null,
-    id: null,
+        _class: null,
+        _links: null,
+        email: null,
+        fullName: null,
+        id: null,
     }
 ) {
     isAnonymous() {
