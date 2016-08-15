@@ -83,7 +83,7 @@ export class PipelineCard extends Component {
     render() {
         const { status, commitId, startTime, estimatedDuration } = this.props;
         const bgClass = PipelineCard._getBackgroundClass(status);
-        const showRun = status && (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
+        const showRun = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
         const showRunAgain = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
