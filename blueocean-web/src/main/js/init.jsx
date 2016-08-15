@@ -1,35 +1,4 @@
-const requestDone = 4; // Because Zombie is garbage
-
-// Basically copied from AjaxHoc
-function getURL(url, onLoad) {
-    const xmlhttp = new XMLHttpRequest();
-
-    if (!url) {
-        onLoad(null);
-        return;
-    }
-
-    xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState === requestDone) {
-            if (xmlhttp.status === 200) {
-                let data = null;
-                try {
-                    data = JSON.parse(xmlhttp.responseText);
-                } catch (e) {
-                    // eslint-disable-next-line
-                    console.log('Loading', url,
-                    'Expecting JSON, instead got', xmlhttp.responseText);
-                }
-                onLoad(data);
-            } else {
-                // eslint-disable-next-line
-                console.log('Loading', url, 'expected 200, got', xmlhttp.status, xmlhttp.responseText);
-            }
-        }
-    };
-    xmlhttp.open('GET', url, true);
-    xmlhttp.send();
-}
+import { FetchUtils } from '@jenkins-cd/blueocean-core-js';
 
 exports.initialize = function (oncomplete) {
     //
@@ -60,8 +29,9 @@ exports.initialize = function (oncomplete) {
     // Might want to do some flux fancy-pants stuff for this.
     const appRoot = document.getElementsByTagName("head")[0].getAttribute("data-appurl");
     Extensions.init({
-        extensionDataProvider: cb => getURL(`${appRoot}/js-extensions`, rsp => cb(rsp.data)),
-        classMetadataProvider: (type, cb) => getURL(`${appRoot}/rest/classes/${type}/`, cb)
+        extensionDataProvider: cb => FetchUtils.fetchJson(`${appRoot}/js-extensions`, body => cb(body.data)),
+        classMetadataProvider: (type, cb) => FetchUtils.fetchJson(`${appRoot}/rest/classes/${type}/`,cb)
     });
     oncomplete();
+    
 };

@@ -2,11 +2,13 @@ import keymirror from 'keymirror';
 import fetch from 'isomorphic-fetch';
 
 import { State } from '../components/records';
-import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
 import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
-import jwt from 'jsonwebtoken';
-import moment from 'moment-timezone';
+
+import { FetchUtils, JWT } from '@jenkins-cd/blueocean-core-js';
+
+const { checkStatus, fetchOptions, parseJSON } = FetchUtils;
+
 
 
 /**
@@ -146,29 +148,6 @@ export const actionHandlers = {
     },
 };
 
-// fetch helper
-function fetchOptions(token) {
-    return {
-        credentials: 'same-origin',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        },
-    };
-}
-
-function checkStatus(response) {
-    if (response.status >= 300 || response.status < 200) {
-        const error = new Error(response.statusText);
-        error.response = response;
-        throw error;
-    }
-    return response;
-}
-
-function parseJSON(response) {
-    return response.json();
-}
-
 function parseMoreDataHeader(response) {
     let newStart = null;
     /*
@@ -185,63 +164,6 @@ function parseMoreDataHeader(response) {
     const payload = { response, newStart };
     return payload;
 }
-let jwtToken = null;
-function storeToken(token) {
-    jwtToken = token;
-    return token;
-}
-
-function getTokenFromStorage() {
-    return jwtToken;
-}
-
-function getToken() {
-    const storedToken = getTokenFromStorage();
-    if (storedToken) {
-        const tokenPayload = jwt.decode(storedToken);
-        const expiry = moment.unix(tokenPayload.exp);
-        if (expiry.diff(moment.tz('UTC'), 'seconds') < 300) {
-            return Promise.fulfilled(storedToken);
-        }
-    }
-
-    return fetch('/jenkins/jwt-auth/token', { credentials: 'same-origin' })
-        .then(checkStatus)
-        .then(response => {
-            if (response.headers.get("X-BLUEOCEAN-JWT")) {
-                const token = response.headers.get("X-BLUEOCEAN-JWT");
-                storeToken(token);
-                return token;
-            }
-            
-            throw new Error('Could not fetch jwt_token');
-        });
-}
-
-
-/**
- * Fetch JSON data.
- * <p>
- * Utility function that can be mocked for testing.
- *
- * @param url The URL to fetch from.
- * @param onSuccess o
- * @param onError
- */
-exports.fetchJson = function fetchJson(url, onSuccess, onError) {
-    return getToken()
-        .then(token => fetch(url, fetchOptions(token)))
-        .then(checkStatus)
-        .then(parseJSON)
-        .then(onSuccess)
-        .catch((error) => {
-            if (onError) {
-                onError(error);
-            } else {
-                console.error(error); // eslint-disable-line no-console
-            }
-        });
-};
 
 /**
  * Fetch TXT/log data and inject a start parameter to indicate that a refetch is needed
@@ -261,7 +183,7 @@ exports.fetchLogsInjectStart = function fetchLogsInjectStart(url, start, onSucce
     } else {
         refetchUrl = `${url}?start=${start}`;
     }
-    return getToken()
+    return JWT.getToken()
         .then(token => fetch(refetchUrl, fetchOptions(token)))
         .then(checkStatus)
         .then(parseMoreDataHeader)
@@ -674,9 +596,8 @@ export const actions = {
             dispatch({ type: types.clear });
 
             const id = general.id;
-
             if (!data || !data[id]) {
-                return getToken()
+                return JWT.getToken()
                     .then(token => fetch(general.url, fetchOptions(token)))
                     .then(checkStatus)
                     .then(parseJSON)
@@ -712,7 +633,7 @@ export const actions = {
     },
 
     generateData(url, actionType, optional) {
-        return (dispatch) => getToken()
+        return (dispatch) => JWT.getToken()
                 .then(token => fetch(url, fetchOptions(token)))
                 .then(checkStatus)
                 .then(parseJSON)

@@ -39,6 +39,7 @@
     "@jenkins-cd/js-extensions": "0.0.21-beta4",
     "@jenkins-cd/js-modules": "0.0.5",
     "@jenkins-cd/sse-gateway": "0.0.7",
+    "@jenkins-cd/blueocean-core-js": "0.0.1",
     "immutable": "3.8.1",
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "7.1.8",
