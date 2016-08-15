@@ -107,6 +107,44 @@ export const actions = {
         };
     },
 
+    runPipeline(pipeline) {
+        return () => {
+            const baseUrl = urlConfig.blueoceanAppURL;
+            const pipelineUrl = pipeline._links.self.href;
+            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
+
+            const fetchOptions = {
+                ...defaultFetchOptions,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
+            fetch(runPipelineUrl, fetchOptions);
+        };
+    },
+
+    replayPipeline(pipeline) {
+        return() => {
+            const baseUrl = urlConfig.blueoceanAppURL;
+            const pipelineUrl = pipeline.latestRun._links.self.href;
+            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
+
+            const fetchOptions = {
+                ...defaultFetchOptions,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
+            fetch(runPipelineUrl, fetchOptions);
+        }
+    },
+
     updateRun(jobRun) {
         return (dispatch) => {
             dispatch({

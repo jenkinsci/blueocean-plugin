@@ -101,6 +101,14 @@ export class DashboardCards extends Component {
         );
     }
 
+    _onRunAgainClick(pipeline) {
+        this.props.replayPipeline(pipeline);
+    }
+
+    _onRunClick(pipeline) {
+        this.props.runPipeline(pipeline);
+    }
+
     _onFavoriteToggle(isFavorite, favorite) {
         this.props.toggleFavorite(isFavorite, favorite.item, favorite);
     }
@@ -157,6 +165,7 @@ export class DashboardCards extends Component {
                 <div key={favorite._links.self.href}>
                     <PipelineCard
                       router={this.props.router}
+                      item={pipeline}
                       status={status}
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
@@ -167,6 +176,8 @@ export class DashboardCards extends Component {
                       commitId={commitId}
                       runId={runId}
                       favorite
+                      onRunAgainClick={(pipeline) => this._onRunAgainClick(pipeline)}
+                      onRunClick={(pipeline) => this._onRunClick(pipeline)}
                       onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                     />
                 </div>
@@ -199,6 +210,7 @@ DashboardCards.propTypes = {
     router: PropTypes.object,
     favorites: PropTypes.instanceOf(List),
     toggleFavorite: PropTypes.func,
+    runPipeline: PropTypes.func,
     updateRun: PropTypes.func,
 };
 
