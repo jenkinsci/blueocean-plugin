@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
+import hudson.model.ItemGroup;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.model.BlueUser;
@@ -21,9 +22,9 @@ public class UserSearch extends OmniSearch<BlueUser> {
     }
 
     @Override
-    public Pageable<BlueUser> search(Query q) {
+    public Pageable<BlueUser> search(Query q, ItemGroup<?> root) {
         List<BlueUser> users = new ArrayList<>();
-        for(hudson.model.User u:hudson.model.User.getAll()){
+        for(hudson.model.User u: hudson.model.User.getAll()){
             users.add(new UserImpl(u));
         }
         return Pageables.wrap(users);

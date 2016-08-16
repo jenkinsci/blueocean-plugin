@@ -2,6 +2,8 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.collect.ImmutableList;
 import hudson.Extension;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TopLevelItem;
@@ -33,14 +35,14 @@ public class RunSearch extends OmniSearch<BlueRun> {
     }
 
     @Override
-    public Pageable<BlueRun> search(Query q) {
+    public Pageable<BlueRun> search(Query q, ItemGroup<?> root) {
 
         String pipeline = q.param("pipeline", false);
 
         boolean latestOnly = q.param("latestOnly", Boolean.class);
-
+        
         if(pipeline != null){
-            TopLevelItem p = Jenkins.getActiveInstance().getItem(pipeline);
+            Item p = root.getItem(pipeline);
             if(latestOnly){
                 BlueRun r = getLatestRun((Job)p);
                 if(r != null) {

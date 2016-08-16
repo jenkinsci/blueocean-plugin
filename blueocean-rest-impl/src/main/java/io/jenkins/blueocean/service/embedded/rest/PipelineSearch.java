@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
-import hudson.Plugin;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
+import hudson.model.Items;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
@@ -49,7 +49,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
     }
 
     @Override
-    public Pageable<BluePipeline> search(Query q) {
+    public Pageable<BluePipeline> search(Query q, ItemGroup<?> root) {
         String s = q.param(EXCLUDED_FROM_FLATTENING_PARAM);
         String org = q.param(ORGANIZATION_PARAM);
 
@@ -65,13 +65,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
                     c = Class.forName(s1);
                 } catch (ClassNotFoundException e) {
                     try {
-                        //TODO: There should be better ways to find a class from a plugin.
-                        Plugin p = Jenkins.getInstance().getPlugin("blueocean-pipeline-api-impl");
-                        if(p != null){
-                            c = p.getWrapper().classLoader.loadClass(s1);
-                        }else{
-                            logger.error("blueocean-pipeline-api-impl plugin not found!");
-                        }
+                        c = Jenkins.getInstance().getPluginManager().uberClassLoader.loadClass(s1);
                     } catch (ClassNotFoundException e1) {
                         logger.error(e.getMessage(), e1);
                     }
@@ -86,13 +80,13 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
 
         List<Item> items = new ArrayList<>();
         if(!excludeList.isEmpty()) {
-            for (Item item : Jenkins.getActiveInstance().getAllItems(Item.class)) {
+            for (Item item : Items.getAllItems(root, Item.class)) {
                 if (!exclude(item.getParent(), excludeList)) {
                     items.add(item);
                 }
             }
         }else{
-            items = Jenkins.getActiveInstance().getAllItems(Item.class);
+            items = Items.getAllItems(root, Item.class);
         }
         final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl()
             .getPipelines(items);

@@ -10,6 +10,8 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
+import jenkins.model.Jenkins;
+
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -50,11 +52,7 @@ public final class ApiHead implements RootRoutable, Reachable  {
      */
     @WebMethod(name="search") @GET @PagedResponse
     public Pageable<?> search(@QueryParameter("q") Query query) {
-        for (OmniSearch os : OmniSearch.all()) {
-            if (os.getType().equals(query.type))
-                return os.search(query);
-        }
-        return Pageables.empty();
+        return OmniSearch.query(query, Jenkins.getInstance());
     }
 
     /**
