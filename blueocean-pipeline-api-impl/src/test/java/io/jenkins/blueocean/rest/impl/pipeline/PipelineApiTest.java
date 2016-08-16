@@ -231,4 +231,32 @@ public class PipelineApiTest extends PipelineBaseTest {
         Assert.assertEquals("io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl", ((Map) l.get(1)).get("_class"));
     }
 
+    @Test
+    public void pipelineJobCapabilityTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition("" +
+            "node {" +
+            "   stage ('Build1'); " +
+            "   sh('sleep 60') " +
+            "   stage ('Test1'); " +
+            "   echo ('Testing'); " +
+            "}"));
+
+        Map response = get("/organizations/jenkins/pipelines/pipeline1/");
+
+        String clazz = (String) response.get("_class");
+
+        response = get("/classes/"+clazz+"/");
+        Assert.assertNotNull(response);
+
+        List<String> classes = (List<String>) response.get("classes");
+        Assert.assertTrue(classes.contains("hudson.model.Job")
+            && classes.contains("org.jenkinsci.plugins.workflow.job.WorkflowJob")
+            && classes.contains("io.jenkins.blueocean.rest.model.BluePipeline")
+            && !classes.contains("io.jenkins.blueocean.rest.model.BlueBranch")
+        );
+    }
+
+
 }

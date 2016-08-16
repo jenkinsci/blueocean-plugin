@@ -15,10 +15,8 @@ import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.hamcrest.collection.IsArrayContainingInAnyOrder;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
-import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
@@ -668,6 +666,35 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         List<Map> responses = get("/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject", List.class);
         Assert.assertEquals(1, responses.size());
+    }
+
+    @Test
+    public void branchCapabilityTest() throws Exception {
+
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+
+
+        j.waitUntilNoActivity();
+
+        Map response = get("/organizations/jenkins/pipelines/p/branches/master/", Map.class);
+        String clazz = (String) response.get("_class");
+
+        response = get("/classes/"+clazz+"/");
+        Assert.assertNotNull(response);
+
+        List<String> classes = (List<String>) response.get("classes");
+        Assert.assertTrue(classes.contains("hudson.model.Job")
+            && classes.contains("org.jenkinsci.plugins.workflow.job.WorkflowJob")
+            && classes.contains("io.jenkins.blueocean.rest.model.BlueBranch")
+            && classes.contains("io.jenkins.blueocean.rest.model.BluePipeline")
+            && classes.contains("io.jenkins.blueocean.rest.impl.pipeline.PullReuqest"));
     }
 
 

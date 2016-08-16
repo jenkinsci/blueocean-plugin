@@ -5,6 +5,7 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -20,6 +21,7 @@ import java.util.Map;
  *
  * @author Vivek Pandey
  */
+@Capability("hudson.model.FreeStyleBuild")
 public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     public FreeStyleRunImpl(FreeStyleBuild run, Link parent) {
         super(run, parent);

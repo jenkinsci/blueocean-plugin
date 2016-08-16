@@ -18,12 +18,12 @@ import java.util.List;
  * @author Ivan Meredith
  */
 public class QueueContainerImpl extends BlueQueueContainer {
-    private PipelineImpl pipeline;
+    private AbstractPipelineImpl pipeline;
     private Job job;
 
-    public QueueContainerImpl(PipelineImpl pipeline) {
+    public QueueContainerImpl(AbstractPipelineImpl pipeline) {
         this.pipeline = pipeline;
-        this.job = pipeline.job;
+        this.job = pipeline.getJob();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
      * @return List of items newest first
      */
     public static List<BlueQueueItem> getQueuedItems(Job job) {
-        BluePipeline pipeline = new PipelineImpl(job);
+        BluePipeline pipeline = new AbstractPipelineImpl(job);
 
         if(job instanceof BuildableItem) {
             BuildableItem task = (BuildableItem)job;
