@@ -77,7 +77,6 @@ const actionHandlers = {
             }
         }
 
-        console.warn('run was not updated; likely an error?');
         return state;
     },
 };
