@@ -97,7 +97,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public Link getLink() {
-        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
+        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
     }
 
     @Extension(ordinal = 0)

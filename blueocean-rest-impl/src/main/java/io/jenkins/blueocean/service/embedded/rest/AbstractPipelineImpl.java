@@ -9,6 +9,7 @@ import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -23,7 +24,6 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
@@ -33,12 +33,15 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author Kohsuke Kawaguchi
+ * Pipeline abstraction implementation. Use it to extend other kind of jenkins jobs
+ *
+ * @author Vivek Pandey
  */
-public class PipelineImpl extends BluePipeline {
-    /*package*/ final Job job;
+@Capability("hudson.model.Job")
+public class AbstractPipelineImpl extends BluePipeline {
+    private final Job job;
 
-    protected PipelineImpl(Job job) {
+    protected AbstractPipelineImpl(Job job) {
         this.job = job;
     }
 
@@ -118,7 +121,7 @@ public class PipelineImpl extends BluePipeline {
         return FavoriteUtil.getFavorite(job, new Reachable() {
             @Override
             public Link getLink() {
-                return PipelineImpl.this.getLink().ancestor();
+                return AbstractPipelineImpl.this.getLink().ancestor();
             }
         });
 
@@ -153,26 +156,6 @@ public class PipelineImpl extends BluePipeline {
         return pipelinePath.toString();
     }
 
-    @Extension(ordinal = 1)
-    public static class PipelineFactoryImpl extends BluePipelineFactory {
-
-        @Override
-        public BluePipeline getPipeline(Item item, Reachable parent) {
-            if (item instanceof Job) {
-                return new PipelineImpl((Job) item);
-            }
-            return null;
-        }
-
-        @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
-            if(context == target && target instanceof Job) {
-                return getPipeline(target,parent);
-            }
-            return null;
-        }
-    }
-
     public static Collection<BlueActionProxy> getActionProxies(List<? extends Action> actions, Reachable parent){
         List<BlueActionProxy> actionProxies = new ArrayList<>();
         for(Action action:actions){
@@ -187,6 +170,37 @@ public class PipelineImpl extends BluePipeline {
 
     @Navigable
     public Container<Resource> getActivities() {
-        return Containers.fromResource(getLink(),Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+        return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
     }
+
+    /**
+     * Gives underlying Jenkins job
+     *
+     * @return jenkins job
+     */
+    public Job getJob(){
+        return job;
+    }
+
+    @Extension(ordinal = 0)
+    public static class PipelineFactoryImpl extends BluePipelineFactory {
+
+        @Override
+        public BluePipeline getPipeline(Item item, Reachable parent) {
+            if (item instanceof Job) {
+                return new AbstractPipelineImpl((Job) item);
+            }
+            return null;
+        }
+
+        @Override
+        public Resource resolve(Item context, Reachable parent, Item target) {
+            if(context == target && target instanceof Job) {
+                return getPipeline(target,parent);
+            }
+            return null;
+        }
+    }
+
+
 }
