@@ -9,6 +9,7 @@ import { List } from 'immutable';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
+import favoritesSseListener from '../model/FavoritesSseListener';
 
 import FavoritesProvider from './FavoritesProvider';
 import { PipelineCard } from './PipelineCard';
@@ -89,8 +90,16 @@ const extractPath = (path, begin, end) => {
 };
 
 /**
+ * Renders a stack of "favorites cards" including current most recent status.
  */
 export class DashboardCards extends Component {
+
+    componentWillMount() {
+        favoritesSseListener.initialize(
+            this.props.store,
+            this.props.updateRun
+        );
+    }
 
     _onFavoriteToggle(isFavorite, favorite) {
         this.props.toggleFavorite(isFavorite, favorite.item, favorite);
@@ -112,7 +121,7 @@ export class DashboardCards extends Component {
             let branchName;
 
             if (pipeline._class === 'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl') {
-                // branch.fullName is in the form folder1/folder2/pipeline/branch ...
+                // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
                 // "pipeline"
                 pipelineName = extractPath(pipeline.fullName, -2, -1);
                 // everything up to "branch"
@@ -167,8 +176,8 @@ export class DashboardCards extends Component {
         return (
             <div className="favorites-card-stack">
                 <TransitionGroup transitionName="vertical-expand-collapse"
-                  transitionEnterTimeout={150}
-                  transitionLeaveTimeout={150}
+                  transitionEnterTimeout={300}
+                  transitionLeaveTimeout={300}
                 >
                     {favoriteCards}
                 </TransitionGroup>
@@ -190,6 +199,7 @@ DashboardCards.propTypes = {
     router: PropTypes.object,
     favorites: PropTypes.instanceOf(List),
     toggleFavorite: PropTypes.func,
+    updateRun: PropTypes.func,
 };
 
 const selectors = createSelector(

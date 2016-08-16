@@ -27,6 +27,7 @@ import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.model.ParameterizedJobMixIn;
 import org.jenkins.pubsub.EventProps;
@@ -38,7 +39,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
 import javax.annotation.Nonnull;
-import java.net.URLEncoder;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -55,14 +55,14 @@ public class BlueMessageEnricher extends MessageEnricher {
     @Override
     public void enrich(@Nonnull Message message) {
 
-        // TODO: Replace once https://issues.jenkins-ci.org/browse/JENKINS-36286 is done
+        // TODO: Get organization name in generic way once multi-organization support is implemented in API
         message.set(EventProps.Jenkins.jenkins_org, OrganizationImpl.INSTANCE.getName());
 
         String channelName = message.getChannelName();
         if (channelName.equals(Events.JobChannel.NAME)) {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
             ParameterizedJobMixIn.ParameterizedJob job = jobChannelMessage.getJob();
-            Link jobUrl = getLink(job);
+            Link jobUrl = LinkResolver.resolveLink(job);
 
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
             jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, job.getFullName());
@@ -76,22 +76,5 @@ public class BlueMessageEnricher extends MessageEnricher {
                 }
             }
         }
-    }
-
-    // TODO: Replace once https://issues.jenkins-ci.org/browse/JENKINS-36286 is done
-    private static @Nonnull Link getLink(@Nonnull ParameterizedJobMixIn.ParameterizedJob job) {
-        Link orgLink = new Link("/rest/organizations/" + OrganizationImpl.INSTANCE.getName());
-
-        if (job instanceof WorkflowJob) {
-            ItemGroup<? extends Item> parent = job.getParent();
-            if (parent instanceof WorkflowMultiBranchProject) {
-                String multiBranchProjectName = parent.getFullName();
-                //MN I hate everything about this. Branch names must be encoded, even if they are already URL encoded, they need to be twice endcode
-                // eg foo/bar -> foo%2Fbar -> foo%252F. The latter form is what is required by API and classic URIs.
-                return orgLink.rel("pipelines").rel(multiBranchProjectName).rel("branches").rel(URLEncoder.encode(job.getName()));
-            }
-        }
-
-        return orgLink.rel("pipelines").rel(job.getFullName());
     }
 }
