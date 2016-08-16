@@ -6,6 +6,10 @@ import defaultFetch from 'isomorphic-fetch';
 import urlConfig from '../config';
 urlConfig.loadConfig();
 
+const defaultFetchOptions = {
+    credentials: 'same-origin',
+};
+
 /**
  * Trims duplicate forward slashes to a single slash and adds trailing slash if needed.
  * @param url
@@ -156,7 +160,7 @@ export class SseBus {
         const baseUrl = urlConfig.jenkinsRootURL;
         const url = cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
-        this.fetch(url)
+        this.fetch(url, defaultFetchOptions)
             .then(checkStatus)
             .then(parseJSON)
             .then((data) => {
