@@ -119,27 +119,33 @@ export class LogConsole extends Component {
             return null;
         }
 
-        return (<code
-          className="block"
-        >
-            { isLoading && <Progress />}
-            { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
-                <a
-                  className="btn-secondary inverse"
-                  key={0}
-                  href={`?start=0#${prefix || ''}`}
-                >
-                Show complete log
-            </a>
+        return (<div>
+            { isLoading && <div className="loadingContainer">
+                <Progress />
             </div>}
-            { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-                <a
-                  key={index + 1}
-                  href={`#${prefix || ''}log-${index + 1}`}
-                  name={`${prefix}log-${index + 1}`}
-                >{line}
-                </a>
-            </p>)}</code>);
+
+            { !isLoading && <code
+              className="block"
+            >
+                { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
+                    <a
+                      className="btn-secondary inverse"
+                      key={0}
+                      href={`?start=0#${prefix || ''}`}
+                    >
+                        Show complete log
+                    </a>
+                </div>}
+                { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
+                    <a
+                      key={index + 1}
+                      href={`#${prefix || ''}log-${index + 1}`}
+                      name={`${prefix}log-${index + 1}`}
+                    >{line}
+                    </a>
+                </p>)}</code>
+            }
+        </div>);
     }
 }
 
