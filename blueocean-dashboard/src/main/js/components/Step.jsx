@@ -125,6 +125,8 @@ export default class Node extends Component {
             key: id,
             prefix: `step-${id}-`,
         };
+
+        const { hasLogs } = node;
         if (log) {
             // in follow along the Full Log button should not be shown, since you see everything already
             if (followAlong) {
@@ -136,6 +138,12 @@ export default class Node extends Component {
         }
 
         const logConsoleClass = `logConsole step-${id}`;
+        let children = null;
+        if (log) {
+            children = <LogConsole {...logProps} />;
+        } else if (!log && hasLogs) {
+            children = <span>&nbsp;</span>;
+        }
 
         return (<div className={logConsoleClass}>
             <ResultItem
@@ -146,11 +154,8 @@ export default class Node extends Component {
               onExpand={getLogForNode}
               durationMillis={durationInMillis}
             >
-                { log && <LogConsole {...logProps} /> }
+                {children}
 
-                { !log && <span>
-                    &nbsp;
-                </span> }
             </ResultItem>
       </div>);
     }
