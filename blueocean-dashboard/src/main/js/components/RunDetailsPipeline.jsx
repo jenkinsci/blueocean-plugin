@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
-import LogConsole from './LogConsole';
+import LogConsoleView from './LogConsoleView';
 import * as sse from '@jenkins-cd/sse-gateway';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
@@ -18,7 +18,7 @@ import {
     createSelector,
 } from '../redux';
 
-import { calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl, calculateFetchAll } from '../util/UrlUtils';
+import { calculateLogView, calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl, calculateFetchAll } from '../util/UrlUtils';
 import { calculateNode } from '../util/KaraokeHelper';
 
 
@@ -37,6 +37,9 @@ const queuedState = () => (
     </EmptyStateView>
 );
 
+// It should really be using capability using /rest/classes API
+const supportsNodes = (result) => result && result._class === 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl';
+
 export class RunDetailsPipeline extends Component {
     constructor(props) {
         super(props);
@@ -49,27 +52,19 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillMount() {
-        const { fetchNodes, fetchLog, result } = this.props;
+        const { fetchNodes, result } = this.props;
 
         this.mergedConfig = this.generateConfig(this.props);
 
         if (!result.isQueued()) {
-            // It should really be using capability using /rest/classes API
-            const supportsNode = result && result._class === 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl';
-            if (supportsNode) {
+            if (this.mergedConfig.supportsNode) {
                 fetchNodes(this.mergedConfig);
-            } else {
-                // console.log('fetch the log directly')
-                const logGeneral = calculateRunLogURLObject(this.mergedConfig);
-                // fetchAll indicates whether we want all logs
-                const fetchAll = this.mergedConfig.fetchAll;
-                fetchLog({ ...logGeneral, fetchAll });
             }
         }
 
         this.listener.sse = sse.subscribe('pipeline', this._onSseEvent);
     }
-    
+
     componentDidMount() {
         const { result } = this.props;
 
@@ -104,33 +99,6 @@ export class RunDetailsPipeline extends Component {
             }
             // if we have actions we fire them
             this.props[nodeAction.action](this.mergedConfig);
-        }
-        const fetchAll = this.mergedConfig.fetchAll;
-        // console.log('this.mergedConfig.fetchAll', fetchAll)
-        // if we only interested in logs (in case of e.g. freestyle)
-        const { logs, fetchLog } = nextProps;
-        if (logs !== this.props.logs || fetchAll) {
-            const logGeneral = calculateRunLogURLObject(this.mergedConfig);
-            // console.log('logGenralReceive', logGeneral)
-            const log = logs ? logs[logGeneral.url] : null;
-            if (log && log !== null) {
-                // we may have a streaming log
-                const newStart = log.newStart;
-                if (Number(newStart) > 0) {
-                    // in case we doing karaoke we want to see more logs
-                    if (this.state.followAlong) {
-                        // kill current  timeout if any
-                        clearTimeout(this.timeout);
-                        // we need to get mpre input from the log stream
-                        this.timeout = setTimeout(() => fetchLog({ ...logGeneral, newStart }), 1000);
-                    }
-                }
-            } else if (fetchAll) {
-                // kill current  timeout if any
-                clearTimeout(this.timeout);
-                // we need to get mpre input from the log stream
-                this.timeout = setTimeout(() => fetchLog({ ...logGeneral, fetchAll }), 1000);
-            }
         }
     }
 
@@ -217,8 +185,9 @@ export class RunDetailsPipeline extends Component {
     generateConfig(props) {
         const { config = {} } = this.context;
         const followAlong = this.state.followAlong;
-        const { isMultiBranch, params } = props;
+        const { isMultiBranch, params, result } = props;
         const fetchAll = calculateFetchAll(props);
+        const forceLogView = calculateLogView(props);
         // we would use default properties however the node can be null so no default properties will be triggered
         let { nodeReducer } = props;
         if (!nodeReducer) {
@@ -226,29 +195,34 @@ export class RunDetailsPipeline extends Component {
         }
         // if we have a node param we do not want the calculation of the focused node
         const node = params.node || nodeReducer.id;
+        // It should really be using capability using /rest/classes API
+        const supportsNode = supportsNodes(result);
 
         // Merge config
         return {
             ...config,
-            name: params.pipeline,
-            branch: params.branch,
-            runId: params.runId,
+            supportsNode,
             isMultiBranch,
             node,
             nodeReducer,
             followAlong,
             fetchAll,
+            forceLogView,
+            name: params.pipeline,
+            branch: params.branch,
+            runId: params.runId,
         };
     }
 
     render() {
         const { location, router } = this.context;
 
-        const { isMultiBranch, steps, nodes, logs, result: run, params } = this.props;
-        
+        const { isMultiBranch, steps, nodes, result: run, params } = this.props;
+
         if (run.isQueued()) {
             return queuedState();
         }
+        const supportsNode = supportsNodes(run);
         const resultRun = run.isCompleted() ? run.state : run.result;
         const followAlong = this.state.followAlong;
         // in certain cases we want that the log component will scroll to the end of a log
@@ -260,11 +234,8 @@ export class RunDetailsPipeline extends Component {
         const nodeKey = calculateNodeBaseUrl(this.mergedConfig);
         const key = calculateStepsBaseUrl(this.mergedConfig);
         const logGeneral = calculateRunLogURLObject(this.mergedConfig);
-        const log = logs ? logs[logGeneral.url] : null;
         let title = this.mergedConfig.nodeReducer.displayName;
-        if (log) {
-            title = 'Logs';
-        } else if (this.mergedConfig.nodeReducer.id !== null && title) {
+        if (this.mergedConfig.nodeReducer.id !== null && title) {
             title = `Steps - ${title}`;
         }
         const currentSteps = steps ? steps[key] : null;
@@ -302,27 +273,21 @@ export class RunDetailsPipeline extends Component {
             }
             router.push(newPath);
         };
-        const noSteps = !log && currentSteps && currentSteps.model && currentSteps.model.length === 0;
-        const shouldShowLogHeader = log !== null || !noSteps;
-        const logProps = {
-            scrollToBottom,
-            key: logGeneral.url,
-        };
-        if (log) {
-            // in follow along the Full Log button should not be shown, since you see everything already
-            if (followAlong) {
-                logProps.hasMore = false;
-            } else {
-                logProps.hasMore = log.hasMore;
-            }
-            logProps.logArray = log.logArray;
-        }
+        const noSteps = currentSteps && currentSteps.model && currentSteps.model.length === 0;
+        const shouldShowLogHeader = noSteps !== null && !noSteps;
 
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
 
+        const logProps = {
+            scrollToBottom,
+            ...this.props,
+            ...this.state,
+            mergedConfig: this.mergedConfig,
+        };
+
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
-                { nodes && nodes[nodeKey] && <Extensions.Renderer
+                { nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
                   selectedStage={this.mergedConfig.nodeReducer}
                   callback={afterClick}
@@ -332,26 +297,26 @@ export class RunDetailsPipeline extends Component {
                   runId={run.id}
                 />
                 }
-                { shouldShowLogHeader &&
+                { shouldShowLogHeader && !this.mergedConfig.forceLogView &&
                     <LogToolbar
                       fileName={logGeneral.fileName}
                       url={logGeneral.url}
                       title={title}
                     />
                 }
-                { currentSteps && <Steps
+                { currentSteps && !this.mergedConfig.forceLogView && <Steps
                   nodeInformation={currentSteps}
                   followAlong={followAlong}
                   router={router}
                   {...this.props}
                 />
                 }
-                { noSteps && <EmptyStateView tightSpacing>
-                    <p>There are no steps.</p>
+                { noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
+                    <p>There are no steps. <a href="?view=0">Log console view</a></p>
                 </EmptyStateView>
                 }
 
-                { log && <LogConsole {...logProps} /> }
+                { !supportsNode || this.mergedConfig.forceLogView && <LogConsoleView {...logProps} /> }
             </div>
         );
     }
@@ -364,12 +329,10 @@ RunDetailsPipeline.propTypes = {
     result: object,
     fileName: string,
     url: string,
-    fetchLog: func,
     fetchNodes: func,
     setNode: func,
     fetchSteps: func,
     cleanNodePointer: func,
-    logs: object,
     steps: object,
     nodes: object,
     nodeReducer: object,
