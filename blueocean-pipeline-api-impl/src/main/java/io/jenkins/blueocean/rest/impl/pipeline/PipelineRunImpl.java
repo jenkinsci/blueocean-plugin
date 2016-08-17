@@ -8,6 +8,7 @@ import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
@@ -34,6 +35,7 @@ import java.util.Map;
  *
  * @author Vivek Pandey
  */
+@Capability("org.jenkinsci.plugins.workflow.job.WorkflowRun")
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);

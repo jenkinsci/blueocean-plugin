@@ -743,6 +743,35 @@ public class MultiBranchTest extends PipelineBaseTest {
         Assert.assertEquals(1, responses.size());
     }
 
+    @Test
+    public void branchCapabilityTest() throws Exception {
+
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+
+
+        j.waitUntilNoActivity();
+
+        Map response = get("/organizations/jenkins/pipelines/p/branches/master/", Map.class);
+        String clazz = (String) response.get("_class");
+
+        response = get("/classes/"+clazz+"/");
+        Assert.assertNotNull(response);
+
+        List<String> classes = (List<String>) response.get("classes");
+        Assert.assertTrue(classes.contains("hudson.model.Job")
+            && classes.contains("org.jenkinsci.plugins.workflow.job.WorkflowJob")
+            && classes.contains("io.jenkins.blueocean.rest.model.BlueBranch")
+            && classes.contains("io.jenkins.blueocean.rest.model.BluePipeline")
+            && classes.contains("io.jenkins.blueocean.rest.impl.pipeline.PullReuqest"));
+    }
+
 
     private void setupScm() throws Exception {
         // create git repo

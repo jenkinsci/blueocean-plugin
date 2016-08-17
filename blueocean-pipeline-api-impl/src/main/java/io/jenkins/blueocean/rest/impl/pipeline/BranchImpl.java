@@ -5,12 +5,12 @@ import hudson.Util;
 import hudson.model.Item;
 import hudson.model.Job;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.branch.MultiBranchProject;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
-import io.jenkins.blueocean.service.embedded.rest.PipelineImpl;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -19,6 +19,7 @@ import org.kohsuke.stapler.export.Exported;
 /**
  * @author Vivek Pandey
  */
+@Capability({"io.jenkins.blueocean.rest.model.BlueBranch","org.jenkinsci.plugins.workflow.job.WorkflowJob", "io.jenkins.blueocean.rest.impl.pipeline.PullReuqest"})
 public class BranchImpl extends PipelineImpl {
 
     private static final String PULL_REQUEST = "pullRequest";
