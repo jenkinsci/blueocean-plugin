@@ -91,19 +91,19 @@ export default class Node extends Component {
     render() {
         const { logs, nodesBaseUrl, fetchLog, followAlong } = this.props;
         const node = this.expandAnchor(this.props);
-        const fetchAll = node.fetchAll;
         // Early out
         if (!node || !fetchLog) {
             return null;
         }
         const { config = {} } = this.context;
         const {
-          isFocused = false,
+          fetchAll,
           title,
           durationInMillis,
           result,
           id,
           state,
+          isFocused = false,
         } = node;
 
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
