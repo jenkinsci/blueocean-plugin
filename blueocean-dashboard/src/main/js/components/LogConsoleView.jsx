@@ -1,30 +1,24 @@
 import React, { Component, PropTypes } from 'react';
 import LogConsole from './LogConsole';
-
 import LogToolbar from './LogToolbar';
+import { calculateRunLogURLObject } from '../util/UrlUtils';
 
-import {
-    calculateRunLogURLObject,
-} from '../util/UrlUtils';
 const { bool, string, object, func } = PropTypes;
-
 
 export default class LogConsoleView extends Component {
 
     componentWillMount() {
         const { fetchLog, mergedConfig } = this.props;
-        console.log('sanity?');
         // console.log('fetch the log directly')
         const logGeneral = calculateRunLogURLObject(mergedConfig);
-        // fetchAll indicates whether we want all logs
-        const fetchAll = mergedConfig.fetchAll;
-        fetchLog({ ...logGeneral, fetchAll });
+        // fetchAll indicates whether we want all logs (taking shortcut ...mergedConfig to pass fetchAll)
+        fetchLog({ ...logGeneral, ...mergedConfig });
     }
 
     componentWillReceiveProps(nextProps) {
         const { fetchLog, mergedConfig, logs, followAlong } = nextProps;
-        const fetchAll = mergedConfig.fetchAll;
-        // if we only interested in logs (in case of e.g. freestyle)
+        const { fetchAll } = mergedConfig;
+        // if we only interested in logs
         if (logs !== this.props.logs || fetchAll) {
             const logGeneral = calculateRunLogURLObject(mergedConfig);
             // console.log('logGenralReceive', logGeneral)
@@ -50,7 +44,6 @@ export default class LogConsoleView extends Component {
         }
     }
 
-
     componentWillUnmount() {
         clearTimeout(this.timeout);
     }
@@ -65,11 +58,7 @@ export default class LogConsoleView extends Component {
         };
         if (log) {
             // in follow along the Full Log button should not be shown, since you see everything already
-            if (followAlong) {
-                logProps.hasMore = false;
-            } else {
-                logProps.hasMore = log.hasMore;
-            }
+            logProps.hasMore = followAlong ? false : log.hasMore;
             logProps.logArray = log.logArray;
             return (<div>
                 <LogToolbar
@@ -84,7 +73,6 @@ export default class LogConsoleView extends Component {
     }
 }
 
-
 LogConsoleView.propTypes = {
     result: object,
     mergedConfig: object,
@@ -93,7 +81,4 @@ LogConsoleView.propTypes = {
     title: string,
     scrollToBottom: bool,
     logs: object,
-    steps: object,
-    nodes: object,
-    nodeReducer: object,
 };
