@@ -31,6 +31,9 @@ export const getNodesInformation = (nodes) => {
         const isFailingNode = errorNodes.indexOf(item.id) > -1;
         const isRunningNode = runningNodes.indexOf(item.id) > -1;
 
+        // FIXME: TS I need to talk to cliffMeyers how we can refactor the following code to use capabilities
+        // the problem I see ATM is that we would need to ask the c-API everytime for each action, whether this
+        // action has the capability for logging
         const hasLogs = item.actions ? item.actions
                 .filter(action => action._class === 'org.jenkinsci.plugins.workflow.support.actions.LogActionImpl').length > 0
             : false;
