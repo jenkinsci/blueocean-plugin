@@ -1,11 +1,10 @@
 import keymirror from 'keymirror';
-import fetch from 'isomorphic-fetch';
 
 import { State } from '../components/records';
 import { getNodesInformation } from '../util/logDisplayHelper';
 import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
 
-import { FetchUtils } from '@jenkins-cd/blueocean-core-js';
+import { FetchUtils, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 /**
  * This function maps a queue item into a run instancce.
@@ -734,7 +733,7 @@ export const actions = {
                             type: ACTION_TYPES.SET_STEPS,
                             payload: information,
                         });
-                    }).catch(FetchUtils.consoleError);     
+                    }).catch(FetchUtils.consoleError);
             }
             return null;
         };
