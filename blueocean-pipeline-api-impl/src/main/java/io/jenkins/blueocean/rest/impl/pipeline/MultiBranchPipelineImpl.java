@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
@@ -43,6 +44,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -77,6 +79,13 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         FavoriteUtil.favoriteJob(mbp.getFullName(), favoriteAction.isFavorite());
 
         return new FavoriteImpl(new BranchImpl(job,getLink().rel("branches")), getLink().rel("favorite"));
+    }
+
+    @Override
+    public Map<String, Boolean> getPermissions() {
+        return ImmutableMap.of(
+            BluePipeline.CREATE_PERMISSION, mbp.getACL().hasPermission(Item.CREATE),
+            BluePipeline.READ_PERMISSION, mbp.getACL().hasPermission(Item.READ));
     }
 
     @Override

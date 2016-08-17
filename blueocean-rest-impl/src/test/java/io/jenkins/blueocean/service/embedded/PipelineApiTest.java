@@ -18,6 +18,8 @@ import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.StringParameterDefinition;
 import hudson.model.StringParameterValue;
+import hudson.security.HudsonPrivateSecurityRealm;
+import hudson.security.LegacyAuthorizationStrategy;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
@@ -51,7 +53,7 @@ public class PipelineApiTest extends BaseTest {
         MockFolder folder = j.createFolder("folder1");
         Project p = folder.createProject(FreeStyleProject.class, "test1");
 
-        Map response = get("/organizations/jenkins/pipelines/folder1/test1");
+        Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/test1");
         validatePipeline(p, response);
     }
 
@@ -68,7 +70,7 @@ public class PipelineApiTest extends BaseTest {
 
         Assert.assertEquals(1, topFolders.size());
 
-        Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/folder2/test2");
+        Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/test2");
         validatePipeline(p2, response);
 
         List<Map> pipelines = get("/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/", List.class);
@@ -503,4 +505,74 @@ public class PipelineApiTest extends BaseTest {
         classes = (List<String>) v.get("classes");
         Assert.assertTrue(classes.contains("io.jenkins.blueocean.rest.model.BluePipeline"));
     }
+
+    @Test
+    public void PipelineUnsecurePermissionTest() throws IOException {
+        MockFolder folder = j.createFolder("folder1");
+
+        Project p = folder.createProject(FreeStyleProject.class, "test1");
+
+        Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/test1");
+        validatePipeline(p, response);
+
+        Map<String,Boolean> permissions = (Map<String, Boolean>) response.get("permissions");
+        Assert.assertTrue(permissions.get("create"));
+        Assert.assertTrue(permissions.get("start"));
+        Assert.assertTrue(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("read"));
+    }
+
+    @Test
+    public void PipelineSecureWithAnonymousUserPermissionTest() throws IOException {
+        j.jenkins.setSecurityRealm(new HudsonPrivateSecurityRealm(false));
+        j.jenkins.setAuthorizationStrategy(new LegacyAuthorizationStrategy());
+
+        MockFolder folder = j.createFolder("folder1");
+
+        Project p = folder.createProject(FreeStyleProject.class, "test1");
+
+        Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/test1");
+        validatePipeline(p, response);
+
+        Map<String,Boolean> permissions = (Map<String, Boolean>) response.get("permissions");
+        Assert.assertFalse(permissions.get("create"));
+        Assert.assertFalse(permissions.get("start"));
+        Assert.assertFalse(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("read"));
+
+        response = get("/organizations/jenkins/pipelines/folder1/");
+
+        permissions = (Map<String, Boolean>) response.get("permissions");
+        Assert.assertFalse(permissions.get("create"));
+        Assert.assertNull(permissions.get("start"));
+        Assert.assertNull(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("read"));
+    }
+
+    @Test
+    public void PipelineSecureWithLoggedInUserPermissionTest() throws IOException {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+
+
+        MockFolder folder = j.createFolder("folder1");
+
+        Project p = folder.createProject(FreeStyleProject.class, "test1");
+
+        Map response = new RequestBuilder(baseUrl)
+            .get("/organizations/jenkins/pipelines/folder1/pipelines/test1")
+            .auth("alice", "alice")
+            .build(Map.class);
+
+        validatePipeline(p, response);
+
+        Map<String,Boolean> permissions = (Map<String, Boolean>) response.get("permissions");
+        Assert.assertTrue(permissions.get("create"));
+        Assert.assertTrue(permissions.get("start"));
+        Assert.assertTrue(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("read"));
+    }
+
 }
