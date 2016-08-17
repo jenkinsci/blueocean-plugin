@@ -14,9 +14,12 @@ const stopProp = (event) => {
  * PipelineCard displays an informational card about a Pipeline and its status.
  *
  * Properties:
+ * router: instance of RouterContext
+ * item: pipeline or branch
+ * capabilities: array of capability strings for the item
  * status: 'result' or 'status' value e.g. 'success', 'failure', etc.
- * "estimatedDuration": time in millis over which the progress indicator will update.
- * "startTime": ISO-8601 string indicating when tracking of progress begins from.
+ * estimatedDuration: time in millis over which the progress indicator will update.
+ * startTime: ISO-8601 string indicating when tracking of progress begins from.
  * organization: name of org
  * pipeline: name of pipeline
  * branch: name of branch
@@ -81,11 +84,13 @@ export class PipelineCard extends Component {
     }
 
     render() {
-        const { status, commitId, startTime, estimatedDuration } = this.props;
+        const { capabilities, status, commitId, startTime, estimatedDuration } = this.props;
         const bgClass = PipelineCard._getBackgroundClass(status);
-        const showRun = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
-        const showRunAgain = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
+        const hasRunningStatus = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
+        const hasFailedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
+        const isPipeline = capabilities && capabilities.indexOf('org.jenkinsci.plugins.workflow.job.WorkflowJob') >= 0;
         const commitText = commitId ? commitId.substr(0, 7) : '';
+
 
         const activityUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
         `${encodeURIComponent(this.props.fullName)}/activity`;
@@ -132,13 +137,13 @@ export class PipelineCard extends Component {
                 }
 
                 <span className="actions">
-                    { showRunAgain &&
+                    { hasFailedStatus && isPipeline &&
                     <a className="action-item" title="Run Again" onClick={(event) => {stopProp(event); this._onRunAgainClick();}}>
                         <Icon size={24} icon="replay" />
                     </a>
                     }
 
-                    { showRun &&
+                    { hasRunningStatus &&
                     <a className="action-item" title="Run" onClick={(event) => {stopProp(event); this._onRunClick();}}>
                         <Icon size={24} icon="play_arrow" />
                     </a>
@@ -156,6 +161,7 @@ export class PipelineCard extends Component {
 PipelineCard.propTypes = {
     router: PropTypes.object,
     item: PropTypes.object,
+    capabilities: PropTypes.array,
     status: PropTypes.string,
     startTime: PropTypes.string,
     estimatedDuration: PropTypes.number,
