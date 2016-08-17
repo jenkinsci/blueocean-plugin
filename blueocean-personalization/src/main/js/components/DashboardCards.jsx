@@ -182,8 +182,6 @@ export class DashboardCards extends Component {
             let pipelineName;
             let branchName;
 
-            debugger;
-
             if (isBranch) {
                 // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
                 // "pipeline"
