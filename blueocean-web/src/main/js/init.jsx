@@ -17,6 +17,11 @@ exports.initialize = function (oncomplete) {
     const jdl = require('@jenkins-cd/design-language');
     jenkinsMods.export('jenkins-cd', 'jdl', jdl);
 
+    // Create and export a shared instance of the core
+    // js module
+    const corejs = require('@jenkins-cd/blueocean-core-js');
+    jenkinsMods.export('jenkins-cd', 'blueocean-core-js', corejs);
+    
     // Load and export the react modules, allowing them to be imported by other bundles.
     const react = require('react');
     const reactDOM = require('react-dom');
@@ -29,9 +34,9 @@ exports.initialize = function (oncomplete) {
     // Might want to do some flux fancy-pants stuff for this.
     const appRoot = document.getElementsByTagName("head")[0].getAttribute("data-appurl");
     Extensions.init({
-        extensionDataProvider: cb => FetchUtils.fetchJson(`${appRoot}/js-extensions`, body => cb(body.data)),
-        classMetadataProvider: (type, cb) => FetchUtils.fetchJson(`${appRoot}/rest/classes/${type}/`,cb)
+        extensionDataProvider: cb => FetchUtils.fetchJson(`${appRoot}/js-extensions`).then(body => cb(body.data)).catch(FetchUtils.consoleError),
+        classMetadataProvider: (type, cb) => FetchUtils.fetchJson(`${appRoot}/rest/classes/${type}/`).then(cb).catch(FetchUtils.consoleError)
     });
+
     oncomplete();
-    
 };

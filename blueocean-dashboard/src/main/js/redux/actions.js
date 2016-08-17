@@ -5,11 +5,7 @@ import { State } from '../components/records';
 import { getNodesInformation } from '../util/logDisplayHelper';
 import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
 
-import { FetchUtils, JWT } from '@jenkins-cd/blueocean-core-js';
-
-const { checkStatus, fetchOptions, parseJSON } = FetchUtils;
-
-
+import { FetchUtils } from '@jenkins-cd/blueocean-core-js';
 
 /**
  * This function maps a queue item into a run instancce.
@@ -19,6 +15,7 @@ const { checkStatus, fetchOptions, parseJSON } = FetchUtils;
  * as the same thing. If the raw data is needed if can be fetched
  * from _item.
  */
+
 function _mapQueueToPsuedoRun(run) {
     if (run._class === 'io.jenkins.blueocean.service.embedded.rest.QueueItemImpl') {
         return {
@@ -183,18 +180,10 @@ exports.fetchLogsInjectStart = function fetchLogsInjectStart(url, start, onSucce
     } else {
         refetchUrl = `${url}?start=${start}`;
     }
-    return JWT.getToken()
-        .then(token => fetch(refetchUrl, fetchOptions(token)))
-        .then(checkStatus)
+    return FetchUtils.fetchJson(refetchUrl)
         .then(parseMoreDataHeader)
         .then(onSuccess)
-        .catch((error) => {
-            if (onError) {
-                onError(error);
-            } else {
-                console.error(error); // eslint-disable-line no-console
-            }
-        });
+        .catch(FetchUtils.onError(onError));
 };
 /**
  * Clone a JSON object/array instance.
@@ -328,6 +317,7 @@ export const actions = {
         };
     },
 
+
     updateRunState(event, config, updateByQueueId) {
         return (dispatch, getState) => {
             let storeData;
@@ -433,48 +423,50 @@ export const actions = {
                 // The event tells us that the run state has changed, but does not give all
                 // run related data (times, commit Ids etc). So, lets go get that data from
                 // REST API and present a consistent picture of the run state to the user.
-                exports.fetchJson(runUrl, updateRunData, (error) => {
-                    let runData;
+                FetchUtils.fetchJson(runUrl)
+                    .then(updateRunData)
+                    .catch((error) => {
+                        let runData;
 
-                    // Getting the actual state of the run failed. Lets log
-                    // the failure and update the state manually as best we can.
+                        // Getting the actual state of the run failed. Lets log
+                        // the failure and update the state manually as best we can.
 
-                    // eslint-disable-next-line no-console
-                    console.warn(`Error getting run data from REST endpoint: ${runUrl}`);
-                    // eslint-disable-next-line no-console
-                    console.warn(error);
+                        // eslint-disable-next-line no-console
+                        console.warn(`Error getting run data from REST endpoint: ${runUrl}`);
+                        // eslint-disable-next-line no-console
+                        console.warn(error);
 
-                    // We're after coming out of an async operation (the fetch).
-                    // In that case, we better refresh the copy of the storeData
-                    // that we have in case things changed while we were doing the
-                    // fetch.
-                    storeData = getFromStore();
+                        // We're after coming out of an async operation (the fetch).
+                        // In that case, we better refresh the copy of the storeData
+                        // that we have in case things changed while we were doing the
+                        // fetch.
+                        storeData = getFromStore();
 
-                    if (storeData.runIndex !== undefined) {
-                        runData = storeData.eventJobRuns[storeData.runIndex];
-                    } else {
-                        runData = {};
-                        runData.job_run_queueId = event.job_run_queueId;
-                        if (event.job_ismultibranch) {
-                            runData.pipeline = event.blueocean_job_branch_name;
+                        if (storeData.runIndex !== undefined) {
+                            runData = storeData.eventJobRuns[storeData.runIndex];
                         } else {
-                            runData.pipeline = event.blueocean_job_pipeline_name;
+                            runData = {};
+                            runData.job_run_queueId = event.job_run_queueId;
+                            if (event.job_ismultibranch) {
+                                runData.pipeline = event.blueocean_job_branch_name;
+                            } else {
+                                runData.pipeline = event.blueocean_job_pipeline_name;
+                            }
                         }
-                    }
 
-                    if (event.jenkins_event === 'job_run_ended') {
-                        runData.state = 'FINISHED';
-                    } else {
-                        runData.state = 'RUNNING';
-                    }
-                    runData.id = event.jenkins_object_id;
-                    runData.result = event.job_run_status;
+                        if (event.jenkins_event === 'job_run_ended') {
+                            runData.state = 'FINISHED';
+                        } else {
+                            runData.state = 'RUNNING';
+                        }
+                        runData.id = event.jenkins_object_id;
+                        runData.result = event.job_run_status;
 
-                    // Update the run data. We do not need updateRunData to refresh the
-                    // storeData again because we already just did it at the start of
-                    // this function call.
-                    updateRunData(runData, false);
-                });
+                        // Update the run data. We do not need updateRunData to refresh the
+                        // storeData again because we already just did it at the start of
+                        // this function call.
+                        updateRunData(runData, false);
+                    });
             }
         };
     },
@@ -512,9 +504,7 @@ export const actions = {
                     });
                 };
 
-                exports.fetchJson(url, processBranchData, (error) => {
-                    console.log(error); // eslint-disable-line no-console
-                });
+                FetchUtils.fetchJson(url).then(processBranchData).catch(FetchUtils.consoleError);
             }
         };
     },
@@ -534,7 +524,7 @@ export const actions = {
                 // Fetch/refetch the latest set of branches for the pipeline.
                 const url = `${config.getAppURLBase()}/rest/organizations/${event.jenkins_org}` +
                     `/pipelines/${pipelineName}/branches`;
-                exports.fetchJson(url, (latestPipelineBranches) => {
+                FetchUtils.fetchJson(url).then((latestPipelineBranches) => {
                     if (event.blueocean_is_for_current_job) {
                         dispatch({
                             id: pipelineName,
@@ -547,10 +537,11 @@ export const actions = {
                         payload: latestPipelineBranches,
                         type: ACTION_TYPES.SET_BRANCHES_DATA,
                     });
-                });
+                }).catch(FetchUtils.consoleError);
             }
         };
     },
+
 
     fetchRunsIfNeeded(config) {
         return (dispatch) => {
@@ -597,10 +588,7 @@ export const actions = {
 
             const id = general.id;
             if (!data || !data[id]) {
-                return JWT.getToken()
-                    .then(token => fetch(general.url, fetchOptions(token)))
-                    .then(checkStatus)
-                    .then(parseJSON)
+                return FetchUtils.fetchJson(general.url)
                     .then(json => {
                         // TODO: Why call dispatch twice here?
                         dispatch({
@@ -632,11 +620,9 @@ export const actions = {
         };
     },
 
+
     generateData(url, actionType, optional) {
-        return (dispatch) => JWT.getToken()
-                .then(token => fetch(url, fetchOptions(token)))
-                .then(checkStatus)
-                .then(parseJSON)
+        return (dispatch) => FetchUtils.fetchJson(url)
                 .then(json => dispatch({
                     ...optional,
                     type: actionType,
@@ -662,6 +648,7 @@ export const actions = {
      We later store them with the key: nodesBaseUrl
      so we only fetch them once.
      */
+
     fetchNodes(config) {
         return (dispatch, getState) => {
             const data = getState().adminStore.nodes;
@@ -692,9 +679,8 @@ export const actions = {
             }
 
             if (!data || !data[nodesBaseUrl] || config.refetch) {
-                return exports.fetchJson(
-                    nodesBaseUrl,
-                    (json) => {
+                return FetchUtils.fetchJson(nodesBaseUrl)
+                    .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = nodesBaseUrl;
                         dispatch({
@@ -703,9 +689,7 @@ export const actions = {
                         });
 
                         return getNodeAndSteps(information);
-                    },
-                    (error) => console.error('error', error) // eslint-disable-line no-console
-                );
+                    }).catch(FetchUtils.consoleError);
             }
             return getNodeAndSteps(data[nodesBaseUrl]);
         };
@@ -742,18 +726,15 @@ export const actions = {
             const data = getState().adminStore.steps;
             const stepBaseUrl = calculateStepsBaseUrl(config);
             if (!data || !data[stepBaseUrl] || config.refetch) {
-                return exports.fetchJson(
-                  stepBaseUrl,
-                  (json) => {
-                      const information = getNodesInformation(json);
-                      information.nodesBaseUrl = stepBaseUrl;
-                      return dispatch({
-                          type: ACTION_TYPES.SET_STEPS,
-                          payload: information,
-                      });
-                  },
-                  (error) => console.error('error', error) // eslint-disable-line no-console
-                );
+                return FetchUtils.fetchJson(stepBaseUrl)
+                    .then((json) => {
+                        const information = getNodesInformation(json);
+                        information.nodesBaseUrl = stepBaseUrl;
+                        return dispatch({
+                            type: ACTION_TYPES.SET_STEPS,
+                            payload: information,
+                        });
+                    }).catch(FetchUtils.consoleError);     
             }
             return null;
         };
