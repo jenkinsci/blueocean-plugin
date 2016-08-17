@@ -36,6 +36,7 @@ public class PipelineImpl extends AbstractPipelineImpl {
             if(context == target && target instanceof WorkflowJob) {
                 return getPipeline(target,parent);
             }
+            
             return null;
         }
     }
