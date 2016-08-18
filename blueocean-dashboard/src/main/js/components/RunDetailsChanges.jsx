@@ -38,7 +38,7 @@ export default class RunDetailsChanges extends Component {
                     <tr key={commit.commitId}>
                         <td><CommitHash commitId={commit.commitId} /></td>
                         <td>{commit.author.fullName}</td>
-                        <td>{commit.msg}</td>
+                        <td className='multipleLines'>{commit.msg}</td>
                         <td><ReadableDate date={commit.timestamp} liveUpdate /></td>
                     </tr>
                 ))}
