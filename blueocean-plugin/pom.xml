@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0-alpha-7-SNAPSHOT</version>
+        <version>1.0-alpha-8-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
@@ -46,7 +46,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-analytics-tools</artifactId>
+            <artifactId>blueocean-config</artifactId>
         </dependency>
 
         <!-- Test deps -->
@@ -112,7 +112,7 @@
                         linkHPI('blueocean-commons');
                         linkHPI('blueocean-rest-impl');
                         linkHPI('blueocean-pipeline-api-impl')
-                        linkHPI('blueocean-analytics-tools')
+                        linkHPI('blueocean-config')
                     </source>
                 </configuration>
             </plugin>

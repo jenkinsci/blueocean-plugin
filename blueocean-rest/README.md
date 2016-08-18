@@ -596,6 +596,28 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     ]
 
 
+## Pipeline Permissions
+
+Pipeline API response gives permission object in response:
+
+Following permissions are returned as key to the permission map: create, start, stop, read for a pipeline job:
+
+* create: User can create a pipeline
+* start: User can start a run of this pipeline. If not applicable to certain pipeline then can be false or null.
+* stop: User can stop a run of this pipeline. If not applicable to certain pipeline then can be false or null.
+* read: User has permission to view this pipeline
+
+For example for anonymous user with security enabled and only read permission, the permission map for a pipeline job is:
+
+    "permissions" : {
+        "create" : false,
+        "read" : true,
+        "start" : false,
+        "stop" : false
+    }
+
+> Implementation of BluePipeline can provide their own set of permissions in addition to the ones defined here.
+
 # Queue API
 
 ## Fetch queue for an pipeline

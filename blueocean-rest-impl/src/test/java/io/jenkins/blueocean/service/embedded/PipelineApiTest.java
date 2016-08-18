@@ -18,6 +18,8 @@ import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.StringParameterDefinition;
 import hudson.model.StringParameterValue;
+import hudson.security.HudsonPrivateSecurityRealm;
+import hudson.security.LegacyAuthorizationStrategy;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
@@ -26,8 +28,8 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
-import io.jenkins.blueocean.service.embedded.rest.PipelineImpl;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,7 +53,7 @@ public class PipelineApiTest extends BaseTest {
         MockFolder folder = j.createFolder("folder1");
         Project p = folder.createProject(FreeStyleProject.class, "test1");
 
-        Map response = get("/organizations/jenkins/pipelines/folder1/test1");
+        Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/test1");
         validatePipeline(p, response);
     }
 
@@ -68,7 +70,7 @@ public class PipelineApiTest extends BaseTest {
 
         Assert.assertEquals(1, topFolders.size());
 
-        Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/folder2/test2");
+        Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/test2");
         validatePipeline(p2, response);
 
         List<Map> pipelines = get("/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/", List.class);
@@ -86,6 +88,17 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals(2, response.get("numberOfFolders"));
         Assert.assertEquals(1, response.get("numberOfPipelines"));
         Assert.assertEquals("folder1", response.get("fullName"));
+
+        String clazz = (String) response.get("_class");
+
+        response = get("/classes/"+clazz+"/");
+        Assert.assertNotNull(response);
+
+        List<String> classes = (List<String>) response.get("classes");
+        Assert.assertTrue(!classes.contains("hudson.model.Job")
+            && classes.contains("io.jenkins.blueocean.rest.model.BluePipeline")
+            && classes.contains("io.jenkins.blueocean.rest.model.BluePipelineFolder")
+            && classes.contains("com.cloudbees.hudson.plugins.folder.AbstractFolder"));
 
     }
 
@@ -113,6 +126,16 @@ public class PipelineApiTest extends BaseTest {
 
         Map<String,Object> response = get("/organizations/jenkins/pipelines/pipeline1");
         validatePipeline(p, response);
+
+        String clazz = (String) response.get("_class");
+
+        response = get("/classes/"+clazz+"/");
+        Assert.assertNotNull(response);
+
+        List<String> classes = (List<String>) response.get("classes");
+        Assert.assertTrue(classes.contains("hudson.model.Job")
+            && !classes.contains("org.jenkinsci.plugins.workflow.job.WorkflowJob")
+            && !classes.contains("io.jenkins.blueocean.rest.model.BlueBranch"));
     }
 
     /** TODO: latest stapler change broke delete, disabled for now */
@@ -427,7 +450,7 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @Capability({"io.jenkins.blueocean.rest.annotation.test.TestPipeline", "io.jenkins.blueocean.rest.annotation.test.TestPipelineExample"})
-    public static class TestPipelineImpl extends PipelineImpl {
+    public static class TestPipelineImpl extends AbstractPipelineImpl {
 
         public TestPipelineImpl(Job job) {
             super(job);
@@ -464,13 +487,13 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertTrue(m.isEmpty());
 
         // get classes map for given classes in the query
-        resp = get("/classes/?q=io.jenkins.blueocean.service.embedded.rest.PipelineImpl,"+TestPipelineImpl.class.getName());
+        resp = get("/classes/?q=io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl,"+TestPipelineImpl.class.getName());
         Assert.assertNotNull(resp);
         m = (Map) resp.get("map");
         Assert.assertNotNull(m);
         Assert.assertEquals(2, m.size());
 
-        Map v = (Map) m.get("io.jenkins.blueocean.service.embedded.rest.PipelineImpl");
+        Map v = (Map) m.get("io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl");
         Assert.assertNotNull(v);
 
         classes = (List<String>) v.get("classes");
@@ -482,4 +505,74 @@ public class PipelineApiTest extends BaseTest {
         classes = (List<String>) v.get("classes");
         Assert.assertTrue(classes.contains("io.jenkins.blueocean.rest.model.BluePipeline"));
     }
+
+    @Test
+    public void PipelineUnsecurePermissionTest() throws IOException {
+        MockFolder folder = j.createFolder("folder1");
+
+        Project p = folder.createProject(FreeStyleProject.class, "test1");
+
+        Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/test1");
+        validatePipeline(p, response);
+
+        Map<String,Boolean> permissions = (Map<String, Boolean>) response.get("permissions");
+        Assert.assertTrue(permissions.get("create"));
+        Assert.assertTrue(permissions.get("start"));
+        Assert.assertTrue(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("read"));
+    }
+
+    @Test
+    public void PipelineSecureWithAnonymousUserPermissionTest() throws IOException {
+        j.jenkins.setSecurityRealm(new HudsonPrivateSecurityRealm(false));
+        j.jenkins.setAuthorizationStrategy(new LegacyAuthorizationStrategy());
+
+        MockFolder folder = j.createFolder("folder1");
+
+        Project p = folder.createProject(FreeStyleProject.class, "test1");
+
+        Map response = get("/organizations/jenkins/pipelines/folder1/pipelines/test1");
+        validatePipeline(p, response);
+
+        Map<String,Boolean> permissions = (Map<String, Boolean>) response.get("permissions");
+        Assert.assertFalse(permissions.get("create"));
+        Assert.assertFalse(permissions.get("start"));
+        Assert.assertFalse(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("read"));
+
+        response = get("/organizations/jenkins/pipelines/folder1/");
+
+        permissions = (Map<String, Boolean>) response.get("permissions");
+        Assert.assertFalse(permissions.get("create"));
+        Assert.assertNull(permissions.get("start"));
+        Assert.assertNull(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("read"));
+    }
+
+    @Test
+    public void PipelineSecureWithLoggedInUserPermissionTest() throws IOException {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        hudson.model.User user = j.jenkins.getUser("alice");
+        user.setFullName("Alice Cooper");
+
+
+        MockFolder folder = j.createFolder("folder1");
+
+        Project p = folder.createProject(FreeStyleProject.class, "test1");
+
+        Map response = new RequestBuilder(baseUrl)
+            .get("/organizations/jenkins/pipelines/folder1/pipelines/test1")
+            .auth("alice", "alice")
+            .build(Map.class);
+
+        validatePipeline(p, response);
+
+        Map<String,Boolean> permissions = (Map<String, Boolean>) response.get("permissions");
+        Assert.assertTrue(permissions.get("create"));
+        Assert.assertTrue(permissions.get("start"));
+        Assert.assertTrue(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("read"));
+    }
+
 }
