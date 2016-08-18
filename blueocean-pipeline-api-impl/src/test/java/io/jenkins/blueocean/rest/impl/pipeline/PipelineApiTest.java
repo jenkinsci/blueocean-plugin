@@ -1,6 +1,9 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.mashape.unirest.http.HttpResponse;
+import hudson.matrix.Axis;
+import hudson.matrix.MatrixBuild;
+import hudson.matrix.MatrixProject;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
@@ -256,6 +259,27 @@ public class PipelineApiTest extends PipelineBaseTest {
             && classes.contains("io.jenkins.blueocean.rest.model.BluePipeline")
             && !classes.contains("io.jenkins.blueocean.rest.model.BlueBranch")
         );
+    }
+
+    @Test
+    public void matrixProjectTest() throws Exception{
+        MatrixProject mp = j.jenkins.createProject(MatrixProject.class, "mp1");
+        mp.getAxes().add(new Axis("os", "linux", "windows"));
+        mp.getAxes().add(new Axis("jdk", "1.7", "1.8"));
+
+        MatrixBuild matrixBuild = mp.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(matrixBuild);
+
+        List<Map> pipelines = get("/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject", List.class);
+        Assert.assertEquals(1, pipelines.size());
+
+        Map p = pipelines.get(0);
+
+        Assert.assertEquals("mp1", p.get("name"));
+
+        String href = getHrefFromLinks(p, "self");
+
+        Assert.assertEquals("/job/mp1/", href);
     }
 
 
