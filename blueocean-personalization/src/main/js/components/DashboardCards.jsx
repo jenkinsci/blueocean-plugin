@@ -162,6 +162,10 @@ export class DashboardCards extends Component {
         this.props.runPipeline(pipeline);
     }
 
+    _onStopClick(pipeline) {
+        this.props.stopPipeline(pipeline);
+    }
+
     _onFavoriteToggle(isFavorite, favorite) {
         this.props.toggleFavorite(isFavorite, favorite.item, favorite);
     }
@@ -234,6 +238,7 @@ export class DashboardCards extends Component {
                       favorite
                       onRunAgainClick={(pipeline1) => this._onRunAgainClick(pipeline1)}
                       onRunClick={(pipeline2) => this._onRunClick(pipeline2)}
+                      onStopClick={(pipeline3) => this._onStopClick(pipeline3)}
                       onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                     />
                 </div>
@@ -268,6 +273,7 @@ DashboardCards.propTypes = {
     toggleFavorite: PropTypes.func,
     runPipeline: PropTypes.func,
     replayPipeline: PropTypes.func,
+    stopPipeline: PropTypes.func,
     updateRun: PropTypes.func,
 };
 

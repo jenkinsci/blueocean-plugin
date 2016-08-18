@@ -129,8 +129,8 @@ export const actions = {
     replayPipeline(pipeline) {
         return () => {
             const baseUrl = urlConfig.blueoceanAppURL;
-            const pipelineUrl = pipeline.latestRun._links.self.href;
-            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
+            const latestRunUrl = pipeline.latestRun._links.self.href;
+            const replayPipelineUrl = cleanSlashes(`${baseUrl}/${latestRunUrl}/replay/`);
 
             const fetchOptions = {
                 ...defaultFetchOptions,
@@ -141,7 +141,26 @@ export const actions = {
             };
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            fetch(runPipelineUrl, fetchOptions);
+            fetch(replayPipelineUrl, fetchOptions);
+        };
+    },
+
+    stopPipeline(pipeline) {
+        return () => {
+            const baseUrl = urlConfig.blueoceanAppURL;
+            const latestRunUrl = pipeline.latestRun._links.self.href;
+            const stopPipelineUrl = cleanSlashes(`${baseUrl}/${latestRunUrl}/stop/`);
+
+            const fetchOptions = {
+                ...defaultFetchOptions,
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
+            fetch(stopPipelineUrl, fetchOptions);
         };
     },
 

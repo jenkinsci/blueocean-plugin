@@ -41,6 +41,7 @@ export class PipelineCard extends Component {
 
         this.state = {
             favorite: false,
+            stopping: false,
         };
     }
 
@@ -57,6 +58,7 @@ export class PipelineCard extends Component {
     _updateState(props) {
         this.setState({
             favorite: props.favorite,
+            stopping: false,
         });
     }
 
@@ -73,7 +75,15 @@ export class PipelineCard extends Component {
     }
 
     _onStopClick() {
+        if (!this.state.stopping) {
+            this.setState({
+                stopping: true,
+            });
 
+            if (this.props.onStopClick) {
+                this.props.onStopClick(this.props.item);
+            }
+        }
     }
 
     _onFavoriteToggle() {
@@ -93,6 +103,7 @@ export class PipelineCard extends Component {
         const notRunningStatus = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
         const hasFailedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
         const isPipeline = capabilities && capabilities.indexOf('org.jenkinsci.plugins.workflow.job.WorkflowJob') >= 0;
+        const stopClass = this.state.stopping ? 'stopping' : '';
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
         const activityUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
@@ -152,7 +163,8 @@ export class PipelineCard extends Component {
                     </a>
                     }
 
-                    <a className="action-item stop-button" title="Stop" onClick={(event) => {stopProp(event); this._onStopClick();}}></a>
+                    { !notRunningStatus &&
+                    <a className={`action-item stop-button ${stopClass}`} title="Stop" onClick={(event) => {stopProp(event); this._onStopClick();}}></a>
                     }
 
                     <Favorite checked={this.state.favorite} className="dark-white"
@@ -180,6 +192,7 @@ PipelineCard.propTypes = {
     favorite: PropTypes.bool,
     onRunClick: PropTypes.func,
     onRunAgainClick: PropTypes.func,
+    onStopClick: PropTypes.func,
     onFavoriteToggle: PropTypes.func,
 };
 
