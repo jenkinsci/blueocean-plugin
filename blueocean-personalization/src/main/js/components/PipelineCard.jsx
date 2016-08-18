@@ -90,7 +90,7 @@ export class PipelineCard extends Component {
     render() {
         const { capabilities, status, commitId, startTime, estimatedDuration } = this.props;
         const bgClass = PipelineCard._getBackgroundClass(status);
-        const hasRunningStatus = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
+        const notRunningStatus = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
         const hasFailedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
         const isPipeline = capabilities && capabilities.indexOf('org.jenkinsci.plugins.workflow.job.WorkflowJob') >= 0;
         const commitText = commitId ? commitId.substr(0, 7) : '';
@@ -141,18 +141,17 @@ export class PipelineCard extends Component {
 
                 <span className="actions">
                     { hasFailedStatus && isPipeline &&
-                    <a className="action-item rerun" title="Run Again" onClick={(event) => {stopProp(event); this._onRunAgainClick();}}>
+                    <a className="action-item rerun-button" title="Run Again" onClick={(event) => {stopProp(event); this._onRunAgainClick();}}>
                         <Icon size={24} icon="replay" />
                     </a>
                     }
 
-                    { hasRunningStatus &&
-                    <a className="action-item run" title="Run" onClick={(event) => {stopProp(event); this._onRunClick();}}>
+                    { notRunningStatus &&
+                    <a className="action-item run-button" title="Run" onClick={(event) => {stopProp(event); this._onRunClick();}}>
                         <Icon size={24} icon="play_arrow" />
                     </a>
                     }
 
-                    { !showRun &&
                     <a className="action-item stop-button" title="Stop" onClick={(event) => {stopProp(event); this._onStopClick();}}></a>
                     }
 
