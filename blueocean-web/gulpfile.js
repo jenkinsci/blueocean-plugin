@@ -1,6 +1,9 @@
 //
 // See https://github.com/jenkinsci/js-builder
 //
+
+process.env.SKIP_BLUE_IMPORTS = 'YES';
+
 var gi = require('giti');
 var fs = require('fs');
 var builder = require('@jenkins-cd/js-builder');
@@ -43,7 +46,7 @@ builder.bundle('src/main/js/blueocean.js')
 //
 builder.bundle('src/main/js/try.js')
     .inDir('target/classes/io/jenkins/blueocean')
-    .withExternalModuleMapping('jquery-detached', 'core-assets/jquery-detached:jquery2') // Bundled in Jenkins 2.x 
+    .import('jquery-detached', 'core-assets/jquery-detached:jquery2') // Bundled in Jenkins 2.x
     .less('src/main/less/try.less');
 
 // 

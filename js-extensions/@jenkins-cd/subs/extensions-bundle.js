@@ -10,6 +10,7 @@ var fs = require('fs');
 var path = require('path');
 var cwd = process.cwd();
 var jsonFile = cwd + '/target/classes/jenkins-js-extension.json';
+var ModuleSpec = require('@jenkins-cd/js-modules/js/ModuleSpec');
 
 var jsExtensionsYAMLFile = findExtensionsYAMLFile();
 
@@ -123,7 +124,8 @@ function transformToJSX() {
 
         // Add the js-modules import of the extensions and add the code to register all
         // of the extensions in the shared store.
-        jsxFileContent += "require('@jenkins-cd/js-modules').import('jenkins-cd:js-extensions').onFulfilled(function(Extension) {\n";
+        var jsExtensionsModuleSpec = new ModuleSpec('@jenkins-cd/js-extensions@any');
+        jsxFileContent += "require('@jenkins-cd/js-modules').import('" + jsExtensionsModuleSpec.importAs() + "').onFulfilled(function(Extension) {\n";
         for (var i2 = 0; i2 < extensions.length; i2++) {
             var extension = extensions[i2];
 
@@ -142,11 +144,6 @@ function transformToJSX() {
 function createBundle(jsxFile) {
     __builder.bundle(jsxFile)
         .namespace(maven.getArtifactId())
-        .withExternalModuleMapping('@jenkins-cd/js-extensions', 'jenkins-cd:js-extensions')
-        .withExternalModuleMapping('@jenkins-cd/design-language', 'jenkins-cd:jdl')
-        .withExternalModuleMapping('react', 'react:react')
-        .withExternalModuleMapping('react-dom', 'react:react-dom')
-        .withExternalModuleMapping('react-addons-css-transition-group', 'react:react-addons-css-transition-group')
         .inDir('target/classes/org/jenkins/ui/jsmodules/' + maven.getArtifactId());
 }
 
