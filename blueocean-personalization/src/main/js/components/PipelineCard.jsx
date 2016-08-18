@@ -91,7 +91,6 @@ export class PipelineCard extends Component {
         const isPipeline = capabilities && capabilities.indexOf('org.jenkinsci.plugins.workflow.job.WorkflowJob') >= 0;
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
-
         const activityUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
         `${encodeURIComponent(this.props.fullName)}/activity`;
 
@@ -138,13 +137,13 @@ export class PipelineCard extends Component {
 
                 <span className="actions">
                     { hasFailedStatus && isPipeline &&
-                    <a className="action-item" title="Run Again" onClick={(event) => {stopProp(event); this._onRunAgainClick();}}>
+                    <a className="action-item rerun" title="Run Again" onClick={(event) => {stopProp(event); this._onRunAgainClick();}}>
                         <Icon size={24} icon="replay" />
                     </a>
                     }
 
                     { hasRunningStatus &&
-                    <a className="action-item" title="Run" onClick={(event) => {stopProp(event); this._onRunClick();}}>
+                    <a className="action-item run" title="Run" onClick={(event) => {stopProp(event); this._onRunClick();}}>
                         <Icon size={24} icon="play_arrow" />
                     </a>
                     }
