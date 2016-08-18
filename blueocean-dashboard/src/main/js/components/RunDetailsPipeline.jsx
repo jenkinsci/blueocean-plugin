@@ -312,7 +312,7 @@ export class RunDetailsPipeline extends Component {
                 />
                 }
                 { noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
-                    <p>There are no steps. <a href="?view=0">Log console view</a></p>
+                    <p>There are no steps.</p>
                 </EmptyStateView>
                 }
 
