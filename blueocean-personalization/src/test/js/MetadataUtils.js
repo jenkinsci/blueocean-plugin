@@ -14,16 +14,17 @@ import { classMetadataStore } from '@jenkins-cd/js-extensions';
 export const bindCapability = (className, ...capabilities) => {
     if (!classMetadataStore.classMetadata) {
         classMetadataStore.init(() => null);
-
-        let metadata = classMetadataStore.classMetadata[className];
-
-        if (!metadata) {
-            metadata = classMetadataStore.classMetadata[className] = {};
-            metadata.classes = [
-                className
-            ];
-        }
-
-        metadata.classes = metadata.classes.concat(capabilities);
     }
+
+    let metadata = classMetadataStore.classMetadata[className];
+
+    if (!metadata) {
+        metadata = classMetadataStore.classMetadata[className] = {};
+        metadata.classes = [
+            className
+        ];
+    }
+
+    metadata.classes = metadata.classes.concat(capabilities);
+
 };

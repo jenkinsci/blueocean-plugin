@@ -115,6 +115,7 @@ export class DashboardCards extends Component {
         this._initializeCapabilities(nextProps);
     }
 
+    // TODO: eliminate capabilities code after JENKINS-37519 is implemented
     _initializeCapabilities(props) {
         if (props.favorites && props.favorites.size) {
             const capabilities = this.state.capabilities;
