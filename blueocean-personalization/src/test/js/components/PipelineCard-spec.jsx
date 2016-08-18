@@ -5,12 +5,19 @@ import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
+import { bindCapability } from '../MetadataUtils';
 import { PipelineCard } from '../../../main/js/components/PipelineCard';
 
 describe('PipelineCard', () => {
     const capabilities = [
-        'org.jenkinsci.plugins.workflow.job.WorkflowJob'
+        'org.jenkinsci.plugins.workflow.job.WorkflowJob',
     ];
+
+    // needed to prevent DashboardCards from blowing up internally
+    bindCapability(
+        'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl',
+        'io.jenkins.blueocean.rest.model.BlueBranch'
+    );
 
     it('renders without error for empty props', () => {
         const wrapper = shallow(
