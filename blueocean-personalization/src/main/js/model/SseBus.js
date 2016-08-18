@@ -7,6 +7,10 @@ import { cleanSlashes } from '../util/UrlUtils';
 import urlConfig from '../config';
 urlConfig.loadConfig();
 
+const defaultFetchOptions = {
+    credentials: 'same-origin',
+};
+
 // TODO: migrate all this code down to 'fetch'
 function checkStatus(response) {
     if (response.status >= 300 || response.status < 200) {
@@ -140,7 +144,7 @@ export class SseBus {
         const baseUrl = urlConfig.jenkinsRootURL;
         const url = cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
-        this.fetch(url)
+        this.fetch(url, defaultFetchOptions)
             .then(checkStatus)
             .then(parseJSON)
             .then((data) => {

@@ -260,7 +260,7 @@ export const actions = {
         return (dispatch) => {
             const baseUrl = config.getAppURLBase();
             // TODO: update this code to call /search with organizationName once JENKINS-36273 is ready
-            const url = `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject`;
+            const url = `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject`;
 
             return dispatch(actions.generateData(
                 url,
@@ -281,7 +281,7 @@ export const actions = {
             const pipelines = getState().adminStore.pipelines;
             const baseUrl = config.getAppURLBase();
             // TODO: update this code to call /search with organizationName once JENKINS-36273 is ready
-            const url = `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject`;
+            const url = `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject`;
 
             if (!pipelines) {
                 return dispatch(actions.generateData(
@@ -848,7 +848,7 @@ export const actions = {
             ));
         };
     },
-    
+
     resetTestDetails() {
         return (dispatch) =>
             dispatch({

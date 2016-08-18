@@ -6,7 +6,7 @@ import keymirror from 'keymirror';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 
-import { User } from '../model/User';
+import { AnonUser, User } from '../model/User';
 import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 
 /* eslint new-cap: [0] */
@@ -30,7 +30,9 @@ function clone(json) {
 
 const actionHandlers = {
     [ACTION_TYPES.SET_USER](state, { payload }) {
-        const user = new User(payload);
+        const user = payload instanceof Error ?
+            new AnonUser() :
+            new User(payload);
         return state.set('user', user);
     },
     [ACTION_TYPES.SET_FAVORITES](state, { payload }) {
@@ -75,7 +77,6 @@ const actionHandlers = {
             }
         }
 
-        console.warn('run was not updated; likely an error?');
         return state;
     },
 };
