@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Progress } from '@jenkins-cd/design-language';
 import { scrollHelper } from './ScrollHelper';
 
 const INITIAL_RENDER_CHUNK_SIZE = 100;
@@ -15,6 +16,7 @@ export class LogConsole extends Component {
         this.queuedLines = [];
         this.state = {
             lines: [],
+            isLoading: false,
         };
         // we have different timeouts in this component, each will take its own workspace
         this.timeouts = {};
@@ -51,6 +53,7 @@ export class LogConsole extends Component {
 
     // initial method to create lines to render
     _processLines(lines) {
+        this.setState({ isLoading: true });
         let newLines = lines;
         if (newLines && newLines.length > INITIAL_RENDER_CHUNK_SIZE) {
             // queue up all the lines and grab just the beginning to render for now
@@ -62,6 +65,7 @@ export class LogConsole extends Component {
             }, INITIAL_RENDER_DELAY);
         } else {
             this.scroll();
+            this.setState({ isLoading: false });
         }
 
         this.setState({
@@ -86,6 +90,8 @@ export class LogConsole extends Component {
             this.timeouts.render = setTimeout(() => {
                 this._processNextLines();
             }, RERENDER_DELAY);
+        } else {
+            this.setState({ isLoading: false });
         }
         this.scroll();
     }
@@ -107,32 +113,39 @@ export class LogConsole extends Component {
     }
 
     render() {
-        const lines = this.state.lines;
+        const { isLoading, lines } = this.state;
         const { prefix = '', hasMore = false } = this.props; // if hasMore true then show link to full log
         if (!lines) {
             return null;
         }
 
-        return (<code
-          className="block"
-        >
-            { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
-                <a
-                  className="btn-secondary inverse"
-                  key={0}
-                  href={`?start=0#${prefix || ''}log-${1}`}
-                >
-                Show complete log
-            </a>
+        return (<div>
+            { isLoading && <div className="loadingContainer">
+                <Progress />
             </div>}
-            { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-                <a
-                  key={index + 1}
-                  href={`#${prefix || ''}log-${index + 1}`}
-                  name={`${prefix}log-${index + 1}`}
-                >{line}
-                </a>
-            </p>)}</code>);
+
+            { !isLoading && <code
+              className="block"
+            >
+                { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
+                    <a
+                      className="btn-secondary inverse"
+                      key={0}
+                      href={`?start=0#${prefix || ''}`}
+                    >
+                        Show complete log
+                    </a>
+                </div>}
+                { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
+                    <a
+                      key={index + 1}
+                      href={`#${prefix || ''}log-${index + 1}`}
+                      name={`${prefix}log-${index + 1}`}
+                    >{line}
+                    </a>
+                </p>)}</code>
+            }
+        </div>);
     }
 }
 

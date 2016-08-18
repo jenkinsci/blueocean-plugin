@@ -181,10 +181,10 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     public Collection<BlueActionProxy> getActions() {
-        return PipelineImpl.getActionProxies(run.getAllActions(), this);
+        return AbstractPipelineImpl.getActionProxies(run.getAllActions(), this);
     }
 
-    protected static BlueRun getBlueRun(Run r, Reachable parent){
+    public static BlueRun getBlueRun(Run r, Reachable parent){
         for(BlueRunFactory runFactory:BlueRunFactory.all()){
             BlueRun blueRun = runFactory.getRun(r,parent);
             if(blueRun != null){

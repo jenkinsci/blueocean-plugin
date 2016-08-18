@@ -75,9 +75,9 @@ class RunDetails extends Component {
         }
 
         const { router, location, params } = this.context;
-        
+
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
-          
+
         const foundRun = this.props.runs.find((run) =>
             run.id === params.runId &&
                 decodeURIComponent(run.pipeline) === params.branch
@@ -89,9 +89,9 @@ class RunDetails extends Component {
         }
 
         const currentRun = new RunRecord(foundRun);
-    
+
         const status = currentRun.getComputedResult();
-       
+
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
             location.pathname = this.opener || fallbackUrl;
