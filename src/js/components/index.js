@@ -28,6 +28,7 @@ export {EmptyStateIcon} from './EmptyStateIcon';
 export {PipelineGraph} from './PipelineGraph';
 export {FileSize} from './FileSize';
 export {Toast} from './Toast';
+export {Toaster} from './Toaster';
 export {ResultItem} from './ResultItem';
 export {TimeDuration} from './TimeDuration';
 export { Progress } from './Progress';
