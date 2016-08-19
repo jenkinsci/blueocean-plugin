@@ -1,8 +1,10 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
+import hudson.model.AbstractItem;
 import hudson.model.Action;
 import hudson.model.Item;
 import hudson.model.Job;
@@ -31,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Pipeline abstraction implementation. Use it to extend other kind of jenkins jobs
@@ -202,5 +205,17 @@ public class AbstractPipelineImpl extends BluePipeline {
         }
     }
 
+    @Override
+    public Map<String, Boolean> getPermissions(){
+        return getPermissions(job);
+    }
 
+    public static Map<String, Boolean> getPermissions(AbstractItem item){
+        return ImmutableMap.of(
+            BluePipeline.CREATE_PERMISSION, item.getACL().hasPermission(Item.CREATE),
+            BluePipeline.READ_PERMISSION, item.getACL().hasPermission(Item.READ),
+            BluePipeline.START_PERMISSION, item.getACL().hasPermission(Item.BUILD),
+            BluePipeline.STOP_PERMISSION, item.getACL().hasPermission(Item.CANCEL)
+        );
+    }
 }

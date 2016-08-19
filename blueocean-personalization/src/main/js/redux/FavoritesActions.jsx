@@ -134,6 +134,7 @@ export const actions = {
                 dispatch({
                     ...optional,
                     type: actionType,
+                    payload: error,
                 });
             });
     },

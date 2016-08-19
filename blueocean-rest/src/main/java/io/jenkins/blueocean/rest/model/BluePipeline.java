@@ -9,6 +9,7 @@ import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.PUT;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Defines pipeline state and its routing
@@ -26,6 +27,19 @@ public abstract class BluePipeline extends Resource {
     public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
     public static final String LAST_SUCCESSFUL_RUN = "lastSuccessfulRun";
     public static final String ACTIONS = "actions";
+    public static final String PERMISSIONS= "permissions";
+
+    /** Create pipeline */
+    public static final String CREATE_PERMISSION = "create";
+
+    /** Read pipeline permission */
+    public static final String READ_PERMISSION = "read";
+
+    /** start pipeline run */
+    public static final String START_PERMISSION = "start";
+
+    /** stop pipeline run */
+    public static final String STOP_PERMISSION = "stop";
 
     /**
      * @return name of the organization
@@ -99,4 +113,38 @@ public abstract class BluePipeline extends Resource {
     @WebMethod(name="favorite")
     @TreeResponse
     public abstract BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction);
+
+
+    /**
+     * Gives permissions of user in context for a given pipeline.
+     *
+     * Following permissions are returned as key to the permission map: create, start, stop, read for a pipeline job:
+     *
+     * <p>
+     * create: User can create a pipeline
+     * <p>
+     * start: User can start a run of this pipeline. If not applicable to certain pipeline then can be false or null.
+     * <p>
+     * stop: User can stop a run of this pipeline. If not applicable to certain pipeline then can be false or null.
+     * <p>
+     * read: User has permission to view this pipeline
+     *
+     * <p>
+     * For example for anonymous user with security enabled and only read permission, the permission map for a pipeline job is:
+     *
+     * <pre>
+     * "permissions":{
+     *     "start": false,
+     *     "stop": false,
+     *     "create":false,
+     *     "read": true
+     * }
+     * </pre>
+     *
+     * Implementation of BluePipeline can provide their own set of permissions in addition to the ones defined
+     *
+     * @return permission map
+     */
+    @Exported(name = PERMISSIONS)
+    public abstract Map<String, Boolean> getPermissions();
 }
