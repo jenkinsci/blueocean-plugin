@@ -275,8 +275,10 @@ export class RunDetailsPipeline extends Component {
         };
         const noSteps = currentSteps && currentSteps.model && currentSteps.model.length === 0;
         const shouldShowLogHeader = noSteps !== null && !noSteps;
-        const hasResultsForSteps = nodes && nodes[nodeKey] ? nodes[nodeKey].hasResultsForSteps : false;
-console.log(hasResultsForSteps, supportsNode, this.mergedConfig.forceLogView )
+        let hasResultsForSteps = nodes && nodes[nodeKey] ? nodes[nodeKey].hasResultsForSteps : false;
+        if (noSteps !== null && !noSteps) {
+            hasResultsForSteps = true;
+        }
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
 
         const logProps = {

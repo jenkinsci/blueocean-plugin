@@ -12,7 +12,6 @@ export const STATES = keymirror({
 });
 
 export const getNodesInformation = (nodes) => {
-
   // calculation of information about stages
   // nodes in Runing state
     const runningNodes = nodes
