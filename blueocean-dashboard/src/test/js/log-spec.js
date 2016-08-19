@@ -15,7 +15,9 @@ import {runNodesSuccess, runNodesFail, runNodesRunning} from './runNodes';
 import {firstFinishedSecondRunning} from './runNodes-firstFinishedSecondRunning';
 import {firstRunning} from './runNodes-firstRunning';
 import {finishedMultipleFailure} from './runNodes-finishedMultipleFailure';
+import {queuedAborted} from './runNodes-QueuedAborted';
 import {getNodesInformation} from './../../main/js/util/logDisplayHelper';
+
 
 import Step from '../../main/js/components/Step';
 import Steps from '../../main/js/components/Steps';
@@ -31,15 +33,22 @@ const assertResult = (item, {finished = true, failed = false, errors = 0, runnin
 };
 
 describe("Logic test of different runs", () => {
+    it("handles aborted job that only had been in queue but never build", () => {
+        const stagesInformationQueuedAborted = getNodesInformation(queuedAborted);
+        assert.equal(stagesInformationQueuedAborted.hasResultsForSteps, false);
+    });
     it("handles success", () => {
         const stagesInformationSuccess = getNodesInformation(runNodesSuccess);
+        assert.equal(stagesInformationSuccess.hasResultsForSteps, true);
         assertResult(stagesInformationSuccess, {});
     });
     it("handles error", () => {
         let stagesInformationFail = getNodesInformation(runNodesFail);
         assertResult(stagesInformationFail, {failed: true, errors: 2});
+        assert.equal(stagesInformationFail.hasResultsForSteps, true);
         stagesInformationFail = getNodesInformation(finishedMultipleFailure);
         assertResult(stagesInformationFail, {failed: true, errors: 3});
+        assert.equal(stagesInformationFail.hasResultsForSteps, true);
     });
     it("handles running", () => {
         const runningSamples = [runNodesRunning, firstRunning, firstFinishedSecondRunning];

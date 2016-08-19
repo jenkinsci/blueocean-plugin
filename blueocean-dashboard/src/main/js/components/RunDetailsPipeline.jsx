@@ -275,7 +275,8 @@ export class RunDetailsPipeline extends Component {
         };
         const noSteps = currentSteps && currentSteps.model && currentSteps.model.length === 0;
         const shouldShowLogHeader = noSteps !== null && !noSteps;
-
+        const hasResultsForSteps = nodes && nodes[nodeKey] ? nodes[nodeKey].hasResultsForSteps : false;
+console.log(hasResultsForSteps, supportsNode, this.mergedConfig.forceLogView )
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
 
         const logProps = {
@@ -287,7 +288,7 @@ export class RunDetailsPipeline extends Component {
 
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
-                { nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
+                { hasResultsForSteps && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
                   selectedStage={this.mergedConfig.nodeReducer}
                   callback={afterClick}
@@ -297,26 +298,25 @@ export class RunDetailsPipeline extends Component {
                   runId={run.id}
                 />
                 }
-                { shouldShowLogHeader && !this.mergedConfig.forceLogView &&
+                { hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView &&
                     <LogToolbar
                       fileName={logGeneral.fileName}
                       url={logGeneral.url}
                       title={title}
                     />
                 }
-                { currentSteps && !this.mergedConfig.forceLogView && <Steps
+                { hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView && <Steps
                   nodeInformation={currentSteps}
                   followAlong={followAlong}
                   router={router}
                   {...this.props}
                 />
                 }
-                { noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
+                { hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
                     <p>There are no steps.</p>
                 </EmptyStateView>
                 }
-
-                { !supportsNode || this.mergedConfig.forceLogView && <LogConsoleView {...logProps} /> }
+                { (!hasResultsForSteps || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
             </div>
         );
     }
