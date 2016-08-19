@@ -124,7 +124,7 @@ public class LinkResolverTest extends PipelineBaseTest {
 
             PipelineNodeGraphBuilder graphBuilder = new PipelineNodeGraphBuilder(b1);
 
-            List<FlowNode> steps = graphBuilder.getAllSteps();
+            List<FlowNodeWrapper> steps = graphBuilder.getAllSteps();
 
             Assert.assertEquals(String.format("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/%s/steps/%s/",
                 b1.getId(),steps.get(0).getId()),

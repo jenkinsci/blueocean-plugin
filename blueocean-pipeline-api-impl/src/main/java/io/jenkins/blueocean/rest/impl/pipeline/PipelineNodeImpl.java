@@ -6,9 +6,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
-import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,29 +20,17 @@ import java.util.List;
  * @see FlowNode
  */
 public class PipelineNodeImpl extends BluePipelineNode {
-    private final FlowNode node;
-    private final List<FlowNode> children;
+    private final FlowNodeWrapper node;
     private final List<Edge> edges;
-    private final WorkflowRun run;
     private final Long durationInMillis;
     private final PipelineNodeGraphBuilder.NodeRunStatus status;
-    private final PipelineNodeGraphBuilder nodeGraphBuilder;
     private final Link self;
 
-    public PipelineNodeImpl(WorkflowRun run, final FlowNode node, PipelineNodeGraphBuilder.NodeRunStatus status, PipelineNodeGraphBuilder nodeGraphBuilder, Link parentLink) {
-        this.run = run;
+    public PipelineNodeImpl(FlowNodeWrapper node, Link parentLink) {
         this.node = node;
-        this.children = nodeGraphBuilder.getChildren(node);
-        this.edges = buildEdges();
-        this.status = status;
-        if(getStateObj() == BlueRun.BlueRunState.FINISHED){
-            this.durationInMillis = nodeGraphBuilder.getDurationInMillis(node);
-        }else if(getStateObj() == BlueRun.BlueRunState.RUNNING){
-            this.durationInMillis = System.currentTimeMillis()-TimingAction.getStartTime(node);
-        }else{
-            this.durationInMillis = null;
-        }
-        this.nodeGraphBuilder = nodeGraphBuilder;
+        this.edges = buildEdges(node.edges);
+        this.status = node.getStatus();
+        this.durationInMillis = node.getTiming().getTotalDurationMillis();
         this.self = parentLink.rel(node.getId());
     }
 
@@ -55,7 +41,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public String getDisplayName() {
-        return PipelineNodeUtil.getDisplayName(node);
+        return PipelineNodeUtil.getDisplayName(node.getNode());
     }
 
     @Override
@@ -79,7 +65,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
         if(isInactiveNode()){
             return null;
         }
-        long nodeTime = TimingAction.getStartTime(node);
+        long nodeTime = node.getTiming().getStartTimeMillis();
         return new Date(nodeTime);
     }
 
@@ -105,7 +91,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public BluePipelineStepContainer getSteps() {
-        return new PipelineStepContainerImpl(node, nodeGraphBuilder, self);
+        return new PipelineStepContainerImpl(node, self);
     }
 
     @Override
@@ -115,36 +101,34 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return PipelineImpl.getActionProxies(node.getAllActions(), this);
+        return PipelineImpl.getActionProxies(node.getNode().getAllActions(), this);
     }
 
 
     public static class EdgeImpl extends Edge{
-        private final FlowNode node;
-        private final FlowNode edge;
+        private final String id;
 
-        public EdgeImpl(FlowNode node, FlowNode edge) {
-            this.node = node;
-            this.edge = edge;
+        public EdgeImpl(String id) {
+            this.id = id;
         }
 
         @Override
         public String getId() {
-            return edge.getId();
+            return id;
         }
     }
 
-    private List<Edge> buildEdges(){
+    private List<Edge> buildEdges(List<String> nodes){
         List<Edge> edges  = new ArrayList<>();
-        if(!this.children.isEmpty()) {
-            for (final FlowNode c : children) {
-                edges.add(new EdgeImpl(node, c));
+        if(!nodes.isEmpty()) {
+            for (String id:nodes) {
+                edges.add(new EdgeImpl(id));
             }
         }
         return edges;
     }
 
     private boolean isInactiveNode(){
-        return node instanceof PipelineNodeGraphBuilder.InactiveFlowNodeWrapper;
+        return node.getNode() instanceof PipelineNodeGraphBuilder.InactiveFlowNodeWrapper;
     }
 }
