@@ -115,10 +115,11 @@ export const actions = {
 
             const fetchOptions = {
                 ...defaultFetchOptions,
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                
             };
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
@@ -134,7 +135,7 @@ export const actions = {
 
             const fetchOptions = {
                 ...defaultFetchOptions,
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },

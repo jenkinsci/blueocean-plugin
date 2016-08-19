@@ -144,7 +144,7 @@ export class PipelineCard extends Component {
 
                     { hasRunningStatus &&
                     <a className="action-item run" title="Run" onClick={(event) => {stopProp(event); this._onRunClick();}}>
-                        <Icon size={24} icon="play_arrow" />
+                        <Icon size={24} icon="play_circle_outline" />
                     </a>
                     }
 
