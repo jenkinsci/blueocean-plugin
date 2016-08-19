@@ -113,7 +113,9 @@ class RunDetails extends Component {
             >
                 <ModalHeader>
                     <div>
-                        <RunDetailsHeader data={currentRun}
+                        <RunDetailsHeader
+                          pipeline={this.props.pipeline}
+                          data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}

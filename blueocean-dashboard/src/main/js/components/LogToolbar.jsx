@@ -16,7 +16,7 @@ export default class LogToolbar extends Component {
         const logUrl = url.includes(suffix) ? url : `${url}${suffix}`;
         const style = { fill: '#4a4a4a' };
         return (<div className="log-header">
-            <div className="log-header__section">
+            <div className="log-header__section selected">
                 {title}
             </div>
             <div className="log-header__section download-log-button">
