@@ -8,7 +8,7 @@ import { Provider, configureStore, combineReducers} from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
 
 import { ToastService2 } from './ToastService2';
-import { ToastService } from '@jenkins-cd/blueocean-core-js';
+import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 import { Toaster } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 
@@ -45,19 +45,13 @@ WebToaster.propTypes = {
  */
 class App extends Component {
 
-    constructor(props) {
-        super(props);
-
-        this.toastService = new ToastService2();
-    }
-
     getChildContext() {
         return {config};
     }
 
     _addToast() {
         const id = new Date().getTime();
-        this.toastService.newToast({
+        toastService.newToast({
             id: id,
             text: `Hello World ${id}`,
             action: 'Dismiss',
@@ -80,7 +74,7 @@ class App extends Component {
                         {this.props.children /* Set by react-router */ }
                     </main>
                 </div>
-                <WebToaster toastService={this.toastService} />
+                <WebToaster toastService={toastService} />
                 <DevelopmentFooter />
             </div>
         );

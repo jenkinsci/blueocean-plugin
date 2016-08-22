@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 import { classMetadataStore } from '@jenkins-cd/js-extensions';
+import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
@@ -139,6 +140,13 @@ export class DashboardCards extends Component {
 
     _onRunClick(pipeline) {
         this.props.runPipeline(pipeline);
+        const id = new Date().getTime();
+        debugger;
+        toastService.newToast({
+            id: id,
+            text: `Hello World ${id}`,
+            action: 'Goodbye',
+        });
     }
 
     _onFavoriteToggle(isFavorite, favorite) {
