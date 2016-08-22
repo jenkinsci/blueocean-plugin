@@ -213,29 +213,29 @@ code div a.btn-secondary.inverse:hover{
     font-weight: bold;
 }
 
-.example-enter {
+.stepAnimation-enter {
     opacity: 0.01;
-    &.example-enter-active {
+    &.stepAnimation-enter-active {
         opacity: 1;
-        .transition(all ease-in 1s);
+        .transition(all ease-in-out 1s);
     }
 }
 
-.example-leave {
+.stepAnimation-leave {
     opacity: 1;
-    &.example-leave-active {
+    &.stepAnimation-leave-active {
         opacity: 0.01;
-        .transition(all ease-out 1s);
+        .transition(all ease-in 0.1s);
     }
 }
 
-.example-appear {
-    .transition(all ease-in 1s);
+.stepAnimation-appear {
+    .transition(all ease-in-out 1s);
     opacity: 0.01;
 
-    &.example-appear-active {
+    &.stepAnimation-appear-active {
         opacity: 1;
-        .transition(all ease-in 1s);
+        .transition(all ease-in-out 1s);
     }
 }
 

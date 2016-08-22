@@ -311,12 +311,12 @@ export class RunDetailsPipeline extends Component {
         }
 
         if (hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView) {
-            items.push(<EmptyStateView key={nodeKey} tightSpacing>
+            items.push(<EmptyStateView tightSpacing>
                 <p>There are no steps.</p>
             </EmptyStateView>);
         }
 
-        const transitionDuration = 5000;
+        const transitionDuration = 500;
 
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
@@ -331,13 +331,13 @@ export class RunDetailsPipeline extends Component {
                 />
                 }
                 <ReactCSSTransitionGroup
-                    transitionName="example"
+                    transitionName="stepAnimation"
                     transitionAppear
                     transitionAppearTimeout={transitionDuration}
                     transitionEnterTimeout={transitionDuration}
                     transitionLeaveTimeout={transitionDuration}
                 >
-                    <div key={nodeKey}>
+                    <div key={this.mergedConfig.nodeReducer.id}>
                         {items}
                     </div>
                 </ReactCSSTransitionGroup>
