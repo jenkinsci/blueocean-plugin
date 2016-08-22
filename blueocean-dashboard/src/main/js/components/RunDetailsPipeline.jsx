@@ -239,6 +239,7 @@ export class RunDetailsPipeline extends Component {
             title = `Steps - ${title}`;
         }
         const currentSteps = steps ? steps[key] : null;
+        const isRunning = run.state !== 'FINISHED';
         // here we decide what to do next if somebody clicks on a flowNode
         const afterClick = (id) => {
             // get some information about the node the user clicked
@@ -276,7 +277,7 @@ export class RunDetailsPipeline extends Component {
         const noSteps = currentSteps && currentSteps.model && currentSteps.model.length === 0;
         const shouldShowLogHeader = noSteps !== null && !noSteps;
         let hasResultsForSteps = nodes && nodes[nodeKey] ? nodes[nodeKey].hasResultsForSteps : false;
-        if ((noSteps !== null && !noSteps) || run.state !== 'FINISHED') {
+        if ((noSteps !== null && !noSteps) || (isRunning && supportsNode)) {
             hasResultsForSteps = true;
         }
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
