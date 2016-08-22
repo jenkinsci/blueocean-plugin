@@ -36,7 +36,11 @@ export default class RunDetailsChanges extends Component {
             <Table headers={headers} className="changeset-table fixed">
                 { changeSet.map(commit => (
                     <tr key={commit.commitId}>
-                        <td><CommitHash commitId={commit.commitId} /></td>
+                        <td>
+                            <a href={commit.url}>
+                                <CommitHash commitId={commit.commitId} />
+                            </a>
+                        </td>
                         <td>{commit.author.fullName}</td>
                         <td className="multipleLines">{commit.msg}</td>
                         <td><ReadableDate date={commit.timestamp} liveUpdate /></td>
