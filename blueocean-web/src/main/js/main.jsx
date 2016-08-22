@@ -19,9 +19,19 @@ let config; // Holder for various app-wide state
 
 @observer
 class WebToaster extends Component {
+
+    _removeToast(toast) {
+        this.props.toastService.removeToast(toast);
+    }
+
     render() {
         return (
-            <Toaster toasts={this.props.toastService.toasts} />
+            <Toaster
+                toasts={this.props.toastService.toasts}
+                onActionClick={(toast1) => this._removeToast(toast1)}
+                onDismiss={(toast2) => this._removeToast(toast2)}
+                dismissDelay={10000}
+            />
         );
     }
 }
@@ -39,11 +49,6 @@ class App extends Component {
         super(props);
 
         this.toastService = new ToastService2();
-        this.toastService.newToast({
-            id: 1,
-            text: 'Hello',
-            action: 'CLOSE',
-        });
     }
 
     getChildContext() {
@@ -51,10 +56,11 @@ class App extends Component {
     }
 
     _addToast() {
+        const id = new Date().getTime();
         this.toastService.newToast({
-            id: new Date().getTime(),
-            text: 'Hello',
-            action: 'Boosh',
+            id: id,
+            text: `Hello World ${id}`,
+            action: 'Dismiss',
         });
     }
 

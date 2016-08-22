@@ -2,13 +2,20 @@
  * Created by cmeyers on 8/22/16.
  */
 import { observable } from 'mobx';
-import Immutable from 'immutable';
-const { List } = Immutable;
 
 export class ToastService2 {
-    @observable toasts = new List();
+    @observable toasts = [];
 
     newToast(toast) {
-        this.toasts = this.toasts.push(toast);
+        // TODO: determine why it's necessary to re-set the "toasts" field to trigger the UI update
+        const copy = this.toasts.slice();
+        copy.push(toast);
+        this.toasts = copy;
+    }
+
+    removeToast(toast) {
+        this.toasts = this.toasts.filter((item) => {
+            return toast.id !== item.id;
+        });
     }
 }
