@@ -69,7 +69,7 @@ export class RunDetailsPipeline extends Component {
 
         this.listener.sse = sse.subscribe('pipeline', this._onSseEvent);
     }
-    
+
     componentDidMount() {
         const { result } = this.props;
 
@@ -77,7 +77,7 @@ export class RunDetailsPipeline extends Component {
             // determine scroll area
             const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
             // add both listemer, one to the scroll area and another to the whole document
-            domNode.addEventListener('wheel', this.onScrollHandler, false);
+            domNode && domNode.addEventListener('wheel', this.onScrollHandler, false);
             document.addEventListener('keydown', this._handleKeys, false);
         }
     }
@@ -146,7 +146,7 @@ export class RunDetailsPipeline extends Component {
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
         this.props.cleanNodePointer();
         clearTimeout(this.timeout);
-        domNode.removeEventListener('wheel', this._onScrollHandler);
+        domNode && domNode.removeEventListener('wheel', this._onScrollHandler);
         document.removeEventListener('keydown', this._handleKeys);
     }
 
@@ -245,7 +245,7 @@ export class RunDetailsPipeline extends Component {
         const { location, router } = this.context;
 
         const { isMultiBranch, steps, nodes, logs, result: run, params } = this.props;
-        
+
         if (run.isQueued()) {
             return queuedState();
         }
