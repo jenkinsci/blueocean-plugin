@@ -2,23 +2,60 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { Provider, configureStore, combineReducers} from './redux';
-import { DevelopmentFooter } from './DevelopmentFooter';
+import { observer } from 'mobx-react';
 
-import Extensions from '@jenkins-cd/js-extensions';
+import { Provider, configureStore, combineReducers} from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
 
+import { ToastService2 } from './ToastService2';
+import { ToastService } from '@jenkins-cd/blueocean-core-js';
+import { Toaster } from '@jenkins-cd/design-language';
+import Extensions from '@jenkins-cd/js-extensions';
+
 import Config from './config';
+import { DevelopmentFooter } from './DevelopmentFooter';
 
 let config; // Holder for various app-wide state
+
+@observer
+class WebToaster extends Component {
+    render() {
+        return (
+            <Toaster toasts={this.props.toastService.toasts} />
+        );
+    }
+}
+
+WebToaster.propTypes = {
+    toastService: PropTypes.object,
+};
 
 /**
  * Root Blue Ocean UI component
  */
 class App extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.toastService = new ToastService2();
+        this.toastService.newToast({
+            id: 1,
+            text: 'Hello',
+            action: 'CLOSE',
+        });
+    }
+
     getChildContext() {
         return {config};
+    }
+
+    _addToast() {
+        this.toastService.newToast({
+            id: new Date().getTime(),
+            text: 'Hello',
+            action: 'Boosh',
+        });
     }
 
     render() {
@@ -32,10 +69,12 @@ class App extends Component {
                             <a href="#">Administration</a>
                         </nav>
                     </header>
+                    <button onClick={() => this._addToast()}>Add</button>
                     <main>
                         {this.props.children /* Set by react-router */ }
                     </main>
                 </div>
+                <WebToaster toastService={this.toastService} />
                 <DevelopmentFooter />
             </div>
         );
