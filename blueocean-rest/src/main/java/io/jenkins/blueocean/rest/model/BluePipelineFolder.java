@@ -15,7 +15,7 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @see BluePipelineContainer
  */
-@Capability("io.jenkins.blueocean.rest.model.BluePipelineFolder")
+@Capability({"io.jenkins.blueocean.rest.model.BluePipelineFolder","com.cloudbees.hudson.plugins.folder.AbstractFolder"})
 public abstract class BluePipelineFolder extends BluePipeline {
 
     private static final String NUMBER_OF_PIPELINES = "numberOfPipelines";

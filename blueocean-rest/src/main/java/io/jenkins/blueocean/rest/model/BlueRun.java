@@ -3,10 +3,10 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import org.kohsuke.stapler.json.JsonResponse;
 import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
@@ -39,6 +39,8 @@ public abstract class BlueRun extends Resource {
     public static final String ARTIFACTS = "artifacts";
     public static final String STEPS = "steps";
     public static final String ACTIONS = "actions";
+
+    public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;
 
 
 
@@ -147,10 +149,22 @@ public abstract class BlueRun extends Resource {
     @Exported(name=TYPE)
     public abstract String getType();
 
+    /**
+     * Attempt to stop ongoing run.
+     *
+     * @param blocking if true then tries to stop till times out.
+     *
+     * @param timeOutInSecs if blocking is true then defines timeout value in seconds. Default 10 sec. If non-blocking
+     *                      then this parameter is ignored.
+     *
+     * @return Blue run instance. Caller should look at state field to determine if stop was successful. If state is
+     *         {@link BlueRun.BlueRunState#FINISHED} then stop was successful or run finished normally.
+     *
+     */
     @PUT
     @TreeResponse
     @WebMethod(name="stop")
-    public abstract BlueRun stop();
+    public abstract BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs);
 
     /**
      *

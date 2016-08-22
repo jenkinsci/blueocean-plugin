@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.0-alpha-7-SNAPSHOT</version>
+  <version>1.0-alpha-9-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean UI Parent</name>
@@ -105,7 +105,7 @@
     <module>blueocean-dashboard</module>
     <module>blueocean-personalization</module>
     <module>blueocean-plugin</module>
-    <module>blueocean-analytics-tools</module>
+    <module>blueocean-config</module>
   </modules>
 
   <repositories>
@@ -175,7 +175,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-analytics-tools</artifactId>
+            <artifactId>blueocean-config</artifactId>
             <version>${project.version}</version>
         </dependency>
 

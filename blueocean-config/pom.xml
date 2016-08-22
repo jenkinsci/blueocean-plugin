@@ -5,10 +5,10 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.0-alpha-7-SNAPSHOT</version>
+    <version>1.0-alpha-9-SNAPSHOT</version>
   </parent>
 
-  <artifactId>blueocean-analytics-tools</artifactId>
+  <artifactId>blueocean-config</artifactId>
   <packaging>hpi</packaging>
 
   <name>BlueOcean :: Analytics Tools</name>

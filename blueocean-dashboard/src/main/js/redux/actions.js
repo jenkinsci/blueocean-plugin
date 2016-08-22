@@ -381,7 +381,7 @@ export const actions = {
         return (dispatch) => {
             // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
             const url =
-                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject&filter=no-folders`;
+                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
             return paginate({ urlProvider: paginateUrl(url) })
             .then(data => {
                 dispatch({
@@ -824,7 +824,7 @@ export const actions = {
                 }));
         };
     },
-    
+
     resetTestDetails() {
         return (dispatch) =>
             dispatch({

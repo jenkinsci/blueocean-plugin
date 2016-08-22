@@ -22,7 +22,7 @@ export class RunDetailsTests extends Component {
             this.props.result
         );
     }
-    
+
     componentWillUnmount() {
         this.props.resetTestDetails();
     }
@@ -37,11 +37,11 @@ export class RunDetailsTests extends Component {
 
     render() {
         const { testResults } = this.props;
-        
+
         if (!testResults) {
             return null;
         }
-        
+
         if (testResults.$pending) {
             return <div>PENDING</div>;
         }
@@ -49,10 +49,10 @@ export class RunDetailsTests extends Component {
         if (testResults.$failed) {
             return <EmptyState />;
         }
-        
+
         const percentComplete = testResults.passCount /
             (testResults.passCount + testResults.failCount);
-        
+
         return (<div className="test-results-container">
             <div className="test=result-summary" style={{ display: 'none' }}>
                 <div className={`test-result-bar ${percentComplete}%`}></div>
@@ -61,7 +61,7 @@ export class RunDetailsTests extends Component {
                 <div className="test-result-skipped">Skipped {testResults.skipCount}</div>
                 <div className="test-result-duration">Duration {testResults.duration}</div>
             </div>
-            
+
             <Extensions.Renderer extensionPoint="jenkins.test.result" filter={dataType(testResults)} testResults={testResults} />
         </div>);
     }

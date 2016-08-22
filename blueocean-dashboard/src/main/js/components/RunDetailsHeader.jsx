@@ -29,7 +29,13 @@ class RunDetailsHeader extends Component {
     }
 
     render() {
-        const { data: run } = this.props;
+        const { data: run, pipeline: { fullName = '' } } = this.props;
+        // enable folder path
+        const nameArray = fullName.split('/');
+        // last part is same as run.pipeline so getting rid of it
+        nameArray.pop();
+        // cleanName is in case of no folder empty
+        const cleanFullName = nameArray.join(' / ');
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
         const changeSet = run.changeSet;
@@ -49,6 +55,7 @@ class RunDetailsHeader extends Component {
                 <h4>
                     <a onClick={() => this.handleOrganizationClick()}>{run.organization}</a>
                     &nbsp;/&nbsp;
+                    { cleanFullName && `${cleanFullName} / `}
                     <a onClick={() => this.handleNameClick()}>{run.pipeline}</a>
                     &nbsp;
                     #{run.id}
@@ -103,6 +110,7 @@ class RunDetailsHeader extends Component {
 
 RunDetailsHeader.propTypes = {
     data: object.isRequired,
+    pipeline: object,
     colors: object,
     onOrganizationClick: func,
     onNameClick: func,

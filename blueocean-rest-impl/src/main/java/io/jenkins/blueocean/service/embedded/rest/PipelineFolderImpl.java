@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
+import hudson.model.AbstractItem;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -18,6 +20,7 @@ import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -96,8 +99,21 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     }
 
     @Override
+    public Map<String, Boolean> getPermissions() {
+        if(folder instanceof AbstractItem){
+            AbstractItem item = (AbstractItem) folder;
+            return ImmutableMap.of(
+                BluePipeline.CREATE_PERMISSION, item.getACL().hasPermission(Item.CREATE),
+                BluePipeline.READ_PERMISSION, item.getACL().hasPermission(Item.READ));
+        }else{
+            return null;
+        }
+
+    }
+
+    @Override
     public Link getLink() {
-        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
+        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
     }
 
     @Extension(ordinal = 0)

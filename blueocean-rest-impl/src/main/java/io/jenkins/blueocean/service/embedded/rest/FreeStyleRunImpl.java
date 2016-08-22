@@ -4,13 +4,14 @@ import hudson.Extension;
 import hudson.model.FreeStyleBuild;
 import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
-import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
+import org.kohsuke.stapler.QueryParameter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ import java.util.Map;
  *
  * @author Vivek Pandey
  */
+@Capability("hudson.model.FreeStyleBuild")
 public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     public FreeStyleRunImpl(FreeStyleBuild run, Link parent) {
         super(run, parent);
@@ -40,13 +42,14 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     }
 
     @Override
-    public BlueRun stop() {
-        try {
-            run.doStop();
-            return this;
-        } catch (Exception e) {
-           throw new ServiceException.UnexpectedErrorException("Error while trying to stop run", e);
-        }
+    public BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs){
+        return stop(blocking, timeOutInSecs, new StoppableRun() {
+            @Override
+            public void stop() throws Exception {
+                run.doStop();
+            }
+        });
+
     }
 
     @Extension

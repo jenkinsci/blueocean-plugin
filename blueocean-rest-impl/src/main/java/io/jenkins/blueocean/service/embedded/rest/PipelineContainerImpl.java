@@ -51,7 +51,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         if(item == null){
             throw new ServiceException.NotFoundException(String.format("Pipeline %s not found", name));
         }
-        return get(item);
+        return BluePipelineFactory.getPipelineInstance(item, this);
     }
 
     @Override
@@ -64,22 +64,11 @@ public class PipelineContainerImpl extends BluePipelineContainer {
         items = ContainerFilter.filter(items);
         List<BluePipeline> pipelines = new ArrayList<>();
         for (Item item : items) {
-            BluePipeline pipeline  = get(item);
+            BluePipeline pipeline  = BluePipelineFactory.getPipelineInstance(item, this);
             if(pipeline != null){
                 pipelines.add(pipeline);
             }
         }
         return pipelines.iterator();
-    }
-
-    private BluePipeline get(Item item){
-
-        for(BluePipelineFactory factory:BluePipelineFactory.all()){
-            BluePipeline pipeline = factory.getPipeline(item, this);
-            if( pipeline!= null){
-                return pipeline;
-            }
-        }
-        return null;
     }
 }

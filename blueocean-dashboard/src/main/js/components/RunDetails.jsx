@@ -60,7 +60,7 @@ class RunDetails extends Component {
         }
 
         const { router, location, params } = this.context;
-        
+
         const baseUrl = getLocation({
             location,
             organization: params.organization,
@@ -72,9 +72,9 @@ class RunDetails extends Component {
         const currentRun = this.props.run;
         
         const runRecord = new RunRecord(currentRun);
-    
+
         const status = runRecord.getComputedResult() || '';
-       
+
         const afterClose = () => {
             const url = getLocation({
                 location,
@@ -94,7 +94,9 @@ class RunDetails extends Component {
                 <ModalHeader>
                     <div>
                         {!currentRun.$pending &&
-                        <RunDetailsHeader data={runRecord}
+                        <RunDetailsHeader
+                          pipeline={this.props.pipeline}
+                          data={runRecord}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}

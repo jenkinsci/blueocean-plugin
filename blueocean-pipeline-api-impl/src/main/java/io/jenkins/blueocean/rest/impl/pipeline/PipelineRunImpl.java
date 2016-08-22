@@ -8,6 +8,7 @@ import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
@@ -20,8 +21,10 @@ import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.BlueRunFactory;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.LinkedHashMap;
@@ -32,6 +35,7 @@ import java.util.Map;
  *
  * @author Vivek Pandey
  */
+@Capability("org.jenkinsci.plugins.workflow.job.WorkflowRun")
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);
@@ -83,9 +87,13 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
-    public BlueRun stop() {
-        run.doStop();
-        return this;
+    public BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs){
+        return stop(blocking, timeOutInSecs, new StoppableRun() {
+            @Override
+            public void stop() {
+                run.doStop();
+            }
+        });
     }
 
 
