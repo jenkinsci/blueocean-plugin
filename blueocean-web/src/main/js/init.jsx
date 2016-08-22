@@ -43,6 +43,11 @@ exports.initialize = function (oncomplete) {
     const Extensions = require('@jenkins-cd/js-extensions');
     jenkinsMods.export('jenkins-cd', 'js-extensions', Extensions);
 
+    // Create and export a shared instance of the core
+    // js module
+    const corejs = require('@jenkins-cd/blueocean-core-js');
+    jenkinsMods.export('jenkins-cd', 'blueocean-core-js', corejs);
+
     // Create and export a shared instance of the design
     // language React classes.
     const jdl = require('@jenkins-cd/design-language');
