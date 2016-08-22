@@ -109,7 +109,7 @@ export const actions = {
 
     runPipeline(pipeline) {
         return () => {
-            const baseUrl = urlConfig.blueoceanAppURL;
+            const baseUrl = urlConfig.jenkinsRootURL;
             const pipelineUrl = pipeline._links.self.href;
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
 
@@ -119,7 +119,6 @@ export const actions = {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                
             };
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
@@ -129,7 +128,7 @@ export const actions = {
 
     replayPipeline(pipeline) {
         return () => {
-            const baseUrl = urlConfig.blueoceanAppURL;
+            const baseUrl = urlConfig.jenkinsRootURL;
             const pipelineUrl = pipeline.latestRun._links.self.href;
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
 
