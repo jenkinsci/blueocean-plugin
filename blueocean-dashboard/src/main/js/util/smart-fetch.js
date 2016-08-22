@@ -1,6 +1,6 @@
-var infoLog = require('debug')('smart-fetch:info');
-var debugLog = require('debug')('smart-fetch:debug');
-var errorLog = require('debug')('smart-fetch:error');
+const infoLog = require('debug')('smart-fetch:info');
+const debugLog = require('debug')('smart-fetch:debug');
+const errorLog = require('debug')('smart-fetch:error');
 import isoFetch from 'isomorphic-fetch';
 import dedupe from './dedupe-calls';
 
@@ -224,7 +224,7 @@ function defaultArrayConcatenator(pager, existing, incoming) {
  */
 export function paginate({ urlProvider, onData, concatenator = defaultArrayConcatenator, startIndex = 0, pageSize = defaultPageSize }) {
     if (onData) {
-        infoLog('paginate: ', urlProvider(0,0));
+        infoLog('paginate: ', urlProvider(0, 0));
         const pager = new Pager(urlProvider, concatenator, onData, startIndex, pageSize);
         return pager.fetchMore();
     }

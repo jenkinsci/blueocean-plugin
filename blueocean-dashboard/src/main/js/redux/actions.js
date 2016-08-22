@@ -112,7 +112,7 @@ export function findAndUpdate(obj, replacer) {
     try {
         debugLog('findAndUpdate called with: ', obj, 'from:', new Error(), 'with replacer:', replacer);
         const noReplacement = { };
-        var out = _findAndUpdate(obj, replacer, {
+        const out = _findAndUpdate(obj, replacer, {
             visited: [],
             replaced: [],
             stop(o) {
@@ -138,7 +138,7 @@ export function findAndUpdate(obj, replacer) {
         });
         debugLog('findAndUpdateDone: ', out || obj);
         return out || obj;
-    } catch(e) {
+    } catch (e) {
         console.error(e); // eslint-disable-line no-console
         throw e;
     }
