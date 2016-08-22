@@ -276,7 +276,7 @@ export class RunDetailsPipeline extends Component {
         const noSteps = currentSteps && currentSteps.model && currentSteps.model.length === 0;
         const shouldShowLogHeader = noSteps !== null && !noSteps;
         let hasResultsForSteps = nodes && nodes[nodeKey] ? nodes[nodeKey].hasResultsForSteps : false;
-        if (noSteps !== null && !noSteps) {
+        if ((noSteps !== null && !noSteps) || run.state !== 'FINISHED') {
             hasResultsForSteps = true;
         }
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
