@@ -38,6 +38,10 @@ export class Toaster extends Component {
     }
 
     _initialize(props) {
+        if(!props.toasts) {
+            return;
+        }
+
         for (const toast of props.toasts) {
             const dismissDelay = toast.dismissDelay || props.dismissDelay || 5000;
 
@@ -119,4 +123,8 @@ Toaster.propTypes = {
     onActionClick: PropTypes.func,
     onDismiss: PropTypes.func,
     dismissDelay: PropTypes.number,
+};
+
+Toaster.defaultProps = {
+    toasts: [],
 };
