@@ -73,7 +73,9 @@ export class RunDetailsPipeline extends Component {
             // determine scroll area
             const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
             // add both listemer, one to the scroll area and another to the whole document
-            domNode.addEventListener('wheel', this.onScrollHandler, false);
+            if (domNode) {
+                domNode.addEventListener('wheel', this.onScrollHandler, false);
+            }
             document.addEventListener('keydown', this._handleKeys, false);
         }
     }
@@ -115,7 +117,9 @@ export class RunDetailsPipeline extends Component {
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
         this.props.cleanNodePointer();
         clearTimeout(this.timeout);
-        domNode.removeEventListener('wheel', this._onScrollHandler);
+        if (domNode) {
+            domNode.removeEventListener('wheel', this._onScrollHandler);
+        }
         document.removeEventListener('keydown', this._handleKeys);
     }
 
