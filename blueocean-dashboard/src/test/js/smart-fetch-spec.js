@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import nock from 'nock';
 import { fetch, paginate } from '../../main/js/util/smart-fetch';
-const debug = true;
+const debug = require('debug')('smart-fetch-test:debug');
 
 describe("smart-fetch", () => {
   afterEach(() => {
@@ -88,17 +88,17 @@ describe("smart-fetch", () => {
       var mockSrv = nock('http://example.com')
       mockSrv.get('/?start=0&limit=3').reply(200, function (uri, requestBody) { // fetches an extra 1 to check for more
           calls++;
-          if (debug) console.log('smart-fetch-spec.pagination 1');
+          debug('smart-fetch-spec.pagination 1');
         return '[{"name":"thing1"},{"name":"thing2"},{"name":"thing3"}]';
       });
       mockSrv.get('/?start=2&limit=3').reply(200, function (uri, requestBody) {
           calls++;
-          if (debug) console.log('smart-fetch-spec.pagination 2');
+          debug('smart-fetch-spec.pagination 2');
         return '[{"name":"thing3"},{"name":"thing4"},{"name":"thing5"}]';
       });
       mockSrv.get('/?start=4&limit=3').reply(200, function (uri, requestBody) {
           calls++;
-          if (debug) console.log('smart-fetch-spec.pagination 3');
+          debug('smart-fetch-spec.pagination 3');
         return '[{"name":"thing5"},{"name":"thing6"}]';
       });
 

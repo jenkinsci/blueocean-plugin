@@ -1,10 +1,13 @@
 import keymirror from 'keymirror';
 import fetch from 'isomorphic-fetch';
-import { fetch as smartFetch, paginate } from '../util/smart-fetch';
+import Immutable from 'immutable';
+import { fetch as smartFetch, paginate, applyFetchMarkers } from '../util/smart-fetch';
 import { State } from '../components/records';
 import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
 import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, paginateUrl, getRestUrl } from '../util/UrlUtils';
+
+const debugLog = require('debug')('blueocean-actions-js:debug');
 
 /**
  * This function maps a queue item into a run instancce.
@@ -32,6 +35,115 @@ function _mapQueueToPsuedoRun(run) {
     return run;
 }
 
+// Main body of findAndUpdate
+function _findAndUpdate(obj, replacer, visited) {
+    if (!obj || typeof obj === 'boolean' || typeof obj === 'number' || typeof obj === 'string') {
+        return undefined;
+    }
+    const visit = visited.stop(obj);
+    if (visit) {
+        return visit.replacement; // usually undefined
+    }
+    const val = replacer(obj);
+    if (val) {
+        visited.setReplaced(obj, val);
+        return val;
+    }
+    if (obj instanceof Array || obj instanceof Immutable.Iterable.Indexed) {
+        let updated = false;
+        const next = obj.map(curr => { // retains $pager info
+            const other = _findAndUpdate(curr, replacer, visited);
+            if (other) {
+                debugLog('found replacement in map: ', other);
+                updated = other;
+                return other;
+            }
+            return curr;
+        });
+        if (updated) {
+            debugLog('updated array/Immutable.Indexed: ', obj, next);
+            return next || obj; // Iterable.map sometimes may mutate?
+        }
+    } else if (obj instanceof Immutable.Record) {
+        let updated = false;
+        let o = obj;
+        for (const k of o.keySeq().toArray()) {
+            const v = o[k];
+            const next = _findAndUpdate(v, replacer, visited);
+            if (next) {
+                debugLog('found replacement for Immutable.Record: ', o, k, next);
+                updated = true;
+                o = o.set(k, next);
+            }
+        }
+        if (updated) {
+            debugLog('returning from IR: ', o);
+            return o;
+        }
+    } else {
+        let updated = false;
+        let o = obj;
+        for (const k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                const next = _findAndUpdate(o[k], replacer, visited);
+                if (next) {
+                    debugLog('found replacement for obj: ', o, k, next);
+                    updated = true;
+                    o = Object.assign({}, o);
+                    o[k] = next;
+                }
+            }
+        }
+        if (updated) {
+            o.hehe = true;
+            debugLog('returning: ', o);
+            return o;
+        }
+    }
+    debugLog('no replacement found for: ', obj);
+    return null;
+}
+
+/**
+ * Locates instances in the provided object graph and replaces them, just provide a 'replacer' method,
+ * which returns undefined/false for objects which should not be replaced.
+ */
+export function findAndUpdate(obj, replacer) {
+    try {
+        debugLog('findAndUpdate called with: ', obj, 'from:', new Error(), 'with replacer:', replacer);
+        const noReplacement = { };
+        var out = _findAndUpdate(obj, replacer, {
+            visited: [],
+            replaced: [],
+            stop(o) {
+                const idx = this.visited.indexOf(o);
+                if (idx >= 0) {
+                    const replacement = this.replaced[idx];
+                    if (replacement) {
+                        return replacement;
+                    }
+                    return noReplacement;
+                }
+                this.visited.push(o);
+                this.replaced.push(undefined);
+                return false;
+            },
+            setReplaced(o, replacement) {
+                const idx = this.visited.indexOf(o);
+                if (idx < 0) {
+                    throw new Error('Unable to find visited value.');
+                }
+                this.replaced[idx] = { replacement };
+            },
+        });
+        debugLog('findAndUpdateDone: ', out || obj);
+        return out || obj;
+    } catch(e) {
+        console.error(e); // eslint-disable-line no-console
+        throw e;
+    }
+}
+
 // main actin logic
 export const ACTION_TYPES = keymirror({
     UPDATE_MESSAGES: null,
@@ -41,19 +153,16 @@ export const ACTION_TYPES = keymirror({
     SET_PIPELINE: null,
     CLEAR_PIPELINE_DATA: null,
     SET_RUNS_DATA: null,
-    SET_CURRENT_RUN_DATA: null,
-    CLEAR_CURRENT_RUN_DATA: null,
     SET_CURRENT_RUN: null,
-    SET_BRANCHES_DATA: null,
     SET_PULL_REQUEST_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
     SET_TEST_RESULTS: null,
-    UPDATE_BRANCH_DATA: null,
     SET_STEPS: null,
     SET_NODE: null,
     SET_NODES: null,
     SET_LOGS: null,
+    FIND_AND_UPDATE: null,
 });
 
 export const actionHandlers = {
@@ -80,9 +189,6 @@ export const actionHandlers = {
     [ACTION_TYPES.SET_PIPELINE](state, { payload }): State {
         return state.set('pipeline', payload);
     },
-    [ACTION_TYPES.CLEAR_CURRENT_RUN_DATA](state) {
-        return state.set('currentRuns', null);
-    },
     [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
         return state.set('currentRuns', payload.map((run) => _mapQueueToPsuedoRun(run)));
     },
@@ -104,18 +210,14 @@ export const actionHandlers = {
         runs[id].$pending = payload.$pending;
         runs[id].$success = payload.$success;
         runs[id].$failed = payload.$failed;
-        return state.set('runs', runs);
+        return state.set('runs', runs)
+            .set('currentRuns', runs[id]);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
         return state.set('currentBranches', null);
     },
     [ACTION_TYPES.SET_CURRENT_BRANCHES_DATA](state, { payload }): State {
         return state.set('currentBranches', payload);
-    },
-    [ACTION_TYPES.SET_BRANCHES_DATA](state, { payload, id }): State {
-        const branches = { ...state.branches } || {};
-        branches[id] = payload;
-        return state.set('branches', branches);
     },
     [ACTION_TYPES.SET_PULL_REQUEST_DATA](state, { payload }): State {
         return state.set('pullRequests', payload);
@@ -134,22 +236,12 @@ export const actionHandlers = {
 
         return state.set('logs', logs);
     },
-
-    [ACTION_TYPES.UPDATE_BRANCH_DATA](state, { payload, id }): State {
-        const branches = state.get('branches') || {};
-        const jobBranches = branches[id];
-
-        // store the new branch data for the single branch
-        // then update all branch data in the store
-        const newBranches = jobBranches.map(branch =>
-            branch.name === payload.name ?
-                payload : branch
-        );
-
-        branches[id] = newBranches;
-        return state
-            .set('branches', branches)
-            .set('currentBranches', newBranches);
+    [ACTION_TYPES.FIND_AND_UPDATE](state, { payload }): State {
+        const updated = findAndUpdate(state, payload);
+        if (updated) {
+            return updated;
+        }
+        return state;
     },
 };
 
@@ -237,6 +329,26 @@ exports.fetchLogsInjectStart = function fetchLogsInjectStart(url, start, onSucce
             }
         });
 };
+
+/**
+ * Determines if the provided object is a "run" type
+ */
+function isRun(obj) {
+    return obj._class === 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl'
+        || obj._class === 'io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl';
+}
+
+/**
+ * Locates instances in the state tree and replaces them, just provide a 'replacer' method,
+ * which returns undefined/false for objects which should not be replaced.
+ */
+function dispatchFindAndUpdate(dispatch, fn) {
+    dispatch({
+        type: ACTION_TYPES.FIND_AND_UPDATE,
+        payload: fn,
+    });
+}
+
 /**
  * Clone a JSON object/array instance.
  * <p>
@@ -340,8 +452,9 @@ export const actions = {
 
     processJobQueuedEvent(event) {
         return (dispatch, getState) => {
+            const id = event.blueocean_job_pipeline_name;
             const runsByJobName = getState().adminStore.runs || {};
-            const eventJobRuns = runsByJobName[event.blueocean_job_pipeline_name];
+            const eventJobRuns = runsByJobName[id];
 
             // Only interested in the event if we have already loaded the runs for that job.
             if (eventJobRuns && event.job_run_queueId) {
@@ -376,6 +489,7 @@ export const actions = {
                 newRun.result = 'UNKNOWN';
 
                 const newRuns = clone([newRun, ...eventJobRuns]);
+                applyFetchMarkers(newRuns, eventJobRuns);
 
                 if (event.blueocean_is_for_current_job) {
                     // set current runs since we are ATM looking at it
@@ -383,283 +497,144 @@ export const actions = {
                 }
                 dispatch({
                     payload: newRuns,
-                    id: event.blueocean_job_pipeline_name,
+                    id,
                     type: ACTION_TYPES.SET_RUNS_DATA,
                 });
             }
         };
     },
 
-    updateRunState(event, config, updateByQueueId) {
+    updateRunState(event, config) {
         return (dispatch, getState) => {
-            let storeData;
-
-            // Go to the redux store and get a fresh copy of the run data associated
-            // with the event. We need to be able to do this because we do an async
-            // fetch and so need to be able refresh the data used when processing
-            // the event i.e. we need to get from the store more than once - before
-            // and after the fetch. Need to get it after the fetch because things
-            // may have changed state.
-            function getFromStore() {
-                const runsByJobName = getState().adminStore.runs || {};
-                const eventJobRuns = runsByJobName[event.blueocean_job_pipeline_name];
-                let newStoreData = undefined;
-
-                // Only interested in the event if we have already loaded the runs for that job.
-                if (eventJobRuns) {
-                    newStoreData = {};
-                    newStoreData.eventJobRuns = eventJobRuns;
-
-                    for (let i = 0; i < eventJobRuns.length; i++) {
-                        const run = eventJobRuns[i];
-                        if (event.job_ismultibranch
-                            && event.blueocean_job_branch_name !== run.pipeline) {
-                            // Not the same branch. Yes, run.pipeline actually contains
-                            // the branch name.
-                            continue;
-                        }
-                        if (updateByQueueId) {
-                            // We use the queueId to locate the right "dummy" run entry that
-                            // needs updating. The "dummy" run entry was created in
-                            // processJobQueuedEvent().
-                            if (run.job_run_queueId === event.job_run_queueId) {
-                                newStoreData.runIndex = i;
-                                break;
-                            }
-                        } else {
-                            if (run.id === event.jenkins_object_id) {
-                                newStoreData.runIndex = i;
-                                break;
-                            }
-                        }
-                    }
+            debugLog('updateRunState:', event);
+            let found = false;
+            findAndUpdate(getState().adminStore, o => {
+                if (!found && o.job_run_queueId === event.job_run_queueId || (isRun(o) && o.id === event.jenkins_object_id)) {
+                    debugLog('found:', o);
+                    found = true;
                 }
-
-                return newStoreData;
-            }
-
-            // Get the event related data from the
-            // redux store.
-            storeData = getFromStore();
-
-            // Only interested in the event if we have already loaded the runs for that job.
-            if (storeData) {
-                const updateRunData = function updateRunData(runData, skipStoreDataRefresh) {
-                    const newRunData = Object.assign({}, runData);
-                    let newRuns;
-
-                    // Only need to update the storeData if something async
-                    // happened i.e. giving an opportunity for the current
-                    // copy of the start data to become "stale".
-                    if (!skipStoreDataRefresh) {
-                        storeData = getFromStore();
-                    }
-
-                    // In theory, the following code should not be needed as the
-                    // call to the REST API should return run data with a state
-                    // that's at least as up-to-date as the state received in
-                    // event that triggered this. However, that's not what has
-                    // been e.g. we've seen run start events coming in, triggering
-                    // a call of the REST API, but the run state coming back for
-                    // that same run may still be "QUEUED".
-                    // Note, if you put a breakpoint in and wait for a second before
-                    // allowing the REST API call, then you get the right state.
-                    // So, it seems like the RunListener event is being fired
-                    // in Jenkins core before the state is properly persisted.
-                    if (event.jenkins_event === 'job_run_ended') {
-                        newRunData.state = 'FINISHED';
-                    } else {
-                        newRunData.state = 'RUNNING';
-                    }
-
-                    if (storeData.runIndex !== undefined) {
-                        newRuns = clone(storeData.eventJobRuns);
-                        newRuns[storeData.runIndex] = newRunData;
-                    } else {
-                        newRuns = clone([newRunData, ...storeData.eventJobRuns]);
-                    }
-
-                    if (event.blueocean_is_for_current_job) {
-                        // set current runs since we are ATM looking at it
-                        dispatch({ payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA });
-                    }
-                    dispatch({
-                        payload: newRuns,
-                        id: event.blueocean_job_pipeline_name,
-                        type: ACTION_TYPES.SET_RUNS_DATA,
-                    });
-                };
-
+            });
+            if (found) {
+                debugLog('calling dispatch for event ', event);
                 const runUrl = `${config.getAppURLBase()}${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`;
-
-                // The event tells us that the run state has changed, but does not give all
-                // run related data (times, commit Ids etc). So, lets go get that data from
-                // REST API and present a consistent picture of the run state to the user.
-                exports.fetchJson(runUrl, updateRunData, (error) => {
-                    let runData;
-
-                    // Getting the actual state of the run failed. Lets log
-                    // the failure and update the state manually as best we can.
-
-                    // eslint-disable-next-line no-console
-                    console.warn(`Error getting run data from REST endpoint: ${runUrl}`);
-                    // eslint-disable-next-line no-console
-                    console.warn(error);
-
-                    // We're after coming out of an async operation (the fetch).
-                    // In that case, we better refresh the copy of the storeData
-                    // that we have in case things changed while we were doing the
-                    // fetch.
-                    storeData = getFromStore();
-
-                    if (storeData.runIndex !== undefined) {
-                        runData = storeData.eventJobRuns[storeData.runIndex];
-                    } else {
-                        runData = {};
-                        runData.job_run_queueId = event.job_run_queueId;
-                        if (event.job_ismultibranch) {
-                            runData.pipeline = event.blueocean_job_branch_name;
-                        } else {
-                            runData.pipeline = event.blueocean_job_pipeline_name;
+                smartFetch(runUrl)
+                .then(data => {
+                    if (data.$pending) return;
+                    dispatchFindAndUpdate(dispatch, run => {
+                        if (run.job_run_queueId === event.job_run_queueId || (isRun(run) && run.id === event.jenkins_object_id)) {
+                            debugLog('found match: ', event);
+                            return { ...data,
+                                state: event.jenkins_event === 'job_run_ended' ? 'FINISHED' : 'RUNNING',
+                                result: event.job_run_status,
+                            };
                         }
-                    }
-
-                    if (event.jenkins_event === 'job_run_ended') {
-                        runData.state = 'FINISHED';
-                    } else {
-                        runData.state = 'RUNNING';
-                    }
-                    runData.id = event.jenkins_object_id;
-                    runData.result = event.job_run_status;
-
-                    // Update the run data. We do not need updateRunData to refresh the
-                    // storeData again because we already just did it at the start of
-                    // this function call.
-                    updateRunData(runData, false);
-                });
-            }
-        };
-    },
-
-    updateBranchState(event, config) {
-        return (dispatch, getState) => {
-            // if the job event is multibranch, refetch the corresponding branch
-            // from the REST API and update our stores
-            if (event.job_ismultibranch) {
-                const branches = getState().adminStore.branches || {};
-                const jobs = branches[event.blueocean_job_pipeline_name] || [];
-                const branch = jobs.find(job => job.name === event.blueocean_job_branch_name);
-
-                if (!branch) {
-                    return;
-                }
-
-                const url = `${config.getAppURLBase()}${event.blueocean_job_rest_url}`;
-
-                const processBranchData = function processBranchData(branchData) {
-                    const { latestRun } = branchData;
-
-                    // same issue as in 'updateRunData'; see comment above
-                    if (event.jenkins_event === 'job_run_ended') {
-                        latestRun.state = 'FINISHED';
-                    } else {
-                        latestRun.state = 'RUNNING';
-                    }
-
-                    // apply the new data to the store
-                    dispatch({
-                        payload: branchData,
-                        id: event.blueocean_job_pipeline_name,
-                        type: ACTION_TYPES.UPDATE_BRANCH_DATA,
+                        return undefined;
                     });
-                };
-
-                exports.fetchJson(url, processBranchData, (error) => {
-                    console.log(error); // eslint-disable-line no-console
+                })
+                .catch(err => {
+                    console.error(err); // eslint-disable-line no-console
                 });
             }
         };
     },
 
-    updateBranchList(event, config) {
+    updateBranchState(event) {
         return (dispatch, getState) => {
-            if (event.job_ismultibranch) {
-                const multibranchPipelines = getState().adminStore.branches || {};
-                const pipelineName = event.blueocean_job_pipeline_name;
-
-                // We're only interested in this event if we're already managing branch state
-                // associated with this multi-branch job.
-                if (!multibranchPipelines[pipelineName]) {
-                    return;
+            debugLog('updateBranchState:', event);
+            let found = false;
+            findAndUpdate(getState().adminStore, o => {
+                debugLog('updateBranchState:', o);
+                if (!found && o && o.latestRun && (o.fullName === event.job_name)) {
+                    debugLog('found:', o);
+                    found = true;
                 }
-
-                // Fetch/refetch the latest set of branches for the pipeline.
-                const url = `${config.getAppURLBase()}/rest/organizations/${event.jenkins_org}` +
-                    `/pipelines/${pipelineName}/branches`;
-                exports.fetchJson(url, (latestPipelineBranches) => {
-                    if (event.blueocean_is_for_current_job) {
-                        dispatch({
-                            id: pipelineName,
-                            payload: latestPipelineBranches,
-                            type: ACTION_TYPES.SET_CURRENT_BRANCHES_DATA,
-                        });
+            });
+            if (found) {
+                const url = `${UrlConfig.getJenkinsRootURL()}/blue${event.blueocean_job_rest_url}`;
+                smartFetch(url, (branchData) => {
+                    if (branchData.$pending) { return; }
+                    if (branchData.$failure) {
+                        debugLog(branchData.$failure); // eslint-disable-line no-console
+                        return;
                     }
-                    dispatch({
-                        id: pipelineName,
-                        payload: latestPipelineBranches,
-                        type: ACTION_TYPES.SET_BRANCHES_DATA,
+                    // apply the new data to the store
+                    dispatchFindAndUpdate(dispatch, branch => {
+                        if (branch && branch.latestRun && (branch.fullName === event.job_name)) {
+                            if (branchData.latestRun.state !== 'RUNNING') {
+                                return { ...branchData,
+                                    latestRun: { ...branchData.latestRun,
+                                        // Jenkins doesn't update this value
+                                        // at least not fast enough...
+                                        state: event.jenkins_event === 'job_run_ended' ? 'FINISHED' : 'RUNNING',
+                                    },
+                                };
+                            }
+                            return branchData;
+                        }
+                        return undefined;
                     });
                 });
             }
         };
     },
     
-    fetchRuns(config) {
+    updateBranchList(event) {
+        return (dispatch, getState) => {
+            if (event.blueocean_job_pipeline_name === getState().adminStore.pipeline.name) {
+                this.fetchBranches({
+                    organizationName: event.jenkins_org,
+                    pipelineName: event.blueocean_job_pipeline_name,
+                })(dispatch, getState);
+            }
+        };
+    },
+    
+    fetchRuns({ organization, pipeline }) {
         return (dispatch) => paginate({
             urlProvider: paginateUrl(
-                `${config.getAppURLBase()}/rest/organizations/${config.organization}/pipelines/${config.pipeline}/activities/`),
+                `${UrlConfig.getRestRoot()}/organizations/${organization}/pipelines/${pipeline}/activities/`),
             onData: data => {
-                const general = {
-                    id: config.pipeline,
-                    type: 'runs',
+                dispatch({
+                    id: pipeline,
                     payload: data,
-                };
-                actions.dispatchToMultiple(dispatch, general.id, general.payload, {
-                    current: ACTION_TYPES.SET_CURRENT_RUN_DATA,
-                    general: ACTION_TYPES.SET_RUNS_DATA,
-                    clear: ACTION_TYPES.CLEAR_CURRENT_RUN_DATA,
+                    type: ACTION_TYPES.SET_RUNS_DATA,
                 });
             },
         });
     },
 
     fetchRun(config) {
-        return (dispatch) =>
-        smartFetch(
-            getRestUrl(config),
-            data => dispatch({
-                id: config.pipeline,
-                type: ACTION_TYPES.SET_CURRENT_RUN,
-                payload: data,
-            })
-        );
-    },
-
-    /**
-     * types[current,general,clear]
-     */
-    dispatchToMultiple(dispatch, id, data, types) {
-        dispatch({ type: types.clear });
-        dispatch({
-            id,
-            payload: data,
-            type: types.current,
-        });
-        dispatch({
-            id,
-            payload: data,
-            type: types.general,
-        });
+        return (dispatch, getState) => {
+            const attachStatus = run => {
+                if (run.state === 'QUEUED') {
+                    // look up the run locally first, as this is the only way
+                    // for us to get an appropriate value if the run was recently queued
+                    // this is a back-end issue where the status takes a while to update to 'RUNNING'
+                    let runs = getState().adminStore.runs;
+                    runs = runs && runs[config.pipeline];
+                    runs = runs && runs.filter(r => r.id === config.runId);
+                    if (runs && runs.length > 0) {
+                        return Object.assign({}, run, {
+                            state: runs[0].state,
+                            result: 'UNKNOWN',
+                        });
+                    }
+                    return Object.assign({}, run, {
+                        state: 'RUNNING',
+                        result: 'UNKNOWN',
+                    });
+                }
+                return run;
+            };
+            smartFetch(
+                getRestUrl(config),
+                data => dispatch({
+                    id: config.pipeline,
+                    type: ACTION_TYPES.SET_CURRENT_RUN,
+                    payload: attachStatus(data),
+                })
+            );
+        };
     },
 
     generateData(url, actionType, optional) {
@@ -812,7 +787,7 @@ export const actions = {
                             // set flag that there are more logs then we deliver
                             let hasMore = contentLength > maxLength;
                             // when we came from ?start=0, hasMore has to be false since there is no more
-                            // console.log(config.fetchAll, 'inner')
+                            // debugLog(config.fetchAll, 'inner')
                             if (config.fetchAll) {
                                 hasMore = false;
                             }

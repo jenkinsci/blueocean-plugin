@@ -5,7 +5,7 @@ import { RunRecord, ChangeSetRecord } from './records';
 import RunPipeline from './RunPipeline.jsx';
 import {
     actions,
-    currentRuns as runsSelector,
+    currentRuns as currentRunsSelector,
     createSelector,
     connect,
 } from '../redux';
@@ -80,7 +80,6 @@ export class Activity extends Component {
         // the Branches/PRs tab.
         const showRunButton = !isMultiBranchPipeline;
 
-
         if (runs.$success && !runs.length) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
         }
@@ -152,6 +151,6 @@ Activity.propTypes = {
     children: any,
 };
 
-const selectors = createSelector([runsSelector], (runs) => ({ runs }));
+const selectors = createSelector([currentRunsSelector], (runs) => ({ runs }));
 
 export default connect(selectors, actions)(capabilityStore(props => props.pipeline._class)(Activity));

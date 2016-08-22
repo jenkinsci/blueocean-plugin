@@ -1,3 +1,6 @@
+var infoLog = require('debug')('smart-fetch:info');
+var debugLog = require('debug')('smart-fetch:debug');
+var errorLog = require('debug')('smart-fetch:error');
 import isoFetch from 'isomorphic-fetch';
 import dedupe from './dedupe-calls';
 
@@ -27,7 +30,7 @@ const deepFreeze = (obj) => {
  */
 const checkStatus = (response) => {
     if (response.status >= 300 || response.status < 200) {
-        console.error('ERROR: ', response); // eslint-disable-line no-console
+        errorLog('ERROR: ', response);
         const error = new Error(response.statusText);
         error.response = response;
         throw error;
@@ -42,7 +45,7 @@ const parseJSON = (rsp) => {
     try {
         return rsp.json();
     } catch (err) {
-        console.error('Unable to parse JSON: ', rsp.body, err); // eslint-disable-line no-console
+        errorLog('Unable to parse JSON: ', rsp.body, err);
         throw new Error('Invalid JSON payload', err);
     }
 };
@@ -75,6 +78,8 @@ export function fetch(url, options, onData) {
         _options = null;
     }
     if (_onData) {
+        infoLog('fetch: ', url);
+        debugLog(' -- pending: ', url);
         _onData({ $pending: true });
         return dedupe(url, () =>
             isoFetch(url, _options || fetchOptions) // Fetch data
@@ -83,9 +88,11 @@ export function fetch(url, options, onData) {
             .then(successAndFreeze) // add success field & freeze graph
             )
             .then((data) => {
+                debugLog(' -- success: ', url, data);
                 _onData(data);
             })
             .catch(err => {
+                debugLog(' -- error: ', url, err);
                 _onData({ $failed: err });
             });
     }
@@ -100,14 +107,25 @@ export function fetch(url, options, onData) {
  * Copy paging and fetch data
  */
 export function applyFetchMarkers(toObj, fromObj) {
+    /* eslint-disable no-param-reassign, no-use-before-define */
     if (fromObj) {
-        for (const k in fromObj) {
-            if (k && k.indexOf && k.indexOf('$') === 0) {
-                toObj[k] = fromObj[k]; // eslint-disable-line no-param-reassign
-            }
+        toObj.$pending = fromObj.$pending;
+        toObj.$success = fromObj.$success;
+        toObj.$failed = fromObj.$failed;
+        if (fromObj.$pager) {
+            toObj.$pager = new Pager(
+                fromObj.$pager.urlProvider,
+                fromObj.$pager.concatenator,
+                fromObj.$pager.onData,
+                fromObj.$pager.startIndex,
+                fromObj.$pager.pageSize,
+                toObj); // current data
+            toObj.$pager.hasMore = fromObj.$pager.hasMore;
+            toObj.$pager.current = fromObj.$pager.current;
         }
     }
-    assignObj(toObj); // eslint-disable-line no-use-before-define
+    assignObj(toObj);
+    /* eslint-enable no-param-reassign, no-use-before-define */
     return toObj;
 }
 
@@ -124,7 +142,7 @@ function assignObj(obj, vals) {
 }
 
 class Pager {
-    constructor(urlProvider, concatenator, onData, startIndex, pageSize) {
+    constructor(urlProvider, concatenator, onData, startIndex, pageSize, currentData) {
         this.urlProvider = urlProvider;
         this.concatenator = concatenator;
         this.onData = onData;
@@ -133,7 +151,7 @@ class Pager {
         this.current = startIndex - pageSize; // first will fetchMore the first page
         this.hasMore = true; // assume so
         this.hasPrev = startIndex > 0;
-        this.currentData = concatenator(this);
+        this.currentData = currentData || concatenator(this);
     }
     fetchRange(first, limit) {
         this._fetchPagedData(this.concatenator, this.onData, this.concatenator(this), first, limit);
@@ -145,9 +163,11 @@ class Pager {
         return Math.floor((this.startIndex + this.currentData.length) / this.pageSize);
     }
     _fetchPagedData(concatenator, onData, existingData, first, limit) {
-        // Indicate pending
-        onData(assignObj(concatenator(this, existingData), { $pending: true, $pager: this }));
         const url = this.urlProvider(first, limit + 1);
+        // Indicate pending
+        debugLog(' -- pending: ', url);
+        onData(assignObj(concatenator(this, existingData), { $pending: true, $pager: this }));
+        infoLog('Fetching paged data: ', this);
         return dedupe(url, () =>
             isoFetch(url, fetchOptions) // Fetch data
             .then(checkStatus) // Validate success
@@ -155,6 +175,7 @@ class Pager {
             .then(successAndFreeze) // add success field & freeze graph
             )
             .then((data) => {
+                debugLog(' -- success: ', url, data);
                 // fetched an extra to test if more
                 const hasMore = data.length > limit;
                 const outData = assignObj(concatenator(this, existingData, data));
@@ -168,7 +189,10 @@ class Pager {
                 Object.freeze(outData); // children are already frozen, only shallow freeze here
                 onData(outData);
             })
-            .catch(err => onData(assignObj(concatenator(this, existingData), { $failed: err })));
+            .catch(err => {
+                debugLog(' -- error: ', url, err);
+                onData(assignObj(concatenator(this, existingData), { $failed: err }));
+            });
     }
 }
 
@@ -200,6 +224,7 @@ function defaultArrayConcatenator(pager, existing, incoming) {
  */
 export function paginate({ urlProvider, onData, concatenator = defaultArrayConcatenator, startIndex = 0, pageSize = defaultPageSize }) {
     if (onData) {
+        infoLog('paginate: ', urlProvider(0,0));
         const pager = new Pager(urlProvider, concatenator, onData, startIndex, pageSize);
         return pager.fetchMore();
     }
