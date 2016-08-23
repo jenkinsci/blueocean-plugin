@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.1",
+  "version": "0.0.1-beta5",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -23,7 +23,8 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "isomorphic-fetch": "2.2.1"
+    "isomorphic-fetch": "2.2.1",
+    "mobx": "2.4.3"
   },
   "peerDependencies": {
     "react": "^15.1.0",
@@ -52,7 +53,6 @@
     "karma-mocha": "1.0.1",
     "karma-mocha-reporter": "2.0.4",
     "karma-phantomjs-launcher": "1.0.0",
-    "mobx": "2.4.3",
     "mocha": "2.5.3",
     "phantomjs-prebuilt": "2.1.7",
     "react": "15.1.0",
