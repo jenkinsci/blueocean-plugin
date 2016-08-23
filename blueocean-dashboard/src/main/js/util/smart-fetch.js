@@ -4,6 +4,11 @@ const errorLog = require('debug')('smart-fetch:error');
 import isoFetch from 'isomorphic-fetch';
 import dedupe from './dedupe-calls';
 
+import urlConfig from '../../../main/js/config.js';
+
+urlConfig.blueoceanAppURL = '/blue';
+urlConfig.jenkinsRootURL = '/jenkins';
+
 /**
  * How many records to fetch by default
  */

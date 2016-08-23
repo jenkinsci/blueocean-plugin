@@ -95,7 +95,6 @@ function _findAndUpdate(obj, replacer, visited) {
             }
         }
         if (updated) {
-            o.hehe = true;
             debugLog('returning: ', o);
             return o;
         }
@@ -139,7 +138,6 @@ export function findAndUpdate(obj, replacer) {
         debugLog('findAndUpdateDone: ', out || obj);
         return out || obj;
     } catch (e) {
-        console.error(e); // eslint-disable-line no-console
         throw e;
     }
 }
@@ -414,6 +412,7 @@ export const actions = {
             return paginate({ urlProvider: paginateUrl(url) })
             .then(data => {
                 dispatch({
+                    id: pipelineName,
                     type: ACTION_TYPES.SET_CURRENT_BRANCHES_DATA,
                     payload: data,
                 });
@@ -537,8 +536,9 @@ export const actions = {
                         if (o.job_run_queueId === event.job_run_queueId) {
                             return { ...o, state: event.jenkins_event === 'job_run_ended' ? 'FINISHED' : 'RUNNING' };
                         }
+                        return undefined;
                     });
-                    console.error(err); // eslint-disable-line no-console
+                    debugLog('Fetch error: ', err); // eslint-disable-line no-console
                 });
             }
         };
@@ -586,7 +586,10 @@ export const actions = {
     
     updateBranchList(event) {
         return (dispatch, getState) => {
-            if (event.blueocean_job_pipeline_name === getState().adminStore.pipeline.name) {
+            // this should probably be responsible for determining when to update, rather than
+            // the event having any knowledge of which job is visible...
+            // e.g.: if (event.blueocean_job_pipeline_name === getState().adminStore.pipeline.name)
+            if (event.blueocean_is_for_current_job) {
                 this.fetchBranches({
                     organizationName: event.jenkins_org,
                     pipelineName: event.blueocean_job_pipeline_name,

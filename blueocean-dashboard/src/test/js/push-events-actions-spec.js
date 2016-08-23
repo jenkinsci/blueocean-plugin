@@ -48,7 +48,6 @@ describe("push events - queued run tests", () => {
         // actualDispatchObj passed to the dispatch function
         const dispatchedEvents = [];
         dispatcher(function(actualDispatchObj) {
-            //console.log(actualDispatchObj);
             dispatchedEvents.push(actualDispatchObj);
         }, function() {
             return {
@@ -94,7 +93,6 @@ describe("push events - queued run tests", () => {
         // actualDispatchObj passed to the dispatch function
         const dispatchedEvents = [];
         dispatcher(function(actualDispatchObj) {
-            // console.log(actualDispatchObj);
             dispatchedEvents.push(actualDispatchObj);
         }, function() {
             return {
@@ -206,7 +204,6 @@ describe("push events - started run tests", () => {
                     adminStore = actions.findAndUpdate(adminStore, actualDispatchObj.payload);
                     debugLog('runs after update: ', adminStore);
                 } else {
-                    console.log('dispatch: ', actualDispatchObj);
                     if (actualDispatchObj.type === 'UPDATE_RUN_DETAILS') {
                         adminStore.runs['PR-demo'] = actualDispatchObj.payload;
                     }
@@ -259,7 +256,6 @@ describe("push events - started run tests", () => {
                     adminStore = actions.findAndUpdate(adminStore, actualDispatchObj.payload);
                     debugLog('runs after update: ', adminStore);
                 } else {
-                    console.log('dispatch: ', actualDispatchObj);
                     if (actualDispatchObj.type === 'UPDATE_RUN_DETAILS') {
                         adminStore.runs['PR-demo'] = actualDispatchObj.payload;
                     }
@@ -281,7 +277,6 @@ describe("push events - started run tests", () => {
         // because we do it manually when the fetch fails, but we don't
         // see the time changes etc.
         assert.equal(runs[0].enQueueTime, undefined);
-        console.log('got runs', runs);
         assert.equal(runs[0].state, 'RUNNING');
     });
 });
