@@ -532,6 +532,12 @@ export const actions = {
                     });
                 })
                 .catch(err => {
+                    // Just update the run state for fetch failures (this was the existing behavior, not sure why, really)
+                    dispatchFindAndUpdate(dispatch, o => {
+                        if (o.job_run_queueId === event.job_run_queueId) {
+                            return { ...o, state: event.jenkins_event === 'job_run_ended' ? 'FINISHED' : 'RUNNING' };
+                        }
+                    });
                     console.error(err); // eslint-disable-line no-console
                 });
             }

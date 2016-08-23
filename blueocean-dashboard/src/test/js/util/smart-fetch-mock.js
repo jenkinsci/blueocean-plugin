@@ -15,6 +15,18 @@ module.exports = function mockSmartFetch(path, reply) {
                 if (arguments.length > 1) {
                     arguments[length-1](reply);
                 }
+                if (reply instanceof Error) {
+                    return {
+                        then() {
+                            // ignore
+                            return this;
+                        },
+                        catch(f) {
+                            f(reply);
+                            return this;
+                        },
+                    };
+                }
                 return {
                     then: (fn) => {
                         fn(reply);

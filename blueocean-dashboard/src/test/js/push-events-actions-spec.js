@@ -2,7 +2,7 @@ import React from 'react';
 import { assert} from 'chai';
 import { shallow } from 'enzyme';
 import nock from 'nock';
-import smartFetchMock from './util/smart-fetch-mock';
+import mockFetch from './util/smart-fetch-mock';
 
 import * as actions from '../../main/js/redux/actions';
 
@@ -173,7 +173,7 @@ describe("push events - started run tests", () => {
         };
 
         // Mock the fetch
-        smartFetchMock('/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12',
+        mockFetch('/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12',
         {
             "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
             "artifacts": [],
@@ -223,7 +223,6 @@ describe("push events - started run tests", () => {
         fireEvent();
 
         var runs = adminStore.runs['PR-demo'];
-        console.log('omfg whtf "" ', runs)
         debugLog('Got PR-demo: ', runs);
         assert.equal(runs.length, 1);
         assert.equal(runs[0].enQueueTime, '2016-05-19T22:05:39.301+0100');
@@ -232,7 +231,7 @@ describe("push events - started run tests", () => {
 
     it("run fetch failed", () => {
         // Mimic the run being in the queued state before the start
-        const adminStore = {
+        let adminStore = {
             runs: {
                 'PR-demo': [{
                     job_run_queueId: '12',
@@ -248,15 +247,23 @@ describe("push events - started run tests", () => {
             event.blueocean_is_for_current_job = false;
 
             // Mock the fetchJson
-            actions.fetchJson = function(url, onSuccess, onError) {
-                assert.equal(url, '/jenkins/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12');
-                onError({});
-            };
+            mockFetch('/jenkins/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12',
+                new Error());
 
             const dispatcher = actions.actions.updateRunState(event, CONFIG, true);
 
             dispatcher(function (actualDispatchObj) {
-                adminStore.runs['PR-demo'] = actualDispatchObj.payload;
+                debugLog('dispatch type: ', actualDispatchObj.type, 'with payload:', actualDispatchObj.payload);
+                if (actualDispatchObj.type == 'FIND_AND_UPDATE') {
+                    debugLog('findAndUpdate: ', adminStore, ' with payload: ', actualDispatchObj.payload);
+                    adminStore = actions.findAndUpdate(adminStore, actualDispatchObj.payload);
+                    debugLog('runs after update: ', adminStore);
+                } else {
+                    console.log('dispatch: ', actualDispatchObj);
+                    if (actualDispatchObj.type === 'UPDATE_RUN_DETAILS') {
+                        adminStore.runs['PR-demo'] = actualDispatchObj.payload;
+                    }
+                }
             }, function () {
                 return {
                     adminStore: adminStore
@@ -274,6 +281,7 @@ describe("push events - started run tests", () => {
         // because we do it manually when the fetch fails, but we don't
         // see the time changes etc.
         assert.equal(runs[0].enQueueTime, undefined);
+        console.log('got runs', runs);
         assert.equal(runs[0].state, 'RUNNING');
     });
 });

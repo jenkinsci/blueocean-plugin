@@ -95,7 +95,7 @@ class RunDetails extends Component {
                     <div>
                         {!currentRun.$pending &&
                         <RunDetailsHeader
-                          pipeline={this.props.pipeline}
+                          pipeline={this.context.pipeline}
                           data={runRecord}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
