@@ -3,6 +3,7 @@ import { assert} from 'chai';
 import { shallow } from 'enzyme';
 
 import * as actions from '../../main/js/redux/actions';
+import { TestUtils } from '@jenkins-cd/blueocean-core-js';
 
 function newEvent(type) {
     return {
@@ -24,11 +25,10 @@ function newEvent(type) {
 const CONFIG = {
     getAppURLBase: function() { return '/jenkins'; }
 };
-const originalFetchJson = actions.fetchJson;
 
 describe("push events - queued run tests", () => {
     afterEach(() => {
-        actions.fetchJson = originalFetchJson;
+        TestUtils.restoreFetch();
     });
 
     // Test queued event for when the event is for the pipeline that
@@ -147,7 +147,7 @@ describe("push events - queued run tests", () => {
 
 describe("push events - started run tests", () => {
     afterEach(() => {
-        actions.fetchJson = originalFetchJson;
+        TestUtils.restoreFetch();
     });
 
     // Test run started event for when the event is for the pipeline that
@@ -170,9 +170,9 @@ describe("push events - started run tests", () => {
             event.blueocean_is_for_current_job = false;
 
             // Mock the fetchJson
-            actions.fetchJson = function(url, onSuccess, onError) {
+            TestUtils.patchFetchWithData((url) => {
                 assert.equal(url, '/jenkins/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12');
-                onSuccess({
+                return {
                     "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
                     "artifacts": [],
                     "changeSet": [],
@@ -189,13 +189,13 @@ describe("push events - started run tests", () => {
                     "state": "RUNNING",
                     "type": "WorkflowRun",
                     "commitId": null
-                });
-            };
+                };
+            });
 
             const dispatcher = actions.actions.updateRunState(event, CONFIG, true);
 
-            dispatcher(function (actualDispatchObj) {
-                adminStore.runs['PR-demo'] = actualDispatchObj.payload;
+            return dispatcher(function (actualDispatchObj) {
+                adminStore.runs['PR-demo'] = actualDispatchObj.payload      
             }, function () {
                 return {
                     adminStore: adminStore
@@ -205,12 +205,12 @@ describe("push events - started run tests", () => {
 
         // Fire the start event and then check that the run state
         // has changed as expected.
-        fireEvent();
-
-        var runs = adminStore.runs['PR-demo'];
-        assert.equal(runs.length, 1);
-        assert.equal(runs[0].enQueueTime, '2016-05-19T22:05:39.301+0100');
-        assert.equal(runs[0].state, 'RUNNING');
+        return fireEvent().then(() => {
+            const runs = adminStore.runs['PR-demo'];
+            assert.equal(runs.length, 1);
+            assert.equal(runs[0].enQueueTime, '2016-05-19T22:05:39.301+0100');
+            assert.equal(runs[0].state, 'RUNNING');
+        });
     });
 
     it("run fetch failed", () => {
@@ -231,14 +231,14 @@ describe("push events - started run tests", () => {
             event.blueocean_is_for_current_job = false;
 
             // Mock the fetchJson
-            actions.fetchJson = function(url, onSuccess, onError) {
+            TestUtils.patchFetchWithData((url) => {
                 assert.equal(url, '/jenkins/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12');
-                onError({});
-            };
+                Promise.reject({});
+            });
 
             const dispatcher = actions.actions.updateRunState(event, CONFIG, true);
 
-            dispatcher(function (actualDispatchObj) {
+            return dispatcher(function (actualDispatchObj) {
                 adminStore.runs['PR-demo'] = actualDispatchObj.payload;
             }, function () {
                 return {
@@ -249,14 +249,14 @@ describe("push events - started run tests", () => {
 
         // Fire the start event and then check that the run state
         // has changed as expected .
-        fireEvent();
-
-        var runs = adminStore.runs['PR-demo'];
-        assert.equal(runs.length, 1);
-        // This time, the run state should have changed as expected
-        // because we do it manually when the fetch fails, but we don't
-        // see the time changes etc.
-        assert.equal(runs[0].enQueueTime, undefined);
-        assert.equal(runs[0].state, 'RUNNING');
+        return fireEvent().then(() => {
+            const runs = adminStore.runs['PR-demo'];
+            assert.equal(runs.length, 1);
+            // This time, the run state should have changed as expected
+            // because we do it manually when the fetch fails, but we don't
+            // see the time changes etc.
+            assert.equal(runs[0].enQueueTime, undefined);
+            assert.equal(runs[0].state, 'RUNNING');
+        });
     });
 });

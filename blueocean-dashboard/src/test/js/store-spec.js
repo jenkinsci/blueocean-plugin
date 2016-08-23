@@ -15,16 +15,17 @@ import { latestRuns } from './data/runs/latestRuns';
 import job_crud_created_multibranch from './data/sse/job_crud_created_multibranch';
 import fetchedBranches from './data/branches/latestBranches';
 
+import { FetchUtils, TestUtils } from '@jenkins-cd/blueocean-core-js';
+
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-import * as actionsModule from '../../main/js/redux/actions';
-const actionsFetch = actionsModule.fetchJson;
+const actionsFetch = FetchUtils.fetchJson;
 
 describe("Redux Store - ", () => {
     afterEach(() => {
         nock.cleanAll();
-        actionsModule.fetchJson = actionsFetch;
+        FetchUtils.fetchJson = actionsFetch;
     });
     it("create store with pipeline data", () => {
         var ruleId = '/rest/organizations/jenkins/pipelines/';
@@ -64,10 +65,8 @@ describe("Redux Store - ", () => {
 
     const multi_branch_job_crud_job_created = (job_crud_sse_event) => {
         // Mock the fetching of the latest branches from the REST API.
-        actionsModule.fetchJson = function (url, onSuccess) {
-            onSuccess(fetchedBranches);
-        };
-
+        TestUtils.patchFetchWithData(() => fetchedBranches);
+    
         const actionFunc = actions.updateBranchList(job_crud_sse_event, {
             getAppURLBase() {
                 return 'http://example.com';
@@ -75,8 +74,7 @@ describe("Redux Store - ", () => {
         });
 
         const dispatches = [];
-
-        actionFunc((dispatchConfig) => {
+        const ret = actionFunc((dispatchConfig) => {
             dispatches.push(dispatchConfig);
         }, () => {
             // fetchedBranches is a 3 branch array. First 2 branches
@@ -94,26 +92,22 @@ describe("Redux Store - ", () => {
                 }
             };
         });
-
-        //console.log('------------------');
-        //console.log(dispatches);
-        //console.log('------------------');
-
-        return dispatches;
+        return ret.then(() => dispatches);
     };
 
     it("multi-branch job_crud_job_created blueocean_is_for_current_job=true", () => {
-        const dispatches = multi_branch_job_crud_job_created(job_crud_created_multibranch);
-
-        // Should be 2 events dispatched because
-        // blueocean_is_for_current_job=true
-        assert.equal(dispatches.length, 2);
-        assert.equal(dispatches[0].id, 'tfprdemo');
-        assert.equal(dispatches[0].type, 'SET_CURRENT_BRANCHES_DATA');
-        assert.equal(dispatches[0].payload.length, 3); // 3 branches as returned by the fetch
-        assert.equal(dispatches[1].id, 'tfprdemo');
-        assert.equal(dispatches[1].type, 'SET_BRANCHES_DATA');
-        assert.equal(dispatches[1].payload.length, 3); // 3 branches as returned by the fetch
+        return multi_branch_job_crud_job_created(job_crud_created_multibranch)
+            .then(dispatches => {
+                // Should be 2 events dispatched because
+                // blueocean_is_for_current_job=true
+                assert.equal(dispatches.length, 2);
+                assert.equal(dispatches[0].id, 'tfprdemo');
+                assert.equal(dispatches[0].type, 'SET_CURRENT_BRANCHES_DATA');
+                assert.equal(dispatches[0].payload.length, 3); // 3 branches as returned by the fetch
+                assert.equal(dispatches[1].id, 'tfprdemo');
+                assert.equal(dispatches[1].type, 'SET_BRANCHES_DATA');
+                assert.equal(dispatches[1].payload.length, 3); // 3 branches as returned by the fetch
+            });
     });
 
     it("multi-branch job_crud_job_created blueocean_is_for_current_job=false", () => {
@@ -123,14 +117,14 @@ describe("Redux Store - ", () => {
         const sse_event = Object.assign({}, job_crud_created_multibranch);
         sse_event.blueocean_is_for_current_job = false;
 
-        const dispatches = multi_branch_job_crud_job_created(sse_event);
-
-        // Should only be 1 event dispatched because
-        // blueocean_is_for_current_job=false
-        assert.equal(dispatches.length, 1);
-        assert.equal(dispatches[0].id, 'tfprdemo');
-        assert.equal(dispatches[0].type, 'SET_BRANCHES_DATA');
-        assert.equal(dispatches[0].payload.length, 3); // 3 branches as returned by the fetch
+        return multi_branch_job_crud_job_created(sse_event).then(dispatches => {
+            // Should only be 1 event dispatched because
+            // blueocean_is_for_current_job=false
+            assert.equal(dispatches.length, 1);
+            assert.equal(dispatches[0].id, 'tfprdemo');
+            assert.equal(dispatches[0].type, 'SET_BRANCHES_DATA');
+            assert.equal(dispatches[0].payload.length, 3); // 3 branches as returned by the fetch
+        });
     });
 });
 

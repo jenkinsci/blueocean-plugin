@@ -14,6 +14,7 @@ import {
     calculateRunLogURLObject, calculateStepsBaseUrl, calculateNodeBaseUrl,
 } from '../../main/js/util/UrlUtils';
 
+import { TestUtils } from '@jenkins-cd/blueocean-core-js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -43,6 +44,7 @@ Tue May 24 13:42:38 CEST 2016
 `);
             const store = mockStore({adminStore: {logs: {}}});
             logGeneral.url = `http://example.com${logGeneral.url}`;
+            TestUtils.patchFetchNoJWT();
             return store.dispatch(
                 actions.fetchLog({...logGeneral}))
                 .then(() => { // return of async actions
@@ -72,9 +74,10 @@ Tue May 24 13:42:38 CEST 2016
                 .reply(200, stepsNode45)
             ;
             const store = mockStore({adminStore: {}});
-            mergedConfig._appURLBase = `${baseUrl}:80`;
+            mergedConfig._appURLBase = `${baseUrl}`;
+            TestUtils.patchFetchNoJWT();
 
-            store.dispatch(
+            return store.dispatch(
                 actions.fetchSteps({...mergedConfig, node}))
                 .then(() => { // return of async actions
                     assert.equal(store.getActions()[0].type, 'SET_STEPS');
@@ -82,8 +85,9 @@ Tue May 24 13:42:38 CEST 2016
                     assert.equal(store.getActions()[0].payload.isError, false);
                     assert.equal(store.getActions()[0].payload.nodesBaseUrl, `${baseUrl}${stepsUrl}`);
                     assert.equal(store.getActions()[0].payload.model.length, 10);
-                });
-            assert.equal(stepsNock.isDone(), true);
+                    assert.equal(stepsNock.isDone(), true);         
+            });
+    
         });
     });
 
@@ -111,6 +115,8 @@ Tue May 24 13:42:38 CEST 2016
             const steps = {};
             steps[`${baseUrl}:80${stepsUrl}`] = getNodesInformation(stepsNode45);
             const otherStore = mockStore({adminStore: {steps}});
+            TestUtils.patchFetchNoJWT();
+
             otherStore.dispatch(actions.fetchNodes(mergedConfig));
             assert.equal(nodeNock.isDone(), true);
         });

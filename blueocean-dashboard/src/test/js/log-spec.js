@@ -4,6 +4,8 @@ import { shallow } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import nock from 'nock';
+import { TestUtils } from '@jenkins-cd/blueocean-core-js';
+TestUtils.patchFetchNoJWT();
 
 import {
   actions,

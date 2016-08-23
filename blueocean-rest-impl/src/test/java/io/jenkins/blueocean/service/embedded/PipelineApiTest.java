@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -550,7 +551,7 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @Test
-    public void PipelineSecureWithLoggedInUserPermissionTest() throws IOException {
+    public void PipelineSecureWithLoggedInUserPermissionTest() throws IOException, UnirestException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
         hudson.model.User user = j.jenkins.getUser("alice");
@@ -560,10 +561,11 @@ public class PipelineApiTest extends BaseTest {
         MockFolder folder = j.createFolder("folder1");
 
         Project p = folder.createProject(FreeStyleProject.class, "test1");
-
+        String token = getJwtToken(j.jenkins, "alice", "alice");
+        Assert.assertNotNull(token);
         Map response = new RequestBuilder(baseUrl)
             .get("/organizations/jenkins/pipelines/folder1/pipelines/test1")
-            .auth("alice", "alice")
+            .jwtToken(token)
             .build(Map.class);
 
         validatePipeline(p, response);

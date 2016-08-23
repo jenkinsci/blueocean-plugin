@@ -9,16 +9,23 @@ export default {
         }
         return response;
     },
-    // fetch helper
-    fetchOptions(token, options) {
+    sameOriginFetchOption(options) {
         let newOptions = {};
+        
         if (options) {
             newOptions = options;
         }
-
         
         if (!newOptions.credentials) {
             newOptions.credentials = 'same-origin';
+        }
+        return newOptions;
+    },
+    // fetch helper
+    jwtfetchOption(token, options) {
+        let newOptions = {};
+        if (options) {
+            newOptions = options;
         }
 
         if (!newOptions.headers) {
@@ -57,20 +64,10 @@ export default {
             }
         };
     },
-
-    /**
-     * Fetch JSON data.
-     * <p>
-     * Utility function that can be mocked for testing.
-     *
-     * @param url The URL to fetch from.
-     * @param onSuccess o
-     * @param onError
-     */
-    fetchJson(url, options) {
+    
+    rawFetchJson(url, options) {
         const { onSuccess, onError, fetchOptions } = options || {};
-        const request = JWTUtils.getToken()
-            .then(token => fetch(url, this.fetchOptions(token, fetchOptions)))
+        const request = fetch(url, this.sameOriginFetchOption(fetchOptions))
             .then(this.checkStatus)
             .then(this.parseJSON);
 
@@ -87,5 +84,53 @@ export default {
         
 
         return request;
+    },
+    /**
+     * Fetch JSON data.
+     * <p>
+     * Utility function that can be mocked for testing.
+     *
+     * @param {string} url - The URL to fetch from.
+     * @param {Object} [options]
+     * @param {string} [options.onSuccess] -
+     */
+    fetchJson(url, options) {
+        const { onSuccess, onError, fetchOptions } = options || {};
+    
+        return JWTUtils.getToken()
+            .then(token => this.rawFetchJson(url, {
+                onSuccess,
+                onError,
+                fetchOptions: this.jwtfetchOption(token, fetchOptions),
+            }));
+    },
+    rawFetch(url, options) {
+        const { onSuccess, onError, fetchOptions } = options || {};
+        const request = fetch(url, this.sameOriginFetchOption(fetchOptions))
+            .then(this.checkStatus);
+           
+        if (onSuccess) {
+            return request.then(onSuccess)
+                .catch((error) => {
+                    if (onError) {
+                        onError(error);
+                    } else {
+                        console.error(error); // eslint-disable-line no-console
+                    }
+                });
+        }
+        
+
+        return request;
+    },
+    fetch(url, options) {
+        const { onSuccess, onError, fetchOptions } = options || {};
+    
+        return JWTUtils.getToken()
+            .then(token => this.rawFetch(url, {
+                onSuccess,
+                onError,
+                fetchOptions: this.jwtfetchOption(token, fetchOptions),
+            }));
     },
 };

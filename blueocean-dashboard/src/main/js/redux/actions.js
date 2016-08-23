@@ -6,6 +6,7 @@ import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '..
 
 import { FetchUtils, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
+
 /**
  * This function maps a queue item into a run instancce.
  *
@@ -179,7 +180,7 @@ exports.fetchLogsInjectStart = function fetchLogsInjectStart(url, start, onSucce
     } else {
         refetchUrl = `${url}?start=${start}`;
     }
-    return FetchUtils.fetchJson(refetchUrl)
+    return FetchUtils.fetch(refetchUrl)
         .then(parseMoreDataHeader)
         .then(onSuccess)
         .catch(FetchUtils.onError(onError));
@@ -422,7 +423,7 @@ export const actions = {
                 // The event tells us that the run state has changed, but does not give all
                 // run related data (times, commit Ids etc). So, lets go get that data from
                 // REST API and present a consistent picture of the run state to the user.
-                FetchUtils.fetchJson(runUrl)
+                return FetchUtils.fetchJson(runUrl)
                     .then(updateRunData)
                     .catch((error) => {
                         let runData;
@@ -467,6 +468,8 @@ export const actions = {
                         updateRunData(runData, false);
                     });
             }
+
+            return null;
         };
     },
 
@@ -517,13 +520,13 @@ export const actions = {
                 // We're only interested in this event if we're already managing branch state
                 // associated with this multi-branch job.
                 if (!multibranchPipelines[pipelineName]) {
-                    return;
+                    return Promise.resolve(null);
                 }
 
                 // Fetch/refetch the latest set of branches for the pipeline.
                 const url = `${config.getAppURLBase()}/rest/organizations/${event.jenkins_org}` +
                     `/pipelines/${pipelineName}/branches`;
-                FetchUtils.fetchJson(url).then((latestPipelineBranches) => {
+                return FetchUtils.fetchJson(url).then((latestPipelineBranches) => {
                     if (event.blueocean_is_for_current_job) {
                         dispatch({
                             id: pipelineName,
@@ -538,6 +541,8 @@ export const actions = {
                     });
                 }).catch(FetchUtils.consoleError);
             }
+
+            return null;
         };
     },
 
@@ -784,7 +789,7 @@ export const actions = {
                     (error) => console.error('error', error) // eslint-disable-line no-console
                 );
             }
-            return null;
+            return Promise.resolve(null);
         };
     },
 
