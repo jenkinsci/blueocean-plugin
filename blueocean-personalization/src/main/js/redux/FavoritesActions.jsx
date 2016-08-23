@@ -78,12 +78,11 @@ export const actions = {
 
     runPipeline(pipeline) {
         return () => {
-            const baseUrl = urlConfig.jenkinsRootURL;
+            const baseUrl = UrlUtils.getJenkinsRootURL();
             const pipelineUrl = pipeline._links.self.href;
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
 
             const fetchOptions = {
-                ...defaultFetchOptions,
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -91,18 +90,17 @@ export const actions = {
             };
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            fetch(runPipelineUrl, fetchOptions);
+            FetchUtils.fetch(runPipelineUrl, fetchOptions);
         };
     },
 
     replayPipeline(pipeline) {
         return () => {
-            const baseUrl = urlConfig.jenkinsRootURL;
+            const baseUrl = UrlUtils.getJenkinsRootURL();
             const pipelineUrl = pipeline.latestRun._links.self.href;
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
 
             const fetchOptions = {
-                ...defaultFetchOptions,
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,7 +108,7 @@ export const actions = {
             };
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            fetch(runPipelineUrl, fetchOptions);
+            FetchUtils.fetch(runPipelineUrl, fetchOptions);
         };
     },
 
