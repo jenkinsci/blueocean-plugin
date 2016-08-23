@@ -12,11 +12,6 @@ import * as pushEventUtil from './util/push-event-util';
 const { object, array, func, node, string } = PropTypes;
 
 class OrganizationPipelines extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
-    
     // FIXME: get rid of context use
     getChildContext() {
         if (this._getOrganizationName()) {
@@ -33,7 +28,6 @@ class OrganizationPipelines extends Component {
         const config = this.context.config;
         if (config) {
             const organizationName = this._getOrganizationName();
-            this.setState({ organizationName });
             
             if (organizationName) {
                 this.props.fetchOrganizationPipelines({ organizationName });
@@ -96,8 +90,7 @@ class OrganizationPipelines extends Component {
 
     componentWillReceiveProps(nextProps) {
         const organizationName = this._getOrganizationName(nextProps);
-        if (this.state.organizationName !== organizationName) {
-            this.setState({ organizationName });
+        if (this._getOrganizationName(this.props) !== organizationName) {
             if (organizationName) {
                 this.props.fetchOrganizationPipelines({ organizationName });
             } else {
