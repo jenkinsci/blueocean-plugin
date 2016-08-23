@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/js-extensions",
-  "version": "0.0.21-beta12",
+  "version": "0.0.21-beta13",
   "description": "Jenkins Extension Store",
   "main": "index.js",
   "files": [
@@ -12,20 +12,20 @@
   "scripts": {
     "build": "rm -rf dist && mkdir dist && babel --presets es2015,react src -d dist && npm run test",
     "test": "gulp test",
-    "prepublish": "npm run build",
     "lint": "gulp lint"
   },
   "author": "Tom Fennelly <tom.fennelly@gmail.com> (https://github.com/tfennelly)",
   "license": "MIT",
   "peerDependencies": {
     "react": "^0.14.7 || ^15.0.0",
-    "@jenkins-cd/js-modules": "^0.0.6-beta9",
+    "@jenkins-cd/js-modules": "^0.0.6-beta10",
     "react-dom": "^0.14.7 || ^15.0.0"
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.36-beta22",
-    "@jenkins-cd/js-test": "1.1.1",
+    "@jenkins-cd/js-builder": "0.0.36-beta24",
+    "@jenkins-cd/js-modules": "0.0.6-beta10",
+    "@jenkins-cd/js-test": "1.2.1",
     "babel-cli": "6.10.1",
     "babel-core": "^6.7.6",
     "babel-eslint": "^6.0.2",

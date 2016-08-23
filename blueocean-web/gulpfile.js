@@ -36,6 +36,12 @@ builder.src(['src/main/js', 'src/main/less', 'node_modules/@jenkins-cd/design-la
 builder.bundle('src/main/js/blueocean.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/main/less/blueocean.less')
+    .export("@jenkins-cd/js-extensions")
+    .export("@jenkins-cd/design-language")
+    .export('react')
+    .export('react-dom')
+    .export('redux')
+    .export('react-addons-css-transition-group') // Have to export this because it dips down into the react package internals grrr
     .generateNoImportsBundle();
 
 //

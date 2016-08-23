@@ -47,6 +47,8 @@ exports.install = function(builder) {
         builder.import('@jenkins-cd/js-extensions@any')
             .import('@jenkins-cd/design-language@any')
             .import('react@any')
-            .import('react-dom@any');
+            .import('react-dom@any')
+            .import('redux@any')
+        ;
     }
 };
