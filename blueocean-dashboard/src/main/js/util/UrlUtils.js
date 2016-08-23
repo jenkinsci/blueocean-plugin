@@ -66,6 +66,19 @@ export function calculateFetchAll(props) {
     return false;
 }
 
+// using the hook 'location.search'.includes('view=0') to trigger the logConsole view instead of steps
+export const calculateLogView = function (props) {
+    const { location: { search } } = props;
+
+    if (search) {
+        const viewReg = /view=([0-9]{1,})/;
+        const match = viewReg.exec(search);
+        if (match && match[1] && Number(match[1]) === 0) {
+            return true;
+        }
+    }
+    return false;
+};
 /*
  * helper to calculate log url. When we have a node we get create a special url, otherwise we use the url passed to us
  * @param config { nodesBaseUrl, node, url}

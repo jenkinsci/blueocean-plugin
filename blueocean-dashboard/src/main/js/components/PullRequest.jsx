@@ -3,6 +3,7 @@ import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import RunPipeline from './RunPipeline.jsx';
 import { getLocation } from '../util/UrlUtils';
+import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 const { object } = PropTypes;
 
@@ -45,6 +46,7 @@ export default class PullRequest extends Component {
                 pipeline: this.context.pipeline,
                 branch: name,
                 runId: id,
+                tab: 'pipeline',
             });
             router.push(url);
         };

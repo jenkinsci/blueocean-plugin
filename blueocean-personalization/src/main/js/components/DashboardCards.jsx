@@ -6,6 +6,7 @@ import TransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
+import { classMetadataStore } from '@jenkins-cd/js-extensions';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
@@ -94,11 +95,71 @@ const extractPath = (path, begin, end) => {
  */
 export class DashboardCards extends Component {
 
+    constructor() {
+        super();
+        this.state = {
+            capabilities: {},
+        };
+    }
+
     componentWillMount() {
         favoritesSseListener.initialize(
             this.props.store,
             this.props.updateRun
         );
+
+        this._initializeCapabilities(this.props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this._initializeCapabilities(nextProps);
+    }
+
+    // TODO: eliminate capabilities code after JENKINS-37519 is implemented
+    _initializeCapabilities(props) {
+        if (props.favorites && props.favorites.size) {
+            const capabilities = this.state.capabilities;
+
+            for (const favorite of props.favorites) {
+                const className = favorite.item._class;
+                capabilities[className] = null;
+                classMetadataStore.getClassMetadata(className, (classMeta) => this._updateCapabilities(classMeta));
+            }
+
+            this.setState({
+                capabilities,
+            });
+        }
+    }
+
+    _updateCapabilities(classMeta) {
+        const capabilities = this.state.capabilities;
+        const className = classMeta.classes[0];
+        if (!capabilities[className]) {
+            capabilities[className] = classMeta;
+
+            this.setState({
+                capabilities,
+            });
+        }
+    }
+
+    _hasPendingCapabilities() {
+        for (const key in this.state.capabilities) {
+            if (!this.state.capabilities[key]) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    _onRunAgainClick(pipeline) {
+        this.props.replayPipeline(pipeline);
+    }
+
+    _onRunClick(pipeline) {
+        this.props.runPipeline(pipeline);
     }
 
     _onFavoriteToggle(isFavorite, favorite) {
@@ -106,7 +167,7 @@ export class DashboardCards extends Component {
     }
 
     _renderCardStack() {
-        if (!this.props.favorites) {
+        if (!this.props.favorites || this._hasPendingCapabilities()) {
             return null;
         }
 
@@ -115,12 +176,14 @@ export class DashboardCards extends Component {
         const favoriteCards = sortedFavorites.map(favorite => {
             const pipeline = favorite.item;
             const latestRun = pipeline.latestRun;
+            const capabilities = this.state.capabilities[pipeline._class];
+            const isBranch = capabilities.classes.indexOf('io.jenkins.blueocean.rest.model.BlueBranch') >= 0;
 
             let fullName;
             let pipelineName;
             let branchName;
 
-            if (pipeline._class === 'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl') {
+            if (isBranch) {
                 // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
                 // "pipeline"
                 pipelineName = extractPath(pipeline.fullName, -2, -1);
@@ -157,6 +220,8 @@ export class DashboardCards extends Component {
                 <div key={favorite._links.self.href}>
                     <PipelineCard
                       router={this.props.router}
+                      item={pipeline}
+                      capabilities={capabilities.classes}
                       status={status}
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
@@ -167,6 +232,8 @@ export class DashboardCards extends Component {
                       commitId={commitId}
                       runId={runId}
                       favorite
+                      onRunAgainClick={(pipeline1) => this._onRunAgainClick(pipeline1)}
+                      onRunClick={(pipeline2) => this._onRunClick(pipeline2)}
                       onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                     />
                 </div>
@@ -199,6 +266,8 @@ DashboardCards.propTypes = {
     router: PropTypes.object,
     favorites: PropTypes.instanceOf(List),
     toggleFavorite: PropTypes.func,
+    runPipeline: PropTypes.func,
+    replayPipeline: PropTypes.func,
     updateRun: PropTypes.func,
 };
 

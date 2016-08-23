@@ -78,7 +78,7 @@ export default class Runs extends Component {
             <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
                 <td>{decodeURIComponent(pipeline)}</td>
             </IfCapability>
-            <td>{changeset && changeset.comment || '-'}</td>
+            <td>{changeset && changeset.msg || '-'}</td>
             <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
             <td>
