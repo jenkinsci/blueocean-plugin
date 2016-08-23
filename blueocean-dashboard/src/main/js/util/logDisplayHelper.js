@@ -12,8 +12,6 @@ export const STATES = keymirror({
 });
 
 export const getNodesInformation = (nodes) => {
-    const information = {};
-
   // calculation of information about stages
   // nodes in Runing state
     const runningNodes = nodes
@@ -23,6 +21,9 @@ export const getNodesInformation = (nodes) => {
     const errorNodes = nodes
     .filter((item) => item.result === RESULTS.FAILURE)
     .map((item) => item.id);
+  // nodes without information
+    const hasResultsForSteps = nodes
+        .filter((item) => item.state === null && item.result === null).length !== nodes.length;
   // principal model mapper
     let wasFocused = false; // we only want one node to be focused if any
     const model = nodes.map((item, index) => {
@@ -60,12 +61,17 @@ export const getNodesInformation = (nodes) => {
         return modelItem;
     });
 
+    // FIXME: this assumaption is not 100% correct since a job that is in queue would be marked as finished since
+    // there will be no running nodes yet!
     const finished = runningNodes.length === 0;
     const error = !(errorNodes.length === 0);
 
   // creating the response object
-    information.model = model;
-    information.isFinished = finished;
+    const information = {
+        isFinished: finished,
+        hasResultsForSteps,
+        model,
+    };
   // on not finished we return null and not a bool since we do not know the result yet
     if (!finished) {
         information.isError = null;

@@ -120,7 +120,7 @@ export class LogConsole extends Component {
         }
 
         return (<div>
-            { isLoading && <div className="loadingContainer">
+            { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
                 <Progress />
             </div>}
 
@@ -131,7 +131,7 @@ export class LogConsole extends Component {
                     <a
                       className="btn-secondary inverse"
                       key={0}
-                      href={`?start=0#${prefix || ''}`}
+                      href={`?start=0#${prefix || ''}log-${0}`}
                     >
                         Show complete log
                     </a>

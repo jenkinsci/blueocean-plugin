@@ -8,6 +8,10 @@ import { shallow } from 'enzyme';
 import { PipelineCard } from '../../../main/js/components/PipelineCard';
 
 describe('PipelineCard', () => {
+    const capabilities = [
+        'org.jenkinsci.plugins.workflow.job.WorkflowJob',
+    ];
+
     it('renders without error for empty props', () => {
         const wrapper = shallow(
             <PipelineCard />
@@ -19,7 +23,7 @@ describe('PipelineCard', () => {
     it('renders basic child elements', () => {
         const status = 'SUCCESS';
         const wrapper = shallow(
-            <PipelineCard status={status} organization="Jenkins" pipeline="blueocean"
+            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
               branch="feature/JENKINS-123" commitId="447d8e1" favorite
             />
         );
@@ -34,26 +38,26 @@ describe('PipelineCard', () => {
         assert.equal(wrapper.find('Favorite').length, 1);
     });
 
-    it('renders "run" button after failure', () => {
+    it('renders "rerun" button after failure', () => {
         const status = 'FAILURE';
         const wrapper = shallow(
-            <PipelineCard status={status} organization="Jenkins" pipeline="blueocean"
+            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
               branch="feature/JENKINS-123" commitId="447d8e1" favorite
             />
         );
 
-        assert.equal(wrapper.find('.actions .run').length, 1);
+        assert.equal(wrapper.find('.actions .rerun').length, 1);
     });
 
-    it('renders no "run" button after success', () => {
+    it('renders no "rerun" button after success', () => {
         const status = 'SUCCESS';
         const wrapper = shallow(
-            <PipelineCard status={status} organization="Jenkins" pipeline="blueocean"
+            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
               branch="feature/JENKINS-123" commitId="447d8e1" favorite
             />
         );
 
-        assert.equal(wrapper.find('.actions .run').length, 0);
+        assert.equal(wrapper.find('.actions .rerun').length, 0);
     });
 
     it('escapes the branch name', () => {
