@@ -46,7 +46,9 @@ exports.install = function(builder) {
         // See jenkinscd/export in blueocean-web/package.json
         builder.import('@jenkins-cd/js-extensions@any')
             .import('@jenkins-cd/design-language@any')
-            .import('react@any')
+            .import('react@any', {
+                aliases: ['react/lib/React'] // in case a module requires react through the back door
+            })
             .import('react-dom@any')
             .import('redux@any')
         ;

@@ -13,8 +13,8 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.36-beta24",
-    "@jenkins-cd/js-test": "1.2.1",
+    "@jenkins-cd/js-builder": "0.0.36-beta27",
+    "@jenkins-cd/js-test": "1.2.2",
     "@kadira/storybook": "1.19.0",
     "babel": "^6.5.2",
     "babel-core": "^6.7.6",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@jenkins-cd/design-language": "0.0.68",
-    "@jenkins-cd/js-extensions": "0.0.21-beta13",
+    "@jenkins-cd/js-extensions": "0.0.21-beta15",
     "@jenkins-cd/js-modules": "0.0.6-beta10",
     "@jenkins-cd/sse-gateway": "0.0.7",
     "immutable": "3.8.1",

@@ -41,7 +41,6 @@ builder.bundle('src/main/js/blueocean.js')
     .export('react')
     .export('react-dom')
     .export('redux')
-    .export('react-addons-css-transition-group') // Have to export this because it dips down into the react package internals grrr
     .generateNoImportsBundle();
 
 //

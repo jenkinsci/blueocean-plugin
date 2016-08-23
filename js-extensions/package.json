@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/js-extensions",
-  "version": "0.0.21-beta13",
+  "version": "0.0.21-beta15",
   "description": "Jenkins Extension Store",
   "main": "index.js",
   "files": [
@@ -23,9 +23,9 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.36-beta24",
+    "@jenkins-cd/js-builder": "0.0.36-beta27",
     "@jenkins-cd/js-modules": "0.0.6-beta10",
-    "@jenkins-cd/js-test": "1.2.1",
+    "@jenkins-cd/js-test": "1.2.2",
     "babel-cli": "6.10.1",
     "babel-core": "^6.7.6",
     "babel-eslint": "^6.0.2",
