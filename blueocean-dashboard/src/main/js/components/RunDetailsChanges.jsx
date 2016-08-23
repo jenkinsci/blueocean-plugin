@@ -13,7 +13,7 @@ const CommitLink = (commit) => {
 };
 
 const EmptyState = () => (<EmptyStateView tightSpacing>
-        <p>There are no changes for this pipeline run. xxx</p>
+        <p>There are no changes for this pipeline run.</p>
     </EmptyStateView>)
 ;
 
