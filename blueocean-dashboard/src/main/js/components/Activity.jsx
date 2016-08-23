@@ -112,7 +112,7 @@ export class Activity extends Component {
                             let latestRecord = {};
                             if (changeset && changeset.length > 0) {
                                 latestRecord = new ChangeSetRecord(changeset[
-                                    Object.keys(changeset)[0]
+                                    Object.keys(changeset)[changeset.length - 1]
                                 ]);
                             }
 
