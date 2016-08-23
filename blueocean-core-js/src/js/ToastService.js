@@ -13,7 +13,7 @@ export class ToastService {
     /**
      * Creates a new toast that is added to the list.
      *
-     * @param toast object with the following defined below.
+     * @param toast object with the following shape:
      * {
      *  text: string, message text to display
      *  action: string, text for action link
