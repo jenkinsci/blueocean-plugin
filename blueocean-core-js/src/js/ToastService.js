@@ -3,13 +3,12 @@
  */
 import { observable } from 'mobx';
 
+/**
+ * Holds one or more toasts in state for display in UI.
+ */
 export class ToastService {
 
     @observable toasts = [];
-
-    constructor() {
-        console.log('hello from ToastService');
-    }
 
     newToast(toast) {
         // TODO: determine why it's necessary to re-set the "toasts" field to trigger the UI update
