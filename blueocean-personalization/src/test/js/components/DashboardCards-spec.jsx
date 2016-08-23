@@ -9,6 +9,7 @@ import Immutable from 'immutable';
 import { User } from '../../../main/js/model/User';
 import { favorites } from '../data/favorites';
 import { DashboardCards } from '../../../main/js/components/DashboardCards';
+import { bindCapability } from '../MetadataUtils';
 
 const { List } = Immutable;
 
@@ -19,6 +20,12 @@ const user = new User({
 const favorlitesList = new List(favorites);
 
 describe('DashboardCards', () => {
+    // needed to prevent DashboardCards from blowing up internally
+    bindCapability(
+        'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl',
+        'io.jenkins.blueocean.rest.model.BlueBranch'
+    );
+
     it('renders without error for empty props', () => {
         const wrapper = shallow(
             <DashboardCards />
