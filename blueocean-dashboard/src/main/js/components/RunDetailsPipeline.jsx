@@ -300,13 +300,11 @@ export class RunDetailsPipeline extends Component {
                 fileName={logGeneral.fileName}
                 url={logGeneral.url}
                 title={title}
-                key={title}
             />);
         }
 
         if (hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView) {
             items.push(<Steps
-                key={currentSteps}
                 nodeInformation={currentSteps}
                 followAlong={followAlong}
                 router={router}

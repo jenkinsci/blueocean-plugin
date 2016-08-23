@@ -214,32 +214,41 @@ code div a.btn-secondary.inverse:hover{
 }
 
 .stepAnimation-enter {
-    opacity: 0.01;
+    opacity: 0;
+    visibility:hidden;
+    .transition(all linear 0.5s);
+
     &.stepAnimation-enter-active {
         opacity: 1;
-        .transition(all ease-in-out 1s);
+        visibility:visible;
     }
 }
 
 .stepAnimation-leave {
     opacity: 1;
+    visibility:visible;
+    .transition(all linear 0.5s);
+
     &.stepAnimation-leave-active {
-        opacity: 0.01;
-        .transition(all ease-in 0.1s);
+        opacity: 0;
+        visibility:hidden;
     }
 }
 
 .stepAnimation-appear {
-    .transition(all ease-in-out 1s);
-    opacity: 0.01;
+    opacity: 0;
+    visibility:hidden;
+    .transition('visibility linear 0.5s,opacity 0.5s linear');
 
     &.stepAnimation-appear-active {
-        opacity: 1;
-        .transition(all ease-in-out 1s);
+        visibility:visible;
+        opacity:1;
     }
 }
 
 .transition(@transition) {
+    position: absolute;
+    width: 84%;
     -webkit-transition: @transition;
     -o-transition: @transition;
     transition: @transition;
