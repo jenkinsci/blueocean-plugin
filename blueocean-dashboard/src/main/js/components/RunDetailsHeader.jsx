@@ -42,6 +42,7 @@ class RunDetailsHeader extends Component {
         const status = run.getComputedResult();
         const durationMillis = run.isRunning() ?
             moment().diff(moment(run.startTime)) : run.durationInMillis;
+        const displayName = decodeURIComponent(run.pipeline);
         return (
         <div className="pipeline-result">
             <section className="status inverse">
@@ -55,7 +56,7 @@ class RunDetailsHeader extends Component {
                     <a onClick={() => this.handleOrganizationClick()}>{run.organization}</a>
                     &nbsp;/&nbsp;
                     { cleanFullName && `${cleanFullName} / `}
-                    <a onClick={() => this.handleNameClick()}>{run.pipeline}</a>
+                    <a onClick={() => this.handleNameClick()}>{displayName}</a>
                     &nbsp;
                     #{run.id}
                 </h4>
@@ -64,7 +65,7 @@ class RunDetailsHeader extends Component {
                     <div className="commons">
                         <div>
                             <label>Branch</label>
-                            <span>{decodeURIComponent(run.pipeline)}</span>
+                            <span>{displayName}</span>
                         </div>
                         { run.commitId ?
                         <div>
