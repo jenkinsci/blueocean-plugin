@@ -4,8 +4,8 @@
 import fetch from 'isomorphic-fetch';
 
 import { ACTION_TYPES } from './FavoritesStore';
+import { cleanSlashes } from '../util/UrlUtils';
 import urlConfig from '../config';
-
 urlConfig.loadConfig();
 
 const defaultFetchOptions = {
@@ -42,7 +42,7 @@ export const actions = {
     fetchUser() {
         return (dispatch) => {
             const baseUrl = urlConfig.blueoceanAppURL;
-            const url = `${baseUrl}/rest/organizations/jenkins/user/`;
+            const url = cleanSlashes(`${baseUrl}/rest/organizations/jenkins/user/`);
             const fetchOptions = { ...defaultFetchOptions };
 
             if (fetchFlags[ACTION_TYPES.SET_USER]) {
@@ -62,7 +62,7 @@ export const actions = {
         return (dispatch) => {
             const baseUrl = urlConfig.blueoceanAppURL;
             const username = user.id;
-            const url = `${baseUrl}/rest/users/${username}/favorites/`;
+            const url = cleanSlashes(`${baseUrl}/rest/users/${username}/favorites/`);
             const fetchOptions = { ...defaultFetchOptions };
 
             if (fetchFlags[ACTION_TYPES.SET_FAVORITES]) {
@@ -82,9 +82,11 @@ export const actions = {
         return (dispatch) => {
             const baseUrl = urlConfig.jenkinsRootURL;
 
-            const url = addFavorite ?
+            const url = cleanSlashes(
+                addFavorite ?
                 `${baseUrl}${branch._links.self.href}/favorite` :
-                `${baseUrl}${favoriteToRemove._links.self.href}`;
+                `${baseUrl}${favoriteToRemove._links.self.href}`
+            );
 
             const fetchOptions = {
                 ...defaultFetchOptions,
@@ -102,6 +104,44 @@ export const actions = {
                 ACTION_TYPES.TOGGLE_FAVORITE,
                 { addFavorite, branch },
             ));
+        };
+    },
+
+    runPipeline(pipeline) {
+        return () => {
+            const baseUrl = urlConfig.jenkinsRootURL;
+            const pipelineUrl = pipeline._links.self.href;
+            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
+
+            const fetchOptions = {
+                ...defaultFetchOptions,
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
+            fetch(runPipelineUrl, fetchOptions);
+        };
+    },
+
+    replayPipeline(pipeline) {
+        return () => {
+            const baseUrl = urlConfig.jenkinsRootURL;
+            const pipelineUrl = pipeline.latestRun._links.self.href;
+            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
+
+            const fetchOptions = {
+                ...defaultFetchOptions,
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
+            fetch(runPipelineUrl, fetchOptions);
         };
     },
 
