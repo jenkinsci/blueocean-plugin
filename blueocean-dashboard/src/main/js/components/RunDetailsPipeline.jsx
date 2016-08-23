@@ -297,18 +297,18 @@ export class RunDetailsPipeline extends Component {
         const items = [];
         if (hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView) {
             items.push(<LogToolbar
-                fileName={logGeneral.fileName}
-                url={logGeneral.url}
-                title={title}
+              fileName={logGeneral.fileName}
+              url={logGeneral.url}
+              title={title}
             />);
         }
 
         if (hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView) {
             items.push(<Steps
-                nodeInformation={currentSteps}
-                followAlong={followAlong}
-                router={router}
-                {...this.props}
+              nodeInformation={currentSteps}
+              followAlong={followAlong}
+              router={router}
+              {...this.props}
             />);
         }
 
@@ -333,11 +333,11 @@ export class RunDetailsPipeline extends Component {
                 />
                 }
                 <ReactCSSTransitionGroup
-                    transitionName="stepAnimation"
-                    transitionAppear
-                    transitionAppearTimeout={transitionDuration}
-                    transitionEnterTimeout={transitionDuration}
-                    transitionLeaveTimeout={transitionDuration}
+                  transitionName="stepAnimation"
+                  transitionAppear
+                  transitionAppearTimeout={transitionDuration}
+                  transitionEnterTimeout={transitionDuration}
+                  transitionLeaveTimeout={transitionDuration}
                 >
                     <div key={this.mergedConfig.nodeReducer.id}>
                         {items}
