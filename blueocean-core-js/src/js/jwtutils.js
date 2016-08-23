@@ -7,6 +7,10 @@ let storedToken = null;
 let publicKeyStore = null;
 let tokenFetchPromise = null;
 export default {
+    /**
+     * Fetches the JWT token. This token is cached for a default of 25mins.
+     * If it is within 5mins or expiry it will fetch a new one.
+     */
     fetchJWT() {
         if (storedToken && storedToken.exp) {
             const diff = storedToken.exp - Math.trunc(new Date().getTime() / 1000);
@@ -31,6 +35,9 @@ export default {
         return tokenFetchPromise;
     },
 
+    /**
+     * Verifies the token using the public key.
+     */
     verifyToken(token, certObject) {
         return new Promise((resolve, reject) =>
             jwt.verify(token, jwk2pem(certObject), { algorithms: [certObject.alg] }, (err, payload) => {
@@ -42,6 +49,9 @@ export default {
             }));
     },
 
+    /**
+     * Fetches the public key that is used to verify tokens.
+     */
     fetchJWTPublicKey(token) {
         const decoded = jwt.decode(token, { complete: true });
         const url = `${UrlUtils.getJenkinsRootURL()}/jwt-auth/jwks/${decoded.header.kid}/`;
@@ -59,11 +69,17 @@ export default {
         return publicKeyStore;
     },
 
+    /**
+     * Puts the token into global storage for later use.
+     */
     storeToken(data) {
         storedToken = data.payload;
         return data;
     },
 
+    /**
+     * Use this function if you want the payload from the token.
+     */
     getTokenWithPayload() {
         return this.fetchJWT()
             .then(FetchUtils.checkStatus)
@@ -71,6 +87,9 @@ export default {
             .then(data => this.storeToken(data));
     },
 
+    /**
+     * Gets the token from te server and verifies it.
+     */
     getToken() {
         return this.getTokenWithPayload().then(token => token.token);
     },
