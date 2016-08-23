@@ -6,7 +6,6 @@ import React, { Component, PropTypes } from 'react';
 import Pipeline from '../api/Pipeline';
 import Branch from '../api/Branch';
 import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
-import { Toast } from '@jenkins-cd/design-language';
 import assert from 'assert';
 
 export default class RunPipeline extends Component {
