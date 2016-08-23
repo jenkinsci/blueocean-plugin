@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 import { classMetadataStore } from '@jenkins-cd/js-extensions';
-import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
@@ -116,22 +115,43 @@ export class DashboardCards extends Component {
         this._initializeCapabilities(nextProps);
     }
 
+    // TODO: eliminate capabilities code after JENKINS-37519 is implemented
     _initializeCapabilities(props) {
         if (props.favorites && props.favorites.size) {
+            const capabilities = this.state.capabilities;
+
             for (const favorite of props.favorites) {
                 const className = favorite.item._class;
-                classMetadataStore.getClassMetadata(className, (classMeta) => {
-                    const capabilities = this.state.capabilities;
-                    if (!capabilities[className]) {
-                        capabilities[className] = classMeta;
+                capabilities[className] = null;
+                classMetadataStore.getClassMetadata(className, (classMeta) => this._updateCapabilities(classMeta));
+            }
 
-                        this.setState({
-                            capabilities,
-                        });
-                    }
-                });
+            this.setState({
+                capabilities,
+            });
+        }
+    }
+
+    _updateCapabilities(classMeta) {
+        const capabilities = this.state.capabilities;
+        const className = classMeta.classes[0];
+        if (!capabilities[className]) {
+            capabilities[className] = classMeta;
+
+            this.setState({
+                capabilities,
+            });
+        }
+    }
+
+    _hasPendingCapabilities() {
+        for (const key in this.state.capabilities) {
+            if (!this.state.capabilities[key]) {
+                return true;
             }
         }
+
+        return false;
     }
 
     _onRunAgainClick(pipeline) {
@@ -140,13 +160,6 @@ export class DashboardCards extends Component {
 
     _onRunClick(pipeline) {
         this.props.runPipeline(pipeline);
-        const id = new Date().getTime();
-        debugger;
-        toastService.newToast({
-            id: id,
-            text: `Hello World ${id}`,
-            action: 'Goodbye',
-        });
     }
 
     _onFavoriteToggle(isFavorite, favorite) {
@@ -154,7 +167,7 @@ export class DashboardCards extends Component {
     }
 
     _renderCardStack() {
-        if (!this.props.favorites) {
+        if (!this.props.favorites || this._hasPendingCapabilities()) {
             return null;
         }
 
@@ -163,12 +176,14 @@ export class DashboardCards extends Component {
         const favoriteCards = sortedFavorites.map(favorite => {
             const pipeline = favorite.item;
             const latestRun = pipeline.latestRun;
+            const capabilities = this.state.capabilities[pipeline._class];
+            const isBranch = capabilities.classes.indexOf('io.jenkins.blueocean.rest.model.BlueBranch') >= 0;
 
             let fullName;
             let pipelineName;
             let branchName;
 
-            if (pipeline._class === 'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl') {
+            if (isBranch) {
                 // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
                 // "pipeline"
                 pipelineName = extractPath(pipeline.fullName, -2, -1);
@@ -206,6 +221,7 @@ export class DashboardCards extends Component {
                     <PipelineCard
                       router={this.props.router}
                       item={pipeline}
+                      capabilities={capabilities.classes}
                       status={status}
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
