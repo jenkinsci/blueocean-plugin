@@ -6,7 +6,9 @@ import TransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
+
 import { classMetadataStore } from '@jenkins-cd/js-extensions';
+import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
@@ -90,6 +92,8 @@ const extractPath = (path, begin, end) => {
     }
 };
 
+const BRANCH_CAPABILITY = 'io.jenkins.blueocean.rest.model.BlueBranch';
+
 /**
  * Renders a stack of "favorites cards" including current most recent status.
  */
@@ -105,7 +109,7 @@ export class DashboardCards extends Component {
     componentWillMount() {
         favoritesSseListener.initialize(
             this.props.store,
-            this.props.updateRun
+            (runData, event) => this._handleJobRunUpdate(runData, event),
         );
 
         this._initializeCapabilities(this.props);
@@ -154,12 +158,28 @@ export class DashboardCards extends Component {
         return false;
     }
 
+    _getCapabilities(item) {
+        const capabilities = this.state.capabilities[item._class];
+        return capabilities && capabilities.classes ?
+            capabilities.classes : [];
+    }
+
+    _hasCapability(item, capabilityName) {
+        const capabilities = this._getCapabilities(item);
+        return capabilities.indexOf(capabilityName) !== -1;
+    }
+
     _onRunAgainClick(pipeline) {
         this.props.replayPipeline(pipeline);
     }
 
     _onRunClick(pipeline) {
         this.props.runPipeline(pipeline);
+
+        const name = decodeURIComponent(pipeline.name);
+        toastService.newToast({
+            text: `Queued "${name}"`,
+        });
     }
 
     _onStopClick(pipeline) {
@@ -168,6 +188,24 @@ export class DashboardCards extends Component {
 
     _onFavoriteToggle(isFavorite, favorite) {
         this.props.toggleFavorite(isFavorite, favorite.item, favorite);
+    }
+
+    _handleJobRunUpdate(runData, event) {
+        this.props.updateRun(runData);
+
+        if (event.jenkins_event === 'job_run_started') {
+            const name = decodeURIComponent(
+                event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name
+            );
+
+            toastService.newToast({
+                text: `Started "${name}" #${event.jenkins_object_id}`,
+                action: 'Open',
+                onActionClick: () => {
+                    // TODO: navigate to run details
+                },
+            });
+        }
     }
 
     _renderCardStack() {
@@ -180,8 +218,8 @@ export class DashboardCards extends Component {
         const favoriteCards = sortedFavorites.map(favorite => {
             const pipeline = favorite.item;
             const latestRun = pipeline.latestRun;
-            const capabilities = this.state.capabilities[pipeline._class];
-            const isBranch = capabilities.classes.indexOf('io.jenkins.blueocean.rest.model.BlueBranch') >= 0;
+            const capabilities = this._getCapabilities(pipeline);
+            const isBranch = this._hasCapability(pipeline, BRANCH_CAPABILITY);
 
             let fullName;
             let pipelineName;

@@ -116,9 +116,7 @@ export class SseBus {
     }
 
     _enqueueJob(event) {
-        const queuedRun = {
-            event,
-        };
+        const queuedRun = {};
 
         queuedRun.pipeline = event.job_ismultibranch ?
             event.blueocean_job_branch_name :
@@ -136,7 +134,7 @@ export class SseBus {
         queuedRun.result = 'UNKNOWN';
 
         if (this.jobListenerExternal) {
-            this.jobListenerExternal(queuedRun);
+            this.jobListenerExternal(queuedRun, event);
         }
     }
 
@@ -159,7 +157,7 @@ export class SseBus {
                 }
 
                 if (this.jobListenerExternal) {
-                    this.jobListenerExternal(updatedRun);
+                    this.jobListenerExternal(updatedRun, event);
                 }
             });
     }
