@@ -23,17 +23,14 @@ export default class RunPipeline extends Component {
 
         this.buttonText = (props.buttonText ? props.buttonText : '');
         this.buttonClass = (props.buttonClass ? props.buttonClass : '');
-        this.queuedToastId = null;
     }
 
     componentDidMount() {
-        const _this = this;
         const reactContext = this.context;
         const thePipeline = this.pipeline;
 
         this.pipeline.onJobChannelEvent((event) => {
             if (event.jenkins_event === 'job_run_started') {
-                toastService.removeToast({ id: _this.queuedToastId });
                 toastService.newToast({
                     text: `Started "${thePipeline.branchName}" #${event.jenkins_object_id}`,
                     action: 'Open',
@@ -52,11 +49,10 @@ export default class RunPipeline extends Component {
     }
 
     run(event) {
-        const _this = this;
         const thePipeline = this.pipeline;
 
         this.pipeline.run(() => {
-            _this.queuedToastId = toastService.newToast({
+            toastService.newToast({
                 text: `Queued "${thePipeline.branchName}"`,
             });
         }, (error) => {

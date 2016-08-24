@@ -13,8 +13,8 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.34",
-    "@jenkins-cd/js-test": "1.1.1",
+    "@jenkins-cd/js-builder": "0.0.37",
+    "@jenkins-cd/js-test": "1.2.2",
     "@kadira/storybook": "1.19.0",
     "babel": "^6.5.2",
     "babel-core": "^6.7.6",
@@ -36,9 +36,9 @@
   },
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.1-beta5",
-    "@jenkins-cd/design-language": "0.0.69",
-    "@jenkins-cd/js-extensions": "0.0.21-beta7",
-    "@jenkins-cd/js-modules": "0.0.5",
+    "@jenkins-cd/design-language": "0.0.70",
+    "@jenkins-cd/js-extensions": "0.0.22-beta1",
+    "@jenkins-cd/js-modules": "0.0.6",
     "@jenkins-cd/sse-gateway": "0.0.7",
     "immutable": "3.8.1",
     "isomorphic-fetch": "2.2.1",
@@ -53,19 +53,16 @@
     "react-router": "2.3.0",
     "redux": "3.5.2",
     "redux-thunk": "2.0.1",
-    "reselect": "2.5.1",
-    "window-handle": "1.0.0"
+    "reselect": "2.5.1"
   },
   "jenkinscd": {
-    "extDependencies": [
+    "import": [
       "@jenkins-cd/sse-gateway",
       "immutable",
       "isomorphic-fetch",
-      "react-router",
       "keymirror",
       "react-redux",
       "react-router",
-      "redux",
       "redux-thunk",
       "reselect"
     ]
