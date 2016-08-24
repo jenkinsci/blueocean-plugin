@@ -5,6 +5,7 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
+import hudson.tasks.test.TestResult;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 import org.jenkinsci.plugins.displayurlapi.DisplayURLProvider;
@@ -27,6 +28,11 @@ public class BlueDisplayURLProvider extends DisplayURLProvider {
     @Override
     public String getChangesURL(Run<?, ?> run) {
         return generateBlueUrl(getOrganization(), run) + "changes";
+    }
+
+    @Override
+    public String getTestUrl(TestResult testResult) {
+        return generateBlueUrl(getOrganization(), testResult.getRun()) + "tests";
     }
 
     @Override
