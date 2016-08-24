@@ -48,14 +48,19 @@ describe("ToastService", () => {
             text: 'Hello World',
             action: 'Dismiss',
         });
+        toastService.newToast({
+            id: 54321,
+            text: "Hello You",
+            action: 'Dismiss',
+        });
 
-        assert.equal(toastService.count, 1);
+        assert.equal(toastService.count, 2);
 
         toastService.removeToast({
             id: 12345,
         });
 
-        assert.equal(toastService.count, 0);
+        assert.equal(toastService.count, 1);
     });
 
 });
