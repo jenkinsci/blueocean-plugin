@@ -39,7 +39,7 @@ export default class Pipeline {
 
         // clean the branch name before passing it through to URL builder
         let branchName = this.branchName;
-        while (branchName.indexOf('%2') >= 0) {
+        while (branchName != decodeURIComponent(branchName)) {
             branchName = decodeURIComponent(branchName);
         }
 
