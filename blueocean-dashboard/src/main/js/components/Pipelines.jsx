@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import PipelineRowItem from './PipelineRowItem';
+import PageLoading from './PageLoading';
 
 import { Page, PageHeader, Table, Title, Progress } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
@@ -32,7 +33,7 @@ export default class Pipelines extends Component {
         return (
             <Page>
                 <PageHeader>
-                    {!pipelines || pipelines.$pending && <Progress />}
+                    {!pipelines || pipelines.$pending && <PageLoading duration={2000} />}
                     <Title>
                         <h1>
                             <Link to="/" className="inverse">Dashboard</Link>

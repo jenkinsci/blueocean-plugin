@@ -2,6 +2,11 @@ import * as smartFetch from '../../../main/js/util/smart-fetch';
 import debug from 'debug';
 var debugLog = debug('smart-fetch:debug'); // same as smart-fetch
 
+import urlConfig from '../../../main/js/config.js';
+
+urlConfig.blueoceanAppURL = '/blue';
+urlConfig.jenkinsRootURL = '/jenkins'; // maybe just ''?
+
 module.exports = function mockSmartFetch(path, reply) {
     debugLog("mocking: ", path);
     var exp = new RegExp('.*'+path.replace(/([/?=])/g,'\\$1')+'.*');

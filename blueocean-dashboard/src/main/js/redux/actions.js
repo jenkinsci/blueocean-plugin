@@ -151,6 +151,7 @@ export const ACTION_TYPES = keymirror({
     SET_PIPELINE: null,
     CLEAR_PIPELINE_DATA: null,
     SET_RUNS_DATA: null,
+    SET_CURRENT_RUN_DATA: null,
     SET_CURRENT_RUN: null,
     SET_PULL_REQUEST_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
