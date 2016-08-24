@@ -37,4 +37,20 @@ exports.install = function(builder) {
     builder.onPreBundle(function (bundler) { // See https://github.com/jenkinsci/js-builder#onprebundle-listeners
         bundler.transform(require('envify'));
     });
+
+    if (!process.env.SKIP_BLUE_IMPORTS) {
+        // All Blue Ocean bundles should import the following
+        // modules. These are all exported from the main blueocean
+        // bootstrap bundle. Think of these as being like
+        // singletons within the blueocean subsystem.
+        // See jenkinscd/export in blueocean-web/package.json
+        builder.import('@jenkins-cd/js-extensions@any')
+            .import('@jenkins-cd/design-language@any')
+            .import('react@any', {
+                aliases: ['react/lib/React'] // in case a module requires react through the back door
+            })
+            .import('react-dom@any')
+            .import('redux@any')
+        ;
+    }
 };
