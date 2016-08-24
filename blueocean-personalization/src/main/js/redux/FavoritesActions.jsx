@@ -3,7 +3,7 @@
  */
 
 import { ACTION_TYPES } from './FavoritesStore';
-import { UrlUtils, FetchUtils } from '@jenkins-cd/blueocean-core-js';
+import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
 import { cleanSlashes } from '../util/UrlUtils';
 
 const fetchFlags = {
@@ -14,7 +14,7 @@ const fetchFlags = {
 export const actions = {
     fetchUser() {
         return (dispatch) => {
-            const baseUrl = UrlUtils.getBlueAppUrl();
+            const baseUrl = UrlConfig.getBlueAppUrl();
             const url = cleanSlashes(`${baseUrl}/rest/organizations/jenkins/user/`);
 
             if (fetchFlags[ACTION_TYPES.SET_USER]) {
@@ -32,7 +32,7 @@ export const actions = {
 
     fetchFavorites(user) {
         return (dispatch) => {
-            const baseUrl = UrlUtils.getBlueAppUrl();
+            const baseUrl = UrlConfig.getBlueAppUrl();
             const username = user.id;
             const url = cleanSlashes(`${baseUrl}/rest/users/${username}/favorites/`);
 
@@ -51,7 +51,7 @@ export const actions = {
 
     toggleFavorite(addFavorite, branch, favoriteToRemove) {
         return (dispatch) => {
-            const baseUrl = UrlUtils.getBlueAppUrl();
+            const baseUrl = UrlConfig.getBlueAppUrl();
 
             const url = cleanSlashes(addFavorite ?
                 `${baseUrl}${branch._links.self.href}/favorite` :
@@ -78,7 +78,7 @@ export const actions = {
 
     runPipeline(pipeline) {
         return () => {
-            const baseUrl = UrlUtils.getJenkinsRootURL();
+            const baseUrl = UrlConfig.getJenkinsRootURL();
             const pipelineUrl = pipeline._links.self.href;
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
 
@@ -90,13 +90,13 @@ export const actions = {
             };
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            FetchUtils.fetch(runPipelineUrl, fetchOptions);
+            Fetch.fetch(runPipelineUrl, fetchOptions);
         };
     },
 
     replayPipeline(pipeline) {
         return () => {
-            const baseUrl = UrlUtils.getJenkinsRootURL();
+            const baseUrl = UrlConfig.getJenkinsRootURL();
             const pipelineUrl = pipeline.latestRun._links.self.href;
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
 
@@ -108,7 +108,7 @@ export const actions = {
             };
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            FetchUtils.fetch(runPipelineUrl, fetchOptions);
+            Fetch.fetch(runPipelineUrl, fetchOptions);
         };
     },
 
@@ -123,7 +123,7 @@ export const actions = {
 
     generateData(request, actionType, optional) {
         const { url, fetchOptions } = request;
-        return (dispatch) => FetchUtils.fetchJson(url, { fetchOptions })
+        return (dispatch) => Fetch.fetchJSON(url, { fetchOptions })
             .then((json) => {
                 fetchFlags[actionType] = false;
                 return dispatch({

@@ -4,8 +4,7 @@ import { State } from '../components/records';
 import { getNodesInformation } from '../util/logDisplayHelper';
 import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
 
-import { FetchUtils, UrlConfig } from '@jenkins-cd/blueocean-core-js';
-
+import { Fetch, FetchFunctions, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 /**
  * This function maps a queue item into a run instancce.
@@ -180,10 +179,10 @@ exports.fetchLogsInjectStart = function fetchLogsInjectStart(url, start, onSucce
     } else {
         refetchUrl = `${url}?start=${start}`;
     }
-    return FetchUtils.fetch(refetchUrl)
+    return Fetch.fetch(refetchUrl)
         .then(parseMoreDataHeader)
         .then(onSuccess)
-        .catch(FetchUtils.onError(onError));
+        .catch(FetchFunctions.onError(onError));
 };
 /**
  * Clone a JSON object/array instance.
@@ -423,7 +422,7 @@ export const actions = {
                 // The event tells us that the run state has changed, but does not give all
                 // run related data (times, commit Ids etc). So, lets go get that data from
                 // REST API and present a consistent picture of the run state to the user.
-                return FetchUtils.fetchJson(runUrl)
+                return Fetch.fetchJSON(runUrl)
                     .then(updateRunData)
                     .catch((error) => {
                         let runData;
@@ -506,7 +505,7 @@ export const actions = {
                     });
                 };
 
-                FetchUtils.fetchJson(url).then(processBranchData).catch(FetchUtils.consoleError);
+                Fetch.fetchJSON(url).then(processBranchData).catch(FetchFunctions.consoleError);
             }
         };
     },
@@ -526,7 +525,7 @@ export const actions = {
                 // Fetch/refetch the latest set of branches for the pipeline.
                 const url = `${config.getAppURLBase()}/rest/organizations/${event.jenkins_org}` +
                     `/pipelines/${pipelineName}/branches`;
-                return FetchUtils.fetchJson(url).then((latestPipelineBranches) => {
+                return Fetch.fetchJSON(url).then((latestPipelineBranches) => {
                     if (event.blueocean_is_for_current_job) {
                         dispatch({
                             id: pipelineName,
@@ -539,7 +538,7 @@ export const actions = {
                         payload: latestPipelineBranches,
                         type: ACTION_TYPES.SET_BRANCHES_DATA,
                     });
-                }).catch(FetchUtils.consoleError);
+                }).catch(FetchFunctions.consoleError);
             }
 
             return null;
@@ -592,7 +591,7 @@ export const actions = {
 
             const id = general.id;
             if (!data || !data[id]) {
-                return FetchUtils.fetchJson(general.url)
+                return Fetch.fetchJSON(general.url)
                     .then(json => {
                         // TODO: Why call dispatch twice here?
                         dispatch({
@@ -626,7 +625,7 @@ export const actions = {
 
 
     generateData(url, actionType, optional) {
-        return (dispatch) => FetchUtils.fetchJson(url)
+        return (dispatch) => Fetch.fetchJSON(url)
                 .then(json => dispatch({
                     ...optional,
                     type: actionType,
@@ -683,7 +682,7 @@ export const actions = {
             }
 
             if (!data || !data[nodesBaseUrl] || config.refetch) {
-                return FetchUtils.fetchJson(nodesBaseUrl)
+                return Fetch.fetchJSON(nodesBaseUrl)
                     .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = nodesBaseUrl;
@@ -693,7 +692,7 @@ export const actions = {
                         });
 
                         return getNodeAndSteps(information);
-                    }).catch(FetchUtils.consoleError);
+                    }).catch(FetchFunctions.consoleError);
             }
             return getNodeAndSteps(data[nodesBaseUrl]);
         };
@@ -730,7 +729,7 @@ export const actions = {
             const data = getState().adminStore.steps;
             const stepBaseUrl = calculateStepsBaseUrl(config);
             if (!data || !data[stepBaseUrl] || config.refetch) {
-                return FetchUtils.fetchJson(stepBaseUrl)
+                return Fetch.fetchJSON(stepBaseUrl)
                     .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = stepBaseUrl;
@@ -738,7 +737,7 @@ export const actions = {
                             type: ACTION_TYPES.SET_STEPS,
                             payload: information,
                         });
-                    }).catch(FetchUtils.consoleError);
+                    }).catch(FetchFunctions.consoleError);
             }
             return null;
         };

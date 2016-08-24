@@ -4,9 +4,7 @@
  * Non-react component that contains general API methods for
  * interacting with pipelines, encapsulating REST API calls etc.
  */
-
-import fetch from 'isomorphic-fetch';
-import config from '../config';
+import { Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import * as urlUtils from '../util/UrlUtils';
 import * as sse from '@jenkins-cd/sse-gateway';
 import assert from 'assert';
@@ -43,25 +41,18 @@ export default class Pipeline {
     }
 
     restUrl() {
-        return `${config.blueoceanAppURL}${this.url}`;
+        return `${UrlConfig.getBlueAppUrl()}${this.url}`;
     }
 
-    run(onSuccess, onFail) {
+    run(onSuccess, onError) {
         const url = `${this.restUrl()}/runs/`;
-
-        fetch(url, {
+        const fetchOptions = {
             method: 'post',
-            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
             },
-        }).then((response) => {
-            if (onSuccess && response.status >= 200 && response.status < 300) {
-                onSuccess(response);
-            } else if (onFail && (response.status < 200 || response.status > 299)) {
-                onFail(response);
-            }
-        });
+        };
+        Fetch.fetch(url, { fetchOptions, onSuccess, onError });
     }
 
     onJobChannelEvent(callback) {

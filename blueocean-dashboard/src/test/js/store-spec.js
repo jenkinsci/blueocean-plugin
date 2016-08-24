@@ -15,17 +15,17 @@ import { latestRuns } from './data/runs/latestRuns';
 import job_crud_created_multibranch from './data/sse/job_crud_created_multibranch';
 import fetchedBranches from './data/branches/latestBranches';
 
-import { FetchUtils, TestUtils } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, TestUtils } from '@jenkins-cd/blueocean-core-js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-const actionsFetch = FetchUtils.fetchJson;
+const actionsFetch = Fetch.fetchJSON;
 
 describe("Redux Store - ", () => {
     afterEach(() => {
         nock.cleanAll();
-        FetchUtils.fetchJson = actionsFetch;
+        Fetch.fetchJSON = actionsFetch;
     });
     it("create store with pipeline data", () => {
         var ruleId = '/rest/organizations/jenkins/pipelines/';

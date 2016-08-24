@@ -1,4 +1,4 @@
-import { FetchUtils } from '@jenkins-cd/blueocean-core-js';
+import { Fetch } from '@jenkins-cd/blueocean-core-js';
 
 exports.initialize = function (oncomplete) {
     //
@@ -34,8 +34,8 @@ exports.initialize = function (oncomplete) {
     // Might want to do some flux fancy-pants stuff for this.
     const appRoot = document.getElementsByTagName("head")[0].getAttribute("data-appurl");
     Extensions.init({
-        extensionDataProvider: cb => FetchUtils.fetchJson(`${appRoot}/js-extensions`).then(body => cb(body.data)).catch(FetchUtils.consoleError),
-        classMetadataProvider: (type, cb) => FetchUtils.fetchJson(`${appRoot}/rest/classes/${type}/`).then(cb).catch(FetchUtils.consoleError)
+        extensionDataProvider: cb => Fetch.fetchJSON(`${appRoot}/js-extensions`).then(body => cb(body.data)).catch(Fetch.consoleError),
+        classMetadataProvider: (type, cb) => Fetch.fetchJSON(`${appRoot}/rest/classes/${type}/`).then(cb).catch(Fetch.consoleError)
     });
 
     oncomplete();
