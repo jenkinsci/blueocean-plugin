@@ -488,4 +488,26 @@ public class PipelineNodeGraphBuilder {
             return PipelineNodeUtil.getDisplayName(inactiveNode);
         }
     }
+
+    public List<FlowNode> getSages(){
+        List<FlowNode> stages = new ArrayList<>();
+
+        for(FlowNode n: parentToChildrenMap.keySet()){
+            if(PipelineNodeUtil.isStage(n)){
+                stages.add(n);
+            }
+        }
+        return stages;
+    }
+
+    public List<FlowNode> getParallelBranches(){
+        List<FlowNode> parallel = new ArrayList<>();
+
+        for(FlowNode n: parentToChildrenMap.keySet()){
+            if(PipelineNodeUtil.isParallelBranch(n)){
+                parallel.add(n);
+            }
+        }
+        return parallel;
+    }
 }
