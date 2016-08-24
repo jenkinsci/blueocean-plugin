@@ -7,12 +7,12 @@ import hudson.model.Job;
 import hudson.model.Run;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
-import jenkins.model.URLFactory;
+import org.jenkinsci.plugins.displayurlapi.DisplayURLProvider;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
 @Extension
-public class BlueURLFactory extends URLFactory {
+public class BlueDisplayURLProvider extends DisplayURLProvider {
     @Override
     public String getRunURL(Run<?, ?> run) {
         return generateBlueUrl(getOrganization(), run) + "pipeline";
@@ -24,14 +24,21 @@ public class BlueURLFactory extends URLFactory {
     }
 
     @Override
-    public String getProjectURL(Item item) {
+    public String getJobURL(Job<?, ?> job) {
         String org = getOrganization();
-        return getBaseURL() + generateBlueUrl(org, item);
+        return getBaseURL() + generateBlueUrl(org, job);
     }
 
     static String getOrganization() {
         Jenkins j = Jenkins.getInstance();
-        return j.getDisplayName().toLowerCase();
+        if (j == null) {
+            throw new IllegalStateException("Jenkins has not started");
+        }
+        String organizationName = j.getDisplayName();
+        if (organizationName == null) {
+            organizationName = "jenkins";
+        }
+        return organizationName.toLowerCase();
     }
 
     static String getBaseURL() {
