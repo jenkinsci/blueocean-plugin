@@ -72,7 +72,7 @@ export class PipelinePage extends Component {
                         <Extensions.Renderer
                           extensionPoint="jenkins.pipeline.detail.header.action"
                           store={this.context.store}
-                          pipeline={this.context.pipeline}
+                          pipeline={this.props.pipeline}
                         />
                     </Title>
                     }
