@@ -1,6 +1,9 @@
 //
 // See https://github.com/jenkinsci/js-builder
 //
+
+process.env.SKIP_BLUE_IMPORTS = 'YES';
+
 var gi = require('giti');
 var fs = require('fs');
 var builder = require('@jenkins-cd/js-builder');
@@ -33,6 +36,11 @@ builder.src(['src/main/js', 'src/main/less', 'node_modules/@jenkins-cd/design-la
 builder.bundle('src/main/js/blueocean.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/main/less/blueocean.less')
+    .export("@jenkins-cd/js-extensions")
+    .export("@jenkins-cd/design-language")
+    .export('react')
+    .export('react-dom')
+    .export('redux')
     .generateNoImportsBundle();
 
 //
@@ -43,7 +51,7 @@ builder.bundle('src/main/js/blueocean.js')
 //
 builder.bundle('src/main/js/try.js')
     .inDir('target/classes/io/jenkins/blueocean')
-    .withExternalModuleMapping('jquery-detached', 'core-assets/jquery-detached:jquery2') // Bundled in Jenkins 2.x 
+    .import('jquery-detached', 'core-assets/jquery-detached:jquery2') // Bundled in Jenkins 2.x
     .less('src/main/less/try.less');
 
 // 
