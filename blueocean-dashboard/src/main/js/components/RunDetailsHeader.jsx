@@ -29,13 +29,20 @@ class RunDetailsHeader extends Component {
     }
 
     render() {
-        const { data: run } = this.props;
+        const { data: run, pipeline: { fullName = '' } } = this.props;
+        // enable folder path
+        const nameArray = fullName.split('/');
+        // last part is same as run.pipeline so getting rid of it
+        nameArray.pop();
+        // cleanName is in case of no folder empty
+        const cleanFullName = nameArray.join(' / ');
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
         const authors = [...(new Set(run.changeSet.map(change => change.author.fullName)):any)];
         const status = run.getComputedResult();
         const durationMillis = run.isRunning() ?
             moment().diff(moment(run.startTime)) : run.durationInMillis;
+        const displayName = decodeURIComponent(run.pipeline);
         return (
         <div className="pipeline-result">
             <section className="status inverse">
@@ -48,7 +55,8 @@ class RunDetailsHeader extends Component {
                 <h4>
                     <a onClick={() => this.handleOrganizationClick()}>{run.organization}</a>
                     &nbsp;/&nbsp;
-                    <a onClick={() => this.handleNameClick()}>{run.pipeline}</a>
+                    { cleanFullName && `${cleanFullName} / `}
+                    <a onClick={() => this.handleNameClick()}>{displayName}</a>
                     &nbsp;
                     #{run.id}
                 </h4>
@@ -57,7 +65,7 @@ class RunDetailsHeader extends Component {
                     <div className="commons">
                         <div>
                             <label>Branch</label>
-                            <span>{decodeURIComponent(run.pipeline)}</span>
+                            <span>{displayName}</span>
                         </div>
                         { run.commitId ?
                         <div>
@@ -102,6 +110,7 @@ class RunDetailsHeader extends Component {
 
 RunDetailsHeader.propTypes = {
     data: object.isRequired,
+    pipeline: object,
     colors: object,
     onOrganizationClick: func,
     onNameClick: func,

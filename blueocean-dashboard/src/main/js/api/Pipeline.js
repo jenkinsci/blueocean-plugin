@@ -36,10 +36,17 @@ export default class Pipeline {
         if (runId === undefined) {
             throw new Error('Branch.runDetailsRouteUrl must be supplied with a "runId" parameter.');
         }
+
+        // clean the branch name before passing it through to URL builder
+        let branchName = this.branchName;
+        while (branchName.indexOf('%2') >= 0) {
+            branchName = decodeURIComponent(branchName);
+        }
+
         return urlUtils.buildRunDetailsUrl(
             this.organization,
             this.pipelineName,
-            this.branchName, runId, 'pipeline');
+            branchName, runId, 'pipeline');
     }
 
     restUrl() {

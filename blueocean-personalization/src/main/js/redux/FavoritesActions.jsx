@@ -109,13 +109,13 @@ export const actions = {
 
     runPipeline(pipeline) {
         return () => {
-            const baseUrl = urlConfig.blueoceanAppURL;
+            const baseUrl = urlConfig.jenkinsRootURL;
             const pipelineUrl = pipeline._links.self.href;
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
 
             const fetchOptions = {
                 ...defaultFetchOptions,
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -128,13 +128,13 @@ export const actions = {
 
     replayPipeline(pipeline) {
         return () => {
-            const baseUrl = urlConfig.blueoceanAppURL;
+            const baseUrl = urlConfig.jenkinsRootURL;
             const latestRunUrl = pipeline.latestRun._links.self.href;
             const replayPipelineUrl = cleanSlashes(`${baseUrl}/${latestRunUrl}/replay/`);
 
             const fetchOptions = {
                 ...defaultFetchOptions,
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },

@@ -144,6 +144,7 @@ function createBundle(jsxFile) {
         .namespace(maven.getArtifactId())
         .withExternalModuleMapping('@jenkins-cd/js-extensions', 'jenkins-cd:js-extensions')
         .withExternalModuleMapping('@jenkins-cd/design-language', 'jenkins-cd:jdl')
+        .withExternalModuleMapping('@jenkins-cd/blueocean-core-js', 'jenkins-cd:blueocean-core-js')
         .withExternalModuleMapping('react', 'react:react')
         .withExternalModuleMapping('react-dom', 'react:react-dom')
         .withExternalModuleMapping('react-addons-css-transition-group', 'react:react-addons-css-transition-group')

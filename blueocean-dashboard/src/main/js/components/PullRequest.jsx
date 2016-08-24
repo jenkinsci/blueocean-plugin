@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import RunPipeline from './RunPipeline.jsx';
+import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 const { object } = PropTypes;
 
@@ -16,6 +17,7 @@ export default class PullRequest extends Component {
                 result: resultString,
                 id,
                 startTime,
+                pipeline,
                 endTime,
                 estimatedDurationInMillis,
                 state,
@@ -37,9 +39,8 @@ export default class PullRequest extends Component {
             },
                 },
         } = this;
-        const url = `organizations/${organization}/${pipelineName}/detail/${name}/${id}/pipeline`;
         const open = () => {
-            location.pathname = url;
+            location.pathname = buildRunDetailsUrl(organization, pipelineName, decodeURIComponent(pipeline), id, 'pipeline');
             router.push(location);
         };
 

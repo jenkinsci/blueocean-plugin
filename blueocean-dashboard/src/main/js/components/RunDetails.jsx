@@ -95,6 +95,12 @@ class RunDetails extends Component {
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
             location.pathname = this.opener || fallbackUrl;
+            // reset query
+            /*
+            FIXME: reset query when you go back, we may want to store the whole location object in previous so we have a perfect prev.
+            this.opener would then be location and we the above location = this.opener || {pathname: fallbackUrl]
+             */
+            location.query = null;
             router.push(location);
         };
         return (
@@ -107,7 +113,9 @@ class RunDetails extends Component {
             >
                 <ModalHeader>
                     <div>
-                        <RunDetailsHeader data={currentRun}
+                        <RunDetailsHeader
+                          pipeline={this.props.pipeline}
+                          data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
