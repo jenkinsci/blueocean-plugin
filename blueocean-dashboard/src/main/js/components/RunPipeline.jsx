@@ -31,8 +31,9 @@ export default class RunPipeline extends Component {
 
         this.pipeline.onJobChannelEvent((event) => {
             if (event.jenkins_event === 'job_run_started') {
+                const branchName = Pipeline.cleanBranchName(thePipeline.branchName);
                 toastService.newToast({
-                    text: `Started "${thePipeline.branchName}" #${event.jenkins_object_id}`,
+                    text: `Started "${branchName}" #${event.jenkins_object_id}`,
                     action: 'Open',
                     onActionClick: () => {
                         const runDetailsUrl = thePipeline.runDetailsRouteUrl(event.jenkins_object_id);
@@ -50,16 +51,17 @@ export default class RunPipeline extends Component {
 
     run(event) {
         const thePipeline = this.pipeline;
+        const branchName = Pipeline.cleanBranchName(thePipeline.branchName);
 
         this.pipeline.run(() => {
             toastService.newToast({
-                text: `Queued "${thePipeline.branchName}"`,
+                text: `Queued "${branchName}"`,
             });
         }, (error) => {
             console.error(`Unexpected error queuing a run of "${thePipeline.branchName}". Response:`);
             console.error(error);
             toastService.newToast({
-                text: `Failed to queue "${thePipeline.branchName}". Try reloading the page.`,
+                text: `Failed to queue "${branchName}". Try reloading the page.`,
             });
         });
 

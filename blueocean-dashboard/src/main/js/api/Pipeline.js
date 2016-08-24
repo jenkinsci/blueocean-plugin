@@ -38,10 +38,7 @@ export default class Pipeline {
         }
 
         // clean the branch name before passing it through to URL builder
-        let branchName = this.branchName;
-        while (branchName !== decodeURIComponent(branchName)) {
-            branchName = decodeURIComponent(branchName);
-        }
+        const branchName = Pipeline.cleanBranchName(this.branchName);
 
         return urlUtils.buildRunDetailsUrl(
             this.organization,
@@ -103,6 +100,19 @@ export default class Pipeline {
             );
         }
         return false;
+    }
+
+    /**
+     * Strip an encoded branch name down to its fully unencoded form
+     * @param {string} branchName
+     * @returns {string}
+     */
+    static cleanBranchName(branchName) {
+        let branch = branchName;
+        while (branch !== decodeURIComponent(branch)) {
+            branch = decodeURIComponent(branch);
+        }
+        return branch;
     }
 }
 
