@@ -13,6 +13,12 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
 @Extension
 public class BlueDisplayURLProvider extends DisplayURLProvider {
+
+    @Override
+    public String getRoot() {
+        return getBaseURL() + "/blue";
+    }
+
     @Override
     public String getRunURL(Run<?, ?> run) {
         return generateBlueUrl(getOrganization(), run) + "pipeline";
@@ -26,7 +32,7 @@ public class BlueDisplayURLProvider extends DisplayURLProvider {
     @Override
     public String getJobURL(Job<?, ?> job) {
         String org = getOrganization();
-        return getBaseURL() + generateBlueUrl(org, job);
+        return generateBlueUrl(org, job);
     }
 
     static String getOrganization() {
@@ -49,9 +55,9 @@ public class BlueDisplayURLProvider extends DisplayURLProvider {
         return url;
     }
 
-    static String generateBlueUrl(String org, Run<?, ?> run) {
+    String generateBlueUrl(String org, Run<?, ?> run) {
         Job<?, ?> parent = run.getParent();
-        return generateBlueUrl(org, parent) + "/" + parent.getName() + "/details/" + run.getNumber() + "/";
+        return getRoot() + generateBlueUrl(org, parent) + "/" + parent.getName() + "/details/" + run.getNumber() + "/";
     }
 
     static String generateBlueUrl(String org, Item i) {
