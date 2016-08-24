@@ -2,7 +2,7 @@
  * Created by cmeyers on 7/29/16.
  */
 
-import { FetchUtils, UrlUtils } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, FetchFunctions, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import { cleanSlashes } from '../util/UrlUtils';
 
 function clone(json) {
@@ -112,10 +112,10 @@ export class SseBus {
     }
 
     _updateJob(event) {
-        const baseUrl = UrlUtils.getJenkinsRootURL();
+        const baseUrl = UrlConfig.getJenkinsRootURL();
         const url = cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
-        FetchUtils.fetchJson(url)
+        Fetch.fetchJSON(url)
             .then((data) => {
                 const updatedRun = clone(data);
 
@@ -130,7 +130,7 @@ export class SseBus {
                 if (this.jobListenerExternal) {
                     this.jobListenerExternal(updatedRun);
                 }
-            }).catch(FetchUtils.consoleError);
+            }).catch(FetchFunctions.consoleError);
     }
 
     _updateMultiBranchPipelineBranches() {
