@@ -50,9 +50,7 @@ export class PipelineCard extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.favorite !== nextProps.favorite) {
-            this._updateState(nextProps);
-        }
+        this._updateState(nextProps);
     }
 
     _updateState(props) {

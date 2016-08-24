@@ -149,7 +149,7 @@ export const actions = {
         return () => {
             const baseUrl = urlConfig.blueoceanAppURL;
             const latestRunUrl = pipeline.latestRun._links.self.href;
-            const stopPipelineUrl = cleanSlashes(`${baseUrl}/${latestRunUrl}/stop/`);
+            const stopPipelineUrl = cleanSlashes(`${baseUrl}/${latestRunUrl}/stop/?blocking=true&timeOutInSecs=10`);
 
             const fetchOptions = {
                 ...defaultFetchOptions,
