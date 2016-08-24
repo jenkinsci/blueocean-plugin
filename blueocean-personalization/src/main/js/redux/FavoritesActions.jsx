@@ -14,7 +14,7 @@ const fetchFlags = {
 export const actions = {
     fetchUser() {
         return (dispatch) => {
-            const baseUrl = UrlConfig.getBlueAppUrl();
+            const baseUrl = UrlConfig.getBlueOceanAppURL();
             const url = cleanSlashes(`${baseUrl}/rest/organizations/jenkins/user/`);
 
             if (fetchFlags[ACTION_TYPES.SET_USER]) {
@@ -32,7 +32,7 @@ export const actions = {
 
     fetchFavorites(user) {
         return (dispatch) => {
-            const baseUrl = UrlConfig.getBlueAppUrl();
+            const baseUrl = UrlConfig.getBlueOceanAppURL();
             const username = user.id;
             const url = cleanSlashes(`${baseUrl}/rest/users/${username}/favorites/`);
 
@@ -51,7 +51,7 @@ export const actions = {
 
     toggleFavorite(addFavorite, branch, favoriteToRemove) {
         return (dispatch) => {
-            const baseUrl = UrlConfig.getBlueAppUrl();
+            const baseUrl = UrlConfig.getBlueOceanAppURL();
 
             const url = cleanSlashes(addFavorite ?
                 `${baseUrl}${branch._links.self.href}/favorite` :
@@ -90,7 +90,7 @@ export const actions = {
             };
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            Fetch.fetch(runPipelineUrl, fetchOptions);
+            Fetch.fetch(runPipelineUrl, { fetchOptions });
         };
     },
 
@@ -108,7 +108,7 @@ export const actions = {
             };
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            Fetch.fetch(runPipelineUrl, fetchOptions);
+            Fetch.fetch(runPipelineUrl, { fetchOptions });
         };
     },
 

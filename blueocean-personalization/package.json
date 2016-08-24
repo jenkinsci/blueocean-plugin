@@ -40,7 +40,6 @@
     "@jenkins-cd/js-modules": "0.0.5",
     "@jenkins-cd/sse-gateway": "0.0.7",
     "immutable": "3.8.1",
-    "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "^7.1.9",
     "keymirror": "0.1.1",
     "moment": "2.13.0",
@@ -61,7 +60,6 @@
     "extDependencies": [
       "@jenkins-cd/sse-gateway",
       "immutable",
-      "isomorphic-fetch",
       "react-router",
       "keymirror",
       "react-redux",

@@ -1,3 +1,4 @@
+import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import jwt from './jwt';
 import isoFetch from 'isomorphic-fetch';
 import objutils from './objutils.js';

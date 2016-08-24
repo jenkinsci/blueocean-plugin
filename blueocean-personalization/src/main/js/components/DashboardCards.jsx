@@ -159,6 +159,7 @@ export class DashboardCards extends Component {
     }
 
     _onRunClick(pipeline) {
+        console.log("clikced");
         this.props.runPipeline(pipeline);
     }
 

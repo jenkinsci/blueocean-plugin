@@ -1,3 +1,4 @@
+import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import fetch from 'isomorphic-fetch';
 import jwt from 'jsonwebtoken';
 import UrlUtils from './urlconfig';

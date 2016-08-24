@@ -1,36 +1,40 @@
-let jenkinsRootURL = null;
-let blueoceanAppURL = null;
+let blueOceanAppURL = '/';
+let jenkinsRootURL = '';
 
-// General "system" config information.
-//
-// TODO: This should be in a general sharable component.
-// Passing it around in the react context is silly.
-//
+let loaded = false;
+
 function loadConfig() {
-    const headElement = document.getElementsByTagName('head')[0];
+    try {
+        const headElement = document.getElementsByTagName('head')[0];
 
-    // Look up where the Blue Ocean app is hosted
-    blueoceanAppURL = headElement.getAttribute('data-appurl');
+        // Look up where the Blue Ocean app is hosted
+        blueOceanAppURL = headElement.getAttribute('data-appurl');
+        if (typeof blueOceanAppURL !== 'string') {
+            blueOceanAppURL = '/';
+        }
+          
+        jenkinsRootURL = headElement.getAttribute('data-rooturl');
+        loaded = true;
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('error reading attributes from document; urls will be empty');
 
-    if (typeof blueoceanAppURL !== 'string') {
-        blueoceanAppURL = '/';
+        loaded = false;
     }
-
-    jenkinsRootURL = headElement.getAttribute('data-rooturl');
 }
 
 export default {
     getJenkinsRootURL() {
-        if (!jenkinsRootURL) {
+        if (!loaded) {
             loadConfig();
         }
         return jenkinsRootURL;
     },
     
-    getBlueAppUrl() {
-        if (!blueoceanAppURL) {
+    getBlueOceanAppURL() {
+        if (!loaded) {
             loadConfig();
         }
-        return blueoceanAppURL;
+        return blueOceanAppURL;
     },
 };

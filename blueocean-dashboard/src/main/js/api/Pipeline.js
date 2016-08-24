@@ -41,7 +41,7 @@ export default class Pipeline {
     }
 
     restUrl() {
-        return `${UrlConfig.getBlueAppUrl()}${this.url}`;
+        return `${UrlConfig.getBlueOceanAppURL()}${this.url}`;
     }
 
     run(onSuccess, onError) {
