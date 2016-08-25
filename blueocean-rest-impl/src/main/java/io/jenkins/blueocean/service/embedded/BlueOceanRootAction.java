@@ -6,7 +6,6 @@ import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
 import io.jenkins.blueocean.BlueOceanUI;
-import jenkins.model.Jenkins;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.kohsuke.stapler.Stapler;
@@ -51,12 +50,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         if(!disableJWT && request.getOriginalRestOfPath().startsWith("/rest/")) {
             JwtAuthenticationToken tokenAuthentication = new JwtAuthenticationToken(request);
             SecurityContext holder = SecurityContextHolder.getContext();
-            if(tokenAuthentication.isAuthenticated() &&
-                tokenAuthentication.getName().equals(Jenkins.getInstance().ANONYMOUS.getName())) {
-                holder.setAuthentication(Jenkins.getInstance().ANONYMOUS);
-            } else {
-                holder.setAuthentication(tokenAuthentication);
-            }
+            holder.setAuthentication(tokenAuthentication);
         }
         return app;
     }
