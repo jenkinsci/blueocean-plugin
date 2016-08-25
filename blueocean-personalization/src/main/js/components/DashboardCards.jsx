@@ -13,6 +13,7 @@ import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 import favoritesSseListener from '../model/FavoritesSseListener';
+import { uriEncodeOnce } from '../util/UrlUtils';
 
 import FavoritesProvider from './FavoritesProvider';
 import { PipelineCard } from './PipelineCard';
@@ -198,14 +199,69 @@ export class DashboardCards extends Component {
                 event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name
             );
 
+            const item = this._getFavoritedItem(event.blueocean_job_rest_url);
+            const runDetailsUrl = this._buildRunDetailsUrl(item, runData);
+
             toastService.newToast({
                 text: `Started "${name}" #${event.jenkins_object_id}`,
                 action: 'Open',
                 onActionClick: () => {
-                    // TODO: navigate to run details
+                    this.props.router.push({
+                        pathname: runDetailsUrl,
+                    });
                 },
             });
         }
+    }
+
+    _buildRunDetailsUrl(pipeline, run) {
+        const names = this._extractNames(pipeline);
+        const detailPart = names.branchName || names.pipelineName;
+        return `/organizations/${uriEncodeOnce(pipeline.organization)}/` +
+            `${uriEncodeOnce(names.fullName)}/detail/` +
+            `${uriEncodeOnce(detailPart)}/${uriEncodeOnce(run.id)}/pipeline`;
+    }
+
+    _getFavoritedItem(itemUrl) {
+        if (this.props.favorites) {
+            const favorite = this.props.favorites.find(fav => fav.item._links.self.href === itemUrl);
+
+            if (favorite) {
+                return favorite.item;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Takes a pipeline/branch object and returns the fullName, pipelineName and branchName components
+     * @param pipeline
+     * @returns {{pipelineName: string, fullName: string, branchName: string}}
+     * @private
+     */
+    _extractNames(pipeline) {
+        const isBranch = this._hasCapability(pipeline, BRANCH_CAPABILITY);
+
+        let fullName = null;
+        let pipelineName = null;
+        let branchName = null;
+
+        if (isBranch) {
+            // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
+            // extract "pipeline"
+            pipelineName = extractPath(pipeline.fullName, -2, -1);
+            // extract everything up to "branch"
+            fullName = extractPath(pipeline.fullName, 0, -1);
+            branchName = pipeline.name;
+        } else {
+            pipelineName = pipeline.name;
+            fullName = pipeline.fullName;
+        }
+
+        return {
+            pipelineName, fullName, branchName,
+        };
     }
 
     _renderCardStack() {
@@ -219,23 +275,7 @@ export class DashboardCards extends Component {
             const pipeline = favorite.item;
             const latestRun = pipeline.latestRun;
             const capabilities = this._getCapabilities(pipeline);
-            const isBranch = this._hasCapability(pipeline, BRANCH_CAPABILITY);
-
-            let fullName;
-            let pipelineName;
-            let branchName;
-
-            if (isBranch) {
-                // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
-                // "pipeline"
-                pipelineName = extractPath(pipeline.fullName, -2, -1);
-                // everything up to "branch"
-                fullName = extractPath(pipeline.fullName, 0, -1);
-                branchName = pipeline.name;
-            } else {
-                pipelineName = pipeline.name;
-                fullName = pipeline.fullName;
-            }
+            const names = this._extractNames(pipeline);
 
             let status = null;
             let startTime = null;
@@ -267,10 +307,10 @@ export class DashboardCards extends Component {
                       status={status}
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
-                      fullName={fullName}
                       organization={pipeline.organization}
-                      pipeline={pipelineName}
-                      branch={branchName}
+                      fullName={names.fullName}
+                      pipeline={names.pipelineName}
+                      branch={names.branchName}
                       commitId={commitId}
                       runId={runId}
                       favorite
