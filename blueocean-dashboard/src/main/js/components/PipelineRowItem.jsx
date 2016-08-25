@@ -41,10 +41,11 @@ export default class PipelineRowItem extends Component {
         const baseUrl = buildPipelineUrl(organization, fullName);
         const multiBranchURL = `${baseUrl}/branches`;
         const pullRequestsURL = `${baseUrl}/pr`;
+        const activitiesURL = `${baseUrl}/activity`;
 
         const formattedName = fullName ? fullName.split('/').join(' / ') : '';
         const nameLink = (
-            <Link to={baseUrl}>
+            <Link to={activitiesURL}>
                 { showOrganization ?
                     `${organization} / ${formattedName}` :
                     formattedName

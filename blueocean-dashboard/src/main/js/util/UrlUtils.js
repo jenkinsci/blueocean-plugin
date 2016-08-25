@@ -186,31 +186,6 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
 }
 
 /**
- * Examines the provided object for:
- * organization, pipeline, branch, runId
- * and builds a path to the GUI as best it can...
- * TODO: we could probably figure this out more accurately from the routes
- */
-export function getLocation({ organization, pipeline, branch, runId, tab }) {
-    const pipelineName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
-    const organizationName = organization ||
-        (typeof pipeline === 'object' ? pipeline.organization : '');
-    /* eslint-disable prefer-template */
-    let url = '/organizations/' + encodeURIComponent(organizationName);
-    if (pipelineName) {
-        url += '/' + encodeURIComponent(pipelineName);
-    }
-    if (runId) {
-        url += '/detail' +
-        (branch ? ('/' + uriString(branch)) : '') +
-        '/' + encodeURIComponent(runId) +
-        (tab ? ('/' + tab) : '');
-    }
-    /* eslint-enable prefer-template */
-    return url;
-}
-
-/**
  * Returns a new string which ends with a slash, or the
  * original if it already does
  */

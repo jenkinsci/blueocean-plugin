@@ -16,7 +16,13 @@ import {
     createSelector,
     connect,
 } from '../redux';
-import { getLocation } from '../util/UrlUtils';
+
+import {
+    buildOrganizationUrl,
+    buildPipelineUrl,
+    buildRunDetailsUrl,
+} from '../util/UrlUtils';
+
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 
@@ -25,29 +31,36 @@ const { func, object, any, string } = PropTypes;
 class RunDetails extends Component {
     componentWillMount() {
         if (this.context.config && this.context.params) {
-            this.props.fetchRun(this.props.params);
+            this.props.fetchRun({
+                organization: this.props.params.organization,
+                pipeline: this.props.params.pipeline,
+                branch: this.props.isMultiBranch && this.props.params.branch,
+                runId: this.props.params.runId,
+            });
             this.opener = this.props.previous;
         }
     }
     navigateToOrganization() {
-        const organizationUrl = getLocation({
-            organization: this.props.params.organization,
-        });
+        const { organization } = this.props.pipeline;
+        const organizationUrl = buildOrganizationUrl(organization);
         this.context.router.push(organizationUrl);
     }
     navigateToPipeline() {
-        const pipelineUrl = getLocation({
-            organization: this.props.params.organization,
-            pipeline: this.props.params.pipeline,
-        });
+        const { organization, fullName } = this.props.pipeline;
+        const pipelineUrl = buildPipelineUrl(organization, fullName);
         this.context.router.push(pipelineUrl);
     }
     navigateToChanges() {
-        const changesUrl = getLocation({
-            pipeline: this.props.pipeline,
-            runId: this.props.run.id,
-            tab: 'changes',
-        });
+        const {
+            params: {
+                organization,
+                pipeline,
+                branch,
+                runId,
+            },
+        } = this.context;
+
+        const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
         this.context.router.push(changesUrl);
     }
     render() {
@@ -60,31 +73,24 @@ class RunDetails extends Component {
 
         const { router, location, params } = this.context;
 
-        const baseUrl = getLocation({
-            organization: params.organization,
-            pipeline: params.pipeline,
-            branch: params.branch,
-            runId: params.runId,
-        });
+        const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
-        const currentRun = this.props.run;
-        
-        const runRecord = new RunRecord(currentRun);
+        const run = this.props.run;
 
-        const status = runRecord.getComputedResult() || '';
+        const currentRun = new RunRecord(run);
+
+        const status = currentRun.getComputedResult() || '';
 
         const afterClose = () => {
+            const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
+            location.pathname = this.opener || fallbackUrl;
             // reset query
             /*
             FIXME: reset query when you go back, we may want to store the whole location object in previous so we have a perfect prev.
             this.opener would then be location and we the above location = this.opener || {pathname: fallbackUrl]
              */
             location.query = null;
-            const url = this.opener || getLocation({
-                organization: params.organization,
-                pipeline: params.pipeline,
-            });
-            router.push(url);
+            router.push(location);
         };
         return (
             <ModalView
@@ -96,10 +102,10 @@ class RunDetails extends Component {
             >
                 <ModalHeader>
                     <div>
-                        {!currentRun.$pending &&
+                        {!run.$pending &&
                         <RunDetailsHeader
                           pipeline={this.context.pipeline}
-                          data={runRecord}
+                          data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
@@ -115,10 +121,10 @@ class RunDetails extends Component {
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {currentRun.$pending && <Progress />}
-                        {currentRun.$success && React.cloneElement(
+                        {run.$pending && <Progress />}
+                        {run.$success && React.cloneElement(
                             this.props.children,
-                            { baseUrl, result: runRecord, ...this.props }
+                            { baseUrl, result: currentRun, ...this.props }
                         )}
                     </div>
                 </ModalBody>

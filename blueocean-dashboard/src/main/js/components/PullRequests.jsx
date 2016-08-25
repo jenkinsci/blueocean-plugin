@@ -9,7 +9,7 @@ import {
     connect,
 } from '../redux';
 
-const { func, object, array, string, any } = PropTypes;
+const { func, object, array, string } = PropTypes;
 
 const EmptyState = ({ repoName }) => (
     <main>
@@ -51,17 +51,8 @@ export class PullRequests extends Component {
             unsupportedJob: false,
         };
     }
-    
-    componentWillMount() {
-        if (this.context.config && this.context.params) {
-            this.props.fetchPullRequests({
-                organizationName: this.context.params.organization,
-                pipelineName: this.context.params.pipeline,
-            });
-        }
-    }
 
-    componentWillReceiveProps() {
+    componentWillMount() {
         if (this.context.config && this.context.params) {
             const {
                 config = {},
@@ -79,6 +70,10 @@ export class PullRequests extends Component {
             }
 
             config.pipeline = pipelineName;
+            this.props.fetchPullRequests({
+                organizationName: this.context.params.organization,
+                pipelineName: this.context.params.pipeline,
+            });
         }
     }
 
@@ -133,7 +128,6 @@ export class PullRequests extends Component {
                         </button>
                     }
                 </article>
-                {this.props.children}
             </main>
         );
     }
@@ -146,7 +140,6 @@ PullRequests.contextTypes = {
 };
 
 PullRequests.propTypes = {
-    children: any,
     pullRequests: array,
     fetchPullRequests: func,
 };

@@ -118,7 +118,7 @@ class OrganizationPipelines extends Component {
         }
         return null;
     }
-    
+
     /*
      FIXME we should use clone here, this way we could pass all actions and reducer down to all
      components and get rid of the seperate connect in each subcomponents -> see RunDetailsPipeline

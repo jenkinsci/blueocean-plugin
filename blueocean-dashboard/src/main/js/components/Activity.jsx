@@ -13,7 +13,7 @@ import PageLoading from './PageLoading';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { capabilityStore } from './Capability';
 
-const { object, array, func, string, bool, any } = PropTypes;
+const { object, array, func, string, bool } = PropTypes;
 
 const EmptyState = ({ repoName, pipeline, showRunButton }) => (
     <main>
@@ -131,7 +131,6 @@ export class Activity extends Component {
                     </button>
                 }
             </article>
-            {this.props.children}
         </main>);
     }
 }
@@ -148,7 +147,6 @@ Activity.propTypes = {
     pipeline: object,
     capabilities: object,
     fetchRuns: func,
-    children: any,
 };
 
 const selectors = createSelector([currentRunsSelector], (runs) => ({ runs }));

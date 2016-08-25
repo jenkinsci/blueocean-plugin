@@ -8,8 +8,7 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 
 import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
-import { getLocation } from '../util/UrlUtils';
-import Pipeline from '../api/Pipeline';
+import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 
 const { object, string, any } = PropTypes;
@@ -22,16 +21,6 @@ export default class Runs extends Component {
         super(props);
         this.state = { isVisible: false };
     }
-
-    openRunDetails() {
-        const location = getLocation({
-            ...this.context,
-            branch: (Pipeline.isMultibranch(this.context.pipeline) && this.props.result.pipeline),
-            runId: this.props.result.id,
-        });
-        this.context.router.push(location);
-    }
-
     render() {
         // early out
         if (!this.props.result || !this.context.pipeline) {
@@ -39,8 +28,12 @@ export default class Runs extends Component {
         }
         const {
             context: {
+                router,
+                location,
                 pipeline: {
                     _class: pipelineClass,
+                    fullName,
+                    organization,
                 },
             },
             props: {
@@ -65,7 +58,13 @@ export default class Runs extends Component {
             durationInMillis :
             moment().diff(moment(startTime));
 
-        return (<tr key={id} onClick={() => this.openRunDetails()} id={`${pipeline}-${id}`} >
+        const open = () => {
+            const pipelineName = decodeURIComponent(pipeline);
+            location.pathname = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
+            router.push(location);
+        };
+
+        return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
             <td>
                 <LiveStatusIndicator result={resultRun} startTime={startTime}
                   estimatedDuration={estimatedDurationInMillis}
@@ -92,7 +91,6 @@ Runs.propTypes = {
     result: any.isRequired, // FIXME: create a shape
     data: string,
     changeset: object.isRequired,
-    basePage: string,
 };
 Runs.contextTypes = {
     pipeline: object,

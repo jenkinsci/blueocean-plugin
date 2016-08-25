@@ -5,6 +5,7 @@ import nock from 'nock';
 import mockFetch from './util/smart-fetch-mock';
 
 import * as actions from '../../main/js/redux/actions';
+import findAndUpdate from '../../main/js/util/find-and-update';
 
 const debugLog = require('debug')('push-events-actions:debug');
 
@@ -201,7 +202,7 @@ describe("push events - started run tests", () => {
                 debugLog('dispatch type: ', actualDispatchObj.type, 'with payload:', actualDispatchObj.payload);
                 if (actualDispatchObj.type == 'FIND_AND_UPDATE') {
                     debugLog('findAndUpdate: ', adminStore, ' with payload: ', actualDispatchObj.payload);
-                    adminStore = actions.findAndUpdate(adminStore, actualDispatchObj.payload);
+                    adminStore = findAndUpdate(adminStore, actualDispatchObj.payload);
                     debugLog('runs after update: ', adminStore);
                 } else {
                     if (actualDispatchObj.type === 'UPDATE_RUN_DETAILS') {
@@ -253,7 +254,7 @@ describe("push events - started run tests", () => {
                 debugLog('dispatch type: ', actualDispatchObj.type, 'with payload:', actualDispatchObj.payload);
                 if (actualDispatchObj.type == 'FIND_AND_UPDATE') {
                     debugLog('findAndUpdate: ', adminStore, ' with payload: ', actualDispatchObj.payload);
-                    adminStore = actions.findAndUpdate(adminStore, actualDispatchObj.payload);
+                    adminStore = findAndUpdate(adminStore, actualDispatchObj.payload);
                     debugLog('runs after update: ', adminStore);
                 } else {
                     if (actualDispatchObj.type === 'UPDATE_RUN_DETAILS') {
