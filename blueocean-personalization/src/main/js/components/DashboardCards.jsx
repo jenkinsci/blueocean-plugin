@@ -178,6 +178,7 @@ export class DashboardCards extends Component {
         this.props.runPipeline(pipeline);
 
         const name = decodeURIComponent(pipeline.name);
+
         toastService.newToast({
             text: `Queued "${name}"`,
         });
@@ -185,6 +186,13 @@ export class DashboardCards extends Component {
 
     _onStopClick(pipeline) {
         this.props.stopPipeline(pipeline);
+
+        const name = decodeURIComponent(pipeline.name);
+        const runId = pipeline.latestRun.id;
+
+        toastService.newToast({
+            text: `Stopping "${name}" #${runId}...`,
+        });
     }
 
     _onFavoriteToggle(isFavorite, favorite) {
@@ -194,22 +202,27 @@ export class DashboardCards extends Component {
     _handleJobRunUpdate(runData, event) {
         this.props.updateRun(runData);
 
-        if (event.jenkins_event === 'job_run_started') {
-            const name = decodeURIComponent(
-                event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name
-            );
+        const name = decodeURIComponent(
+            event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name
+        );
+        const runId = event.jenkins_object_id;
 
+        if (event.jenkins_event === 'job_run_started') {
             const item = this._getFavoritedItem(event.blueocean_job_rest_url);
             const runDetailsUrl = this._buildRunDetailsUrl(item, runData);
 
             toastService.newToast({
-                text: `Started "${name}" #${event.jenkins_object_id}`,
+                text: `Started "${name}" #${runId}`,
                 action: 'Open',
                 onActionClick: () => {
                     this.props.router.push({
                         pathname: runDetailsUrl,
                     });
                 },
+            });
+        } else if (event.jenkins_event === 'job_run_ended' && runData.result === 'ABORTED') {
+            toastService.newToast({
+                text: `Stopped "${name}" #${runId}`,
             });
         }
     }
