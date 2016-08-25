@@ -22,7 +22,6 @@ export default class Branches extends Component {
         const {
             context: {
                 router,
-                location,
                 pipeline: {
                     fullName,
                     organization,
@@ -39,7 +38,6 @@ export default class Branches extends Component {
 
         const open = () => {
             const url = getLocation({
-                location,
                 pipeline: this.context.pipeline,
                 branch: cleanBranchName,
                 runId: id,

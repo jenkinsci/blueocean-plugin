@@ -44,7 +44,6 @@ class RunDetails extends Component {
     }
     navigateToChanges() {
         const changesUrl = getLocation({
-            location: this.context.location,
             pipeline: this.props.pipeline,
             runId: this.props.run.id,
             tab: 'changes',
@@ -62,7 +61,6 @@ class RunDetails extends Component {
         const { router, location, params } = this.context;
 
         const baseUrl = getLocation({
-            location,
             organization: params.organization,
             pipeline: params.pipeline,
             branch: params.branch,
@@ -83,7 +81,6 @@ class RunDetails extends Component {
              */
             location.query = null;
             const url = getLocation({
-                location,
                 organization: params.organization,
                 pipeline: params.pipeline,
             });

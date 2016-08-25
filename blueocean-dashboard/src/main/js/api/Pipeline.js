@@ -37,7 +37,6 @@ export default class Pipeline {
             throw new Error('Branch.runDetailsRouteUrl must be supplied with a "runId" parameter.');
         }
         return urlUtils.getLocation({
-            basePage: 'activity',
             organization: this.organization,
             pipeline: this.pipelineName,
             branch: this.branchName,

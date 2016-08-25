@@ -31,7 +31,6 @@ export default class PullRequest extends Component {
         const {
             context: {
                 router,
-                location,
                 pipeline: {
                     name: pipelineName,
                     organization,
@@ -41,7 +40,6 @@ export default class PullRequest extends Component {
         
         const open = () => {
             const url = getLocation({
-                location,
                 pipeline: this.context.pipeline,
                 branch: name,
                 runId: id,
