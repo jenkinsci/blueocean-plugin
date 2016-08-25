@@ -80,7 +80,7 @@ class RunDetails extends Component {
             this.opener would then be location and we the above location = this.opener || {pathname: fallbackUrl]
              */
             location.query = null;
-            const url = getLocation({
+            const url = this.opener || getLocation({
                 organization: params.organization,
                 pipeline: params.pipeline,
             });
