@@ -62,13 +62,21 @@ class NotFound extends Component {
 
 function makeRoutes(routes) {
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
-    const routesOrNotFound = [...routes, { path: "*", component: NotFound }];
-    return {
+    const appRoutes = [
+        ...routes,
+        // FIXME: Not sure best how to set this up without the hardcoded IndexRedirect :-/
+        <IndexRedirect to="/pipelines" />,
+        <Route path="*" component={NotFound}/>
+    ];
+
+    const routeProps = {
         path: "/",
-        component: App,
-        childRoutes: routesOrNotFound
+        component: App
     };
+
+    return React.createElement(Route, routeProps, ...appRoutes);
 }
+
 
 function startApp(routes, stores) {
 
@@ -133,7 +141,7 @@ function startApp(routes, stores) {
     // Start React
     render(
         <Provider store={store}>
-            <Router history={history} routes={ makeRoutes(routes) }/>
+            <Router history={history}>{ makeRoutes(routes) }</Router>
         </Provider>
       , rootElement);
 }
