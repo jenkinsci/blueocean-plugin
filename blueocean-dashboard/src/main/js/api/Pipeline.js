@@ -36,12 +36,14 @@ export default class Pipeline {
         if (runId === undefined) {
             throw new Error('Branch.runDetailsRouteUrl must be supplied with a "runId" parameter.');
         }
-        return urlUtils.getLocation({
-            organization: this.organization,
-            pipeline: this.pipelineName,
-            branch: this.branchName,
-            runId,
-            tab: 'pipeline' });
+
+        // clean the branch name before passing it through to URL builder
+        const branchName = Pipeline.cleanBranchName(this.branchName);
+
+        return urlUtils.buildRunDetailsUrl(
+            this.organization,
+            this.pipelineName,
+            branchName, runId, 'pipeline');
     }
 
     restUrl() {
@@ -98,6 +100,19 @@ export default class Pipeline {
             );
         }
         return false;
+    }
+
+    /**
+     * Strip an encoded branch name down to its fully unencoded form
+     * @param {string} branchName
+     * @returns {string}
+     */
+    static cleanBranchName(branchName) {
+        let branch = branchName;
+        while (branch !== decodeURIComponent(branch)) {
+            branch = decodeURIComponent(branch);
+        }
+        return branch;
     }
 }
 

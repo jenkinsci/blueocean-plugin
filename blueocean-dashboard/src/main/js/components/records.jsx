@@ -49,6 +49,7 @@ export class RunRecord extends Record({
     _class: null,
     _links: null,
     changeSet: ChangeSetRecord,
+    artifacts: null,
     durationInMillis: null,
     enQueueTime: null,
     endTime: null,

@@ -2,13 +2,15 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { Provider, configureStore, combineReducers} from './redux';
-import { DevelopmentFooter } from './DevelopmentFooter';
 
-import Extensions from '@jenkins-cd/js-extensions';
+import { Provider, configureStore, combineReducers} from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
 
+import Extensions from '@jenkins-cd/js-extensions';
+
 import Config from './config';
+import { ToastDrawer } from './components/ToastDrawer';
+import { DevelopmentFooter } from './DevelopmentFooter';
 
 let config; // Holder for various app-wide state
 
@@ -36,6 +38,7 @@ class App extends Component {
                         {this.props.children /* Set by react-router */ }
                     </main>
                 </div>
+                <ToastDrawer />
                 <DevelopmentFooter />
             </div>
         );
@@ -138,3 +141,6 @@ function startApp(routes, stores) {
 Extensions.store.getExtensions(['jenkins.main.routes', 'jenkins.main.stores'], (routes = [], stores = []) => {
     startApp(routes, stores);
 });
+
+// Enable page reload.
+require('./reload');

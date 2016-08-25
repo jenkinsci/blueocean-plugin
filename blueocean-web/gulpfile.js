@@ -36,8 +36,9 @@ builder.src(['src/main/js', 'src/main/less', 'node_modules/@jenkins-cd/design-la
 builder.bundle('src/main/js/blueocean.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/main/less/blueocean.less')
-    .export("@jenkins-cd/js-extensions")
+    .export("@jenkins-cd/blueocean-core-js")
     .export("@jenkins-cd/design-language")
+    .export("@jenkins-cd/js-extensions")
     .export('react')
     .export('react-dom')
     .export('redux')
@@ -54,9 +55,9 @@ builder.bundle('src/main/js/try.js')
     .import('jquery-detached', 'core-assets/jquery-detached:jquery2') // Bundled in Jenkins 2.x
     .less('src/main/less/try.less');
 
-// 
+//
 // Copy/link the JDL assests into the webapp dir, making them available at runtime.
-// 
+//
 var isWindows = /^win/.test(process.platform);
 var assetsDstPath = './src/main/webapp/assets';
 if (isWindows) {
@@ -69,7 +70,7 @@ if (isWindows) {
             // wipe the destination directory and recreate.
             if (fs.existsSync(assetsDstPath)) {
                 rmdir(assetsDstPath);
-            } 
+            }
             fs.mkdirSync(assetsDstPath);
             // copy assets from stc to dsy.
             var assetsSrcPath = './node_modules/@jenkins-cd/design-language/dist/assets';
