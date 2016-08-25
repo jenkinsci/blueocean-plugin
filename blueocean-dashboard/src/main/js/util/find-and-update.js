@@ -9,32 +9,42 @@ import Immutable from 'immutable';
 const debugLog = require('debug')('find-and-update:debug');
 
 // Main body of findAndUpdate
-function _findAndUpdate(obj, replacer, visited) {
+function _findAndUpdate(obj, replacer, visited, path) {
     if (!obj || typeof obj === 'boolean' || typeof obj === 'number' || typeof obj === 'string') {
         return undefined;
     }
+    debugLog('checking: ', path, obj);
     const visit = visited.stop(obj);
     if (visit) {
+        debugLog('was already visited object at path: ', path, visit);
+        if (visit.replacement) {
+            debugLog('found already visited replacement at path: ', path, visit);
+        }
         return visit.replacement; // usually undefined
     }
     const val = replacer(obj);
     if (val) {
+        debugLog('found replacement at path: ', path, val);
         visited.setReplaced(obj, val);
         return val;
     }
     if (obj instanceof Array || obj instanceof Immutable.Iterable.Indexed) {
         let updated = false;
+        let idx = 0;
         const next = obj.map(curr => { // retains $pager info
-            const other = _findAndUpdate(curr, replacer, visited);
+            path.push(idx);
+            const other = _findAndUpdate(curr, replacer, visited, path);
+            path.pop();
+            idx++;
             if (other) {
-                debugLog('found replacement in map: ', other);
                 updated = other;
                 return other;
             }
             return curr;
         });
         if (updated) {
-            debugLog('updated array/Immutable.Indexed: ', obj, next);
+            debugLog('updated array/Immutable.Indexed at path: ', path, 'new: ', obj, next);
+            visited.setReplaced(obj, next || obj);
             return next || obj; // Iterable.map sometimes may mutate?
         }
     } else if (obj instanceof Immutable.Record) {
@@ -42,15 +52,17 @@ function _findAndUpdate(obj, replacer, visited) {
         let o = obj;
         for (const k of o.keySeq().toArray()) {
             const v = o[k];
-            const next = _findAndUpdate(v, replacer, visited);
+            path.push(k);
+            const next = _findAndUpdate(v, replacer, visited, path);
+            path.pop();
             if (next) {
-                debugLog('found replacement for Immutable.Record: ', o, k, next);
                 updated = true;
                 o = o.set(k, next);
             }
         }
         if (updated) {
-            debugLog('returning from IR: ', o);
+            debugLog('Updated immutable record: ', path, obj);
+            visited.setReplaced(obj, o);
             return o;
         }
     } else {
@@ -58,7 +70,9 @@ function _findAndUpdate(obj, replacer, visited) {
         let o = obj;
         for (const k in obj) {
             if (obj.hasOwnProperty(k)) {
-                const next = _findAndUpdate(o[k], replacer, visited);
+                path.push(k);
+                const next = _findAndUpdate(o[k], replacer, visited, path);
+                path.pop();
                 if (next) {
                     debugLog('found replacement for obj: ', o, k, next);
                     updated = true;
@@ -68,11 +82,11 @@ function _findAndUpdate(obj, replacer, visited) {
             }
         }
         if (updated) {
-            debugLog('returning: ', o);
+            debugLog('Updated object at path: ', path, o);
+            visited.setReplaced(obj, o);
             return o;
         }
     }
-    debugLog('no replacement found for: ', obj);
     return null;
 }
 
@@ -107,7 +121,7 @@ export default function findAndUpdate(obj, replacer) {
                 }
                 this.replaced[idx] = { replacement };
             },
-        });
+        }, []);
         debugLog('findAndUpdateDone: ', out || obj);
         return out || obj;
     } catch (e) {

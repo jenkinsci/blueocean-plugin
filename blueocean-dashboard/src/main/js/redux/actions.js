@@ -427,19 +427,22 @@ export const actions = {
                 }
             });
             if (found) {
-                debugLog('calling dispatch for event ', event);
+                debugLog('Calling dispatch for event ', event);
                 const runUrl = `${config.getAppURLBase()}${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`;
                 smartFetch(runUrl)
                 .then(data => {
                     if (data.$pending) return;
+                    debugLog('Updating run: ', data);
                     dispatchFindAndUpdate(dispatch, run => {
                         if (run.job_run_queueId === event.job_run_queueId || (isRun(run) && run.id === event.jenkins_object_id)) {
-                            debugLog('found match: ', event);
-                            return { ...data,
-                                id: event.jenkins_object_id, // make sure the runId is set so we can find it later
-                                state: event.jenkins_event === 'job_run_ended' ? 'FINISHED' : 'RUNNING',
-                                result: event.job_run_status,
-                            };
+                            if (event.jenkins_event !== 'job_run_ended') {
+                                return { ...data,
+                                    id: event.jenkins_object_id, // make sure the runId is set so we can find it later
+                                    state: 'RUNNING', // This is a horrible hack due to issues with QUEUED status
+                                    result: event.job_run_status,
+                                };
+                            }
+                            return data;
                         }
                         return undefined;
                     });
@@ -452,7 +455,7 @@ export const actions = {
                         }
                         return undefined;
                     });
-                    debugLog('Fetch error: ', err); // eslint-disable-line no-console
+                    debugLog('Fetch error: ', err);
                 });
             }
         };
@@ -474,7 +477,7 @@ export const actions = {
                 smartFetch(url, (branchData) => {
                     if (branchData.$pending) { return; }
                     if (branchData.$failure) {
-                        debugLog(branchData.$failure); // eslint-disable-line no-console
+                        debugLog(branchData.$failure);
                         return;
                     }
                     // apply the new data to the store
