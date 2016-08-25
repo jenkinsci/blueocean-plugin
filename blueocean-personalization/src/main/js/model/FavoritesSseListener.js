@@ -15,9 +15,9 @@ import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 class FavoritesSseListener {
 
     initialize(store, jobListener) {
-        // prevent more than one registration
+        // prevent leaking by disposing of any prior listeners
         if (this.store && this.sseBus) {
-            return;
+            this.sseBus.dispose();
         }
 
         this.store = store;
