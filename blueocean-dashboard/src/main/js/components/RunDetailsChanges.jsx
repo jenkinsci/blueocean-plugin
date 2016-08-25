@@ -3,14 +3,21 @@ import { CommitHash, EmptyStateView, ReadableDate, Table } from '@jenkins-cd/des
 
 const { object } = PropTypes;
 
-export default class RunDetailsChanges extends Component {
-    renderEmptyState() {
-        return (
-            <EmptyStateView tightSpacing>
-                <p>There are no changes for this pipeline run.</p>
-            </EmptyStateView>
-        );
+const CommitLink = (commit) => {
+    if (commit.url) {
+        return (<a href={commit.url}>
+            <CommitHash commitId={commit.commitId} />
+        </a>);
     }
+    return <CommitHash commitId={commit.commitId} />;
+};
+
+const EmptyState = () => (<EmptyStateView tightSpacing>
+        <p>There are no changes for this pipeline run.</p>
+    </EmptyStateView>)
+;
+
+export default class RunDetailsChanges extends Component {
 
     render() {
         const { result } = this.props;
@@ -22,7 +29,7 @@ export default class RunDetailsChanges extends Component {
         const { changeSet } = result;
 
         if (!changeSet || !changeSet.length) {
-            return this.renderEmptyState();
+            return <EmptyState />;
         }
 
         const headers = [
@@ -36,7 +43,7 @@ export default class RunDetailsChanges extends Component {
             <Table headers={headers} className="changeset-table fixed">
                 { changeSet.map(commit => (
                     <tr key={commit.commitId}>
-                        <td><CommitHash commitId={commit.commitId} /></td>
+                        <td><CommitLink {...commit} /></td>
                         <td>{commit.author.fullName}</td>
                         <td className="multipleLines">{commit.msg}</td>
                         <td><ReadableDate date={commit.timestamp} liveUpdate /></td>

@@ -20,7 +20,7 @@ export default class Branch extends Pipeline {
     }
 
     equals(branch) {
-        if (branch && branch._type === TYPE && branch.branchName === this.branchName) {
+        if (branch && branch._type === TYPE && this._compareBranchNames(branch.branchName, this.branchName)) {
             // and it's the same pipeline...
             return (
                 branch.organization === this.organization &&
@@ -28,5 +28,19 @@ export default class Branch extends Pipeline {
             );
         }
         return false;
+    }
+
+    /**
+     * Check if two branch names are the same.
+     * Works around encoding mismatch bugs by encoding each branch name and comparing to the other.
+     * @param branchName1
+     * @param branchName2
+     * @returns {boolean}
+     * @private
+     */
+    _compareBranchNames(branchName1, branchName2) {
+        return branchName1 === branchName2 ||
+            encodeURIComponent(branchName1) === branchName2 ||
+            branchName1 === encodeURIComponent(branchName2);
     }
 }
