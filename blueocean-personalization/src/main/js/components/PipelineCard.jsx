@@ -53,6 +53,16 @@ export class PipelineCard extends Component {
         this._updateState(nextProps);
     }
 
+    _navigateToRunDetails() {
+        const runUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
+            `${encodeURIComponent(this.props.fullName)}/detail/` +
+            `${this.props.branch || this.props.pipeline}/${encodeURIComponent(this.props.runId)}/pipeline`;
+
+        this.props.router.push({
+            pathname: runUrl,
+        });
+    };
+
     _updateState(props) {
         this.setState({
             favorite: props.favorite,
@@ -107,18 +117,8 @@ export class PipelineCard extends Component {
         const activityUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
         `${encodeURIComponent(this.props.fullName)}/activity`;
 
-        const navigateToRunDetails = () => {
-            const runUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
-                `${encodeURIComponent(this.props.fullName)}/detail/` +
-                `${this.props.branch || this.props.pipeline}/${encodeURIComponent(this.props.runId)}/pipeline`;
-
-            this.props.router.push({
-                pathname: runUrl,
-            });
-        };
-
         return (
-            <div className={`pipeline-card ${bgClass}`} onClick={() => navigateToRunDetails()}>
+            <div className={`pipeline-card ${bgClass}`} onClick={() => this._navigateToRunDetails()}>
                 <LiveStatusIndicator
                   result={status} startTime={startTime} estimatedDuration={estimatedDuration}
                   width={'24px'} height={'24px'} noBackground
