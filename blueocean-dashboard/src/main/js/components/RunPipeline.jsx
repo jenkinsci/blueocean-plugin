@@ -5,7 +5,7 @@
 import React, { Component, PropTypes } from 'react';
 import Pipeline from '../api/Pipeline';
 import Branch from '../api/Branch';
-import { Toast } from '@jenkins-cd/design-language';
+import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 import assert from 'assert';
 
 export default class RunPipeline extends Component {
@@ -21,36 +21,26 @@ export default class RunPipeline extends Component {
             this.pipeline = new Pipeline(props.organization, props.pipeline);
         }
 
-        this.state = {
-            toast: undefined,
-        };
-
         this.buttonText = (props.buttonText ? props.buttonText : '');
         this.buttonClass = (props.buttonClass ? props.buttonClass : '');
     }
 
     componentDidMount() {
-        const _this = this;
         const reactContext = this.context;
         const thePipeline = this.pipeline;
 
         this.pipeline.onJobChannelEvent((event) => {
             if (event.jenkins_event === 'job_run_started') {
-                _this.setState({
-                    toast: {
-                        text: `Started "${thePipeline.branchName}" #${event.jenkins_object_id}`,
-                        action: {
-                            label: 'Open',
-                            callback: () => {
-                                const runDetailsUrl = thePipeline.runDetailsRouteUrl(event.jenkins_object_id);
-                                reactContext.location.pathname = runDetailsUrl;
-                                reactContext.router.push(runDetailsUrl);
-                            },
-                        },
+                const branchName = Pipeline.cleanBranchName(thePipeline.branchName);
+                toastService.newToast({
+                    text: `Started "${branchName}" #${event.jenkins_object_id}`,
+                    action: 'Open',
+                    onActionClick: () => {
+                        const runDetailsUrl = thePipeline.runDetailsRouteUrl(event.jenkins_object_id);
+                        reactContext.location.pathname = runDetailsUrl;
+                        reactContext.router.push(runDetailsUrl);
                     },
                 });
-            } else {
-                _this.setState({ toast: undefined });
             }
         });
     }
@@ -60,46 +50,29 @@ export default class RunPipeline extends Component {
     }
 
     run(event) {
-        const _this = this;
         const thePipeline = this.pipeline;
+        const branchName = Pipeline.cleanBranchName(thePipeline.branchName);
 
         this.pipeline.run(() => {
-            // Success...
-            _this.setState({
-                toast: { text: `Queued "${thePipeline.branchName}"` },
+            toastService.newToast({
+                text: `Queued "${branchName}"`,
             });
         }, (error) => {
-            // Fail...
             console.error(`Unexpected error queuing a run of "${thePipeline.branchName}". Response:`);
             console.error(error);
-            _this.setState({
-                toast: { text: `Failed to queue "${thePipeline.branchName}". Try reloading the page.` },
+            toastService.newToast({
+                text: `Failed to queue "${branchName}". Try reloading the page.`,
             });
         });
-        
+
         event.stopPropagation();
     }
 
     render() {
         const _this = this;
-        const toast = this.state.toast;
-        if (toast) {
-            if (toast.action) {
-                return (<div>
-                    <div className={`run-pipeline ${_this.buttonClass}`} onClick={(event) => this.run(event)}>{_this.buttonText}</div>
-                    <div className="run-pipeline-toast">
-                        <Toast text={toast.text} action={toast.action.label} onActionClick={() => toast.action.callback()} />
-                    </div>
-                </div>);
-            }
-            return (<div>
-                <div className={`run-pipeline ${_this.buttonClass}`} onClick={(event) => this.run(event)}>{_this.buttonText}</div>
-                <div className="run-pipeline-toast">
-                    <Toast text={toast.text} />
-                </div>
-            </div>);
-        }
-        return (<div className={`run-pipeline ${_this.buttonClass}`} onClick={(event) => this.run(event)}>{_this.buttonText}</div>);
+        return (
+            <div className={`run-pipeline ${_this.buttonClass}`} onClick={(event) => this.run(event)}>{_this.buttonText}</div>
+        );
     }
 }
 
