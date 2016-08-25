@@ -39,7 +39,7 @@ function goTo(path) {
 
 // multibranch-pr-github/detail/test-pass-fail-stage/1/pipeline
 // :pipeline/detail/:branch/:runId/pipeline
-const runDetailRoutes = { path: 'detail(/branch/:branch)/:runId', component: RunDetails,
+const runDetailRoutes = { path: ':runId', component: RunDetails,
     indexRoute: goTo('pipeline'),
     childRoutes: [
         { path: 'pipeline', component: RunDetailsPipeline, childRoutes: [
@@ -63,15 +63,15 @@ export default (
             { path: ':pipeline', component: PipelinePage,
                 indexRoute: goTo('activity'),
                 childRoutes: [
+                    { path: 'branches', component: MultiBranch },
 
-                { path: 'branches', component: MultiBranch,
-                    childRoutes: [runDetailRoutes] },
+                    { path: 'activity', component: Activity },
 
-                { path: 'activity', component: Activity,
-                    childRoutes: [runDetailRoutes] },
+                    { path: 'pr', component: PullRequests },
 
-                { path: 'pr', component: PullRequests,
-                    childRoutes: [runDetailRoutes] },
+                    { path: 'detail', childRoutes: [ runDetailRoutes ] },
+                    
+                    { path: 'detail/:branch', childRoutes: [ runDetailRoutes ] },
 
                     DynamicRoutes,
                 ] },

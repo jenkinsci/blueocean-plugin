@@ -202,15 +202,9 @@ export function getLocation({ location, organization, pipeline, branch, runId, t
     if (pipelineName) {
         url += '/' + encodeURIComponent(pipelineName);
     }
-    if (basePageName) {
-        url += '/' + basePageName;
-    }
     if (runId) {
-        if (!basePageName) {
-            url += '/activity';
-        }
         url += '/detail' +
-        (branch ? ('/branch/' + uriString(branch)) : '') +
+        (branch ? ('/' + uriString(branch)) : '') +
         '/' + encodeURIComponent(runId) +
         (tab ? ('/' + tab) : '');
     }
