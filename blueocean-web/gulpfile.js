@@ -61,6 +61,12 @@ builder.bundle('src/main/js/try.js')
     .less('src/main/less/try.less');
 
 //
+// An Internet Explorer specific polyfill.
+// Go IE ... you never fail to make me smile :(
+//
+builder.bundle('src/main/js/ie/iepolyfills.js');
+
+//
 // Copy/link the JDL assests into the webapp dir, making them available at runtime.
 //
 var isWindows = /^win/.test(process.platform);
