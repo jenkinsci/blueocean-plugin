@@ -69,9 +69,9 @@ export default (
 
                     { path: 'pr', component: PullRequests },
 
-                    { path: 'detail', childRoutes: [ runDetailRoutes ] },
+                    { path: 'detail', childRoutes: [runDetailRoutes] },
                     
-                    { path: 'detail/:branch', childRoutes: [ runDetailRoutes ] },
+                    { path: 'detail/:branch', childRoutes: [runDetailRoutes] },
 
                     DynamicRoutes,
                 ] },

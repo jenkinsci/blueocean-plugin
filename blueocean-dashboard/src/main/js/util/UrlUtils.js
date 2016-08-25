@@ -191,12 +191,10 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
  * and builds a path to the GUI as best it can...
  * TODO: we could probably figure this out more accurately from the routes
  */
-export function getLocation({ location, organization, pipeline, branch, runId, tab, basePage }) {
+export function getLocation({ organization, pipeline, branch, runId, tab }) {
     const pipelineName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
     const organizationName = organization ||
         (typeof pipeline === 'object' ? pipeline.organization : '');
-    const basePageName = basePage || location &&
-        (location.pathname ? location.pathname : location).split('/')[4];
     /* eslint-disable prefer-template */
     let url = '/organizations/' + encodeURIComponent(organizationName);
     if (pipelineName) {
