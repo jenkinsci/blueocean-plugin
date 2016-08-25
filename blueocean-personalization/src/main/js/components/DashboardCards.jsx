@@ -172,6 +172,12 @@ export class DashboardCards extends Component {
 
     _onRunAgainClick(pipeline) {
         this.props.replayPipeline(pipeline);
+
+        const name = decodeURIComponent(pipeline.name);
+
+        toastService.newToast({
+            text: `Queued "${name}"`,
+        });
     }
 
     _onRunClick(pipeline) {
@@ -316,7 +322,7 @@ export class DashboardCards extends Component {
                     <PipelineCard
                       router={this.props.router}
                       item={pipeline}
-                      capabilities={capabilities.classes}
+                      capabilities={capabilities}
                       status={status}
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
