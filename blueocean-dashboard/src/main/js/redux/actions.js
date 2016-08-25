@@ -1,3 +1,4 @@
+import { es6Promise } from 'es6-promise'; es6Promise.polyill();
 import keymirror from 'keymirror';
 
 import { State } from '../components/records';
