@@ -365,7 +365,7 @@ export const actions = {
     processJobQueuedEvent(event) {
         return (dispatch, getState) => {
             const id = event.blueocean_job_pipeline_name;
-            const runsByJobName = getState().adminStore.runs || {};
+            const runsByJobName = getState().adminStore && getState().adminStore.runs || {};
             const eventJobRuns = runsByJobName[id];
 
             // Only interested in the event if we have already loaded the runs for that job.
@@ -517,7 +517,7 @@ export const actions = {
             urlProvider: paginateUrl(
                 `${UrlConfig.getRestRoot()}/organizations/${organization}/pipelines/${pipeline}/activities/`),
             onData: data => {
-                const runs = getState().adminStore.runs ? getState().adminStore.runs[pipeline] : [];
+                const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[pipeline] : [];
                 dispatch({
                     id: pipeline,
                     payload: data.map(run => tryToFixRunState(run, runs)),
@@ -532,7 +532,7 @@ export const actions = {
             smartFetch(
                 getRestUrl(config),
                 data => {
-                    const runs = getState().adminStore.runs ? getState().adminStore.runs[config.pipeline] : [];
+                    const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[config.pipeline] : [];
                     dispatch({
                         id: config.pipeline,
                         type: ACTION_TYPES.SET_CURRENT_RUN,
