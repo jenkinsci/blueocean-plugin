@@ -61,7 +61,7 @@ export class PipelineCard extends Component {
         this.props.router.push({
             pathname: runUrl,
         });
-    };
+    }
 
     _updateState(props) {
         this.setState({
