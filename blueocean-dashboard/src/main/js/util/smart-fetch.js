@@ -7,7 +7,7 @@ import dedupe from './dedupe-calls';
 /**
  * How many records to fetch by default
  */
-export const defaultPageSize = 2; // FIXME increase page size
+export const defaultPageSize = 25;
 
 /**
  * Freezes an object and all child properties
