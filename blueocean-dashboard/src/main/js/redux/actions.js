@@ -49,6 +49,10 @@ function tryToFixRunState(run, pipelineRuns) {
                 job_run_queueId: found.job_run_queueId,
             });
         }
+        return Object.assign({}, run, {
+            state: 'RUNNING',
+            result: 'UNKNOWN',
+        });
     }
     return run;
 }
@@ -380,14 +384,14 @@ export const actions = {
                         // run. No need to create another i.e. ignore this event.
                         return;
                     }
-                    if (parseInt(run.id) > nextId) { // need the estimated next id
-                         nextId = parseInt(run.id);
+                    if (parseInt(run.id, 10) > nextId) { // need the estimated next id
+                        nextId = parseInt(run.id, 10);
                     }
                 }
 
                 // Create a new "dummy" entry in the runs list for the
                 // run that's been queued.
-                const newRun = { id: `${nextId+1}` };
+                const newRun = { id: `${nextId + 1}` };
 
                 // We keep the queueId so we can cross reference it with the actual
                 // run once it has been started.
@@ -438,7 +442,7 @@ export const actions = {
                             if (event.jenkins_event !== 'job_run_ended') {
                                 return { ...data,
                                     id: event.jenkins_object_id, // make sure the runId is set so we can find it later
-                                    state: event.job_run_status, // This is a horrible hack due to issues with QUEUED status
+                                    state: 'RUNNING', // This is a horrible hack due to issues with QUEUED status
                                     result: 'UNKNOWN',
                                 };
                             }
