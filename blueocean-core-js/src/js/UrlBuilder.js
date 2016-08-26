@@ -2,7 +2,13 @@
  * Created by cmeyers on 8/25/16.
  */
 
-
+/**
+ * Builds the proper URL to view Run Details for the specified run.
+ * Run is either a run object with "_links.self.href" property, or the URL itself.
+ *
+ * @param {object|string} run
+ * @returns {string}
+ */
 export const buildRunDetailsUrl = (run) => {
     let restUrl = null;
 
