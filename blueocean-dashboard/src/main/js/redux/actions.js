@@ -49,10 +49,6 @@ function tryToFixRunState(run, pipelineRuns) {
                 job_run_queueId: found.job_run_queueId,
             });
         }
-        return Object.assign({}, run, {
-            state: 'RUNNING',
-            result: 'UNKNOWN',
-        });
     }
     return run;
 }
@@ -438,8 +434,8 @@ export const actions = {
                             if (event.jenkins_event !== 'job_run_ended') {
                                 return { ...data,
                                     id: event.jenkins_object_id, // make sure the runId is set so we can find it later
-                                    state: 'RUNNING', // This is a horrible hack due to issues with QUEUED status
-                                    result: event.job_run_status,
+                                    state: event.job_run_status, // This is a horrible hack due to issues with QUEUED status
+                                    result: 'UNKNOWN',
                                 };
                             }
                             return data;
@@ -532,10 +528,22 @@ export const actions = {
 
     fetchRun(config) {
         return (dispatch, getState) => {
+            const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[config.pipeline] : [];
             smartFetch(
                 getRestUrl(config),
                 data => {
-                    const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[config.pipeline] : [];
+                    if (data.$failed) { // might be a queued item...
+                        const found = runs.filter(r => r.id === config.runId)[0];
+                        if (found) {
+                            found.$success = true;
+                            dispatch({
+                                id: config.pipeline,
+                                type: ACTION_TYPES.SET_CURRENT_RUN,
+                                payload: found,
+                            });
+                            return; // skip the next dispatch
+                        }
+                    }
                     dispatch({
                         id: config.pipeline,
                         type: ACTION_TYPES.SET_CURRENT_RUN,
