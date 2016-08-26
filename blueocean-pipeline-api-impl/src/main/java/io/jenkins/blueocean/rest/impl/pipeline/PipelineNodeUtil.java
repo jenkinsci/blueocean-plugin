@@ -7,12 +7,14 @@ import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * @author Vivek Pandey
@@ -82,5 +84,63 @@ public class PipelineNodeUtil {
         }
     };
 
+
+    public static boolean isNestedInParallel(List<FlowNode> sortedNodes, FlowNode node){
+        FlowNode p = getClosestEnclosingParallelBranch(sortedNodes,node, node.getParents());
+        return isInBlock(p, getStepEndNode(sortedNodes, p), node);
+    }
+
+
+
+    private static FlowNode getClosestEnclosingParallelBranch(List<FlowNode> sortedNodes, FlowNode node, List<FlowNode> parents){
+        for(FlowNode n: parents){
+            if(isParallelBranch(n)){
+                if(isInBlock(n, getStepEndNode(sortedNodes, n), node)) {
+                    return n;
+                }
+            }
+            return getClosestEnclosingParallelBranch(sortedNodes, node, n.getParents());
+        }
+        return null;
+    }
+
+    public static FlowNode getStepEndNode(List<FlowNode> sortedNodes, FlowNode startNode){
+        for(int i = sortedNodes.size() - 1; i >=0; i--){
+            FlowNode n = sortedNodes.get(i);
+            if(n instanceof StepEndNode){
+                StepEndNode endNode = (StepEndNode) n;
+                if(endNode.getStartNode().equals(startNode))
+                    return endNode;
+            }
+        }
+        return null;
+    }
+
+    public static boolean isInBlock(FlowNode startNode, FlowNode endNode, FlowNode c){
+        return isChildOf(startNode, c) && isChildOf(c, endNode);
+    }
+
+    public static boolean isChildOf(FlowNode parent, FlowNode child){
+        if(child == null){
+            return false;
+        }
+        for(FlowNode p:child.getParents()){
+            if(p.equals(parent)){
+                return true;
+            }
+            return isChildOf(parent, p);
+        }
+        return false;
+    }
+
+    public static boolean isBranchNestedInBranch(FlowNode node){
+        for(FlowNode n: node.getParents()){
+            if(isParallelBranch(node)){
+                return true;
+            }
+            isBranchNestedInBranch(n);
+        }
+        return false;
+    }
 
 }
