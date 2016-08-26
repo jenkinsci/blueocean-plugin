@@ -11,12 +11,9 @@
     "bundle": "gulp bundle",
     "bundle:watch": "gulp bundle:watch"
   },
-  "peerDependencies": {
-    "@jenkins-cd/js-builder": "0.0.37"
-  },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.37",
+    "@jenkins-cd/js-builder": "0.0.38-beta2",
     "@jenkins-cd/js-test": "1.2.2",
     "@kadira/storybook": "1.19.0",
     "babel": "^6.5.2",
@@ -38,9 +35,9 @@
     "skin-deep": "^0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.1-beta5",
+    "@jenkins-cd/blueocean-core-js": "0.0.1-beta9",
     "@jenkins-cd/design-language": "0.0.70",
-    "@jenkins-cd/js-extensions": "0.0.22-beta1",
+    "@jenkins-cd/js-extensions": "0.0.22",
     "@jenkins-cd/js-modules": "0.0.6",
     "@jenkins-cd/sse-gateway": "0.0.7",
     "es6-promise": "3.2.1",
