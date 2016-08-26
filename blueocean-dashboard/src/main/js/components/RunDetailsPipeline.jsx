@@ -68,12 +68,12 @@ export class RunDetailsPipeline extends Component {
     componentDidMount() {
         const { result } = this.props;
 
-        if (!result.isQueued()) {
+        if (!result.isQueued()) {// FIXME: when https://issues.jenkins-ci.org/browse/JENKINS-37708 is fixed, test whether it breaks karaoke on freestyle
             // determine scroll area
             const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
-            // add both listemer, one to the scroll area and another to the whole document
+            // add both listener, one to the scroll area and another to the whole document
             if (domNode) {
-                domNode.addEventListener('wheel', this.onScrollHandler, false);
+                domNode.addEventListener('wheel', this._onScrollHandler, false);
             }
             document.addEventListener('keydown', this._handleKeys, false);
         }
@@ -130,6 +130,13 @@ export class RunDetailsPipeline extends Component {
         }
     }
 
+    // we bail out on arrow_up key
+    _handleKeys(event) {
+        if (event.keyCode === 38 && this.state.followAlong) {
+            this.setState({ followAlong: false });
+        }
+    }
+
     // Listen for pipeline flow node events.
     // We filter them only for steps and the end event all other we let pass
     _onSseEvent(event) {
@@ -176,13 +183,6 @@ export class RunDetailsPipeline extends Component {
             if (e.message !== 'exit') {
                 throw e;
             }
-        }
-    }
-
-    // we bail out on arrow_up key
-    _handleKeys(event) {
-        if (event.keyCode === 38 && this.state.followAlong) {
-            this.setState({ followAlong: false });
         }
     }
 
