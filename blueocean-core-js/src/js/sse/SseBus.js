@@ -49,15 +49,6 @@ export class SseBus {
         this.sseConnected = false;
         this.externalListeners = {};
         this.sseListeners = {};
-
-        // TODO: seems to be a timing issue here; investigate further
-        setTimeout(() => {
-            sse.connect({
-                clientId: 'jenkins_blueocean',
-                onConnect: undefined,
-                jenkinsUrl: `${urlConfig.jenkinsRootURL}/`, // FIXME sse should not require this to end with a /
-            });
-        }, 1000);
     }
 
     dispose() {
@@ -76,6 +67,8 @@ export class SseBus {
      * @returns {number} unsubscribe token
      */
     subscribeToJob(callback, jobFilter) {
+        this._initialize();
+
         const id = this._random();
 
         this.externalListeners[id] = {
@@ -97,6 +90,19 @@ export class SseBus {
 
         delete this.externalListeners[token];
         delete this.sseListeners[token];
+    }
+
+    _initialize() {
+        if (!this.sseConnected) {
+            // FIXME sse should not require this to end with a /
+            this.sse.connect({
+                clientId: 'jenkins-blueocean-core-js',
+                onConnect: undefined,
+                jenkinsUrl: `${urlConfig.jenkinsRootURL}/`,
+            });
+
+            this.sseConnected = true;
+        }
     }
 
     _handleJobEvent(event) {
