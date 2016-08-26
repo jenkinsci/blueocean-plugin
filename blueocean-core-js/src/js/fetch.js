@@ -1,7 +1,7 @@
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import jwt from './jwt';
 import isoFetch from 'isomorphic-fetch';
-import objutils from './objutils.js';
+import utils from './utils.js';
 
 export const FetchFunctions = {
         /**
@@ -21,7 +21,7 @@ export const FetchFunctions = {
      * Adds same-origin option to the fetch.
      */
     sameOriginFetchOption(options = {}) {
-        const newOpts = objutils.clone(options);
+        const newOpts = utils.clone(options);
         newOpts.credentials = newOpts.credentials || 'same-origin';
         return newOpts;
     },
@@ -31,7 +31,7 @@ export const FetchFunctions = {
      * if not using fetch or fetchJson.
      */
     jwtFetchOption(token, options = {}) {
-        const newOpts = objutils.clone(options);
+        const newOpts = utils.clone(options);
         newOpts.headers = newOpts.headers || {};
         newOpts.headers.Authorization = newOpts.headers.Authorization || `Bearer ${token}`;
         return newOpts;
@@ -98,7 +98,7 @@ export const FetchFunctions = {
      * @returns JSON body
      */
     rawFetchJSON(url, { onSuccess, onError, fetchOptions } = {}) {
-        const request = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+        const request = isoFetch(url, fetchOptions)
             .then(FetchFunctions.checkStatus)
             .then(FetchFunctions.parseJSON);
 
@@ -122,7 +122,7 @@ export const FetchFunctions = {
      * @returns fetch response
      */
     rawFetch(url, { onSuccess, onError, fetchOptions } = {}) {
-        const request = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+        const request = isoFetch(url, fetchOptions)
             .then(FetchFunctions.checkStatus);
 
         if (onSuccess) {
