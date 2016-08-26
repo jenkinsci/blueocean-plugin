@@ -24,6 +24,8 @@
             <title>Jenkins Blue Ocean</title>
 
             <j:if test="${isMSIE}">
+                <script src="${resURL}/plugin/blueocean-web/scripts/iepolyfills.js"></script>
+                <script src="${resURL}/plugin/blueocean-web/scripts/html5shiv-printshiv.min.js"></script>
                 <st:adjunct includes="org.jenkins.ui.jsmodules.blueocean_web.iepolyfills"/>
             </j:if>
             <st:adjunct includes="org.jenkinsci.plugins.ssegateway.sse.EventSource" />

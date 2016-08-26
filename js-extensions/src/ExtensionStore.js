@@ -197,7 +197,7 @@ export class ExtensionStore {
             if (!pluginMetadata.loadCountMonitors) {
                 pluginMetadata.loadCountMonitors = [];
                 pluginMetadata.loadCountMonitors.push(loadCountMonitor);
-                jsModules.import(pluginMetadata.hpiPluginId + ':jenkins-js-extension')
+                jsModules.importModule(pluginMetadata.hpiPluginId + ':jenkins-js-extension')
                     .onFulfilled(() => {
                         pluginMetadata.bundleLoaded = true;
                         for (var i = 0; i < pluginMetadata.loadCountMonitors.length; i++) {
