@@ -61,6 +61,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
     }
 
     public  Iterator<BluePipeline> getPipelines(Collection<? extends Item> items){
+        items = ContainerFilter.filter(items);
         List<BluePipeline> pipelines = new ArrayList<>();
         for (Item item : items) {
             BluePipeline pipeline  = BluePipelineFactory.getPipelineInstance(item, this);

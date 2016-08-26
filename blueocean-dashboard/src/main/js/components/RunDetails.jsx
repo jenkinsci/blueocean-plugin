@@ -4,12 +4,13 @@ import {
     ModalBody,
     ModalHeader,
     PageTabs,
+    Progress,
     TabLink,
 } from '@jenkins-cd/design-language';
 
 import {
     actions,
-    currentRuns as runsSelector,
+    currentRun as runSelector,
     isMultiBranch as isMultiBranchSelector,
     previous as previousSelector,
     createSelector,
@@ -25,21 +26,17 @@ import {
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 
-const { func, object, array, any, string } = PropTypes;
+const { func, object, any, string } = PropTypes;
 
 class RunDetails extends Component {
     componentWillMount() {
         if (this.context.config && this.context.params) {
-            const {
-                params: {
-                    pipeline,
-                    },
-                config = {},
-                } = this.context;
-
-            config.pipeline = pipeline;
-
-            this.props.fetchRunsIfNeeded(config);
+            this.props.fetchRun({
+                organization: this.props.params.organization,
+                pipeline: this.props.params.pipeline,
+                branch: this.props.isMultiBranch && this.props.params.branch,
+                runId: this.props.params.runId,
+            });
             this.opener = this.props.previous;
         }
     }
@@ -69,7 +66,7 @@ class RunDetails extends Component {
     render() {
         // early out
         if (!this.context.params
-            || !this.props.runs
+            || !this.props.run
             || this.props.isMultiBranch === null) {
             return null;
         }
@@ -78,19 +75,11 @@ class RunDetails extends Component {
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
-        const foundRun = this.props.runs.find((run) =>
-            run.id === params.runId &&
-                decodeURIComponent(run.pipeline) === params.branch
-        );
-       // deep-linking across RunDetails for different pipelines yields 'runs' data for the wrong pipeline
-        // during initial render. when runs are refetched the screen will render again with 'currentRun' correctly set
-        if (!foundRun) {
-            return null;
-        }
+        const run = this.props.run;
 
-        const currentRun = new RunRecord(foundRun);
+        const currentRun = new RunRecord(run);
 
-        const status = currentRun.getComputedResult();
+        const status = currentRun.getComputedResult() || '';
 
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
@@ -113,13 +102,15 @@ class RunDetails extends Component {
             >
                 <ModalHeader>
                     <div>
+                        {!run.$pending &&
                         <RunDetailsHeader
-                          pipeline={this.props.pipeline}
+                          pipeline={this.context.pipeline}
                           data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
+                        }
                         <PageTabs base={baseUrl}>
                             <TabLink to="/pipeline">Pipeline</TabLink>
                             <TabLink to="/changes">Changes</TabLink>
@@ -130,7 +121,8 @@ class RunDetails extends Component {
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {React.cloneElement(
+                        {run.$pending && <Progress />}
+                        {run.$success && React.cloneElement(
                             this.props.children,
                             { baseUrl, result: currentRun, ...this.props }
                         )}
@@ -146,22 +138,22 @@ RunDetails.contextTypes = {
     params: object,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
+    pipeline: object,
 };
 
 RunDetails.propTypes = {
     children: PropTypes.node,
+    params: any,
     pipeline: object,
-    runs: array,
+    run: object,
     isMultiBranch: any,
-    fetchIfNeeded: func,
-    fetchRunsIfNeeded: func,
-    setPipeline: func,
+    fetchRun: func,
     getPipeline: func,
     previous: string,
 };
 
 const selectors = createSelector(
-    [runsSelector, isMultiBranchSelector, previousSelector],
-    (runs, isMultiBranch, previous) => ({ runs, isMultiBranch, previous }));
+    [runSelector, isMultiBranchSelector, previousSelector],
+    (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
 
 export default connect(selectors, actions)(RunDetails);
