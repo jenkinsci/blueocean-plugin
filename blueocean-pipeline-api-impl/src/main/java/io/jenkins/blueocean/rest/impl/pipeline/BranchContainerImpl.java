@@ -4,6 +4,7 @@ import hudson.model.Job;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +36,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
     public Iterator<BluePipeline> iterator() {
         List<BluePipeline> branches = new ArrayList<>();
         Collection<Job> jobs = pipeline.mbp.getAllJobs();
+        jobs = ContainerFilter.filter(jobs);
         for(Job j: jobs){
             branches.add(new BranchImpl(j, getLink()));
         }

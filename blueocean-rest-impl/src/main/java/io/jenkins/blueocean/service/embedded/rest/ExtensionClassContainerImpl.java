@@ -74,5 +74,3 @@ public class ExtensionClassContainerImpl extends BlueExtensionClassContainer {
         }
     }
 }
-
-

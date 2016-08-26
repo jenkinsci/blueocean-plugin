@@ -9,7 +9,7 @@ const pr = branches.filter((run) => run.pullRequest);
 
 describe("PullRequests should render", () => {
   it("does renders the PullRequests with data", () => {
-    const wrapper =  shallow(<PullRequests branches={branches} />);
+    const wrapper =  shallow(<PullRequests pullRequests={pr} />);
     // does data renders?
     assert.equal(wrapper.find('PullRequest').length, pr.length);
     const table = wrapper.find('Table').node;

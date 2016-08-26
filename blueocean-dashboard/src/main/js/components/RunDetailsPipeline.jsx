@@ -5,7 +5,6 @@ import LogConsoleView from './LogConsoleView';
 import * as sse from '@jenkins-cd/sse-gateway';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
@@ -69,12 +68,12 @@ export class RunDetailsPipeline extends Component {
     componentDidMount() {
         const { result } = this.props;
 
-        if (!result.isQueued()) {
+        if (!result.isQueued()) {// FIXME: when https://issues.jenkins-ci.org/browse/JENKINS-37708 is fixed, test whether it breaks karaoke on freestyle
             // determine scroll area
             const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
-            // add both listemer, one to the scroll area and another to the whole document
+            // add both listener, one to the scroll area and another to the whole document
             if (domNode) {
-                domNode.addEventListener('wheel', this.onScrollHandler, false);
+                domNode.addEventListener('wheel', this._onScrollHandler, false);
             }
             document.addEventListener('keydown', this._handleKeys, false);
         }
@@ -131,6 +130,13 @@ export class RunDetailsPipeline extends Component {
         }
     }
 
+    // we bail out on arrow_up key
+    _handleKeys(event) {
+        if (event.keyCode === 38 && this.state.followAlong) {
+            this.setState({ followAlong: false });
+        }
+    }
+
     // Listen for pipeline flow node events.
     // We filter them only for steps and the end event all other we let pass
     _onSseEvent(event) {
@@ -177,13 +183,6 @@ export class RunDetailsPipeline extends Component {
             if (e.message !== 'exit') {
                 throw e;
             }
-        }
-    }
-
-    // we bail out on arrow_up key
-    _handleKeys(event) {
-        if (event.keyCode === 38 && this.state.followAlong) {
-            this.setState({ followAlong: false });
         }
     }
 
@@ -294,32 +293,6 @@ export class RunDetailsPipeline extends Component {
             mergedConfig: this.mergedConfig,
         };
 
-        const items = [];
-        if (hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView) {
-            items.push(<LogToolbar
-              fileName={logGeneral.fileName}
-              url={logGeneral.url}
-              title={title}
-            />);
-        }
-
-        if (hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView) {
-            items.push(<Steps
-              nodeInformation={currentSteps}
-              followAlong={followAlong}
-              router={router}
-              {...this.props}
-            />);
-        }
-
-        if (hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView) {
-            items.push(<EmptyStateView tightSpacing>
-                <p>There are no steps.</p>
-            </EmptyStateView>);
-        }
-
-        const transitionDuration = 500;
-
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { hasResultsForSteps && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
@@ -332,17 +305,24 @@ export class RunDetailsPipeline extends Component {
                   runId={run.id}
                 />
                 }
-                <ReactCSSTransitionGroup
-                  transitionName="stepAnimation"
-                  transitionAppear
-                  transitionAppearTimeout={transitionDuration}
-                  transitionEnterTimeout={transitionDuration}
-                  transitionLeaveTimeout={transitionDuration}
-                >
-                    <div key={this.mergedConfig.nodeReducer.id}>
-                        {items}
-                    </div>
-                </ReactCSSTransitionGroup>
+                { hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView &&
+                    <LogToolbar
+                      fileName={logGeneral.fileName}
+                      url={logGeneral.url}
+                      title={title}
+                    />
+                }
+                { hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView && <Steps
+                  nodeInformation={currentSteps}
+                  followAlong={followAlong}
+                  router={router}
+                  {...this.props}
+                />
+                }
+                { hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
+                    <p>There are no steps.</p>
+                </EmptyStateView>
+                }
                 { (!hasResultsForSteps || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
             </div>
         );

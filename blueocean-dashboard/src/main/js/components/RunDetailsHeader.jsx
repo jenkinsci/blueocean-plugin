@@ -38,7 +38,8 @@ class RunDetailsHeader extends Component {
         const cleanFullName = nameArray.join(' / ');
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
-        const authors = [...(new Set(run.changeSet.map(change => change.author.fullName)):any)];
+        const changeSet = run.changeSet;
+        const authors = changeSet && changeSet.map ? [...(new Set(changeSet.map(change => change.author.fullName)):any)] : [];
         const status = run.getComputedResult();
         const durationMillis = run.isRunning() ?
             moment().diff(moment(run.startTime)) : run.durationInMillis;

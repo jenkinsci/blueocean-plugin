@@ -3,11 +3,14 @@ import { assert} from 'chai';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import nock from 'nock';
+import mockFetch from './util/smart-fetch-mock';
+
+const debugLog = require('debug')('store-spec:debug');
 
 import {
     actions,
     ACTION_TYPES,
-    pipelines as pipelinesSelector,
+    allPipelines as pipelinesSelector,
     currentRuns as currentRunsSelector,
 } from '../../main/js/redux';
 import { pipelines } from './data/pipelines/pipelinesSingle';
@@ -31,14 +34,14 @@ describe("Redux Store - ", () => {
         nock('http://example.com')
             .get(ruleId)
             .reply(200, pipelines);
-        const store = mockStore({ adminStore: {pipelines: [] }});
+        const store = mockStore({ adminStore: {allPipelines: [] }});
 
         return store.dispatch(
-            actions.generateData('http://example.com' + ruleId, ACTION_TYPES.SET_PIPELINES_DATA))
+            actions.generateData('http://example.com' + ruleId, ACTION_TYPES.SET_ALL_PIPELINES_DATA))
             .then(() => { // return of async actions
-                assert.equal(store.getActions()[0].type, 'SET_PIPELINES_DATA');
+                assert.equal(store.getActions()[0].type, 'SET_ALL_PIPELINES_DATA');
                 assert.equal(store.getActions()[0].payload.length, pipelines.length);
-                assert.equal(pipelinesSelector({adminStore: {pipelines}}).length, pipelines.length);
+                assert.equal(pipelinesSelector({adminStore: {allPipelines: pipelines}}).length, pipelines.length);
             });
     });
     it("create store with branch data", () => {
@@ -47,26 +50,33 @@ describe("Redux Store - ", () => {
         nock(baseUrl)
             .get(ruleId)
             .reply(200, latestRuns);
+        
+        mockFetch(
+            '/jenkins/blue/rest/organizations/orgg/pipelines/xxx/activities/',
+            latestRuns);
 
         const store = mockStore({ adminStore: {}});
         return store.dispatch(
-            actions.fetchRunsIfNeeded({
+            actions.fetchRuns({
                 getAppURLBase() {
                     return baseUrl;
                 },
+                organization: 'orgg',
                 pipeline: 'xxx'
             }))
-            .then(() => { // return of async actions
+            .then(data => { // return of async actions
                 assert.equal(currentRunsSelector({adminStore: {currentRuns: latestRuns}}).length, latestRuns.length);
-                assert.equal(store.getActions()[0].type, 'CLEAR_CURRENT_RUN_DATA');
+                assert.equal(store.getActions()[0].type, 'SET_RUNS_DATA');
             });
     });
 
     const multi_branch_job_crud_job_created = (job_crud_sse_event) => {
         // Mock the fetching of the latest branches from the REST API.
-        actionsModule.fetchJson = function (url, onSuccess) {
-            onSuccess(fetchedBranches);
-        };
+        if (job_crud_sse_event.blueocean_is_for_current_job) {
+            mockFetch(
+                '/jenkins/blue/rest/organizations/jenkins/pipelines/tfprdemo/branches/?filter=origin',
+                fetchedBranches);
+        }
 
         const actionFunc = actions.updateBranchList(job_crud_sse_event, {
             getAppURLBase() {
@@ -104,16 +114,14 @@ describe("Redux Store - ", () => {
 
     it("multi-branch job_crud_job_created blueocean_is_for_current_job=true", () => {
         const dispatches = multi_branch_job_crud_job_created(job_crud_created_multibranch);
+        debugLog('dispatches: ', dispatches);
 
-        // Should be 2 events dispatched because
+        // Should be 1 events dispatched because
         // blueocean_is_for_current_job=true
-        assert.equal(dispatches.length, 2);
+        assert.equal(dispatches.length, 1);
         assert.equal(dispatches[0].id, 'tfprdemo');
         assert.equal(dispatches[0].type, 'SET_CURRENT_BRANCHES_DATA');
         assert.equal(dispatches[0].payload.length, 3); // 3 branches as returned by the fetch
-        assert.equal(dispatches[1].id, 'tfprdemo');
-        assert.equal(dispatches[1].type, 'SET_BRANCHES_DATA');
-        assert.equal(dispatches[1].payload.length, 3); // 3 branches as returned by the fetch
     });
 
     it("multi-branch job_crud_job_created blueocean_is_for_current_job=false", () => {
@@ -125,12 +133,9 @@ describe("Redux Store - ", () => {
 
         const dispatches = multi_branch_job_crud_job_created(sse_event);
 
-        // Should only be 1 event dispatched because
+        // Should only be 0 event dispatched because
         // blueocean_is_for_current_job=false
-        assert.equal(dispatches.length, 1);
-        assert.equal(dispatches[0].id, 'tfprdemo');
-        assert.equal(dispatches[0].type, 'SET_BRANCHES_DATA');
-        assert.equal(dispatches[0].payload.length, 3); // 3 branches as returned by the fetch
+        assert.equal(dispatches.length, 0);
     });
 });
 
