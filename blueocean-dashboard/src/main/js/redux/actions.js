@@ -366,6 +366,7 @@ export const actions = {
 
             // Only interested in the event if we have already loaded the runs for that job.
             if (eventJobRuns && event.job_run_queueId) {
+                let nextId = 0; // this is a terrible hack
                 for (let i = 0; i < eventJobRuns.length; i++) {
                     const run = eventJobRuns[i];
                     if (event.job_ismultibranch
@@ -379,11 +380,14 @@ export const actions = {
                         // run. No need to create another i.e. ignore this event.
                         return;
                     }
+                    if (parseInt(run.id) > nextId) { // need the estimated next id
+                         nextId = parseInt(run.id);
+                    }
                 }
 
                 // Create a new "dummy" entry in the runs list for the
                 // run that's been queued.
-                const newRun = {};
+                const newRun = { id: `${nextId+1}` };
 
                 // We keep the queueId so we can cross reference it with the actual
                 // run once it has been started.
