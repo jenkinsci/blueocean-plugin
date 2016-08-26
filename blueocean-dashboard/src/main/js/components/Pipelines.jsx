@@ -57,8 +57,8 @@ export default class Pipelines extends Component {
                           className="pipelines-table fixed"
                           headers={headers}
                         >
-                            { pipelines && pipelines
-                                .map(pipeline => {
+                            { pipelines &&
+                                pipelines.map(pipeline => {
                                     const key = pipeline._links.self.href;
                                     return (
                                         <PipelineRowItem

@@ -32,13 +32,6 @@ export class PipelinePage extends Component {
         }
     }
     
-    _componentWillReceiveProps(nextProps) {
-        if (this.props.params.organziation !== nextProps.params.organization
-        || this.props.params.pipeline !== nextProps.params.pipeline) {
-            nextProps.fetchPipeline(nextProps.params.organization, nextProps.params.pipeline);
-        }
-    }
-    
     render() {
         const { pipeline } = this.props;
         const { organization, name, fullName } = pipeline || {};
