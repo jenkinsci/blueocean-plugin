@@ -13,13 +13,15 @@ export const buildRunDetailsUrl = (run) => {
     let restUrl = null;
 
     if (typeof run === 'object') {
-        restUrl = run._links.self.href;
+        if (run && run._links && run._links.self) {
+            restUrl = run._links.self.href;
+        }
     } else if (typeof run === 'string') {
         restUrl = run;
     }
 
     if (!restUrl) {
-        throw new Error("Invalid run object or URL specified");
+        throw new Error('Could not find input URL');
     }
 
     const tokens = restUrl.split('/');
@@ -53,6 +55,11 @@ export const buildRunDetailsUrl = (run) => {
     const runId = tokens[tokens.length - 1];
 
     const detailName = isMultiBranch ? decodeURIComponent(branchName) : pipelineName;
+
+    // fail fast
+    if (!organizationName || !fullName || !detailName || !runId) {
+        throw new Error('Could not extract URI components');
+    }
 
     return `/organizations/${organizationName}` +
         `/${encodeURIComponent(fullName)}/detail` +
