@@ -3,6 +3,7 @@
  */
 import * as sse from '@jenkins-cd/sse-gateway';
 
+import { RunApi } from './rest/RunApi';
 import { SseBus } from './sse/SseBus';
 import { ToastService}  from './ToastService';
 
@@ -15,5 +16,8 @@ export { sseBus as SseBus };
 // required so new toasts are routed to the instance used in blueocean-web
 const toastService = new ToastService();
 export { toastService as ToastService };
+
+const runApi = new RunApi();
+export { runApi as RunApi };
 
 export { RunButton } from './components/RunButton';

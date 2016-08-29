@@ -5,6 +5,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
 
+import { RunApi as runApi } from '../';
 import { SseBus as sseBus } from '../';
 import { ToastService as toastService } from '../';
 
@@ -20,7 +21,6 @@ export class RunButton extends Component {
     constructor(props) {
         super(props);
 
-        this.item = null;
         this.subscriptionId = null;
 
         this.state = {
@@ -63,7 +63,9 @@ export class RunButton extends Component {
     }
 
     _onRunClick() {
+        runApi.startRun(this.props.runnable);
 
+        const name = this.props.runnable.name;
 
         toastService.newToast({
             text: `Queued "${name}"`,
@@ -71,7 +73,10 @@ export class RunButton extends Component {
     }
 
     _onStopClick() {
+        runApi.stopRun(this.props.latestRun);
 
+        const name = this.props.runnable.name;
+        const runId = this.props.latestRun.id;
 
         toastService.newToast({
             text: `Stopping "${name}" #${runId}...`,
@@ -109,7 +114,6 @@ export class RunButton extends Component {
 
 RunButton.propTypes = {
     className: PropTypes.string,
-    pipeline: PropTypes.object,
-    branch: PropTypes.object,
+    runnable: PropTypes.object,
     latestRun: PropTypes.object,
 };
