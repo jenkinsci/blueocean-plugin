@@ -44,6 +44,7 @@ function clone(json) {
 export class SseBus {
 
     constructor(sse, fetch) {
+        this.id = this._random();
         this.sse = sse;
         this.fetch = fetch || defaultFetch;
         this.sseConnected = false;
@@ -76,20 +77,24 @@ export class SseBus {
             filter: jobFilter,
         };
 
-        const sseListener = this.sse.subscribe('job', (event) => {
-            this._handleJobEvent(event);
-        });
+        if (!this.sseListeners['job']) {
+            const sseListener = this.sse.subscribe('job', (event) => {
+                this._handleJobEvent(event);
+            });
 
-        this.sseListeners[id] = sseListener;
+            this.sseListeners['job'] = sseListener;
+        }
 
         return id;
     }
 
     unsubscribe(token) {
-        this.sse.unsubscribe(this.sseListeners[token]);
-
         delete this.externalListeners[token];
-        delete this.sseListeners[token];
+
+        if (Object.keys(this.externalListeners).length === 0) {
+            this.sse.unsubscribe(this.sseListeners['job']);
+            delete this.sseListeners['job'];
+        }
     }
 
     _initialize() {
