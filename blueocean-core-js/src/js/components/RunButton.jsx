@@ -79,14 +79,17 @@ export class RunButton extends Component {
     }
 
     render() {
+        const outerClass = this.props.className ? this.props.className : '';
+        const outerClassNames = outerClass.split(' ');
+        const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'inverse' : '';
         const stopClass = this.state.stopping ? 'stopping' : '';
 
         return (
-            <div className={`run-button-component ${this.props.buttonClass}`} onClick={(event => stopProp(event))}>
+            <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
                 { !this.state.running &&
-                <a className="run-button" title="Run" onClick={() => this._onRunClick()}>
+                <a className={`btn run-button ${innerButtonClass}`} title="Run" onClick={() => this._onRunClick()}>
                     <Icon size={24} icon="play_circle_outline" />
-                    {this.props.buttonText}
+                    <span className="button-label">Run</span>
                 </a>
                 }
 
@@ -99,8 +102,7 @@ export class RunButton extends Component {
 }
 
 RunButton.propTypes = {
+    className: PropTypes.string,
     pipeline: PropTypes.object,
     branch: PropTypes.object,
-    buttonClass: PropTypes.string,
-    buttonText: PropTypes.string,
 };
