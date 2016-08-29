@@ -30,6 +30,10 @@ export class RunButton extends Component {
         };
     }
 
+    componentWillReceiveProps(nextProps) {
+        this._updateState(nextProps);
+    }
+
     componentDidMount() {
         this.subscriptionId = sseBus.subscribeToJob(
             (runData, event) => this._onJobEvent(runData, event),
@@ -40,6 +44,18 @@ export class RunButton extends Component {
     componentWillUnmount() {
         if (this.subscriptionId) {
             sseBus.unsubscribe(this.subscriptionId);
+        }
+    }
+
+    _updateState(nextProps) {
+        const oldStatus = this.props.latestRun && this.props.latestRun.state || '';
+        const newStatus = nextProps.latestRun && nextProps.latestRun.state || '';
+
+        // if the state of the run changed, then assume it's no longer trying to stop
+        if (oldStatus !== newStatus) {
+            this.setState({
+                stopping: false,
+            });
         }
     }
 
@@ -84,6 +100,14 @@ export class RunButton extends Component {
     }
 
     _onStopClick() {
+        if (this.state.stopping) {
+            return;
+        }
+
+        this.setState({
+            stopping: true,
+        });
+
         runApi.stopRun(this.props.latestRun);
 
         const name = this.props.runnable.name;

@@ -2,12 +2,9 @@
 
     display: inline-block;
 
-    &:hover {
-        cursor: pointer;
-    }
-
     .run-button, .stop-button {
         display: inline-block;
+        cursor: pointer;
     }
 
     // default (text) display
@@ -41,10 +38,11 @@
                 width: 20px;
                 height: 20px;
                 background-image: url('./icons/stop-button-blue.svg');
+            }
 
-                &.stopping {
-                    opacity: 0.4;
-                }
+            &.stopping {
+                opacity: 0.4;
+                cursor: auto;
             }
         }
 
