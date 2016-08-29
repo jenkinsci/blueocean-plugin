@@ -8,6 +8,7 @@ import { Icon } from 'react-material-icons-blue';
 import { RunApi as runApi } from '../';
 import { SseBus as sseBus } from '../';
 import { ToastService as toastService } from '../';
+import { buildRunDetailsUrl } from '../UrlBuilder';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -22,17 +23,12 @@ export class RunButton extends Component {
         super(props);
 
         this.subscriptionId = null;
+        this.awaitingJobEvent = false;
 
         this.state = {
             running: false,
             stopping: false,
         };
-
-        this._initialize(props);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this._initialize(nextProps);
     }
 
     componentDidMount() {
@@ -43,29 +39,55 @@ export class RunButton extends Component {
     }
 
     componentWillUnmount() {
-        sseBus.unsubscribe(this.subscriptionId);
-    }
-
-    _initialize(props) {
-        if (props.pipeline) {
-            this.item = props.pipeline;
-        } else if (props.branch) {
-            this.item = props.branch;
+        if (this.subscriptionId) {
+            sseBus.unsubscribe(this.subscriptionId);
         }
     }
 
     _onJobEvent(runData, event) {
+        if (!this.awaitingJobEvent) {
+            return;
+        }
+
+        const name = decodeURIComponent(
+            event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name
+        );
+        const runId = event.jenkins_object_id;
+
+        if (event.jenkins_event === 'job_run_started') {
+            const runDetailsUrl = buildRunDetailsUrl(runData);
+
+            toastService.newToast({
+                text: `Started "${name}" #${runId}`,
+                action: 'Open',
+                onActionClick: () => {
+                    if (this.props.onNavigation) {
+                        this.props.onNavigation(runDetailsUrl);
+                    }
+                },
+            });
+
+            this.awaitingJobEvent = false;
+        } else if (event.jenkins_event === 'job_run_ended' && runData.result === 'ABORTED') {
+            toastService.newToast({
+                text: `Stopped "${name}" #${runId}`,
+            });
+
+            this.awaitingJobEvent = false;
+        }
 
     }
 
     _filterJob(event) {
-
+        return event.blueocean_job_rest_url === this.props.runnable._links.self.href;
     }
 
     _onRunClick() {
         runApi.startRun(this.props.runnable);
 
         const name = this.props.runnable.name;
+
+        this.awaitingJobEvent = true;
 
         toastService.newToast({
             text: `Queued "${name}"`,
@@ -77,6 +99,8 @@ export class RunButton extends Component {
 
         const name = this.props.runnable.name;
         const runId = this.props.latestRun.id;
+
+        this.awaitingJobEvent = true;
 
         toastService.newToast({
             text: `Stopping "${name}" #${runId}...`,
@@ -116,4 +140,5 @@ RunButton.propTypes = {
     className: PropTypes.string,
     runnable: PropTypes.object,
     latestRun: PropTypes.object,
+    onNavigation: PropTypes.func,
 };
