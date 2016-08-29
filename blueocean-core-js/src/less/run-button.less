@@ -6,6 +6,10 @@
         cursor: pointer;
     }
 
+    .run-button, .stop-button {
+        display: inline-block;
+    }
+
     // default (text) display
     .svg-icon {
         display: none;
@@ -13,6 +17,8 @@
 
     // icon display
     &.icon-button {
+        height: 24px;
+
         .run-button {
             width: 24px;
             height: 24px;
@@ -26,21 +32,24 @@
                 top: 0;
                 left: 0;
             }
+        }
 
-            .button-label {
-                display: none;
+        .stop-button {
+            padding: 2px;
+
+            .btn-icon {
+                width: 20px;
+                height: 20px;
+                background-image: url('./icons/stop-button-blue.svg');
+
+                &.stopping {
+                    opacity: 0.4;
+                }
             }
         }
-    }
 
-    .stop-button {
-        width: 20px;
-        height: 20px;
-        margin: 0 2px 2px 0;
-        background-image: url('./icons/stop-button-white.svg');
-
-        &.stopping {
-            opacity: 0.4;
+        .button-label {
+            display: none;
         }
     }
 
@@ -57,6 +66,10 @@
     &.dark {
         .svg-icon {
             fill: white;
+        }
+
+        .stop-button .btn-icon {
+            background-image: url('./icons/stop-button-white.svg');
         }
     }
 }

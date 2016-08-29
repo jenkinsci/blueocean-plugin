@@ -81,20 +81,26 @@ export class RunButton extends Component {
     render() {
         const outerClass = this.props.className ? this.props.className : '';
         const outerClassNames = outerClass.split(' ');
-        const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'inverse' : '';
+        const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'btn inverse' : '';
         const stopClass = this.state.stopping ? 'stopping' : '';
+
+        const status = this.props.latestRun ? this.props.latestRun.state : '';
+        const runningStatus = status && (status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
 
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
-                { !this.state.running &&
-                <a className={`btn run-button ${innerButtonClass}`} title="Run" onClick={() => this._onRunClick()}>
+                { !runningStatus &&
+                <a className={`run-button ${innerButtonClass}`} title="Run" onClick={() => this._onRunClick()}>
                     <Icon size={24} icon="play_circle_outline" />
                     <span className="button-label">Run</span>
                 </a>
                 }
 
-                { this.state.running &&
-                <a className={`stop-button ${stopClass}`} title="Stop" onClick={() => this._onStopClick()}></a>
+                { runningStatus &&
+                <a className={`stop-button ${innerButtonClass} ${stopClass}`} title="Stop" onClick={() => this._onStopClick()}>
+                    <div className="btn-icon"></div>
+                    <span className="button-label">Stop</span>
+                </a>
                 }
             </div>
         );
@@ -105,4 +111,5 @@ RunButton.propTypes = {
     className: PropTypes.string,
     pipeline: PropTypes.object,
     branch: PropTypes.object,
+    latestRun: PropTypes.object,
 };
