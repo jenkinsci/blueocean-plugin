@@ -7,6 +7,8 @@ import {
     TabLink,
 } from '@jenkins-cd/design-language';
 
+import { RunButton } from '@jenkins-cd/blueocean-core-js';
+
 import {
     actions,
     currentRuns as runsSelector,
@@ -126,6 +128,10 @@ class RunDetails extends Component {
                             <TabLink to="/tests">Tests</TabLink>
                             <TabLink to="/artifacts">Artifacts</TabLink>
                         </PageTabs>
+
+                        <div className="button-bar">
+                            <RunButton className="dark" runnable={this.props.pipeline} latestRun={currentRun} hideRun />
+                        </div>
                     </div>
                 </ModalHeader>
                 <ModalBody>

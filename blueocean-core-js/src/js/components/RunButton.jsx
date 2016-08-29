@@ -132,7 +132,7 @@ export class RunButton extends Component {
 
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
-                { !runningStatus &&
+                { !runningStatus && !this.props.hideRun &&
                 <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={() => this._onRunClick()}>
                     <Icon size={24} icon="play_circle_outline" />
                     <span className="button-label">{runLabel}</span>
@@ -155,5 +155,10 @@ RunButton.propTypes = {
     runnable: PropTypes.object,
     latestRun: PropTypes.object,
     onNavigation: PropTypes.func,
+    hideRun: PropTypes.bool,
     runText: PropTypes.string,
+};
+
+RunButton.defaultProps = {
+    hideRun: false,
 };
