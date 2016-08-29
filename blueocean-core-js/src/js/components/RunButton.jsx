@@ -126,21 +126,23 @@ export class RunButton extends Component {
 
         const status = this.props.latestRun ? this.props.latestRun.state : '';
         const runningStatus = status && (status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
-        const runText = this.props.runText || 'Run';
+
+        const runLabel = this.props.runText || 'Run';
+        const stopLabel = this.state.stopping ? 'Stopping...' : 'Stop';
 
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
                 { !runningStatus &&
-                <a className={`run-button ${innerButtonClass}`} title="Run" onClick={() => this._onRunClick()}>
+                <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={() => this._onRunClick()}>
                     <Icon size={24} icon="play_circle_outline" />
-                    <span className="button-label">{runText}</span>
+                    <span className="button-label">{runLabel}</span>
                 </a>
                 }
 
                 { runningStatus &&
-                <a className={`stop-button ${innerButtonClass} ${stopClass}`} title="Stop" onClick={() => this._onStopClick()}>
+                <a className={`stop-button ${innerButtonClass} ${stopClass}`} title={stopLabel} onClick={() => this._onStopClick()}>
                     <div className="btn-icon"></div>
-                    <span className="button-label">Stop</span>
+                    <span className="button-label">{stopLabel}</span>
                 </a>
                 }
             </div>
