@@ -126,13 +126,14 @@ export class RunButton extends Component {
 
         const status = this.props.latestRun ? this.props.latestRun.state : '';
         const runningStatus = status && (status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
+        const runText = this.props.runText || 'Run';
 
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
                 { !runningStatus &&
                 <a className={`run-button ${innerButtonClass}`} title="Run" onClick={() => this._onRunClick()}>
                     <Icon size={24} icon="play_circle_outline" />
-                    <span className="button-label">Run</span>
+                    <span className="button-label">{runText}</span>
                 </a>
                 }
 
@@ -152,4 +153,5 @@ RunButton.propTypes = {
     runnable: PropTypes.object,
     latestRun: PropTypes.object,
     onNavigation: PropTypes.func,
+    runText: PropTypes.string,
 };
