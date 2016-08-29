@@ -3,6 +3,7 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
+import { RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 
@@ -70,9 +71,7 @@ export default class Runs extends Component {
                   estimatedDuration={estimatedDurationInMillis}
                 />
             </td>
-            <td>
-                {id}
-            </td>
+            <td>{id}</td>
             <td><CommitHash commitId={commitId} /></td>
             <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
                 <td>{decodeURIComponent(pipeline)}</td>
@@ -82,12 +81,14 @@ export default class Runs extends Component {
             <td><ReadableDate date={endTime} liveUpdate /></td>
             <td>
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
+                <RunButton className="icon-button" runnable={pipeline} latestRun={this.props.run} hideRun />
             </td>
         </tr>);
     }
 }
 
 Runs.propTypes = {
+    run: PropTypes.object,
     result: any.isRequired, // FIXME: create a shape
     data: string,
     changeset: object.isRequired,

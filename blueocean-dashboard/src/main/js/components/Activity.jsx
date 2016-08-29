@@ -116,10 +116,13 @@ export class Activity extends Component {
                                 ]);
                             }
 
-                            return (<Runs {...{
-                                key: index,
-                                changeset: latestRecord,
-                                result: new RunRecord(run) }} />);
+                            return (
+                                <Runs {...{
+                                    key: index,
+                                    run,
+                                    changeset: latestRecord,
+                                    result: new RunRecord(run) }} />
+                            );
                         })
                     }
                 </Table>
