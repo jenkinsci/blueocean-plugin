@@ -1,6 +1,6 @@
 {
     "name": "@jenkins-cd/blueocean-core-js",
-    "version": "0.0.3-beta2",
+    "version": "0.0.3-beta3",
     "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
     "main": "dist/js/index.js",
     "scripts": {
@@ -25,7 +25,8 @@
     "dependencies": {
         "@jenkins-cd/sse-gateway": "0.0.7",
         "isomorphic-fetch": "2.2.1",
-        "mobx": "2.4.3"
+        "mobx": "2.4.3",
+        "react-material-icons-blue": "1.0.4"
     },
     "peerDependencies": {
         "react": "^15.1.0",

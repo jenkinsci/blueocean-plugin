@@ -1,15 +1,39 @@
-.run-button {
-    z-index: 2000;
-    font-size: 10px;
-    padding-left: 5px;
-    padding-top: 2px;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    background-image: url('./icons/run.svg');
-    background-size: cover;
+.run-button-component {
+
+    display: inline-block;
 
     &:hover {
-        background-image: url('./icons/run-darkened.svg'); // TODO: nicer if it could be done via a data-uri transform
+        cursor: pointer;
+    }
+
+    .run-button {
+        width: 24px;
+        height: 24px;
+    }
+
+    .stop-button {
+        width: 20px;
+        height: 20px;
+        margin: 0 2px 2px 0;
+        background-image: url('./icons/stop-button-white.svg');
+
+        &.stopping {
+            opacity: 0.4;
+        }
+    }
+
+    // default themeing
+    .svg-icon {
+        fill: @brand-primary;
+
+        &:hover {
+            fill: @brand-primary-dark;
+        }
+    }
+
+    &.dark {
+        .svg-icon {
+            fill: white;
+        }
     }
 }
