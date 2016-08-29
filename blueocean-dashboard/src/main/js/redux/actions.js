@@ -370,7 +370,12 @@ export const actions = {
 
             // Only interested in the event if we have already loaded the runs for that job.
             if (eventJobRuns && event.job_run_queueId) {
-                let nextId = 0; // this is a terrible hack
+                // here, we're emulating the expectedBuildNumber in order to get a runId
+                // we need a runId so clicking to view the queued item shows the right page
+                // now that we are fetching a run 'directly', however it's important to note
+                // that this could still fail with a reload if the runs have not loaded and
+                // we don't have a matching queued item with the same runId
+                let nextId = 0;
                 for (let i = 0; i < eventJobRuns.length; i++) {
                     const run = eventJobRuns[i];
                     if (event.job_ismultibranch
@@ -384,7 +389,7 @@ export const actions = {
                         // run. No need to create another i.e. ignore this event.
                         return;
                     }
-                    if (parseInt(run.id, 10) > nextId) { // need the estimated next id
+                    if (parseInt(run.id, 10) > nextId) { // figure out the next id, expectedBuildNumber
                         nextId = parseInt(run.id, 10);
                     }
                 }
