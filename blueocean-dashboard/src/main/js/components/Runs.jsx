@@ -81,7 +81,7 @@ export default class Runs extends Component {
             <td><ReadableDate date={endTime} liveUpdate /></td>
             <td>
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
-                <RunButton className="icon-button" runnable={pipeline} latestRun={this.props.run} hideRun />
+                <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
             </td>
         </tr>);
     }
@@ -89,6 +89,7 @@ export default class Runs extends Component {
 
 Runs.propTypes = {
     run: PropTypes.object,
+    pipeline: PropTypes.object,
     result: any.isRequired, // FIXME: create a shape
     data: string,
     changeset: object.isRequired,

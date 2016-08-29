@@ -130,7 +130,7 @@ class RunDetails extends Component {
                         </PageTabs>
 
                         <div className="button-bar">
-                            <RunButton className="dark" runnable={this.props.pipeline} latestRun={currentRun} hideRun />
+                            <RunButton className="dark" runnable={this.props.pipeline} latestRun={currentRun} buttonType="stop-only" />
                         </div>
                     </div>
                 </ModalHeader>

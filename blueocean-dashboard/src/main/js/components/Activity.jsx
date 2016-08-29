@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
+import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Runs from './Runs';
 import { RunRecord, ChangeSetRecord } from './records';
-import RunPipeline from './RunPipeline.jsx';
 import {
     actions,
     currentRuns as runsSelector,
@@ -14,7 +14,7 @@ import { capabilityStore } from './Capability';
 
 const { object, array, func, string, bool } = PropTypes;
 
-const EmptyState = ({ repoName, pipeline, showRunButton }) => (
+const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation }) => (
     <main>
         <EmptyStateView iconName="shoes">
             <h1>Ready, get set...</h1>
@@ -27,7 +27,14 @@ const EmptyState = ({ repoName, pipeline, showRunButton }) => (
                 Commit to the repository <em>{repoName}</em> or run the pipeline manually.
             </p>
 
-            {showRunButton && <RunNonMultiBranchPipeline pipeline={pipeline} buttonText="Run Now" />}
+        { showRunButton &&
+            <RunButton
+              runnable={pipeline}
+              buttonType="run-only"
+              runLabel="Run Now"
+              onNavigation={onNavigation}
+            />
+        }
         </EmptyStateView>
     </main>
 );
@@ -36,15 +43,6 @@ EmptyState.propTypes = {
     repoName: string,
     pipeline: object,
     showRunButton: bool,
-};
-
-const RunNonMultiBranchPipeline = ({ pipeline, buttonText }) => (
-    <RunPipeline organization={pipeline.organization} pipeline={pipeline.fullName} buttonClass="btn-primary inverse non-multi-branch" buttonText={buttonText} />
-);
-
-RunNonMultiBranchPipeline.propTypes = {
-    pipeline: object,
-    buttonText: string,
 };
 
 export class Activity extends Component {
@@ -77,10 +75,22 @@ export class Activity extends Component {
         // the Branches/PRs tab.
         const showRunButton = !isMultiBranchPipeline;
 
+        const onNavigation = (url) => {
+            this.context.location.pathname = url;
+            this.context.router.push(location);
+        };
 
         if (!runs.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
+            return (
+                <EmptyState
+                  repoName={this.context.params.pipeline}
+                  pipeline={pipeline}
+                  showRunButton={showRunButton}
+                />
+            );
         }
+
+        const latestRun = runs[0];
 
         const headers = isMultiBranchPipeline ? [
             'Status',
@@ -101,33 +111,45 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ];
 
+        debugger;
 
-        return (<main>
-            <article className="activity">
-                {showRunButton && <RunNonMultiBranchPipeline pipeline={pipeline} buttonText="Run" />}
-                <Table className="activity-table fixed" headers={headers}>
-                    {
-                        runs.map((run, index) => {
-                            const changeset = run.changeSet;
-                            let latestRecord = {};
-                            if (changeset && changeset.length > 0) {
-                                latestRecord = new ChangeSetRecord(changeset[
-                                    Object.keys(changeset)[changeset.length - 1]
-                                ]);
-                            }
+        return (
+            <main>
+                <article className="activity">
+                { showRunButton &&
+                    <RunButton
+                      runnable={pipeline}
+                      latestRun={latestRun}
+                      buttonType="run-only"
+                      onNavigation={onNavigation}
+                    />
+                }
 
-                            return (
-                                <Runs {...{
-                                    key: index,
-                                    run,
-                                    changeset: latestRecord,
-                                    result: new RunRecord(run) }} />
-                            );
-                        })
-                    }
-                </Table>
-            </article>
-        </main>);
+                    <Table className="activity-table fixed" headers={headers}>
+                        {
+                            runs.map((run, index) => {
+                                const changeset = run.changeSet;
+                                let latestRecord = {};
+                                if (changeset && changeset.length > 0) {
+                                    latestRecord = new ChangeSetRecord(changeset[
+                                        Object.keys(changeset)[changeset.length - 1]
+                                    ]);
+                                }
+
+                                return (
+                                    <Runs {...{
+                                        key: index,
+                                        run,
+                                        pipeline,
+                                        changeset: latestRecord,
+                                        result: new RunRecord(run) }} />
+                                );
+                            })
+                        }
+                    </Table>
+                </article>
+            </main>
+        );
     }
 }
 
@@ -135,6 +157,7 @@ Activity.contextTypes = {
     params: object.isRequired,
     location: object.isRequired,
     config: object.isRequired,
+    router: object.isRequired,
 };
 
 Activity.propTypes = {

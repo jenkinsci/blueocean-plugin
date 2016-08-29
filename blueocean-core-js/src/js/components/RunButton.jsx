@@ -127,19 +127,23 @@ export class RunButton extends Component {
         const status = this.props.latestRun ? this.props.latestRun.state : '';
         const runningStatus = status && (status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
 
+        const showRunButton = this.props.buttonType === 'run-only' ||
+            (this.props.buttonType === 'toggle' && !runningStatus);
+        const showStopButton = runningStatus && (this.props.buttonType === 'toggle' || this.props.buttonType === 'stop-only');
+
         const runLabel = this.props.runText || 'Run';
         const stopLabel = this.state.stopping ? 'Stopping...' : 'Stop';
 
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
-                { !runningStatus && !this.props.hideRun &&
+                { showRunButton &&
                 <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={() => this._onRunClick()}>
                     <Icon size={24} icon="play_circle_outline" />
                     <span className="button-label">{runLabel}</span>
                 </a>
                 }
 
-                { runningStatus &&
+                { showStopButton &&
                 <a className={`stop-button ${innerButtonClass} ${stopClass}`} title={stopLabel} onClick={() => this._onStopClick()}>
                     <div className="btn-icon"></div>
                     <span className="button-label">{stopLabel}</span>
@@ -151,14 +155,14 @@ export class RunButton extends Component {
 }
 
 RunButton.propTypes = {
+    buttonType: PropTypes.oneOf('toggle', 'stop-only', 'run-only'),
     className: PropTypes.string,
     runnable: PropTypes.object,
     latestRun: PropTypes.object,
     onNavigation: PropTypes.func,
-    hideRun: PropTypes.bool,
     runText: PropTypes.string,
 };
 
 RunButton.defaultProps = {
-    hideRun: false,
+    buttonType: 'toggle',
 };
