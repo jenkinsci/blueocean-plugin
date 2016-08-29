@@ -447,7 +447,13 @@ export const actions = {
                             if (event.jenkins_event !== 'job_run_ended') {
                                 return { ...data,
                                     id: event.jenkins_object_id, // make sure the runId is set so we can find it later
-                                    state: 'RUNNING', // This is a horrible hack due to issues with QUEUED status
+                                    // here, we explicitly set to running. this is because
+                                    // pipeline runs get removed from the queue, a running event is sent
+                                    // but they are still queued in Jenkins, as they may not actually
+                                    // be executing anything. However, pipeline doesn't send any further
+                                    // events so we're never notified when it actually does start, so
+                                    // we just treat this subsequent runStateEvent as a start or a finish
+                                    state: 'RUNNING',
                                     result: 'UNKNOWN',
                                 };
                             }
