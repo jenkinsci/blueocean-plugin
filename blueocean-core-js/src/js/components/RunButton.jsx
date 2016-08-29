@@ -23,7 +23,6 @@ export class RunButton extends Component {
         super(props);
 
         this.subscriptionId = null;
-        this.awaitingJobEvent = false;
 
         this.state = {
             running: false,
@@ -45,10 +44,6 @@ export class RunButton extends Component {
     }
 
     _onJobEvent(runData, event) {
-        if (!this.awaitingJobEvent) {
-            return;
-        }
-
         const name = decodeURIComponent(
             event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name
         );
@@ -66,14 +61,10 @@ export class RunButton extends Component {
                     }
                 },
             });
-
-            this.awaitingJobEvent = false;
         } else if (event.jenkins_event === 'job_run_ended' && runData.result === 'ABORTED') {
             toastService.newToast({
                 text: `Stopped "${name}" #${runId}`,
             });
-
-            this.awaitingJobEvent = false;
         }
 
     }
@@ -87,8 +78,6 @@ export class RunButton extends Component {
 
         const name = this.props.runnable.name;
 
-        this.awaitingJobEvent = true;
-
         toastService.newToast({
             text: `Queued "${name}"`,
         });
@@ -99,8 +88,6 @@ export class RunButton extends Component {
 
         const name = this.props.runnable.name;
         const runId = this.props.latestRun.id;
-
-        this.awaitingJobEvent = true;
 
         toastService.newToast({
             text: `Stopping "${name}" #${runId}...`,
