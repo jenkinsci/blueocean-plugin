@@ -25,6 +25,12 @@ export class ToastService {
      * @returns {number} unique ID of toast
      */
     newToast(toast) {
+        // prevent duplicate toasts from appearing when multiple UI elements
+        // are listening for an event that triggers creation of a toast
+        if (this._hasDuplicate(toast)) {
+            return;
+        }
+
         if (!toast.id) {
             toast.id = Math.random() * Math.pow(10, 16);
         }
@@ -51,6 +57,23 @@ export class ToastService {
     @computed
     get count() {
         return this.toasts ? this.toasts.length : 0;
+    }
+
+    /**
+     * Returns true if a toast with the same 'text' and 'action' already exists
+     * @param newToast
+     * @returns {boolean}
+     * @private
+     */
+    _hasDuplicate(newToast) {
+        for (const toast of this.toasts) {
+            if (toast.text === newToast.text &&
+                toast.action === newToast.action) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
