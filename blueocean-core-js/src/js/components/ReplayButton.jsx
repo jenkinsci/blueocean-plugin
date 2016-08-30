@@ -53,7 +53,7 @@ export class ReplayButton extends Component {
             const name = this.props.runnable.name;
 
             toastService.newToast({
-                text: `Queued "${name}" #${runId}`,
+                text: `Started "${name}" #${runId}`,
                 action: 'Open',
                 onActionClick: () => {
                     if (this.props.onNavigation) {
