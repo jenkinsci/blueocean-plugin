@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
+import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
-import RunPipeline from './RunPipeline.jsx';
+
 import { StopPropagation } from './StopPropagation';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
@@ -58,7 +59,7 @@ export default class Branches extends Component {
                 <td><ReadableDate date={endTime} liveUpdate /></td>
                 <td>
                     <StopPropagation className="actions">
-                        <RunPipeline organization={organization} pipeline={fullName} branch={encodeURIComponent(branchName)} />
+                        <RunButton className="icon-button" runnable={data} latestRun={data.latestRun} />
                         <Extensions.Renderer
                           extensionPoint="jenkins.pipeline.branches.list.action"
                           pipeline={data}
