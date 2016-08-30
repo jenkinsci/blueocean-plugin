@@ -11,7 +11,7 @@
     "bundle:watch": "gulp bundle:watch"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.38-beta1",
+    "@jenkins-cd/js-builder": "0.0.39-beta2",
     "@jenkins-cd/js-test": "1.2.2",
     "babel-eslint": "^6.0.2",
     "babel-plugin-transform-decorators-legacy": "1.3.4",

@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.38",
+    "@jenkins-cd/js-builder": "0.0.39-beta2",
     "@jenkins-cd/js-test": "1.2.3",
     "@kadira/storybook": "1.19.0",
     "babel": "^6.5.2",
