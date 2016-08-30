@@ -51,13 +51,13 @@ export const actions = {
 
     toggleFavorite(addFavorite, branch, favoriteToRemove) {
         return (dispatch) => {
-            const baseUrl = UrlConfig.getBlueOceanAppURL();
-
+            const baseUrl = UrlConfig.getJenkinsRootURL();
             const url = cleanSlashes(addFavorite ?
                 `${baseUrl}${branch._links.self.href}/favorite` :
                 `${baseUrl}${favoriteToRemove._links.self.href}`
             );
-
+           
+         
             const fetchOptions = {
                 method: 'PUT',
                 headers: {
