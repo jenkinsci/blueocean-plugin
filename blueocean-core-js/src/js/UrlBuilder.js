@@ -2,6 +2,38 @@
  * Created by cmeyers on 8/25/16.
  */
 
+const extractRestUrl = (subject) => {
+    let restUrl = null;
+
+    if (typeof subject === 'object') {
+        if (subject && subject._links && subject._links.self) {
+            restUrl = subject._links.self.href;
+        }
+    } else if (typeof subject === 'string') {
+        restUrl = subject;
+    }
+
+    if (!restUrl) {
+        throw new Error('Could not find input URL');
+    }
+
+    return restUrl;
+};
+
+const stripEmptyTokens = (tokens) => {
+    const copy = tokens.slice();
+
+    if (copy[0] === '') {
+        copy.shift();
+    }
+
+    if (copy[copy.length - 1] === '') {
+        copy.pop();
+    }
+
+    return copy;
+};
+
 /**
  * Builds the proper URL to view Run Details for the specified run.
  * Run is either a run object with "_links.self.href" property, or the URL itself.
@@ -10,33 +42,12 @@
  * @returns {string}
  */
 export const buildRunDetailsUrl = (run) => {
-    let restUrl = null;
-
-    if (typeof run === 'object') {
-        if (run && run._links && run._links.self) {
-            restUrl = run._links.self.href;
-        }
-    } else if (typeof run === 'string') {
-        restUrl = run;
-    }
-
-    if (!restUrl) {
-        throw new Error('Could not find input URL');
-    }
-
-    const tokens = restUrl.split('/');
+    const restUrl = extractRestUrl(run);
+    // clean empty chars that result from URL beginning or ending with forward slash
+    const tokens = stripEmptyTokens(restUrl.split('/'));
 
     // given the following URL '/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/folder3/pipelines/jdl-2
     // /branches/experiment%252Fbuild-locally-docker/runs/21/
-
-    // clean empty chars that result from URL beginning or ending with forward slash
-    if (tokens[0] === '') {
-        tokens.shift();
-    }
-
-    if (tokens[tokens.length - 1] === '') {
-        tokens.pop();
-    }
 
     const organizationName = tokens[3];
     const isMultiBranch = tokens[tokens.length - 4] === 'branches';
