@@ -173,11 +173,12 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
     const jenkinsUrl = require('../config').getJenkinsRootURL();
     let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
     if (pipelineName) {
-        // pipelineName might include a folder path, don't escape it
+        // pipelineName might include a folder path, don't encode it
         url += `/pipelines/${pipelineName}`;
     }
     if (branch) {
-        url += `/branches/${encodeURIComponent(branch)}`;
+        // JENKINS-37712 branch needs to be double-encoded for some reason
+        url += `/branches/${encodeURIComponent(encodeURIComponent(branch))}`;
     }
     if (runId) {
         url += `/runs/${encodeURIComponent(runId)}`;
