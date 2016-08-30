@@ -7,7 +7,7 @@ import {
     TabLink,
 } from '@jenkins-cd/design-language';
 
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import {
     actions,
@@ -91,8 +91,12 @@ class RunDetails extends Component {
         }
 
         const currentRun = new RunRecord(foundRun);
-
         const status = currentRun.getComputedResult();
+
+        const switchRunDetails = (newUrl) => {
+            location.pathname = newUrl;
+            router.push(location);
+        };
 
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
@@ -105,6 +109,7 @@ class RunDetails extends Component {
             location.query = null;
             router.push(location);
         };
+
         return (
             <ModalView
               isVisible
@@ -130,7 +135,20 @@ class RunDetails extends Component {
                         </PageTabs>
 
                         <div className="button-bar">
-                            <RunButton className="dark" runnable={this.props.pipeline} latestRun={currentRun} buttonType="stop-only" />
+                            <ReplayButton
+                              className="dark"
+                              runnable={this.props.pipeline}
+                              latestRun={currentRun}
+                              onNavigation={switchRunDetails}
+                              autoNavigate
+                            />
+
+                            <RunButton
+                              className="dark"
+                              runnable={this.props.pipeline}
+                              latestRun={currentRun}
+                              buttonType="stop-only"
+                            />
                         </div>
                     </div>
                 </ModalHeader>
