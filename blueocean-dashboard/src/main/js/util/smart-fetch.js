@@ -1,8 +1,7 @@
 const infoLog = require('debug')('smart-fetch:info');
 const debugLog = require('debug')('smart-fetch:debug');
-const errorLog = require('debug')('smart-fetch:error');
 import dedupe from './dedupe-calls';
-import { Fetch, FetchFunctions } from '@jenkins-cd/blueocean-core-js';
+import { Fetch } from '@jenkins-cd/blueocean-core-js';
 
 /**
  * How many records to fetch by default
@@ -23,19 +22,6 @@ const deepFreeze = (obj) => {
         }
     }
     return Object.freeze(obj);
-};
-
-/**
- * Validates the status is 200-299 or returns an error
- */
-const checkStatus = (response) => {
-    if (response.status >= 300 || response.status < 200) {
-        errorLog('ERROR: ', response);
-        const error = new Error(response.statusText);
-        error.response = response;
-        throw error;
-    }
-    return response;
 };
 
 /**

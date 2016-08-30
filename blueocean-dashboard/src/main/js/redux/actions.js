@@ -1,5 +1,4 @@
 import keymirror from 'keymirror';
-import fetch from 'isomorphic-fetch';
 import { fetch as smartFetch, paginate, applyFetchMarkers } from '../util/smart-fetch';
 import { State } from '../components/records';
 import UrlConfig from '../config';
