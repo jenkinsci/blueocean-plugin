@@ -56,7 +56,13 @@ exports.yamlToJSON = function(sourceFile, targetFile, transformer) {
     if (transformer) {
         asJSON = transformer(asJSON);
     }
+    
+    var parentDir = paths.parentDir(targetFile);
+    if (!fs.existsSync(parentDir)) {
+        paths.mkdirp(parentDir);
+    }
     fs.writeFileSync(targetFile, JSON.stringify(asJSON, undefined, 4));
+
     return asJSON;
 };
 

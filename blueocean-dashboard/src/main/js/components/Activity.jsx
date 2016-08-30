@@ -5,10 +5,11 @@ import { RunRecord, ChangeSetRecord } from './records';
 import RunPipeline from './RunPipeline.jsx';
 import {
     actions,
-    currentRuns as runsSelector,
+    currentRuns as currentRunsSelector,
     createSelector,
     connect,
 } from '../redux';
+import PageLoading from './PageLoading';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { capabilityStore } from './Capability';
 
@@ -53,19 +54,21 @@ export class Activity extends Component {
             const {
                 params: {
                     pipeline,
+                    organization,
                 },
                 config = {},
             } = this.context;
 
             config.pipeline = pipeline;
-            this.props.fetchRunsIfNeeded(config);
+            config.organization = organization;
+            this.props.fetchRuns(config);
         }
     }
 
     render() {
         const { runs, pipeline } = this.props;
-        // early out
-        if (!runs) {
+
+        if (!runs || !pipeline || pipeline.$pending) {
             return null;
         }
 
@@ -77,8 +80,7 @@ export class Activity extends Component {
         // the Branches/PRs tab.
         const showRunButton = !isMultiBranchPipeline;
 
-
-        if (!runs.length) {
+        if (runs.$success && !runs.length) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
         }
 
@@ -101,8 +103,8 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ];
 
-
         return (<main>
+            {runs.$pending && <PageLoading />}
             <article className="activity">
                 {showRunButton && <RunNonMultiBranchPipeline pipeline={pipeline} buttonText="Run" />}
                 <Table className="activity-table fixed" headers={headers}>
@@ -123,6 +125,11 @@ export class Activity extends Component {
                         })
                     }
                 </Table>
+                {runs.$pager &&
+                    <button disabled={!runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
+                        {runs.$pending ? 'Loading...' : 'Show More'}
+                    </button>
+                }
             </article>
         </main>);
     }
@@ -131,6 +138,7 @@ export class Activity extends Component {
 Activity.contextTypes = {
     params: object.isRequired,
     location: object.isRequired,
+    pipeline: object,
     config: object.isRequired,
 };
 
@@ -138,9 +146,9 @@ Activity.propTypes = {
     runs: array,
     pipeline: object,
     capabilities: object,
-    fetchRunsIfNeeded: func,
+    fetchRuns: func,
 };
 
-const selectors = createSelector([runsSelector], (runs) => ({ runs }));
+const selectors = createSelector([currentRunsSelector], (runs) => ({ runs }));
 
 export default connect(selectors, actions)(capabilityStore(props => props.pipeline._class)(Activity));

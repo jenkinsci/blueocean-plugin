@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
             }
         }
 
-        List<Item> items = new ArrayList<>();
+        Collection<Item> items = new ArrayList<>();
         if(!excludeList.isEmpty()) {
             for (Item item : Jenkins.getActiveInstance().getAllItems(Item.class)) {
                 if (!exclude(item.getParent(), excludeList)) {
@@ -94,6 +95,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
         }else{
             items = Jenkins.getActiveInstance().getAllItems(Item.class);
         }
+        items = ContainerFilter.filter(items);
         final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl()
             .getPipelines(items);
         final List<BluePipeline> pipelines = new ArrayList<>();

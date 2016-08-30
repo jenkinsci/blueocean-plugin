@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import PipelineRowItem from './PipelineRowItem';
-import { PipelineRecord } from './records';
+import PageLoading from './PageLoading';
 
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
@@ -14,20 +14,10 @@ export default class Pipelines extends Component {
         const { pipelines, config } = this.context;
         const { organization } = this.context.params;
 
-        // Early out
-        if (!pipelines) {
-            return <div>No pipelines found.</div>;
-        }
-
         const orgLink = organization ?
             <Link to={`organizations/${organization}`} className="inverse">
                 {organization}
             </Link> : '';
-
-        const pipelineRecords = pipelines
-            .map(data => new PipelineRecord(data))
-            .filter(data => !data.isFolder())
-            .sort(pipeline => !!pipeline.branchNames);
 
         const headers = [
             { label: 'Name', className: 'name' },
@@ -43,6 +33,7 @@ export default class Pipelines extends Component {
         return (
             <Page>
                 <PageHeader>
+                    {!pipelines || pipelines.$pending && <PageLoading duration={2000} />}
                     <Title>
                         <h1>
                             <Link to="/" className="inverse">Dashboard</Link>
@@ -66,8 +57,8 @@ export default class Pipelines extends Component {
                           className="pipelines-table fixed"
                           headers={headers}
                         >
-                            { pipelineRecords
-                                .map(pipeline => {
+                            { pipelines &&
+                                pipelines.map(pipeline => {
                                     const key = pipeline._links.self.href;
                                     return (
                                         <PipelineRowItem
@@ -78,6 +69,12 @@ export default class Pipelines extends Component {
                                 })
                             }
                         </Table>
+                        
+                        { pipelines && pipelines.$pager &&
+                            <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
+                                {pipelines.$pending ? 'Loading...' : 'Show More'}
+                            </button>
+                        }
                     </article>
                 </main>
             </Page>);

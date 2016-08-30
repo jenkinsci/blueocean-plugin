@@ -1,14 +1,14 @@
 import React from 'react';
-import {assert} from 'chai';
+import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import nock from 'nock';
 
-import {getNodesInformation} from './../../main/js/util/logDisplayHelper';
+import { getNodesInformation } from './../../main/js/util/logDisplayHelper';
 import {
     actions,
 } from '../../main/js/redux';
-import  {nodes, stepsNode45} from './nodes';
+import { nodes, stepsNode45 } from './nodes';
 
 import {
     calculateRunLogURLObject, calculateStepsBaseUrl, calculateNodeBaseUrl,
