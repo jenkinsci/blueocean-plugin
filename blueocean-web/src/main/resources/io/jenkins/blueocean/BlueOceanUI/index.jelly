@@ -22,18 +22,18 @@
             <title>Jenkins Blue Ocean</title>
 
             <st:adjunct includes="org.jenkinsci.plugins.ssegateway.sse.EventSource" />
+            <j:set var="assetsPath" value="${resURL}/plugin/blueocean-web/assets" />
 
             <!-- Reset -->
-            <link href="${resURL}/plugin/blueocean-web/assets/css/normalize.css" rel="stylesheet"/>
+            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/normalize.css" />
 
             <!-- Icons + Fonts -->
-            <link rel="stylesheet" href="${resURL}/plugin/blueocean-web/assets/css/latofonts.css" type="text/css"/>
-            <link rel="stylesheet" href="${resURL}/plugin/blueocean-web/assets/octicons/octicons.css" type="text/css"/>
+            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/latofonts.css" />
+            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/octicons/octicons.css" />
 
-            <!-- Jenkins Design Language -->
-            <link rel="stylesheet"
-                  href="${resURL}/plugin/blueocean-web/assets/css/jenkins-design-language.css"
-                  type="text/css"/>
+            <!-- Core Styles -->
+            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/jenkins-design-language.css" />
+            <link rel="stylesheet" type="text/css" href="${assetsPath}/corejs/css/blueocean-core-js.css" />
 
             <!-- Inject headers from other extensions. See BluePageDecorator.java -->
             <j:forEach var="pd" items="${it.pageDecorators}">
