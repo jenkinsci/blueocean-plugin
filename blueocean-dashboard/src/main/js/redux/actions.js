@@ -381,14 +381,16 @@ export const actions = {
     },
 
     updateRunState(event, config) {
-        const matchesEvent = o =>
-            o.job_run_queueId === event.job_run_queueId
-            || (isRun(o) && o.id === event.jenkins_object_id && event.blueocean_job_branch_name === o.pipeline);
+        function matchesEvent(evt, o) {
+            return o.job_run_queueId === evt.job_run_queueId
+                || (isRun(o) && o.id === evt.jenkins_object_id
+                    && (evt.blueocean_job_branch_name || evt.blueocean_job_pipeline_name) === o.pipeline);
+        }
         return (dispatch, getState) => {
             debugLog('updateRunState:', event);
             let found = false;
             findAndUpdate(getState().adminStore, o => {
-                if (!found && matchesEvent(o)) {
+                if (!found && matchesEvent(event, o)) {
                     debugLog('found:', o);
                     found = true;
                 }
@@ -401,7 +403,7 @@ export const actions = {
                     if (data.$pending) return;
                     debugLog('Updating run: ', data);
                     dispatchFindAndUpdate(dispatch, run => {
-                        if (matchesEvent(run)) {
+                        if (matchesEvent(event, run)) {
                             if (event.jenkins_event !== 'job_run_ended') {
                                 return { ...data,
                                     id: event.jenkins_object_id, // make sure the runId is set so we can find it later
