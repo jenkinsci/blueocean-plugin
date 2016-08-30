@@ -20,4 +20,5 @@ export { toastService as ToastService };
 const runApi = new RunApi();
 export { runApi as RunApi };
 
+export { ReplayButton } from './components/ReplayButton';
 export { RunButton } from './components/RunButton';
