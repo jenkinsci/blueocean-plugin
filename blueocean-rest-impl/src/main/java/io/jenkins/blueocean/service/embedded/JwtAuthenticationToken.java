@@ -4,8 +4,8 @@ import hudson.model.User;
 import io.jenkins.blueocean.auth.jwt.JwtToken;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
+import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
 import org.acegisecurity.providers.AbstractAuthenticationToken;
 import org.acegisecurity.userdetails.UserDetails;
 import org.jose4j.jwt.JwtClaims;
@@ -33,13 +33,42 @@ public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationToken.class);
 
-
     private final String name;
     private final GrantedAuthority[] grantedAuthorities;
 
-    public JwtAuthenticationToken(StaplerRequest request) {
+    public static Authentication create(StaplerRequest request){
+        JwtClaims claims = validate(request);
+        String subject = null;
+        try {
+            subject = claims.getSubject();
+
+            if(subject.equals("anonymous")) { //if anonymous, we don't look in user db
+                return Jenkins.getInstance().ANONYMOUS;
+            }else{
+                return new JwtAuthenticationToken(subject);
+            }
+        } catch (MalformedClaimException e) {
+            logger.error(String.format("Error reading sub header for token %s",claims.getRawJson()),e);
+            throw new ServiceException.UnauthorizedException("Invalid JWT token: malformed claim");
+        }
+    }
+
+
+    public JwtAuthenticationToken(String subject) {
+        User user = User.get(subject, false, Collections.emptyMap());
+        if (user == null) {
+            throw new ServiceException.UnauthorizedException("Invalid JWT token: subject " + subject + " not found");
+        }
+        //TODO: UserDetails call is expensive, encode it in token and create UserDetails from it
+        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(user.getId());
+        this.grantedAuthorities = d.getAuthorities();
+        this.name = subject;
+        super.setAuthenticated(true);
+    }
+
+    private  static JwtClaims validate(StaplerRequest request) {
         String authHeader = request.getHeader("Authorization");
-        if(authHeader == null || !authHeader.startsWith("Bearer")){
+        if(authHeader == null || !authHeader.startsWith("Bearer ")){
             throw new ServiceException.UnauthorizedException("JWT token not found");
         }
         String token = authHeader.substring("Bearer ".length());
@@ -85,20 +114,7 @@ public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
                 if (expirationTime.isBefore(NumericDate.now())){
                     throw new ServiceException.UnauthorizedException("Invalid JWT token: expired");
                 }
-                String subject = claims.getSubject();
-
-                if(!subject.equals("anonymous")) { //if anonymous, we don't look in user db
-                    User user = User.get(subject, false, Collections.emptyMap());
-                    if (user == null) {
-                        throw new ServiceException.UnauthorizedException("Invalid JWT token: subject " + subject + " not found");
-                    }
-                    UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(user.getId());
-                    this.grantedAuthorities = d.getAuthorities();
-                }else{
-                    this.grantedAuthorities = new GrantedAuthority[] {new GrantedAuthorityImpl("anonymous")};
-                }
-                this.name = subject;
-
+                return claims;
             } catch (InvalidJwtException e) {
                 logger.error("Invalid JWT token: "+e.getMessage(), e);
                 throw new ServiceException.UnauthorizedException("Invalid JWT token");
@@ -108,9 +124,8 @@ public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
             }
         } catch (JoseException e) {
             logger.error("Error parsing JWT token: "+e.getMessage(), e);
-            throw new ServiceException.UnexpectedErrorException("Unexpected error");
+            throw new ServiceException.UnauthorizedException("Invalid JWT Token: "+ e.getMessage());
         }
-        super.setAuthenticated(true);
     }
 
     @Override

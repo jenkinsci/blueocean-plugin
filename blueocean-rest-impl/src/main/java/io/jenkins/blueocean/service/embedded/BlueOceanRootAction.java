@@ -6,8 +6,10 @@ import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
 import io.jenkins.blueocean.BlueOceanUI;
+import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.context.SecurityContextImpl;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
@@ -48,9 +50,14 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         StaplerRequest request = Stapler.getCurrentRequest();
 
         if(!disableJWT && request.getOriginalRestOfPath().startsWith("/rest/")) {
-            JwtAuthenticationToken tokenAuthentication = new JwtAuthenticationToken(request);
-            SecurityContext holder = SecurityContextHolder.getContext();
-            holder.setAuthentication(tokenAuthentication);
+            Authentication tokenAuthentication = JwtAuthenticationToken.create(request);
+
+            //create a new context and set it to holder to not clobber existing context
+            SecurityContext securityContext = new SecurityContextImpl();
+            securityContext.setAuthentication(tokenAuthentication);
+            SecurityContextHolder.setContext(securityContext);
+
+            //TODO: implement this as filter, see PluginServletFilter to clear the context
         }
         return app;
     }

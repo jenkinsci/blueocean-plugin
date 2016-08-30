@@ -7,6 +7,7 @@ import hudson.model.Project;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import jenkins.model.Jenkins;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
@@ -323,9 +324,48 @@ public class ProfileApiTest extends BaseTest{
 
         Map u = new RequestBuilder(baseUrl)
             .get("/organizations/jenkins/user/")
+            .status(404)
+            .build(Map.class); //sends jwt token for anonymous user
+    }
+
+    @Test
+    public void badTokenTest1() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        new RequestBuilder(baseUrl)
+            .get("/organizations/jenkins/user/")
+            .jwtToken("")
+            .status(401)
             .build(Map.class);
 
-        Assert.assertEquals("anonymous",u.get("id"));
     }
+
+
+    @Test
+    public void badTokenTest2() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        new RequestBuilder(baseUrl)
+            .get("/organizations/jenkins/user/")
+            .jwtToken("aasasasas")
+            .status(401)
+            .build(Map.class);    }
+
+
+    @Test
+    public void userCurrentTest() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        SecurityContextHolder.getContext().setAuthentication(j.jenkins.ANONYMOUS);
+
+        Assert.assertNull(User.current());
+
+        List<Map> l = new RequestBuilder(baseUrl)
+            .get("/organizations/jenkins/pipelines/")
+            .jwtToken(getJwtToken(j.jenkins))
+            .build(List.class);
+
+        Assert.assertEquals(0, l.size());
+        Assert.assertNull(User.current());
+    }
+
 
 }
