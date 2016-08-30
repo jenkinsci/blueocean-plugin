@@ -65,6 +65,11 @@ export default class Runs extends Component {
             router.push(location);
         };
 
+        const openRunDetails = (newUrl) => {
+            location.pathname = newUrl;
+            router.push(location);
+        };
+
         return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
             <td>
                 <LiveStatusIndicator result={resultRun} startTime={startTime}
@@ -82,7 +87,7 @@ export default class Runs extends Component {
             <td>
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
-                <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} />
+                <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} onNavigation={openRunDetails} />
             </td>
         </tr>);
     }
