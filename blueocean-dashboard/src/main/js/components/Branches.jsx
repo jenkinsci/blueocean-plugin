@@ -43,6 +43,12 @@ export default class Branches extends Component {
             location.pathname = url;
             router.push(location);
         };
+
+        const openRunDetails = (newUrl) => {
+            location.pathname = newUrl;
+            router.push(location);
+        };
+
         const { msg } = changeSet[0] || {};
 
         return (
@@ -59,7 +65,12 @@ export default class Branches extends Component {
                 <td><ReadableDate date={endTime} liveUpdate /></td>
                 <td>
                     <StopPropagation className="actions">
-                        <RunButton className="icon-button" runnable={data} latestRun={data.latestRun} />
+                        <RunButton
+                          className="icon-button"
+                          runnable={data}
+                          latestRun={data.latestRun}
+                          onNavigation={openRunDetails}
+                        />
                         <Extensions.Renderer
                           extensionPoint="jenkins.pipeline.branches.list.action"
                           pipeline={data}
