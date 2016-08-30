@@ -3,7 +3,7 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 
@@ -82,6 +82,7 @@ export default class Runs extends Component {
             <td>
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
+                <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} />
             </td>
         </tr>);
     }
