@@ -7,7 +7,7 @@ import { Icon } from 'react-material-icons-blue';
 
 import { RunApi as runApi } from '../';
 import { ToastService as toastService } from '../';
-import { buildRunDetailsUrl } from '../UrlBuilder';
+import { isMultiBranchRun, buildRunDetailsUrlFromQueue } from '../UrlBuilder';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -40,13 +40,17 @@ export class ReplayButton extends Component {
     }
 
     _nextAction(runInfo) {
-        const runDetailsUrl = buildRunDetailsUrl(runInfo._links.self.href);
+        const runId = runInfo.expectedBuildNumber;
+        const runDetailsUrl = buildRunDetailsUrlFromQueue(
+            runInfo._links.self.href,
+            this._isMultiBranch(),
+            runId
+        );
 
         if (this.props.autoNavigate && this.props.onNavigation) {
             this.props.onNavigation(runDetailsUrl);
         } else {
             const name = this.props.runnable.name;
-            const runId = runInfo.id;
 
             toastService.newToast({
                 text: `Queued "${name}" #${runId}`,
@@ -58,6 +62,10 @@ export class ReplayButton extends Component {
                 },
             });
         }
+    }
+
+    _isMultiBranch() {
+        return isMultiBranchRun(this.props.latestRun._links.self.href);
     }
 
     render() {

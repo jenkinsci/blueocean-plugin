@@ -34,6 +34,13 @@ const stripEmptyTokens = (tokens) => {
     return copy;
 };
 
+export const isMultiBranchRun = (run) => {
+    const restUrl = extractRestUrl(run);
+    // clean empty chars that result from URL beginning or ending with forward slash
+    const tokens = stripEmptyTokens(restUrl.split('/'));
+    return tokens[tokens.length - 4] === 'branches';
+};
+
 /**
  * Builds the proper URL to view Run Details for the specified run.
  * Run is either a run object with "_links.self.href" property, or the URL itself.
@@ -75,4 +82,25 @@ export const buildRunDetailsUrl = (run) => {
     return `/organizations/${organizationName}` +
         `/${encodeURIComponent(fullName)}/detail` +
         `/${detailName}/${runId}/pipeline`;
+};
+
+export const buildRunDetailsUrlFromQueue = (queueItem, isMultiBranch, expectedBuildNumber) => {
+    const restUrl = extractRestUrl(queueItem);
+    // clean empty chars that result from URL beginning or ending with forward slash
+    const tokens = stripEmptyTokens(restUrl.split('/'));
+
+    // given the following URL '/blue/rest/organizations/jenkins/pipelines/jenkinsfile-experiments/pipelines/PR-2/queue/31/'
+
+    // modify the 'queue' URL so it looks like a 'runs' URL
+    tokens[tokens.length - 2] = 'runs';
+
+    // replace the queue number with the expected runId
+    tokens[tokens.length - 1] = expectedBuildNumber;
+
+    // if multi-branch, change the last value of 'pipelines' to 'branches' so it looks like a multibranch REST URL
+    if (isMultiBranch) {
+        tokens[tokens.length - 4] = 'branches';
+    }
+
+    return buildRunDetailsUrl(tokens.join('/'));
 };
