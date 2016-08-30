@@ -149,3 +149,6 @@ function startApp(routes, stores) {
 Extensions.store.getExtensions(['jenkins.main.routes', 'jenkins.main.stores'], (routes = [], stores = []) => {
     startApp(routes, stores);
 });
+
+// Enable page reload.
+require('./reload');

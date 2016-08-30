@@ -370,6 +370,12 @@ export const actions = {
 
             // Only interested in the event if we have already loaded the runs for that job.
             if (eventJobRuns && event.job_run_queueId) {
+                // here, we're emulating the expectedBuildNumber in order to get a runId
+                // we need a runId so clicking to view the queued item shows the right page
+                // now that we are fetching a run 'directly', however it's important to note
+                // that this could still fail with a reload if the runs have not loaded and
+                // we don't have a matching queued item with the same runId
+                let nextId = 0;
                 for (let i = 0; i < eventJobRuns.length; i++) {
                     const run = eventJobRuns[i];
                     if (event.job_ismultibranch
@@ -383,11 +389,14 @@ export const actions = {
                         // run. No need to create another i.e. ignore this event.
                         return;
                     }
+                    if (parseInt(run.id, 10) > nextId) { // figure out the next id, expectedBuildNumber
+                        nextId = parseInt(run.id, 10);
+                    }
                 }
 
                 // Create a new "dummy" entry in the runs list for the
                 // run that's been queued.
-                const newRun = {};
+                const newRun = { id: `${nextId + 1}` };
 
                 // We keep the queueId so we can cross reference it with the actual
                 // run once it has been started.
@@ -417,11 +426,14 @@ export const actions = {
     },
 
     updateRunState(event, config) {
+        const matchesEvent = o =>
+            o.job_run_queueId === event.job_run_queueId
+            || (isRun(o) && o.id === event.jenkins_object_id && event.blueocean_job_branch_name === o.pipeline);
         return (dispatch, getState) => {
             debugLog('updateRunState:', event);
             let found = false;
             findAndUpdate(getState().adminStore, o => {
-                if (!found && o.job_run_queueId === event.job_run_queueId || (isRun(o) && o.id === event.jenkins_object_id)) {
+                if (!found && matchesEvent(o)) {
                     debugLog('found:', o);
                     found = true;
                 }
@@ -434,12 +446,18 @@ export const actions = {
                     if (data.$pending) return;
                     debugLog('Updating run: ', data);
                     dispatchFindAndUpdate(dispatch, run => {
-                        if (run.job_run_queueId === event.job_run_queueId || (isRun(run) && run.id === event.jenkins_object_id)) {
+                        if (matchesEvent(run)) {
                             if (event.jenkins_event !== 'job_run_ended') {
                                 return { ...data,
                                     id: event.jenkins_object_id, // make sure the runId is set so we can find it later
-                                    state: 'RUNNING', // This is a horrible hack due to issues with QUEUED status
-                                    result: event.job_run_status,
+                                    // here, we explicitly set to running. this is because
+                                    // pipeline runs get removed from the queue, a running event is sent
+                                    // but they are still queued in Jenkins, as they may not actually
+                                    // be executing anything. However, pipeline doesn't send any further
+                                    // events so we're never notified when it actually does start, so
+                                    // we just treat this subsequent runStateEvent as a start or a finish
+                                    state: 'RUNNING',
+                                    result: 'UNKNOWN',
                                 };
                             }
                             return data;
@@ -532,10 +550,22 @@ export const actions = {
 
     fetchRun(config) {
         return (dispatch, getState) => {
+            const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[config.pipeline] : [];
             smartFetch(
                 getRestUrl(config),
                 data => {
-                    const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[config.pipeline] : [];
+                    if (data.$failed) { // might be a queued item...
+                        const found = runs.filter(r => r.id === config.runId)[0];
+                        if (found) {
+                            found.$success = true;
+                            dispatch({
+                                id: config.pipeline,
+                                type: ACTION_TYPES.SET_CURRENT_RUN,
+                                payload: found,
+                            });
+                            return; // skip the next dispatch
+                        }
+                    }
                     dispatch({
                         id: config.pipeline,
                         type: ACTION_TYPES.SET_CURRENT_RUN,
