@@ -25,7 +25,7 @@
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@jenkins-cd/js-builder": "0.0.39-beta2",
     "@jenkins-cd/js-modules": "0.0.7-beta1",
-    "@jenkins-cd/js-test": "1.2.2",
+    "@jenkins-cd/js-test": "1.2.3",
     "babel-cli": "6.10.1",
     "babel-core": "^6.7.6",
     "babel-eslint": "^6.0.2",
