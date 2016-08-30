@@ -43,6 +43,7 @@ EmptyState.propTypes = {
     repoName: string,
     pipeline: object,
     showRunButton: bool,
+    onNavigation: func,
 };
 
 export class Activity extends Component {
