@@ -12,7 +12,7 @@ const defaultFetchOptions = {
     credentials: 'same-origin',
 };
 
-// TODO: migrate all this code down to 'fetch'
+// TODO: remove all this code once JWT Fetch is integration
 function checkStatus(response) {
     if (response.status >= 300 || response.status < 200) {
         const error = new Error(response.statusText);
