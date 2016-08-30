@@ -74,7 +74,7 @@ export class ReplayButton extends Component {
         const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'btn inverse' : '';
 
         const status = this.props.latestRun ? this.props.latestRun.result : '';
-        const failedStatus = status && (status.toLowerCase() === 'failed' || status.toLowerCase() === 'aborted');
+        const failedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
 
         const replayLabel = 'Re-run';
 
