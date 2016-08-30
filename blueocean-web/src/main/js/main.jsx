@@ -34,12 +34,14 @@ class App extends Component {
                             <a href="#">Administration</a>
                         </nav>
                     </header>
-                    <main>
+                    <main className="Site-content">
                         {this.props.children /* Set by react-router */ }
                     </main>
+                    <footer>
+                        <DevelopmentFooter />
+                    </footer>
                 </div>
                 <ToastDrawer />
-                <DevelopmentFooter />
             </div>
         );
     }
