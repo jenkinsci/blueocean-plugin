@@ -34,7 +34,6 @@ describe('UrlBuilder', () => {
             });
 
             it('throws sensible error for bad url', () => {
-                debugger;
                 assert.throws(() => buildRunDetailsUrl('/a/b/c/d'), 'Could not extract URI components');
             });
         });

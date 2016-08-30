@@ -112,8 +112,6 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ];
 
-        debugger;
-
         return (
             <main>
                 <article className="activity">
