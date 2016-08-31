@@ -6,7 +6,7 @@ import { Fetch } from './fetch';
 import * as sse from '@jenkins-cd/sse-gateway';
 import { RunApi } from './rest/RunApi';
 import { SseBus } from './sse/SseBus';
-import { ToastService }  from './ToastService';
+import { ToastService } from './ToastService';
 
 export { Fetch, FetchFunctions } from './fetch';
 export UrlConfig from './urlconfig';

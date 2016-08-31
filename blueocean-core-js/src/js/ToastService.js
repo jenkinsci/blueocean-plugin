@@ -28,19 +28,21 @@ export class ToastService {
         // prevent duplicate toasts from appearing when multiple UI elements
         // are listening for an event that triggers creation of a toast
         if (this._hasDuplicate(toast)) {
-            return;
+            return null;
         }
 
-        if (!toast.id) {
-            toast.id = Math.random() * Math.pow(10, 16);
+        const newToast = toast;
+
+        if (!newToast.id) {
+            newToast.id = Math.random() * Math.pow(10, 16);
         }
 
         // TODO: determine why it's necessary to re-set the "toasts" field to trigger the UI update
-        const copy = this.toasts.slice();
-        copy.push(toast);
-        this.toasts = copy;
+        const toasts = this.toasts.slice();
+        toasts.push(toast);
+        this.toasts = toasts;
 
-        return toast.id;
+        return newToast.id;
     }
 
     /**
@@ -49,9 +51,9 @@ export class ToastService {
      * @param toast
      */
     removeToast(toast) {
-        this.toasts = this.toasts.filter((item) => {
-            return toast.id !== item.id;
-        });
+        this.toasts = this.toasts.filter((item) =>
+            toast.id !== item.id
+        );
     }
 
     @computed

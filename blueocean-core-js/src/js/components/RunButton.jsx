@@ -30,15 +30,15 @@ export class RunButton extends Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        this._updateState(nextProps);
-    }
-
     componentDidMount() {
         this.subscriptionId = sseBus.subscribeToJob(
             (runData, event) => this._onJobEvent(runData, event),
             (event) => this._filterJob(event)
         );
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this._updateState(nextProps);
     }
 
     componentWillUnmount() {
@@ -82,7 +82,6 @@ export class RunButton extends Component {
                 text: `Stopped "${name}" #${runId}`,
             });
         }
-
     }
 
     _filterJob(event) {
