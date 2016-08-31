@@ -162,6 +162,20 @@ export function paginateUrl(url) {
 }
 
 /**
+ * Returns a new string which ends with a slash, or the
+ * original if it already does
+ */
+export function endSlash(str) {
+    if (!str) {
+        return str;
+    }
+    if (str.charAt(str.length - 1) !== '/') {
+        return `${str}/`;
+    }
+    return str;
+}
+
+/**
  * Examines the provided object for:
  * organization, pipeline, branch, runId
  * and builds a path to the thing as best it can...
@@ -174,30 +188,16 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
     let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
     if (pipelineName) {
         // pipelineName might include a folder path, don't encode it
-        url += `/pipelines/${pipelineName}/`;
+        url += `/pipelines/${pipelineName}`;
     }
     if (branch) {
         // JENKINS-37712 branch needs to be double-encoded for some reason
-        url += `/branches/${encodeURIComponent(encodeURIComponent(branch))}/`;
+        url += `/branches/${encodeURIComponent(encodeURIComponent(branch))}`;
     }
     if (runId) {
-        url += `/runs/${encodeURIComponent(runId)}/`;
+        url += `/runs/${encodeURIComponent(runId)}`;
     }
-    return url;
-}
-
-/**
- * Returns a new string which ends with a slash, or the
- * original if it already does
- */
-export function endSlash(str) {
-    if (!str) {
-        return str;
-    }
-    if (str.charAt(str.length - 1) !== '/') {
-        return `${str}/`;
-    }
-    return str;
+    return endSlash(url);
 }
 
 /**
