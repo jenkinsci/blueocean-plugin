@@ -8,32 +8,6 @@ import { cleanSlashes } from './UrlUtils';
 import urlConfig from './config';
 urlConfig.loadConfig();
 
-const defaultFetchOptions = {
-    credentials: 'same-origin',
-};
-
-// TODO: remove all this code once JWT Fetch is integration
-function checkStatus(response) {
-    if (response.status >= 300 || response.status < 200) {
-        const error = new Error(response.statusText);
-        error.response = response;
-        throw error;
-    }
-    return response;
-}
-
-function parseJSON(response) {
-    return response.json()
-    // FIXME: workaround for status=200 w/ empty response body that causes error in Chrome
-    // server should probably return HTTP 204 instead
-        .catch((error) => {
-            if (error.message === 'Unexpected end of JSON input') {
-                return {};
-            }
-            throw error;
-        });
-}
-
 function clone(json) {
     return JSON.parse(JSON.stringify(json));
 }
@@ -182,9 +156,7 @@ export class SseBus {
         const baseUrl = urlConfig.jenkinsRootURL;
         const url = cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
-        this.fetch(url, defaultFetchOptions)
-            .then(checkStatus)
-            .then(parseJSON)
+        this.fetch(url)
             .then((data) => {
                 const updatedRun = clone(data);
 
