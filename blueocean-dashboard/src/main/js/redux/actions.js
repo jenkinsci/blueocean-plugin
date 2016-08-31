@@ -380,7 +380,7 @@ export const actions = {
         };
     },
 
-    updateRunState(event, config) {
+    updateRunState(event) {
         function matchesEvent(evt, o) {
             return o.job_run_queueId === evt.job_run_queueId
                 || (isRun(o) && o.id === evt.jenkins_object_id
