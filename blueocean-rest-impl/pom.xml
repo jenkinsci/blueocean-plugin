@@ -28,6 +28,10 @@
             <artifactId>scm-api</artifactId>
             <version>1.2</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jwt</artifactId>
+        </dependency>
 
         <!-- Test plugins -->
         <dependency>

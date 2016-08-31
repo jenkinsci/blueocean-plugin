@@ -2,8 +2,12 @@ import { assert } from 'chai';
 import nock from 'nock';
 import { fetch, paginate } from '../../main/js/util/smart-fetch';
 const debug = require('debug')('smart-fetch-test:debug');
+import { TestUtils, Fetch, FetchFunctions } from '@jenkins-cd/blueocean-core-js';
 
 describe("smart-fetch", () => {
+  beforeEach(() => {
+      TestUtils.patchFetchNoJWT();
+  })
   afterEach(() => {
       nock.cleanAll()
   });
@@ -47,6 +51,7 @@ describe("smart-fetch", () => {
               done();
               return;
           }
+          console.log("blad");
           // will get here first
           assert(data.$pending);
       });

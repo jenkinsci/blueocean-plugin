@@ -1,8 +1,7 @@
 const infoLog = require('debug')('smart-fetch:info');
 const debugLog = require('debug')('smart-fetch:debug');
-const errorLog = require('debug')('smart-fetch:error');
-import isoFetch from 'isomorphic-fetch';
 import dedupe from './dedupe-calls';
+import { Fetch } from '@jenkins-cd/blueocean-core-js';
 
 /**
  * How many records to fetch by default
@@ -24,36 +23,6 @@ const deepFreeze = (obj) => {
     }
     return Object.freeze(obj);
 };
-
-/**
- * Validates the status is 200-299 or returns an error
- */
-const checkStatus = (response) => {
-    if (response.status >= 300 || response.status < 200) {
-        errorLog('ERROR: ', response);
-        const error = new Error(response.statusText);
-        error.response = response;
-        throw error;
-    }
-    return response;
-};
-
-/**
- * Get the JSON response body
- */
-const parseJSON = (rsp) => {
-    try {
-        return rsp.json();
-    } catch (err) {
-        errorLog('Unable to parse JSON: ', rsp.body, err);
-        throw new Error('Invalid JSON payload', err);
-    }
-};
-
-/**
- * Static fetch options used for every request
- */
-const fetchOptions = { credentials: 'same-origin' };
 
 /**
  * Mark with $success flag and freeze the object
@@ -82,19 +51,16 @@ export function fetch(url, options, onData) {
         debugLog(' -- pending: ', url);
         _onData({ $pending: true });
         return dedupe(url, () =>
-            isoFetch(url, _options || fetchOptions) // Fetch data
-            .then(checkStatus) // Validate success
-            .then(parseJSON) // transfer to json
-            .then(successAndFreeze) // add success field & freeze graph
-            )
-            .then((data) => {
-                debugLog(' -- success: ', url, data);
-                _onData(data);
-            })
-            .catch(err => {
-                debugLog(' -- error: ', url, err);
-                _onData({ $failed: err });
-            });
+            Fetch.fetchJSON(url, { fetchOptions: _options || {} }) // Fetch data
+                .then(successAndFreeze)) // add success field & freeze graph
+                .then((data) => {
+                    debugLog(' -- success: ', url, data);
+                    _onData(data);
+                })
+                .catch(err => {
+                    debugLog(' -- error: ', url, err);
+                    _onData({ $failed: err });
+                });
     }
     // return a fake promise, a thenable
     // so it can be resolved multiple times
@@ -169,11 +135,8 @@ class Pager {
         onData(assignObj(concatenator(this, existingData), { $pending: true, $pager: this }));
         infoLog('Fetching paged data: ', this);
         return dedupe(url, () =>
-            isoFetch(url, fetchOptions) // Fetch data
-            .then(checkStatus) // Validate success
-            .then(parseJSON) // transfer to json
-            .then(successAndFreeze) // add success field & freeze graph
-            )
+            Fetch.fetchJSON(url) // Fetch data
+            .then(successAndFreeze)) // add success field & freeze graph
             .then((data) => {
                 debugLog(' -- success: ', url, data);
                 // fetched an extra to test if more

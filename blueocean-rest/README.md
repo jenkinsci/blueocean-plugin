@@ -7,6 +7,8 @@
   - [Media Type](#media-type)
   - [Date Format](#date-format)
   - [Crumbs](#crumbs)
+- [Security](#security)
+  - [API access from browser with JWT enabled](#api-access-from-browser-with-jwt-enabled)
 - [Navigability](#navigability)
   - [Links](#links)
 - [Resource discovery](#resource-discovery)
@@ -32,6 +34,7 @@
   - [MultiBranch Pipeline API](#multibranch-pipeline-api)
     - [Get MultiBranch pipeline](#get-multibranch-pipeline)
     - [Get MultiBranch pipeline branches](#get-multibranch-pipeline-branches)
+  - [Pipeline Permissions](#pipeline-permissions)
 - [Queue API](#queue-api)
   - [Fetch queue for an pipeline](#fetch-queue-for-an-pipeline)
   - [GET queue for a MultiBranch pipeline](#get-queue-for-a-multibranch-pipeline)
@@ -42,6 +45,7 @@
   - [Find latest run on all pipelines](#find-latest-run-on-all-pipelines)
   - [Start a build](#start-a-build)
   - [Stop a build](#stop-a-build)
+    - [Stop a build as blocking call](#stop-a-build-as-blocking-call)
   - [Get MultiBranch job's branch run detail](#get-multibranch-jobs-branch-run-detail)
   - [Get all runs for all branches on a multibranch pipeline (ordered by date)](#get-all-runs-for-all-branches-on-a-multibranch-pipeline-ordered-by-date)
   - [Get change set for a run](#get-change-set-for-a-run)
@@ -103,7 +107,32 @@ All date formats are in ISO 8601 format
 
 Jenkins usually requires a "crumb" with posted requests to prevent request forgery and other shenanigans. 
 To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
-    
+
+# Security
+
+BlueOcean REST APIs requires JWT token for authentication. JWT APIs are provided by blueocean-jwt plugin. See 
+[JWT APIs](../blueocean-jwt/README.md) to get JWT token and to get public key needed to verify the claims.
+  
+JWT token must be sent as bearer token as value of HTTP 'Authorization' header:
+  
+    curl -H 'Authorization: Bearer eyJraWQ...' http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/
+
+To disable JWT authentication use DISABLE_BLUEOCEAN_JWT_AUTHENTICATION=true system property.
+
+    mvn hpi:run -DDISABLE_BLUEOCEAN_JWT_AUTHENTICATION=true 
+
+
+## API access from browser with JWT enabled
+
+Sometimes testing API from browser is desirable. Here are steps to to do that using Postman Chrome app:
+
+* Install Postman on Chrome (chrome://apps/) or install Postman app on Mac OS (https://www.getpostman.com).
+* Launch postman
+* Create a JWT token, see [JWT APIs](../blueocean-jwt/README.md). You can customize expiry time to reuse the fetched token. You may like to save the query in Postman as collection *blueocean*. Anytime later you want to generate token use *blueocean* collection and click send on previous GET. 
+* Click on + on tab and type the API URL, e.g. http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/, then add header with *Authorization* header with value *Bearer COPIED_JWT_TOKEN*. Use this tab to invoke any Blueocean REST API. You may like to either add to 'blueocean' collection if you like.      
+  
+ 
+
 # Navigability
 
 ## Links 

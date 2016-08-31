@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Cause;
 import hudson.model.CauseAction;
+import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.queue.ScheduleResult;
@@ -77,6 +78,7 @@ public class RunContainerImpl extends BlueRunContainer {
      */
     @Override
     public BlueQueueItem create() {
+        job.checkPermission(Item.BUILD);
         if (job instanceof Queue.Task) {
             ScheduleResult scheduleResult = Jenkins.getInstance()
                 .getQueue()

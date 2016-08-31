@@ -1,10 +1,8 @@
 import * as sse from '@jenkins-cd/sse-gateway';
 import React, { Component, PropTypes } from 'react';
-import appConfig from './config';
-
+import { UrlConfig } from '@jenkins-cd/blueocean-core-js';
 const { object, node } = PropTypes;
 
-appConfig.loadConfig();
 
 // Connect to the SSE Gateway and allocate a
 // dispatcher for blueocean.
@@ -12,7 +10,7 @@ appConfig.loadConfig();
 sse.connect({
     clientId: 'jenkins_blueocean',
     onConnect: undefined,
-    jenkinsUrl: `${appConfig.getJenkinsRootURL()}/`, // FIXME sse should not require this to end with a /
+    jenkinsUrl: `${UrlConfig.getJenkinsRootURL()}/`, // FIXME sse should not require this to end with a /
 });
 
 class Dashboard extends Component {
