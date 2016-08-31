@@ -5,14 +5,12 @@ import { assert } from 'chai';
 
 import { buildRunDetailsUrl, buildRunDetailsUrlFromQueue } from '../../src/js/UrlBuilder';
 
-const createObjectFromLink = (url) => {
-    return { _links: { self: { href: url } } };
-};
+const createObjectFromLink = (url) => (
+    { _links: { self: { href: url } } }
+);
 
 describe('UrlBuilder', () => {
-
     describe('buildRunDetailsUrl', () => {
-
         describe('handling input', () => {
             it('handles an object', () => {
                 const freestyle = createObjectFromLink(
@@ -98,11 +96,9 @@ describe('UrlBuilder', () => {
                 assert.equal(url, '/organizations/jenkins/folder1%2Ffolder2%2Ffolder3%2Fjdl-2/detail/experiment%2Fbuild-locally-docker/21/pipeline');
             });
         });
-
     });
 
     describe('buildRunDetailsUrlFromQueue', () => {
-
         // TODO: cover more scenarios
         describe('multibranch pipeline', () => {
             it('handles top-level job', () => {
@@ -114,7 +110,5 @@ describe('UrlBuilder', () => {
                 assert.equal(url, '/organizations/jenkins/jenkinsfile-experiments/detail/PR-2/55/pipeline');
             });
         });
-
     });
-
 });
