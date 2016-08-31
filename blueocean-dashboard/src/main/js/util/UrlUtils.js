@@ -44,16 +44,16 @@ export const uriString = (input) => encodeURIComponent(input).replace(/%2F/g, '%
 export const fetchAllSuffix = '?start=0';
 
 // Add fetchAllSuffix in case it is needed
-export const applyFetchAll = function (config, url) {
+export function applyFetchAll(config, url) {
 // if we pass fetchAll means we want the full log -> start=0 will trigger that on the server
     if (config.fetchAll && !url.includes(fetchAllSuffix)) {
         return `${url}${fetchAllSuffix}`;
     }
     return url;
-};
+}
 
 // using the hook 'location.search'.includes('start=0') to trigger fetchAll
-export const calculateFetchAll = function (props) {
+export function calculateFetchAll(props) {
     const { location: { search } } = props;
 
     if (search) {
@@ -64,7 +64,7 @@ export const calculateFetchAll = function (props) {
         }
     }
     return false;
-};
+}
 
 // using the hook 'location.search'.includes('view=0') to trigger the logConsole view instead of steps
 export const calculateLogView = function (props) {
@@ -153,10 +153,58 @@ export function calculateRunLogURLObject(config) {
 }
 
 /**
+ * Provide a pagination function for the generic
+ * blueocean pagination
+ */
+export function paginateUrl(url) {
+    const sep = url.indexOf('?') >= 0 ? '&' : '?';
+    return (start, limit) => `${url}${sep}start=${start}&limit=${limit}`;
+}
+
+/**
+ * Examines the provided object for:
+ * organization, pipeline, branch, runId
+ * and builds a path to the thing as best it can...
+ */
+export function getRestUrl({ organization, pipeline, branch, runId }) {
+    const pipelineName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
+    const organizationName = organization ||
+        (typeof pipeline === 'object' ? pipeline.organization : '');
+    const jenkinsUrl = require('../config').getJenkinsRootURL();
+    let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
+    if (pipelineName) {
+        // pipelineName might include a folder path, don't encode it
+        url += `/pipelines/${pipelineName}`;
+    }
+    if (branch) {
+        // JENKINS-37712 branch needs to be double-encoded for some reason
+        url += `/branches/${encodeURIComponent(encodeURIComponent(branch))}`;
+    }
+    if (runId) {
+        url += `/runs/${encodeURIComponent(runId)}`;
+    }
+    return url;
+}
+
+/**
+ * Returns a new string which ends with a slash, or the
+ * original if it already does
+ */
+export function endSlash(str) {
+    if (!str) {
+        return str;
+    }
+    if (str.charAt(str.length - 1) !== '/') {
+        return `${str}/`;
+    }
+    return str;
+}
+
+/**
  * Constructs an escaped url based on the arguments, with forward slashes between them
  * e.g. buildURL('organizations', orgName, 'runs', runId) => organizations/my%20org/runs/34
  */
-export const buildUrl = (...args) => {
+export function buildUrl(...args) {
     let url = '';
     for (let i = 0; i < args.length; i++) {
         if (i > 0) {
@@ -165,4 +213,11 @@ export const buildUrl = (...args) => {
         url += encodeURIComponent(args[i]);
     }
     return url;
-};
+}
+
+/**
+ * Returns a relative URL based on the current location
+ */
+export function relativeUrl(location, ...args) {
+    return endSlash(location.pathname) + buildUrl.apply(null, args);
+}

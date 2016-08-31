@@ -11,8 +11,8 @@
     "bundle:watch": "gulp bundle:watch"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.37",
-    "@jenkins-cd/js-test": "1.2.2",
+    "@jenkins-cd/js-builder": "0.0.38",
+    "@jenkins-cd/js-test": "1.2.3",
     "babel-eslint": "^6.0.2",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
     "babel-preset-es2015": "^6.6.0",
@@ -27,7 +27,7 @@
     "zombie": "^4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.3-beta11",
+    "@jenkins-cd/blueocean-core-js": "0.0.5-beta2",
     "@jenkins-cd/design-language": "0.0.70",
     "@jenkins-cd/js-extensions": "0.0.22",
     "@jenkins-cd/js-modules": "0.0.6",

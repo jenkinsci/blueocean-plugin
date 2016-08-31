@@ -137,19 +137,18 @@ const pipeline = {
 const capabilities = {
   'some.class': new CapabilityRecord({})
 }
-describe("Activity should render", () => {
+data.$success = true; // fetch flag
 
-  it("does renders the Activity with data", () => {
-    const wrapper =  shallow(<Activity runs={data} pipeline={pipeline}  capabilities={capabilities}/>);
+describe("Activity", () => {
+
+  it("render the Activity with data", () => {
+    const wrapper =  shallow(<Activity runs={data} pipeline={pipeline} capabilities={capabilities}/>);
     // does data renders?
     assert.isNotNull(wrapper)
     assert.equal(wrapper.find('Runs').length, data.length)
   });
 
-});
-
-describe("Activity should not render", () => {
-  it("does not renders the Activity without data", () => {
+  it("does not render without data", () => {
     const wrapper =  shallow(<Activity pipeline={pipeline} capabilities={capabilities}/>).node;
     assert.isNull(wrapper);
   });

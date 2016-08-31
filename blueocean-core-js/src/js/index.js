@@ -1,11 +1,17 @@
 /**
  * Created by cmeyers on 8/18/16.
  */
-import * as sse from '@jenkins-cd/sse-gateway';
 
+export { Fetch, FetchFunctions } from './fetch';
+export UrlConfig from './urlconfig';
+export JWT from './jwt';
+export TestUtils from './testutils';
+export Utils from './utils';
+
+import * as sse from '@jenkins-cd/sse-gateway';
 import { RunApi } from './rest/RunApi';
 import { SseBus } from './sse/SseBus';
-import { ToastService}  from './ToastService';
+import { ToastService }  from './ToastService';
 
 // export services as a singleton so all plugins will use the same instance
 

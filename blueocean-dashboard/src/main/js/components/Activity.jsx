@@ -5,10 +5,11 @@ import Runs from './Runs';
 import { RunRecord, ChangeSetRecord } from './records';
 import {
     actions,
-    currentRuns as runsSelector,
+    currentRuns as currentRunsSelector,
     createSelector,
     connect,
 } from '../redux';
+import PageLoading from './PageLoading';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { capabilityStore } from './Capability';
 
@@ -52,19 +53,21 @@ export class Activity extends Component {
             const {
                 params: {
                     pipeline,
+                    organization,
                 },
                 config = {},
             } = this.context;
 
             config.pipeline = pipeline;
-            this.props.fetchRunsIfNeeded(config);
+            config.organization = organization;
+            this.props.fetchRuns(config);
         }
     }
 
     render() {
         const { runs, pipeline } = this.props;
-        // early out
-        if (!runs) {
+
+        if (!runs || !pipeline || pipeline.$pending) {
             return null;
         }
 
@@ -81,14 +84,8 @@ export class Activity extends Component {
             this.context.router.push(location);
         };
 
-        if (!runs.length) {
-            return (
-                <EmptyState
-                  repoName={this.context.params.pipeline}
-                  pipeline={pipeline}
-                  showRunButton={showRunButton}
-                />
-            );
+        if (runs.$success && !runs.length) {
+            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
         }
 
         const latestRun = runs[0];
@@ -112,49 +109,53 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ];
 
-        return (
-            <main>
-                <article className="activity">
+        return (<main>
+            {runs.$pending && <PageLoading />}
+            <article className="activity">
                 { showRunButton &&
-                    <RunButton
-                      runnable={pipeline}
-                      latestRun={latestRun}
-                      buttonType="run-only"
-                      onNavigation={onNavigation}
-                    />
+                <RunButton
+                  runnable={pipeline}
+                  latestRun={latestRun}
+                  buttonType="run-only"
+                  onNavigation={onNavigation}
+                />
                 }
+                <Table className="activity-table fixed" headers={headers}>
+                    {
+                        runs.map((run, index) => {
+                            const changeset = run.changeSet;
+                            let latestRecord = {};
+                            if (changeset && changeset.length > 0) {
+                                latestRecord = new ChangeSetRecord(changeset[
+                                    Object.keys(changeset)[changeset.length - 1]
+                                ]);
+                            }
 
-                    <Table className="activity-table fixed" headers={headers}>
-                        {
-                            runs.map((run, index) => {
-                                const changeset = run.changeSet;
-                                let latestRecord = {};
-                                if (changeset && changeset.length > 0) {
-                                    latestRecord = new ChangeSetRecord(changeset[
-                                        Object.keys(changeset)[changeset.length - 1]
-                                    ]);
-                                }
-
-                                return (
-                                    <Runs {...{
-                                        key: index,
-                                        run,
-                                        pipeline,
-                                        changeset: latestRecord,
-                                        result: new RunRecord(run) }} />
-                                );
-                            })
-                        }
-                    </Table>
-                </article>
-            </main>
-        );
+                            return (
+                                <Runs {...{
+                                    key: index,
+                                    run,
+                                    pipeline,
+                                    changeset: latestRecord,
+                                    result: new RunRecord(run) }} />
+                            );
+                        })
+                    }
+                </Table>
+                {runs.$pager &&
+                    <button disabled={!runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
+                        {runs.$pending ? 'Loading...' : 'Show More'}
+                    </button>
+                }
+            </article>
+        </main>);
     }
 }
 
 Activity.contextTypes = {
     params: object.isRequired,
     location: object.isRequired,
+    pipeline: object,
     config: object.isRequired,
     router: object.isRequired,
 };
@@ -163,9 +164,9 @@ Activity.propTypes = {
     runs: array,
     pipeline: object,
     capabilities: object,
-    fetchRunsIfNeeded: func,
+    fetchRuns: func,
 };
 
-const selectors = createSelector([runsSelector], (runs) => ({ runs }));
+const selectors = createSelector([currentRunsSelector], (runs) => ({ runs }));
 
 export default connect(selectors, actions)(capabilityStore(props => props.pipeline._class)(Activity));

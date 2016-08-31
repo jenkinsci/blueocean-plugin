@@ -11,6 +11,8 @@ import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import jenkins.model.Jenkins;
 
+import java.util.Collections;
+
 /**
  * {@link BlueUser} implementation backed by in-memory {@link User}
  *
@@ -43,7 +45,16 @@ public class UserImpl extends BlueUser {
 
     @Override
     public String getEmail() {
-        if (!user.hasPermission(Jenkins.ADMINISTER)) return null;
+        String name = Jenkins.getAuthentication().getName();
+        if(name.equals("anonymous") || user.getId().equals("anonymous")){
+            return null;
+        }else{
+            User user = User.get(name, false, Collections.EMPTY_MAP);
+            if(user == null){
+                return null;
+            }
+            if (!user.hasPermission(Jenkins.ADMINISTER)) return null;
+        }
 
         Mailer.UserProperty p = user.getProperty(Mailer.UserProperty.class);
         return p != null ? p.getAddress() : null;
