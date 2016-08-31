@@ -5,9 +5,8 @@ import { Icon } from 'react-material-icons-blue';
 import { ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator } from '@jenkins-cd/design-language';
 import { TimeDuration } from '@jenkins-cd/design-language';
+import ChangeSet from './ChangeSet';
 import moment from 'moment';
-
-const { object, func } = PropTypes;
 
 class RunDetailsHeader extends Component {
     handleAuthorsClick() {
@@ -39,11 +38,14 @@ class RunDetailsHeader extends Component {
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
         const changeSet = run.changeSet;
-        const authors = changeSet && changeSet.map ? [...(new Set(changeSet.map(change => change.author.fullName)):any)] : [];
         const status = run.getComputedResult();
         const durationMillis = run.isRunning() ?
             moment().diff(moment(run.startTime)) : run.durationInMillis;
         const displayName = decodeURIComponent(run.pipeline);
+        const changeProps = {
+            changeSet,
+            onClick: () => this.handleAuthorsClick(),
+        };
         return (
         <div className="pipeline-result">
             <section className="status inverse">
@@ -76,14 +78,7 @@ class RunDetailsHeader extends Component {
                             </span>
                         </div>
                         : null }
-                        <div>
-                       { authors.length > 0 ?
-                                   <a className="authors" onClick={() => this.handleAuthorsClick()}>
-                                        Changes by {authors.map(
-                                        author => ` ${author}`)}
-                                   </a>
-                       : 'No changes' }
-                        </div>
+                        <ChangeSet {...changeProps} />
                     </div>
                     <div className="times">
                         <div>
@@ -108,6 +103,8 @@ class RunDetailsHeader extends Component {
         </div>);
     }
 }
+
+const { object, func } = PropTypes;
 
 RunDetailsHeader.propTypes = {
     data: object.isRequired,
