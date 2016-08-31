@@ -397,7 +397,7 @@ export const actions = {
             });
             if (found) {
                 debugLog('Calling dispatch for event ', event);
-                const runUrl = `${config.getAppURLBase()}${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`;
+                const runUrl = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}`;
                 smartFetch(runUrl)
                 .then(data => {
                     if (data.$pending) return;
@@ -448,7 +448,7 @@ export const actions = {
                 }
             });
             if (found) {
-                const url = `${UrlConfig.getJenkinsRootURL()}/blue${event.blueocean_job_rest_url}`;
+                const url = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}`;
                 smartFetch(url, (branchData) => {
                     if (branchData.$pending) { return; }
                     if (branchData.$failure) {
