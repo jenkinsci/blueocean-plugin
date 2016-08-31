@@ -1,14 +1,9 @@
 /**
  * Created by cmeyers on 7/29/16.
  */
-import config from '../urlconfig';
 import defaultFetch from 'isomorphic-fetch';
-
-import { cleanSlashes } from './UrlUtils';
-
-function clone(json) {
-    return JSON.parse(JSON.stringify(json));
-}
+import config from '../urlconfig';
+import utils from '../utils';
 
 /**
  * Wraps the SSE Gateway and fetches data related to events from REST API.
@@ -134,7 +129,7 @@ export class SseBus {
             event.blueocean_job_branch_name :
             event.blueocean_job_pipeline_name;
 
-        const runUrl = cleanSlashes(`${event.blueocean_job_rest_url}/runs/${event.job_run_queueId}`);
+        const runUrl = utils.cleanSlashes(`${event.blueocean_job_rest_url}/runs/${event.job_run_queueId}`);
 
         queuedRun._links = {
             self: {
@@ -152,11 +147,11 @@ export class SseBus {
 
     _updateJob(event, listeners) {
         const baseUrl = config.getJenkinsRootURL();
-        const url = cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
+        const url = utils.cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
         this.fetch(url)
             .then((data) => {
-                const updatedRun = clone(data);
+                const updatedRun = utils.clone(data);
 
                 // in many cases the SSE and subsequent REST call occur so quickly
                 // that the run's state is stale. force the state to the correct value.

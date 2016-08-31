@@ -3,14 +3,13 @@
  */
 import { Fetch } from '../fetch';
 import config from '../urlconfig';
-
-import { cleanSlashes } from '../sse/UrlUtils';
+import utils from '../utils';
 
 export class RunApi {
 
     startRun(item) {
         const path = config.getJenkinsRootURL();
-        const runUrl = cleanSlashes(`${path}/${item._links.self.href}/runs/`);
+        const runUrl = utils.cleanSlashes(`${path}/${item._links.self.href}/runs/`);
 
         const fetchOptions = {
             method: 'PUT',
@@ -25,7 +24,7 @@ export class RunApi {
     stopRun(run) {
         const path = config.getJenkinsRootURL();
         const runUrl = run._links.self.href;
-        const stopUrl = cleanSlashes(`${path}/${runUrl}/stop/?blocking=true&timeOutInSecs=10`);
+        const stopUrl = utils.cleanSlashes(`${path}/${runUrl}/stop/?blocking=true&timeOutInSecs=10`);
 
         const fetchOptions = {
             method: 'PUT',
@@ -40,7 +39,7 @@ export class RunApi {
     replayRun(run) {
         const path = config.getJenkinsRootURL();
         const runUrl = run._links.self.href;
-        const replayPipelineUrl = cleanSlashes(`${path}/${runUrl}/replay/`);
+        const replayPipelineUrl = utils.cleanSlashes(`${path}/${runUrl}/replay/`);
 
         const fetchOptions = {
             method: 'PUT',
