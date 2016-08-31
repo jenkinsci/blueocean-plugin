@@ -16,7 +16,7 @@ function newEvent(type) {
         blueocean_is_for_current_job: true,
         job_ismultibranch: 'true',
         blueocean_job_pipeline_name: "PR-demo",
-        blueocean_job_rest_url: '/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker',
+        blueocean_job_rest_url: '/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/',
         jenkins_channel: "job",
         jenkins_event: type,
         jenkins_object_name: "CloudBeers/PR-demo/quicker",
