@@ -197,14 +197,6 @@ exports.fetchLogsInjectStart = function fetchLogsInjectStart(url, start, onSucce
 };
 
 /**
- * Determines if the provided object is a "run" type
- */
-function isRun(obj) {
-    return obj._class === 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl'
-        || obj._class === 'io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl';
-}
-
-/**
  * Locates instances in the state tree and replaces them, just provide a 'replacer' method,
  * which returns undefined/false for objects which should not be replaced.
  */
@@ -383,8 +375,7 @@ export const actions = {
     updateRunState(event) {
         function matchesEvent(evt, o) {
             return o.job_run_queueId === evt.job_run_queueId
-                || (isRun(o) && o.id === evt.jenkins_object_id
-                    && (evt.blueocean_job_branch_name || evt.blueocean_job_pipeline_name) === o.pipeline);
+                || (o._links && o._links.self && o._links.self.href.indexOf(evt.blueocean_job_rest_url) === 0 && o.id === evt.jenkins_object_id);
         }
         return (dispatch, getState) => {
             debugLog('updateRunState:', event);
