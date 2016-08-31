@@ -1,12 +1,10 @@
 /**
  * Created by cmeyers on 7/29/16.
  */
+import config from '../urlconfig';
 import defaultFetch from 'isomorphic-fetch';
 
-// TODO: all these utilities can be removed once merged with new JWT / fetch code
 import { cleanSlashes } from './UrlUtils';
-import urlConfig from './config';
-urlConfig.loadConfig();
 
 function clone(json) {
     return JSON.parse(JSON.stringify(json));
@@ -77,7 +75,7 @@ export class SseBus {
             this.sse.connect({
                 clientId: 'jenkins-blueocean-core-js',
                 onConnect: undefined,
-                jenkinsUrl: `${urlConfig.jenkinsRootURL}/`,
+                jenkinsUrl: `${config.getJenkinsRootURL()}/`,
             });
 
             this.sseConnected = true;
@@ -153,7 +151,7 @@ export class SseBus {
     }
 
     _updateJob(event, listeners) {
-        const baseUrl = urlConfig.jenkinsRootURL;
+        const baseUrl = config.getJenkinsRootURL();
         const url = cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
         this.fetch(url)
