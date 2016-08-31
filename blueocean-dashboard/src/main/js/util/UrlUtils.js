@@ -174,14 +174,14 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
     let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
     if (pipelineName) {
         // pipelineName might include a folder path, don't encode it
-        url += `/pipelines/${pipelineName}`;
+        url += `/pipelines/${pipelineName}/`;
     }
     if (branch) {
         // JENKINS-37712 branch needs to be double-encoded for some reason
-        url += `/branches/${encodeURIComponent(encodeURIComponent(branch))}`;
+        url += `/branches/${encodeURIComponent(encodeURIComponent(branch))}/`;
     }
     if (runId) {
-        url += `/runs/${encodeURIComponent(runId)}`;
+        url += `/runs/${encodeURIComponent(runId)}/`;
     }
     return url;
 }
