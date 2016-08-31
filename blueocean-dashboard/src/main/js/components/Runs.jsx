@@ -5,7 +5,7 @@ import {
     from '@jenkins-cd/design-language';
 import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
-import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 
 import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
@@ -87,7 +87,10 @@ export default class Runs extends Component {
             <td>
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
-                <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} onNavigation={openRunDetails} />
+                { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
+                <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
+                    <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} onNavigation={openRunDetails} />
+                </IfCapability>
             </td>
         </tr>);
     }
