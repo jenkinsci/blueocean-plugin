@@ -26,4 +26,5 @@
  * Internet explorer specific polyfills
  */
 
+require('./Error');
 require('babel-polyfill');
