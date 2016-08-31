@@ -1,37 +1,9 @@
 /**
  * Created by cmeyers on 7/29/16.
  */
-import defaultFetch from 'isomorphic-fetch';
 
+import { Fetch, FetchFunctions, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import { cleanSlashes } from '../util/UrlUtils';
-import urlConfig from '../config';
-urlConfig.loadConfig();
-
-const defaultFetchOptions = {
-    credentials: 'same-origin',
-};
-
-// TODO: migrate all this code down to 'fetch'
-function checkStatus(response) {
-    if (response.status >= 300 || response.status < 200) {
-        const error = new Error(response.statusText);
-        error.response = response;
-        throw error;
-    }
-    return response;
-}
-
-function parseJSON(response) {
-    return response.json()
-    // FIXME: workaround for status=200 w/ empty response body that causes error in Chrome
-    // server should probably return HTTP 204 instead
-        .catch((error) => {
-            if (error.message === 'Unexpected end of JSON input') {
-                return {};
-            }
-            throw error;
-        });
-}
 
 function clone(json) {
     return JSON.parse(JSON.stringify(json));
@@ -42,9 +14,8 @@ function clone(json) {
  */
 export class SseBus {
 
-    constructor(sse, fetch) {
+    constructor(sse) {
         this.sse = sse;
-        this.fetch = fetch || defaultFetch;
         this.jobListenerSse = null;
         this.jobListenerExternal = null;
         this.jobFilter = null;
@@ -141,12 +112,10 @@ export class SseBus {
     }
 
     _updateJob(event) {
-        const baseUrl = urlConfig.jenkinsRootURL;
+        const baseUrl = UrlConfig.getJenkinsRootURL();
         const url = cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
-        this.fetch(url, defaultFetchOptions)
-            .then(checkStatus)
-            .then(parseJSON)
+        Fetch.fetchJSON(url)
             .then((data) => {
                 const updatedRun = clone(data);
 
@@ -161,7 +130,7 @@ export class SseBus {
                 if (this.jobListenerExternal) {
                     this.jobListenerExternal(updatedRun);
                 }
-            });
+            }).catch(FetchFunctions.consoleError);
     }
 
     _updateMultiBranchPipelineBranches() {

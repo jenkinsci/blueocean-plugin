@@ -6,11 +6,14 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.JsonConverter;
+import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.logging.LogManager;
+
+import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
 
 /**
  * @author Vivek Pandey
@@ -41,6 +46,8 @@ public abstract class BaseTest {
         return "blue/rest";
     }
 
+    protected String jwtToken;
+
     @Before
     public void setup() throws Exception {
         if(System.getProperty("DISABLE_HTTP_HEADER_TRACE") == null) {
@@ -48,6 +55,7 @@ public abstract class BaseTest {
             LogManager.getLogManager().readConfiguration(is);
         }
         this.baseUrl = j.jenkins.getRootUrl() + getContextPath();
+        this.jwtToken = getJwtToken(j.jenkins);
         Unirest.setObjectMapper(new ObjectMapper() {
             public <T> T readValue(String value, Class<T> valueType) {
                 try {
@@ -101,12 +109,13 @@ public abstract class BaseTest {
             if(HttpResponse.class.isAssignableFrom(type)){
                 HttpResponse<String> response = Unirest.get(getBaseUrl(path)).header("Accept", accept)
                     .header("Accept-Encoding","")
+                    .header("Authorization", "Bearer "+jwtToken)
                     .asString();
                 Assert.assertEquals(expectedStatus, response.getStatus());
                 return (T) response;
             }
 
-            HttpResponse<T> response = Unirest.get(getBaseUrl(path)).header("Accept", accept).asObject(type);
+            HttpResponse<T> response = Unirest.get(getBaseUrl(path)).header("Accept", accept).header("Authorization", "Bearer "+jwtToken).asObject(type);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
         } catch (UnirestException e) {
@@ -118,7 +127,8 @@ public abstract class BaseTest {
     protected Map delete(String path){
         assert path.startsWith("/");
         try {
-            HttpResponse<Map> response = Unirest.delete(getBaseUrl(path)).asObject(Map.class);
+            HttpResponse<Map> response = Unirest.delete(getBaseUrl(path))
+                .header("Authorization", "Bearer "+jwtToken).asObject(Map.class);
             Assert.assertEquals(200, response.getStatus());
             return response.getBody();
         } catch (UnirestException e) {
@@ -137,6 +147,7 @@ public abstract class BaseTest {
         try {
             HttpResponse<Map> response = Unirest.post(getBaseUrl(path))
                 .header("Content-Type","application/json")
+                .header("Authorization", "Bearer "+jwtToken)
                 .body(body).asObject(Map.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -151,6 +162,7 @@ public abstract class BaseTest {
             HttpResponse<String> response = Unirest.post(getBaseUrl(path))
                 .header("Content-Type",contentType)
                 .header("Accept-Encoding","")
+                .header("Authorization", "Bearer "+jwtToken)
                 .body(body).asObject(String.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -171,6 +183,7 @@ public abstract class BaseTest {
             HttpResponse<Map> response = Unirest.put(getBaseUrl(path))
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
+                .header("Authorization", "Bearer "+jwtToken)
                 //Unirest by default sets accept-encoding to gzip but stapler is sending malformed gzip value if
                 // the response length is small (in this case its 20 chars).
                 // Needs investigation in stapler to see whats going on there.
@@ -190,6 +203,7 @@ public abstract class BaseTest {
         try {
             HttpResponse<String> response = Unirest.put(getBaseUrl(path))
                 .header("Content-Type",contentType)
+                .header("Authorization", "Bearer "+jwtToken)
                 .body(body).asObject(String.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -207,6 +221,7 @@ public abstract class BaseTest {
         try {
             HttpResponse<Map> response = Unirest.patch(getBaseUrl(path))
                 .header("Content-Type","application/json")
+                .header("Authorization", "Bearer "+jwtToken)
                 .body(body).asObject(Map.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -221,6 +236,7 @@ public abstract class BaseTest {
         try {
             HttpResponse<String> response = Unirest.patch(getBaseUrl(path))
                 .header("Content-Type",contentType)
+                .header("Authorization", "Bearer "+jwtToken)
                 .body(body).asObject(String.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -300,7 +316,9 @@ public abstract class BaseTest {
     public RequestBuilder request() {
         return new RequestBuilder(baseUrl);
     }
-    public static class RequestBuilder {
+
+
+    public  class RequestBuilder {
         private String url;
         private String username;
         private String method;
@@ -310,6 +328,7 @@ public abstract class BaseTest {
         private String baseUrl;
         private int expectedStatus = 200;
 
+        private String token;
 
         private String getBaseUrl(String path){
             return baseUrl + path;
@@ -341,6 +360,11 @@ public abstract class BaseTest {
             return this;
         }
 
+        public RequestBuilder jwtToken(String token){
+            this.token = token;
+            return this;
+        }
+
 
         public RequestBuilder data(Map data) {
             this.data = data;
@@ -358,6 +382,11 @@ public abstract class BaseTest {
             return this;
         }
 
+        public RequestBuilder patch(String url) {
+            this.url = url;
+            this.method = "PATCH";
+            return this;
+        }
 
         public RequestBuilder get(String url) {
             this.url = url;
@@ -387,6 +416,9 @@ public abstract class BaseTest {
                     case "PUT":
                         request = Unirest.put(getBaseUrl(url));
                         break;
+                    case "PATCH":
+                        request = Unirest.patch(getBaseUrl(url));
+                        break;
                     case "POST":
                         request = Unirest.post(getBaseUrl(url));
                         break;
@@ -407,6 +439,12 @@ public abstract class BaseTest {
                     request.basicAuth(username, password);
                 }
 
+                if(token == null) {
+                    request.header("Authorization", "Bearer " + BaseTest.this.jwtToken);
+                }else{
+                    request.header("Authorization", "Bearer " + token);
+                }
+
                 if(request instanceof HttpRequestWithBody && data != null) {
                     ((HttpRequestWithBody)request).body(data);
                 }
@@ -418,4 +456,39 @@ public abstract class BaseTest {
             }
         }
     }
+
+    public static String getJwtToken(Jenkins jenkins) throws UnirestException {
+        HttpResponse<String> response = Unirest.get(jenkins.getRootUrl()+"jwt-auth/token/").header("Accept", "*/*")
+            .header("Accept-Encoding","").asString();
+
+        String token = response.getHeaders().getFirst(X_BLUEOCEAN_JWT);
+        Assert.assertNotNull(token);
+        //we do not validate it for test optimization and for the fact that there are separate
+        // tests that test token generation and validation
+        return token;
+    }
+
+    public static String getJwtToken(Jenkins jenkins, String username, String password) throws UnirestException {
+         GetRequest request = Unirest.get(jenkins.getRootUrl()+"jwt-auth/token/").header("Accept", "*/*")
+            .header("Accept-Encoding","");
+        if(username!= null && password!= null){
+            request.basicAuth(username,password);
+        }
+
+        HttpResponse<String> response = request.asString();
+        String token = response.getHeaders().getFirst(X_BLUEOCEAN_JWT);
+        Assert.assertNotNull(token);
+        //we do not validate it for test optimization and for the fact that there are separate
+        // tests that test token generation and validation
+        int i = token.indexOf('.');
+        Assert.assertTrue(i > 0);
+
+        int j = token.lastIndexOf(".");
+        Assert.assertTrue(j > 0);
+        String claim = new String(org.jose4j.base64url.Base64.decode(token.substring(i+1, j)));
+        Map u = JSONObject.fromObject(claim);
+        Assert.assertEquals(username,u.get("sub"));
+        return token;
+    }
+
 }
