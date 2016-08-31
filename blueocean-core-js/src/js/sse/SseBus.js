@@ -20,9 +20,9 @@ export class SseBus {
     }
 
     dispose() {
-        for (const token in Object.keys(this.sseListeners)) {
+        Object.keys(this.sseListeners).forEach((token) => {
             this.unsubscribe(token);
-        }
+        });
 
         this.externalListeners = {};
         this.sseListeners = {};
@@ -44,12 +44,12 @@ export class SseBus {
             filter: jobFilter,
         };
 
-        if (!this.sseListeners['job']) {
+        if (!this.sseListeners.job) {
             const sseListener = this.sse.subscribe('job', (event) => {
                 this._handleJobEvent(event);
             });
 
-            this.sseListeners['job'] = sseListener;
+            this.sseListeners.job = sseListener;
         }
 
         return id;
@@ -59,8 +59,8 @@ export class SseBus {
         delete this.externalListeners[token];
 
         if (Object.keys(this.externalListeners).length === 0) {
-            this.sse.unsubscribe(this.sseListeners['job']);
-            delete this.sseListeners['job'];
+            this.sse.unsubscribe(this.sseListeners.job);
+            delete this.sseListeners.job;
         }
     }
 
@@ -92,29 +92,29 @@ export class SseBus {
         }
 
         switch (event.jenkins_event) {
-            case 'job_crud_created':
-            case 'job_crud_deleted':
-            case 'job_crud_renamed':
-                this._refetchPipelines();
-                break;
-            case 'job_run_queue_buildable':
-            case 'job_run_queue_enter':
-                this._enqueueJob(event, interestedListeners);
-                break;
-            case 'job_run_queue_left':
-            case 'job_run_queue_blocked': {
-                break;
-            }
-            case 'job_run_started': {
-                this._updateJob(event, interestedListeners);
-                break;
-            }
-            case 'job_run_ended': {
-                this._updateJob(event, interestedListeners);
-                break;
-            }
-            default :
-            // Else ignore the event.
+        case 'job_crud_created':
+        case 'job_crud_deleted':
+        case 'job_crud_renamed':
+            this._refetchPipelines();
+            break;
+        case 'job_run_queue_buildable':
+        case 'job_run_queue_enter':
+            this._enqueueJob(event, interestedListeners);
+            break;
+        case 'job_run_queue_left':
+        case 'job_run_queue_blocked': {
+            break;
+        }
+        case 'job_run_started': {
+            this._updateJob(event, interestedListeners);
+            break;
+        }
+        case 'job_run_ended': {
+            this._updateJob(event, interestedListeners);
+            break;
+        }
+        default :
+        // Else ignore the event.
         }
     }
 
