@@ -20,7 +20,13 @@ const extractRestUrl = (subject) => {
     return restUrl;
 };
 
-const stripEmptyTokens = (tokens) => {
+/**
+ * Return a new array with leading and trailing whitespace elements removed.
+ *
+ * @param {Array} tokens
+ * @returns {Array}
+ */
+const trimEmptyTokens = (tokens) => {
     const copy = tokens.slice();
 
     if (copy[0] === '') {
@@ -36,8 +42,7 @@ const stripEmptyTokens = (tokens) => {
 
 export const isMultiBranchRun = (run) => {
     const restUrl = extractRestUrl(run);
-    // clean empty chars that result from URL beginning or ending with forward slash
-    const tokens = stripEmptyTokens(restUrl.split('/'));
+    const tokens = trimEmptyTokens(restUrl.split('/'));
     return tokens[tokens.length - 4] === 'branches';
 };
 
@@ -50,8 +55,7 @@ export const isMultiBranchRun = (run) => {
  */
 export const buildRunDetailsUrl = (run) => {
     const restUrl = extractRestUrl(run);
-    // clean empty chars that result from URL beginning or ending with forward slash
-    const tokens = stripEmptyTokens(restUrl.split('/'));
+    const tokens = trimEmptyTokens(restUrl.split('/'));
 
     // given the following URL '/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/folder3/pipelines/jdl-2
     // /branches/experiment%252Fbuild-locally-docker/runs/21/
@@ -86,8 +90,7 @@ export const buildRunDetailsUrl = (run) => {
 
 export const buildRunDetailsUrlFromQueue = (queueItem, isMultiBranch, expectedBuildNumber) => {
     const restUrl = extractRestUrl(queueItem);
-    // clean empty chars that result from URL beginning or ending with forward slash
-    const tokens = stripEmptyTokens(restUrl.split('/'));
+    const tokens = trimEmptyTokens(restUrl.split('/'));
 
     // given the following URL '/blue/rest/organizations/jenkins/pipelines/jenkinsfile-experiments/pipelines/PR-2/queue/31/'
 
