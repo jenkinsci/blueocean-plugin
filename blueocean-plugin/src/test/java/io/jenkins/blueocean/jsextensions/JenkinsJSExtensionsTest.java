@@ -43,8 +43,6 @@ public class JenkinsJSExtensionsTest extends BaseTest {
         Map response = get("/js-extensions", Map.class);
         List<Map> extensions = (List)response.get("data");
 
-        Assert.assertEquals(2, extensions.size());
-
         for (Map extension : extensions) {
             List<Map> extensionPoints = (List<Map>) extension.get("extensions");
             String pluginId = (String) extension.get("hpiPluginId");
@@ -65,8 +63,6 @@ public class JenkinsJSExtensionsTest extends BaseTest {
                 Assert.assertEquals("jenkins.pipeline.detail.header.action", extensionPoints.get(3).get("extensionPoint"));
                 Assert.assertEquals("components/FavoritePipeline", extensionPoints.get(4).get("component"));
                 Assert.assertEquals("jenkins.pipeline.branches.list.action", extensionPoints.get(4).get("extensionPoint"));
-            } else {
-                Assert.fail("Found extensions from unknown pluginId: " + pluginId);
             }
         }
 

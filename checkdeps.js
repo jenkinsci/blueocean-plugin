@@ -41,6 +41,7 @@ var packageFiles = [];
 
 packageFiles.push(require("./blueocean-dashboard/package.json"));
 packageFiles.push(require("./blueocean-web/package.json"));
+packageFiles.push(require("./blueocean-pipeline-editor/package.json"));
 packageFiles.push(require("./blueocean-personalization/package.json"));
 packageFiles.push(require("./blueocean-config/package.json"));
 

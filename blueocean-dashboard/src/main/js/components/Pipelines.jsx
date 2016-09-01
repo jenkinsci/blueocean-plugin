@@ -43,6 +43,9 @@ export default class Pipelines extends Component {
                         <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
                             New Pipeline
                         </a>
+                        <Link className="btn-secondary inverse" to="/pipeline-editor-demo">
+                            Editor {/* TODO: Move this button into extension? */}
+                        </Link>
                     </Title>
                 </PageHeader>
                 <main>

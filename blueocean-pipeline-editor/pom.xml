@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>blueocean-parent</artifactId>
+        <groupId>io.jenkins.blueocean</groupId>
+        <version>1.0-alpha-10-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>BlueOcean :: Pipeline Editor</name>
+    <artifactId>blueocean-pipeline-editor</artifactId>
+    <packaging>hpi</packaging>
+    
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+
+    <dependencies>
+    </dependencies>
+
+</project>

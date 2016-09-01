@@ -1,0 +1,3 @@
+// TODO: Merge these into JDL equivalent, and figure out how to pull them in from there
+
+type HTMLEvent = Event & {target: HTMLElement}; // So we can actually *use* event.target

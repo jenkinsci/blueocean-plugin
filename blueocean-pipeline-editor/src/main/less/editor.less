@@ -1,0 +1,205 @@
+// TODO: Make sure to move this out alongside the code when extracting a new repo
+
+//--[ Theme ]-----------------------------------------------------------------------------------------------------------
+
+@hr-color: #ccc;
+@grab-color: #949393;
+@selection-color: #ddd;
+@editor-background: #fff;
+@brand-grey-lite: #949393;
+@top-bg: #f9f9f9;
+@brand-color: #4a90e2;
+
+@font-family-header: "LatoLatinWebMedium", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+// TODO: Make these ^^^ use the JDL variables
+
+//--[ Outer Editor Component ]------------------------------------------------------------------------------------------
+
+.editor-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width:100%;
+    height:100%;
+    flex-grow:1;
+}
+
+.editor-main-graph {
+    flex-grow: 1;
+    min-height: 5em;
+    display:flex;
+    justify-content: center;
+    background: @top-bg;
+    border-bottom: solid 1px @hr-color;
+}
+
+.editor-main-step-list {
+    min-height: 5em;
+    width: 50%;
+    border-right: solid 1px @hr-color;
+}
+
+.editor-main-step-details {
+    min-height: 5em;
+    width: 50%;
+}
+
+.editor-main-step-list p,
+.editor-main-step-details p {
+    text-align: center;
+}
+
+//--[ "Dialog" page styles ]--------------------------------------------------------------------------------------------
+
+// TODO: Fix the storybooks in blueocean-dashboard, then using that fix the JDL styles for dialogs and...
+// TODO: ... things using said styles, remove this stuff from here.
+
+.editor-page-outer {
+    display:flex;
+    flex-direction: column;
+    width:100%;
+    height:100%;
+}
+
+.editor-page-header {
+    flex-grow: 1;
+    width:100%;
+    background: @brand-color;
+    color: white;
+    min-height: 80px;
+    display:flex;
+    align-items: center;
+}
+
+.editor-page-header h3 {
+    margin:1em;
+    position:relative;
+    font-size:20px;
+    top:-3px;
+    flex-grow:1;
+}
+
+.editor-page-header-controls {
+    flex-grow: 0;
+    margin: 1em;
+}
+
+.editor-page-header-controls button {
+    margin:0.5em;
+}
+
+    //--[ Pipeline Graph ]--------------------------------------------------------------------------------------------------
+
+.editor-graph-node {
+    fill: none;
+    stroke: @brand-grey-lite;
+}
+
+.editor-graph-nodegroup.selected .editor-graph-node {
+    stroke: #fff; //@brand-grey-lite;
+    fill: @brand-grey-lite;
+}
+
+.editor-add-node-placeholder {
+    fill: @brand-color;
+}
+
+//--[ Steps List ]------------------------------------------------------------------------------------------------------
+
+.editor-steps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.editor-step {
+    width: 100%;
+    display: flex;
+    background: @editor-background;
+}
+
+.editor-step-grab {
+    background: @grab-color;
+    display: flex;
+    align-items: center;
+    cursor: -webkit-grab;
+    cursor: grab;
+}
+
+.editor-step-main {
+    width: 100%;
+    border-bottom: solid 1px @hr-color;
+    padding: 0.5rem 0rem 0.5rem 1rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.editor-step.selected > .editor-step-main {
+    background: @selection-color;
+}
+
+.editor-step-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: flex-start;
+}
+
+.delete-step-button {
+    visibility: hidden;
+    cursor: pointer;
+    margin-right: 1rem;
+}
+
+.editor-step.selected > .editor-step-main > .editor-step-content > .editor-step-title > .delete-step-button {
+    visibility: visible;
+}
+
+.editor-step-title {
+    width: 100%;
+    display: flex;
+}
+
+.editor-step-label {
+    font-weight: bold;
+    font-size: 110%;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+    flex-grow: 1;
+}
+
+.editor-nested-steps {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    width: 100%;
+}
+
+.editor-button-bar {
+    padding: 0.5em;
+    width: 100%;
+}
+
+//--[ Step Details ]----------------------------------------------------------------------------------------------------
+
+.editor-step-detail {
+    padding:1.5em;
+    flex-grow:1;
+    display:flex;
+    flex-direction: column;
+    width:100%;
+    height:100%;
+}
+
+.editor-step-detail-script {
+    margin-top:1em;
+    flex-grow:1;
+    border: solid 1px @brand-color;
+    padding:0.5em;
+    min-height: 8em;
+}
+
+.editor-step-detail-label {
+    font-size:16px;
+    font-family: @font-family-header;
+}
