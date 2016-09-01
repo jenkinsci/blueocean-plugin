@@ -4,6 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import { EditorPipelineGraph } from './EditorPipelineGraph';
 import { EditorStepList } from './EditorStepList';
 import { EditorStepDetails } from './EditorStepDetails';
+import Extensions from '@jenkins-cd/js-extensions';
 
 import type { StageInfo, StepInfo } from './common';
 
@@ -232,6 +233,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                                                         onDataChange={newValue => this.stepDataChanged(newValue)}/>
                         : <p>Select or create a build stage</p>}
                 </div>
+                <Extensions.Renderer extensionPoint="pipeline.editor.css" />
             </div>
         );
     }
