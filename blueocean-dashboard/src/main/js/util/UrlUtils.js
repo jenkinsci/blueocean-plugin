@@ -162,6 +162,20 @@ export function paginateUrl(url) {
 }
 
 /**
+ * Returns a new string which ends with a slash, or the
+ * original if it already does
+ */
+export function endSlash(str) {
+    if (!str) {
+        return str;
+    }
+    if (str.charAt(str.length - 1) !== '/') {
+        return `${str}/`;
+    }
+    return str;
+}
+
+/**
  * Examines the provided object for:
  * organization, pipeline, branch, runId
  * and builds a path to the thing as best it can...
@@ -183,21 +197,7 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
     if (runId) {
         url += `/runs/${encodeURIComponent(runId)}`;
     }
-    return url;
-}
-
-/**
- * Returns a new string which ends with a slash, or the
- * original if it already does
- */
-export function endSlash(str) {
-    if (!str) {
-        return str;
-    }
-    if (str.charAt(str.length - 1) !== '/') {
-        return `${str}/`;
-    }
-    return str;
+    return endSlash(url);
 }
 
 /**
