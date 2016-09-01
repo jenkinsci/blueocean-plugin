@@ -10,7 +10,7 @@ import utils from './utils';
 export const CAPABILITIES = {
     SIMPLE_PIPELINE: 'org.jenkinsci.plugins.workflow.job.WorkflowJob',
     MULTIBRANCH_PIPELINE: 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline',
-    PIPELINE_OR_BRANCH: 'org.jenkinsci.plugins.workflow.job.WorkflowJob',
+    MULTIBRANCH_BRANCH: 'io.jenkins.blueocean.rest.model.BlueBranch',
 };
 
 /**

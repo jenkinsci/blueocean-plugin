@@ -6,9 +6,10 @@ import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
 
 import { RunApi as runApi } from '../';
-import { SseBus as sseBus } from '../';
 import { ToastService as toastService } from '../';
-import { buildRunDetailsUrl } from '../UrlBuilder';
+import { capabilityStore } from '../';
+import { CAPABILITIES } from '../';
+import { buildRunDetailsUrlFromQueue } from '../UrlBuilder';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -22,29 +23,14 @@ export class RunButton extends Component {
     constructor(props) {
         super(props);
 
-        this.subscriptionId = null;
-
         this.state = {
             running: false,
             stopping: false,
         };
     }
 
-    componentDidMount() {
-        this.subscriptionId = sseBus.subscribeToJob(
-            (runData, event) => this._onJobEvent(runData, event),
-            (event) => this._filterJob(event)
-        );
-    }
-
     componentWillReceiveProps(nextProps) {
         this._updateState(nextProps);
-    }
-
-    componentWillUnmount() {
-        if (this.subscriptionId) {
-            sseBus.unsubscribe(this.subscriptionId);
-        }
     }
 
     _updateState(nextProps) {
@@ -59,43 +45,42 @@ export class RunButton extends Component {
         }
     }
 
-    _onJobEvent(runData, event) {
-        const name = decodeURIComponent(
-            event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name
-        );
-        const runId = event.jenkins_object_id;
-
-        if (event.jenkins_event === 'job_run_started') {
-            const runDetailsUrl = buildRunDetailsUrl(runData);
-
-            toastService.newToast({
-                text: `Started "${name}" #${runId}`,
-                action: 'Open',
-                onActionClick: () => {
-                    if (this.props.onNavigation) {
-                        this.props.onNavigation(runDetailsUrl);
-                    }
-                },
-            });
-        } else if (event.jenkins_event === 'job_run_ended' && runData.result === 'ABORTED') {
-            toastService.newToast({
-                text: `Stopped "${name}" #${runId}`,
-            });
-        }
-    }
-
-    _filterJob(event) {
-        return event.blueocean_job_rest_url === this.props.runnable._links.self.href;
-    }
-
     _onRunClick() {
-        runApi.startRun(this.props.runnable);
+        runApi.startRun(this.props.runnable)
+            .then((runInfo) => this._nextAction(runInfo));
+    }
 
-        const name = this.props.runnable.name;
+    _nextAction(runInfo) {
+        const className = this.props.runnable._class;
 
-        toastService.newToast({
-            text: `Queued "${name}"`,
-        });
+        capabilityStore.resolveCapabilities(className)
+            .then(capabilityMap => {
+                const capabilities = capabilityMap[className];
+                const isMultiBranch = capabilities.some(capability => {
+                    return [CAPABILITIES.MULTIBRANCH_BRANCH, CAPABILITIES.MULTIBRANCH_PIPELINE].indexOf(capability) !== -1;
+                });
+
+                const runId = runInfo.expectedBuildNumber;
+                // TODO: href doesn't encode branch name correctly; verify bug fix after JENKINS-37873 is resolved
+                const runDetailsUrl = buildRunDetailsUrlFromQueue(
+                    runInfo._links.self.href,
+                    isMultiBranch,
+                    runId,
+                    true
+                );
+
+                const name = decodeURIComponent(this.props.runnable.name);
+
+                toastService.newToast({
+                    text: `Started "${name}" #${runId}`,
+                    action: 'Open',
+                    onActionClick: () => {
+                        if (this.props.onNavigation) {
+                            this.props.onNavigation(runDetailsUrl);
+                        }
+                    },
+                });
+            });
     }
 
     _onStopClick() {
