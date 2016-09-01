@@ -4,4 +4,6 @@ extensions:
 #    extensionPoint: jenkins.pipeline.editor
   - component: EditorRoutes
     extensionPoint: jenkins.main.routes
+  - component: components/editor/EditorCSS
+    extensionPoint: pipeline.editor.css    
  
