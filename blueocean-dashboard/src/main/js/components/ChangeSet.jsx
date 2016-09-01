@@ -38,7 +38,7 @@ export default class ChangeSet extends Component {
         if (authors && authors.length > 0) {
             let nested;
             if (condense) {
-                nested = `${this.props.changeSet.length} changes`;
+                nested = `${changeSet.length} changes`;
             } else {
                 nested = `Changes by ${authors.map(author => ` ${author}`)} `;
             }
