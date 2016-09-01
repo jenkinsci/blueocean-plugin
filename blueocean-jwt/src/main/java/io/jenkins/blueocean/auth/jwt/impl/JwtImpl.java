@@ -21,9 +21,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Vivek Pandey
@@ -34,8 +32,6 @@ public class JwtImpl extends JwtAuthenticationService {
     private static int DEFAULT_EXPIRY_IN_SEC = 1800;
     private static int DEFAULT_MAX_EXPIRY_TIME_IN_MIN = 480;
     private static int DEFAULT_NOT_BEFORE_IN_SEC = 30;
-
-    private final Map<String, Authentication> authenticationMap = new ConcurrentHashMap<>();
 
     @Override
     public JwtToken getToken(@Nullable @QueryParameter("expiryTimeInMins") Integer expiryTimeInMins, @Nullable @QueryParameter("maxExpiryTimeInMins") Integer maxExpiryTimeInMins) {
