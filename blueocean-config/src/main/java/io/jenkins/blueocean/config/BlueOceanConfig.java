@@ -18,6 +18,7 @@ public class BlueOceanConfig extends BluePageDecorator {
     public boolean isRollBarEnabled(){
         return Boolean.getBoolean("BLUEOCEAN_ROLLBAR_ENABLED");
     }
+    public final boolean FEATURE_JWT = Boolean.getBoolean("FEATURE_BLUEOCEAN_JWT_AUTHENTICATION");
 
 
     public String getBlueOceanConfig(){
@@ -44,13 +45,13 @@ public class BlueOceanConfig extends BluePageDecorator {
                     .key("security")
                     .object()
                         .key("enabled").value(jenkins.isUseSecurity())
-                        .key("authorizationStrategy")
-                        .object()
+                        .key("authorizationStrategy").object()
                             .key("allowAnonymousRead").value(allowAnonymousRead)
+                            .endObject()
+                        .key("enableJWT").value(FEATURE_JWT)
                         .endObject()
-                .endObject()
-            .endObject()
-            .endObject();
+                    .endObject()
+                .endObject();
 
         return writer.toString();
     }

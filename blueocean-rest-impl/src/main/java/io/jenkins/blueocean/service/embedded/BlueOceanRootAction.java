@@ -21,7 +21,7 @@ import org.kohsuke.stapler.StaplerRequest;
 public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy {
     private static final String URL_BASE="blue";
 
-    private final boolean disableJWT = Boolean.getBoolean("DISABLE_BLUEOCEAN_JWT_AUTHENTICATION");
+    private final boolean enableJWT = Boolean.getBoolean("FEATURE_BLUEOCEAN_JWT_AUTHENTICATION");
 
     @Inject
     private BlueOceanUI app;
@@ -49,7 +49,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
 
         StaplerRequest request = Stapler.getCurrentRequest();
 
-        if(!disableJWT && request.getOriginalRestOfPath().startsWith("/rest/")) {
+        if(enableJWT && request.getOriginalRestOfPath().startsWith("/rest/")) {
             Authentication tokenAuthentication = JwtAuthenticationToken.create(request);
 
             //create a new context and set it to holder to not clobber existing context
