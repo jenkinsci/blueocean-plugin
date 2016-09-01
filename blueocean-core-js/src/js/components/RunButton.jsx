@@ -7,8 +7,7 @@ import { Icon } from 'react-material-icons-blue';
 
 import { RunApi as runApi } from '../';
 import { ToastService as toastService } from '../';
-import { CAPABILITIES, capabilityStore } from '../';
-import { buildRunDetailsUrlFromQueue } from '../UrlBuilder';
+import { createRunStartedToast } from './utils';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -46,40 +45,7 @@ export class RunButton extends Component {
 
     _onRunClick() {
         runApi.startRun(this.props.runnable)
-            .then((runInfo) => this._nextAction(runInfo));
-    }
-
-    _nextAction(runInfo) {
-        const className = this.props.runnable._class;
-
-        capabilityStore.resolveCapabilities(className)
-            .then(capabilityMap => {
-                const capabilities = capabilityMap[className];
-                const isMultiBranch = capabilities.some(capability => {
-                    return [CAPABILITIES.MULTIBRANCH_BRANCH, CAPABILITIES.MULTIBRANCH_PIPELINE].indexOf(capability) !== -1;
-                });
-
-                const runId = runInfo.expectedBuildNumber;
-                // TODO: href doesn't encode branch name correctly; verify bug fix after JENKINS-37873 is resolved
-                const runDetailsUrl = buildRunDetailsUrlFromQueue(
-                    runInfo._links.self.href,
-                    isMultiBranch,
-                    runId,
-                    true
-                );
-
-                const name = decodeURIComponent(this.props.runnable.name);
-
-                toastService.newToast({
-                    text: `Started "${name}" #${runId}`,
-                    action: 'Open',
-                    onActionClick: () => {
-                        if (this.props.onNavigation) {
-                            this.props.onNavigation(runDetailsUrl);
-                        }
-                    },
-                });
-            });
+            .then((runInfo) => createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation));
     }
 
     _onStopClick() {
