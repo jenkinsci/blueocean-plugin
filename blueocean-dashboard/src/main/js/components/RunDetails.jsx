@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { browserHistory } from 'react-router';
 import {
     ModalView,
     ModalBody,
@@ -67,6 +68,10 @@ class RunDetails extends Component {
         const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
         this.context.router.push(changesUrl);
     }
+    navigateToUrl(newUrl) {
+        this.context.location.pathname = newUrl;
+        this.context.router.push(newUrl);
+    }
     render() {
         // early out
         if (!this.context.params
@@ -83,11 +88,6 @@ class RunDetails extends Component {
         const currentRun = new RunRecord(run);
         const pipelineClass = this.context.pipeline._class;
         const status = currentRun.getComputedResult() || '';
-
-        const switchRunDetails = (newUrl) => {
-            location.pathname = newUrl;
-            router.push(location);
-        };
 
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
@@ -134,7 +134,7 @@ class RunDetails extends Component {
                                   className="dark"
                                   runnable={this.props.pipeline}
                                   latestRun={currentRun}
-                                  onNavigation={switchRunDetails}
+                                  onNavigation={(url) => this.navigateToUrl(url)}
                                   autoNavigate
                                 />
                             </IfCapability>

@@ -7,8 +7,7 @@ import { Icon } from 'react-material-icons-blue';
 
 import { RunApi as runApi } from '../';
 import { ToastService as toastService } from '../';
-import { capabilityStore } from '../';
-import { CAPABILITIES } from '../';
+import { CAPABILITIES, capabilityStore } from '../';
 import { buildRunDetailsUrlFromQueue } from '../UrlBuilder';
 
 const stopProp = (event) => {

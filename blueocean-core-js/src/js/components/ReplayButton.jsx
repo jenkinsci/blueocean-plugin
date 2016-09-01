@@ -7,6 +7,7 @@ import { Icon } from 'react-material-icons-blue';
 
 import { RunApi as runApi } from '../';
 import { ToastService as toastService } from '../';
+import { CAPABILITIES, capabilityStore } from '../';
 import { isMultiBranchRun, buildRunDetailsUrlFromQueue } from '../UrlBuilder';
 
 const stopProp = (event) => {
@@ -40,32 +41,51 @@ export class ReplayButton extends Component {
     }
 
     _nextAction(runInfo) {
+        const className = this.props.runnable._class;
         const runId = runInfo.expectedBuildNumber;
+
         const runDetailsUrl = buildRunDetailsUrlFromQueue(
             runInfo._links.self.href,
-            this._isMultiBranch(),
+            false,
             runId
         );
 
-        if (this.props.autoNavigate && this.props.onNavigation) {
-            this.props.onNavigation(runDetailsUrl);
-        } else {
-            const name = this.props.runnable.name;
+        this.props.onNavigation(runDetailsUrl);
 
-            toastService.newToast({
-                text: `Started "${name}" #${runId}`,
-                action: 'Open',
-                onActionClick: () => {
-                    if (this.props.onNavigation) {
-                        this.props.onNavigation(runDetailsUrl);
-                    }
-                },
+        /*
+        capabilityStore.resolveCapabilities(className)
+            .then(capabilityMap => {
+                const capabilities = capabilityMap[className];
+                const isMultiBranch = capabilities.some(capability => {
+                    return [CAPABILITIES.MULTIBRANCH_BRANCH, CAPABILITIES.MULTIBRANCH_PIPELINE].indexOf(capability) !== -1;
+                });
+
+                const runId = runInfo.expectedBuildNumber;
+                // TODO: href doesn't encode branch name correctly; verify bug fix after JENKINS-37873 is resolved
+                const runDetailsUrl = buildRunDetailsUrlFromQueue(
+                    runInfo._links.self.href,
+                    isMultiBranch,
+                    runId,
+                    true
+                );
+
+                if (this.props.autoNavigate && this.props.onNavigation) {
+                    this.props.onNavigation(runDetailsUrl);
+                } else {
+                    const name = decodeURIComponent(this.props.runnable.name);
+
+                    toastService.newToast({
+                        text: `Started "${name}" #${runId}`,
+                        action: 'Open',
+                        onActionClick: () => {
+                            if (this.props.onNavigation) {
+                                this.props.onNavigation(runDetailsUrl);
+                            }
+                        },
+                    });
+                }
             });
-        }
-    }
-
-    _isMultiBranch() {
-        return isMultiBranchRun(this.props.latestRun._links.self.href);
+            */
     }
 
     render() {
