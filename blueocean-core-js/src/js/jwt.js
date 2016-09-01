@@ -7,6 +7,8 @@ import { jwk2pem } from 'pem-jwk';
 let storedToken = null;
 let publicKeyStore = null;
 let tokenFetchPromise = null;
+
+const CLOCK_SKEW_SECONDS = 60;
 export default {
     /**
      * Fetches the JWT token. This token is cached for a default of 25mins.
@@ -15,7 +17,9 @@ export default {
     fetchJWT() {
         if (storedToken && storedToken.exp) {
             const diff = storedToken.exp - Math.trunc(new Date().getTime() / 1000);
-            if (diff < 300) {
+            
+            // refetch token if we are within 60s of it exp
+            if (diff < CLOCK_SKEW_SECONDS) {
                 tokenFetchPromise = null;
             }
         }
@@ -41,7 +45,7 @@ export default {
      */
     verifyToken(token, certObject) {
         return new Promise((resolve, reject) =>
-            jwt.verify(token, jwk2pem(certObject), { algorithms: [certObject.alg] }, (err, payload) => {
+            jwt.verify(token, jwk2pem(certObject), { algorithms: [certObject.alg], clockTolerance: CLOCK_SKEW_SECONDS }, (err, payload) => {
                 if (err) {
                     reject(err);
                 } else {
