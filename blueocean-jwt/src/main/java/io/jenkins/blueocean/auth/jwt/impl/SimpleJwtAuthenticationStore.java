@@ -8,6 +8,7 @@ import org.acegisecurity.Authentication;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Stores authentication map and makes them available in memory.
@@ -16,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Extension(ordinal = 0)
 public class SimpleJwtAuthenticationStore extends JwtAuthenticationStoreFactory implements JwtAuthenticationStore {
-    private final Map<String, Authentication> authenticationMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Authentication> authenticationMap = new ConcurrentHashMap<>();
 
     public void add(String id, Authentication authentication){
         if(authenticationMap.get(id) == null){
@@ -45,10 +46,7 @@ public class SimpleJwtAuthenticationStore extends JwtAuthenticationStoreFactory 
     @Override
     public void store(Authentication authentication, Map<String,Object> claims) {
         String authenticationId = String.valueOf(authentication.hashCode());
-        if(authenticationMap.get(authenticationId) == null){
-            authenticationMap.put(authenticationId, authentication);
-        }
-
+        authenticationMap.putIfAbsent(authenticationId, authentication);
         JSONObject provider = new JSONObject();
 
         provider.put("id", authenticationId);
