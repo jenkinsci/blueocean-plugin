@@ -8,6 +8,8 @@ import hudson.remoting.Base64;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.auth.jwt.JwkService;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationService;
+import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
+import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
 import io.jenkins.blueocean.auth.jwt.JwtToken;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
@@ -19,7 +21,9 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Vivek Pandey
@@ -30,6 +34,8 @@ public class JwtImpl extends JwtAuthenticationService {
     private static int DEFAULT_EXPIRY_IN_SEC = 1800;
     private static int DEFAULT_MAX_EXPIRY_TIME_IN_MIN = 480;
     private static int DEFAULT_NOT_BEFORE_IN_SEC = 30;
+
+    private final Map<String, Authentication> authenticationMap = new ConcurrentHashMap<>();
 
     @Override
     public JwtToken getToken(@Nullable @QueryParameter("expiryTimeInMins") Integer expiryTimeInMins, @Nullable @QueryParameter("maxExpiryTimeInMins") Integer maxExpiryTimeInMins) {
@@ -89,10 +95,16 @@ public class JwtImpl extends JwtAuthenticationService {
 
         //set claim
         JSONObject context = new JSONObject();
+
         JSONObject userObject = new JSONObject();
         userObject.put("id", userId);
         userObject.put("fullName", fullName);
         userObject.put("email", email);
+
+        JwtAuthenticationStore authenticationStore = getJwtStore(authentication);
+
+        authenticationStore.store(authentication, context);
+
         context.put("user", userObject);
         jwtToken.claim.put("context", context);
 
@@ -147,5 +159,21 @@ public class JwtImpl extends JwtAuthenticationService {
         }
     }
 
+    public static JwtAuthenticationStore getJwtStore(Authentication authentication){
+        JwtAuthenticationStore jwtAuthenticationStore=null;
+        for(JwtAuthenticationStoreFactory factory: JwtAuthenticationStoreFactory.all()){
+            if(factory instanceof SimpleJwtAuthenticationStore){
+                jwtAuthenticationStore = factory.getJwtAuthenticationStore(authentication);
+                continue;
+            }
+            JwtAuthenticationStore authenticationStore = factory.getJwtAuthenticationStore(authentication);
+            if(authenticationStore != null){
+                return authenticationStore;
+            }
+        }
+
+        //none found, lets use SimpleJwtAuthenticationStore
+        return jwtAuthenticationStore;
+    }
 }
 

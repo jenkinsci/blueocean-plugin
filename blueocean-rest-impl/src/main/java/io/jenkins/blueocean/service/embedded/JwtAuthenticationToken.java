@@ -1,13 +1,13 @@
 package io.jenkins.blueocean.service.embedded;
 
 import hudson.model.User;
+import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
+import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
 import io.jenkins.blueocean.auth.jwt.JwtToken;
+import io.jenkins.blueocean.auth.jwt.impl.SimpleJwtAuthenticationStore;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.providers.AbstractAuthenticationToken;
-import org.acegisecurity.userdetails.UserDetails;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.NumericDate;
@@ -23,29 +23,32 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.jose4j.jws.AlgorithmIdentifiers.RSA_USING_SHA256;
 
 /**
  * @author Kohsuke Kawaguchi
  */
-public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
+public final class JwtAuthenticationToken{
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationToken.class);
 
-    private final String name;
-    private final GrantedAuthority[] grantedAuthorities;
-
     public static Authentication create(StaplerRequest request){
         JwtClaims claims = validate(request);
-        String subject = null;
         try {
-            subject = claims.getSubject();
+            String subject = claims.getSubject();
 
             if(subject.equals("anonymous")) { //if anonymous, we don't look in user db
                 return Jenkins.getInstance().ANONYMOUS;
             }else{
-                return new JwtAuthenticationToken(subject);
+
+                JwtAuthenticationStore authenticationStore = getJwtStore(claims.getClaimsMap());
+                Authentication authentication = authenticationStore.getAuthentication(claims.getClaimsMap());
+                if(authentication == null){
+                    throw new ServiceException.UnauthorizedException("Unauthorized: No valid authentication instance found");
+                }
+                return authentication;
             }
         } catch (MalformedClaimException e) {
             logger.error(String.format("Error reading sub header for token %s",claims.getRawJson()),e);
@@ -54,16 +57,12 @@ public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
     }
 
 
-    public JwtAuthenticationToken(String subject) {
+    public JwtAuthenticationToken(JwtClaims claims) throws MalformedClaimException {
+        String subject = claims.getSubject();
         User user = User.get(subject, false, Collections.emptyMap());
         if (user == null) {
             throw new ServiceException.UnauthorizedException("Invalid JWT token: subject " + subject + " not found");
         }
-        //TODO: UserDetails call is expensive, encode it in token and create UserDetails from it
-        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(user.getId());
-        this.grantedAuthorities = d.getAuthorities();
-        this.name = subject;
-        super.setAuthenticated(true);
     }
 
     private  static JwtClaims validate(StaplerRequest request) {
@@ -114,6 +113,16 @@ public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
                 if (expirationTime.isBefore(NumericDate.now())){
                     throw new ServiceException.UnauthorizedException("Invalid JWT token: expired");
                 }
+
+                //Check if this user is present
+                String subject = claims.getSubject();
+                if(!subject.equals("anonymous")) {
+                    User user = User.get(subject, false, Collections.emptyMap());
+                    if (user == null) {
+                        throw new ServiceException.UnauthorizedException("Invalid JWT token: subject " + subject + " not found");
+                    }
+                }
+
                 return claims;
             } catch (InvalidJwtException e) {
                 logger.error("Invalid JWT token: "+e.getMessage(), e);
@@ -128,23 +137,21 @@ public final class JwtAuthenticationToken extends AbstractAuthenticationToken{
         }
     }
 
-    @Override
-    public Object getCredentials() {
-        return "";
+    private static JwtAuthenticationStore getJwtStore(Map<String,Object> claims){
+        JwtAuthenticationStore jwtAuthenticationStore=null;
+        for(JwtAuthenticationStoreFactory factory: JwtAuthenticationStoreFactory.all()){
+            if(factory instanceof SimpleJwtAuthenticationStore){
+                jwtAuthenticationStore = factory.getJwtAuthenticationStore(claims);
+                continue;
+            }
+            JwtAuthenticationStore authenticationStore = factory.getJwtAuthenticationStore(claims);
+            if(authenticationStore != null){
+                return authenticationStore;
+            }
+        }
+
+        //none found, lets use SimpleJwtAuthenticationStore
+        return jwtAuthenticationStore;
     }
 
-    @Override
-    public Object getPrincipal() {
-        return name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public GrantedAuthority[] getAuthorities() {
-        return grantedAuthorities;
-    }
 }
