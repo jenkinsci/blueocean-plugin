@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 
-export default class ChangeSet extends Component {
+export default class ChangeSetToAuthors extends Component {
 
     constructor(props) {
         super(props);
@@ -32,7 +32,7 @@ export default class ChangeSet extends Component {
     }
 
     render() {
-        const { props: { changeSet, onClick }, state: { condense } } = this;
+        const { props: { changeSet, onAuthorsClick }, state: { condense } } = this;
         const authors = changeSet && changeSet.map ? [...(new Set(changeSet.map(change => change.author.fullName)):any)] : [];
         let children = 'No changes';
         if (authors && authors.length > 0) {
@@ -42,7 +42,7 @@ export default class ChangeSet extends Component {
             } else {
                 nested = `Changes by ${authors.map(author => ` ${author}`)} `;
             }
-            children = (<a className="authors" onClick={onClick}>
+            children = (<a className="authors" onClick={onAuthorsClick}>
                {nested}
             </a>);
         }
@@ -54,7 +54,7 @@ export default class ChangeSet extends Component {
 
 const { array, func } = PropTypes;
 
-ChangeSet.propTypes = {
+ChangeSetToAuthors.propTypes = {
     changeSet: array,
-    onClick: func,
+    onAuthorsClick: func,
 };

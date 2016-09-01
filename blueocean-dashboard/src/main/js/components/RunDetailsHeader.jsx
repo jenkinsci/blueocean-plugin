@@ -5,7 +5,7 @@ import { Icon } from 'react-material-icons-blue';
 import { ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator } from '@jenkins-cd/design-language';
 import { TimeDuration } from '@jenkins-cd/design-language';
-import ChangeSet from './ChangeSet';
+import ChangeSetToAuthors from './ChangeSetToAuthors';
 import moment from 'moment';
 
 class RunDetailsHeader extends Component {
@@ -42,10 +42,7 @@ class RunDetailsHeader extends Component {
         const durationMillis = run.isRunning() ?
             moment().diff(moment(run.startTime)) : run.durationInMillis;
         const displayName = decodeURIComponent(run.pipeline);
-        const changeProps = {
-            changeSet,
-            onClick: () => this.handleAuthorsClick(),
-        };
+        const onAuthorsClick = () => this.handleAuthorsClick();
         return (
         <div className="pipeline-result">
             <section className="status inverse">
@@ -78,7 +75,7 @@ class RunDetailsHeader extends Component {
                             </span>
                         </div>
                         : null }
-                        <ChangeSet {...changeProps} />
+                        <ChangeSetToAuthors {...{ changeSet, onAuthorsClick }} />
                     </div>
                     <div className="times">
                         <div>
