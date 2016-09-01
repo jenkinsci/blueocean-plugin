@@ -14,7 +14,7 @@
         <j:invokeStatic var="j" className="jenkins.model.Jenkins" method="getActiveInstance"/>
         ${h.initPageVariables(context)}
 
-        <j:set var="isMSIE" value="${userAgent.contains('MSIE')}"/>
+        <j:set var="isMSIE" value="${userAgent.contains('MSIE') || userAgent.contains('Trident')}"/>
 
         <head data-rooturl="${rootURL}"
               data-resurl="${resURL}"
@@ -26,6 +26,7 @@
             <j:if test="${isMSIE}">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
                 <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1"></meta>
+                <script src="${resURL}/plugin/blueocean-web/scripts/ie-detect.js"></script>
                 <script src="${resURL}/plugin/blueocean-web/scripts/html5shiv-printshiv.min.js"></script>
                 <st:adjunct includes="org.jenkins.ui.jsmodules.blueocean_web.iepolyfills"/>
             </j:if>
