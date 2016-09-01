@@ -60,6 +60,12 @@ builder.bundle('src/main/js/try.js')
     .import('jquery-detached', 'core-assets/jquery-detached:jquery2') // Bundled in Jenkins 2.x
     .less('src/main/less/try.less');
 
+//
+// An Internet Explorer specific polyfill.
+// Go IE ... you never fail to make me smile :(
+//
+builder.bundle('src/main/js/ie/iepolyfills.js');
+
 // Copy/link library assests into the src/main/webapp/assets dir, making them available at runtime.
 linkAssets('jdl', '@jenkins-cd/design-language/dist/assets');
 linkAssets('corejs', '@jenkins-cd/blueocean-core-js/dist/assets');

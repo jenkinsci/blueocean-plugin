@@ -10,7 +10,7 @@ console.debug = function(msg) { console.log('DEBUG: ' + msg); };
 
 // Mock the calls to import
 var jsModules = require('@jenkins-cd/js-modules');
-var theRealImport = jsModules.import;
+var theRealImport = jsModules.importModule;
 
 var makeClassMetadataStore = function(fn) {
     ClassMetadataStore.init(fn);
@@ -21,7 +21,7 @@ var mockDataLoad = function(extensionStore, out, componentMap) {
     out.plugins = {};
     out.loadCount = 0;
     
-    jsModules.import = function(bundleId) {
+    jsModules.importModule = function(bundleId) {
         var ModuleSpec = require('@jenkins-cd/js-modules/js/ModuleSpec');
         var bundleModuleSpec = new ModuleSpec(bundleId);
         var pluginId = bundleModuleSpec.namespace;
@@ -52,7 +52,7 @@ var mockDataLoad = function(extensionStore, out, componentMap) {
             var orig = console.debug;
             try {
                 console.debug = function(msg) { };
-                jsModules.export(pluginId, 'jenkins-js-extension', {});
+                jsModules.exportModule(pluginId, 'jenkins-js-extension', {});
             } finally {
                 console.debug = orig;
             }
