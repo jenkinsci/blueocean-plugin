@@ -33,17 +33,43 @@ import IfCapability from './IfCapability';
 const { func, object, any, string } = PropTypes;
 
 class RunDetails extends Component {
+
     componentWillMount() {
+        this._fetchRun(this.props, true);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!this._didRunChange(this.props.params, nextProps.params)) {
+            return;
+        }
+
+        // in some cases the route params might have actually changed (such as 'runId' during a Re-run) so re-fetch
+        // also don't update the 'previous route' otherwise closing the modal will try to navigate back to last run
+        this._fetchRun(nextProps, false);
+    }
+
+    _fetchRun(props, storePreviousRoute) {
         if (this.context.config && this.context.params) {
-            this.props.fetchRun({
-                organization: this.props.params.organization,
-                pipeline: this.props.params.pipeline,
-                branch: this.props.isMultiBranch && this.props.params.branch,
-                runId: this.props.params.runId,
+            props.fetchRun({
+                organization: props.params.organization,
+                pipeline: props.params.pipeline,
+                branch: props.isMultiBranch && props.params.branch,
+                runId: props.params.runId,
             });
-            this.opener = this.props.previous;
+
+            if (storePreviousRoute) {
+                this.opener = props.previous;
+            }
         }
     }
+
+    _didRunChange(oldParams, newParams) {
+        return oldParams.organization !== newParams.organization ||
+                oldParams.pipeline !== newParams.pipeline ||
+                oldParams.branch !== newParams.branch ||
+                oldParams.runId !== newParams.runId;
+    }
+
     navigateToOrganization() {
         const { organization } = this.props.pipeline;
         const organizationUrl = buildOrganizationUrl(organization);
