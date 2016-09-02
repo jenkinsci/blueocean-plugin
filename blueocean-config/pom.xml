@@ -19,5 +19,9 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>blueocean-web</artifactId>
     </dependency>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>blueocean-commons</artifactId>
+      </dependency>
   </dependencies>
  </project>
