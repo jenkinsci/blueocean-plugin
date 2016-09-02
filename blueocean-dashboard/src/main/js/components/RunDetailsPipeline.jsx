@@ -31,7 +31,8 @@ const queuedState = () => (
                 size: 20,
                 icon: 'timer',
                 style: { fill: '#fff' },
-            }} />
+            }}
+            />
             <span>Waiting for run to start.</span>
         </p>
     </EmptyStateView>
