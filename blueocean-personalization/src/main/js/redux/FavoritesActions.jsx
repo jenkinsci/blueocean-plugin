@@ -83,7 +83,7 @@ export const actions = {
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
 
             const fetchOptions = {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
