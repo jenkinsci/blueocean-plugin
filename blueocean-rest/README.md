@@ -110,17 +110,27 @@ To avoid needing a crumb to POST data, the header `Content-Type: application/jso
 
 # Security
 
+NOTE: JWT is disabled by default for now. to enable JWT authentication use FEATURE_BLUEOCEAN_JWT_AUTHENTICATION=true system property.
+
+    mvn hpi:run -DFEATURE_BLUEOCEAN_JWT_AUTHENTICATION=true
+
+With -DFEATURE_BLUEOCEAN_JWT_AUTHENTICATION=false (default)
+
+* No JWT tokens are send from the frontend.
+* Api does not look for a JWT token, and instead uses cookies for authentication.
+
+With -DFEATURE_BLUEOCEAN_JWT_AUTHENTICATION=true
+
+* JWT tokens are fetched and sent with api requests from the frontend.
+* API requires a valid JWT token, and does not use cookies for authentication.
+
+
 BlueOcean REST APIs requires JWT token for authentication. JWT APIs are provided by blueocean-jwt plugin. See 
 [JWT APIs](../blueocean-jwt/README.md) to get JWT token and to get public key needed to verify the claims.
   
 JWT token must be sent as bearer token as value of HTTP 'Authorization' header:
   
     curl -H 'Authorization: Bearer eyJraWQ...' http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/
-
-To disable JWT authentication use DISABLE_BLUEOCEAN_JWT_AUTHENTICATION=true system property.
-
-    mvn hpi:run -DDISABLE_BLUEOCEAN_JWT_AUTHENTICATION=true 
-
 
 ## API access from browser with JWT enabled
 

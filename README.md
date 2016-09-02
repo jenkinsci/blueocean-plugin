@@ -16,7 +16,7 @@ Yarr...
 
 Blue Ocean Dashboard plugin. Currently contains the bulk of the Blue Ocean user interface. This is mostly client side JavaScript built with ES6 and React. 
 
-## blueocean-plugin
+## blueocean
 
 Acts as an aggregator plugin, making it an easy place from which to run Blue Ocean via `hpi:run`. 
 
@@ -63,7 +63,7 @@ $ mvn clean install -DskipTests
 ## Running Blue Ocean
 
 ```
-$ mvn -f blueocean-plugin/pom.xml hpi:run
+$ mvn -f blueocean/pom.xml hpi:run
 ```
 
 Then open http://localhost:8080/jenkins/blue to start using Blue Ocean.
