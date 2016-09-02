@@ -15,5 +15,4 @@ npm-debug.log
 **/.project
 **/.classpath
 blueocean-web/src/main/webapp/assets
-blueocean-web/src/main/webapp/.readme
 .build_container

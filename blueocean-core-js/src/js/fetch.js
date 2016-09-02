@@ -1,7 +1,8 @@
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import jwt from './jwt';
 import isoFetch from 'isomorphic-fetch';
-import utils from './utils.js';
+import utils from './utils';
+import config from './config';
 
 export const FetchFunctions = {
         /**
@@ -98,7 +99,7 @@ export const FetchFunctions = {
      * @returns JSON body
      */
     rawFetchJSON(url, { onSuccess, onError, fetchOptions } = {}) {
-        const request = isoFetch(url, fetchOptions)
+        const request = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
             .then(FetchFunctions.checkStatus)
             .then(FetchFunctions.parseJSON);
 
@@ -122,7 +123,7 @@ export const FetchFunctions = {
      * @returns fetch response
      */
     rawFetch(url, { onSuccess, onError, fetchOptions } = {}) {
-        const request = isoFetch(url, fetchOptions)
+        const request = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
             .then(FetchFunctions.checkStatus);
 
         if (onSuccess) {
@@ -147,6 +148,9 @@ export const Fetch = {
      * @returns JSON body.
      */
     fetchJSON(url, { onSuccess, onError, fetchOptions } = {}) {
+        if (!config.isJWTEnabled()) {
+            return FetchFunctions.rawFetchJSON(url, { onSuccess, onError, fetchOptions });
+        }
         return jwt.getToken()
             .then(token => FetchFunctions.rawFetchJSON(url, {
                 onSuccess,
@@ -168,6 +172,9 @@ export const Fetch = {
      * @returns fetch body.
      */
     fetch(url, { onSuccess, onError, fetchOptions } = {}) {
+        if (!config.isJWTEnabled()) {
+            return FetchFunctions.rawFetch(url, { onSuccess, onError, fetchOptions });
+        }
         return jwt.getToken()
             .then(token => FetchFunctions.rawFetch(url, {
                 onSuccess,

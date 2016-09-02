@@ -6,6 +6,7 @@ import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
 import io.jenkins.blueocean.BlueOceanUI;
+import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -21,7 +22,7 @@ import org.kohsuke.stapler.StaplerRequest;
 public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy {
     private static final String URL_BASE="blue";
 
-    private final boolean disableJWT = Boolean.getBoolean("DISABLE_BLUEOCEAN_JWT_AUTHENTICATION");
+    private final boolean enableJWT = BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION;
 
     @Inject
     private BlueOceanUI app;
@@ -49,7 +50,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
 
         StaplerRequest request = Stapler.getCurrentRequest();
 
-        if(!disableJWT && request.getOriginalRestOfPath().startsWith("/rest/")) {
+        if(enableJWT && request.getOriginalRestOfPath().startsWith("/rest/")) {
             Authentication tokenAuthentication = JwtAuthenticationToken.create(request);
 
             //create a new context and set it to holder to not clobber existing context

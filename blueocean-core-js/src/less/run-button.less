@@ -1,0 +1,83 @@
+.run-button-component {
+
+    display: inline-block;
+
+    .run-button, .stop-button {
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    // default (text) display
+    .svg-icon {
+        display: none;
+    }
+
+    // icon display
+    &.icon-button {
+        height: 24px;
+
+        .run-button {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: 0;
+            position: relative;
+
+            .svg-icon {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        }
+
+        .stop-button {
+            padding: 2px;
+
+            .btn-icon {
+                width: 20px;
+                height: 20px;
+                background-image: url('./icons/stop-button-blue.svg');
+
+                &:hover {
+                    background-image: url('./icons/stop-button-blue-dark.svg');
+                }
+            }
+
+            &.stopping {
+                opacity: 0.4;
+                cursor: auto;
+            }
+        }
+
+        .button-label {
+            display: none;
+        }
+    }
+
+    // default (light) themeing
+    .svg-icon {
+        fill: @brand-primary;
+
+        &:hover {
+            fill: @brand-primary-dark;
+        }
+    }
+
+    // dark themeing
+    &.dark {
+        .btn {
+            background: transparent;
+            color: white;
+            border-color: white;
+        }
+
+        .svg-icon {
+            fill: white;
+        }
+
+        .stop-button .btn-icon {
+            background-image: url('./icons/stop-button-white.svg');
+        }
+    }
+}
