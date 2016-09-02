@@ -34,6 +34,7 @@ import org.jvnet.hudson.test.MockFolder;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -365,6 +366,26 @@ public class MultiBranchTest extends PipelineBaseTest {
         List<Map> run = get("/organizations/jenkins/pipelines/p/branches/master/runs/", List.class);
         validateRun(b4, run.get(0));
     }
+
+
+    @Test
+    public void startMultiBranchPipelineRuns() throws Exception {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "feature%2Fux-1");
+        j.waitUntilNoActivity();
+
+        Map resp = post("/organizations/jenkins/pipelines/p/branches/"+ Util.rawEncode("feature%2Fux-1")+"/runs/",
+            Collections.EMPTY_MAP);
+        String id = (String) resp.get("id");
+        String link = getHrefFromLinks(resp, "self");
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/queue/"+id+"/", link);
+    }
+
 
     @Test
     public void getMultiBranchPipelineActivityRuns() throws Exception {
