@@ -210,10 +210,8 @@ export class DashboardCards extends Component {
                 estimatedDuration = latestRun.estimatedDurationInMillis;
                 commitId = latestRun.commitId;
                 runId = latestRun.id;
-            }
-
-            if (latestRun && latestRun.result) {
-                status = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
+            } else {
+                status = 'NOT_BUILT';
             }
 
             return (
