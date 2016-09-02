@@ -6,6 +6,7 @@ process.env.SKIP_BLUE_IMPORTS = 'YES';
 
 var gi = require('giti');
 var fs = require('fs');
+
 var builder = require('@jenkins-cd/js-builder');
 
 // create a dummy revisionInfo so developmentFooter will not fail
@@ -22,12 +23,16 @@ gi(function (err, result) {
           return console.log(err);
         }
         console.log("The file was saved!\n" + revisionInfo);
-    })
+    });
 });
 // Explicitly setting the src paths in order to allow the rebundle task to
 // watch for changes in the JDL (js, css, icons etc).
 // See https://github.com/jenkinsci/js-builder#setting-src-and-test-spec-paths
-builder.src(['src/main/js', 'src/main/less', 'node_modules/@jenkins-cd/design-language/dist']);
+builder.src([
+    'src/main/js',
+    'src/main/less',
+    'node_modules/@jenkins-cd/design-language/dist',
+    'node_modules/@jenkins-cd/blueocean-core-js/dist']);
 
 //
 // Create the main "App" bundle.
@@ -36,8 +41,9 @@ builder.src(['src/main/js', 'src/main/less', 'node_modules/@jenkins-cd/design-la
 builder.bundle('src/main/js/blueocean.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/main/less/blueocean.less')
-    .export("@jenkins-cd/js-extensions")
+    .export("@jenkins-cd/blueocean-core-js")
     .export("@jenkins-cd/design-language")
+    .export("@jenkins-cd/js-extensions")
     .export('react')
     .export('react-dom')
     .export('redux')
@@ -54,36 +60,51 @@ builder.bundle('src/main/js/try.js')
     .import('jquery-detached', 'core-assets/jquery-detached:jquery2') // Bundled in Jenkins 2.x
     .less('src/main/less/try.less');
 
-// 
-// Copy/link the JDL assests into the webapp dir, making them available at runtime.
-// 
-var isWindows = /^win/.test(process.platform);
-var assetsDstPath = './src/main/webapp/assets';
-if (isWindows) {
-    var assestsCopyDone = false;
-    builder.onPreBundle(function() {
-        if (!assestsCopyDone) {
-            assestsCopyDone = true;
-            var ncp = require('ncp').ncp;
+//
+// An Internet Explorer specific polyfill.
+// Go IE ... you never fail to make me smile :(
+//
+builder.bundle('src/main/js/ie/iepolyfills.js');
 
-            // wipe the destination directory and recreate.
-            if (fs.existsSync(assetsDstPath)) {
-                rmdir(assetsDstPath);
-            } 
-            fs.mkdirSync(assetsDstPath);
-            // copy assets from stc to dsy.
-            var assetsSrcPath = './node_modules/@jenkins-cd/design-language/dist/assets';
-            ncp(assetsSrcPath, assetsDstPath, function (err) {
-                if (err) {
-                    return logger.logError(err);
+// Copy/link library assests into the src/main/webapp/assets dir, making them available at runtime.
+linkAssets('jdl', '@jenkins-cd/design-language/dist/assets');
+linkAssets('corejs', '@jenkins-cd/blueocean-core-js/dist/assets');
+
+/**
+ * Link (or copy) the specified module's subdir to a dir within /src/main/webapp/assets
+ * @param {string} dirName name of directory link
+ * @param {string} modulePath path within module, e.g. '@org-name/module/name/some/path
+ */
+function linkAssets(dirName, modulePath) {
+    var isWindows = /^win/.test(process.platform);
+    var assetsDstPath = './src/main/webapp/assets/' + dirName;
+
+    if (isWindows) {
+        var assestsCopyDone = false;
+        builder.onPreBundle(function() {
+            if (!assestsCopyDone) {
+                assestsCopyDone = true;
+                var ncp = require('ncp').ncp;
+
+                // wipe the destination directory and recreate.
+                if (fs.existsSync(assetsDstPath)) {
+                    rmdir(assetsDstPath);
                 }
-            });
-        }
-    });
-} else if (!fs.existsSync(assetsDstPath)) {
-    // Just need a symlink for non-windows platforms.
-    var assetsSrcPath = '../../../node_modules/@jenkins-cd/design-language/dist/assets';
-    fs.symlinkSync(assetsSrcPath, assetsDstPath);
+                fs.mkdirSync(assetsDstPath);
+                // copy assets from stc to dsy.
+                var assetsSrcPath = './node_modules/' + modulePath;
+                ncp(assetsSrcPath, assetsDstPath, function (err) {
+                    if (err) {
+                        return logger.logError(err);
+                    }
+                });
+            }
+        });
+    } else if (!fs.existsSync(assetsDstPath)) {
+        // Just need a symlink for non-windows platforms.
+        var assetsSrcPath = '../../../../node_modules/' + modulePath;
+        fs.symlinkSync(assetsSrcPath, assetsDstPath);
+    }
 }
 
 function rmdir(path) {

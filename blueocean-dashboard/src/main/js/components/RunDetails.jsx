@@ -4,12 +4,15 @@ import {
     ModalBody,
     ModalHeader,
     PageTabs,
+    Progress,
     TabLink,
 } from '@jenkins-cd/design-language';
 
+import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+
 import {
     actions,
-    currentRuns as runsSelector,
+    currentRun as runSelector,
     isMultiBranch as isMultiBranchSelector,
     previous as previousSelector,
     createSelector,
@@ -22,27 +25,51 @@ import {
     buildRunDetailsUrl,
 } from '../util/UrlUtils';
 
+import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
+import IfCapability from './IfCapability';
 
-const { func, object, array, any, string } = PropTypes;
+const { func, object, any, string } = PropTypes;
 
 class RunDetails extends Component {
+
     componentWillMount() {
+        this._fetchRun(this.props, true);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!this._didRunChange(this.props.params, nextProps.params)) {
+            return;
+        }
+
+        // in some cases the route params might have actually changed (such as 'runId' during a Re-run) so re-fetch
+        // also don't update the 'previous route' otherwise closing the modal will try to navigate back to last run
+        this._fetchRun(nextProps, false);
+    }
+
+    _fetchRun(props, storePreviousRoute) {
         if (this.context.config && this.context.params) {
-            const {
-                params: {
-                    pipeline,
-                    },
-                config = {},
-                } = this.context;
+            props.fetchRun({
+                organization: props.params.organization,
+                pipeline: props.params.pipeline,
+                branch: props.isMultiBranch && props.params.branch,
+                runId: props.params.runId,
+            });
 
-            config.pipeline = pipeline;
-
-            this.props.fetchRunsIfNeeded(config);
-            this.opener = this.props.previous;
+            if (storePreviousRoute) {
+                this.opener = props.previous;
+            }
         }
     }
+
+    _didRunChange(oldParams, newParams) {
+        return oldParams.organization !== newParams.organization ||
+                oldParams.pipeline !== newParams.pipeline ||
+                oldParams.branch !== newParams.branch ||
+                oldParams.runId !== newParams.runId;
+    }
+
     navigateToOrganization() {
         const { organization } = this.props.pipeline;
         const organizationUrl = buildOrganizationUrl(organization);
@@ -69,7 +96,7 @@ class RunDetails extends Component {
     render() {
         // early out
         if (!this.context.params
-            || !this.props.runs
+            || !this.props.run
             || this.props.isMultiBranch === null) {
             return null;
         }
@@ -78,19 +105,15 @@ class RunDetails extends Component {
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
-        const foundRun = this.props.runs.find((run) =>
-            run.id === params.runId &&
-                decodeURIComponent(run.pipeline) === params.branch
-        );
-       // deep-linking across RunDetails for different pipelines yields 'runs' data for the wrong pipeline
-        // during initial render. when runs are refetched the screen will render again with 'currentRun' correctly set
-        if (!foundRun) {
-            return null;
-        }
+        const run = this.props.run;
+        const currentRun = new RunRecord(run);
+        const pipelineClass = this.context.pipeline._class;
+        const status = currentRun.getComputedResult() || '';
 
-        const currentRun = new RunRecord(foundRun);
-
-        const status = currentRun.getComputedResult();
+        const switchRunDetails = (newUrl) => {
+            location.pathname = newUrl;
+            router.push(location);
+        };
 
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
@@ -103,6 +126,7 @@ class RunDetails extends Component {
             location.query = null;
             router.push(location);
         };
+
         return (
             <ModalView
               isVisible
@@ -113,24 +137,47 @@ class RunDetails extends Component {
             >
                 <ModalHeader>
                     <div>
+                        {!run.$pending &&
                         <RunDetailsHeader
-                          pipeline={this.props.pipeline}
+                          pipeline={this.context.pipeline}
                           data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
+                        }
                         <PageTabs base={baseUrl}>
                             <TabLink to="/pipeline">Pipeline</TabLink>
                             <TabLink to="/changes">Changes</TabLink>
                             <TabLink to="/tests">Tests</TabLink>
                             <TabLink to="/artifacts">Artifacts</TabLink>
                         </PageTabs>
+
+                        <div className="button-bar">
+                            { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
+                            <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
+                                <ReplayButton
+                                  className="dark"
+                                  runnable={this.props.pipeline}
+                                  latestRun={currentRun}
+                                  onNavigation={switchRunDetails}
+                                  autoNavigate
+                                />
+                            </IfCapability>
+
+                            <RunButton
+                              className="dark"
+                              runnable={this.props.pipeline}
+                              latestRun={currentRun}
+                              buttonType="stop-only"
+                            />
+                        </div>
                     </div>
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {React.cloneElement(
+                        {run.$pending && <Progress />}
+                        {run.$success && React.cloneElement(
                             this.props.children,
                             { baseUrl, result: currentRun, ...this.props }
                         )}
@@ -146,22 +193,22 @@ RunDetails.contextTypes = {
     params: object,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
+    pipeline: object,
 };
 
 RunDetails.propTypes = {
     children: PropTypes.node,
+    params: any,
     pipeline: object,
-    runs: array,
+    run: object,
     isMultiBranch: any,
-    fetchIfNeeded: func,
-    fetchRunsIfNeeded: func,
-    setPipeline: func,
+    fetchRun: func,
     getPipeline: func,
     previous: string,
 };
 
 const selectors = createSelector(
-    [runsSelector, isMultiBranchSelector, previousSelector],
-    (runs, isMultiBranch, previous) => ({ runs, isMultiBranch, previous }));
+    [runSelector, isMultiBranchSelector, previousSelector],
+    (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
 
 export default connect(selectors, actions)(RunDetails);

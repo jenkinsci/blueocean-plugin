@@ -19,7 +19,7 @@ exports.install = function(builder) {
         // Save extensions JSON again.
         jsBundle.setJSExtensionsJSON(extensionsJSON);
     }
-    
+
     //
     // Defaulting the NODE_ENV to "production" so as to optimize
     // bundle generation. This ensures that e.g. the react dev tools are
@@ -29,7 +29,7 @@ exports.install = function(builder) {
     // supplying a "NODE_ENV" arg e.g.
     //
     //   $ gulp bundle --NODE_ENV development
-    // 
+    //
     // We can build this into the mvn build later if this proves to be
     // a bit painful.
     //
@@ -44,8 +44,10 @@ exports.install = function(builder) {
         // bootstrap bundle. Think of these as being like
         // singletons within the blueocean subsystem.
         // See jenkinscd/export in blueocean-web/package.json
-        builder.import('@jenkins-cd/js-extensions@any')
+        builder
+            .import('@jenkins-cd/js-extensions@any')
             .import('@jenkins-cd/design-language@any')
+            .import("@jenkins-cd/blueocean-core-js@any")
             .import('react@any', {
                 aliases: ['react/lib/React'] // in case a module requires react through the back door
             })

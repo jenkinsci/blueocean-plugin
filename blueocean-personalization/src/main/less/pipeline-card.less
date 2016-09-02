@@ -1,0 +1,98 @@
+.pipeline-card {
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    color: white;
+    min-width: 400px;
+    padding: 15px;
+    cursor: pointer;
+
+    a {
+        color: white;
+        cursor: pointer;
+    }
+    
+    .svgResultStatus {
+        min-width: 20px;
+    }
+
+    .name, .branch, .commit {
+        margin-left: 10px;
+    }
+
+    .branch, .commit {
+        display: flex;
+        align-items: center;
+    }
+
+    .name {
+        width: 55%;
+    }
+
+    .branch {
+        width: 45%;
+    }
+
+    .commit {
+        min-width: 100px;
+    }
+
+    .name, .branchText, .commitId {
+        min-height: 18px;
+    }
+
+    .commitId {
+        margin: 0 0 0 5px;
+    }
+
+    .actions {
+        min-width: 95px;
+        margin-left: 10px;
+        text-align: right;
+    }
+
+    .action-item {
+        display: inline-block;
+        height: 24px;
+    }
+
+    .svg-icon {
+        fill: white;
+    }
+
+    // remove empty space to attain centered vertical alignment
+    .run, .actions {
+        > * {
+            vertical-align: bottom;
+        }
+    }
+
+    .progress-spinner.running {
+        circle {
+            stroke: #bcd8f1;
+        }
+        path.running {
+            stroke: white;
+        }
+        circle.inner {
+            stroke: white;
+            fill: white;
+        }
+    }
+
+    .progress-spinner.queued {
+        circle {
+            stroke: #bcd8f1;
+        }
+        circle.inner {
+            stroke: white;
+            fill: white;
+        }
+    }
+
+    .progress-spinner.not_built {
+        circle {
+            stroke: white;
+        }
+    }
+}

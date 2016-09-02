@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
+import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
-import RunPipeline from './RunPipeline.jsx';
+
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 const { object } = PropTypes;
@@ -44,6 +45,11 @@ export default class PullRequest extends Component {
             router.push(location);
         };
 
+        const openRunDetails = (newUrl) => {
+            location.pathname = newUrl;
+            router.push(location);
+        };
+
         return (<tr key={id} onClick={open} id={`${name}-${id}`} >
             <td>
                 <LiveStatusIndicator result={result} startTime={startTime}
@@ -55,7 +61,12 @@ export default class PullRequest extends Component {
             <td>{author || '-'}</td>
             <td><ReadableDate date={endTime} liveUpdate /></td>
             <td>
-                <RunPipeline organization={organization} pipeline={pipelineName} branch={name} />
+                <RunButton
+                  className="icon-button"
+                  runnable={pr}
+                  latestRun={pr.latestRun}
+                  onNavigation={openRunDetails}
+                />
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" />
             </td>
         </tr>);

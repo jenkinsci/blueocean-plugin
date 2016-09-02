@@ -243,7 +243,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             if(pullRequests && isPullRequest(j) || !pullRequests && !isPullRequest(j)) {
                 j.getBuildStatusUrl();
                 Run run = j.getLastBuild();
-                if (run.getResult() == result) {
+                if (run!=null && run.getResult() == result) {
                     count++;
                 }
             }
