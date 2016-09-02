@@ -48,8 +48,9 @@ PageTabs.propTypes = {
 export class TabLink extends Component {
     render() {
         const base = this.props.base || "";
-        const routeUrl = base + this.props.to;
-        const linkClassName = this.context.router.isActive(routeUrl) ? "selected" : undefined;
+        const to = (this.props.to).substring(1);
+        const routeUrl = base + '/' + to;
+        const linkClassName = this.context.router.isActive(routeUrl) ? "selected " + to : to;
         return <Link to={routeUrl} className={linkClassName}>{this.props.children}</Link>;
     }
 }
