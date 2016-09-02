@@ -23,7 +23,7 @@ gi(function (err, result) {
           return console.log(err);
         }
         console.log("The file was saved!\n" + revisionInfo);
-    })
+    });
 });
 // Explicitly setting the src paths in order to allow the rebundle task to
 // watch for changes in the JDL (js, css, icons etc).
@@ -66,36 +66,45 @@ builder.bundle('src/main/js/try.js')
 //
 builder.bundle('src/main/js/ie/iepolyfills.js');
 
-//
-// Copy/link the JDL assests into the webapp dir, making them available at runtime.
-//
-var isWindows = /^win/.test(process.platform);
-var assetsDstPath = './src/main/webapp/assets';
-if (isWindows) {
-    var assestsCopyDone = false;
-    builder.onPreBundle(function() {
-        if (!assestsCopyDone) {
-            assestsCopyDone = true;
-            var ncp = require('ncp').ncp;
+// Copy/link library assests into the src/main/webapp/assets dir, making them available at runtime.
+linkAssets('jdl', '@jenkins-cd/design-language/dist/assets');
+linkAssets('corejs', '@jenkins-cd/blueocean-core-js/dist/assets');
 
-            // wipe the destination directory and recreate.
-            if (fs.existsSync(assetsDstPath)) {
-                rmdir(assetsDstPath);
-            }
-            fs.mkdirSync(assetsDstPath);
-            // copy assets from stc to dsy.
-            var assetsSrcPath = './node_modules/@jenkins-cd/design-language/dist/assets';
-            ncp(assetsSrcPath, assetsDstPath, function (err) {
-                if (err) {
-                    return logger.logError(err);
+/**
+ * Link (or copy) the specified module's subdir to a dir within /src/main/webapp/assets
+ * @param {string} dirName name of directory link
+ * @param {string} modulePath path within module, e.g. '@org-name/module/name/some/path
+ */
+function linkAssets(dirName, modulePath) {
+    var isWindows = /^win/.test(process.platform);
+    var assetsDstPath = './src/main/webapp/assets/' + dirName;
+
+    if (isWindows) {
+        var assestsCopyDone = false;
+        builder.onPreBundle(function() {
+            if (!assestsCopyDone) {
+                assestsCopyDone = true;
+                var ncp = require('ncp').ncp;
+
+                // wipe the destination directory and recreate.
+                if (fs.existsSync(assetsDstPath)) {
+                    rmdir(assetsDstPath);
                 }
-            });
-        }
-    });
-} else if (!fs.existsSync(assetsDstPath)) {
-    // Just need a symlink for non-windows platforms.
-    var assetsSrcPath = '../../../node_modules/@jenkins-cd/design-language/dist/assets';
-    fs.symlinkSync(assetsSrcPath, assetsDstPath);
+                fs.mkdirSync(assetsDstPath);
+                // copy assets from stc to dsy.
+                var assetsSrcPath = './node_modules/' + modulePath;
+                ncp(assetsSrcPath, assetsDstPath, function (err) {
+                    if (err) {
+                        return logger.logError(err);
+                    }
+                });
+            }
+        });
+    } else if (!fs.existsSync(assetsDstPath)) {
+        // Just need a symlink for non-windows platforms.
+        var assetsSrcPath = '../../../../node_modules/' + modulePath;
+        fs.symlinkSync(assetsSrcPath, assetsDstPath);
+    }
 }
 
 function rmdir(path) {
