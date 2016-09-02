@@ -37,6 +37,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest-impl</artifactId>
         </dependency>
         <dependency>
@@ -107,9 +111,10 @@
                         //
                         linkHPI('blueocean-web');
                         linkHPI('blueocean-dashboard');
-                        linkHPI('blueocean-personalization')
+                        linkHPI('blueocean-personalization');
                         linkHPI('blueocean-rest');
                         linkHPI('blueocean-commons');
+                        linkHPI('blueocean-jwt');
                         linkHPI('blueocean-rest-impl');
                         linkHPI('blueocean-pipeline-api-impl')
                         linkHPI('blueocean-config')

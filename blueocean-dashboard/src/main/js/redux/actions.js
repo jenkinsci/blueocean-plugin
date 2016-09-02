@@ -1,12 +1,11 @@
 import keymirror from 'keymirror';
-import fetch from 'isomorphic-fetch';
 import { fetch as smartFetch, paginate, applyFetchMarkers } from '../util/smart-fetch';
 import { State } from '../components/records';
 import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
 import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, paginateUrl, getRestUrl } from '../util/UrlUtils';
 import findAndUpdate from '../util/find-and-update';
-
+import { Fetch, FetchFunctions } from '@jenkins-cd/blueocean-core-js';
 const debugLog = require('debug')('blueocean-actions-js:debug');
 
 /**
@@ -156,21 +155,6 @@ export const actionHandlers = {
     },
 };
 
-// fetch helper
-const fetchOptions = { credentials: 'same-origin' };
-function checkStatus(response) {
-    if (response.status >= 300 || response.status < 200) {
-        const error = new Error(response.statusText);
-        error.response = response;
-        throw error;
-    }
-    return response;
-}
-
-function parseJSON(response) {
-    return response.json();
-}
-
 function parseMoreDataHeader(response) {
     let newStart = null;
     /*
@@ -187,28 +171,6 @@ function parseMoreDataHeader(response) {
     const payload = { response, newStart };
     return payload;
 }
-/**
- * Fetch JSON data.
- * <p>
- * Utility function that can be mocked for testing.
- *
- * @param url The URL to fetch from.
- * @param onSuccess o
- * @param onError
- */
-exports.fetchJson = function fetchJson(url, onSuccess, onError) {
-    return fetch(url, fetchOptions)
-        .then(checkStatus)
-        .then(parseJSON)
-        .then(onSuccess)
-        .catch((error) => {
-            if (onError) {
-                onError(error);
-            } else {
-                console.error(error); // eslint-disable-line no-console
-            }
-        });
-};
 
 /**
  * Fetch TXT/log data and inject a start parameter to indicate that a refetch is needed
@@ -228,26 +190,11 @@ exports.fetchLogsInjectStart = function fetchLogsInjectStart(url, start, onSucce
     } else {
         refetchUrl = `${url}?start=${start}`;
     }
-    return fetch(refetchUrl, fetchOptions)
-        .then(checkStatus)
+    return Fetch.fetch(refetchUrl)
         .then(parseMoreDataHeader)
         .then(onSuccess)
-        .catch((error) => {
-            if (onError) {
-                onError(error);
-            } else {
-                console.error(error); // eslint-disable-line no-console
-            }
-        });
+        .catch(FetchFunctions.onError(onError));
 };
-
-/**
- * Determines if the provided object is a "run" type
- */
-function isRun(obj) {
-    return obj._class === 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl'
-        || obj._class === 'io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl';
-}
 
 /**
  * Locates instances in the state tree and replaces them, just provide a 'replacer' method,
@@ -307,7 +254,7 @@ export const actions = {
         return (dispatch) => {
             // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
             const url =
-                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(organizationName)};excludedFromFlattening:jenkins.branch.MultiBranchProject&filter=no-folders`;
+                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(organizationName)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
             return paginate({ urlProvider: paginateUrl(url) })
             .then(data => {
                 dispatch({
@@ -425,28 +372,29 @@ export const actions = {
         };
     },
 
-    updateRunState(event, config) {
-        const matchesEvent = o =>
-            o.job_run_queueId === event.job_run_queueId
-            || (isRun(o) && o.id === event.jenkins_object_id && event.blueocean_job_branch_name === o.pipeline);
+    updateRunState(event) {
+        function matchesEvent(evt, o) {
+            return o.job_run_queueId === evt.job_run_queueId
+                || (o._links && o._links.self && o._links.self.href.indexOf(evt.blueocean_job_rest_url) === 0 && o.id === evt.jenkins_object_id);
+        }
         return (dispatch, getState) => {
             debugLog('updateRunState:', event);
             let found = false;
             findAndUpdate(getState().adminStore, o => {
-                if (!found && matchesEvent(o)) {
+                if (!found && matchesEvent(event, o)) {
                     debugLog('found:', o);
                     found = true;
                 }
             });
             if (found) {
                 debugLog('Calling dispatch for event ', event);
-                const runUrl = `${config.getAppURLBase()}${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`;
+                const runUrl = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}`;
                 smartFetch(runUrl)
                 .then(data => {
                     if (data.$pending) return;
                     debugLog('Updating run: ', data);
                     dispatchFindAndUpdate(dispatch, run => {
-                        if (matchesEvent(run)) {
+                        if (matchesEvent(event, run)) {
                             if (event.jenkins_event !== 'job_run_ended') {
                                 return { ...data,
                                     id: event.jenkins_object_id, // make sure the runId is set so we can find it later
@@ -491,7 +439,7 @@ export const actions = {
                 }
             });
             if (found) {
-                const url = `${UrlConfig.getJenkinsRootURL()}/blue${event.blueocean_job_rest_url}`;
+                const url = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}`;
                 smartFetch(url, (branchData) => {
                     if (branchData.$pending) { return; }
                     if (branchData.$failure) {
@@ -532,7 +480,7 @@ export const actions = {
             }
         };
     },
-    
+
     fetchRuns({ organization, pipeline }) {
         return (dispatch, getState) => paginate({
             urlProvider: paginateUrl(
@@ -576,28 +524,6 @@ export const actions = {
         };
     },
 
-    generateData(url, actionType, optional) {
-        return (dispatch) => fetch(url, fetchOptions)
-            .then(checkStatus)
-            .then(parseJSON)
-            .then(json => dispatch({
-                ...optional,
-                type: actionType,
-                payload: json,
-            }))
-            .catch((error) => {
-                console.error(error); // eslint-disable-line no-console
-                dispatch({
-                    payload: { type: 'ERROR', message: `${error.stack}` },
-                    type: ACTION_TYPES.UPDATE_MESSAGES,
-                });
-                // call again with no payload so actions handle missing data
-                dispatch({
-                    ...optional,
-                    type: actionType,
-                });
-            });
-    },
     /*
      For the detail view we need to fetch the different nodes of
      a run in case we do not have specific node, to
@@ -635,9 +561,8 @@ export const actions = {
             }
 
             if (!data || !data[nodesBaseUrl] || config.refetch) {
-                return exports.fetchJson(
-                    nodesBaseUrl,
-                    (json) => {
+                return Fetch.fetchJSON(nodesBaseUrl)
+                    .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = nodesBaseUrl;
                         dispatch({
@@ -646,10 +571,9 @@ export const actions = {
                         });
 
                         return getNodeAndSteps(information);
-                    },
-                    (error) => console.error('error', error) // eslint-disable-line no-console
-                );
+                    }).catch(FetchFunctions.consoleError);
             }
+
             return getNodeAndSteps(data[nodesBaseUrl]);
         };
     },
@@ -685,18 +609,15 @@ export const actions = {
             const data = getState().adminStore.steps;
             const stepBaseUrl = calculateStepsBaseUrl(config);
             if (!data || !data[stepBaseUrl] || config.refetch) {
-                return exports.fetchJson(
-                  stepBaseUrl,
-                  (json) => {
-                      const information = getNodesInformation(json);
-                      information.nodesBaseUrl = stepBaseUrl;
-                      return dispatch({
-                          type: ACTION_TYPES.SET_STEPS,
-                          payload: information,
-                      });
-                  },
-                  (error) => console.error('error', error) // eslint-disable-line no-console
-                );
+                return Fetch.fetchJSON(stepBaseUrl)
+                    .then((json) => {
+                        const information = getNodesInformation(json);
+                        information.nodesBaseUrl = stepBaseUrl;
+                        return dispatch({
+                            type: ACTION_TYPES.SET_STEPS,
+                            payload: information,
+                        });
+                    }).catch(FetchFunctions.consoleError);
             }
             return null;
         };

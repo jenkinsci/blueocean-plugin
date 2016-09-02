@@ -34,6 +34,7 @@ import org.jvnet.hudson.test.MockFolder;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -366,6 +367,26 @@ public class MultiBranchTest extends PipelineBaseTest {
         validateRun(b4, run.get(0));
     }
 
+
+    @Test
+    public void startMultiBranchPipelineRuns() throws Exception {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "feature%2Fux-1");
+        j.waitUntilNoActivity();
+
+        Map resp = post("/organizations/jenkins/pipelines/p/branches/"+ Util.rawEncode("feature%2Fux-1")+"/runs/",
+            Collections.EMPTY_MAP);
+        String id = (String) resp.get("id");
+        String link = getHrefFromLinks(resp, "self");
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/queue/"+id+"/", link);
+    }
+
+
     @Test
     public void getMultiBranchPipelineActivityRuns() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
@@ -508,9 +529,10 @@ public class MultiBranchTest extends PipelineBaseTest {
         WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
         j.waitUntilNoActivity();
 
+        String token = getJwtToken(j.jenkins, "alice", "alice");
         Map m = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/p/favorite")
-            .auth("alice", "alice")
+            .jwtToken(token)
             .data(ImmutableMap.of("favorite", true))
             .build(Map.class);
 
@@ -522,7 +544,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .auth("alice","alice")
+            .jwtToken(token)
             .build(List.class);
 
         Assert.assertEquals(1,l.size());
@@ -539,7 +561,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         m = new RequestBuilder(baseUrl)
             .put(getUrlFromHref(ref))
-            .auth("alice", "alice")
+            .jwtToken(token)
             .data(ImmutableMap.of("favorite", false))
             .build(Map.class);
 
@@ -551,7 +573,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .auth("alice","alice")
+            .jwtToken(token)
             .build(List.class);
 
         Assert.assertEquals(0,l.size());
@@ -559,7 +581,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .auth("bob","bob")
+            .jwtToken(getJwtToken(j.jenkins,"bob","bob"))
             .status(403)
             .build(String.class);
     }
@@ -582,9 +604,10 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         WorkflowJob p1 = scheduleAndFindBranchProject(mp, "feature2");
 
+        String token = getJwtToken(j.jenkins,"alice","alice");
         Map map = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/p/branches/feature2/favorite")
-            .auth("alice", "alice")
+            .jwtToken(token)
             .data(ImmutableMap.of("favorite", true))
             .build(Map.class);
 
@@ -595,7 +618,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .auth("alice","alice")
+            .jwtToken(token)
             .build(List.class);
 
         Assert.assertEquals(1, l.size());
@@ -612,7 +635,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         map = new RequestBuilder(baseUrl)
             .put(getUrlFromHref(getHrefFromLinks((Map)l.get(0), "self")))
-            .auth("alice", "alice")
+            .jwtToken(token)
             .data(ImmutableMap.of("favorite", false))
             .build(Map.class);
 
@@ -623,7 +646,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .auth("alice","alice")
+            .jwtToken(token)
             .build(List.class);
 
         Assert.assertEquals(0, l.size());
@@ -631,7 +654,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .auth("bob","bob")
+            .jwtToken(getJwtToken(j.jenkins,"bob","bob"))
             .status(403)
             .build(String.class);
 
@@ -661,9 +684,11 @@ public class MultiBranchTest extends PipelineBaseTest {
         fup.toggleFavorite(mp.getFullName());
         user.save();
 
+        String token = getJwtToken(j.jenkins,"alice", "alice");
+
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .auth("alice","alice")
+            .jwtToken(token)
             .build(List.class);
 
         Assert.assertEquals(1, l.size());
@@ -682,7 +707,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         Map m = new RequestBuilder(baseUrl)
             .put(getUrlFromHref(getUrlFromHref(href)))
-            .auth("alice", "alice")
+            .jwtToken(token)
             .data(ImmutableMap.of("favorite", false))
             .build(Map.class);
 
@@ -693,7 +718,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .auth("alice","alice")
+            .jwtToken(token)
             .build(List.class);
 
         Assert.assertEquals(0,l.size());

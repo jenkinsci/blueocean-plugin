@@ -106,6 +106,7 @@
     <module>blueocean-personalization</module>
     <module>blueocean-config</module>
     <module>blueocean</module>
+    <module>blueocean-jwt</module>
   </modules>
 
   <repositories>
@@ -184,6 +185,13 @@
             <artifactId>blueocean</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jwt</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
         <!-- 3rd party dependencies -->
 

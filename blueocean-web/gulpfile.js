@@ -6,6 +6,7 @@ process.env.SKIP_BLUE_IMPORTS = 'YES';
 
 var gi = require('giti');
 var fs = require('fs');
+
 var builder = require('@jenkins-cd/js-builder');
 
 // create a dummy revisionInfo so developmentFooter will not fail
@@ -27,7 +28,11 @@ gi(function (err, result) {
 // Explicitly setting the src paths in order to allow the rebundle task to
 // watch for changes in the JDL (js, css, icons etc).
 // See https://github.com/jenkinsci/js-builder#setting-src-and-test-spec-paths
-builder.src(['src/main/js', 'src/main/less', 'node_modules/@jenkins-cd/design-language/dist']);
+builder.src([
+    'src/main/js',
+    'src/main/less',
+    'node_modules/@jenkins-cd/design-language/dist',
+    'node_modules/@jenkins-cd/blueocean-core-js/dist']);
 
 //
 // Create the main "App" bundle.
@@ -54,6 +59,12 @@ builder.bundle('src/main/js/try.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .import('jquery-detached', 'core-assets/jquery-detached:jquery2') // Bundled in Jenkins 2.x
     .less('src/main/less/try.less');
+
+//
+// An Internet Explorer specific polyfill.
+// Go IE ... you never fail to make me smile :(
+//
+builder.bundle('src/main/js/ie/iepolyfills.js');
 
 //
 // Copy/link the JDL assests into the webapp dir, making them available at runtime.
