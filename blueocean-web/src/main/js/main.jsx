@@ -26,20 +26,22 @@ class App extends Component {
     render() {
         return (
             <div className="Site">
-                <div id="outer">
-                    <header className="global-header">
+                <header className="Site-header">
+                    <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
                             <Link to="/pipelines">Pipelines</Link>
                             <a href="#">Administration</a>
                         </nav>
-                    </header>
-                    <main>
-                        {this.props.children /* Set by react-router */ }
-                    </main>
-                </div>
+                    </div>
+                </header>
+                <main className="Site-content">
+                    {this.props.children /* Set by react-router */ }
+                </main>
+                <footer className="Site-footer">
+                    <DevelopmentFooter />
+                </footer>
                 <ToastDrawer />
-                <DevelopmentFooter />
             </div>
         );
     }

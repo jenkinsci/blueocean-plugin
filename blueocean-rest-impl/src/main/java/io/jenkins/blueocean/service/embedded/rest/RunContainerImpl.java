@@ -74,7 +74,7 @@ public class RunContainerImpl extends BlueRunContainer {
      * support running multiple builds at the same time, return a reference to the existing
      * build.
      *
-     * @return Qeueu item.
+     * @return Queue item.
      */
     @Override
     public BlueQueueItem create() {
