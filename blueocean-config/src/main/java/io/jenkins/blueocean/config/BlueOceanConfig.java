@@ -17,7 +17,7 @@ import java.io.StringWriter;
 public class BlueOceanConfig extends BluePageDecorator {
 
     public boolean isRollBarEnabled(){
-        return BlueOceanConfigProperties.ROLLBAR_ENABLED
+        return BlueOceanConfigProperties.ROLLBAR_ENABLED;
     }
 
     public String getBlueOceanConfig(){
