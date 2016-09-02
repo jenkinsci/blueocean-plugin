@@ -5,13 +5,13 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.0-alpha-10-SNAPSHOT</version>
+    <version>1.0.0-b01-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-config</artifactId>
   <packaging>hpi</packaging>
 
-  <name>BlueOcean :: Analytics Tools</name>
+  <name>Module :: BlueOcean :: Config</name>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
   <dependencies>
