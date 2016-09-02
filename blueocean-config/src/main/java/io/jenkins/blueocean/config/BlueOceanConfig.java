@@ -4,6 +4,7 @@ import hudson.Extension;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import io.jenkins.blueocean.BluePageDecorator;
+import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import jenkins.model.Jenkins;
 import net.sf.json.util.JSONBuilder;
 
@@ -16,10 +17,8 @@ import java.io.StringWriter;
 public class BlueOceanConfig extends BluePageDecorator {
 
     public boolean isRollBarEnabled(){
-        return Boolean.getBoolean("BLUEOCEAN_ROLLBAR_ENABLED");
+        return BlueOceanConfigProperties.ROLLBAR_ENABLED
     }
-    public final boolean FEATURE_JWT = Boolean.getBoolean("FEATURE_BLUEOCEAN_JWT_AUTHENTICATION");
-
 
     public String getBlueOceanConfig(){
         return createConfig();
@@ -48,7 +47,7 @@ public class BlueOceanConfig extends BluePageDecorator {
                         .key("authorizationStrategy").object()
                             .key("allowAnonymousRead").value(allowAnonymousRead)
                             .endObject()
-                        .key("enableJWT").value(FEATURE_JWT)
+                        .key("enableJWT").value(BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
                         .endObject()
                     .endObject()
                 .endObject();
