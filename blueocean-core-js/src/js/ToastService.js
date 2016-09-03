@@ -1,7 +1,7 @@
 /**
  * Created by cmeyers on 8/18/16.
  */
-import { observable, computed } from 'mobx';
+import { action, observable, computed } from 'mobx';
 
 /**
  * Holds one or more toasts in state for display in UI.
@@ -24,6 +24,7 @@ export class ToastService {
      * }
      * @returns {number} unique ID of toast
      */
+    @action
     newToast(toast) {
         // prevent duplicate toasts from appearing when multiple UI elements
         // are listening for an event that triggers creation of a toast
@@ -37,10 +38,7 @@ export class ToastService {
             newToast.id = Math.random() * Math.pow(10, 16);
         }
 
-        // TODO: determine why it's necessary to re-set the "toasts" field to trigger the UI update
-        const toasts = this.toasts.slice();
-        toasts.push(toast);
-        this.toasts = toasts;
+        this.toasts.push(newToast);
 
         return newToast.id;
     }
@@ -50,6 +48,7 @@ export class ToastService {
      *
      * @param toast
      */
+    @action
     removeToast(toast) {
         this.toasts = this.toasts.filter((item) =>
             toast.id !== item.id
