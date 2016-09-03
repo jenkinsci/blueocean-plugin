@@ -41,6 +41,12 @@ public abstract class BluePipeline extends Resource {
     /** stop pipeline run */
     public static final String STOP_PERMISSION = "stop";
 
+    /** Number of running jobs of this pipeline */
+    public static final String NUMBER_OF_RUNNING_PIPELINES = "numberOfRunningPipelines";
+
+    /** Number of queued jobs of this pipeline */
+    public static final String NUMBER_OF_QUEUED_PIPELINES = "numberOfQueuedPipelines";
+
     /**
      * @return name of the organization
      */
@@ -147,4 +153,17 @@ public abstract class BluePipeline extends Resource {
      */
     @Exported(name = PERMISSIONS)
     public abstract Map<String, Boolean> getPermissions();
+
+    /**
+     * @return Gives number of running jobs in this pipeline
+     */
+    @Exported(name = NUMBER_OF_RUNNING_PIPELINES)
+    public abstract int getNumberOfRunningPipelines();
+
+
+    /**
+     * @return Gives number of queued jobs in this pipeline
+     */
+    @Exported(name = NUMBER_OF_QUEUED_PIPELINES)
+    public abstract int getNumberOfQueuedPipelines();
 }

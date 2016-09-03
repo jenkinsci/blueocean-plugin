@@ -44,6 +44,9 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 
+import static io.jenkins.blueocean.rest.model.BluePipeline.NUMBER_OF_QUEUED_PIPELINES;
+import static io.jenkins.blueocean.rest.model.BluePipeline.NUMBER_OF_RUNNING_PIPELINES;
+
 /**
  * @author Vivek Pandey
  */
@@ -401,8 +404,10 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals(queue.size(),2);
         Assert.assertEquals(((Map) queue.get(0)).get("expectedBuildNumber"), 4);
         Assert.assertEquals(((Map) queue.get(1)).get("expectedBuildNumber"), 3);
-        System.out.println(request().get("/organizations/jenkins/pipelines/pipeline1/queue").build(String.class));
+        Map resp = request().get("/organizations/jenkins/pipelines/pipeline1/").build(Map.class);
 
+        Assert.assertEquals(2, resp.get(NUMBER_OF_RUNNING_PIPELINES));
+        Assert.assertEquals(2, resp.get(NUMBER_OF_QUEUED_PIPELINES));
     }
 
     @Test

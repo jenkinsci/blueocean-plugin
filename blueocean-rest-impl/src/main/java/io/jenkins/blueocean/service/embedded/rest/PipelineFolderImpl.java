@@ -112,6 +112,16 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     }
 
     @Override
+    public int getNumberOfRunningPipelines() {
+        return 0; //Folder is not represented itself as main item on dashboard so its left as 0
+    }
+
+    @Override
+    public int getNumberOfQueuedPipelines() {
+        return 0; //Folder is not represented itself as main item on dashboard so its left as 0
+    }
+
+    @Override
     public Link getLink() {
         return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
     }
