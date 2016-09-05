@@ -8,6 +8,9 @@
 # Yay for dependencies that are bloated with tests, and .json files that aren't JSON
 .*/node_modules/cjson/test.*
 
+.*/node_modules/config-chain/test/broken.json
+.*/node_modules/npmconf/test/fixtures/package.json
+
 [libs]
 src/js/declarations
 

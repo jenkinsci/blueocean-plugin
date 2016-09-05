@@ -58,6 +58,10 @@ const config = {
             sources: "fonts/*.woff",
             dest: "dist/assets/fonts/"
         },
+        componentDocFiles: {
+            sources: "src/js/stories/doc-*.{md,ejs,jade}",
+            dest: "website/component-docs/"
+        },
         licenses_octicons: {
             sources: "node_modules/octicons/LICENSE",
             dest: "licenses/"
@@ -170,7 +174,7 @@ gulp.task("svgmin", () =>
 // Copy things
 
 gulp.task("copy", ["copy-icons", "copy-octicons", "copy-normalize", "copy-fontsCSS", "copy-fonts",
-    "copy-licenses-octicons", "copy-licenses-ofl"]);
+    "copy-componentDocFiles", "copy-licenses-octicons", "copy-licenses-ofl"]);
 
 gulp.task("copy-icons", () =>
     gulp.src(config.copy.icons.sources)
@@ -191,6 +195,10 @@ gulp.task("copy-fontsCSS", () =>
 gulp.task("copy-fonts", () =>
     gulp.src(config.copy.fonts.sources)
         .pipe(copy(config.copy.fonts.dest, {prefix: 1})));
+
+gulp.task("copy-componentDocFiles", () =>
+    gulp.src(config.copy.componentDocFiles.sources)
+        .pipe(copy(config.copy.componentDocFiles.dest, {prefix: 3})));
 
 gulp.task("copy-licenses-octicons", () =>
     gulp.src(config.copy.licenses_octicons.sources)

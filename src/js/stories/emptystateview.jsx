@@ -12,9 +12,12 @@ storiesOf('EmptyStateView', module)
 
 function oneLiner() {
     return (
-        <EmptyStateView tightSpacing>
-            <p>There are no artifacts for this pipeline run.</p>
-        </EmptyStateView>
+        <div>
+            <span className="componentdoc" data-docfile="doc-emptystate-oneliner"></span>
+            <EmptyStateView tightSpacing>
+                <p>There are no artifacts for this pipeline run.</p>
+            </EmptyStateView>
+        </div>
     );
 }
 

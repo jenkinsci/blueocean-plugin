@@ -1,14 +1,18 @@
 {
   "name": "@jenkins-cd/design-language",
   "jdlName": "jenkins-design-language",
-  "version": "0.0.74-unpublished",
+  "version": "0.0.75",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
     "storybook": "npm run gulp build && start-storybook -p 9001 --static-dir dist/assets/",
+    "build-storybook": "build-storybook --static-dir dist/assets/ --output-dir website/storybook",
     "flow": "flow",
     "gulp": "gulp",
-    "test": "gulp test"
+    "test": "gulp test",
+    "site-build": "harp compile website/ website-build/",
+    "site-server": "harp server website --port 3000",
+    "prepublish": "gulp && ./site-publish.sh"
   },
   "author": "Josh McDonald <jmcdonald@cloudbees.com> (https://www.cloudbees.com/)",
   "contributors": [
@@ -64,6 +68,7 @@
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "1.6.0",
     "gulp-svgmin": "1.2.2",
+    "harp": "^0.20.3",
     "karma": "0.13.22",
     "karma-browserify": "5.0.5",
     "karma-chrome-launcher": "1.0.1",
