@@ -24,7 +24,7 @@ import { calculateNode } from '../util/KaraokeHelper';
 
 const { string, object, any, func } = PropTypes;
 
-const queuedState = () => (
+const QueuedState = () => (
     <EmptyStateView tightSpacing>
         <p>
             <Icon {...{
@@ -32,7 +32,7 @@ const queuedState = () => (
                 icon: 'timer',
                 style: { fill: '#fff' },
             }} />
-            <span>Waiting for run to start.</span>
+            <span className="waiting">Waiting for run to start.</span>
         </p>
     </EmptyStateView>
 );
@@ -224,7 +224,7 @@ export class RunDetailsPipeline extends Component {
         const { isMultiBranch, steps, nodes, result: run, params } = this.props;
 
         if (run.isQueued()) {
-            return queuedState();
+            return <QueuedState/>;
         }
         const supportsNode = supportsNodes(run);
         const resultRun = run.isCompleted() ? run.state : run.result;
@@ -281,7 +281,7 @@ export class RunDetailsPipeline extends Component {
         const noSteps = currentSteps && currentSteps.model && currentSteps.model.length === 0;
         const shouldShowLogHeader = noSteps !== null && !noSteps;
         let hasResultsForSteps = nodes && nodes[nodeKey] ? nodes[nodeKey].hasResultsForSteps : false;
-        if ((noSteps !== null && !noSteps) || (isRunning && supportsNode)) {
+        if ((noSteps !== null && !noSteps) || (isRunning && supportsNode && !noSteps)) {
             hasResultsForSteps = true;
         }
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
@@ -319,6 +319,7 @@ export class RunDetailsPipeline extends Component {
                   {...this.props}
                 />
                 }
+                { !hasResultsForSteps && noSteps && isRunning && <QueuedState/> }
                 { hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
                     <p>There are no steps.</p>
                 </EmptyStateView>
