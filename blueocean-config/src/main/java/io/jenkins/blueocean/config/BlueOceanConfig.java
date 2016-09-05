@@ -44,6 +44,7 @@ public class BlueOceanConfig extends BluePageDecorator {
                     .key("security")
                     .object()
                         .key("enabled").value(jenkins.isUseSecurity())
+                        .key("loginUrl").value(jenkins.getSecurityRealm().getLoginUrl())
                         .key("authorizationStrategy").object()
                             .key("allowAnonymousRead").value(allowAnonymousRead)
                             .endObject()
