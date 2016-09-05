@@ -5,11 +5,18 @@ import utils from './utils';
 import config from './config';
 
 export const FetchFunctions = {
-        /**
+    /**
      * This method checks for for 2XX http codes. Throws error it it is not.
      * This should only be used if not using fetch or fetchJson.
      */
     checkStatus(response) {
+        if (response.status == 401) {
+            const error = new Error(response.statusText);
+            error.response = response;
+            utils.windowOrGlobal().location = `${config.getLoginUrl()}?from=${encodeURIComponent(utils.windowOrGlobal().location.pathname)}`;
+            throw error;
+        }
+
         if (response.status >= 300 || response.status < 200) {
             const error = new Error(response.statusText);
             error.response = response;

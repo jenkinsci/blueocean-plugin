@@ -75,7 +75,7 @@ public class OrganizationImpl extends BlueOrganization {
     public BlueUser getUser() {
         User user =  User.current();
         if(user == null){
-            throw new ServiceException.NotFoundException("No authenticated user found");
+            throw new ServiceException.UnauthorizedException("No authenticated user found");
         }
         return new UserImpl(user,new UserContainerImpl(OrganizationImpl.INSTANCE));
     }
