@@ -38,6 +38,7 @@
 - [Queue API](#queue-api)
   - [Fetch queue for an pipeline](#fetch-queue-for-an-pipeline)
   - [GET queue for a MultiBranch pipeline](#get-queue-for-a-multibranch-pipeline)
+  - [Remove a queued item](#remove-a-queued-item)
 - [Run API](#run-api)
   - [Get all runs in a pipeline](#get-all-runs-in-a-pipeline)
   - [Get a run details](#get-a-run-details)
@@ -708,6 +709,10 @@ For example for anonymous user with security enabled and only read permission, t
           "expectedBuildNumber" : 11
        }
     ]
+
+## Remove a queued item 
+
+    curl -X DELETE http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/
 
 # Run API
 
