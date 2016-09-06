@@ -56,8 +56,8 @@ export const actions = {
                 `${baseUrl}${branch._links.self.href}/favorite` :
                 `${baseUrl}${favoriteToRemove._links.self.href}`
             );
-           
-         
+
+
             const fetchOptions = {
                 method: 'PUT',
                 headers: {
@@ -101,7 +101,7 @@ export const actions = {
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
 
             const fetchOptions = {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
