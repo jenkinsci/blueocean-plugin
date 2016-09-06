@@ -5,8 +5,10 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
+import hudson.security.Permission;
 import io.jenkins.blueocean.BlueOceanUI;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
+import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -59,6 +61,10 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
             SecurityContextHolder.setContext(securityContext);
 
             //TODO: implement this as filter, see PluginServletFilter to clear the context
+        }else{
+            //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
+            // user to login page
+            Jenkins.getInstance().checkPermission(Permission.READ);
         }
         return app;
     }
