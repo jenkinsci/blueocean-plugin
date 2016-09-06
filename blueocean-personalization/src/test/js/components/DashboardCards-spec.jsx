@@ -20,11 +20,14 @@ const user = new User({
 const favorlitesList = new List(favorites);
 
 describe('DashboardCards', () => {
-    // needed to prevent DashboardCards from blowing up internally
-    bindCapability(
-        'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl',
-        'io.jenkins.blueocean.rest.model.BlueBranch'
-    );
+
+    beforeEach(() => {
+        // needed to prevent DashboardCards from blowing up internally
+        bindCapability(
+            'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl',
+            'io.jenkins.blueocean.rest.model.BlueBranch'
+        );
+    });
 
     it('renders without error for empty props', () => {
         const wrapper = shallow(
@@ -85,5 +88,43 @@ describe('DashboardCards', () => {
         assert.equal(cards.at(11).props().organization, 'jenkins');
         assert.equal(cards.at(11).props().pipeline, 'jenkinsfile-experiments');
         assert.equal(cards.at(11).props().branch, 'master');
+    });
+
+    it('forces a favorite without latestRun to NOT_BUILT', () => {
+        const unbuiltFavorite = new List([
+            {
+                _class: 'io.jenkins.blueocean.service.embedded.rest.FavoriteImpl',
+                _links: {
+                    self: {
+                        _class: 'io.jenkins.blueocean.rest.hal.Link',
+                        href: '/blue/rest/users/cmeyers/favorites/blueocean%252FUX-301/',
+                    },
+                },
+                item: {
+                    _class: 'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl',
+                    displayName: 'UX-301',
+                    estimatedDurationInMillis: 73248,
+                    fullName: 'blueocean/UX-301',
+                    lastSuccessfulRun: null,
+                    latestRun: null,
+                    name: 'UX-301',
+                    organization: 'jenkins',
+                    weatherScore: 0,
+                    pullRequest: null,
+                },
+            },
+        ]);
+
+        const wrapper = shallow(
+            <DashboardCards
+              user={user}
+              favorites={unbuiltFavorite}
+            />
+        );
+
+        const cards = wrapper.find('PipelineCard');
+
+        assert.equal(cards.length, 1);
+        assert.equal(cards.at(0).props().status, 'NOT_BUILT');
     });
 });
