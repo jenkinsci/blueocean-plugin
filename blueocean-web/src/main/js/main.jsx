@@ -33,6 +33,10 @@ class App extends Component {
                             <Link to="/pipelines">Pipelines</Link>
                             <a href="#">Administration</a>
                         </nav>
+                        <div className="button-bar">
+                            <button className="inverse small">Login</button>
+                            <button className="btn-secondary inverse small">Logout</button>
+                        </div>
                     </div>
                 </header>
                 <main className="Site-content">
