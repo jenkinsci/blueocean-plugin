@@ -22,4 +22,10 @@ export default {
     clone(obj) {
         return JSON.parse(JSON.stringify(obj));
     },
+
+    windowOrGlobal() {
+        return (typeof self === 'object' && self.self === self && self) ||
+  (typeof global === 'object' && global.global === global && global) ||
+  this;
+    },
 };
