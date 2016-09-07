@@ -251,7 +251,7 @@ export class RunDetailsPipeline extends Component {
             return <QueuedState />;
         }
         const { nodeKey, supportsNode, noSteps, currentSteps, hasResultsForSteps, isPipelineQueued } = this.mergedConfig;// supportsNodes(run);
-        const resultRun = run.isCompleted() ? run.state : run.result;
+        const resultRun = !run.isCompleted() ? run.state : run.result;
         const followAlong = this.state.followAlong;
         // in certain cases we want that the log component will scroll to the end of a log
         const scrollToBottom =
