@@ -18,3 +18,27 @@ export const cleanSlashes = (url) => {
 
     return url;
 };
+
+/**
+ * Fully decode the provided the string
+ * @param {string} value
+ * @returns {string}
+ */
+export const fullUriDecode = (value) => {
+    let val = value;
+    while (val !== decodeURIComponent(val)) {
+        val = decodeURIComponent(val);
+    }
+    return val;
+};
+
+/**
+ * Returns a string that has been uri-encoded once.
+ * If the string is already encoded one or more times, it will decode it and then re-encode.
+ * @param {string} value
+ * @returns {string}
+ */
+export const uriEncodeOnce = (value) => {
+    const clean = fullUriDecode(value);
+    return encodeURIComponent(clean);
+};

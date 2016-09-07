@@ -112,6 +112,24 @@ export const actions = {
         };
     },
 
+    stopPipeline(pipeline) {
+        return () => {
+            const baseUrl = UrlConfig.getJenkinsRootURL();
+            const latestRunUrl = pipeline.latestRun._links.self.href;
+            const stopPipelineUrl = cleanSlashes(`${baseUrl}/${latestRunUrl}/stop/?blocking=true&timeOutInSecs=10`);
+
+            const fetchOptions = {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            // once job is stopped, SSE will fire and trigger "updateRun" so no need to dispatch an action here
+            Fetch.fetch(stopPipelineUrl, fetchOptions);
+        };
+    },
+
     updateRun(jobRun) {
         return (dispatch) => {
             dispatch({
