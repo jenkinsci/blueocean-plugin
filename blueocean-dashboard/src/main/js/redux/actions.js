@@ -1,10 +1,12 @@
 import keymirror from 'keymirror';
-import fetch from 'isomorphic-fetch';
-
+import { fetch as smartFetch, paginate, applyFetchMarkers } from '../util/smart-fetch';
 import { State } from '../components/records';
 import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
-import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl } from '../util/UrlUtils';
+import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, paginateUrl, getRestUrl } from '../util/UrlUtils';
+import findAndUpdate from '../util/find-and-update';
+import { Fetch, FetchFunctions } from '@jenkins-cd/blueocean-core-js';
+const debugLog = require('debug')('blueocean-actions-js:debug');
 
 /**
  * This function maps a queue item into a run instancce.
@@ -32,25 +34,48 @@ function _mapQueueToPsuedoRun(run) {
     return run;
 }
 
+function tryToFixRunState(run, pipelineRuns) {
+    if (run.state === 'QUEUED') {
+        // look up the run locally first, as this is the only way
+        // for us to get an appropriate value if the run was recently queued
+        // this is a back-end issue where the status takes a while to update to 'RUNNING'
+        const found = pipelineRuns && pipelineRuns.filter(r => r.id === run.id || (r.job_run_queueId && r.job_run_queueId === run.job_run_queueId))[0];
+        if (found) {
+            return Object.assign({}, run, {
+                id: run.id || found.id,
+                state: found.state,
+                result: found.result,
+                job_run_queueId: found.job_run_queueId,
+            });
+        }
+        return Object.assign({}, run, {
+            state: 'RUNNING',
+            result: 'UNKNOWN',
+        });
+    }
+    return run;
+}
+
 // main actin logic
 export const ACTION_TYPES = keymirror({
     UPDATE_MESSAGES: null,
     CLEAR_PIPELINES_DATA: null,
-    SET_PIPELINES_DATA: null,
+    SET_ALL_PIPELINES_DATA: null,
+    SET_ORG_PIPELINES_DATA: null,
     SET_PIPELINE: null,
     CLEAR_PIPELINE_DATA: null,
     SET_RUNS_DATA: null,
     SET_CURRENT_RUN_DATA: null,
-    CLEAR_CURRENT_RUN_DATA: null,
-    SET_BRANCHES_DATA: null,
+    SET_CURRENT_RUN: null,
+    SET_CURRENT_PULL_REQUEST_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
     SET_TEST_RESULTS: null,
-    UPDATE_BRANCH_DATA: null,
     SET_STEPS: null,
     SET_NODE: null,
     SET_NODES: null,
     SET_LOGS: null,
+    FIND_AND_UPDATE: null,
 });
 
 export const actionHandlers = {
@@ -62,28 +87,26 @@ export const actionHandlers = {
         return state.set('messages', messages);
     },
     [ACTION_TYPES.CLEAR_PIPELINES_DATA](state) {
-        return state.set('pipelines', null);
+        return state.set('allPipelines', null)
+            .set('organizationPipelines', null);
     },
-    [ACTION_TYPES.SET_PIPELINES_DATA](state, { payload }): State {
-        return state.set('pipelines', payload);
+    [ACTION_TYPES.SET_ALL_PIPELINES_DATA](state, { payload }): State {
+        return state.set('allPipelines', payload);
+    },
+    [ACTION_TYPES.SET_ORG_PIPELINES_DATA](state, { payload }): State {
+        return state.set('organizationPipelines', payload);
     },
     [ACTION_TYPES.CLEAR_PIPELINE_DATA](state) {
         return state.set('pipeline', null);
     },
-    [ACTION_TYPES.SET_PIPELINE](state, { id }): State {
-        const pipelines = state.pipelines;
-        if (!pipelines) {
-            return state.set('pipeline', null);
-        }
-        // [].slice(0) returns a clone, we do need it for uniqueness
-        const pipeline = pipelines.slice(0).filter(item => item.fullName === id);
-        return state.set('pipeline', pipeline[0] ? pipeline[0] : null);
-    },
-    [ACTION_TYPES.CLEAR_CURRENT_RUN_DATA](state) {
-        return state.set('currentRuns', null);
+    [ACTION_TYPES.SET_PIPELINE](state, { payload }): State {
+        return state.set('pipeline', payload);
     },
     [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
         return state.set('currentRuns', payload.map((run) => _mapQueueToPsuedoRun(run)));
+    },
+    [ACTION_TYPES.SET_CURRENT_RUN](state, { payload }): State {
+        return state.set('currentRun', payload);
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
         return state.set('node', { ...payload });
@@ -95,9 +118,10 @@ export const actionHandlers = {
     },
     [ACTION_TYPES.SET_RUNS_DATA](state, { payload, id }): State {
         const runs = { ...state.runs } || {};
-
         runs[id] = payload.map(run => _mapQueueToPsuedoRun(run));
-        return state.set('runs', runs);
+        applyFetchMarkers(runs[id], payload);
+        return state.set('runs', runs)
+            .set('currentRuns', runs[id]);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
         return state.set('currentBranches', null);
@@ -105,10 +129,8 @@ export const actionHandlers = {
     [ACTION_TYPES.SET_CURRENT_BRANCHES_DATA](state, { payload }): State {
         return state.set('currentBranches', payload);
     },
-    [ACTION_TYPES.SET_BRANCHES_DATA](state, { payload, id }): State {
-        const branches = { ...state.branches } || {};
-        branches[id] = payload;
-        return state.set('branches', branches);
+    [ACTION_TYPES.SET_CURRENT_PULL_REQUEST_DATA](state, { payload }): State {
+        return state.set('pullRequests', payload);
     },
     [ACTION_TYPES.SET_TEST_RESULTS](state, { payload }): State {
         return state.set('testResults', payload === undefined ? {} : payload);
@@ -124,39 +146,14 @@ export const actionHandlers = {
 
         return state.set('logs', logs);
     },
-
-    [ACTION_TYPES.UPDATE_BRANCH_DATA](state, { payload, id }): State {
-        const branches = state.get('branches') || {};
-        const jobBranches = branches[id];
-
-        // store the new branch data for the single branch
-        // then update all branch data in the store
-        const newBranches = jobBranches.map(branch =>
-            branch.name === payload.name ?
-                payload : branch
-        );
-
-        branches[id] = newBranches;
-        return state
-            .set('branches', branches)
-            .set('currentBranches', newBranches);
+    [ACTION_TYPES.FIND_AND_UPDATE](state, { payload }): State {
+        const updated = findAndUpdate(state, payload);
+        if (updated) {
+            return updated;
+        }
+        return state;
     },
 };
-
-// fetch helper
-const fetchOptions = { credentials: 'same-origin' };
-function checkStatus(response) {
-    if (response.status >= 300 || response.status < 200) {
-        const error = new Error(response.statusText);
-        error.response = response;
-        throw error;
-    }
-    return response;
-}
-
-function parseJSON(response) {
-    return response.json();
-}
 
 function parseMoreDataHeader(response) {
     let newStart = null;
@@ -174,28 +171,6 @@ function parseMoreDataHeader(response) {
     const payload = { response, newStart };
     return payload;
 }
-/**
- * Fetch JSON data.
- * <p>
- * Utility function that can be mocked for testing.
- *
- * @param url The URL to fetch from.
- * @param onSuccess o
- * @param onError
- */
-exports.fetchJson = function fetchJson(url, onSuccess, onError) {
-    return fetch(url, fetchOptions)
-        .then(checkStatus)
-        .then(parseJSON)
-        .then(onSuccess)
-        .catch((error) => {
-            if (onError) {
-                onError(error);
-            } else {
-                console.error(error); // eslint-disable-line no-console
-            }
-        });
-};
 
 /**
  * Fetch TXT/log data and inject a start parameter to indicate that a refetch is needed
@@ -215,18 +190,23 @@ exports.fetchLogsInjectStart = function fetchLogsInjectStart(url, start, onSucce
     } else {
         refetchUrl = `${url}?start=${start}`;
     }
-    return fetch(refetchUrl, fetchOptions)
-        .then(checkStatus)
+    return Fetch.fetch(refetchUrl)
         .then(parseMoreDataHeader)
         .then(onSuccess)
-        .catch((error) => {
-            if (onError) {
-                onError(error);
-            } else {
-                console.error(error); // eslint-disable-line no-console
-            }
-        });
+        .catch(FetchFunctions.onError(onError));
 };
+
+/**
+ * Locates instances in the state tree and replaces them, just provide a 'replacer' method,
+ * which returns undefined/false for objects which should not be replaced.
+ */
+function dispatchFindAndUpdate(dispatch, fn) {
+    dispatch({
+        type: ACTION_TYPES.FIND_AND_UPDATE,
+        payload: fn,
+    });
+}
+
 /**
  * Clone a JSON object/array instance.
  * <p>
@@ -243,7 +223,6 @@ function clone(json) {
     return JSON.parse(JSON.stringify(json));
 }
 
-// FIXME: Ignoring isFetching for now
 export const actions = {
     clearPipelinesData: () => ({ type: ACTION_TYPES.CLEAR_PIPELINES_DATA }),
     clearPipelineData() {
@@ -256,63 +235,94 @@ export const actions = {
      * @param organizationName (optional)
      */
     // eslint-disable-next-line no-unused-vars
-    fetchPipelines(config, organizationName) {
+    fetchAllPipelines() {
         return (dispatch) => {
-            const baseUrl = config.getAppURLBase();
-            // TODO: update this code to call /search with organizationName once JENKINS-36273 is ready
-            const url = `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject`;
+            // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
+            const url =
+                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+            return paginate({ urlProvider: paginateUrl(url) })
+            .then(data => {
+                dispatch({
+                    type: ACTION_TYPES.SET_ALL_PIPELINES_DATA,
+                    payload: data,
+                });
+            });
+        };
+    },
 
-            return dispatch(actions.generateData(
-                url,
-                ACTION_TYPES.SET_PIPELINES_DATA
-            ));
+    fetchOrganizationPipelines({ organizationName }) {
+        return (dispatch) => {
+            // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
+            const url =
+                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(organizationName)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+            return paginate({ urlProvider: paginateUrl(url) })
+            .then(data => {
+                dispatch({
+                    type: ACTION_TYPES.SET_ORG_PIPELINES_DATA,
+                    payload: data,
+                });
+            });
+        };
+    },
+
+    fetchBranches({ organizationName, pipelineName }) {
+        return (dispatch) => {
+            const url =
+                `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/branches/?filter=origin`;
+            return paginate({ urlProvider: paginateUrl(url) })
+            .then(data => {
+                dispatch({
+                    id: pipelineName,
+                    type: ACTION_TYPES.SET_CURRENT_BRANCHES_DATA,
+                    payload: data,
+                });
+            });
+        };
+    },
+
+    fetchPullRequests({ organizationName, pipelineName }) {
+        return (dispatch) => {
+            const url =
+                `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/branches/?filter=pull-requests`;
+            return paginate({ urlProvider: paginateUrl(url) })
+            .then(data => {
+                dispatch({
+                    type: ACTION_TYPES.SET_CURRENT_PULL_REQUEST_DATA,
+                    payload: data,
+                });
+            });
         };
     },
 
     /**
-     * Fetch and update the pipelines list if the store doesn't already have
-     * a list of the pipelines.
-     * @param config Application configuration.
-     * @param organizationName (optional)
+     * Fetch a specific pipeline, sets as current
      */
-    // eslint-disable-next-line no-unused-vars
-    fetchPipelinesIfNeeded(config, organizationName) {
-        return (dispatch, getState) => {
-            const pipelines = getState().adminStore.pipelines;
-            const baseUrl = config.getAppURLBase();
-            // TODO: update this code to call /search with organizationName once JENKINS-36273 is ready
-            const url = `${baseUrl}/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject`;
-
-            if (!pipelines) {
-                return dispatch(actions.generateData(
-                    url,
-                    ACTION_TYPES.SET_PIPELINES_DATA
-                ));
-            }
-            return pipelines;
-        };
-    },
-
-    setPipeline(config) {
-        return (dispatch, getState) => {
-            dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
-            const pipelines = getState().adminStore.pipelines;
-
-            if (!pipelines) {
-                return dispatch(actions.fetchPipelinesIfNeeded(config))
-                    .then(() => dispatch({ id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE }));
-            }
-            return dispatch({ id: config.pipeline, type: ACTION_TYPES.SET_PIPELINE });
-        };
+    fetchPipeline(organizationName, pipelineName) {
+        return (dispatch) =>
+            smartFetch(
+                getRestUrl({ organization: organizationName, pipeline: pipelineName }),
+                data => dispatch({
+                    id: pipelineName,
+                    type: ACTION_TYPES.SET_PIPELINE,
+                    payload: data,
+                })
+            );
     },
 
     processJobQueuedEvent(event) {
         return (dispatch, getState) => {
-            const runsByJobName = getState().adminStore.runs || {};
-            const eventJobRuns = runsByJobName[event.blueocean_job_pipeline_name];
+            const id = event.blueocean_job_pipeline_name;
+            const runsByJobName = getState().adminStore && getState().adminStore.runs || {};
+            const eventJobRuns = runsByJobName[id];
 
             // Only interested in the event if we have already loaded the runs for that job.
             if (eventJobRuns && event.job_run_queueId) {
+                // here, we're emulating the expectedBuildNumber in order to get a runId
+                // we need a runId so clicking to view the queued item shows the right page
+                // now that we are fetching a run 'directly', however it's important to note
+                // that this could still fail with a reload if the runs have not loaded and
+                // we don't have a matching queued item with the same runId
+                let nextId = 0;
                 for (let i = 0; i < eventJobRuns.length; i++) {
                     const run = eventJobRuns[i];
                     if (event.job_ismultibranch
@@ -326,11 +336,14 @@ export const actions = {
                         // run. No need to create another i.e. ignore this event.
                         return;
                     }
+                    if (parseInt(run.id, 10) > nextId) { // figure out the next id, expectedBuildNumber
+                        nextId = parseInt(run.id, 10);
+                    }
                 }
 
                 // Create a new "dummy" entry in the runs list for the
                 // run that's been queued.
-                const newRun = {};
+                const newRun = { id: `${nextId + 1}` };
 
                 // We keep the queueId so we can cross reference it with the actual
                 // run once it has been started.
@@ -344,6 +357,7 @@ export const actions = {
                 newRun.result = 'UNKNOWN';
 
                 const newRuns = clone([newRun, ...eventJobRuns]);
+                applyFetchMarkers(newRuns, eventJobRuns);
 
                 if (event.blueocean_is_for_current_job) {
                     // set current runs since we are ATM looking at it
@@ -351,339 +365,165 @@ export const actions = {
                 }
                 dispatch({
                     payload: newRuns,
-                    id: event.blueocean_job_pipeline_name,
+                    id,
                     type: ACTION_TYPES.SET_RUNS_DATA,
                 });
             }
         };
     },
 
-    updateRunState(event, config, updateByQueueId) {
+    updateRunState(event) {
+        function matchesEvent(evt, o) {
+            return o.job_run_queueId === evt.job_run_queueId
+                || (o._links && o._links.self && o._links.self.href.indexOf(evt.blueocean_job_rest_url) === 0 && o.id === evt.jenkins_object_id);
+        }
         return (dispatch, getState) => {
-            let storeData;
-
-            // Go to the redux store and get a fresh copy of the run data associated
-            // with the event. We need to be able to do this because we do an async
-            // fetch and so need to be able refresh the data used when processing
-            // the event i.e. we need to get from the store more than once - before
-            // and after the fetch. Need to get it after the fetch because things
-            // may have changed state.
-            function getFromStore() {
-                const runsByJobName = getState().adminStore.runs || {};
-                const eventJobRuns = runsByJobName[event.blueocean_job_pipeline_name];
-                let newStoreData = undefined;
-
-                // Only interested in the event if we have already loaded the runs for that job.
-                if (eventJobRuns) {
-                    newStoreData = {};
-                    newStoreData.eventJobRuns = eventJobRuns;
-
-                    for (let i = 0; i < eventJobRuns.length; i++) {
-                        const run = eventJobRuns[i];
-                        if (event.job_ismultibranch
-                            && event.blueocean_job_branch_name !== run.pipeline) {
-                            // Not the same branch. Yes, run.pipeline actually contains
-                            // the branch name.
-                            continue;
-                        }
-                        if (updateByQueueId) {
-                            // We use the queueId to locate the right "dummy" run entry that
-                            // needs updating. The "dummy" run entry was created in
-                            // processJobQueuedEvent().
-                            if (run.job_run_queueId === event.job_run_queueId) {
-                                newStoreData.runIndex = i;
-                                break;
-                            }
-                        } else {
-                            if (run.id === event.jenkins_object_id) {
-                                newStoreData.runIndex = i;
-                                break;
-                            }
-                        }
-                    }
+            debugLog('updateRunState:', event);
+            let found = false;
+            findAndUpdate(getState().adminStore, o => {
+                if (!found && matchesEvent(event, o)) {
+                    debugLog('found:', o);
+                    found = true;
                 }
-
-                return newStoreData;
-            }
-
-            // Get the event related data from the
-            // redux store.
-            storeData = getFromStore();
-
-            // Only interested in the event if we have already loaded the runs for that job.
-            if (storeData) {
-                const updateRunData = function updateRunData(runData, skipStoreDataRefresh) {
-                    const newRunData = Object.assign({}, runData);
-                    let newRuns;
-
-                    // Only need to update the storeData if something async
-                    // happened i.e. giving an opportunity for the current
-                    // copy of the start data to become "stale".
-                    if (!skipStoreDataRefresh) {
-                        storeData = getFromStore();
-                    }
-
-                    // In theory, the following code should not be needed as the
-                    // call to the REST API should return run data with a state
-                    // that's at least as up-to-date as the state received in
-                    // event that triggered this. However, that's not what has
-                    // been e.g. we've seen run start events coming in, triggering
-                    // a call of the REST API, but the run state coming back for
-                    // that same run may still be "QUEUED".
-                    // Note, if you put a breakpoint in and wait for a second before
-                    // allowing the REST API call, then you get the right state.
-                    // So, it seems like the RunListener event is being fired
-                    // in Jenkins core before the state is properly persisted.
-                    if (event.jenkins_event === 'job_run_ended') {
-                        newRunData.state = 'FINISHED';
-                    } else {
-                        newRunData.state = 'RUNNING';
-                    }
-
-                    if (storeData.runIndex !== undefined) {
-                        newRuns = clone(storeData.eventJobRuns);
-                        newRuns[storeData.runIndex] = newRunData;
-                    } else {
-                        newRuns = clone([newRunData, ...storeData.eventJobRuns]);
-                    }
-
-                    if (event.blueocean_is_for_current_job) {
-                        // set current runs since we are ATM looking at it
-                        dispatch({ payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA });
-                    }
-                    dispatch({
-                        payload: newRuns,
-                        id: event.blueocean_job_pipeline_name,
-                        type: ACTION_TYPES.SET_RUNS_DATA,
-                    });
-                };
-
-                const runUrl = `${config.getAppURLBase()}${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`;
-
-                // The event tells us that the run state has changed, but does not give all
-                // run related data (times, commit Ids etc). So, lets go get that data from
-                // REST API and present a consistent picture of the run state to the user.
-                exports.fetchJson(runUrl, updateRunData, (error) => {
-                    let runData;
-
-                    // Getting the actual state of the run failed. Lets log
-                    // the failure and update the state manually as best we can.
-
-                    // eslint-disable-next-line no-console
-                    console.warn(`Error getting run data from REST endpoint: ${runUrl}`);
-                    // eslint-disable-next-line no-console
-                    console.warn(error);
-
-                    // We're after coming out of an async operation (the fetch).
-                    // In that case, we better refresh the copy of the storeData
-                    // that we have in case things changed while we were doing the
-                    // fetch.
-                    storeData = getFromStore();
-
-                    if (storeData.runIndex !== undefined) {
-                        runData = storeData.eventJobRuns[storeData.runIndex];
-                    } else {
-                        runData = {};
-                        runData.job_run_queueId = event.job_run_queueId;
-                        if (event.job_ismultibranch) {
-                            runData.pipeline = event.blueocean_job_branch_name;
-                        } else {
-                            runData.pipeline = event.blueocean_job_pipeline_name;
-                        }
-                    }
-
-                    if (event.jenkins_event === 'job_run_ended') {
-                        runData.state = 'FINISHED';
-                    } else {
-                        runData.state = 'RUNNING';
-                    }
-                    runData.id = event.jenkins_object_id;
-                    runData.result = event.job_run_status;
-
-                    // Update the run data. We do not need updateRunData to refresh the
-                    // storeData again because we already just did it at the start of
-                    // this function call.
-                    updateRunData(runData, false);
-                });
-            }
-        };
-    },
-
-    updateBranchState(event, config) {
-        return (dispatch, getState) => {
-            // if the job event is multibranch, refetch the corresponding branch
-            // from the REST API and update our stores
-            if (event.job_ismultibranch) {
-                const branches = getState().adminStore.branches || {};
-                const jobs = branches[event.blueocean_job_pipeline_name] || [];
-                const branch = jobs.find(job => job.name === event.blueocean_job_branch_name);
-
-                if (!branch) {
-                    return;
-                }
-
-                const url = `${config.getAppURLBase()}${event.blueocean_job_rest_url}`;
-
-                const processBranchData = function processBranchData(branchData) {
-                    const { latestRun } = branchData;
-
-                    // same issue as in 'updateRunData'; see comment above
-                    if (event.jenkins_event === 'job_run_ended') {
-                        latestRun.state = 'FINISHED';
-                    } else {
-                        latestRun.state = 'RUNNING';
-                    }
-
-                    // apply the new data to the store
-                    dispatch({
-                        payload: branchData,
-                        id: event.blueocean_job_pipeline_name,
-                        type: ACTION_TYPES.UPDATE_BRANCH_DATA,
-                    });
-                };
-
-                exports.fetchJson(url, processBranchData, (error) => {
-                    console.log(error); // eslint-disable-line no-console
-                });
-            }
-        };
-    },
-
-    updateBranchList(event, config) {
-        return (dispatch, getState) => {
-            if (event.job_ismultibranch) {
-                const multibranchPipelines = getState().adminStore.branches || {};
-                const pipelineName = event.blueocean_job_pipeline_name;
-
-                // We're only interested in this event if we're already managing branch state
-                // associated with this multi-branch job.
-                if (!multibranchPipelines[pipelineName]) {
-                    return;
-                }
-
-                // Fetch/refetch the latest set of branches for the pipeline.
-                const url = `${config.getAppURLBase()}/rest/organizations/${event.jenkins_org}` +
-                    `/pipelines/${pipelineName}/branches`;
-                exports.fetchJson(url, (latestPipelineBranches) => {
-                    if (event.blueocean_is_for_current_job) {
-                        dispatch({
-                            id: pipelineName,
-                            payload: latestPipelineBranches,
-                            type: ACTION_TYPES.SET_CURRENT_BRANCHES_DATA,
-                        });
-                    }
-                    dispatch({
-                        id: pipelineName,
-                        payload: latestPipelineBranches,
-                        type: ACTION_TYPES.SET_BRANCHES_DATA,
-                    });
-                });
-            }
-        };
-    },
-
-    fetchRunsIfNeeded(config) {
-        return (dispatch) => {
-            const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                `/pipelines/${config.pipeline}/activities/`;
-            return dispatch(actions.fetchIfNeeded({
-                url: baseUrl,
-                id: config.pipeline,
-                type: 'runs',
-            }, {
-                current: ACTION_TYPES.SET_CURRENT_RUN_DATA,
-                general: ACTION_TYPES.SET_RUNS_DATA,
-                clear: ACTION_TYPES.CLEAR_CURRENT_RUN_DATA,
-            }));
-        };
-    },
-
-    fetchBranchesIfNeeded(config) {
-        return (dispatch) => {
-            const baseUrl = `${config.getAppURLBase()}/rest/organizations/jenkins` +
-                `/pipelines/${config.pipeline}/branches`;
-            return dispatch(actions.fetchIfNeeded({
-                url: baseUrl,
-                id: config.pipeline,
-                type: 'branches',
-            }, {
-                current: ACTION_TYPES.SET_CURRENT_BRANCHES_DATA,
-                general: ACTION_TYPES.SET_BRANCHES_DATA,
-                clear: ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA,
-            }));
-        };
-    },
-
-    /**
-     * Check the redux store for data and fetch from the REST API if needed.
-     * @param general TODO: what's this and what's in it?
-     * @param types TODO: what's this and what's in it?
-     * @returns {Function}
-     */
-    fetchIfNeeded(general, types) {
-        return (dispatch, getState) => {
-            const data = getState().adminStore[general.type];
-            dispatch({ type: types.clear });
-
-            const id = general.id;
-
-            if (!data || !data[id]) {
-                return fetch(general.url, fetchOptions)
-                    .then(checkStatus)
-                    .then(parseJSON)
-                    .then(json => {
-                        // TODO: Why call dispatch twice here?
-                        dispatch({
-                            id,
-                            payload: json,
-                            type: types.current,
-                        });
-                        return dispatch({
-                            id,
-                            payload: json,
-                            type: types.general,
-                        });
-                    })
-                    .catch((error) => {
-                        console.error(error); // eslint-disable-line no-console
-                        dispatch({
-                            payload: { type: 'ERROR', message: `${error.stack}` },
-                            type: ACTION_TYPES.UPDATE_MESSAGES,
-                        });
-                    });
-            } else if (data && data[id]) {
-                dispatch({
-                    id,
-                    payload: data[id],
-                    type: types.current,
-                });
-            }
-            return null;
-        };
-    },
-
-    generateData(url, actionType, optional) {
-        return (dispatch) => fetch(url, fetchOptions)
-            .then(checkStatus)
-            .then(parseJSON)
-            .then(json => dispatch({
-                ...optional,
-                type: actionType,
-                payload: json,
-            }))
-            .catch((error) => {
-                console.error(error); // eslint-disable-line no-console
-                dispatch({
-                    payload: { type: 'ERROR', message: `${error.stack}` },
-                    type: ACTION_TYPES.UPDATE_MESSAGES,
-                });
-                // call again with no payload so actions handle missing data
-                dispatch({
-                    ...optional,
-                    type: actionType,
-                });
             });
+            if (found) {
+                debugLog('Calling dispatch for event ', event);
+                const runUrl = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}`;
+                smartFetch(runUrl)
+                .then(data => {
+                    if (data.$pending) return;
+                    debugLog('Updating run: ', data);
+                    dispatchFindAndUpdate(dispatch, run => {
+                        if (matchesEvent(event, run)) {
+                            if (event.jenkins_event !== 'job_run_ended') {
+                                return { ...data,
+                                    id: event.jenkins_object_id, // make sure the runId is set so we can find it later
+                                    // here, we explicitly set to running. this is because
+                                    // pipeline runs get removed from the queue, a running event is sent
+                                    // but they are still queued in Jenkins, as they may not actually
+                                    // be executing anything. However, pipeline doesn't send any further
+                                    // events so we're never notified when it actually does start, so
+                                    // we just treat this subsequent runStateEvent as a start or a finish
+                                    state: 'RUNNING',
+                                    result: 'UNKNOWN',
+                                };
+                            }
+                            return data;
+                        }
+                        return undefined;
+                    });
+                })
+                .catch(err => {
+                    // Just update the run state for fetch failures (this was the existing behavior, not sure why, really)
+                    dispatchFindAndUpdate(dispatch, o => {
+                        if (o.job_run_queueId === event.job_run_queueId) {
+                            return { ...o, state: event.jenkins_event === 'job_run_ended' ? 'FINISHED' : 'RUNNING' };
+                        }
+                        return undefined;
+                    });
+                    debugLog('Fetch error: ', err);
+                });
+            }
+        };
     },
+
+    updateBranchState(event) {
+        return (dispatch, getState) => {
+            debugLog('updateBranchState:', event);
+            let found = false;
+            findAndUpdate(getState().adminStore, o => {
+                debugLog('updateBranchState:', o);
+                if (!found && o && o.latestRun && (o.fullName === event.job_name)) {
+                    debugLog('found:', o);
+                    found = true;
+                }
+            });
+            if (found) {
+                const url = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}`;
+                smartFetch(url, (branchData) => {
+                    if (branchData.$pending) { return; }
+                    if (branchData.$failure) {
+                        debugLog(branchData.$failure);
+                        return;
+                    }
+                    // apply the new data to the store
+                    dispatchFindAndUpdate(dispatch, branch => {
+                        if (branch && branch.latestRun && (branch.fullName === event.job_name)) {
+                            if (branchData.latestRun.state !== 'RUNNING') {
+                                return { ...branchData,
+                                    latestRun: { ...branchData.latestRun,
+                                        // Jenkins doesn't update this value
+                                        // at least not fast enough...
+                                        state: event.jenkins_event === 'job_run_ended' ? 'FINISHED' : 'RUNNING',
+                                    },
+                                };
+                            }
+                            return branchData;
+                        }
+                        return undefined;
+                    });
+                });
+            }
+        };
+    },
+
+    updateBranchList(event) {
+        return (dispatch, getState) => {
+            // this should probably be responsible for determining when to update, rather than
+            // the event having any knowledge of which job is visible...
+            // e.g.: if (event.blueocean_job_pipeline_name === getState().adminStore.pipeline.name)
+            if (event.blueocean_is_for_current_job) {
+                this.fetchBranches({
+                    organizationName: event.jenkins_org,
+                    pipelineName: event.blueocean_job_pipeline_name,
+                })(dispatch, getState);
+            }
+        };
+    },
+
+    fetchRuns({ organization, pipeline }) {
+        return (dispatch, getState) => paginate({
+            urlProvider: paginateUrl(
+                `${UrlConfig.getRestRoot()}/organizations/${organization}/pipelines/${pipeline}/activities/`),
+            onData: data => {
+                const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[pipeline] : [];
+                dispatch({
+                    id: pipeline,
+                    payload: data.map(run => tryToFixRunState(run, runs)),
+                    type: ACTION_TYPES.SET_RUNS_DATA,
+                });
+            },
+        });
+    },
+
+    fetchRun(config) {
+        return (dispatch, getState) => {
+            const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[config.pipeline] : [];
+            smartFetch(
+                getRestUrl(config),
+                data => {
+                    if (data.$failed) { // might be a queued item...
+                        const found = runs.filter(r => r.id === config.runId)[0];
+                        if (found) {
+                            found.$success = true;
+                            dispatch({
+                                id: config.pipeline,
+                                type: ACTION_TYPES.SET_CURRENT_RUN,
+                                payload: found,
+                            });
+                            return; // skip the next dispatch
+                        }
+                    }
+                    dispatch({
+                        id: config.pipeline,
+                        type: ACTION_TYPES.SET_CURRENT_RUN,
+                        payload: tryToFixRunState(data, runs),
+                    });
+                }
+            );
+        };
+    },
+
     /*
      For the detail view we need to fetch the different nodes of
      a run in case we do not have specific node, to
@@ -704,7 +544,11 @@ export const actions = {
                     if (focused) {
                         nodeModel = focused;
                     } else {
-                        nodeModel = (information.model[information.model.length - 1]);
+                        if (config.isPipelineQueued) {
+                            nodeModel = (information.model[0]);
+                        } else {
+                            nodeModel = (information.model[information.model.length - 1]);
+                        }
                     }
                     node = nodeModel ? nodeModel.id : null;
                 } else {
@@ -721,9 +565,8 @@ export const actions = {
             }
 
             if (!data || !data[nodesBaseUrl] || config.refetch) {
-                return exports.fetchJson(
-                    nodesBaseUrl,
-                    (json) => {
+                return Fetch.fetchJSON(nodesBaseUrl)
+                    .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = nodesBaseUrl;
                         dispatch({
@@ -732,10 +575,9 @@ export const actions = {
                         });
 
                         return getNodeAndSteps(information);
-                    },
-                    (error) => console.error('error', error) // eslint-disable-line no-console
-                );
+                    }).catch(FetchFunctions.consoleError);
             }
+
             return getNodeAndSteps(data[nodesBaseUrl]);
         };
     },
@@ -771,18 +613,15 @@ export const actions = {
             const data = getState().adminStore.steps;
             const stepBaseUrl = calculateStepsBaseUrl(config);
             if (!data || !data[stepBaseUrl] || config.refetch) {
-                return exports.fetchJson(
-                  stepBaseUrl,
-                  (json) => {
-                      const information = getNodesInformation(json);
-                      information.nodesBaseUrl = stepBaseUrl;
-                      return dispatch({
-                          type: ACTION_TYPES.SET_STEPS,
-                          payload: information,
-                      });
-                  },
-                  (error) => console.error('error', error) // eslint-disable-line no-console
-                );
+                return Fetch.fetchJSON(stepBaseUrl)
+                    .then((json) => {
+                        const information = getNodesInformation(json);
+                        information.nodesBaseUrl = stepBaseUrl;
+                        return dispatch({
+                            type: ACTION_TYPES.SET_STEPS,
+                            payload: information,
+                        });
+                    }).catch(FetchFunctions.consoleError);
             }
             return null;
         };
@@ -812,7 +651,7 @@ export const actions = {
                             // set flag that there are more logs then we deliver
                             let hasMore = contentLength > maxLength;
                             // when we came from ?start=0, hasMore has to be false since there is no more
-                            // console.log(config.fetchAll, 'inner')
+                            // debugLog(config.fetchAll, 'inner')
                             if (config.fetchAll) {
                                 hasMore = false;
                             }
@@ -842,10 +681,11 @@ export const actions = {
             const baseUrl = UrlConfig.getJenkinsRootURL();
             const url = `${baseUrl}${run._links.self.href}testReport/result`;
 
-            return dispatch(actions.generateData(
-                url,
-                ACTION_TYPES.SET_TEST_RESULTS
-            ));
+            return smartFetch(url, data =>
+                dispatch({
+                    type: ACTION_TYPES.SET_TEST_RESULTS,
+                    payload: data,
+                }));
         };
     },
 

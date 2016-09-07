@@ -47,6 +47,19 @@
     }
 }
 
+.page-loading svg {
+    padding: 0;
+    margin: 0;
+    position: fixed;
+    top: -1px;
+    bottom: auto;
+}
+
+.btn-show-more {
+    display: table;
+    margin: 10px auto;
+}
+
 .pipelines-table {
     th {
         width: 10%;
@@ -157,6 +170,37 @@
     }
 }
 
+nav.page-title { // so a missing title doesn't destroy the layout
+    min-height: 4.33em;
+}
+
+.sub-header { // for the progress indicator
+    position: relative;
+    > div > .progress-container {
+        position: absolute;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 10;
+        margin: 0;
+        margin-bottom: -2px;
+        height: 7px;
+    }
+}
+main {
+    position: relative;
+    > div > .progress-container {
+        position: absolute;
+        right: 0;
+        left: 0;
+        bottom: 100%;
+        z-index: 10;
+        margin: 0;
+        margin-bottom: -2px;
+        height: 7px;
+    }
+}
+
 .nodes {
     display: flex;
     align-items: center;
@@ -252,4 +296,23 @@ code div a.btn-secondary.inverse:hover{
     -webkit-transition: @transition;
     -o-transition: @transition;
     transition: @transition;
+}
+
+.dialog .header-content {
+    .page-tabs {
+        display: inline-block;
+    }
+
+    .button-bar {
+        display: inline-flex;
+        float: right;
+        height: 40px;
+        align-items: center;
+
+        .btn {
+            font-size: 15px;
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+    }
 }

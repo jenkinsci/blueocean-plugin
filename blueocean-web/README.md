@@ -9,7 +9,7 @@ Look for blueocean.js for excitement.
 
 Jenkins-js-modules and friends are used to power this. Look in `src/main/js` in any plugin. 
 
-If you wish to make changes to blueocean.js in this plugin, then you will need to install gulp (http://gulpjs.com/), and then run `cd blueocean-plugin && mvn hpi:run` in a separate terminal. 
+If you wish to make changes to blueocean.js in this plugin, then you will need to install gulp (http://gulpjs.com/), and then run `cd blueocean && mvn hpi:run` in a separate terminal. 
 
 Then run:
 

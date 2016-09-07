@@ -6,6 +6,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import hudson.Util;
@@ -13,6 +14,7 @@ import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.branch.MultiBranchProject;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -34,16 +36,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 
+import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
+
 /**
  * @author Vivek Pandey
  */
 public abstract class PipelineBaseTest{
     private static  final Logger LOGGER = LoggerFactory.getLogger(PipelineBaseTest.class);
 
+    public PipelineBaseTest() {
+        System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
+        j = new JenkinsRule();
+    }
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j;
 
     protected  String baseUrl;
+
+    protected String jwtToken;
 
     protected String getContextPath(){
         return "blue/rest";
@@ -56,13 +66,13 @@ public abstract class PipelineBaseTest{
             LogManager.getLogManager().readConfiguration(is);
         }
         this.baseUrl = j.jenkins.getRootUrl() + getContextPath();
+        this.jwtToken = getJwtToken(j.jenkins);
         Unirest.setObjectMapper(new ObjectMapper() {
             public <T> T readValue(String value, Class<T> valueType) {
                 try {
                     if(value.isEmpty()){
                         value = "{}";
                     }
-
                     T r =  JsonConverter.om.readValue(value, valueType);
                     LOGGER.info("Response:\n"+JsonConverter.om.writeValueAsString(r));
                     return r;
@@ -109,12 +119,14 @@ public abstract class PipelineBaseTest{
             if(HttpResponse.class.isAssignableFrom(type)){
                 HttpResponse<String> response = Unirest.get(getBaseUrl(path)).header("Accept", accept)
                     .header("Accept-Encoding","")
+                    .header("Authorization", "Bearer "+jwtToken)
                     .asString();
                 Assert.assertEquals(expectedStatus, response.getStatus());
                 return (T) response;
             }
 
-            HttpResponse<T> response = Unirest.get(getBaseUrl(path)).header("Accept", accept).asObject(type);
+            HttpResponse<T> response = Unirest.get(getBaseUrl(path)).header("Accept", accept)
+                .header("Authorization", "Bearer "+jwtToken).asObject(type);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
         } catch (UnirestException e) {
@@ -145,6 +157,7 @@ public abstract class PipelineBaseTest{
         try {
             HttpResponse<Map> response = Unirest.post(getBaseUrl(path))
                 .header("Content-Type","application/json")
+                .header("Authorization", "Bearer "+jwtToken)
                 .body(body).asObject(Map.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -159,6 +172,7 @@ public abstract class PipelineBaseTest{
             HttpResponse<String> response = Unirest.post(getBaseUrl(path))
                 .header("Content-Type",contentType)
                 .header("Accept-Encoding","")
+                .header("Authorization", "Bearer "+jwtToken)
                 .body(body).asObject(String.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -179,6 +193,7 @@ public abstract class PipelineBaseTest{
             HttpResponse<Map> response = Unirest.put(getBaseUrl(path))
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
+                .header("Authorization", "Bearer "+jwtToken)
                 //Unirest by default sets accept-encoding to gzip but stapler is sending malformed gzip value if
                 // the response length is small (in this case its 20 chars).
                 // Needs investigation in stapler to see whats going on there.
@@ -198,6 +213,7 @@ public abstract class PipelineBaseTest{
         try {
             HttpResponse<String> response = Unirest.put(getBaseUrl(path))
                 .header("Content-Type",contentType)
+                .header("Authorization", "Bearer "+jwtToken)
                 .body(body).asObject(String.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -215,6 +231,7 @@ public abstract class PipelineBaseTest{
         try {
             HttpResponse<Map> response = Unirest.patch(getBaseUrl(path))
                 .header("Content-Type","application/json")
+                .header("Authorization", "Bearer "+jwtToken)
                 .body(body).asObject(Map.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -229,6 +246,7 @@ public abstract class PipelineBaseTest{
         try {
             HttpResponse<String> response = Unirest.patch(getBaseUrl(path))
                 .header("Content-Type",contentType)
+                .header("Authorization", "Bearer "+jwtToken)
                 .body(body).asObject(String.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -353,7 +371,7 @@ public abstract class PipelineBaseTest{
     public RequestBuilder request() {
         return new RequestBuilder(baseUrl);
     }
-    public static class RequestBuilder {
+    public  class RequestBuilder {
         private String url;
         private String username;
         private String method;
@@ -362,6 +380,7 @@ public abstract class PipelineBaseTest{
         private String contentType = "application/json";
         private String baseUrl;
         private int expectedStatus = 200;
+        private String token;
 
 
         private String getBaseUrl(String path){
@@ -394,6 +413,10 @@ public abstract class PipelineBaseTest{
             return this;
         }
 
+        public RequestBuilder jwtToken(String token){
+            this.token = token;
+            return this;
+        }
 
         public RequestBuilder data(Map data) {
             this.data = data;
@@ -454,6 +477,11 @@ public abstract class PipelineBaseTest{
 
                 }
                 request.header("Accept-Encoding","");
+                if(token == null) {
+                    request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
+                }else{
+                    request.header("Authorization", "Bearer " + token);
+                }
 
                 request.header("Content-Type", contentType);
                 if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
@@ -470,5 +498,31 @@ public abstract class PipelineBaseTest{
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static String getJwtToken(Jenkins jenkins) throws UnirestException {
+        HttpResponse<String> response = Unirest.get(jenkins.getRootUrl()+"jwt-auth/token/").header("Accept", "*/*")
+            .header("Accept-Encoding","").asString();
+
+        String token = response.getHeaders().getFirst(X_BLUEOCEAN_JWT);
+        Assert.assertNotNull(token);
+        //we do not validate it for test optimization and for the fact that there are separate
+        // tests that test token generation and validation
+        return token;
+    }
+
+    public static String getJwtToken(Jenkins jenkins, String username, String password) throws UnirestException {
+        GetRequest request = Unirest.get(jenkins.getRootUrl()+"jwt-auth/token/").header("Accept", "*/*")
+            .header("Accept-Encoding","");
+        if(username!= null && password!= null){
+            request.basicAuth(username,password);
+        }
+
+        HttpResponse<String> response = request.asString();
+        String token = response.getHeaders().getFirst(X_BLUEOCEAN_JWT);
+        Assert.assertNotNull(token);
+        //we do not validate it for test optimization and for the fact that there are separate
+        // tests that test token generation and validation
+        return token;
     }
 }

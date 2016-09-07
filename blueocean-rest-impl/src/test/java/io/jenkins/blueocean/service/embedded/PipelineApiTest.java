@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableMap;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -15,6 +16,7 @@ import hudson.model.Job;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Project;
+import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.model.StringParameterDefinition;
 import hudson.model.StringParameterValue;
@@ -418,7 +420,13 @@ public class PipelineApiTest extends BaseTest {
         Map r = request().post("/organizations/jenkins/pipelines/pipeline3/runs/").build(Map.class);
 
         Assert.assertNotNull(p3.getQueueItem());
-        Assert.assertEquals(Long.toString(p3.getQueueItem().getId()), r.get("id"));
+        String id = Long.toString(p3.getQueueItem().getId());
+        Assert.assertEquals(id, r.get("id"));
+
+        delete("/organizations/jenkins/pipelines/pipeline3/queue/"+id+"/");
+        Queue.Item item = j.jenkins.getQueue().getItem(Long.parseLong(id));
+        Assert.assertTrue(item instanceof Queue.LeftItem);
+        Assert.assertTrue(((Queue.LeftItem)item).isCancelled());
     }
 
     @Test
@@ -550,7 +558,7 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @Test
-    public void PipelineSecureWithLoggedInUserPermissionTest() throws IOException {
+    public void PipelineSecureWithLoggedInUserPermissionTest() throws IOException, UnirestException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
         hudson.model.User user = j.jenkins.getUser("alice");
@@ -560,10 +568,11 @@ public class PipelineApiTest extends BaseTest {
         MockFolder folder = j.createFolder("folder1");
 
         Project p = folder.createProject(FreeStyleProject.class, "test1");
-
+        String token = getJwtToken(j.jenkins, "alice", "alice");
+        Assert.assertNotNull(token);
         Map response = new RequestBuilder(baseUrl)
             .get("/organizations/jenkins/pipelines/folder1/pipelines/test1")
-            .auth("alice", "alice")
+            .jwtToken(token)
             .build(Map.class);
 
         validatePipeline(p, response);

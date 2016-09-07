@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.0-alpha-9-SNAPSHOT</version>
+  <version>1.0.0-b03-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean UI Parent</name>
@@ -18,7 +18,7 @@
   <properties>
     <java.level>7</java.level>
     <jackson.version>2.2.3</jackson.version>
-    <jenkins.version>2.2</jenkins.version>
+    <jenkins.version>2.7.3</jenkins.version>
     <node.version>5.8.0</node.version>
     <npm.version>3.7.3</npm.version>
   </properties>
@@ -104,8 +104,9 @@
     <module>blueocean-events</module>
     <module>blueocean-dashboard</module>
     <module>blueocean-personalization</module>
-    <module>blueocean-plugin</module>
     <module>blueocean-config</module>
+    <module>blueocean</module>
+    <module>blueocean-jwt</module>
   </modules>
 
   <repositories>
@@ -181,9 +182,16 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-plugin</artifactId>
+            <artifactId>blueocean</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jwt</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
         <!-- 3rd party dependencies -->
 

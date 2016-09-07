@@ -121,7 +121,7 @@ export class PipelineCard extends Component {
             <div className={`pipeline-card ${bgClass}`} onClick={() => this._navigateToRunDetails()}>
                 <LiveStatusIndicator
                   result={status} startTime={startTime} estimatedDuration={estimatedDuration}
-                  width={'24px'} height={'24px'} noBackground
+                  width={'20px'} height={'20px'} noBackground
                 />
 
                 <span className="name">

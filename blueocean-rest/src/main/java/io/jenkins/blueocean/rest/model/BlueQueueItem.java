@@ -1,7 +1,9 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.annotation.Capability;
+import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.verb.DELETE;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -51,4 +53,10 @@ public abstract class BlueQueueItem extends Resource {
      */
     @Exported
     public abstract int getExpectedBuildNumber();
+
+    /**
+     * Remove a queued item
+     */
+    @WebMethod(name="") @DELETE
+    public abstract void delete();
 }

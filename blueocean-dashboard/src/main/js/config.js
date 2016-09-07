@@ -24,3 +24,7 @@ exports.getJenkinsRootURL = function getJenkinsRootURL() {
     }
     return exports.jenkinsRootURL;
 };
+
+exports.getRestRoot = function getRestRoot() {
+    return `${exports.getJenkinsRootURL()}/blue/rest`;
+};

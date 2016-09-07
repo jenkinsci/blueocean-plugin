@@ -1,10 +1,7 @@
 /**
  * Created by cmeyers on 8/12/16.
  */
-import fetch from 'isomorphic-fetch';
-import * as sse from '@jenkins-cd/sse-gateway';
-
-import { SseBus } from '../model/SseBus';
+import { SseBus as sseBus } from '@jenkins-cd/blueocean-core-js';
 import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 
 /**
@@ -21,7 +18,7 @@ class FavoritesSseListener {
         }
 
         this.store = store;
-        this.sseBus = new SseBus(sse, fetch);
+        this.sseBus = sseBus;
         this.sseBus.subscribeToJob(
             jobListener,
             (event) => this._filterJobs(event)

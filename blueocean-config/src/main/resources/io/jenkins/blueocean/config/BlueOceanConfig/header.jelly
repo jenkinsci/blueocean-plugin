@@ -1,7 +1,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
   <script>
     (function () {
-      window.$$blueoceanConfig = JSON.parse('${it.blueOceanConfig}');
+      window.$$blueoceanConfig = ${it.blueOceanConfig};
     })();
   </script>
 

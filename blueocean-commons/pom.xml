@@ -5,14 +5,14 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.0-alpha-9-SNAPSHOT</version>
+    <version>1.0.0-b03-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-commons</artifactId>
   <packaging>hpi</packaging>
 
-  <name>BlueOcean :: Commons API</name>
-  
+  <name>Module :: BlueOcean :: Commons API</name>
+
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
   <dependencies>
     <dependency>
