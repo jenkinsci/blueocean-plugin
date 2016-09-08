@@ -273,6 +273,15 @@ code, pre, kbd {
     .btn-styles(@btn-danger-bg, @btn-danger-border, @btn-danger-color);
 }
 
+a, button, .btn, .btn-default, .btn-primary, .btn-secondary, .btn-success, .btn-info, .btn-warning, .btn-danger {
+    &.small {
+        font-size: 12px;
+        height: 24px;
+        min-width: 75px;
+        padding: 3px 10px;
+    }
+}
+
 //
 // Images
 // --------------------------------------------------
@@ -648,6 +657,7 @@ code.hash {
 }
 
 .global-header {
+    position: relative;
     font-size: 1.5rem;
     letter-spacing: 1.1px;
     background-color: @header-bg;
@@ -674,6 +684,15 @@ code.hash {
 
 .global-header a:hover {
     color: @gray-dark;
+}
+
+.global-header .button-bar {
+    position: absolute;
+    top: 0;
+    right: 100px;
+    height: 48px;
+    display: flex;
+    align-items: center;
 }
 
 .sub-header {
