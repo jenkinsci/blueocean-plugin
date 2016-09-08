@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -29,6 +28,7 @@ import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
@@ -88,9 +88,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public Map<String, Boolean> getPermissions() {
-        return ImmutableMap.of(
-            BluePipeline.CREATE_PERMISSION, mbp.getACL().hasPermission(Item.CREATE),
-            BluePipeline.READ_PERMISSION, mbp.getACL().hasPermission(Item.READ));
+        return AbstractPipelineImpl.getPermissions(mbp);
     }
 
     @Override

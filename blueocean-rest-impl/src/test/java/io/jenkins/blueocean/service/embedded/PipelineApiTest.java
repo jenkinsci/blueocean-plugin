@@ -582,8 +582,8 @@ public class PipelineApiTest extends BaseTest {
 
         permissions = (Map<String, Boolean>) response.get("permissions");
         Assert.assertFalse(permissions.get("create"));
-        Assert.assertNull(permissions.get("start"));
-        Assert.assertNull(permissions.get("stop"));
+        Assert.assertFalse(permissions.get("start"));
+        Assert.assertFalse(permissions.get("stop"));
         Assert.assertTrue(permissions.get("read"));
     }
 
