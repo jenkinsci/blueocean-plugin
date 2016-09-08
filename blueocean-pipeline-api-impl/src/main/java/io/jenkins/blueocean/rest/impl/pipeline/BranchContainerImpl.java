@@ -2,19 +2,16 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.Ordering;
 import hudson.model.Job;
-import hudson.model.Run;
-import hudson.util.CaseInsensitiveComparator;
+
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
-import org.joda.time.DateTimeComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,25 +20,90 @@ import java.util.List;
  */
 public class BranchContainerImpl extends BluePipelineContainer {
 
-    private static final Comparator<Job> BRANCH_COMPARITOR = new Comparator<Job>() {
+
+    /**
+     * Orders branches with most recent activity first. Favorited branches are always at the top, also in recent
+     * order.
+     */
+    private static final Comparator<BluePipeline> BRANCH_COMPARITOR = new Comparator<BluePipeline>() {
         @Override
-        public int compare(Job pipeline1, Job pipeline2) {
-            long endTime1 = getDate(pipeline1);
-            long endTime2 = getDate(pipeline2);
-            if (endTime1 > endTime2) {
+        public int compare(BluePipeline _pipeline1, BluePipeline _pipeline2) {
+            BranchImpl pipeline1 = (BranchImpl)_pipeline1;
+            BranchImpl pipeline2 = (BranchImpl)_pipeline2;
+
+            // If One pipeline isnt a favorite there is no need to go further.
+            if(pipeline1.isFavorite() && !pipeline2.isFavorite()) {
                 return -1;
             }
-            if (endTime1 < endTime2) {
+
+            if(!pipeline1.isFavorite() && pipeline2.isFavorite()) {
                 return 1;
             }
-            return 0;
+
+            BlueRun latestRun1 = pipeline1.getLatestRun();
+            BlueRun latestRun2 = pipeline2.getLatestRun();
+
+            // If a pipeline doesnt have a run yet, no need to go further.
+            if(latestRun1 != null && latestRun2 == null) {
+                return -1;
+            }
+
+            if(latestRun1 == null && latestRun2 != null) {
+                return 1;
+            }
+
+            //If neither have runs, lets just order by name.
+            if(latestRun1 == null && latestRun2 == null) {
+                return pipeline1.getName().compareTo(pipeline2.getName());
+            }
+
+            // If one run hasnt finished yet, then lets order by that.
+            if(latestRun1.getEndTime() != null && latestRun2.getEndTime() == null) {
+                return 1;
+            }
+
+            if(latestRun1.getEndTime() == null && latestRun2.getEndTime() != null) {
+                return -1;
+            }
+
+            // If both jobs have ended, lets order by the one that ended last.
+            if(latestRun1.getEndTime() != null && latestRun2.getEndTime() != null) {
+                if(latestRun1.getEndTime().getTime() > latestRun2.getEndTime().getTime()) {
+                    return -1;
+                }
+
+                if(latestRun1.getEndTime().getTime() < latestRun2.getEndTime().getTime()) {
+                    return 1;
+                }
+
+                return pipeline1.getName().compareTo(pipeline2.getName());
+            }
+
+            //If both jobs have not eneded yet, we need to order by start time.
+            if(latestRun1.getStartTime() != null && latestRun2.getStartTime() == null) {
+                return 1;
+            }
+
+            if(latestRun1.getStartTime() == null && latestRun2.getStartTime() != null) {
+                return -1;
+            }
+
+            if(latestRun1.getStartTime() != null && latestRun2.getStartTime() != null) {
+                if(latestRun1.getStartTime().getTime() > latestRun2.getStartTime().getTime()) {
+                    return -1;
+                }
+
+                if(latestRun1.getStartTime().getTime() < latestRun2.getStartTime().getTime()) {
+                    return 1;
+                }
+
+                return pipeline1.getName().compareTo(pipeline2.getName());
+            }
+
+            return pipeline1.getName().compareTo(pipeline2.getName());
         }
 
-        long getDate(Job pipeline) {
-            Run latestRun = pipeline.getLastBuild();
-            Date date = latestRun != null ? new Date(latestRun.getStartTimeInMillis() + latestRun.getDuration()) : null;
-            return latestRun != null ? date.getTime() : 0;
-        }
+
     };
 
     private final MultiBranchPipelineImpl pipeline;
@@ -65,12 +127,13 @@ public class BranchContainerImpl extends BluePipelineContainer {
     @SuppressWarnings("unchecked")
     public Iterator<BluePipeline> iterator() {
         List<BluePipeline> branches = new ArrayList<>();
-        Collection<Job> jobs = Ordering.from(BRANCH_COMPARITOR).sortedCopy(pipeline.mbp.getAllJobs());
+        Collection<Job> jobs = pipeline.mbp.getAllJobs();
         jobs = ContainerFilter.filter(jobs);
         for(Job j: jobs){
             branches.add(new BranchImpl(j, getLink()));
         }
-        return branches.iterator();
+
+        return Ordering.from(BRANCH_COMPARITOR).sortedCopy(branches).iterator();
     }
 
     @Override
