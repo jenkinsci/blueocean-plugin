@@ -47,8 +47,20 @@ public class PipelineNodeUtil {
         } else if (execution.getCauseOfFailure() != null) {
             result = getStatus(execution.getCauseOfFailure());
             state = BlueRun.BlueRunState.FINISHED;
-        } else if (execution.isComplete()) {
-            result = BlueRun.BlueRunResult.SUCCESS;
+        } else if (execution.isComplete() &&  run.getResult() != null) { //workaround for https://issues.jenkins-ci.org/browse/JENKINS-38049
+            switch (run.getResult().toString()){
+                case "SUCCESS":
+                    result = BlueRun.BlueRunResult.SUCCESS;
+                    break;
+                case "ABORTED":
+                    result = BlueRun.BlueRunResult.ABORTED;
+                    break;
+                case "FAILURE":
+                    result = BlueRun.BlueRunResult.FAILURE;
+                    break;
+                default:
+                    result = BlueRun.BlueRunResult.UNKNOWN;
+            }
             state = BlueRun.BlueRunState.FINISHED;
         } else {
             result = BlueRun.BlueRunResult.UNKNOWN;

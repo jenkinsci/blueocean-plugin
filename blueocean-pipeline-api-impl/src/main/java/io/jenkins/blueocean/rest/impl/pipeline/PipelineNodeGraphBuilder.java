@@ -429,7 +429,7 @@ public class PipelineNodeGraphBuilder {
 
     public void dumpNodes(List<FlowNode> nodes) {
         for (FlowNode n : nodes) {
-            System.out.println(String.format("id: %s, name: %s, startTime: %s, type: %s", n.getId(), n.getDisplayName(), TimingAction.getStartTime(n), n.getClass()));
+            System.out.println(String.format("id: %s, name: %s, startTime: %s, type: %s, parent: %s", n.getId(), n.getDisplayName(), TimingAction.getStartTime(n), n.getClass(), n.getParents().size() > 0 ? n.getParents().get(0).getId(): null));
         }
     }
 
