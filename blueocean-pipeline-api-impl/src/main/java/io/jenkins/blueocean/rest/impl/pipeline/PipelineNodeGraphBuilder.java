@@ -64,7 +64,7 @@ public class PipelineNodeGraphBuilder {
             Iterables.addAll(nodeTreeSet, new FlowGraphWalker(run.getExecution()));
         }
         this.sortedNodes = Collections.unmodifiableList(new ArrayList<>(nodeTreeSet));
-        dumpNodes(sortedNodes);
+//        dumpNodes(sortedNodes);
         build();
 
     }
