@@ -4,6 +4,19 @@ import moment from 'moment';
 
 /* eslint-disable max-len */
 
+const ConsoleLog = ({ text, className, key = 'console' }) =>
+    <div className={`${className} console-log insert-line-numbers`}>
+        {text.trim().split('\n').map((line, idx) =>
+            <div className="line" id={`#${key}-L${idx}`} key={`#${key}-L${idx}`}>{line}</div>
+        )}
+    </div>;
+
+ConsoleLog.propTypes = {
+    text: PropTypes.string,
+    className: PropTypes.string,
+    key: PropTypes.string,
+};
+
 const TestCaseResultRow = (props) => {
     const t = props.testCase;
     const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
@@ -11,23 +24,19 @@ const TestCaseResultRow = (props) => {
     let testDetails = null;
     
     if (t.errorStackTrace) {
-        testDetails = (
+        testDetails = (<div>
             <div className="test-details">
                 <div className="test-detail-text" style={{ display: 'none' }}>
                     {duration}
                 </div>
-                <div className="test-console">
-                    <h4>Error</h4>
-                    <div className="error-message">
-                        {t.errorDetails}
-                    </div>
-                    <h4>Output</h4>
-                    <div className="stack-trace">
-                        {t.errorStackTrace}
-                    </div>
-                </div>
             </div>
-        );
+            <div className="test-console">
+                <h4>Error</h4>
+                <ConsoleLog className="error-message" text={t.errorDetails} key={`${t}-message`} />
+                <h4>Output</h4>
+                <ConsoleLog className="stack-trace" text={t.errorStackTrace} key={`${t}-stack-trace`} />
+            </div>
+        </div>);
     }
     
     let statusIndicator = null;

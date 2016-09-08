@@ -544,7 +544,11 @@ export const actions = {
                     if (focused) {
                         nodeModel = focused;
                     } else {
-                        nodeModel = (information.model[information.model.length - 1]);
+                        if (config.isPipelineQueued) {
+                            nodeModel = (information.model[0]);
+                        } else {
+                            nodeModel = (information.model[information.model.length - 1]);
+                        }
                     }
                     node = nodeModel ? nodeModel.id : null;
                 } else {

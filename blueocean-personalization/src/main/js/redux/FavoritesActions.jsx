@@ -56,8 +56,8 @@ export const actions = {
                 `${baseUrl}${branch._links.self.href}/favorite` :
                 `${baseUrl}${favoriteToRemove._links.self.href}`
             );
-           
-         
+
+
             const fetchOptions = {
                 method: 'PUT',
                 headers: {
@@ -83,7 +83,7 @@ export const actions = {
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
 
             const fetchOptions = {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -101,7 +101,7 @@ export const actions = {
             const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
 
             const fetchOptions = {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -109,6 +109,24 @@ export const actions = {
 
             // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
             Fetch.fetch(runPipelineUrl, { fetchOptions });
+        };
+    },
+
+    stopPipeline(pipeline) {
+        return () => {
+            const baseUrl = UrlConfig.getJenkinsRootURL();
+            const latestRunUrl = pipeline.latestRun._links.self.href;
+            const stopPipelineUrl = cleanSlashes(`${baseUrl}/${latestRunUrl}/stop/?blocking=true&timeOutInSecs=10`);
+
+            const fetchOptions = {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            // once job is stopped, SSE will fire and trigger "updateRun" so no need to dispatch an action here
+            Fetch.fetch(stopPipelineUrl, fetchOptions);
         };
     },
 

@@ -4,8 +4,29 @@ import isoFetch from 'isomorphic-fetch';
 import utils from './utils';
 import config from './config';
 
+let refreshToken = null;
 export const FetchFunctions = {
-        /**
+    checkRefreshHeader(response) {
+        const _refreshToken = response.headers.get('X-Blueocean-Refresher');
+        // No token in response, lets just ignore.
+        if (!_refreshToken) {
+            return response;
+        }
+
+        // First time we have seen a refresh token, early exit.
+        if (!refreshToken) {
+            refreshToken = _refreshToken;
+            return response;
+        }
+
+        // We need to refresh the page now!
+        if (refreshToken !== _refreshToken) {
+            utils.refreshPage();
+            throw new Error('refreshing apge');
+        }
+        return response;
+    },
+    /**
      * This method checks for for 2XX http codes. Throws error it it is not.
      * This should only be used if not using fetch or fetchJson.
      */
@@ -100,6 +121,7 @@ export const FetchFunctions = {
      */
     rawFetchJSON(url, { onSuccess, onError, fetchOptions } = {}) {
         const request = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+            .then(FetchFunctions.checkRefreshHeader)
             .then(FetchFunctions.checkStatus)
             .then(FetchFunctions.parseJSON);
 
@@ -124,6 +146,7 @@ export const FetchFunctions = {
      */
     rawFetch(url, { onSuccess, onError, fetchOptions } = {}) {
         const request = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+            .then(FetchFunctions.checkRefreshHeader)
             .then(FetchFunctions.checkStatus);
 
         if (onSuccess) {

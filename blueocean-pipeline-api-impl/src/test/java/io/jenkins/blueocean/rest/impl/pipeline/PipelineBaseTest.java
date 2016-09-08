@@ -73,7 +73,6 @@ public abstract class PipelineBaseTest{
                     if(value.isEmpty()){
                         value = "{}";
                     }
-
                     T r =  JsonConverter.om.readValue(value, valueType);
                     LOGGER.info("Response:\n"+JsonConverter.om.writeValueAsString(r));
                     return r;

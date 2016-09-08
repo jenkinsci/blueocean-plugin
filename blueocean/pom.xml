@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0.0-b02-SNAPSHOT</version>
+        <version>1.0.0-b04-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
@@ -51,6 +51,14 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-config</artifactId>
+        </dependency>
+
+        <!-- Bundled plugins for improved out of the box experience -->
+        <!-- Kyoto feature -->
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-definition</artifactId>
+            <version>0.1</version>
         </dependency>
 
         <!-- Test deps -->

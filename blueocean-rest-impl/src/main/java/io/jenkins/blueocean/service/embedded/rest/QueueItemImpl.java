@@ -1,9 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Queue;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
+import jenkins.model.Jenkins;
 
 import java.util.Date;
 
@@ -52,6 +54,15 @@ public class QueueItemImpl extends BlueQueueItem {
     @Override
     public int getExpectedBuildNumber() {
         return expectedBuildNumber;
+    }
+
+    @Override
+    public void delete(){
+        if(!item.hasCancelPermission()){
+            throw new ServiceException.ForbiddenException(String.format("Not authorized to stop queue: %s", getId()));
+        }
+
+        Jenkins.getInstance().getQueue().cancel(item);
     }
 
     @Override
