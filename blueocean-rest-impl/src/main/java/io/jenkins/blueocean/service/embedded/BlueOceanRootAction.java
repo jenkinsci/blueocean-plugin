@@ -21,7 +21,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -88,7 +87,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         }else{
             //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
             // user to login page
-                     Jenkins.getInstance().checkPermission(Permission.READ);
+            Jenkins.getInstance().checkPermission(Permission.READ);
         }
 
         return app;
