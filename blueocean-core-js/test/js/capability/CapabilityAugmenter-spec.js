@@ -169,5 +169,18 @@ describe('CapabilityAugmenter', () => {
             assert.isOk(multibranch1);
             assert.equal(multibranch1.length, 1);
         });
+
+        it('handles cycles in the data', () => {
+            const root = { _class: 'foo.Bar' };
+            root.cycle = root;
+
+            const classMap = augmenter._findClassesInTree(root);
+
+            assert.equal(Object.keys(classMap).length, 1);
+
+            const bar = classMap['foo.Bar'];
+            assert.isOk(bar);
+            assert.equal(bar.length, 1);
+        });
     });
 });

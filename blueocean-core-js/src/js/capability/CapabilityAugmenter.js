@@ -41,9 +41,14 @@ export class CapabilityAugmenter {
     _findClassesInTree(data) {
         const classMap = {};
         const nodesToWalk = [data];
+        const nodesAlreadyWalked = [];
+
         let node = nodesToWalk.shift();
 
         while (node) {
+            nodesAlreadyWalked.push(node);
+
+            // save a ref to the class we can augment it later
             if (typeof node === 'object' && node._class) {
                 addClass(node, classMap);
             }
@@ -53,7 +58,10 @@ export class CapabilityAugmenter {
             for (const key of nodeKeys) {
                 const value = node[key];
 
-                if (canWalk(value) && IGNORED_PROPS.indexOf(key) === -1) {
+                // walk this node at a later iteration as long as
+                // 1. we didn't already walk it (cycles cause an infinite loop otherwise)
+                // 2. the property name isn't on the blacklist
+                if (canWalk(value) && nodesAlreadyWalked.indexOf(value) === -1 && IGNORED_PROPS.indexOf(key) === -1) {
                     nodesToWalk.push(value);
                 }
             }
