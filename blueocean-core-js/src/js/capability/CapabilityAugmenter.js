@@ -2,19 +2,20 @@
  * Created by cmeyers on 9/8/16.
  */
 
-const addAugment = (target, allTargets) => {
-    const className = target._class;
+const addClass = (clazz, classMap) => {
+    const className = clazz._class;
 
-    if (!allTargets[className]) {
-        allTargets[className] = [];
+    if (!classMap[className]) {
+        classMap[className] = [];
     }
 
-    allTargets[className].push(target);
+    classMap[className].push(clazz);
 };
 
 const canWalk = (item) => item && (typeof item === 'object' || Array.isArray(item));
 
-const IGNORED_PROPS = ['_links', '_actions'];
+// TODO: can we really filter out 'actions' in all cases? should it use a leading underscore?
+const IGNORED_PROPS = ['_links', 'actions'];
 
 /**
  *
@@ -26,18 +27,18 @@ export class CapabilityAugmenter {
     }
 
     augmentCapabilities(data) {
-        const augmentTargets = this._walkObjectTree(data);
-        return augmentTargets;
+        const classMap = this._findClassesInTree(data);
+        return classMap;
     }
 
-    _walkObjectTree(data) {
-        const augmentTargets = {};
+    _findClassesInTree(data) {
+        const classMap = {};
         const nodesToWalk = [data];
         let node = nodesToWalk.shift();
 
         while (node) {
             if (typeof node === 'object' && node._class) {
-                addAugment(node, augmentTargets);
+                addClass(node, classMap);
             }
 
             const nodeKeys = Object.keys(node);
@@ -53,7 +54,7 @@ export class CapabilityAugmenter {
             node = nodesToWalk.shift();
         }
 
-        return augmentTargets;
+        return classMap;
     }
 
 }
