@@ -1,15 +1,44 @@
 /**
  * Created by cmeyers on 9/8/16.
  */
+import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import { assert } from 'chai';
 
 import { CapabilityAugmenter } from '../../../src/js/capability/CapabilityAugmenter';
+
+const mockCapabilityStore = {
+    resolveCapabilities: (... classNames) => {
+        const result = {};
+
+        if (classNames.indexOf('io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl') !== -1) {
+            result['io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl'] = [
+                'io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl',
+                'jenkins.branch.MultiBranchProject',
+            ];
+        }
+
+        return new Promise(resolve => resolve(result));
+    },
+};
+
 
 describe('CapabilityAugmenter', () => {
     let augmenter;
 
     beforeEach(() => {
-        augmenter = new CapabilityAugmenter();
+        augmenter = new CapabilityAugmenter(mockCapabilityStore);
+    });
+
+    describe('augmentCapabilities', () => {
+        it('handles a single object', (done) => {
+            const multibranch = require('./multibranch-1.json');
+            augmenter.augmentCapabilities(multibranch)
+                .then(data => {
+                    assert.isOk(data._capabilities);
+                    assert.equal(data._capabilities.length, 2);
+                    done();
+                });
+        });
     });
 
     describe('_findClassesInTree', () => {

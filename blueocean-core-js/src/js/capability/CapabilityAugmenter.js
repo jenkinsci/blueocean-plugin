@@ -28,7 +28,7 @@ export class CapabilityAugmenter {
 
     augmentCapabilities(data) {
         const classMap = this._findClassesInTree(data);
-        return classMap;
+        return this._resolveCapabilities(data, classMap);
     }
 
     _findClassesInTree(data) {
@@ -52,6 +52,24 @@ export class CapabilityAugmenter {
             }
 
             node = nodesToWalk.shift();
+        }
+
+        return classMap;
+    }
+
+    _resolveCapabilities(data, classMap) {
+        const classNames = Object.keys(classMap);
+
+        return this._capabilityStore.resolveCapabilities(...classNames)
+            .then(capabilitiesMap => this._injectCapabilities(classMap, capabilitiesMap))
+            .then(() => data);
+    }
+
+    _injectCapabilities(classMap, capabilitiesMap) {
+        for (const className of Object.keys(classMap)) {
+            for (const target of classMap[className]) {
+                target._capabilities = capabilitiesMap[className];
+            }
         }
 
         return classMap;
