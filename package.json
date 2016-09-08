@@ -1,7 +1,7 @@
 {
     "name": "@jenkins-cd/design-language",
     "jdlName": "jenkins-design-language",
-    "version": "0.0.77-unpublished",
+    "version": "0.0.79-unpublished",
     "description": "Styles, assets, and React classes for Jenkins Design Language",
     "main": "dist/js/components/index.js",
     "scripts": {
@@ -12,7 +12,7 @@
         "test": "gulp test",
         "site-build": "harp compile website/ website-build/",
         "site-server": "harp server website --port 3000",
-        "postpublish": "./site-publish.sh"
+        "site-publish": "./site-publish.sh"
     },
     "author": "Josh McDonald <jmcdonald@cloudbees.com> (https://www.cloudbees.com/)",
     "contributors": [
