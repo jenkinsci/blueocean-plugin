@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
@@ -8,7 +7,6 @@ import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
@@ -16,6 +14,7 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.Collection;
@@ -102,9 +101,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     public Map<String, Boolean> getPermissions() {
         if(folder instanceof AbstractItem){
             AbstractItem item = (AbstractItem) folder;
-            return ImmutableMap.of(
-                BluePipeline.CREATE_PERMISSION, item.getACL().hasPermission(Item.CREATE),
-                BluePipeline.READ_PERMISSION, item.getACL().hasPermission(Item.READ));
+            return AbstractPipelineImpl.getPermissions(item);
         }else{
             return null;
         }

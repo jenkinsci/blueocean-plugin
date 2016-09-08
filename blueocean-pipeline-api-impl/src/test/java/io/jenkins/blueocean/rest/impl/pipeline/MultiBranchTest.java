@@ -159,8 +159,8 @@ public class MultiBranchTest extends PipelineBaseTest {
         Map<String,Boolean> permissions = (Map<String, Boolean>) r.get("permissions");
         Assert.assertTrue(permissions.get("create"));
         Assert.assertTrue(permissions.get("read"));
-        Assert.assertNull(permissions.get("start"));
-        Assert.assertNull(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("start"));
+        Assert.assertTrue(permissions.get("stop"));
 
 
 
@@ -197,8 +197,8 @@ public class MultiBranchTest extends PipelineBaseTest {
         Map<String,Boolean> permissions = (Map<String, Boolean>) r.get("permissions");
         Assert.assertFalse(permissions.get("create"));
         Assert.assertTrue(permissions.get("read"));
-        Assert.assertNull(permissions.get("start"));
-        Assert.assertNull(permissions.get("stop"));
+        Assert.assertFalse(permissions.get("start"));
+        Assert.assertFalse(permissions.get("stop"));
 
 
 
