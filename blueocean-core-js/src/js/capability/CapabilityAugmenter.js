@@ -69,7 +69,13 @@ export class CapabilityAugmenter {
     _injectCapabilities(classMap, capabilitiesMap) {
         for (const className of Object.keys(classMap)) {
             for (const target of classMap[className]) {
-                target._capabilities = capabilitiesMap[className];
+                const capabilities = capabilitiesMap[className];
+
+                if (!capabilities) {
+                    console.warn(`could not resolve capabilities for ${className}; an error may have occurred during lookup`);
+                }
+
+                target._capabilities = capabilities || [];
             }
         }
 

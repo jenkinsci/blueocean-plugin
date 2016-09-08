@@ -91,6 +91,16 @@ describe('CapabilityAugmenter', () => {
                     done();
                 });
         });
+
+        it('initializes an empty array for an unknown capability', (done) => {
+            const unknown = { _class: 'foo.bar.Unknown' };
+            augmenter.augmentCapabilities(unknown)
+                .then(data => {
+                    assert.isOk(data._capabilities);
+                    assert.equal(data._capabilities.length, 0);
+                    done();
+                });
+        });
     });
 
     describe('_findClassesInTree', () => {
