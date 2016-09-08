@@ -19,7 +19,13 @@ const canWalk = (item) => item && (typeof item === 'object' || Array.isArray(ite
 const IGNORED_PROPS = ['_links', 'actions'];
 
 /**
+ * Decorate an object graph with a '_capabilities' property for each object with a valid '_class'
+ * Usage:
+ *      import { capabilityAugmenter } from '@jenkins-cd/blueocean-core-js';
+ *      const augmentCapability = capabilityAugmenter.augmentCapability;
  *
+ *      fetch(url, fetchOptions)
+ *          .then(data => augmentCapability(data));
  */
 export class CapabilityAugmenter {
 
