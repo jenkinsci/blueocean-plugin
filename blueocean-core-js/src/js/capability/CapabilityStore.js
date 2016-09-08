@@ -3,24 +3,15 @@
  */
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
 
-import { Fetch } from '../fetch';
-import config from '../urlconfig';
-import utils from '../utils';
-
-export const CAPABILITIES = {
-    SIMPLE_PIPELINE: 'org.jenkinsci.plugins.workflow.job.WorkflowJob',
-    MULTIBRANCH_PIPELINE: 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline',
-    MULTIBRANCH_BRANCH: 'io.jenkins.blueocean.rest.model.BlueBranch',
-};
-
 /**
  * Retrieves capability metadata for class names.
  * Uses an internal cache to minimize REST API calls.
  */
 export class CapabilityStore {
 
-    constructor() {
-        this.store = {};
+    constructor(capabilityApi) {
+        this._store = {};
+        this._capabilityApi = capabilityApi;
     }
 
     /**
@@ -36,8 +27,8 @@ export class CapabilityStore {
 
         // determine which class names are already in the cache and which aren't
         for (const className of classNames) {
-            if (this.store[className]) {
-                result[className] = this.store[className];
+            if (this._store[className]) {
+                result[className] = this._store[className];
             } else {
                 classesToFetch.push(className);
             }
@@ -60,12 +51,8 @@ export class CapabilityStore {
      * @returns {Promise} with fulfilled {object} keyed by className, with an array of string capability names.
      * @private
      */
-    _fetchCapabilities(...classNames) {
-        const path = config.getJenkinsRootURL();
-        const classList = classNames.join(',');
-        const classesUrl = utils.cleanSlashes(`${path}/blue/rest/classes/?q=${classList}`);
-
-        return Fetch.fetchJSON(classesUrl)
+    _fetchCapabilities(classNames) {
+        return this._capabilityApi.fetchCapabilities(classNames)
             .then(data => this._storeCapabilities(data.map));
     }
 
@@ -81,7 +68,7 @@ export class CapabilityStore {
 
         Object.keys(map).forEach(className => {
             const capabilities = map[className];
-            this.store[className] = storedCapabilities[className] = capabilities.classes.slice();
+            this._store[className] = storedCapabilities[className] = capabilities.classes.slice();
         });
 
         return storedCapabilities;
