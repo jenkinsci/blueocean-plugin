@@ -13,6 +13,7 @@ export UrlConfig from './urlconfig';
 export JWT from './jwt';
 export TestUtils from './testutils';
 export Utils from './utils';
+export AppConfig from './config';
 
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton } from './components/RunButton';
