@@ -60,31 +60,37 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
 
         StaplerRequest request = Stapler.getCurrentRequest();
 
-        if(enableJWT && request.getOriginalRestOfPath().startsWith("/rest/")) {
-            Authentication tokenAuthentication = JwtAuthenticationToken.create(request);
+        if(request.getOriginalRestOfPath().startsWith("/rest/")) {
+            if(enableJWT) {
+                Authentication tokenAuthentication = JwtAuthenticationToken.create(request);
 
-            //create a new context and set it to holder to not clobber existing context
-            SecurityContext securityContext = new SecurityContextImpl();
-            securityContext.setAuthentication(tokenAuthentication);
-            SecurityContextHolder.setContext(securityContext);
+                //create a new context and set it to holder to not clobber existing context
+                SecurityContext securityContext = new SecurityContextImpl();
+                securityContext.setAuthentication(tokenAuthentication);
+                SecurityContextHolder.setContext(securityContext);
 
-            //TODO: implement this as filter, see PluginServletFilter to clear the context
+                //TODO: implement this as filter, see PluginServletFilter to clear the context
+            } else {
+                // Add X-Blueocean-Refresher to response, so that we can detect when the user changes. Wont be needed with JWT
+                MessageDigest md = null;
+                try {
+                    md = MessageDigest.getInstance("SHA-1");
+                } catch (NoSuchAlgorithmException e) {
+                    throw new ServiceException.UnexpectedErrorException("Error getting sha1 algorithm", e);
+                }
+                String blueoceanDownGradeheader = Jenkins.getAuthentication().getName() + Long.toString(randomBits);
+
+                md.update(blueoceanDownGradeheader.getBytes());
+
+                Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", DatatypeConverter.printHexBinary(md.digest()));
+
+            }
         }else{
             //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
             // user to login page
                      Jenkins.getInstance().checkPermission(Permission.READ);
         }
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new ServiceException.UnexpectedErrorException("Error getting sha1 algorithm", e);
-        }
-        String blueoceanDownGradeheader = Jenkins.getAuthentication().getName() + Long.toString(randomBits);
 
-        md.update(blueoceanDownGradeheader.getBytes());
-
-        Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", DatatypeConverter.printHexBinary(md.digest()));
         return app;
     }
 
