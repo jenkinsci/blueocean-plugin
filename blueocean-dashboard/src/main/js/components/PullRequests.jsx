@@ -9,6 +9,7 @@ import {
     connect,
 } from '../redux';
 import PageLoading from './PageLoading';
+import { pipelineBranchesUnsupported } from './PipelinePage';
 
 const { func, object, array, string } = PropTypes;
 
@@ -55,19 +56,6 @@ export class PullRequests extends Component {
         }
     }
 
-    _isUnsupportedJob() {
-        const {
-            pipeline,
-        } = this.context;
-
-        if ((pipeline && !pipeline.branchNames) ||
-            (pipeline && !pipeline.branchNames.length)) {
-            return true;
-        }
-
-        return false;
-    }
-
     render() {
         const { pullRequests } = this.props;
 
@@ -79,7 +67,7 @@ export class PullRequests extends Component {
             return <PageLoading />;
         }
 
-        if (!pullRequests.$pending && this._isUnsupportedJob()) {
+        if (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline)) {
             return (<NotSupported />);
         }
 

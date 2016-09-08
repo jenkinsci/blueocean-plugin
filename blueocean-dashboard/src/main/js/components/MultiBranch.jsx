@@ -9,6 +9,7 @@ import {
     connect,
 } from '../redux';
 import PageLoading from './PageLoading';
+import { pipelineBranchesUnsupported } from './PipelinePage';
 
 const { object, array, func, string, any } = PropTypes;
 
@@ -58,19 +59,6 @@ export class MultiBranch extends Component {
         }
     }
 
-    _isUnsupportedJob() {
-        const {
-            pipeline,
-        } = this.context;
-
-        if ((pipeline && !pipeline.branchNames) ||
-            (pipeline && !pipeline.branchNames.length)) {
-            return true;
-        }
-
-        return false;
-    }
-
     render() {
         const { branches } = this.props;
 
@@ -78,7 +66,7 @@ export class MultiBranch extends Component {
             return null;
         }
 
-        if (!branches.$pending && this._isUnsupportedJob()) {
+        if (!branches.$pending && pipelineBranchesUnsupported(this.context.pipeline)) {
             return (<NotSupported />);
         }
 
