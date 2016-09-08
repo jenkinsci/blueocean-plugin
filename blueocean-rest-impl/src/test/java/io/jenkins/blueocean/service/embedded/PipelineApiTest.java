@@ -123,6 +123,31 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @Test
+    public void getPipelinesDefaultPaginationTest() throws Exception {
+
+        for(int i=0; i < 110; i++){
+            j.createFreeStyleProject("pipeline"+i);
+        }
+
+        List<Map> responses = get("/search/?q=type:pipeline", List.class);
+        Assert.assertEquals(100, responses.size());
+
+        responses = get("/search/?q=type:pipeline&limit=110", List.class);
+        Assert.assertEquals(110, responses.size());
+
+
+        responses = get("/search/?q=type:pipeline&limit=50", List.class);
+        Assert.assertEquals(50, responses.size());
+
+        responses = get("/organizations/jenkins/pipelines/", List.class);
+        Assert.assertEquals(100, responses.size());
+
+        responses = get("/organizations/jenkins/pipelines/?limit=40", List.class);
+        Assert.assertEquals(40, responses.size());
+    }
+
+
+    @Test
     public void getPipelineTest() throws IOException {
         Project p = j.createFreeStyleProject("pipeline1");
 
