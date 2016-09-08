@@ -8,10 +8,8 @@ import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
 import hudson.remoting.Base64;
-import hudson.security.Permission;
 import io.jenkins.blueocean.BlueOceanUI;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
-import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
@@ -21,10 +19,7 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 /**
@@ -87,7 +82,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         }else{
             //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
             // user to login page
-            Jenkins.getInstance().checkPermission(Permission.READ);
+            Jenkins.getInstance().checkPermission(Jenkins.READ);
         }
 
         return app;
