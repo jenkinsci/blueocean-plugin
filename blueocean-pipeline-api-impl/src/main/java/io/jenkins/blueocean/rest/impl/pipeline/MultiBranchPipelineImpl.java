@@ -1,9 +1,11 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
+import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Result;
@@ -33,6 +35,7 @@ import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
+import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
 import org.kohsuke.stapler.json.JsonBody;
@@ -45,6 +48,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl.isRunning;
 
 /**
  * @author Vivek Pandey
@@ -86,6 +91,28 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         return ImmutableMap.of(
             BluePipeline.CREATE_PERMISSION, mbp.getACL().hasPermission(Item.CREATE),
             BluePipeline.READ_PERMISSION, mbp.getACL().hasPermission(Item.READ));
+    }
+
+    @Override
+    public int getNumberOfRunningPipelines() {
+        int count=0;
+        Collection<Job> jobs = mbp.getAllJobs();
+        for(Job j :jobs){
+            count += Iterables.size(j.getBuilds().filter(isRunning));
+        }
+        return count;
+    }
+
+    @Override
+    public int getNumberOfQueuedPipelines() {
+        int count=0;
+        Collection<Job> jobs = mbp.getAllJobs();
+        for(Job j :jobs) {
+            if (j instanceof BuildableItem) {
+                return Iterables.size(Jenkins.getInstance().getQueue().getItems((BuildableItem) j));
+            }
+        }
+        return count;
     }
 
     @Override
