@@ -1,10 +1,13 @@
 package io.jenkins.blueocean.service.embedded;
 
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
+import hudson.remoting.Base64;
 import hudson.security.Permission;
 import io.jenkins.blueocean.BlueOceanUI;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
@@ -19,6 +22,7 @@ import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
@@ -70,19 +74,15 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
 
                 //TODO: implement this as filter, see PluginServletFilter to clear the context
             } else {
-                // Add X-Blueocean-Refresher to response, so that we can detect when the user changes. Wont be needed with JWT
-                MessageDigest md = null;
-                try {
-                    md = MessageDigest.getInstance("SHA-1");
-                } catch (NoSuchAlgorithmException e) {
-                    throw new ServiceException.UnexpectedErrorException("Error getting sha1 algorithm", e);
-                }
-                String blueoceanDownGradeheader = Jenkins.getAuthentication().getName() + Long.toString(randomBits);
+                HashCode hashCode = Hashing.sha1()
+                    .newHasher()
+                    .putString(Jenkins.getAuthentication().getName(), StandardCharsets.UTF_8)
+                    .putLong(randomBits)
+                    .hash();
 
-                md.update(blueoceanDownGradeheader.getBytes());
-
-                Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", DatatypeConverter.printHexBinary(md.digest()));
-
+                // Base64 encode to ensure no non-ASCII characters get into the header
+                String refresherToken = Base64.encode(hashCode.asBytes());
+                Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", refresherToken);
             }
         }else{
             //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
