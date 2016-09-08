@@ -11,6 +11,7 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
+import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
 
@@ -25,7 +26,8 @@ public class PipelineJobFilters {
         private final Predicate<Item> filter = new Predicate<Item>() {
             @Override
             public boolean apply(Item job) {
-                if (Folder.class.equals(job.getClass())) { // Subclasses are fine
+                if (Folder.class.equals(job.getClass()) // some subclasses are fine
+                        || job instanceof OrganizationFolder) {
                     return false;
                 }
                 return true;
