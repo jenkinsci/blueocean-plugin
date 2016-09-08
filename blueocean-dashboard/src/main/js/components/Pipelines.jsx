@@ -20,11 +20,11 @@ export default class Pipelines extends Component {
             </Link> : '';
 
         const headers = [
-            { label: 'Name', className: 'name' },
+            { label: 'Name', className: 'name-col' },
             'Health',
             'Branches',
             'Pull Requests',
-            { label: '', className: 'favorite' },
+            { label: '', className: 'actions-col' },
         ];
 
         const baseUrl = config.getRootURL();
@@ -69,7 +69,7 @@ export default class Pipelines extends Component {
                                 })
                             }
                         </Table>
-                        
+
                         { pipelines && pipelines.$pager &&
                             <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
                                 {pipelines.$pending ? 'Loading...' : 'Show More'}
