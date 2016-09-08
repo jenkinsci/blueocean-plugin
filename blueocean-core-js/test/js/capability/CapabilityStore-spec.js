@@ -14,11 +14,11 @@ const mockCapabilityApi = {
         };
 
         if (classNames.indexOf('A') !== -1) {
-            data.map.A = {classes: ['A', 'A_one', 'A_two']};
+            data.map.A = { classes: ['A', 'A_one', 'A_two'] };
         }
 
         if (classNames.indexOf('B') !== -1) {
-            data.map.B = {classes: ['B', 'B_one', 'B_two']};
+            data.map.B = { classes: ['B', 'B_one', 'B_two'] };
         }
 
         return new Promise(resolve => resolve(data));

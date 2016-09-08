@@ -48,10 +48,10 @@ describe('CapabilityAugmenter', () => {
 
             assert.equal(Object.keys(classMap).length, 6);
 
-            const matrix = classMap['io.jenkins.blueocean.rest.impl.pipeline.MatrixProjectImpl']
+            const matrix = classMap['io.jenkins.blueocean.rest.impl.pipeline.MatrixProjectImpl'];
             assert.isOk(matrix);
             assert.equal(matrix.length, 1);
-            const multibranch = classMap['io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl']
+            const multibranch = classMap['io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl'];
             assert.isOk(multibranch);
             assert.equal(multibranch.length, 3);
             const pipeline = classMap['io.jenkins.blueocean.rest.impl.pipeline.PipelineImpl'];
@@ -103,10 +103,9 @@ describe('CapabilityAugmenter', () => {
 
             assert.equal(Object.keys(classMap).length, 1);
 
-            const multibranch1 = classMap['io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl']
+            const multibranch1 = classMap['io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl'];
             assert.isOk(multibranch1);
             assert.equal(multibranch1.length, 1);
         });
-
     });
 });

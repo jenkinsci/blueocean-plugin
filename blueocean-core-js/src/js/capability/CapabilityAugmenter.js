@@ -6,6 +6,7 @@ const addClass = (clazz, classMap) => {
     const className = clazz._class;
 
     if (!classMap[className]) {
+        // eslint-disable-next-line no-param-reassign
         classMap[className] = [];
     }
 
