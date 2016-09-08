@@ -574,6 +574,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "organization": "jenkins",
             "weatherScore": 100,
             "pullRequest": null,
+            "totalNumberOfPullRequests": 0,
             "numberOfQueuedPipelines" : 0,
             "numberOfRunningPipelines" : 2
         },
@@ -612,6 +613,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "organization": "jenkins",
             "weatherScore": 100,
             "pullRequest": null,
+            "totalNumberOfPullRequests": 0,
             "numberOfQueuedPipelines" : 0,
             "numberOfRunningPipelines" : 2            
         },
@@ -643,6 +645,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "organization": "jenkins",
             "weatherScore": 100,
             "pullRequest": null,
+            "totalNumberOfPullRequests": 0,
             "numberOfQueuedPipelines" : 0,
             "numberOfRunningPipelines" : 2            
         }
