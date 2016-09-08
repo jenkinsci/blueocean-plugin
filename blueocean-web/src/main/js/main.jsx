@@ -12,8 +12,21 @@ import Config from './config';
 import { ToastDrawer } from './components/ToastDrawer';
 import { DevelopmentFooter } from './DevelopmentFooter';
 
+import { AppConfig, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js'
+
 let config; // Holder for various app-wide state
 
+function loginOrLogout() {
+    if (AppConfig.getLoginUrl()) {
+        if (AppConfig.getInitialUser() === "anonymous") {
+            const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`
+            return <a href={loginUrl} className="btn-primary inverse small">Login</a>;
+        } else {
+            const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
+            return <a href={logoutUrl} className="btn-secondary inverse small">Logout</a>;
+        }
+    }
+}
 /**
  * Root Blue Ocean UI component
  */
@@ -34,8 +47,7 @@ class App extends Component {
                             <a href="#">Administration</a>
                         </nav>
                         <div className="button-bar">
-                            <button className="inverse small">Login</button>
-                            <button className="btn-secondary inverse small">Logout</button>
+                            { loginOrLogout() }
                         </div>
                     </div>
                 </header>

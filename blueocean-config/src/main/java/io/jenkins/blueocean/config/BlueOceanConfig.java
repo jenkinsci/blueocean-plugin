@@ -3,6 +3,7 @@ package io.jenkins.blueocean.config;
 import hudson.Extension;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
+import hudson.security.SecurityRealm;
 import io.jenkins.blueocean.BluePageDecorator;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import jenkins.model.Jenkins;
@@ -44,6 +45,8 @@ public class BlueOceanConfig extends BluePageDecorator {
                     .key("security")
                     .object()
                         .key("enabled").value(jenkins.isUseSecurity())
+                        .key("loginUrl").value(jenkins.getSecurityRealm() == SecurityRealm.NO_AUTHENTICATION ? null : jenkins.getSecurityRealm().getLoginUrl())
+                        .key("user").value(Jenkins.getAuthentication().getName())
                         .key("authorizationStrategy").object()
                             .key("allowAnonymousRead").value(allowAnonymousRead)
                             .endObject()

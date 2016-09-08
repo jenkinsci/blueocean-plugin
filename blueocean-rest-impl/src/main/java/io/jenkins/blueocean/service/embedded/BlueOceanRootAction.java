@@ -8,6 +8,7 @@ import hudson.model.UnprotectedRootAction;
 import hudson.security.Permission;
 import io.jenkins.blueocean.BlueOceanUI;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
+import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
@@ -17,12 +18,19 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.xml.bind.DatatypeConverter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
+
 /**
  * @author Kohsuke Kawaguchi
  */
 @Extension
 public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy {
     private static final String URL_BASE="blue";
+    private static final Long randomBits = new Random().nextLong();
 
     private final boolean enableJWT = BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION;
 
@@ -64,8 +72,19 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         }else{
             //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
             // user to login page
-            Jenkins.getInstance().checkPermission(Permission.READ);
+                     Jenkins.getInstance().checkPermission(Permission.READ);
         }
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e) {
+            throw new ServiceException.UnexpectedErrorException("Error getting sha1 algorithm", e);
+        }
+        String blueoceanDownGradeheader = Jenkins.getAuthentication().getName() + Long.toString(randomBits);
+
+        md.update(blueoceanDownGradeheader.getBytes());
+
+        Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", DatatypeConverter.printHexBinary(md.digest()));
         return app;
     }
 
