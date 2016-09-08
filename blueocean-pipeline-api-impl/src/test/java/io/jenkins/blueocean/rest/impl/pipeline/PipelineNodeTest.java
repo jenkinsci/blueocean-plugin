@@ -1259,6 +1259,170 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertNotNull(output);
     }
 
+    @Test
+    public void BlockStageNodesFailureTest1() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("node{\n" +
+            "    stage ('Build') {\n" +
+            "            sh 'echo1 \"Building\"'\n" +
+            "    }\n" +
+            "    stage ('Test') {\n" +
+            "            sh 'echo testing'\n" +
+            "    }\n" +
+            "    stage ('Deploy') {\n" +
+            "            sh 'echo deploy'\n" +
+            "    }\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(1, nodes.size());
+        Assert.assertEquals("FAILURE", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+
+    }
+
+
+    @Test
+    public void BlockStageNodesFailureTest2() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("node{\n" +
+            "    stage ('Build') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "    }\n" +
+            "    stage ('Test') {\n" +
+            "            sh 'echo1 testing'\n" +
+            "    }\n" +
+            "    stage ('Deploy') {\n" +
+            "            sh 'echo deploy'\n" +
+            "    }\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(2, nodes.size());
+        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("FAILURE", nodes.get(1).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+
+    }
+
+    @Test
+    public void BlockStageNodesFailureTest3() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("node{\n" +
+            "    stage ('Build') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "    }\n" +
+            "    stage ('Test') {\n" +
+            "            sh 'echo testing'\n" +
+            "    }\n" +
+            "    stage ('Deploy') {\n" +
+            "            sh 'echo1 deploy'\n" +
+            "    }\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(3, nodes.size());
+        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+        Assert.assertEquals("FAILURE", nodes.get(2).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(2).get("state"));
+    }
+
+    @Test
+    public void KyotoNodesFailureTest1() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("pipeline {\n" +
+            "    agent label:''\n" +
+            "    stages {\n" +
+            "        stage ('Build') {\n" +
+            "            sh 'echo1 \"Building\"'\n" +
+            "        }\n" +
+            "        stage ('Test') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "        }\n" +
+            "        stage ('Deploy') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(1, nodes.size());
+        Assert.assertEquals("FAILURE", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+    }
+
+    @Test
+    public void KyotoNodesFailureTest2() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("pipeline {\n" +
+            "    agent label:''\n" +
+            "    stages {\n" +
+            "        stage ('Build') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "        }\n" +
+            "        stage ('Test') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "            sh 'echo2 \"Building finished\"'\n" +
+            "        }\n" +
+            "        stage ('Deploy') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(2, nodes.size());
+        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("FAILURE", nodes.get(1).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+    }
+
+    @Test
+    public void KyotoNodesFailureTest3() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("pipeline {\n" +
+            "    agent label:''\n" +
+            "    stages {\n" +
+            "        stage ('Build') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "        }\n" +
+            "        stage ('Test') {\n" +
+            "            sh 'echo \"Testing\"'\n" +
+            "        }\n" +
+            "        stage ('Deploy') {\n" +
+            "            sh 'echo1 \"Deploying\"'\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(3, nodes.size());
+        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+        Assert.assertEquals("FAILURE", nodes.get(2).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(2).get("state"));
+    }
+
     private String getActionLink(Map resp, String capability){
         List<Map> actions = (List<Map>) resp.get("actions");
         assertNotNull(actions);

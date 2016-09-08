@@ -5,7 +5,9 @@ import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
+import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
@@ -90,13 +92,21 @@ public class PipelineNodeGraphBuilder {
                     }
                     previousBranch = null;
                 } else if (previousStage != null) {
-                    //node before this stage is the last node before previousStage stage
-                    //get error condition on this node
-                    //XXX: This is assuming stage don't nest stage
-                    nodeStatusMap.put(previousStage, new PipelineNodeGraphBuilder.NodeRunStatus(sortedNodes.get(count - 1)));
                     addChild(previousStage, node);
                 } else { //previousStage is null
                     addChild(node, null);
+                }
+
+                if(node.getAction(LabelAction.class) != null && node.getAction(StageAction.class) == null){
+                    FlowNode endNode = PipelineNodeUtil.getStepEndNode(sortedNodes, node);
+                    if(endNode == null){
+                        endNode = PipelineNodeUtil.getEndNode(sortedNodes,node);
+                    }
+                    if(endNode != null){
+                        nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));
+                    }
+                }else if(previousStage!=null){
+                    nodeStatusMap.put(previousStage, new PipelineNodeGraphBuilder.NodeRunStatus(sortedNodes.get(count - 1)));
                 }
                 previousStage = node;
             } else if (isParallelBranch(node) && !nestedInParallel) { //branch but not nested ones
@@ -429,7 +439,7 @@ public class PipelineNodeGraphBuilder {
 
     public void dumpNodes(List<FlowNode> nodes) {
         for (FlowNode n : nodes) {
-            System.out.println(String.format("id: %s, name: %s, startTime: %s, type: %s", n.getId(), n.getDisplayName(), TimingAction.getStartTime(n), n.getClass()));
+            System.out.println(String.format("id: %s, name: %s, startTime: %s, type: %s, parent: %s", n.getId(), n.getDisplayName(), TimingAction.getStartTime(n), n.getClass(), n.getParents().size() > 0 ? n.getParents().get(0).getId(): null));
         }
     }
 
