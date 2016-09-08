@@ -120,6 +120,7 @@ export class Activity extends Component {
                   onNavigation={onNavigation}
                 />
                 }
+                {runs.length > 0 &&
                 <Table className="activity-table fixed" headers={headers}>
                     {
                         runs.map((run, index) => {
@@ -142,10 +143,11 @@ export class Activity extends Component {
                         })
                     }
                 </Table>
-                {runs.$pager &&
-                    <button disabled={!runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
-                        {runs.$pending ? 'Loading...' : 'Show More'}
-                    </button>
+                }
+                {runs.$pager && runs.length > 0 &&
+                <button disabled={runs.$pending || !runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
+                    {runs.$pending ? 'Loading...' : 'Show More'}
+                </button>
                 }
             </article>
         </main>);

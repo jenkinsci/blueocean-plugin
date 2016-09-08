@@ -6,6 +6,7 @@ import {
     connect,
     createSelector,
 } from './redux';
+import loadingIndicator from './LoadingIndicator';
 import * as sse from '@jenkins-cd/sse-gateway';
 import * as pushEventUtil from './util/push-event-util';
 
@@ -88,6 +89,10 @@ class OrganizationPipelines extends Component {
         }
     }
 
+    componentDidMount() {
+        loadingIndicator.setDarkBackground();
+    }
+    
     componentWillReceiveProps(nextProps) {
         const organizationName = this._getOrganizationName(nextProps);
         if (this._getOrganizationName(this.props) !== organizationName) {
@@ -104,6 +109,7 @@ class OrganizationPipelines extends Component {
             sse.unsubscribe(this.jobListener);
             delete this.jobListener;
         }
+        loadingIndicator.setLightBackground();
     }
     
     _getOrganizationName(nextProps) {

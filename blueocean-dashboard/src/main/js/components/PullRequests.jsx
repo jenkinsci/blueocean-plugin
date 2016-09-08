@@ -8,6 +8,8 @@ import {
     createSelector,
     connect,
 } from '../redux';
+import PageLoading from './PageLoading';
+import { pipelineBranchesUnsupported } from './PipelinePage';
 
 const { func, object, array, string } = PropTypes;
 
@@ -45,31 +47,8 @@ EmptyState.propTypes = {
 };
 
 export class PullRequests extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            unsupportedJob: false,
-        };
-    }
-
     componentWillMount() {
         if (this.context.config && this.context.params) {
-            const {
-                config = {},
-                params: {
-                    pipeline: pipelineName,
-                },
-                pipeline,
-            } = this.context;
-
-            if (!pipeline.branchNames || !pipeline.branchNames.length) {
-                this.setState({
-                    unsupportedJob: true,
-                });
-                return;
-            }
-
-            config.pipeline = pipelineName;
             this.props.fetchPullRequests({
                 organizationName: this.context.params.organization,
                 pipelineName: this.context.params.pipeline,
@@ -78,27 +57,26 @@ export class PullRequests extends Component {
     }
 
     render() {
-        if (this.state.unsupportedJob) {
-            return (<NotSupported />);
-        }
-
         const { pullRequests } = this.props;
 
-        // early out
         if (!pullRequests) {
             return null;
         }
-        
-        if (pullRequests.$pending) {
-            return null;
+
+        if (pullRequests.$pending && !pullRequests.length) {
+            return <PageLoading />;
         }
 
-        if (!pullRequests.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} />);
+        if (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline)) {
+            return (<NotSupported />);
         }
-        
+
         if (pullRequests.$failed) {
             return <div>Error: {pullRequests.$failed}</div>;
+        }
+
+        if (!pullRequests.$pending && !pullRequests.length) {
+            return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
         const headers = [
@@ -113,8 +91,9 @@ export class PullRequests extends Component {
         return (
             <main>
                 <article>
+                    {pullRequests.$pending && <PageLoading />}
                     <Table className="pr-table fixed" headers={headers}>
-                        { pullRequests.map((run, index) => {
+                        {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
                               key={index}
@@ -123,7 +102,7 @@ export class PullRequests extends Component {
                         })}
                     </Table>
                     {pullRequests.$pager &&
-                        <button disabled={!pullRequests.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pullRequests.$pager.fetchMore()}>
+                        <button disabled={pullRequests.$pending || !pullRequests.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pullRequests.$pager.fetchMore()}>
                             {pullRequests.$pending ? 'Loading...' : 'Show More'}
                         </button>
                     }
