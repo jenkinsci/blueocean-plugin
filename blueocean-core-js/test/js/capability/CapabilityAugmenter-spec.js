@@ -6,36 +6,88 @@ import { assert } from 'chai';
 
 import { CapabilityAugmenter } from '../../../src/js/capability/CapabilityAugmenter';
 
-const mockCapabilityStore = {
-    resolveCapabilities: (... classNames) => {
+class MockCapabilityStore {
+
+    constructor() {
+        this.classMap = {};
+    }
+
+    resolveCapabilities(... classNames) {
         const result = {};
 
-        if (classNames.indexOf('io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl') !== -1) {
-            result['io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl'] = [
-                'io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl',
-                'jenkins.branch.MultiBranchProject',
-            ];
+        for (const className of classNames) {
+            result[className] = this.classMap[className];
         }
 
         return new Promise(resolve => resolve(result));
-    },
-};
+    }
+
+    addCapability(className, ... capabilities) {
+        this.classMap[className] = [className].concat(capabilities);
+    }
+}
 
 
 describe('CapabilityAugmenter', () => {
+    let mockCapabilityStore;
     let augmenter;
 
     beforeEach(() => {
+        mockCapabilityStore = new MockCapabilityStore();
         augmenter = new CapabilityAugmenter(mockCapabilityStore);
     });
 
     describe('augmentCapabilities', () => {
-        it('handles a single object', (done) => {
+        it('adds capabilities to a single multibranch pipeline', (done) => {
+            mockCapabilityStore.addCapability(
+                'io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl',
+                'jenkins.branch.MultiBranchProject'
+            );
+
             const multibranch = require('./multibranch-1.json');
             augmenter.augmentCapabilities(multibranch)
                 .then(data => {
                     assert.isOk(data._capabilities);
                     assert.equal(data._capabilities.length, 2);
+                    done();
+                });
+        });
+
+        it('adds capabilities to two branches from a multibranch pipeline', (done) => {
+            mockCapabilityStore.addCapability(
+                'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl',
+                'io.jenkins.blueocean.rest.model.BlueBranch', 'org.jenkinsci.plugins.workflow.job.WorkflowJob',
+                'io.jenkins.blueocean.rest.impl.pipeline.PullRequest',
+            );
+            mockCapabilityStore.addCapability(
+                'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl',
+                'org.jenkinsci.plugins.workflow.job.WorkflowRun'
+            );
+            mockCapabilityStore.addCapability(
+                'io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl$1'
+            );
+
+            const branches = require('./branches-1.json');
+            augmenter.augmentCapabilities(branches)
+                .then(data => {
+                    assert.equal(data.length, 2);
+                    const branch1 = data[0];
+                    assert.isOk(branch1._capabilities);
+                    assert.equal(branch1._capabilities.length, 4);
+                    assert.isOk(branch1.latestRun._capabilities);
+                    assert.equal(branch1.latestRun._capabilities.length, 2);
+                    assert.isOk(branch1.latestRun.artifacts);
+                    assert.isOk(branch1.latestRun.artifacts[0]._capabilities);
+                    assert.equal(branch1.latestRun.artifacts[0]._capabilities.length, 1);
+
+                    const branch2 = data[0];
+                    assert.isOk(branch2._capabilities);
+                    assert.equal(branch2._capabilities.length, 4);
+                    assert.isOk(branch2.latestRun._capabilities);
+                    assert.equal(branch2.latestRun._capabilities.length, 2);
+                    assert.isOk(branch2.latestRun.artifacts);
+                    assert.isOk(branch2.latestRun.artifacts[0]._capabilities);
+                    assert.equal(branch2.latestRun.artifacts[0]._capabilities.length, 1);
                     done();
                 });
         });
