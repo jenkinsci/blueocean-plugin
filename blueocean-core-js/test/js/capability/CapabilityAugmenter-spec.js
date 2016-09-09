@@ -93,6 +93,21 @@ describe('CapabilityAugmenter', () => {
                 });
         });
 
+        it('makes the "can" convenience method available', (done) => {
+            mockCapabilityStore.addCapability(
+                'io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl',
+                'jenkins.branch.MultiBranchProject'
+            );
+
+            const multibranch = require('./multibranch-1.json');
+            augmenter.augmentCapabilities(multibranch)
+                .then(data => {
+                    assert.isTrue(data.can('jenkins.branch.MultiBranchProject'));
+                    assert.isFalse(data.can('jenkins.not.real.Capability'));
+                    done();
+                });
+        });
+
         it('initializes an empty array for an unknown capability', (done) => {
             const unknown = { _class: 'foo.bar.Unknown' };
             augmenter.augmentCapabilities(unknown)

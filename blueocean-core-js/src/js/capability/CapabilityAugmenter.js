@@ -1,6 +1,7 @@
 /**
  * Created by cmeyers on 9/8/16.
  */
+import capable from './Capable';
 
 const addClass = (clazz, classMap) => {
     const className = clazz._class;
@@ -131,6 +132,7 @@ export class CapabilityAugmenter {
                 }
 
                 target._capabilities = capabilities || [];
+                target.can = capable.can;
             }
         }
 
