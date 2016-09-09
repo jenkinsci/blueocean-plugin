@@ -37,6 +37,7 @@ class App extends Component {
     }
 
     render() {
+        const renderAdminLink = AppConfig.getInitialUser() !== "anonymous";
         return (
             <div className="Site">
                 <header className="Site-header">
@@ -44,7 +45,7 @@ class App extends Component {
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
                             <Link to="/pipelines">Pipelines</Link>
-                            <a href="#">Administration</a>
+                            { renderAdminLink && <a href="#">Administration</a> }
                         </nav>
                         <div className="button-bar">
                             { loginOrLogout() }
