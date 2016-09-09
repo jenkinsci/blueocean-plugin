@@ -122,13 +122,14 @@ export class CapabilityAugmenter {
      */
     _injectCapabilities(classMap, capabilitiesMap) {
         const started = new Date().getTime();
+        const unresolved = [];
 
         for (const className of Object.keys(classMap)) {
             for (const target of classMap[className]) {
                 const capabilities = capabilitiesMap[className];
 
-                if (!capabilities) {
-                    console.warn(`could not resolve capabilities for ${className}; an error may have occurred during lookup`);
+                if (!capabilities && unresolved.indexOf(className) === -1) {
+                    unresolved.push(className);
                 }
 
                 target._capabilities = capabilities || [];
@@ -138,6 +139,10 @@ export class CapabilityAugmenter {
 
         if (this._loggingEnabled) {
             console.debug(`augmenter.inject: ${new Date().getTime() - started}ms`);
+        }
+
+        for (const className of unresolved) {
+            console.warn(`could not resolve capabilities for ${className}; an error may have occurred during lookup`);
         }
 
         return classMap;
