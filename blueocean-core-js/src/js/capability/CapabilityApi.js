@@ -15,8 +15,9 @@ export class CapabilityApi {
      * @private
      */
     fetchCapabilities(...classNames) {
+        const noDuplicates = classNames.filter((item, index, self) => self.indexOf(item) === index);
         const path = config.getJenkinsRootURL();
-        const classList = classNames.join(',');
+        const classList = noDuplicates.join(',');
         const classesUrl = utils.cleanSlashes(`${path}/blue/rest/classes/?q=${classList}`);
 
         return Fetch.fetchJSON(classesUrl);
