@@ -12,6 +12,7 @@ import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,21 +59,23 @@ public class BranchContainerImpl extends BluePipelineContainer {
             }
 
             // If one run hasnt finished yet, then lets order by that.
-            if(latestRun1.getEndTime() != null && latestRun2.getEndTime() == null) {
+            Date endTime1 = latestRun1.getEndTime() ;
+            Date endTime2 = latestRun2.getEndTime();
+            if(endTime1 != null && endTime2 == null) {
                 return 1;
             }
 
-            if(latestRun1.getEndTime() == null && latestRun2.getEndTime() != null) {
+            if(endTime1 == null && endTime2 != null) {
                 return -1;
             }
 
             // If both jobs have ended, lets order by the one that ended last.
-            if(latestRun1.getEndTime() != null && latestRun2.getEndTime() != null) {
-                if(latestRun1.getEndTime().getTime() > latestRun2.getEndTime().getTime()) {
+            if(endTime1 != null && endTime2 != null) {
+                if(endTime1.getTime() > endTime2.getTime()) {
                     return -1;
                 }
 
-                if(latestRun1.getEndTime().getTime() < latestRun2.getEndTime().getTime()) {
+                if(endTime1.getTime() < endTime2.getTime()) {
                     return 1;
                 }
 
@@ -80,20 +83,22 @@ public class BranchContainerImpl extends BluePipelineContainer {
             }
 
             //If both jobs have not eneded yet, we need to order by start time.
-            if(latestRun1.getStartTime() != null && latestRun2.getStartTime() == null) {
+            Date startTime1 = latestRun1.getStartTime();
+            Date startTime2 = latestRun2.getStartTime();
+            if(startTime1 != null && startTime2 == null) {
                 return 1;
             }
 
-            if(latestRun1.getStartTime() == null && latestRun2.getStartTime() != null) {
+            if(startTime1 == null && startTime2 != null) {
                 return -1;
             }
 
-            if(latestRun1.getStartTime() != null && latestRun2.getStartTime() != null) {
-                if(latestRun1.getStartTime().getTime() > latestRun2.getStartTime().getTime()) {
+            if(startTime1 != null && startTime2 != null) {
+                if(startTime1.getTime() > startTime2.getTime()) {
                     return -1;
                 }
 
-                if(latestRun1.getStartTime().getTime() < latestRun2.getStartTime().getTime()) {
+                if(startTime1.getTime() < startTime2.getTime()) {
                     return 1;
                 }
 
@@ -102,8 +107,6 @@ public class BranchContainerImpl extends BluePipelineContainer {
 
             return pipeline1.getName().compareTo(pipeline2.getName());
         }
-
-
     };
 
     private final MultiBranchPipelineImpl pipeline;
