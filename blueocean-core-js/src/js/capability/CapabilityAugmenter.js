@@ -34,6 +34,12 @@ export class CapabilityAugmenter {
         this._loggingEnabled = false;
     }
 
+    /**
+     * Add "_capabilities" data or all objects with a "_class" property.
+     *
+     * @param data
+     * @returns {Promise}
+     */
     augmentCapabilities(data) {
         const classMap = this._findClassesInTree(data);
         return this._resolveCapabilities(data, classMap);
@@ -43,6 +49,13 @@ export class CapabilityAugmenter {
         this._loggingEnabled = true;
     }
 
+    /**
+     * Find all of the distinct "_class" values in supplied object.
+     *
+     * @param data
+     * @returns {object} key= "_class" name, value= array of all objects of that class.
+     * @private
+     */
     _findClassesInTree(data) {
         const classMap = {};
         const nodesToWalk = [data];
@@ -90,6 +103,14 @@ export class CapabilityAugmenter {
             .then(() => data);
     }
 
+    /**
+     * Add the capabilities to the "_capabilities" property of all objects in the class map.
+     *
+     * @param classMap
+     * @param capabilitiesMap
+     * @returns {object} classMap
+     * @private
+     */
     _injectCapabilities(classMap, capabilitiesMap) {
         const started = new Date().getTime();
 
