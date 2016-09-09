@@ -31,6 +31,7 @@ export class CapabilityAugmenter {
 
     constructor(capabilityStore) {
         this._capabilityStore = capabilityStore;
+        this._loggingEnabled = false;
     }
 
     augmentCapabilities(data) {
@@ -38,10 +39,15 @@ export class CapabilityAugmenter {
         return this._resolveCapabilities(data, classMap);
     }
 
+    enablePerfLogging() {
+        this._loggingEnabled = true;
+    }
+
     _findClassesInTree(data) {
         const classMap = {};
         const nodesToWalk = [data];
         const nodesAlreadyWalked = [];
+        const started = new Date().getTime();
 
         let node = nodesToWalk.shift();
 
@@ -69,6 +75,10 @@ export class CapabilityAugmenter {
             node = nodesToWalk.shift();
         }
 
+        if (this._loggingEnabled) {
+            console.debug(`augmenter.parse: ${new Date().getTime() - started}ms`);
+        }
+
         return classMap;
     }
 
@@ -81,6 +91,8 @@ export class CapabilityAugmenter {
     }
 
     _injectCapabilities(classMap, capabilitiesMap) {
+        const started = new Date().getTime();
+
         for (const className of Object.keys(classMap)) {
             for (const target of classMap[className]) {
                 const capabilities = capabilitiesMap[className];
@@ -91,6 +103,10 @@ export class CapabilityAugmenter {
 
                 target._capabilities = capabilities || [];
             }
+        }
+
+        if (this._loggingEnabled) {
+            console.debug(`augmenter.inject: ${new Date().getTime() - started}ms`);
         }
 
         return classMap;
