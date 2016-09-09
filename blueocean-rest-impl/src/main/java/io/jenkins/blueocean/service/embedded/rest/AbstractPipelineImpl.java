@@ -12,6 +12,8 @@ import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
+import hudson.model.User;
+import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
@@ -245,5 +247,14 @@ public class AbstractPipelineImpl extends BluePipeline {
         }
     };
 
+    public boolean isFavorite() {
+        User user = User.current();
+        if(user != null) {
+            FavoriteUserProperty prop = user.getProperty(FavoriteUserProperty.class);
+            return prop != null && prop.isJobFavorite(job.getFullName());
+        }
+
+        return false;
+    }
 
 }

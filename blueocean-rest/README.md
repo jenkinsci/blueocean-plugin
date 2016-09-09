@@ -542,7 +542,10 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
     }
 
     
-### Get MultiBranch pipeline branches 
+### Get MultiBranch pipeline branches
+
+The list of branches will be ordered by favorited branches first, and then branches that have the most recent
+activity.
 
     curl -v http://localhost:56720/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches
     
