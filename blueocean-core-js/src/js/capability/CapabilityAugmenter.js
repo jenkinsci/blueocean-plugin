@@ -15,8 +15,8 @@ const addClass = (clazz, classMap) => {
 
 const canWalk = (item) => item && (typeof item === 'object' || Array.isArray(item));
 
-// TODO: can we really filter out 'actions' in all cases? should it use a leading underscore?
-const IGNORED_PROPS = ['_links', 'actions'];
+const DEFAULT_IGNORED_PROPS = ['_links'];
+const ACTIONS_PROP_NAME = 'actions';
 
 /**
  * Decorate an object graph with a '_capabilities' property for each object with a valid '_class'
@@ -37,11 +37,12 @@ export class CapabilityAugmenter {
     /**
      * Add "_capabilities" data or all objects with a "_class" property.
      *
-     * @param data
+     * @param {object|Array} data
+     * @param {boolean} includeActions whether to fetch capabilities for items in the 'actions' property
      * @returns {Promise}
      */
-    augmentCapabilities(data) {
-        const classMap = this._findClassesInTree(data);
+    augmentCapabilities(data, includeActions = false) {
+        const classMap = this._findClassesInTree(data, includeActions);
         return this._resolveCapabilities(data, classMap);
     }
 
@@ -52,14 +53,21 @@ export class CapabilityAugmenter {
     /**
      * Find all of the distinct "_class" values in supplied object.
      *
-     * @param data
+     * @param {object|Array} data
+     * @param {boolean} includeActions whether to fetch capabilities for items in the 'actions' property
      * @returns {object} key= "_class" name, value= array of all objects of that class.
      * @private
      */
-    _findClassesInTree(data) {
+    _findClassesInTree(data, includeActions = false) {
         const classMap = {};
         const nodesToWalk = [data];
         const nodesAlreadyWalked = [];
+        const ignoredProps = DEFAULT_IGNORED_PROPS.slice();
+
+        if (!includeActions) {
+            ignoredProps.push(ACTIONS_PROP_NAME);
+        }
+
         const started = new Date().getTime();
 
         let node = nodesToWalk.shift();
@@ -67,7 +75,7 @@ export class CapabilityAugmenter {
         while (node) {
             nodesAlreadyWalked.push(node);
 
-            // save a ref to the class we can augment it later
+            // save a ref to the class so we can attach capabilities later
             if (typeof node === 'object' && node._class) {
                 addClass(node, classMap);
             }
@@ -78,9 +86,9 @@ export class CapabilityAugmenter {
                 const value = node[key];
 
                 // walk this node at a later iteration as long as
-                // 1. we didn't already walk it (cycles cause an infinite loop otherwise)
-                // 2. the property name isn't on the blacklist
-                if (canWalk(value) && nodesAlreadyWalked.indexOf(value) === -1 && IGNORED_PROPS.indexOf(key) === -1) {
+                // - we didn't already walk it (cycles cause an infinite loop otherwise)
+                // - the property name isn't on the blacklist
+                if (canWalk(value) && nodesAlreadyWalked.indexOf(value) === -1 && ignoredProps.indexOf(key) === -1) {
                     nodesToWalk.push(value);
                 }
             }

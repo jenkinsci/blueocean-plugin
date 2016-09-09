@@ -171,6 +171,30 @@ describe('CapabilityAugmenter', () => {
             assert.equal(multibranch1.length, 1);
         });
 
+        it('builds the correct map for a multibranch pipeline when "includeActions=true"', () => {
+            const multibranch = require('./multibranch-1.json');
+            const classMap = augmenter._findClassesInTree(multibranch, true);
+
+            assert.equal(Object.keys(classMap).length, 5);
+
+            const multibranch1 = classMap['io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl'];
+            assert.isOk(multibranch1);
+            assert.equal(multibranch1.length, 1);
+            // eslint-disable-next-line max-len
+            const action1 = classMap['com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider$FolderCredentialsProperty$CredentialsStoreActionImpl'];
+            assert.isOk(action1);
+            assert.equal(action1.length, 1);
+            const action2 = classMap['com.cloudbees.hudson.plugins.folder.relocate.RelocationAction'];
+            assert.isOk(action2);
+            assert.equal(action2.length, 1);
+            const action3 = classMap['com.cloudbees.plugins.credentials.ViewCredentialsAction'];
+            assert.isOk(action3);
+            assert.equal(action3.length, 1);
+            const action4 = classMap['org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction'];
+            assert.isOk(action4);
+            assert.equal(action4.length, 1);
+        });
+
         it('handles cycles in the data', () => {
             const root = { _class: 'foo.Bar' };
             root.cycle = root;
