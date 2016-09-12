@@ -4,7 +4,6 @@ import {
     ModalBody,
     ModalHeader,
     PageTabs,
-    Progress,
     TabLink,
 } from '@jenkins-cd/design-language';
 
@@ -28,6 +27,7 @@ import {
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
+import PageLoading from './PageLoading';
 import IfCapability from './IfCapability';
 
 const { func, object, any, string } = PropTypes;
@@ -176,7 +176,7 @@ class RunDetails extends Component {
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {run.$pending && <Progress />}
+                        {run.$pending && <PageLoading />}
                         {run.$success && React.cloneElement(
                             this.props.children,
                             { baseUrl, result: currentRun, ...this.props }

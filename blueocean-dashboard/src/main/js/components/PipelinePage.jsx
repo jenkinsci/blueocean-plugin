@@ -19,6 +19,17 @@ import {
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
 
+/**
+ * returns true if the pipeline is defined and has branchNames
+ */
+export function pipelineBranchesUnsupported(pipeline) {
+    if ((pipeline && !pipeline.branchNames) ||
+        (pipeline && !pipeline.branchNames.length)) {
+        return true;
+    }
+    return false;
+}
+
 export class PipelinePage extends Component {
     getChildContext() {
         return {

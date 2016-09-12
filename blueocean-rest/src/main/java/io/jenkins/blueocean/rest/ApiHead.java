@@ -29,13 +29,7 @@ public final class ApiHead implements RootRoutable, Reachable  {
 
     private volatile BlueOceanUI blueOceanUI;
 
-    private final Map<String,ApiRoutable> apis = new HashMap<>();
-
-    public ApiHead() {
-        for ( ApiRoutable api : ExtensionList.lookup(ApiRoutable.class)) {
-            apis.put(api.getUrlName(),api);
-        }
-    }
+    private volatile Map<String,ApiRoutable> apis;
 
     /**
      * Search API
@@ -71,6 +65,7 @@ public final class ApiHead implements RootRoutable, Reachable  {
      * @return {@link ApiRoutable} object
      */
     public ApiRoutable getDynamic(String route) {
+        setApis();
         StaplerRequest request = Stapler.getCurrentRequest();
         String m = request.getMethod();
         if(m.equalsIgnoreCase("POST") || m.equalsIgnoreCase("PUT") || m.equalsIgnoreCase("PATCH")) {
@@ -110,6 +105,23 @@ public final class ApiHead implements RootRoutable, Reachable  {
                 boui = blueOceanUI;
                 if(boui == null){
                     blueOceanUI = boui = Jenkins.getInstance().getInjector().getInstance(BlueOceanUI.class);
+                }
+            }
+        }
+    }
+
+    // Lazy initialize ApiRoutable(s), just so we have all of them
+    private void setApis(){
+        Map<String,ApiRoutable> apiMap = apis;
+        if(apiMap == null){
+            synchronized (this){
+                apiMap = apis;
+                if(apiMap == null){
+                    Map<String,ApiRoutable> apiMapTmp = new HashMap<>();
+                    for ( ApiRoutable api : ExtensionList.lookup(ApiRoutable.class)) {
+                        apiMapTmp.put(api.getUrlName(),api);
+                    }
+                    apis = apiMap = apiMapTmp;
                 }
             }
         }

@@ -38,6 +38,7 @@
 - [Queue API](#queue-api)
   - [Fetch queue for an pipeline](#fetch-queue-for-an-pipeline)
   - [GET queue for a MultiBranch pipeline](#get-queue-for-a-multibranch-pipeline)
+  - [Remove a queued item](#remove-a-queued-item)
 - [Run API](#run-api)
   - [Get all runs in a pipeline](#get-all-runs-in-a-pipeline)
   - [Get a run details](#get-a-run-details)
@@ -339,7 +340,9 @@ Gives authenticated user, gives HTTP 404 error if there is no authenticated user
           "startTime": "2016-04-11T17:44:28.344+1000",
           "state": "FINISHED",
           "type": "WorkflowRun",
-          "commitId": null
+          "commitId": null,
+          "numberOfQueuedPipelines" : 1,
+          "numberOfRunningPipelines" : 2
         }
     }
 
@@ -441,6 +444,8 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
             "name" : "bo1",
             "numberOfFolders" : 0,
             "numberOfSuccessfulPullRequests" : 0,
+            "numberOfQueuedPipelines" : 0,
+            "numberOfRunningPipelines" : 2,
             "actions" : [],
             "branchNames" : []
          }
@@ -462,7 +467,7 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
 
 ## Get Nested Pipeline Inside A Folder
     
-    curl -v -X GET   http://localhost:62054/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/test2/
+    curl -v -X GET   http://localhost:62054/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/test2/
     
     {
       "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineImpl",
@@ -474,7 +479,9 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
       "name" : "test2",
       "fullName" : "test2",      
       "organization" : "jenkins",
-      "weatherScore" : 100
+      "weatherScore" : 100,
+      "numberOfQueuedPipelines" : 0,
+      "numberOfRunningPipelines" : 0
     }
     
 ## Get nested Folder and Pipeline
@@ -529,11 +536,16 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "numberOfSuccessfulBranches": 0,
         "numberOfSuccessfulPullRequests": 0,
         "totalNumberOfBranches": 3,
-        "totalNumberOfPullRequests": 0
+        "totalNumberOfPullRequests": 0,
+        "numberOfQueuedPipelines" : 0,
+        "numberOfRunningPipelines" : 2
     }
 
     
-### Get MultiBranch pipeline branches 
+### Get MultiBranch pipeline branches
+
+The list of branches will be ordered by favorited branches first, and then branches that have the most recent
+activity.
 
     curl -v http://localhost:56720/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches
     
@@ -565,7 +577,10 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "name": "feature2",
             "organization": "jenkins",
             "weatherScore": 100,
-            "pullRequest": null
+            "pullRequest": null,
+            "totalNumberOfPullRequests": 0,
+            "numberOfQueuedPipelines" : 0,
+            "numberOfRunningPipelines" : 2
         },
         {
             "displayName": "master",
@@ -601,7 +616,10 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "name": "master",
             "organization": "jenkins",
             "weatherScore": 100,
-            "pullRequest": null
+            "pullRequest": null,
+            "totalNumberOfPullRequests": 0,
+            "numberOfQueuedPipelines" : 0,
+            "numberOfRunningPipelines" : 2            
         },
         {
             "displayName": "feature1",
@@ -630,7 +648,10 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "name": "feature1",
             "organization": "jenkins",
             "weatherScore": 100,
-            "pullRequest": null
+            "pullRequest": null,
+            "totalNumberOfPullRequests": 0,
+            "numberOfQueuedPipelines" : 0,
+            "numberOfRunningPipelines" : 2            
         }
     ]
 
@@ -708,6 +729,10 @@ For example for anonymous user with security enabled and only read permission, t
           "expectedBuildNumber" : 11
        }
     ]
+
+## Remove a queued item 
+
+    curl -X DELETE http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/
 
 # Run API
 

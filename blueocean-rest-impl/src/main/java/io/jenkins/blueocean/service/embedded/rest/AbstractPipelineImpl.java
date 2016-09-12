@@ -1,13 +1,20 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.AbstractItem;
 import hudson.model.Action;
+import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
+import hudson.model.Run;
+import hudson.model.User;
+import hudson.plugins.favorite.user.FavoriteUserProperty;
+import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
@@ -24,6 +31,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
@@ -206,6 +214,20 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     @Override
+    public int getNumberOfRunningPipelines(){
+        RunList runningJobs =  job.getBuilds().filter(isRunning);
+        return Iterators.size(runningJobs.iterator());
+    }
+
+    @Override
+    public int getNumberOfQueuedPipelines() {
+        if(job instanceof BuildableItem) {
+            return Iterables.size(Jenkins.getInstance().getQueue().getItems((BuildableItem)job));
+        }
+        return 0;
+    }
+
+    @Override
     public Map<String, Boolean> getPermissions(){
         return getPermissions(job);
     }
@@ -218,4 +240,21 @@ public class AbstractPipelineImpl extends BluePipeline {
             BluePipeline.STOP_PERMISSION, item.getACL().hasPermission(Item.CANCEL)
         );
     }
+
+    public static final Predicate<Run> isRunning = new Predicate<Run>() {
+        public boolean apply(Run r) {
+            return r.isBuilding();
+        }
+    };
+
+    public boolean isFavorite() {
+        User user = User.current();
+        if(user != null) {
+            FavoriteUserProperty prop = user.getProperty(FavoriteUserProperty.class);
+            return prop != null && prop.isJobFavorite(job.getFullName());
+        }
+
+        return false;
+    }
+
 }

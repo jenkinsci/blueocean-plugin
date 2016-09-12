@@ -8,6 +8,8 @@ import {
     createSelector,
     connect,
 } from '../redux';
+import PageLoading from './PageLoading';
+import { pipelineBranchesUnsupported } from './PipelinePage';
 
 const { object, array, func, string, any } = PropTypes;
 
@@ -48,26 +50,8 @@ EmptyState.propTypes = {
 };
 
 export class MultiBranch extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            unsupportedJob: false,
-        };
-    }
-
     componentWillMount() {
         if (this.context.config && this.context.params) {
-            const {
-                pipeline,
-            } = this.context;
-
-            if (!pipeline.branchNames || !pipeline.branchNames.length) {
-                this.setState({
-                    unsupportedJob: true,
-                });
-                return;
-            }
-
             this.props.fetchBranches({
                 organizationName: this.context.params.organization,
                 pipelineName: this.context.params.pipeline,
@@ -78,24 +62,19 @@ export class MultiBranch extends Component {
     render() {
         const { branches } = this.props;
 
-        if (this.state.unsupportedJob) {
-            return (<NotSupported />);
-        }
-
-        // early out
         if (!branches) {
             return null;
         }
 
-        if (branches.$pending) {
-            return null;
+        if (!branches.$pending && pipelineBranchesUnsupported(this.context.pipeline)) {
+            return (<NotSupported />);
         }
 
         if (branches.$failed) {
             return <div>ERROR: {branches.$failed}</div>;
         }
 
-        if (!branches.length) {
+        if (!branches.$pending && !branches.length) {
             return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
@@ -112,10 +91,11 @@ export class MultiBranch extends Component {
         return (
             <main>
                 <article>
+                    {branches.$pending && <PageLoading />}
                     <Table className="multibranch-table fixed"
                       headers={headers}
                     >
-                        {branches.map((run, index) => {
+                        {branches.length > 0 && branches.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<Branches
                               key={index}
@@ -125,8 +105,8 @@ export class MultiBranch extends Component {
                         }
                     </Table>
                     {branches.$pager &&
-                        <button disabled={!branches.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => branches.$pager.fetchMore()}>
-                            {branches.$pending ? 'Loading...' : 'Show More'}
+                        <button disabled={branches.$pending || !branches.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => branches.$pager.fetchMore()}>
+                             {branches.$pending ? 'Loading...' : 'Show More'}
                         </button>
                     }
                 </article>

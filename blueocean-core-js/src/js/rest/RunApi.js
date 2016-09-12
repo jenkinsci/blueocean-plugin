@@ -12,7 +12,7 @@ export class RunApi {
         const runUrl = utils.cleanSlashes(`${path}/${item._links.self.href}/runs/`);
 
         const fetchOptions = {
-            method: 'PUT',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -42,7 +42,7 @@ export class RunApi {
         const replayPipelineUrl = utils.cleanSlashes(`${path}/${runUrl}/replay/`);
 
         const fetchOptions = {
-            method: 'PUT',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },

@@ -16,6 +16,7 @@ import hudson.model.Job;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Project;
+import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.model.StringParameterDefinition;
 import hudson.model.StringParameterValue;
@@ -43,6 +44,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
+
+import static io.jenkins.blueocean.rest.model.BluePipeline.NUMBER_OF_QUEUED_PIPELINES;
+import static io.jenkins.blueocean.rest.model.BluePipeline.NUMBER_OF_RUNNING_PIPELINES;
 
 /**
  * @author Vivek Pandey
@@ -120,6 +124,31 @@ public class PipelineApiTest extends BaseTest {
 
 
     }
+
+    @Test
+    public void getPipelinesDefaultPaginationTest() throws Exception {
+
+        for(int i=0; i < 110; i++){
+            j.createFreeStyleProject("pipeline"+i);
+        }
+
+        List<Map> responses = get("/search/?q=type:pipeline", List.class);
+        Assert.assertEquals(100, responses.size());
+
+        responses = get("/search/?q=type:pipeline&limit=110", List.class);
+        Assert.assertEquals(110, responses.size());
+
+
+        responses = get("/search/?q=type:pipeline&limit=50", List.class);
+        Assert.assertEquals(50, responses.size());
+
+        responses = get("/organizations/jenkins/pipelines/", List.class);
+        Assert.assertEquals(100, responses.size());
+
+        responses = get("/organizations/jenkins/pipelines/?limit=40", List.class);
+        Assert.assertEquals(40, responses.size());
+    }
+
 
     @Test
     public void getPipelineTest() throws IOException {
@@ -401,8 +430,10 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals(queue.size(),2);
         Assert.assertEquals(((Map) queue.get(0)).get("expectedBuildNumber"), 4);
         Assert.assertEquals(((Map) queue.get(1)).get("expectedBuildNumber"), 3);
-        System.out.println(request().get("/organizations/jenkins/pipelines/pipeline1/queue").build(String.class));
+        Map resp = request().get("/organizations/jenkins/pipelines/pipeline1/").build(Map.class);
 
+        Assert.assertEquals(2, resp.get(NUMBER_OF_RUNNING_PIPELINES));
+        Assert.assertEquals(2, resp.get(NUMBER_OF_QUEUED_PIPELINES));
     }
 
     @Test
@@ -419,7 +450,13 @@ public class PipelineApiTest extends BaseTest {
         Map r = request().post("/organizations/jenkins/pipelines/pipeline3/runs/").build(Map.class);
 
         Assert.assertNotNull(p3.getQueueItem());
-        Assert.assertEquals(Long.toString(p3.getQueueItem().getId()), r.get("id"));
+        String id = Long.toString(p3.getQueueItem().getId());
+        Assert.assertEquals(id, r.get("id"));
+
+        delete("/organizations/jenkins/pipelines/pipeline3/queue/"+id+"/");
+        Queue.Item item = j.jenkins.getQueue().getItem(Long.parseLong(id));
+        Assert.assertTrue(item instanceof Queue.LeftItem);
+        Assert.assertTrue(((Queue.LeftItem)item).isCancelled());
     }
 
     @Test
@@ -545,8 +582,8 @@ public class PipelineApiTest extends BaseTest {
 
         permissions = (Map<String, Boolean>) response.get("permissions");
         Assert.assertFalse(permissions.get("create"));
-        Assert.assertNull(permissions.get("start"));
-        Assert.assertNull(permissions.get("stop"));
+        Assert.assertFalse(permissions.get("start"));
+        Assert.assertFalse(permissions.get("stop"));
         Assert.assertTrue(permissions.get("read"));
     }
 

@@ -24,15 +24,14 @@ import { calculateNode } from '../util/KaraokeHelper';
 
 const { string, object, any, func } = PropTypes;
 
-const queuedState = () => (
+const QueuedState = () => (
     <EmptyStateView tightSpacing>
         <p>
             <Icon {...{
                 size: 20,
                 icon: 'timer',
                 style: { fill: '#fff' },
-            }}
-            />
+            }} />
             <span>Waiting for run to start.</span>
         </p>
     </EmptyStateView>
@@ -54,9 +53,7 @@ export class RunDetailsPipeline extends Component {
 
     componentWillMount() {
         const { fetchNodes, result } = this.props;
-
         this.mergedConfig = this.generateConfig(this.props);
-
         if (!result.isQueued()) {
             if (this.mergedConfig.supportsNode) {
                 fetchNodes(this.mergedConfig);
@@ -190,7 +187,7 @@ export class RunDetailsPipeline extends Component {
     generateConfig(props) {
         const { config = {} } = this.context;
         const followAlong = this.state.followAlong;
-        const { isMultiBranch, params, result } = props;
+        const { isMultiBranch, params, result, steps, nodes } = props;
         const fetchAll = calculateFetchAll(props);
         const forceLogView = calculateLogView(props);
         // we would use default properties however the node can be null so no default properties will be triggered
@@ -202,9 +199,10 @@ export class RunDetailsPipeline extends Component {
         const node = params.node || nodeReducer.id;
         // It should really be using capability using /rest/classes API
         const supportsNode = supportsNodes(result);
-
+        // do we have a running job?
+        const isRunning = result && result.state && result.state !== 'FINISHED';
         // Merge config
-        return {
+        const calculatedResponse = {
             ...config,
             supportsNode,
             isMultiBranch,
@@ -213,22 +211,47 @@ export class RunDetailsPipeline extends Component {
             followAlong,
             fetchAll,
             forceLogView,
+            isRunning,
             name: params.pipeline,
             branch: params.branch,
             runId: params.runId,
+        };
+        // get the key for the steps we want to display
+        const stepKey = calculateStepsBaseUrl(calculatedResponse);
+        // get the key for the node we want to display
+        const nodeKey = calculateNodeBaseUrl(calculatedResponse);
+        // get the currentSteps (identified by the prior key)
+        const currentSteps = steps ? steps[stepKey] : null;
+        // do we have steps
+        const noSteps = currentSteps && currentSteps.model ? currentSteps.model.length === 0 : true;
+        // does the node has any results/steps
+        let hasResultsForSteps = nodes && nodes[nodeKey] ? nodes[nodeKey].hasResultsForSteps : false;
+        if ((noSteps !== null && !noSteps) || (isRunning && supportsNode && !noSteps)) {
+            hasResultsForSteps = true;
+        }
+        // are we treating a queued node
+        const isPipelineQueued = !hasResultsForSteps && (noSteps === null || noSteps) && isRunning;
+        return {
+            ...calculatedResponse,
+            stepKey,
+            nodeKey,
+            currentSteps,
+            noSteps,
+            hasResultsForSteps,
+            isPipelineQueued,
         };
     }
 
     render() {
         const { location, router } = this.context;
 
-        const { isMultiBranch, steps, nodes, result: run, params } = this.props;
+        const { isMultiBranch, nodes, result: run, params } = this.props;
 
         if (run.isQueued()) {
-            return queuedState();
+            return <QueuedState />;
         }
-        const supportsNode = supportsNodes(run);
-        const resultRun = run.isCompleted() ? run.state : run.result;
+        const { nodeKey, supportsNode, noSteps, currentSteps, hasResultsForSteps, isPipelineQueued } = this.mergedConfig;// supportsNodes(run);
+        const resultRun = !run.isCompleted() ? run.state : run.result;
         const followAlong = this.state.followAlong;
         // in certain cases we want that the log component will scroll to the end of a log
         const scrollToBottom =
@@ -236,15 +259,11 @@ export class RunDetailsPipeline extends Component {
                 || (resultRun.toLowerCase() === 'running' && followAlong)
             ;
 
-        const nodeKey = calculateNodeBaseUrl(this.mergedConfig);
-        const key = calculateStepsBaseUrl(this.mergedConfig);
         const logGeneral = calculateRunLogURLObject(this.mergedConfig);
         let title = this.mergedConfig.nodeReducer.displayName;
         if (this.mergedConfig.nodeReducer.id !== null && title) {
             title = `Steps - ${title}`;
         }
-        const currentSteps = steps ? steps[key] : null;
-        const isRunning = run.state !== 'FINISHED';
         // here we decide what to do next if somebody clicks on a flowNode
         const afterClick = (id) => {
             // get some information about the node the user clicked
@@ -279,12 +298,8 @@ export class RunDetailsPipeline extends Component {
             }
             router.push(newPath);
         };
-        const noSteps = currentSteps && currentSteps.model && currentSteps.model.length === 0;
+
         const shouldShowLogHeader = noSteps !== null && !noSteps;
-        let hasResultsForSteps = nodes && nodes[nodeKey] ? nodes[nodeKey].hasResultsForSteps : false;
-        if ((noSteps !== null && !noSteps) || (isRunning && supportsNode)) {
-            hasResultsForSteps = true;
-        }
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
 
         const logProps = {
@@ -296,7 +311,7 @@ export class RunDetailsPipeline extends Component {
 
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
-                { hasResultsForSteps && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
+                { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
                   selectedStage={this.mergedConfig.nodeReducer}
                   callback={afterClick}
@@ -304,6 +319,7 @@ export class RunDetailsPipeline extends Component {
                   pipelineName={name}
                   branchName={isMultiBranch ? params.branch : undefined}
                   runId={run.id}
+                  run={run}
                 />
                 }
                 { hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView &&
@@ -320,11 +336,12 @@ export class RunDetailsPipeline extends Component {
                   {...this.props}
                 />
                 }
-                { hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
+                { isPipelineQueued && supportsNode && <QueuedState /> }
+                { !isPipelineQueued && hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
                     <p>There are no steps.</p>
                 </EmptyStateView>
                 }
-                { (!hasResultsForSteps || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
+                { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
             </div>
         );
     }
