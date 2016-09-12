@@ -12,7 +12,10 @@
 
     Any conflicting PROD dependencies will be printed on STDERR, and it will exit(1)
 
-    If no conflicts, or only PEER/DEV conflicts, normal exit(0)
+    Any conflicting DEV or PEER dependencies for packages in @jenkins-cd/ npm group will be printed on STDERR,
+    and it will exit(1)
+
+    If no conflicts, or only non-jenkins PEER/DEV conflicts, normal exit(0)
 
 **********************************************************************************************
 *********************************************************************************************/
@@ -41,25 +44,29 @@ var packageFiles = [];
 
 packageFiles.push(require("./blueocean-dashboard/package.json"));
 packageFiles.push(require("./blueocean-web/package.json"));
+packageFiles.push(require("./blueocean-pipeline-editor/package.json"));
 packageFiles.push(require("./blueocean-personalization/package.json"));
 packageFiles.push(require("./blueocean-config/package.json"));
+packageFiles.push(require("./js-extensions/package.json"));
 
 // Add some expected dependencies, so we go another level deep just for these
 packageFiles.push(require("./blueocean-dashboard/node_modules/@jenkins-cd/design-language/package.json"));
-packageFiles.push(require("./blueocean-dashboard/node_modules/@jenkins-cd/js-extensions/package.json"));
 
 packageFiles.forEach(packageFile => {
 
-    addDependencies("prod", packageFile.dependencies);
-    // addDependencies("dev", packageFile.devDependencies);
-    // addDependencies("peer", packageFile.peerDependencies);
+    addDependencies("prod", packageFile.dependencies, true);
+    addDependencies("dev", packageFile.devDependencies, false);
+    addDependencies("peer", packageFile.peerDependencies, false);
 
-    function addDependencies(kind, deps) {
+    function addDependencies(kind, deps, includeNonJenkins) {
+
         if (deps) {
             Object.keys(deps).forEach(dependency => {
-                const version = deps[dependency];
-                initEntry(dependency, version);
-                allDependencies[dependency][version].push(packageFile.name + " (" + kind + ")");
+                if (includeNonJenkins || dependency.startsWith("@jenkins-cd")) {
+                    const version = deps[dependency];
+                    initEntry(dependency, version);
+                    allDependencies[dependency][version].push(packageFile.name + " (" + kind + ")");
+                }
             });
         }
     }

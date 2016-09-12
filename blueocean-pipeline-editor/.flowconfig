@@ -1,0 +1,25 @@
+[ignore]
+
+# FBJS seems to be bad
+.*/node_modules/fbjs/.*
+
+.*/node_modules/react/.*
+
+# Yay for dependencies that are bloated with tests, and .json files that aren't JSON
+.*/node_modules/cjson/test.*
+
+# This is created by mvn build process.
+<PROJECT_ROOT>/node/.*
+
+[libs]
+src/main/js/declarations
+
+[include]
+src/main/js/declarations/browser.js.flow
+
+[options]
+
+# Static fields for React stuff
+# Instance fields for this-bound listeners via arrow funs
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable

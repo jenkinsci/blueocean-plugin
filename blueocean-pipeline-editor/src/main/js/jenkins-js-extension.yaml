@@ -1,0 +1,6 @@
+# Extensions in this plugin
+extensions:
+  - component: EditorRoutes
+    extensionPoint: jenkins.main.routes
+  - component: components/editor/EditorCSS
+    extensionPoint: pipeline.editor.css

@@ -18,7 +18,7 @@
   "license": "MIT",
   "peerDependencies": {
     "react": "^0.14.7 || ^15.0.0",
-    "@jenkins-cd/js-modules": "^0.0.7",
+    "@jenkins-cd/js-modules": "0.0.7",
     "react-dom": "^0.14.7 || ^15.0.0"
   },
   "devDependencies": {
