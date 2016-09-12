@@ -124,7 +124,7 @@ describe('CapabilityAugmenter', () => {
             const pipelines = require('./pipelines-1.json');
             const classMap = augmenter._findClassesInTree(pipelines);
 
-            assert.equal(Object.keys(classMap).length, 6);
+            assert.equal(Object.keys(classMap).length, 31);
 
             const matrix = classMap['io.jenkins.blueocean.rest.impl.pipeline.MatrixProjectImpl'];
             assert.isOk(matrix);
@@ -150,7 +150,7 @@ describe('CapabilityAugmenter', () => {
             const favorites = require('./favorites-1.json');
             const classMap = augmenter._findClassesInTree(favorites);
 
-            assert.equal(Object.keys(classMap).length, 7);
+            assert.equal(Object.keys(classMap).length, 42);
 
             const branch = classMap['io.jenkins.blueocean.rest.impl.pipeline.BranchImpl'];
             assert.isOk(branch);
@@ -179,22 +179,13 @@ describe('CapabilityAugmenter', () => {
             const multibranch = require('./multibranch-1.json');
             const classMap = augmenter._findClassesInTree(multibranch);
 
-            assert.equal(Object.keys(classMap).length, 1);
-
-            const multibranch1 = classMap['io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl'];
-            assert.isOk(multibranch1);
-            assert.equal(multibranch1.length, 1);
-        });
-
-        it('builds the correct map for a multibranch pipeline when "includeActions=true"', () => {
-            const multibranch = require('./multibranch-1.json');
-            const classMap = augmenter._findClassesInTree(multibranch, true);
-
             assert.equal(Object.keys(classMap).length, 5);
 
             const multibranch1 = classMap['io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl'];
             assert.isOk(multibranch1);
             assert.equal(multibranch1.length, 1);
+
+            // check the 'actions' capabilities too
             // eslint-disable-next-line max-len
             const action1 = classMap['com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider$FolderCredentialsProperty$CredentialsStoreActionImpl'];
             assert.isOk(action1);

@@ -17,7 +17,6 @@ const addClass = (clazz, classMap) => {
 const canWalk = (item) => item && (typeof item === 'object' || Array.isArray(item));
 
 const DEFAULT_IGNORED_PROPS = ['_links'];
-const ACTIONS_PROP_NAME = 'actions';
 
 /**
  * Decorate an object graph with a '_capabilities' property for each object with a valid '_class'
@@ -42,8 +41,8 @@ export class CapabilityAugmenter {
      * @param {boolean} includeActions whether to fetch capabilities for items in the 'actions' property
      * @returns {Promise}
      */
-    augmentCapabilities(data, includeActions = false) {
-        const classMap = this._findClassesInTree(data, includeActions);
+    augmentCapabilities(data) {
+        const classMap = this._findClassesInTree(data);
         return this._resolveCapabilities(data, classMap);
     }
 
@@ -55,19 +54,14 @@ export class CapabilityAugmenter {
      * Find all of the distinct "_class" values in supplied object.
      *
      * @param {object|Array} data
-     * @param {boolean} includeActions whether to fetch capabilities for items in the 'actions' property
      * @returns {object} key= "_class" name, value= array of all objects of that class.
      * @private
      */
-    _findClassesInTree(data, includeActions = false) {
+    _findClassesInTree(data) {
         const classMap = {};
         const nodesToWalk = [data];
         const nodesAlreadyWalked = [];
         const ignoredProps = DEFAULT_IGNORED_PROPS.slice();
-
-        if (!includeActions) {
-            ignoredProps.push(ACTIONS_PROP_NAME);
-        }
 
         const started = new Date().getTime();
 
