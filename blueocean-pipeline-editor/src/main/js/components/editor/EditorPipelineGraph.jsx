@@ -1,8 +1,9 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import {getAddIconGroup} from './common';
+import Extensions from '@jenkins-cd/js-extensions';
 
+import {getAddIconGroup} from './common';
 import type { StageInfo } from './common';
 
 // Dimensions used for layout, px
@@ -646,6 +647,7 @@ export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
 
         return (
             <div style={outerDivStyle}>
+                <Extensions.Renderer extensionPoint="pipeline.editor.css"/>
                 <svg width={measuredWidth} height={measuredHeight}>
                     {this.renderSelectionHighlight()}
                     {connections.map(conn => this.renderConnection(conn))}

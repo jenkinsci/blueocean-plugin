@@ -4,7 +4,6 @@ import React, { Component, PropTypes } from 'react';
 import { EditorPipelineGraph } from './EditorPipelineGraph';
 import { EditorStepList } from './EditorStepList';
 import { EditorStepDetails } from './EditorStepDetails';
-import Extensions from '@jenkins-cd/js-extensions';
 import {EmptyStateView} from '@jenkins-cd/design-language';
 
 import type { StageInfo, StepInfo } from './common';
@@ -534,7 +533,6 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                             : <p>Select or create a build stage</p>}
                     </div>
                     <div className="editor-main-step-details">
-                        <Extensions.Renderer extensionPoint="pipeline.editor.css"/>
                         {selectedStage ? <EditorStepDetails step={selectedStep}
                                                             onDataChange={newValue => this.stepDataChanged(newValue)}
                                                             onDeleteStepClick={(step) => this.deleteStep(step)}/>
@@ -596,6 +594,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                 {titleBar}
                 {detailsOrPlaceholder}
                 <div id="soon" style={{...ss, visibility: sv}} onClick={()=>this.setState({s: false})}>&nbsp;</div>
+
                 {/* <button className="btn-warning" onClick={()=>this.dumpState()}>DUMP</button> */}
             </div>
         );
