@@ -396,6 +396,7 @@ export const actions = {
                 // Only interested in the event if we have already loaded the runs for that job.
                 if (eventJobRuns && event.job_run_queueId) {
                     const newRuns = clone(eventJobRuns);
+                    applyFetchMarkers(newRuns, eventJobRuns);
 
                     const queueItemToRemove = newRuns.find((run) => (
                         run.job_run_queueId === event.job_run_queueId
