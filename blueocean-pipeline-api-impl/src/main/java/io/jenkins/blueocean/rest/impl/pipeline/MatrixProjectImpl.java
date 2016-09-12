@@ -19,10 +19,12 @@ import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MATRIX_PROJECT;
+
 /**
  * @author Vivek Pandey
  */
-@Capability("hudson.matrix.MatrixProject")
+@Capability(JENKINS_MATRIX_PROJECT)
 public class MatrixProjectImpl extends PipelineFolderImpl {
 
     private final MatrixProject matrixProject;

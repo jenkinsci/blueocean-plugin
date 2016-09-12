@@ -11,12 +11,14 @@ import org.kohsuke.stapler.verb.PUT;
 import java.util.Collection;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
+
 /**
  * Defines pipeline state and its routing
  *
  * @author Vivek Pandey
  */
-@Capability("io.jenkins.blueocean.rest.model.BluePipeline")
+@Capability(BLUE_PIPELINE)
 public abstract class BluePipeline extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String NAME="name";

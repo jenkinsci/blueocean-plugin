@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.BlueRun.DATE_FORMAT_STRING;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
 import static org.junit.Assert.*;
 
 /**
@@ -790,11 +791,11 @@ public class MultiBranchTest extends PipelineBaseTest {
         Assert.assertNotNull(response);
 
         List<String> classes = (List<String>) response.get("classes");
-        Assert.assertTrue(classes.contains("hudson.model.Job")
-            && classes.contains("org.jenkinsci.plugins.workflow.job.WorkflowJob")
-            && classes.contains("io.jenkins.blueocean.rest.model.BlueBranch")
-            && classes.contains("io.jenkins.blueocean.rest.model.BluePipeline")
-            && classes.contains("io.jenkins.blueocean.rest.impl.pipeline.PullReuqest"));
+        Assert.assertTrue(classes.contains(JENKINS_JOB)
+            && classes.contains(JENKINS_WORKFLOW_JOB)
+            && classes.contains(BLUE_BRANCH)
+            && classes.contains(BLUE_PIPELINE)
+            && classes.contains(PULL_REQUEST));
     }
 
 
