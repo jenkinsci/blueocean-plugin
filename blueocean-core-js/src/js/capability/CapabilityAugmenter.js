@@ -31,7 +31,8 @@ export class CapabilityAugmenter {
 
     constructor(capabilityStore) {
         this._capabilityStore = capabilityStore;
-        this._loggingEnabled = false;
+        this._perfLoggingEnabled = false;
+        this._warnLoggingEnabled = false;
     }
 
     /**
@@ -47,7 +48,11 @@ export class CapabilityAugmenter {
     }
 
     enablePerfLogging() {
-        this._loggingEnabled = true;
+        this._perfLoggingEnabled = true;
+    }
+
+    enableWarningLogging() {
+        this._warnLoggingEnabled = true;
     }
 
     /**
@@ -91,7 +96,7 @@ export class CapabilityAugmenter {
             node = nodesToWalk.shift();
         }
 
-        if (this._loggingEnabled) {
+        if (this._perfLoggingEnabled) {
             console.debug(`augmenter.parse: ${new Date().getTime() - started}ms`);
         }
 
@@ -131,12 +136,14 @@ export class CapabilityAugmenter {
             }
         }
 
-        if (this._loggingEnabled) {
+        if (this._perfLoggingEnabled) {
             console.debug(`augmenter.inject: ${new Date().getTime() - started}ms`);
         }
 
-        for (const className of unresolved) {
-            console.warn(`could not resolve capabilities for ${className}; an error may have occurred during lookup`);
+        if (this._warnLoggingEnabled) {
+            for (const className of unresolved) {
+                console.warn(`could not resolve capabilities for ${className}; an error may have occurred during lookup`);
+            }
         }
 
         return classMap;

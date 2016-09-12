@@ -35,7 +35,6 @@ describe('CapabilityAugmenter', () => {
     beforeEach(() => {
         mockCapabilityStore = new MockCapabilityStore();
         augmenter = new CapabilityAugmenter(mockCapabilityStore);
-        augmenter.enablePerfLogging();
     });
 
     describe('augmentCapabilities', () => {
