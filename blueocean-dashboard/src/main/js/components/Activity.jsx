@@ -139,7 +139,8 @@ export class Activity extends Component {
                                     pipeline,
                                     changeset: latestRecord,
                                     result: new RunRecord(run),
-                                }} />
+                                }}
+                                />
                             );
                         })
                     }
