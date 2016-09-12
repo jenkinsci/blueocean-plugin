@@ -40,7 +40,7 @@
     "envify": "3.4.1"
   },
   "peerDependencies": {
-    "@jenkins-cd/js-builder": "0.0.40-beta5",
+    "@jenkins-cd/js-builder": "^0.0.40-beta5",
     "@jenkins-cd/js-modules": "^0.0.8-beta3",
     "react": "^0.14.7 || ^15.0.0",
     "react-dom": "^0.14.7 || ^15.0.0"
