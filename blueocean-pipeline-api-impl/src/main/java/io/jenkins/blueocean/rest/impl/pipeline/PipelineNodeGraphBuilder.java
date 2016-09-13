@@ -184,6 +184,7 @@ public class PipelineNodeGraphBuilder {
     public List<FlowNode> getParallelBranchSteps(FlowNode p){
         List<FlowNode> steps = new ArrayList<>();
         int i = sortedNodes.indexOf(p);
+        FlowNode prev=p;
         if(i>=0 && isParallelBranch(p)){
             FlowNode end = PipelineNodeUtil.getStepEndNode(sortedNodes,p);
             for(int j=i+1; j < sortedNodes.size(); j++){
@@ -196,11 +197,12 @@ public class PipelineNodeGraphBuilder {
                     continue;
                 }
                 //we take only the legal children
-                if(!PipelineNodeUtil.isInBlock(p, end, c)){
+                if(!PipelineNodeUtil.isInBlock(p, end, c) && !isParentOf(c,prev)){
                     continue;
                 }
                 if(c instanceof StepAtomNode) {
                     steps.add(c);
+                    prev=c;
 
                     FlowNode endNode = PipelineNodeUtil.getStepEndNode(sortedNodes,c);
                     if (endNode != null) {
@@ -210,6 +212,15 @@ public class PipelineNodeGraphBuilder {
             }
         }
         return steps;
+    }
+
+    private boolean isParentOf(FlowNode node, FlowNode child){
+        for(FlowNode n:node.getParents()){
+            if(child.equals(n)){
+                return true;
+            }
+        }
+        return false;
     }
 
 
