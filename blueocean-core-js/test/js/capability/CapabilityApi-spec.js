@@ -29,12 +29,16 @@ describe('CapabilityStore', () => {
 
     describe('fetchCapabilities', () => {
         it('de-duplicates class names', () => {
-            capabilityApi.fetchCapabilities('A', 'A', 'B');
+            capabilityApi.fetchCapabilities(['A', 'A', 'B']);
 
             assert.isTrue(fetchJSON.calledOnce);
-            const args = fetchJSON.args[0];
-            const query = args[0].split('=').slice(-1).join('');
-            assert.equal(query, 'A,B');
+            const fetchParams = fetchJSON.args[0][1];
+            assert.isOk(fetchParams);
+            const { fetchOptions } = fetchParams;
+            assert.isOk(fetchOptions);
+            const { body } = fetchOptions;
+            assert.isOk(body);
+            assert.equal(body, '{"q":["A","B"]}');
         });
     });
 });

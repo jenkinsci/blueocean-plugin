@@ -10,17 +10,26 @@ export class CapabilityApi {
     /**
      * Fetch the capabilities for one or more class names.
      *
-     * @param classNames
+     * @param {Array} classNames
      * @returns {Promise} with fulfilled {object} keyed by className, with an array of string capability names.
      * @private
      */
-    fetchCapabilities(...classNames) {
+    fetchCapabilities(classNames) {
         const noDuplicates = classNames.filter((item, index, self) => self.indexOf(item) === index);
         const path = config.getJenkinsRootURL();
-        const classList = noDuplicates.join(',');
-        const classesUrl = utils.cleanSlashes(`${path}/blue/rest/classes/?q=${classList}`);
+        const classesUrl = utils.cleanSlashes(`${path}/blue/rest/classes/`);
 
-        return Fetch.fetchJSON(classesUrl);
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(
+                { q: noDuplicates }
+            ),
+        };
+
+        return Fetch.fetchJSON(classesUrl, { fetchOptions } );
     }
 
 }
