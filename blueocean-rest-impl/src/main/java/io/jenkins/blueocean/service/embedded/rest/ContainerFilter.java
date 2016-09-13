@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -23,12 +24,12 @@ public abstract class ContainerFilter implements ExtensionPoint {
      * Name to match
      */
     public abstract String getName();
-    
+
     /**
      * Predicate to filter items
      */
     public abstract Predicate<Item> getFilter();
-    
+
     /**
      * Filters the item list based on the current StaplerRequest
      */
@@ -43,7 +44,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
         }
         return filter(items, itemFilter.split(","));
     }
-    
+
     /**
      * Filters the item list based on the supplied filter name
      */
@@ -58,7 +59,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
                 }
                 filters[i] = f;
             }
-            Collection<T> out = new ArrayList<>();
+            Collection<T> out = new LinkedList<>();
             nextItem: for (T item : items) {
                 for (int i = 0; i < filters.length; i++) {
                     if (!filters[i].apply(item)) {
@@ -71,7 +72,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
         }
         return items;
     }
-    
+
     /**
      * Finds a item filter by name
      */

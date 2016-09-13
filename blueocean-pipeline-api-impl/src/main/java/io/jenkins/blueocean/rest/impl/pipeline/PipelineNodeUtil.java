@@ -7,6 +7,7 @@ import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -110,6 +111,18 @@ public class PipelineNodeUtil {
             if(n instanceof StepEndNode){
                 StepEndNode endNode = (StepEndNode) n;
                 if(endNode.getStartNode().equals(startNode))
+                    return endNode;
+            }
+        }
+        return null;
+    }
+
+    public static FlowNode getEndNode(List<FlowNode> sortedNodes, FlowNode startNode){
+        for(int i = sortedNodes.size() - 1; i >=0; i--){
+            FlowNode n = sortedNodes.get(i);
+            if(n instanceof StepAtomNode){
+                StepAtomNode endNode = (StepAtomNode) n;
+                if(endNode.equals(startNode))
                     return endNode;
             }
         }

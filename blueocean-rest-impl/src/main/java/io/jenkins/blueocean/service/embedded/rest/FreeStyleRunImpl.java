@@ -16,12 +16,14 @@ import org.kohsuke.stapler.QueryParameter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_FREE_STYLE_BUILD;
+
 /**
  * FreeStyleRunImpl can add it's own element here
  *
  * @author Vivek Pandey
  */
-@Capability("hudson.model.FreeStyleBuild")
+@Capability(JENKINS_FREE_STYLE_BUILD)
 public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     public FreeStyleRunImpl(FreeStyleBuild run, Link parent) {
         super(run, parent);

@@ -11,12 +11,14 @@ import org.kohsuke.stapler.verb.PUT;
 import java.util.Collection;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
+
 /**
  * Defines pipeline state and its routing
  *
  * @author Vivek Pandey
  */
-@Capability("io.jenkins.blueocean.rest.model.BluePipeline")
+@Capability(BLUE_PIPELINE)
 public abstract class BluePipeline extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String NAME="name";
@@ -40,6 +42,12 @@ public abstract class BluePipeline extends Resource {
 
     /** stop pipeline run */
     public static final String STOP_PERMISSION = "stop";
+
+    /** Number of running jobs of this pipeline */
+    public static final String NUMBER_OF_RUNNING_PIPELINES = "numberOfRunningPipelines";
+
+    /** Number of queued jobs of this pipeline */
+    public static final String NUMBER_OF_QUEUED_PIPELINES = "numberOfQueuedPipelines";
 
     /**
      * @return name of the organization
@@ -147,4 +155,17 @@ public abstract class BluePipeline extends Resource {
      */
     @Exported(name = PERMISSIONS)
     public abstract Map<String, Boolean> getPermissions();
+
+    /**
+     * @return Gives number of running jobs in this pipeline
+     */
+    @Exported(name = NUMBER_OF_RUNNING_PIPELINES)
+    public abstract int getNumberOfRunningPipelines();
+
+
+    /**
+     * @return Gives number of queued jobs in this pipeline
+     */
+    @Exported(name = NUMBER_OF_QUEUED_PIPELINES)
+    public abstract int getNumberOfQueuedPipelines();
 }

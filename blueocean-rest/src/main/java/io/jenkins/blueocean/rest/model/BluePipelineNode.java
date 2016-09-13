@@ -7,6 +7,8 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.List;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_NODE;
+
 /**
  * Abstraction of Pipeline run node.
  *
@@ -52,7 +54,7 @@ import java.util.List;
  *</pre>
  * @author Vivek Pandey
  */
-@Capability("io.jenkins.blueocean.rest.model.BluePipelineNode")
+@Capability(BLUE_PIPELINE_NODE)
 public abstract class BluePipelineNode extends BluePipelineStep{
     /**
      * @return Steps inside a Pipeline Stage or Parallel branch

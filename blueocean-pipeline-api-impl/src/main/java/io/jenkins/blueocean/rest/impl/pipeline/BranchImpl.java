@@ -16,10 +16,14 @@ import jenkins.scm.api.actions.ChangeRequestAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
+
 /**
  * @author Vivek Pandey
  */
-@Capability({"io.jenkins.blueocean.rest.model.BlueBranch","org.jenkinsci.plugins.workflow.job.WorkflowJob", "io.jenkins.blueocean.rest.impl.pipeline.PullReuqest"})
+@Capability({BLUE_BRANCH, JENKINS_WORKFLOW_JOB, PULL_REQUEST})
 public class BranchImpl extends PipelineImpl {
 
     private static final String PULL_REQUEST = "pullRequest";
