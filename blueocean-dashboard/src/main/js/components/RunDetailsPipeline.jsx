@@ -143,7 +143,7 @@ export class RunDetailsPipeline extends Component {
         // we are using try/catch to throw an early out error
         try {
             if (event.pipeline_run_id !== this.props.result.id) {
-                // console.log('early out');
+                console.log('early out');
                 throw new Error('exit');
             }
             // we turn on refetch so we always fetch a new Node result
@@ -155,11 +155,11 @@ export class RunDetailsPipeline extends Component {
                     if (this.state.followAlong) { // if we do it means we want karaoke
                         // if the step_stage_id has changed we need to change the focus
                         if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
-                            // console.log('nodes fetching via sse triggered');
+                            console.log('nodes fetching via sse triggered');
                             delete this.mergedConfig.node;
                             fetchNodes({ ...this.mergedConfig, refetch });
                         } else {
-                            // console.log('only steps fetching via sse triggered');
+                            console.log('only steps fetching via sse triggered');
                             fetchSteps({ ...this.mergedConfig, refetch });
                         }
                     }
@@ -222,6 +222,7 @@ export class RunDetailsPipeline extends Component {
         const nodeKey = calculateNodeBaseUrl(calculatedResponse);
         // get the currentSteps (identified by the prior key)
         const currentSteps = steps ? steps[stepKey] : null;
+        console.log(stepKey, steps);
         // do we have steps
         const noSteps = currentSteps && currentSteps.model ? currentSteps.model.length === 0 : true;
         // does the node has any results/steps
