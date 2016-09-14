@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
+// TODO: figure out why uncommenting this completely breaks loading the bundle
 import { classMetadataStore } from '@jenkins-cd/js-extensions';
 import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 
@@ -53,62 +54,6 @@ export class DashboardCards extends Component {
             this.props.store,
             (runData, event) => this._handleJobRunUpdate(runData, event),
         );
-
-        this._initializeCapabilities(this.props);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this._initializeCapabilities(nextProps);
-    }
-
-    // TODO: eliminate capabilities code after JENKINS-37519 is implemented
-    _initializeCapabilities(props) {
-        if (props.favorites && props.favorites.size) {
-            const capabilities = this.state.capabilities;
-
-            for (const favorite of props.favorites) {
-                const className = favorite.item._class;
-                capabilities[className] = null;
-                classMetadataStore.getClassMetadata(className, (classMeta) => this._updateCapabilities(classMeta));
-            }
-
-            this.setState({
-                capabilities,
-            });
-        }
-    }
-
-    _updateCapabilities(classMeta) {
-        const capabilities = this.state.capabilities;
-        const className = classMeta.classes[0];
-        if (!capabilities[className]) {
-            capabilities[className] = classMeta;
-
-            this.setState({
-                capabilities,
-            });
-        }
-    }
-
-    _hasPendingCapabilities() {
-        for (const key in this.state.capabilities) {
-            if (!this.state.capabilities[key]) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    _getCapabilities(item) {
-        const capabilities = this.state.capabilities[item._class];
-        return capabilities && capabilities.classes ?
-            capabilities.classes : [];
-    }
-
-    _hasCapability(item, capabilityName) {
-        const capabilities = this._getCapabilities(item);
-        return capabilities.indexOf(capabilityName) !== -1;
     }
 
     _onRunAgainClick(pipeline) {
@@ -201,7 +146,7 @@ export class DashboardCards extends Component {
      * @private
      */
     _extractNames(pipeline) {
-        const isBranch = this._hasCapability(pipeline, BRANCH_CAPABILITY);
+        const isBranch = pipeline.can(BRANCH_CAPABILITY);
 
         let fullName = null;
         let pipelineName = null;
@@ -225,7 +170,7 @@ export class DashboardCards extends Component {
     }
 
     _renderCardStack() {
-        if (!this.props.favorites || this._hasPendingCapabilities()) {
+        if (!this.props.favorites) {
             return null;
         }
 
@@ -234,7 +179,6 @@ export class DashboardCards extends Component {
         const favoriteCards = sortedFavorites.map(favorite => {
             const pipeline = favorite.item;
             const latestRun = pipeline.latestRun;
-            const capabilities = this._getCapabilities(pipeline);
             const names = this._extractNames(pipeline);
 
             let status = null;
@@ -261,7 +205,6 @@ export class DashboardCards extends Component {
                     <PipelineCard
                       router={this.props.router}
                       item={pipeline}
-                      capabilities={capabilities}
                       status={status}
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
