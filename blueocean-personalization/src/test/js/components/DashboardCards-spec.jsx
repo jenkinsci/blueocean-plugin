@@ -7,7 +7,6 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import { User } from '../../../main/js/model/User';
-import { favorites } from '../data/favorites';
 import { DashboardCards } from '../../../main/js/components/DashboardCards';
 import { bindCapability } from '../MetadataUtils';
 
@@ -17,6 +16,7 @@ const user = new User({
     id: 'cmeyers',
 });
 
+const favorites = require('../data/favorites.json');
 const favorlitesList = new List(favorites);
 
 describe('DashboardCards', () => {

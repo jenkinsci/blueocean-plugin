@@ -1,5 +1,4 @@
-/* eslint-disable quotes,quote-props,comma-dangle */
-export const favorites = [
+[
     {
         "_class": "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
         "_links": {
@@ -260,7 +259,7 @@ export const favorites = [
             "organization": "jenkins",
             "weatherScore": 100,
             "pullRequest": null
-        },
+        }
     },
     {
         "_class": "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
@@ -1047,5 +1046,5 @@ export const favorites = [
             "weatherScore": 100,
             "pullRequest": null
         }
-    },
-];
+    }
+]
