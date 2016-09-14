@@ -20,7 +20,6 @@ const user = new User({
 const favorlitesList = new List(favorites);
 
 describe('DashboardCards', () => {
-
     beforeEach(() => {
         // needed to prevent DashboardCards from blowing up internally
         bindCapability(
