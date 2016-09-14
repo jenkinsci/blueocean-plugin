@@ -4,10 +4,11 @@ import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
 import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
-import { StopPropagation } from './StopPropagation';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 const { object } = PropTypes;
+
+const stopProp = (event) => event.stopPropagation();
 
 export default class Branches extends Component {
     constructor(props) {
@@ -63,20 +64,19 @@ export default class Branches extends Component {
                 <td><CommitHash commitId={commitId} /></td>
                 <td>{msg || '-'}</td>
                 <td><ReadableDate date={endTime} liveUpdate /></td>
-                <td>
-                    <StopPropagation className="actions">
-                        <RunButton
-                          className="icon-button"
-                          runnable={data}
-                          latestRun={data.latestRun}
-                          onNavigation={openRunDetails}
-                        />
-                        <Extensions.Renderer
-                          extensionPoint="jenkins.pipeline.branches.list.action"
-                          pipeline={data}
-                          store={this.context.store}
-                        />
-                    </StopPropagation>
+                { /* suppress all click events from extension points */ }
+                <td className="actions" onClick={(event) => stopProp(event)}>
+                    <RunButton
+                      className="icon-button"
+                      runnable={data}
+                      latestRun={data.latestRun}
+                      onNavigation={openRunDetails}
+                    />
+                    <Extensions.Renderer
+                      extensionPoint="jenkins.pipeline.branches.list.action"
+                      pipeline={data}
+                      store={this.context.store}
+                    />
                 </td>
             </tr>
         );
