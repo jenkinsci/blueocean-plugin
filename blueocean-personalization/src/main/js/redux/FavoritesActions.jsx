@@ -4,7 +4,7 @@
 
 import { ACTION_TYPES } from './FavoritesStore';
 import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
-import { capabilityAugmenter as augmenter} from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js';
 
 import { cleanSlashes } from '../util/UrlUtils';
 
