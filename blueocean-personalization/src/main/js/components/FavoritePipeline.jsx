@@ -73,6 +73,11 @@ export class FavoritePipeline extends Component {
     }
 
     render() {
+        // TODO: this should probably key off a more generic capability like 'FavoritableItem'
+        if (this.props.pipeline.can('hudson.matrix.MatrixProject')) {
+            return null;
+        }
+
         return (
             <FavoritesProvider store={this.props.store}>
                 <Favorite checked={this.state.favorite} className={this.props.className}
