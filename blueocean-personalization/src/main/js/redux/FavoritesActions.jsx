@@ -1,9 +1,10 @@
 /**
  * Created by cmeyers on 7/6/16.
  */
+import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js';
 
 import { ACTION_TYPES } from './FavoritesStore';
-import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
 import { cleanSlashes } from '../util/UrlUtils';
 
 const fetchFlags = {
@@ -142,6 +143,7 @@ export const actions = {
     generateData(request, actionType, optional) {
         const { url, fetchOptions } = request;
         return (dispatch) => Fetch.fetchJSON(url, { fetchOptions })
+            .then(data => augmenter.augmentCapabilities(data))
             .then((json) => {
                 fetchFlags[actionType] = false;
                 return dispatch({
