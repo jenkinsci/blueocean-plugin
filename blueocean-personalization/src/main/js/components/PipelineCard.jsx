@@ -113,7 +113,7 @@ export class PipelineCard extends Component {
 
         const notRunningStatus = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
         const hasFailedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
-        const isPipeline = capable(item, CAPABILITY_PIPELINE);
+        const isPipeline = item && capable(item, CAPABILITY_PIPELINE);
         const stopClass = this.state.stopping ? 'stopping' : '';
         const commitText = commitId ? commitId.substr(0, 7) : '';
 

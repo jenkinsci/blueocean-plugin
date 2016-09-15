@@ -8,7 +8,7 @@ import Immutable from 'immutable';
 
 import { User } from '../../../main/js/model/User';
 import { DashboardCards } from '../../../main/js/components/DashboardCards';
-import { bindCapability } from '../MetadataUtils';
+import { CapabilityTestUtils } from '../CapabilityTestUtils';
 
 const { List } = Immutable;
 
@@ -16,16 +16,27 @@ const user = new User({
     id: 'cmeyers',
 });
 
-const favorites = require('../data/favorites.json');
-const favorlitesList = new List(favorites);
+describe('DashboardCards', () => {
+    let favorites;
+    let favorlitesList;
+    let testUtils;
 
-describe.skip('DashboardCards', () => {
-    beforeEach(() => {
-        // needed to prevent DashboardCards from blowing up internally
-        bindCapability(
+    beforeEach((done) => {
+        favorites = require('../data/favorites.json');
+
+        testUtils = new CapabilityTestUtils();
+        testUtils.bindCapability(
             'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl',
             'io.jenkins.blueocean.rest.model.BlueBranch'
         );
+        testUtils.augment(favorites);
+
+        favorlitesList = new List(favorites);
+        done();
+    });
+
+    afterEach(() => {
+        testUtils.unbindAll();
     });
 
     it('renders without error for empty props', () => {
@@ -36,7 +47,7 @@ describe.skip('DashboardCards', () => {
         assert.isOk(wrapper);
     });
 
-    it('sorts the cards by status, then by name', () => {
+    it('sorts the cards by status, then by most recent', () => {
         const wrapper = shallow(
             <DashboardCards
               user={user}

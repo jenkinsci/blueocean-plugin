@@ -7,10 +7,20 @@ import { shallow } from 'enzyme';
 
 import { PipelineCard } from '../../../main/js/components/PipelineCard';
 
-describe.skip('PipelineCard', () => {
-    const capabilities = [
-        'org.jenkinsci.plugins.workflow.job.WorkflowJob',
-    ];
+describe('PipelineCard', () => {
+    let item;
+
+    beforeEach(() => {
+        item = {
+            _capabilities: ['org.jenkinsci.plugins.workflow.job.WorkflowJob'],
+            status: null,
+            organization: 'Jenkins',
+            pipeline: 'blueocean',
+            branch: 'feature/JENKINS-123',
+            commitId: '447d8e1',
+            favorite: true,
+        };
+    });
 
     it('renders without error for empty props', () => {
         const wrapper = shallow(
@@ -21,10 +31,10 @@ describe.skip('PipelineCard', () => {
     });
 
     it('renders basic child elements', () => {
-        const status = 'SUCCESS';
+        item.status = 'SUCCESS';
         const wrapper = shallow(
-            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
-              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
+              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
             />
         );
 
@@ -39,10 +49,10 @@ describe.skip('PipelineCard', () => {
     });
 
     it('renders "rerun" button after failure', () => {
-        const status = 'FAILURE';
+        item.status = 'FAILURE';
         const wrapper = shallow(
-            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
-              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
+              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
             />
         );
 
@@ -50,10 +60,10 @@ describe.skip('PipelineCard', () => {
     });
 
     it('renders no "rerun" button after success', () => {
-        const status = 'SUCCESS';
+        item.status = 'SUCCESS';
         const wrapper = shallow(
-            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
-              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
+              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
             />
         );
 
@@ -61,10 +71,10 @@ describe.skip('PipelineCard', () => {
     });
 
     it('renders a "run" button when successful', () => {
-        const status = 'SUCCESS';
+        item.status = 'SUCCESS';
         const wrapper = shallow(
-            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
-              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
+              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
             />
         );
 
@@ -72,10 +82,10 @@ describe.skip('PipelineCard', () => {
     });
 
     it('renders no "run" button while running', () => {
-        const status = 'RUNNING';
+        item.status = 'RUNNING';
         const wrapper = shallow(
-            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
-              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
+              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
             />
         );
 
@@ -83,10 +93,10 @@ describe.skip('PipelineCard', () => {
     });
 
     it('renders a "stop" button while running', () => {
-        const status = 'RUNNING';
+        item.status = 'RUNNING';
         const wrapper = shallow(
-            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
-              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
+              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
             />
         );
 
@@ -94,10 +104,10 @@ describe.skip('PipelineCard', () => {
     });
 
     it('renders no "stop" button after success', () => {
-        const status = 'SUCCESS';
+        item.status = 'SUCCESS';
         const wrapper = shallow(
-            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
-              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
+              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
             />
         );
 
@@ -105,15 +115,15 @@ describe.skip('PipelineCard', () => {
     });
 
     it('escapes the branch name', () => {
-        const branchName = 'feature/JENKINS-667';
+        item.branch = encodeURIComponent('feature/JENKINS-667');
         const wrapper = shallow(
-            <PipelineCard status="SUCCESS" organization="Jenkins" pipeline="blueocean"
-              branch={encodeURIComponent(branchName)} commitId="447d8e1"
+            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
+              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
             />
         );
 
         const elements = wrapper.find('.branchText');
         assert.equal(elements.length, 1);
-        assert.equal(elements.at(0).text(), branchName);
+        assert.equal(elements.at(0).text(), decodeURIComponent(item.branch));
     });
 });

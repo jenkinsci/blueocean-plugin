@@ -7,9 +7,6 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
-// TODO: figure out why uncommenting this completely breaks loading the bundle
-// eslint-disable-next-line
-import { classMetadataStore } from '@jenkins-cd/js-extensions';
 import { capable, ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
