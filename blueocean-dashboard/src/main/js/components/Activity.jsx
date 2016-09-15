@@ -138,7 +138,9 @@ export class Activity extends Component {
                                     run,
                                     pipeline,
                                     changeset: latestRecord,
-                                    result: new RunRecord(run) }} />
+                                    result: new RunRecord(run),
+                                }}
+                                />
                             );
                         })
                     }

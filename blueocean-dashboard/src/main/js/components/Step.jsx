@@ -153,7 +153,8 @@ export default class Node extends Component {
                 label: title,
                 onCollapse: removeFocus,
                 onExpand: getLogForNode,
-            }}>
+            }}
+            >
                 {children}
             </ResultItem>
       </div>);
