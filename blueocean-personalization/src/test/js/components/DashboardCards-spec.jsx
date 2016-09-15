@@ -19,7 +19,7 @@ const user = new User({
 const favorites = require('../data/favorites.json');
 const favorlitesList = new List(favorites);
 
-describe('DashboardCards', () => {
+describe.skip('DashboardCards', () => {
     beforeEach(() => {
         // needed to prevent DashboardCards from blowing up internally
         bindCapability(

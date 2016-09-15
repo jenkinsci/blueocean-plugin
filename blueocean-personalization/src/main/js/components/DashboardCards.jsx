@@ -8,6 +8,7 @@ import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
 // TODO: figure out why uncommenting this completely breaks loading the bundle
+// eslint-disable-next-line
 import { classMetadataStore } from '@jenkins-cd/js-extensions';
 import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 
