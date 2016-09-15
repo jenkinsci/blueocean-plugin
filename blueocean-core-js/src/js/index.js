@@ -20,6 +20,9 @@ export { RunButton } from './components/RunButton';
 
 // export services as a singleton so all plugins will use the same instance
 
+// capabilities
+export { capabilityStore, capabilityAugmenter } from './capability';
+
 // limit to single instance so that duplicate REST calls aren't made as events come in
 const sseBus = new SseBus(sse, Fetch.fetchJSON);
 export { sseBus as SseBus };
