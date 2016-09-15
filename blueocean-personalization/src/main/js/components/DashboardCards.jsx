@@ -10,7 +10,7 @@ import { List } from 'immutable';
 // TODO: figure out why uncommenting this completely breaks loading the bundle
 // eslint-disable-next-line
 import { classMetadataStore } from '@jenkins-cd/js-extensions';
-import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
+import { capable, ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
@@ -147,7 +147,7 @@ export class DashboardCards extends Component {
      * @private
      */
     _extractNames(pipeline) {
-        const isBranch = pipeline.can(BRANCH_CAPABILITY);
+        const isBranch = capable(pipeline, BRANCH_CAPABILITY);
 
         let fullName = null;
         let pipelineName = null;

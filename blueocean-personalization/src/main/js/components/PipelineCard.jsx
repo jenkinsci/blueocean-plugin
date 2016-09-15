@@ -4,6 +4,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Icon } from 'react-material-icons-blue';
+import { capable } from '@jenkins-cd/blueocean-core-js';
 import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 
 const stopProp = (event) => {
@@ -112,7 +113,7 @@ export class PipelineCard extends Component {
 
         const notRunningStatus = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
         const hasFailedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
-        const isPipeline = item.can(CAPABILITY_PIPELINE);
+        const isPipeline = capable(item, CAPABILITY_PIPELINE);
         const stopClass = this.state.stopping ? 'stopping' : '';
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
