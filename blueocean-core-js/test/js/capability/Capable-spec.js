@@ -3,36 +3,46 @@
  */
 import { assert } from 'chai';
 
-import { Capable } from '../../../src/js/capability/Capable';
+import { Capable, capable } from '../../../src/js/capability/Capable';
 
 describe('Capable', () => {
-    let capable;
+    let testObj;
 
     beforeEach(() => {
-        capable = new Capable();
-        capable._capabilities = [
-            'a.b.LongName',
-            'ShortName',
-        ];
+        testObj = {
+            _capabilities: [
+                'a.b.LongName',
+                'ShortName',
+            ],
+        };
+        testObj.can = new Capable().can;
     });
 
-    describe('can', () => {
+    describe('capable - static function', () => {
         it('matches on long name (exact)', () => {
-            assert.isTrue(capable.can('a.b.LongName'));
+            assert.isTrue(capable(testObj, 'a.b.LongName'));
         });
 
         it('matches on long name (using shortname)', () => {
-            assert.isTrue(capable.can('LongName'));
+            assert.isTrue(capable(testObj, 'LongName'));
         });
 
         it('fails to match', () => {
-            assert.isFalse(capable.can('a.LongName'));
+            assert.isFalse(capable(testObj, 'a.LongName'));
+        });
+    });
+
+    describe('can - embedded function', () => {
+        it('matches on long name (exact)', () => {
+            assert.isTrue(testObj.can('a.b.LongName'));
         });
 
-        it('matches on long name using mixin', () => {
-            const someObject = { _capabilities: ['a.b.LongName'] };
-            someObject.can = capable.can;
-            assert.isTrue(someObject.can('a.b.LongName'));
+        it('matches on long name (using shortname)', () => {
+            assert.isTrue(testObj.can('LongName'));
+        });
+
+        it('fails to match', () => {
+            assert.isFalse(testObj.can('a.LongName'));
         });
     });
 });
