@@ -13,7 +13,7 @@ const extractStatus = (favorite) => {
 };
 
 // sorts the cards based on 1. status 2. endTime, startTime or enQueueTime (descending)
-export const sortByStatusByRecent = (favoriteA, favoriteB) => {
+const sortByStatusByRecent = (favoriteA, favoriteB) => {
     const statusA = extractStatus(favoriteA);
     const statusB = extractStatus(favoriteB);
     const orderA = statusSortOrder.indexOf(statusA);
@@ -61,12 +61,21 @@ export const sortByStatusByRecent = (favoriteA, favoriteB) => {
     return 0;
 };
 
+/**
+ * Applies proper sorting to favorites.
+ */
 export class FavoritesSortHelper {
 
     constructor() {
         this._statusMap = {};
     }
 
+    /**
+     * Apply the standard "by status, then by recent" sort to favorites.
+     *
+     * @param {Array|List} favorites
+     * @returns {Array|List}
+     */
     applyStandardSort(favorites) {
         this._statusMap = {};
 
@@ -79,9 +88,18 @@ export class FavoritesSortHelper {
         return favorites.sort(sortByStatusByRecent);
     }
 
-    applyUpdate(allFavorites, updatedFavorite) {
+    /**
+     * Apply the proper sort when favorite in the list is updated.
+     *
+     * @param {Array|List} allFavorites
+     * @param updatedFavorite
+     * @returns {Array|List}
+     */
+    applyUpdateSort(allFavorites, updatedFavorite) {
         const status = extractStatus(updatedFavorite);
 
+        // a significant change occurred that should cause a full resort of the list
+        // this prevents the list from resorting when jobs transition to QUEUED or RUNNING
         if (status === 'FAILURE' || status === 'ABORTED' || status === 'UNSTABLE' || status === 'SUCCESS') {
             return this.applyStandardSort(allFavorites);
         }

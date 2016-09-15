@@ -90,7 +90,7 @@ const actionHandlers = {
                 updatedFavorite.item.latestRun = jobRun;
 
                 const updatedFavorites = favorites.set(index, updatedFavorite);
-                const sortedFavorites = sortHelper.applyUpdate(updatedFavorites, updatedFavorite);
+                const sortedFavorites = sortHelper.applyUpdateSort(updatedFavorites, updatedFavorite);
                 return state.set('favorites', sortedFavorites);
             }
         }

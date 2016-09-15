@@ -51,9 +51,9 @@ export const actions = {
     },
 
     sortFavorites() {
-        return (dispatch) => {
-            return dispatch({ type: ACTION_TYPES.SORT_FAVORITES });
-        };
+        return (dispatch) => (
+            dispatch({ type: ACTION_TYPES.SORT_FAVORITES })
+        );
     },
 
     toggleFavorite(addFavorite, branch, favoriteToRemove) {
