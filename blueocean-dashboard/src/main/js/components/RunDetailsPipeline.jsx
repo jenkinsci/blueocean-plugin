@@ -33,7 +33,7 @@ const QueuedState = () => (
                 style: { fill: '#fff' },
             }}
             />
-            <span>Waiting for run to start.</span>
+            <span className="waiting">Waiting for run to start.</span>
         </p>
     </EmptyStateView>
 );
