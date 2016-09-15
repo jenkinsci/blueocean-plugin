@@ -50,6 +50,12 @@ export const actions = {
         };
     },
 
+    sortFavorites() {
+        return (dispatch) => {
+            return dispatch({ type: ACTION_TYPES.SORT_FAVORITES });
+        };
+    },
+
     toggleFavorite(addFavorite, branch, favoriteToRemove) {
         return (dispatch) => {
             const baseUrl = UrlConfig.getJenkinsRootURL();

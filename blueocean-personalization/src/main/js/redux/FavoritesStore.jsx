@@ -23,6 +23,7 @@ export const FavoritesState = Record({
 export const ACTION_TYPES = keymirror({
     SET_USER: null,
     SET_FAVORITES: null,
+    SORT_FAVORITES: null,
     TOGGLE_FAVORITE: null,
     UPDATE_RUN: null,
 });
@@ -42,6 +43,16 @@ const actionHandlers = {
         const favoriteList = new List(payload);
         const sortedList = sortHelper.applyStandardSort(favoriteList);
         return state.set('favorites', sortedList);
+    },
+    [ACTION_TYPES.SORT_FAVORITES](state) {
+        const favoriteList = state.get('favorites');
+
+        if (favoriteList && favoriteList.size) {
+            const sortedList = sortHelper.applyStandardSort(favoriteList);
+            return state.set('favorites', sortedList);
+        }
+
+        return state;
     },
     [ACTION_TYPES.TOGGLE_FAVORITE](state, { addFavorite, branch, payload }) {
         const favoritesList = state.get('favorites');

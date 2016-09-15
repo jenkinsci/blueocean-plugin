@@ -50,6 +50,8 @@ export class DashboardCards extends Component {
             this.props.store,
             (runData, event) => this._handleJobRunUpdate(runData, event),
         );
+
+        this.props.sortFavorites();
     }
 
     _onRunAgainClick(pipeline) {
@@ -243,6 +245,7 @@ DashboardCards.propTypes = {
     store: PropTypes.object,
     router: PropTypes.object,
     favorites: PropTypes.instanceOf(List),
+    sortFavorites: PropTypes.func,
     toggleFavorite: PropTypes.func,
     runPipeline: PropTypes.func,
     replayPipeline: PropTypes.func,
