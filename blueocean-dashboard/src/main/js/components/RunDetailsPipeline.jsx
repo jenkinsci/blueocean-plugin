@@ -143,7 +143,7 @@ export class RunDetailsPipeline extends Component {
         // we are using try/catch to throw an early out error
         try {
             if (event.pipeline_run_id !== this.props.result.id) {
-                console.log('early out');
+                // console.log('early out');
                 throw new Error('exit');
             }
             // we turn on refetch so we always fetch a new Node result
@@ -153,13 +153,18 @@ export class RunDetailsPipeline extends Component {
                 {
                     // we are not using an early out for the events since we want to refresh the node if we finished
                     if (this.state.followAlong) { // if we do it means we want karaoke
-                        // if the step_stage_id has changed we need to change the focus
-                        if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
-                            console.log('nodes fetching via sse triggered');
+                        /*
+                         * if the step_stage_id has changed we need to change the focus, however if we in a parallel
+                         * node we only want to fetch the steps, since it seems that the "parent" is the reporter of
+                         * some steps.
+                         */
+                        if (event.pipeline_step_stage_id !== this.mergedConfig.node
+                                && event.pipeline_step_stage_id !== this.mergedConfig.nodeReducer.parent) {
+                            // console.log('nodes fetching via sse triggered');
                             delete this.mergedConfig.node;
                             fetchNodes({ ...this.mergedConfig, refetch });
                         } else {
-                            console.log('only steps fetching via sse triggered');
+                            // console.log('only steps fetching via sse triggered');
                             fetchSteps({ ...this.mergedConfig, refetch });
                         }
                     }
@@ -222,7 +227,6 @@ export class RunDetailsPipeline extends Component {
         const nodeKey = calculateNodeBaseUrl(calculatedResponse);
         // get the currentSteps (identified by the prior key)
         const currentSteps = steps ? steps[stepKey] : null;
-        console.log(stepKey, steps);
         // do we have steps
         const noSteps = currentSteps && currentSteps.model ? currentSteps.model.length === 0 : true;
         // does the node has any results/steps
@@ -286,8 +290,11 @@ export class RunDetailsPipeline extends Component {
                 pathArray.shift();
                 newPath = `${pathArray.join('/')}/`;
             }
+            const isParallel = this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
+                this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
+
             // we only want to redirect to the node if the node is finished
-            if (nodeInfo.state === 'FINISHED') {
+            if (nodeInfo.state === 'FINISHED' || isParallel) {
                 newPath = `${newPath}${id}`;
             }
             // see whether we need to update the state
