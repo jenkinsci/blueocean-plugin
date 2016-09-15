@@ -299,7 +299,7 @@ export class RunDetailsPipeline extends Component {
                 newPath = `${newPath}${id}`;
             }
             // see whether we need to update the state
-            if (nodeInfo.state === 'FINISHED' && followAlong) {
+            if ((nodeInfo.state === 'FINISHED' || isParallel) && followAlong) {
                 this.setState({ followAlong: false });
             }
             if (nodeInfo.state !== 'FINISHED' && !followAlong) {
