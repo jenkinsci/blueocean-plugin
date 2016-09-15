@@ -83,7 +83,8 @@ class RunDetailsHeader extends Component {
                                 size: 20,
                                 icon: 'timelapse',
                                 style: { fill: '#fff' },
-                            }} />
+                            }}
+                            />
                             <TimeDuration millis={durationMillis} liveUpdate={run.isRunning()} />
                         </div>
                         <div>
@@ -91,7 +92,8 @@ class RunDetailsHeader extends Component {
                                 size: 20,
                                 icon: 'access_time',
                                 style: { fill: '#fff' },
-                            }} />
+                            }}
+                            />
                             <ReadableDate date={run.endTime} liveUpdate />
                         </div>
                     </div>
