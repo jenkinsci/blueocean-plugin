@@ -12,7 +12,6 @@ import { capable, ToastService as toastService } from '@jenkins-cd/blueocean-cor
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 import favoritesSseListener from '../model/FavoritesSseListener';
-import { sortByStatusByRecent } from '../util/SortUtils';
 import { uriEncodeOnce } from '../util/UrlUtils';
 
 import FavoritesProvider from './FavoritesProvider';
@@ -43,7 +42,6 @@ export class DashboardCards extends Component {
     constructor() {
         super();
         this.state = {
-            capabilities: {},
         };
     }
 
@@ -172,9 +170,7 @@ export class DashboardCards extends Component {
             return null;
         }
 
-        const sortedFavorites = this.props.favorites.sort(sortByStatusByRecent);
-
-        const favoriteCards = sortedFavorites.map(favorite => {
+        const favoriteCards = this.props.favorites.map(favorite => {
             const pipeline = favorite.item;
             const latestRun = pipeline.latestRun;
             const names = this._extractNames(pipeline);

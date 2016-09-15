@@ -60,3 +60,33 @@ export const sortByStatusByRecent = (favoriteA, favoriteB) => {
 
     return 0;
 };
+
+export class FavoritesSortHelper {
+
+    constructor() {
+        this._statusMap = {};
+    }
+
+    applyStandardSort(favorites) {
+        this._statusMap = {};
+
+        favorites.forEach(fav => {
+            const href = fav.item._links.self.href;
+            const status = extractStatus(fav);
+            this._statusMap[href] = status;
+        });
+
+        return favorites.sort(sortByStatusByRecent);
+    }
+
+    applyUpdate(allFavorites, updatedFavorite) {
+        const status = extractStatus(updatedFavorite);
+
+        if (status === 'FAILURE' || status === 'ABORTED' || status === 'UNSTABLE' || status === 'SUCCESS') {
+            return this.applyStandardSort(allFavorites);
+        }
+
+        return allFavorites.slice();
+    }
+
+}
