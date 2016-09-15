@@ -51,7 +51,9 @@ export class DashboardCards extends Component {
             (runData, event) => this._handleJobRunUpdate(runData, event),
         );
 
-        this.props.sortFavorites();
+        if (this.props.sortFavorites) {
+            this.props.sortFavorites();
+        }
     }
 
     _onRunAgainClick(pipeline) {

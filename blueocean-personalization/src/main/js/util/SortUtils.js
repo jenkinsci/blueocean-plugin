@@ -7,13 +7,13 @@ const statusSortOrder = [
     'UNSTABLE', 'RUNNING', 'QUEUED', 'SUCCESS',
 ];
 
-const extractStatus = (favorite) => {
+export const extractStatus = (favorite) => {
     const latestRun = favorite && favorite.item && favorite.item.latestRun || {};
     return latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
 };
 
 // sorts the cards based on 1. status 2. endTime, startTime or enQueueTime (descending)
-const sortByStatusByRecent = (favoriteA, favoriteB) => {
+export const sortByStatusByRecent = (favoriteA, favoriteB) => {
     const statusA = extractStatus(favoriteA);
     const statusB = extractStatus(favoriteB);
     const orderA = statusSortOrder.indexOf(statusA);
