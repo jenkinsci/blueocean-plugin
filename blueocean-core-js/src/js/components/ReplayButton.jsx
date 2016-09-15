@@ -6,8 +6,7 @@ import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
 
 import { RunApi as runApi } from '../';
-import { ToastService as toastService } from '../';
-import { isMultiBranchRun, buildRunDetailsUrlFromQueue } from '../UrlBuilder';
+import { createRunStartedToast } from './utils';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -36,36 +35,7 @@ export class ReplayButton extends Component {
         });
 
         runApi.replayRun(this.props.latestRun)
-            .then((runInfo) => this._nextAction(runInfo));
-    }
-
-    _nextAction(runInfo) {
-        const runId = runInfo.expectedBuildNumber;
-        const runDetailsUrl = buildRunDetailsUrlFromQueue(
-            runInfo._links.self.href,
-            this._isMultiBranch(),
-            runId
-        );
-
-        if (this.props.autoNavigate && this.props.onNavigation) {
-            this.props.onNavigation(runDetailsUrl);
-        } else {
-            const name = this.props.runnable.name;
-
-            toastService.newToast({
-                text: `Started "${name}" #${runId}`,
-                action: 'Open',
-                onActionClick: () => {
-                    if (this.props.onNavigation) {
-                        this.props.onNavigation(runDetailsUrl);
-                    }
-                },
-            });
-        }
-    }
-
-    _isMultiBranch() {
-        return isMultiBranchRun(this.props.latestRun._links.self.href);
+            .then((runInfo) => createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation));
     }
 
     render() {

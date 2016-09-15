@@ -142,11 +142,11 @@ describe('UrlBuilder', () => {
         describe('multibranch pipeline', () => {
             it('handles top-level job', () => {
                 const multibranch = createObjectFromLink(
-                    '/blue/rest/organizations/jenkins/pipelines/jenkinsfile-experiments/pipelines/PR-2/queue/31/'
+                    '/blue/rest/organizations/jenkins/pipelines/jdl1/pipelines/experiment%252Fbuild-locally-docker/queue/42/'
                 );
 
                 const url = buildRunDetailsUrlFromQueue(multibranch, true, 55);
-                assert.equal(url, '/organizations/jenkins/jenkinsfile-experiments/detail/PR-2/55/pipeline');
+                assert.equal(url, '/organizations/jenkins/jdl1/detail/experiment%2Fbuild-locally-docker/55/pipeline');
             });
 
             it('handles nested job', () => {

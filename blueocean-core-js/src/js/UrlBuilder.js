@@ -88,7 +88,7 @@ export const buildRunDetailsUrl = (run) => {
         `/${detailName}/${runId}/pipeline`;
 };
 
-export const buildRunDetailsUrlFromQueue = (queueItem, isMultiBranch, expectedBuildNumber) => {
+export const buildRunDetailsUrlFromQueue = (queueItem, isMultiBranch, expectedBuildNumber, encodeBranchName) => {
     const restUrl = extractRestUrl(queueItem);
     const tokens = trimEmptyTokens(restUrl.split('/'));
 
@@ -103,6 +103,11 @@ export const buildRunDetailsUrlFromQueue = (queueItem, isMultiBranch, expectedBu
     // if multi-branch, change the last value of 'pipelines' to 'branches' so it looks like a multibranch REST URL
     if (isMultiBranch) {
         tokens[tokens.length - 4] = 'branches';
+
+        // TODO: compensation until JENKINS-37746 is fixed - encode the branch name since the server only encoded it once
+        if (encodeBranchName) {
+            tokens[tokens.length - 3] = encodeURIComponent(tokens[tokens.length - 3]);
+        }
     }
 
     return buildRunDetailsUrl(tokens.join('/'));

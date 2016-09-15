@@ -18,7 +18,7 @@ export class RunApi {
             },
         };
 
-        return Fetch.fetch(runUrl, { fetchOptions });
+        return Fetch.fetchJSON(runUrl, { fetchOptions });
     }
 
     stopRun(run) {

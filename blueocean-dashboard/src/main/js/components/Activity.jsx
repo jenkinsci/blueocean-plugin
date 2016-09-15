@@ -66,6 +66,7 @@ export class Activity extends Component {
 
     render() {
         const { runs, pipeline } = this.props;
+        const { router } = this.context;
 
         if (!runs || !pipeline || pipeline.$pending) {
             return null;
@@ -80,8 +81,9 @@ export class Activity extends Component {
         const showRunButton = !isMultiBranchPipeline;
 
         const onNavigation = (url) => {
-            this.context.location.pathname = url;
-            this.context.router.push(location);
+            router.push({
+                pathname: url,
+            });
         };
 
         if (runs.$success && !runs.length) {
