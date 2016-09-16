@@ -9,7 +9,7 @@ import { RunApi as runApi } from '../';
 import { SseBus as sseBus } from '../';
 import { ToastService as toastService } from '../';
 import { buildRunDetailsUrl } from '../UrlBuilder';
-import { Security } from '../';
+import Security from '../security';
 
 const { permit } = Security;
 
