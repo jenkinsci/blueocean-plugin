@@ -1,7 +1,6 @@
 /**
  * Created by cmeyers on 9/16/16.
  */
-import 'babel-polyfill';
 import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
