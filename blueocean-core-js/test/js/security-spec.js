@@ -18,7 +18,6 @@ describe('Security', () => {
             pipeline = utils.clone(require('./data/pipeline-1.json'));
         });
 
-
         it('returns true when user has permission', () => {
             assert.isTrue(permit(pipeline).read());
             assert.isTrue(permit(pipeline).create());
