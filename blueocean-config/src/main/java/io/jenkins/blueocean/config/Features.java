@@ -16,7 +16,7 @@ import java.util.Properties;
 @Singleton
 final class Features {
 
-    private static final String BLUEOCEAN_FEATURES_PROPERTIES = "io.jenkins.blueocean.config/features.properties";
+    private static final String BLUEOCEAN_FEATURES_PROPERTIES = "features.properties";
 
     private final Supplier<ImmutableMap<String, String>> featureSupplier = Suppliers.memoize(new Supplier<ImmutableMap<String, String>>() {
         @Override
