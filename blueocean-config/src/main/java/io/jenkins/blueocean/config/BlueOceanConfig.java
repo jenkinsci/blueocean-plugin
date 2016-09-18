@@ -11,6 +11,7 @@ import jenkins.model.Jenkins;
 import net.sf.json.util.JSONBuilder;
 
 import java.io.StringWriter;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -40,7 +41,7 @@ public class BlueOceanConfig extends BluePageDecorator {
             allowAnonymousRead = ((FullControlOnceLoggedInAuthorizationStrategy) authorizationStrategy).isAllowAnonymousRead();
         }
 
-        new JSONBuilder(writer)
+        JSONBuilder builder = new JSONBuilder(writer)
             .object()
                 .key("version").value(getBlueOceanPluginVersion())
                 .key("jenkinsConfig")
@@ -55,12 +56,21 @@ public class BlueOceanConfig extends BluePageDecorator {
                             .key("allowAnonymousRead").value(allowAnonymousRead)
                             .endObject()
                         .key("enableJWT").value(BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
-                        .endObject()
+                        .endObject();
+                        features(builder)
                     .endObject()
-                    .key("features").value(features.get())
                 .endObject();
 
         return writer.toString();
+    }
+
+    private JSONBuilder features(JSONBuilder builder) {
+        builder = builder.key("features").object();
+        for (Map.Entry<String, String> entry : features.get().entrySet()) {
+            builder.key(entry.getKey());
+            builder.value(entry.getValue());
+        }
+        return builder.endObject();
     }
 
     /** gives Blueocean plugin version. blueocean-web being core module is looked at to determine the version */

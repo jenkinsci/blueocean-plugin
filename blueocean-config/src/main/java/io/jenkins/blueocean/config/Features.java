@@ -16,13 +16,13 @@ import java.util.Properties;
 @Singleton
 final class Features {
 
-    private static final String BLUEOCEAN_FEATURES_PROPERTIES = "features.properties";
+    private static final String BLUEOCEAN_FEATURES_PROPERTIES = "/features.properties";
 
     private final Supplier<ImmutableMap<String, String>> featureSupplier = Suppliers.memoize(new Supplier<ImmutableMap<String, String>>() {
         @Override
         public ImmutableMap<String, String> get() {
             // Find the default list of properties
-            final URL url = Resources.getResource(BLUEOCEAN_FEATURES_PROPERTIES);
+            final URL url = Resources.getResource(Features.class, BLUEOCEAN_FEATURES_PROPERTIES);
             final Properties properties = new Properties();
             try {
                 try (InputStream inputStream = url.openStream()) {
