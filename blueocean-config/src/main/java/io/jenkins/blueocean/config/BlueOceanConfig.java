@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.config;
 
+import com.google.inject.Inject;
 import hudson.Extension;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
@@ -16,6 +17,9 @@ import java.io.StringWriter;
  */
 @Extension(ordinal = 10)
 public class BlueOceanConfig extends BluePageDecorator {
+
+    @Inject
+    Features features;
 
     public boolean isRollBarEnabled(){
         return BlueOceanConfigProperties.ROLLBAR_ENABLED;
@@ -53,6 +57,7 @@ public class BlueOceanConfig extends BluePageDecorator {
                         .key("enableJWT").value(BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
                         .endObject()
                     .endObject()
+                    .key("features").value(features.get())
                 .endObject();
 
         return writer.toString();
