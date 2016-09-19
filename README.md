@@ -103,9 +103,9 @@ __NOTE__: look in the README.md of the respective modules for more detailed dev 
 
 - Don't edit package.json directly; use npm install to ensure that both package.json and npm-shrinkwrap.json are updated.
 - To add or update a dependency:
-   - `npm install packageName --save -E`
+   - `npm install packageName@3.2.1 --save -E`
 - To add or update a devDependency:
-   - `npm install packageName --saveDev -E`
+   - `npm install packageName@3.2.1 --saveDev -E`
 - If you are handling a merge conflict in package.json, resolve the conflict in the file as normal. Then use
 the appropriate command to update each conflicting dependency to ensure shrinkwrap is updated.
 - If you ever need to create a shrinkwrap for the first time, use `npm shrinkwrap --dev` to ensure devDependencies are
