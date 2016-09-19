@@ -49,7 +49,14 @@ export default {
             clearTimeouts();
             setLoaderClass('complete', 10);
             timeouts.push(setTimeout(() => {
-                document.getElementById('loadbar').classList = '';
+                // The Element.classList is a read-only property
+                const classList = document.getElementById('loadbar').classList;
+                var classListAsArray = new Array(classList.length);
+                for (let i = 0, len = classList.length; i < len; i++) {
+                    classListAsArray[i] = classList[i];
+                }
+                // remove all items - compatible with older browser
+                classList.remove.apply(classList, classListAsArray);
             }, 500));
         }
     },
