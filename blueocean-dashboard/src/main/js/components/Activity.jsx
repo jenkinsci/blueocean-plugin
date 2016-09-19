@@ -81,7 +81,7 @@ export class Activity extends Component {
 
         const onNavigation = (url) => {
             this.context.location.pathname = url;
-            this.context.router.push(location);
+            this.context.router.push(this.context.location);
         };
 
         if (runs.$success && !runs.length) {
