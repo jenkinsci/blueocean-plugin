@@ -14,6 +14,8 @@ import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowGraphWalker;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.GenericStatus;
+import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 
 import javax.annotation.Nullable;
@@ -288,7 +290,15 @@ public class PipelineNodeGraphBuilder {
             } else if (status == null) {
                 status = getEffectiveBranchStatus(n);
             }
-            nodes.add(new PipelineNodeImpl(run, n, status, this,parentLink));
+            long durationInMillis = 0;
+            long startTime = TimingAction.getStartTime(n);
+            if(status.state == BlueRun.BlueRunState.FINISHED){
+                durationInMillis = getDurationInMillis(n);
+            }else if(status.state == BlueRun.BlueRunState.RUNNING){
+                durationInMillis = System.currentTimeMillis()-TimingAction.getStartTime(n);
+            }
+            FlowNodeWrapper wrapper = new FlowNodeWrapper(n, status, new TimingInfo(durationInMillis,0,startTime));
+            nodes.add(new PipelineNodeImpl(wrapper, parentLink));
         }
         return nodes;
     }
@@ -298,10 +308,10 @@ public class PipelineNodeGraphBuilder {
     }
 
     @Nullable
-    public Long getDurationInMillis(FlowNode node){
+    public long getDurationInMillis(FlowNode node){
         long startTime = TimingAction.getStartTime(node);
         if( startTime == 0){
-            return null;
+            return 0;
         }
         /**
          * For Stage node:
@@ -485,6 +495,47 @@ public class PipelineNodeGraphBuilder {
 
         public BlueRun.BlueRunState getState() {
             return state;
+        }
+        public NodeRunStatus(GenericStatus status){
+            if (status == null) {
+                this.result = BlueRun.BlueRunResult.NOT_BUILT;
+                this.state = BlueRun.BlueRunState.QUEUED;
+                return;
+            }
+            switch (status) {
+                case PAUSED_PENDING_INPUT:
+                    this.result =  BlueRun.BlueRunResult.UNKNOWN;
+                    this.state =  BlueRun.BlueRunState.PAUSED;
+                    break;
+                case ABORTED:
+                    this.result =  BlueRun.BlueRunResult.ABORTED;
+                    this.state =  BlueRun.BlueRunState.FINISHED;
+                    break;
+                case FAILURE:
+                    this.result =  BlueRun.BlueRunResult.FAILURE;
+                    this.state =  BlueRun.BlueRunState.FINISHED;
+                    break;
+                case IN_PROGRESS:
+                    this.result =  BlueRun.BlueRunResult.UNKNOWN;
+                    this.state =  BlueRun.BlueRunState.RUNNING;
+                    break;
+                case UNSTABLE:
+                    this.result =  BlueRun.BlueRunResult.UNSTABLE;
+                    this.state =  BlueRun.BlueRunState.FINISHED;
+                    break;
+                case SUCCESS:
+                    this.result =  BlueRun.BlueRunResult.SUCCESS;
+                    this.state =  BlueRun.BlueRunState.FINISHED;
+                    break;
+                case NOT_EXECUTED:
+                    this.result = BlueRun.BlueRunResult.NOT_BUILT;
+                    this.state = BlueRun.BlueRunState.QUEUED;
+                    break;
+                default:
+                    // Shouldn't happen, above includes all statuses
+                    this.result = BlueRun.BlueRunResult.NOT_BUILT;
+                    this.state = BlueRun.BlueRunState.QUEUED;
+            }
         }
     }
 
