@@ -132,7 +132,6 @@ export class CapabilityAugmenter {
                 }
 
                 target._capabilities = capabilities || [];
-                target.can = capable.can;
             }
         }
 
