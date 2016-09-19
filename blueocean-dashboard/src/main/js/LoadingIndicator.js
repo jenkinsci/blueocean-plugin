@@ -51,7 +51,7 @@ export default {
             timeouts.push(setTimeout(() => {
                 // The Element.classList is a read-only property
                 const classList = document.getElementById('loadbar').classList;
-                var classListAsArray = new Array(classList.length);
+                const classListAsArray = new Array(classList.length);
                 for (let i = 0, len = classList.length; i < len; i++) {
                     classListAsArray[i] = classList[i];
                 }
