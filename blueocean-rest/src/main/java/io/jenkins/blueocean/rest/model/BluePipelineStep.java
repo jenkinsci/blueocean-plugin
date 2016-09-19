@@ -9,13 +9,14 @@ import java.util.Collection;
 import java.util.Date;
 
 import static io.jenkins.blueocean.rest.model.BlueRun.STATE;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_STEP;
 
 /**
  * Pipeline Step resource
  *
  * @author Vivek Pandey
  */
-@Capability("io.jenkins.blueocean.rest.model.BluePipelineStep")
+@Capability(BLUE_PIPELINE_STEP)
 public abstract class BluePipelineStep extends Resource{
     public static final String DISPLAY_NAME="displayName";
     public static final String RESULT = "result";

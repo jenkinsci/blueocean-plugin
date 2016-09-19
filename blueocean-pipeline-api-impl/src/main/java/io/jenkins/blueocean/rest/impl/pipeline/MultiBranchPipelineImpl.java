@@ -49,12 +49,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MULTI_BRANCH_PROJECT;
 import static io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl.isRunning;
 
 /**
  * @author Vivek Pandey
  */
-@Capability({"jenkins.branch.MultiBranchProject"})
+@Capability({JENKINS_MULTI_BRANCH_PROJECT})
 public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     /*package*/ final MultiBranchProject mbp;
 

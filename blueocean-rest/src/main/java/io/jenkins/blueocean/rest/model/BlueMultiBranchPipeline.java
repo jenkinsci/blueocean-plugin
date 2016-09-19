@@ -9,12 +9,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_MULTI_BRANCH_PIPELINE;
+
 /**
  * Multi-branch pipeline model
  *
  * @author Vivek Pandey
  */
-@Capability("io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline")
+@Capability(BLUE_MULTI_BRANCH_PIPELINE)
 public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
     public static final String TOTAL_NUMBER_OF_BRANCHES="totalNumberOfBranches";
     public static final String NUMBER_OF_FAILING_BRANCHES="numberOfFailingBranches";

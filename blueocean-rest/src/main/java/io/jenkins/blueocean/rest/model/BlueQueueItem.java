@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static io.jenkins.blueocean.commons.JsonConverter.DATE_FORMAT_STRING;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_QUEUE_ITEM;
 
 
 /**
@@ -17,7 +18,7 @@ import static io.jenkins.blueocean.commons.JsonConverter.DATE_FORMAT_STRING;
  *
  * @author Ivan Meredith
  */
-@Capability("io.jenkins.blueocean.rest.model.BlueQueueItem")
+@Capability(BLUE_QUEUE_ITEM)
 public abstract class BlueQueueItem extends Resource {
 
     public static final String QUEUED_TIME = "queuedTime";
