@@ -49,6 +49,7 @@ export default {
             clearTimeouts();
             setLoaderClass('complete', 10);
             timeouts.push(setTimeout(() => {
+                // clear all classes:
                 document.getElementById('loadbar').className = '';
             }, 500));
         }
