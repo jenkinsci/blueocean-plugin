@@ -154,13 +154,16 @@ export class RunDetailsPipeline extends Component {
                 {
                     // we are not using an early out for the events since we want to refresh the node if we finished
                     if (this.state.followAlong) { // if we do it means we want karaoke
+                        let parallel = true;// JENKINS-37962 FIXME the problem is with new syntax that is not reporting satge_id
+                        if (event.pipeline_step_stage_id && this.mergedConfig.nodeReducer.parent) {
+                            parallel = event.pipeline_step_stage_id !== this.mergedConfig.nodeReducer.parent;
+                        }
                         /*
                          * if the step_stage_id has changed we need to change the focus, however if we in a parallel
                          * node we only want to fetch the steps, since it seems that the "parent" is the reporter of
                          * some steps.
                          */
-                        if (event.pipeline_step_stage_id !== this.mergedConfig.node
-                                && event.pipeline_step_stage_id !== this.mergedConfig.nodeReducer.parent) {
+                        if (event.pipeline_step_stage_id !== this.mergedConfig.node && parallel) {
                             // console.log('nodes fetching via sse triggered');
                             delete this.mergedConfig.node;
                             fetchNodes({ ...this.mergedConfig, refetch });
