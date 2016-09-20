@@ -110,7 +110,11 @@ export class RunButton extends Component {
             stopping: true,
         });
 
-        runApi.stopRun(this.props.latestRun);
+        if (this.props.latestRun.state === 'QUEUED') {
+            runApi.removeFromQueue(this.props.latestRun);
+        } else {
+            runApi.stopRun(this.props.latestRun);
+        }
 
         const name = this.props.runnable.name;
         const runId = this.props.latestRun.id;

@@ -4,12 +4,14 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_ORGANIZATION;
+
 /**
  * API endpoint for an organization that houses all the pipelines.
  *
  * @author Kohsuke Kawaguchi
  */
-@Capability("io.jenkins.blueocean.rest.model.BlueOrganization")
+@Capability(BLUE_ORGANIZATION)
 public abstract class BlueOrganization extends Resource {
     public static final String NAME="name";
     public static final String PIPELINES="pipelines";

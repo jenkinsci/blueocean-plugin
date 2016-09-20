@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.Extension;
@@ -40,6 +41,7 @@ import org.jvnet.hudson.test.TestBuilder;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -508,9 +510,8 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals("io.jenkins.blueocean.rest.annotation.test.TestPipelineExample", classes.get(1));
     }
 
-
     @Test
-    public void testClassesQuery(){
+    public void testClassesQueryWithPost(){
         // get classes for given class
         Map resp = get("/classes/"+TestPipelineImpl.class.getName());
         Assert.assertNotNull(resp);
@@ -519,17 +520,17 @@ public class PipelineApiTest extends BaseTest {
 
 
         // should return empty map
-        resp = get("/classes/");
+        resp = post("/classes/", Collections.EMPTY_MAP);
         Assert.assertNotNull(resp);
         Map m = (Map) resp.get("map");
         Assert.assertTrue(m.isEmpty());
 
-        // get classes map for given classes in the query
-        resp = get("/classes/?q=io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl,"+TestPipelineImpl.class.getName());
+        resp = post("/classes/", ImmutableMap.of("q", ImmutableList.of("io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl",TestPipelineImpl.class.getName())));
         Assert.assertNotNull(resp);
         m = (Map) resp.get("map");
         Assert.assertNotNull(m);
         Assert.assertEquals(2, m.size());
+
 
         Map v = (Map) m.get("io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl");
         Assert.assertNotNull(v);
@@ -543,6 +544,7 @@ public class PipelineApiTest extends BaseTest {
         classes = (List<String>) v.get("classes");
         Assert.assertTrue(classes.contains("io.jenkins.blueocean.rest.model.BluePipeline"));
     }
+
 
     @Test
     public void PipelineUnsecurePermissionTest() throws IOException {

@@ -40,3 +40,24 @@ describe('PullRequest should not render', () => {
         assert.isNull(tree.getRenderOutput());
     });
 });
+
+describe('PullRequest', () => {
+    it('opens correctly', (done) => {
+        const immData = new RunsRecord(pr[0]);
+        const tree = sd.shallowRender(<PullRequest pr={immData} />, {
+                router: {push: function(url) {
+                    assert(url.pathname == '/organizations/jenkins/asdf%2Fblah/detail/PR-6/1/pipeline', "Incorrect URL for pull request");
+                    done();
+                }
+            },
+            pipeline: {
+                fullName: 'asdf/blah',
+                organization: 'jenkins',
+            },
+            location: {},
+        });
+        
+        let tr = tree.subTree('tr');
+        tr.props.onClick();
+    });
+});

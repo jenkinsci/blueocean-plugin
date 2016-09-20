@@ -3,6 +3,9 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ABSTRACT_FOLDER;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_FOLDER;
+
 /**
  * Folder  has pipelines, could also hold another BluePipelineFolders.
  *
@@ -15,7 +18,7 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @see BluePipelineContainer
  */
-@Capability({"io.jenkins.blueocean.rest.model.BluePipelineFolder","com.cloudbees.hudson.plugins.folder.AbstractFolder"})
+@Capability({BLUE_PIPELINE_FOLDER, JENKINS_ABSTRACT_FOLDER})
 public abstract class BluePipelineFolder extends BluePipeline {
 
     private static final String NUMBER_OF_PIPELINES = "numberOfPipelines";
