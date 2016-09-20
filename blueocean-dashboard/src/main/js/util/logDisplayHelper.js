@@ -42,7 +42,7 @@ export const getNodesInformation = (nodes) => {
         }
         // in case we had been in a parallel node before, we will indicate it and remove the id of the parallel array
         const indexParallel = parallelNodes.indexOf(item.id);
-        const isParallel = indexParallel > -1;
+        const isParallel = indexParallel !== -1;
         if (isParallel) {
             // remove the match from the array
             parallelNodes.splice(indexParallel, 1);
