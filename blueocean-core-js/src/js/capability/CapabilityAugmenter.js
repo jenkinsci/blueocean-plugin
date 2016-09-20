@@ -1,7 +1,6 @@
 /**
  * Created by cmeyers on 9/8/16.
  */
-import capable from './Capable';
 
 const addClass = (clazz, classMap) => {
     const className = clazz._class;
@@ -39,7 +38,6 @@ export class CapabilityAugmenter {
      * Add "_capabilities" data or all objects with a "_class" property.
      *
      * @param {object|Array} data
-     * @param {boolean} includeActions whether to fetch capabilities for items in the 'actions' property
      * @returns {Promise}
      */
     augmentCapabilities(data) {
@@ -132,7 +130,6 @@ export class CapabilityAugmenter {
                 }
 
                 target._capabilities = capabilities || [];
-                target.can = capable.can;
             }
         }
 

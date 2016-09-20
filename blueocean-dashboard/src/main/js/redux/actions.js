@@ -348,11 +348,24 @@ export const actions = {
                 // We keep the queueId so we can cross reference it with the actual
                 // run once it has been started.
                 newRun.job_run_queueId = event.job_run_queueId;
+                let queueUrl = event.blueocean_job_rest_url;
                 if (event.job_ismultibranch) {
                     newRun.pipeline = event.blueocean_job_branch_name;
+                    queueUrl += `/branches/${event.blueocean_job_branch_name}/queue/${event.job_run_queueId}`;
                 } else {
                     newRun.pipeline = event.blueocean_job_pipeline_name;
+                    queueUrl += `/queue/${event.job_run_queueId}`;
                 }
+
+                // attach the queue href via the _item prop; see _mapQueueToPsuedoRun
+                newRun._item = {
+                    _links: {
+                        self: {
+                            href: queueUrl,
+                        },
+                    },
+                };
+
                 newRun.state = 'QUEUED';
                 newRun.result = 'UNKNOWN';
 
@@ -368,6 +381,39 @@ export const actions = {
                     id,
                     type: ACTION_TYPES.SET_RUNS_DATA,
                 });
+            }
+        };
+    },
+
+    processJobLeftQueueEvent(event) {
+        return (dispatch, getState) => {
+            // only proceed with removal if the job was cancelled
+            if (event.job_run_status === 'CANCELLED') {
+                const id = event.blueocean_job_pipeline_name;
+                const runsByJobName = getState().adminStore && getState().adminStore.runs || {};
+                const eventJobRuns = runsByJobName[id];
+
+                // Only interested in the event if we have already loaded the runs for that job.
+                if (eventJobRuns && event.job_run_queueId) {
+                    const newRuns = clone(eventJobRuns);
+                    applyFetchMarkers(newRuns, eventJobRuns);
+
+                    const queueItemToRemove = newRuns.find((run) => (
+                        run.job_run_queueId === event.job_run_queueId
+                    ));
+
+                    newRuns.splice(newRuns.indexOf(queueItemToRemove), 1);
+
+                    if (event.blueocean_is_for_current_job) {
+                        // set current runs since we are ATM looking at it
+                        dispatch({ payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA });
+                    }
+                    dispatch({
+                        payload: newRuns,
+                        id,
+                        type: ACTION_TYPES.SET_RUNS_DATA,
+                    });
+                }
             }
         };
     },
@@ -555,6 +601,7 @@ export const actions = {
                     nodeModel = information.model.filter((item) => item.id === config.node)[0];
                     node = config.node;
                 }
+                // console.log('ACTION_TYPES.SET_NODE', nodeModel);
 
                 dispatch({
                     type: ACTION_TYPES.SET_NODE,
@@ -569,6 +616,7 @@ export const actions = {
                     .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = nodesBaseUrl;
+                        // console.log('nodes fetch log', information, json);
                         dispatch({
                             type: ACTION_TYPES.SET_NODES,
                             payload: information,
@@ -617,6 +665,8 @@ export const actions = {
                     .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = stepBaseUrl;
+                        // console.log('action fetch log', information, json);
+
                         return dispatch({
                             type: ACTION_TYPES.SET_STEPS,
                             payload: information,

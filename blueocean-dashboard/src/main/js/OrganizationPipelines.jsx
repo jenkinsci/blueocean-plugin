@@ -69,6 +69,8 @@ class OrganizationPipelines extends Component {
                     this.props.processJobQueuedEvent(eventCopy);
                     break;
                 case 'job_run_queue_left':
+                    this.props.processJobLeftQueueEvent(eventCopy);
+                    break;
                 case 'job_run_queue_blocked': {
                     break;
                 }
@@ -146,6 +148,7 @@ OrganizationPipelines.propTypes = {
     fetchAllPipelines: func.isRequired,
     fetchOrganizationPipelines: func.isRequired,
     processJobQueuedEvent: func.isRequired,
+    processJobLeftQueueEvent: func.isRequired,
     updateRunState: func.isRequired,
     updateBranchState: func.isRequired,
     updateBranchList: func.isRequired,
