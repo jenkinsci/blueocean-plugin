@@ -27,7 +27,7 @@
     <!--
         If you need to debug this and doesn't want to wait for a full BlueOcean build, you can run
 
-             mvn -Pdocker-dev-image -pl .,blueocean-docker-dev-image package
+             mvn -pl .,blueocean-docker-dev-image package
     -->
 
     <build>
@@ -67,6 +67,14 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- We don't want this module to be deployed, it doesn't make sense -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
         </plugins>
     </build>

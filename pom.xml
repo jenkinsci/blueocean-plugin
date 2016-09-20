@@ -107,6 +107,7 @@
     <module>blueocean-config</module>
     <module>blueocean</module>
     <module>blueocean-jwt</module>
+    <module>blueocean-docker-dev-image</module>
   </modules>
 
   <repositories>
@@ -292,13 +293,4 @@
 
     </plugins>
   </build>
-
-    <profiles>
-        <profile>
-            <id>docker-dev-image</id>
-            <modules>
-                <module>blueocean-docker-dev-image</module>
-            </modules>
-        </profile>
-    </profiles>
 </project>
