@@ -193,6 +193,18 @@ export class RunDetailsPipeline extends Component {
         }
     }
 
+    /**
+     * We are testing whether we are in parallel mode by comparing the current selected node (nodeReducer)
+     * with an other (in our case the one we clicked)
+     * @param nodeInfo {Object} node that we have clicked on the pipelineGraph
+     * @returns {boolean} true when parallel, false otherwise
+     */
+    isParallel(nodeInfo) {
+        // in case we have edges arrays we compare the first edge, if not we know we are not in parallel mode
+        return this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
+        this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
+    }
+
     generateConfig(props) {
         const { config = {} } = this.context;
         const followAlong = this.state.followAlong;
@@ -294,8 +306,8 @@ export class RunDetailsPipeline extends Component {
                 pathArray.shift();
                 newPath = `${pathArray.join('/')}/`;
             }
-            const isParallel = this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
-                this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
+            // check whether we have a parallel node
+            const isParallel = this.isParallel(nodeInfo);
 
             // we only want to redirect to the node if the node is finished
             if (nodeInfo.state === 'FINISHED' || isParallel) {
@@ -357,6 +369,7 @@ export class RunDetailsPipeline extends Component {
             </div>
         );
     }
+
 }
 
 RunDetailsPipeline.propTypes = {
