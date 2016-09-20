@@ -5,6 +5,7 @@ import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import { assert } from 'chai';
 
 import { CapabilityAugmenter } from '../../../src/js/capability/CapabilityAugmenter';
+import { capable } from '../../../src/js/capability/Capable';
 
 class MockCapabilityStore {
 
@@ -101,8 +102,8 @@ describe('CapabilityAugmenter', () => {
             const multibranch = require('./multibranch-1.json');
             augmenter.augmentCapabilities(multibranch)
                 .then(data => {
-                    assert.isTrue(data.can('jenkins.branch.MultiBranchProject'));
-                    assert.isFalse(data.can('jenkins.not.real.Capability'));
+                    assert.isTrue(capable(data, 'jenkins.branch.MultiBranchProject'));
+                    assert.isFalse(capable(data, 'jenkins.not.real.Capability'));
                     done();
                 });
         });

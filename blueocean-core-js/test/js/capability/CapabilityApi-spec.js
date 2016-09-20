@@ -15,7 +15,7 @@ const mock = {
 const fetch = sinon.spy(mock, 'fetch');
 const fetchJSON = sinon.spy(mock, 'fetchJSON');
 
-describe('CapabilityStore', () => {
+describe('CapabilityApi', () => {
     let capabilityApi;
 
     beforeEach(() => {
