@@ -217,7 +217,7 @@ Frontend can use _class in resource and classes API to serve UI based on class o
 
 ### Get detailed map of all given classes
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/classes/?q=io.jenkins.blueocean.service.embedded.rest.PipelineImpl,io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl 
+    curl -v -X POST  http://localhost:8080/jenkins/blue/rest/classes/ -d '{"q":["io.jenkins.blueocean.service.embedded.rest.PipelineImpl","io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl"] 
 
     {
       "_class" : "io.jenkins.blueocean.service.embedded.rest.ExtensionClassContainerImpl$1",

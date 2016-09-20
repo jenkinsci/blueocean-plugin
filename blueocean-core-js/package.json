@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.15-beta1",
+  "version": "0.0.15",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -24,7 +24,8 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/sse-gateway": "0.0.7",
+    "@jenkins-cd/js-modules": "0.0.8",
+    "@jenkins-cd/sse-gateway": "0.0.9",
     "es6-promise": "3.2.1",
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "7.1.9",
@@ -51,8 +52,8 @@
     "eslint-plugin-react": "^5.0.1",
     "gulp": "3.9.1",
     "gulp-babel": "6.1.2",
-    "gulp-copy": "0.0.2",
     "gulp-clean": "0.3.2",
+    "gulp-copy": "0.0.2",
     "gulp-eslint": "2.0.0",
     "gulp-less": "3.1.0",
     "gulp-rename": "1.2.2",
@@ -70,6 +71,7 @@
     "react-addons-test-utils": "15.1.0",
     "react-dom": "15.1.0",
     "run-sequence": "1.2.1",
+    "sinon": "1.17.5",
     "watchify": "3.7.0"
   }
 }

@@ -601,6 +601,7 @@ export const actions = {
                     nodeModel = information.model.filter((item) => item.id === config.node)[0];
                     node = config.node;
                 }
+                // console.log('ACTION_TYPES.SET_NODE', nodeModel);
 
                 dispatch({
                     type: ACTION_TYPES.SET_NODE,
@@ -615,6 +616,7 @@ export const actions = {
                     .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = nodesBaseUrl;
+                        // console.log('nodes fetch log', information, json);
                         dispatch({
                             type: ACTION_TYPES.SET_NODES,
                             payload: information,
@@ -663,6 +665,8 @@ export const actions = {
                     .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = stepBaseUrl;
+                        // console.log('action fetch log', information, json);
+
                         return dispatch({
                             type: ACTION_TYPES.SET_STEPS,
                             payload: information,

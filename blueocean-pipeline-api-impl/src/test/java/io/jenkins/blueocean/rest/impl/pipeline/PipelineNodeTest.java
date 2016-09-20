@@ -342,6 +342,84 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
+    public void nodesWithPartialParallels() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition("node {\n" +
+            "    stage \"hey\"\n" +
+            "    sh \"echo yeah\"\n" +
+            "    \n" +
+            "    stage \"par\"\n" +
+            "    \n" +
+            "    parallel left : {\n" +
+            "            sh \"echo OMG BS\"\n" +
+            "            sh \"echo yeah\"\n" +
+            "        }, \n" +
+            "        \n" +
+            "        right : {\n" +
+            "            sh \"echo wozzle\"\n" +
+            "        }\n" +
+            "    \n" +
+            "    stage \"ho\"\n" +
+            "        sh \"echo done\"\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        Thread.sleep(1000);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+        Assert.assertEquals(5, resp.size());
+
+        job1.setDefinition(new CpsFlowDefinition("node {\n" +
+            "    stage \"hey\"\n" +
+            "    sh \"echo yeah\"\n" +
+            "    \n" +
+            "    stage \"par\"\n" +
+            "    \n" +
+            "    parallel left : {\n" +
+            "            sh \"echo OMG BS\"\n" +
+            "            echo \"running\"\n" +
+            "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
+            "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+            "            sh \"echo yeah\"\n" +
+            "        }, \n" +
+            "        \n" +
+            "        right : {\n" +
+            "            sh \"echo wozzle\"\n" +
+            "            def branchInput = input message: 'MF Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
+            "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+            "        }\n" +
+            "    \n" +
+            "    stage \"ho\"\n" +
+            "        sh \"echo done\"\n" +
+            "}"));
+
+        job1.scheduleBuild2(0);
+        Thread.sleep(1000);
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/", List.class);
+
+        Assert.assertEquals(5, resp.size());
+
+        Map leftNode = resp.get(2);
+        Assert.assertEquals("left", leftNode.get("displayName"));
+
+        Map rightNode = resp.get(3);
+        Assert.assertEquals("right", rightNode.get("displayName"));
+
+        List<Map> leftSteps = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/"+leftNode.get("id")+"/steps/", List.class);
+
+        //XXX: for some reason in test harness 'input' step fails and never registered as step
+        Assert.assertEquals(2, leftSteps.size());
+
+        List<Map> rightSteps = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/"+rightNode.get("id")+"/steps/", List.class);
+
+        Assert.assertEquals(1, rightSteps.size());
+    }
+
+
+    @Test
     public void nodesTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
