@@ -154,8 +154,16 @@ export class RunDetailsPipeline extends Component {
                 {
                     // we are not using an early out for the events since we want to refresh the node if we finished
                     if (this.state.followAlong) { // if we do it means we want karaoke
-                        // if the step_stage_id has changed we need to change the focus
-                        if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
+                        let parallel = true;// JENKINS-37962 FIXME the problem is with new syntax that is not reporting satge_id
+                        if (event.pipeline_step_stage_id && this.mergedConfig.nodeReducer.parent) {
+                            parallel = event.pipeline_step_stage_id !== this.mergedConfig.nodeReducer.parent;
+                        }
+                        /*
+                         * if the step_stage_id has changed we need to change the focus, however if we in a parallel
+                         * node we only want to fetch the steps, since it seems that the "parent" is the reporter of
+                         * some steps.
+                         */
+                        if (event.pipeline_step_stage_id !== this.mergedConfig.node && parallel) {
                             // console.log('nodes fetching via sse triggered');
                             delete this.mergedConfig.node;
                             fetchNodes({ ...this.mergedConfig, refetch });
@@ -183,6 +191,18 @@ export class RunDetailsPipeline extends Component {
                 throw e;
             }
         }
+    }
+
+    /**
+     * We are testing whether we are in parallel mode by comparing the current selected node (nodeReducer)
+     * with an other (in our case the one we clicked)
+     * @param nodeInfo {Object} node that we have clicked on the pipelineGraph
+     * @returns {boolean} true when parallel, false otherwise
+     */
+    isParallel(nodeInfo) {
+        // in case we have edges arrays we compare the first edge, if not we know we are not in parallel mode
+        return this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
+        this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
     }
 
     generateConfig(props) {
@@ -286,12 +306,15 @@ export class RunDetailsPipeline extends Component {
                 pathArray.shift();
                 newPath = `${pathArray.join('/')}/`;
             }
+            // check whether we have a parallel node
+            const isParallel = this.isParallel(nodeInfo);
+
             // we only want to redirect to the node if the node is finished
-            if (nodeInfo.state === 'FINISHED') {
+            if (nodeInfo.state === 'FINISHED' || isParallel) {
                 newPath = `${newPath}${id}`;
             }
             // see whether we need to update the state
-            if (nodeInfo.state === 'FINISHED' && followAlong) {
+            if ((nodeInfo.state === 'FINISHED' || isParallel) && followAlong) {
                 this.setState({ followAlong: false });
             }
             if (nodeInfo.state !== 'FINISHED' && !followAlong) {
@@ -346,6 +369,7 @@ export class RunDetailsPipeline extends Component {
             </div>
         );
     }
+
 }
 
 RunDetailsPipeline.propTypes = {
