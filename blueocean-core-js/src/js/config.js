@@ -19,4 +19,12 @@ export default {
     isJWTEnabled() {
         return this.getSecurityConfig().enableJWT;
     },
+
+    getInitialUser() {
+        return this.getSecurityConfig().user;
+    },
+
+    getLoginUrl() {
+        return this.getSecurityConfig().loginUrl;
+    },
 };

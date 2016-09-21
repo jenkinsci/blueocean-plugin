@@ -15,6 +15,7 @@ export UrlConfig from './urlconfig';
 export JWT from './jwt';
 export TestUtils from './testutils';
 export Utils from './utils';
+export AppConfig from './config';
 
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton } from './components/RunButton';
@@ -22,6 +23,9 @@ export { RunButton } from './components/RunButton';
 // export services as a singleton so all plugins will use the same instance
 const capabilityStore = new CapabilityStore();
 export { capabilityStore };
+
+// capabilities
+export { capable, capabilityStore, capabilityAugmenter } from './capability';
 
 // limit to single instance so that duplicate REST calls aren't made as events come in
 const sseBus = new SseBus(sse, Fetch.fetchJSON);

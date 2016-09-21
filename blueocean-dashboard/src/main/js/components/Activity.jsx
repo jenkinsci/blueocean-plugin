@@ -66,7 +66,6 @@ export class Activity extends Component {
 
     render() {
         const { runs, pipeline } = this.props;
-        const { router } = this.context;
 
         if (!runs || !pipeline || pipeline.$pending) {
             return null;
@@ -81,9 +80,8 @@ export class Activity extends Component {
         const showRunButton = !isMultiBranchPipeline;
 
         const onNavigation = (url) => {
-            router.push({
-                pathname: url,
-            });
+            this.context.location.pathname = url;
+            this.context.router.push(this.context.location);
         };
 
         if (runs.$success && !runs.length) {
@@ -122,6 +120,7 @@ export class Activity extends Component {
                   onNavigation={onNavigation}
                 />
                 }
+                {runs.length > 0 &&
                 <Table className="activity-table fixed" headers={headers}>
                     {
                         runs.map((run, index) => {
@@ -139,15 +138,18 @@ export class Activity extends Component {
                                     run,
                                     pipeline,
                                     changeset: latestRecord,
-                                    result: new RunRecord(run) }} />
+                                    result: new RunRecord(run),
+                                }}
+                                />
                             );
                         })
                     }
                 </Table>
-                {runs.$pager &&
-                    <button disabled={!runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
-                        {runs.$pending ? 'Loading...' : 'Show More'}
-                    </button>
+                }
+                {runs.$pager && runs.length > 0 &&
+                <button disabled={runs.$pending || !runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
+                    {runs.$pending ? 'Loading...' : 'Show More'}
+                </button>
                 }
             </article>
         </main>);

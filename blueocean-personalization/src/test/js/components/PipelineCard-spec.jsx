@@ -46,7 +46,7 @@ describe('PipelineCard', () => {
             />
         );
 
-        assert.equal(wrapper.find('.actions .rerun').length, 1);
+        assert.equal(wrapper.find('.actions .rerun-button').length, 1);
     });
 
     it('renders no "rerun" button after success', () => {
@@ -57,7 +57,51 @@ describe('PipelineCard', () => {
             />
         );
 
-        assert.equal(wrapper.find('.actions .rerun').length, 0);
+        assert.equal(wrapper.find('.actions .rerun-button').length, 0);
+    });
+
+    it('renders a "run" button when successful', () => {
+        const status = 'SUCCESS';
+        const wrapper = shallow(
+            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
+              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            />
+        );
+
+        assert.equal(wrapper.find('.actions .run-button').length, 1);
+    });
+
+    it('renders no "run" button while running', () => {
+        const status = 'RUNNING';
+        const wrapper = shallow(
+            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
+              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            />
+        );
+
+        assert.equal(wrapper.find('.actions .run-button').length, 0);
+    });
+
+    it('renders a "stop" button while running', () => {
+        const status = 'RUNNING';
+        const wrapper = shallow(
+            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
+              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            />
+        );
+
+        assert.equal(wrapper.find('.actions .stop-button').length, 1);
+    });
+
+    it('renders no "stop" button after success', () => {
+        const status = 'SUCCESS';
+        const wrapper = shallow(
+            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
+              branch="feature/JENKINS-123" commitId="447d8e1" favorite
+            />
+        );
+
+        assert.equal(wrapper.find('.actions .stop-button').length, 0);
     });
 
     it('escapes the branch name', () => {

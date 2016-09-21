@@ -6,11 +6,14 @@ import TransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
+
 import { classMetadataStore } from '@jenkins-cd/js-extensions';
+import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 import favoritesSseListener from '../model/FavoritesSseListener';
+import { uriEncodeOnce } from '../util/UrlUtils';
 
 import FavoritesProvider from './FavoritesProvider';
 import { PipelineCard } from './PipelineCard';
@@ -90,6 +93,8 @@ const extractPath = (path, begin, end) => {
     }
 };
 
+const BRANCH_CAPABILITY = 'io.jenkins.blueocean.rest.model.BlueBranch';
+
 /**
  * Renders a stack of "favorites cards" including current most recent status.
  */
@@ -105,7 +110,7 @@ export class DashboardCards extends Component {
     componentWillMount() {
         favoritesSseListener.initialize(
             this.props.store,
-            this.props.updateRun
+            (runData, event) => this._handleJobRunUpdate(runData, event),
         );
 
         this._initializeCapabilities(this.props);
@@ -154,16 +159,128 @@ export class DashboardCards extends Component {
         return false;
     }
 
+    _getCapabilities(item) {
+        const capabilities = this.state.capabilities[item._class];
+        return capabilities && capabilities.classes ?
+            capabilities.classes : [];
+    }
+
+    _hasCapability(item, capabilityName) {
+        const capabilities = this._getCapabilities(item);
+        return capabilities.indexOf(capabilityName) !== -1;
+    }
+
     _onRunAgainClick(pipeline) {
         this.props.replayPipeline(pipeline);
+
+        const name = decodeURIComponent(pipeline.name);
+
+        toastService.newToast({
+            text: `Queued "${name}"`,
+        });
     }
 
     _onRunClick(pipeline) {
         this.props.runPipeline(pipeline);
+
+        const name = decodeURIComponent(pipeline.name);
+
+        toastService.newToast({
+            text: `Queued "${name}"`,
+        });
+    }
+
+    _onStopClick(pipeline) {
+        this.props.stopPipeline(pipeline);
+
+        const name = decodeURIComponent(pipeline.name);
+        const runId = pipeline.latestRun.id;
+
+        toastService.newToast({
+            text: `Stopping "${name}" #${runId}...`,
+        });
     }
 
     _onFavoriteToggle(isFavorite, favorite) {
         this.props.toggleFavorite(isFavorite, favorite.item, favorite);
+    }
+
+    _handleJobRunUpdate(runData, event) {
+        this.props.updateRun(runData);
+
+        const name = decodeURIComponent(
+            event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name
+        );
+        const runId = event.jenkins_object_id;
+
+        if (event.jenkins_event === 'job_run_started') {
+            const item = this._getFavoritedItem(event.blueocean_job_rest_url);
+            const runDetailsUrl = this._buildRunDetailsUrl(item, runData);
+
+            toastService.newToast({
+                text: `Started "${name}" #${runId}`,
+                action: 'Open',
+                onActionClick: () => {
+                    this.props.router.push({
+                        pathname: runDetailsUrl,
+                    });
+                },
+            });
+        } else if (event.jenkins_event === 'job_run_ended' && runData.result === 'ABORTED') {
+            toastService.newToast({
+                text: `Stopped "${name}" #${runId}`,
+            });
+        }
+    }
+
+    _buildRunDetailsUrl(pipeline, run) {
+        const names = this._extractNames(pipeline);
+        const detailPart = names.branchName || names.pipelineName;
+        return `/organizations/${uriEncodeOnce(pipeline.organization)}/` +
+            `${uriEncodeOnce(names.fullName)}/detail/` +
+            `${uriEncodeOnce(detailPart)}/${uriEncodeOnce(run.id)}/pipeline`;
+    }
+
+    _getFavoritedItem(itemUrl) {
+        if (this.props.favorites) {
+            const favorite = this.props.favorites.find(fav => fav.item._links.self.href === itemUrl);
+
+            if (favorite) {
+                return favorite.item;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Takes a pipeline/branch object and returns the fullName, pipelineName and branchName components
+     * @param pipeline
+     * @returns {{pipelineName: string, fullName: string, branchName: string}}
+     * @private
+     */
+    _extractNames(pipeline) {
+        const isBranch = this._hasCapability(pipeline, BRANCH_CAPABILITY);
+
+        let fullName = null;
+        let pipelineName = null;
+        let branchName = null;
+
+        if (isBranch) {
+            // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
+            // extract "pipeline"
+            pipelineName = extractPath(pipeline.fullName, -2, -1);
+            // extract everything up to "branch"
+            fullName = extractPath(pipeline.fullName, 0, -1);
+            branchName = pipeline.name;
+        } else {
+            pipelineName = pipeline.name;
+            fullName = pipeline.fullName;
+        }
+
+        return {
+            pipelineName, fullName, branchName,
+        };
     }
 
     _renderCardStack() {
@@ -176,24 +293,8 @@ export class DashboardCards extends Component {
         const favoriteCards = sortedFavorites.map(favorite => {
             const pipeline = favorite.item;
             const latestRun = pipeline.latestRun;
-            const capabilities = this.state.capabilities[pipeline._class];
-            const isBranch = capabilities.classes.indexOf('io.jenkins.blueocean.rest.model.BlueBranch') >= 0;
-
-            let fullName;
-            let pipelineName;
-            let branchName;
-
-            if (isBranch) {
-                // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
-                // "pipeline"
-                pipelineName = extractPath(pipeline.fullName, -2, -1);
-                // everything up to "branch"
-                fullName = extractPath(pipeline.fullName, 0, -1);
-                branchName = pipeline.name;
-            } else {
-                pipelineName = pipeline.name;
-                fullName = pipeline.fullName;
-            }
+            const capabilities = this._getCapabilities(pipeline);
+            const names = this._extractNames(pipeline);
 
             let status = null;
             let startTime = null;
@@ -210,10 +311,8 @@ export class DashboardCards extends Component {
                 estimatedDuration = latestRun.estimatedDurationInMillis;
                 commitId = latestRun.commitId;
                 runId = latestRun.id;
-            }
-
-            if (latestRun && latestRun.result) {
-                status = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
+            } else {
+                status = 'NOT_BUILT';
             }
 
             return (
@@ -221,19 +320,20 @@ export class DashboardCards extends Component {
                     <PipelineCard
                       router={this.props.router}
                       item={pipeline}
-                      capabilities={capabilities.classes}
+                      capabilities={capabilities}
                       status={status}
                       startTime={startTime}
                       estimatedDuration={estimatedDuration}
-                      fullName={fullName}
                       organization={pipeline.organization}
-                      pipeline={pipelineName}
-                      branch={branchName}
+                      fullName={names.fullName}
+                      pipeline={names.pipelineName}
+                      branch={names.branchName}
                       commitId={commitId}
                       runId={runId}
                       favorite
                       onRunAgainClick={(pipeline1) => this._onRunAgainClick(pipeline1)}
                       onRunClick={(pipeline2) => this._onRunClick(pipeline2)}
+                      onStopClick={(pipeline3) => this._onStopClick(pipeline3)}
                       onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                     />
                 </div>
@@ -268,6 +368,7 @@ DashboardCards.propTypes = {
     toggleFavorite: PropTypes.func,
     runPipeline: PropTypes.func,
     replayPipeline: PropTypes.func,
+    stopPipeline: PropTypes.func,
     updateRun: PropTypes.func,
 };
 

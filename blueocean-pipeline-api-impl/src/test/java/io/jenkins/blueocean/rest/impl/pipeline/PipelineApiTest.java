@@ -69,8 +69,8 @@ public class PipelineApiTest extends PipelineBaseTest {
 
     }
 
-
-    @Test
+    //TODO: Fix test - see JENKINS-38319
+    //@Test
     public void getPipelineRunblockingStopTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 

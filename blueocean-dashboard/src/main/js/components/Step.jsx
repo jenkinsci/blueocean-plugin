@@ -71,7 +71,7 @@ export default class Node extends Component {
       */
     expandAnchor(props) {
         const { node, location: { hash: anchorName } } = props;
-        const isFocused = true;
+        const isFocused = this.state ? this.state.isFocused : node.isFocused;
         const fetchAll = calculateFetchAll(props);
         const general = { ...node, fetchAll };
         // e.g. #step-10-log-1 or #step-10
@@ -80,12 +80,10 @@ export default class Node extends Component {
             const match = stepReg.exec(anchorName);
 
             if (match && match[1] && match[1] === node.id) {
-                return { ...general, isFocused };
+                return { ...general, isFocused: true };
             }
-        } else if (this.state && this.state.isFocused) {
-            return { ...general, isFocused };
         }
-        return general;
+        return { ...general, isFocused };
     }
 
     render() {
@@ -115,6 +113,7 @@ export default class Node extends Component {
             }
             this.setState({ isFocused: true });
         };
+        const removeFocus = () => this.setState({ isFocused: false });
         const runResult = resultRun.toLowerCase();
         const scrollToBottom =
             resultRun.toLowerCase() === 'failure'
@@ -146,16 +145,17 @@ export default class Node extends Component {
         }
 
         return (<div className={logConsoleClass}>
-            <ResultItem
-              key={id}
-              result={runResult}
-              expanded={isFocused}
-              label={title}
-              onExpand={getLogForNode}
-              durationMillis={durationInMillis}
+            <ResultItem {...{
+                durationInMillis,
+                key: id,
+                result: runResult,
+                expanded: isFocused,
+                label: title,
+                onCollapse: removeFocus,
+                onExpand: getLogForNode,
+            }}
             >
                 {children}
-
             </ResultItem>
       </div>);
     }

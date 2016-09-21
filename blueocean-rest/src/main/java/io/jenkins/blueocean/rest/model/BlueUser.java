@@ -3,13 +3,15 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_USER;
+
 /**
  * API endpoint for a user
  *
  * @author Kohsuke Kawaguchi
  * @author Vivek Pandey
  */
-@Capability("io.jenkins.blueocean.rest.model.BlueUser")
+@Capability(BLUE_USER)
 public abstract class BlueUser extends Resource {
     public static final String ID="id";
     public static final String FULL_NAME="fullName";

@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.BlueRun.DATE_FORMAT_STRING;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
 import static org.junit.Assert.*;
 
 /**
@@ -159,8 +160,8 @@ public class MultiBranchTest extends PipelineBaseTest {
         Map<String,Boolean> permissions = (Map<String, Boolean>) r.get("permissions");
         Assert.assertTrue(permissions.get("create"));
         Assert.assertTrue(permissions.get("read"));
-        Assert.assertNull(permissions.get("start"));
-        Assert.assertNull(permissions.get("stop"));
+        Assert.assertTrue(permissions.get("start"));
+        Assert.assertTrue(permissions.get("stop"));
 
 
 
@@ -197,8 +198,8 @@ public class MultiBranchTest extends PipelineBaseTest {
         Map<String,Boolean> permissions = (Map<String, Boolean>) r.get("permissions");
         Assert.assertFalse(permissions.get("create"));
         Assert.assertTrue(permissions.get("read"));
-        Assert.assertNull(permissions.get("start"));
-        Assert.assertNull(permissions.get("stop"));
+        Assert.assertFalse(permissions.get("start"));
+        Assert.assertFalse(permissions.get("stop"));
 
 
 
@@ -790,11 +791,11 @@ public class MultiBranchTest extends PipelineBaseTest {
         Assert.assertNotNull(response);
 
         List<String> classes = (List<String>) response.get("classes");
-        Assert.assertTrue(classes.contains("hudson.model.Job")
-            && classes.contains("org.jenkinsci.plugins.workflow.job.WorkflowJob")
-            && classes.contains("io.jenkins.blueocean.rest.model.BlueBranch")
-            && classes.contains("io.jenkins.blueocean.rest.model.BluePipeline")
-            && classes.contains("io.jenkins.blueocean.rest.impl.pipeline.PullReuqest"));
+        Assert.assertTrue(classes.contains(JENKINS_JOB)
+            && classes.contains(JENKINS_WORKFLOW_JOB)
+            && classes.contains(BLUE_BRANCH)
+            && classes.contains(BLUE_PIPELINE)
+            && classes.contains(PULL_REQUEST));
     }
 
 

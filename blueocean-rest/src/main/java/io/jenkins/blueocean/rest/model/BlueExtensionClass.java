@@ -5,12 +5,14 @@ import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_EXTENSION_CLASS;
+
 /**
  * Abstraction that defines a class extending Jenkins
  *
  * @author Vivek Pandey
  */
-@Capability("io.jenkins.blueocean.rest.model.BlueExtensionClass")
+@Capability(BLUE_EXTENSION_CLASS)
 public abstract class BlueExtensionClass extends Resource {
     private static final String CLASSES="classes";
 

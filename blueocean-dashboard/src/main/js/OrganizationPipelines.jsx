@@ -6,6 +6,7 @@ import {
     connect,
     createSelector,
 } from './redux';
+import loadingIndicator from './LoadingIndicator';
 import * as sse from '@jenkins-cd/sse-gateway';
 import * as pushEventUtil from './util/push-event-util';
 
@@ -68,6 +69,8 @@ class OrganizationPipelines extends Component {
                     this.props.processJobQueuedEvent(eventCopy);
                     break;
                 case 'job_run_queue_left':
+                    this.props.processJobLeftQueueEvent(eventCopy);
+                    break;
                 case 'job_run_queue_blocked': {
                     break;
                 }
@@ -88,6 +91,10 @@ class OrganizationPipelines extends Component {
         }
     }
 
+    componentDidMount() {
+        loadingIndicator.setDarkBackground();
+    }
+    
     componentWillReceiveProps(nextProps) {
         const organizationName = this._getOrganizationName(nextProps);
         if (this._getOrganizationName(this.props) !== organizationName) {
@@ -104,6 +111,7 @@ class OrganizationPipelines extends Component {
             sse.unsubscribe(this.jobListener);
             delete this.jobListener;
         }
+        loadingIndicator.setLightBackground();
     }
     
     _getOrganizationName(nextProps) {
@@ -140,6 +148,7 @@ OrganizationPipelines.propTypes = {
     fetchAllPipelines: func.isRequired,
     fetchOrganizationPipelines: func.isRequired,
     processJobQueuedEvent: func.isRequired,
+    processJobLeftQueueEvent: func.isRequired,
     updateRunState: func.isRequired,
     updateBranchState: func.isRequired,
     updateBranchList: func.isRequired,
