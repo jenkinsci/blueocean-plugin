@@ -113,15 +113,6 @@
     .lastcommit, .completed {
         width: 125px;
     }
-
-    .actions {
-        display: flex;
-        align-items: center;
-
-        & > * {
-            margin-left: 5px;
-        }
-    }
 }
 
 .pr-table {
@@ -135,6 +126,18 @@
 
     .build, .completed {
         width: 125px;
+    }
+}
+
+.multibranch-table, .pr-table {
+    .actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        & > * {
+            margin-left: 5px;
+        }
     }
 }
 

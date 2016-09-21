@@ -98,6 +98,7 @@ export const RunsRecord = Record({
     name: null,
     weatherScore: 0,
     pullRequest: PullRequestRecord,
+    permissions: {},
 });
 
 export const State = Record({

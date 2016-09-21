@@ -9,6 +9,9 @@ import { RunApi as runApi } from '../';
 import { SseBus as sseBus } from '../';
 import { ToastService as toastService } from '../';
 import { buildRunDetailsUrl } from '../UrlBuilder';
+import Security from '../security';
+
+const { permit } = Security;
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -130,12 +133,18 @@ export class RunButton extends Component {
         const status = this.props.latestRun ? this.props.latestRun.state : '';
         const runningStatus = status && (status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
 
-        const showRunButton = this.props.buttonType === 'run-only' ||
-            (this.props.buttonType === 'toggle' && !runningStatus);
-        const showStopButton = runningStatus && (this.props.buttonType === 'toggle' || this.props.buttonType === 'stop-only');
+        let showRunButton = this.props.buttonType === 'run-only' || (this.props.buttonType === 'toggle' && !runningStatus);
+        let showStopButton = runningStatus && (this.props.buttonType === 'toggle' || this.props.buttonType === 'stop-only');
+
+        showRunButton = showRunButton && permit(this.props.runnable).start();
+        showStopButton = showStopButton && permit(this.props.runnable).stop();
 
         const runLabel = this.props.runText || 'Run';
         const stopLabel = this.state.stopping ? 'Stopping...' : 'Stop';
+
+        if (!showRunButton && !showStopButton) {
+            return null;
+        }
 
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
