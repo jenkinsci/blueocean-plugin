@@ -31,7 +31,7 @@ describe('Capable', () => {
             assert.isTrue(capable(testObj, ['a.b.LongName', 'a.b.OtherName']));
         });
 
-        it ('matches with array containing long name (short version)', () => {
+        it('matches with array containing long name (short version)', () => {
             assert.isTrue(capable(testObj, ['LongName', 'a.b.OtherName']));
         });
 
