@@ -41,5 +41,7 @@ export default {
                 }
             },
         });
+
+        return runDetailsUrl;
     },
 };
