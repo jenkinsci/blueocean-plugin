@@ -4,15 +4,13 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Icon } from 'react-material-icons-blue';
-import { capable } from '@jenkins-cd/blueocean-core-js';
+import { capable, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 import { RunButton, ReplayButton } from '@jenkins-cd/blueocean-core-js';
 
 const stopProp = (event) => {
     event.stopPropagation();
 };
-
-const CAPABILITY_PIPELINE = 'org.jenkinsci.plugins.workflow.job.WorkflowJob';
 
 /**
  * PipelineCard displays an informational card about a Pipeline and its status.
@@ -57,9 +55,7 @@ export class PipelineCard extends Component {
     }
 
     _navigateToRunDetails() {
-        const runUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
-            `${encodeURIComponent(this.props.fullName)}/detail/` +
-            `${this.props.branch || this.props.pipeline}/${encodeURIComponent(this.props.runId)}/pipeline`;
+        const runUrl = UrlBuilder.buildRunDetailsUrl(this.props.latestRun);
 
         this.props.router.push({
             pathname: runUrl,

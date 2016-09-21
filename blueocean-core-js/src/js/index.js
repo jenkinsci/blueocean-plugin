@@ -9,6 +9,7 @@ import { SseBus } from './sse/SseBus';
 import { ToastService } from './ToastService';
 
 export { Fetch, FetchFunctions } from './fetch';
+export UrlBuilder from './UrlBuilder';
 export UrlConfig from './urlconfig';
 export JWT from './jwt';
 export TestUtils from './testutils';
