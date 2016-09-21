@@ -5,8 +5,9 @@
 import { ToastService as toastService } from './index';
 import { buildRunDetailsUrlFromQueue } from './UrlBuilder';
 
+const CAPABILITY_MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
 const CAPABILITY_MULTIBRANCH_BRANCH = 'io.jenkins.blueocean.rest.model.BlueBranch';
-const CAPABILITY_SIMPLE_PIPELINE = 'org.jenkinsci.plugins.workflow.job.WorkflowJob';
+
 
 export default {
 
@@ -17,9 +18,8 @@ export default {
      * @param toastAction
      */
     createRunStartedToast: (runnable, runInfo, toastAction) => {
-        debugger;
         const isMultiBranch = runnable._capabilities.some(capability => (
-            [CAPABILITY_MULTIBRANCH_BRANCH, CAPABILITY_SIMPLE_PIPELINE].indexOf(capability) !== -1
+            [CAPABILITY_MULTIBRANCH_PIPELINE, CAPABILITY_MULTIBRANCH_BRANCH].indexOf(capability) !== -1
         ));
 
         const runId = runInfo.expectedBuildNumber;

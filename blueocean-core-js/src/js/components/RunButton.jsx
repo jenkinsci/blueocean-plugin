@@ -63,7 +63,7 @@ export class RunButton extends Component {
             runApi.stopRun(this.props.latestRun);
         }
 
-        const name = this.props.runnable.name;
+        const name = decodeURIComponent(this.props.runnable.name);
         const runId = this.props.latestRun.id;
 
         toastService.newToast({
