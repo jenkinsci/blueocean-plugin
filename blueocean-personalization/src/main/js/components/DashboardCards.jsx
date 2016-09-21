@@ -276,6 +276,7 @@ export class DashboardCards extends Component {
                     <PipelineCard
                       router={this.props.router}
                       item={pipeline}
+                      latestRun={latestRun}
                       capabilities={capabilities}
                       status={status}
                       startTime={startTime}

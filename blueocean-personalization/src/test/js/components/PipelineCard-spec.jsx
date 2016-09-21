@@ -38,6 +38,7 @@ describe('PipelineCard', () => {
         assert.equal(wrapper.find('Favorite').length, 1);
     });
 
+    // FIXME: currently broken
     it('renders "rerun" button after failure', () => {
         const status = 'FAILURE';
         const wrapper = shallow(
@@ -49,6 +50,7 @@ describe('PipelineCard', () => {
         assert.equal(wrapper.find('.actions .rerun-button').length, 1);
     });
 
+    // TODO: needs updating
     it('renders no "rerun" button after success', () => {
         const status = 'SUCCESS';
         const wrapper = shallow(
@@ -60,6 +62,7 @@ describe('PipelineCard', () => {
         assert.equal(wrapper.find('.actions .rerun-button').length, 0);
     });
 
+    // TODO: needs updating
     it('renders a "run" button when successful', () => {
         const status = 'SUCCESS';
         const wrapper = shallow(
@@ -71,6 +74,7 @@ describe('PipelineCard', () => {
         assert.equal(wrapper.find('.actions .run-button').length, 1);
     });
 
+    // FIXME: currently broken
     it('renders no "run" button while running', () => {
         const status = 'RUNNING';
         const wrapper = shallow(
@@ -82,6 +86,7 @@ describe('PipelineCard', () => {
         assert.equal(wrapper.find('.actions .run-button').length, 0);
     });
 
+    // FIXME: currently broken
     it('renders a "stop" button while running', () => {
         const status = 'RUNNING';
         const wrapper = shallow(
@@ -93,6 +98,7 @@ describe('PipelineCard', () => {
         assert.equal(wrapper.find('.actions .stop-button').length, 1);
     });
 
+    // TODO: needs updating
     it('renders no "stop" button after success', () => {
         const status = 'SUCCESS';
         const wrapper = shallow(

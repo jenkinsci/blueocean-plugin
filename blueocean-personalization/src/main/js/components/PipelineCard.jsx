@@ -5,6 +5,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Icon } from 'react-material-icons-blue';
 import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
+import { RunButton, ReplayButton } from '@jenkins-cd/blueocean-core-js';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -70,28 +71,8 @@ export class PipelineCard extends Component {
         });
     }
 
-    _onRunClick() {
-        if (this.props.onRunClick) {
-            this.props.onRunClick(this.props.item);
-        }
-    }
-
-    _onRunAgainClick() {
-        if (this.props.onRunAgainClick) {
-            this.props.onRunAgainClick(this.props.item);
-        }
-    }
-
-    _onStopClick() {
-        if (!this.state.stopping) {
-            this.setState({
-                stopping: true,
-            });
-
-            if (this.props.onStopClick) {
-                this.props.onStopClick(this.props.item);
-            }
-        }
+    _onRunDetails(url) {
+        this.props.router.push(url);
     }
 
     _onFavoriteToggle() {
@@ -106,12 +87,8 @@ export class PipelineCard extends Component {
     }
 
     render() {
-        const { capabilities, status, commitId, startTime, estimatedDuration } = this.props;
+        const { status, commitId, startTime, estimatedDuration } = this.props;
         const bgClass = PipelineCard._getBackgroundClass(status);
-        const notRunningStatus = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
-        const hasFailedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
-        const isPipeline = capabilities && capabilities.indexOf('org.jenkinsci.plugins.workflow.job.WorkflowJob') >= 0;
-        const stopClass = this.state.stopping ? 'stopping' : '';
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
         const activityUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
@@ -142,28 +119,26 @@ export class PipelineCard extends Component {
                 { commitId ?
                 <span className="commit">
                     <span className="octicon octicon-git-commit"></span>
-                    <pre className="commitId">#{commitText}</pre>
+                    <pre className="commitId">&#35;{commitText}</pre>
                 </span>
                 :
                 <span className="commit"></span>
                 }
 
                 <span className="actions">
-                    { hasFailedStatus && isPipeline &&
-                    <a className="action-item rerun-button" title="Run Again" onClick={(event) => {stopProp(event); this._onRunAgainClick();}}>
-                        <Icon size={24} icon="replay" />
-                    </a>
-                    }
+                    <ReplayButton
+                      className="icon-button dark"
+                      runnable={this.props.item}
+                      latestRun={this.props.latestRun}
+                      onNavigation={url => this._onRunDetails(url)}
+                    />
 
-                    { notRunningStatus &&
-                    <a className="action-item run-button" title="Run" onClick={(event) => {stopProp(event); this._onRunClick();}}>
-                        <Icon size={24} icon="play_circle_outline" />
-                    </a>
-                    }
-
-                    { !notRunningStatus &&
-                    <a className={`action-item stop-button ${stopClass}`} title="Stop" onClick={(event) => {stopProp(event); this._onStopClick();}}></a>
-                    }
+                    <RunButton
+                      className="icon-button dark"
+                      runnable={this.props.item}
+                      latestRun={this.props.latestRun}
+                      onNavigation={url => this._onRunDetails(url)}
+                    />
 
                     <Favorite checked={this.state.favorite} className="dark-white"
                       onToggle={() => this._onFavoriteToggle()}
@@ -177,6 +152,7 @@ export class PipelineCard extends Component {
 PipelineCard.propTypes = {
     router: PropTypes.object,
     item: PropTypes.object,
+    latestRun: PropTypes.object,
     capabilities: PropTypes.array,
     status: PropTypes.string,
     startTime: PropTypes.string,
