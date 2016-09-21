@@ -205,52 +205,8 @@ export class DashboardCards extends Component {
         this.props.toggleFavorite(isFavorite, favorite.item, favorite);
     }
 
-    _handleJobRunUpdate(runData, event) {
+    _handleJobRunUpdate(runData) {
         this.props.updateRun(runData);
-
-        const name = decodeURIComponent(
-            event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name
-        );
-        const runId = event.jenkins_object_id;
-
-        if (event.jenkins_event === 'job_run_started') {
-            const item = this._getFavoritedItem(event.blueocean_job_rest_url);
-            const runDetailsUrl = this._buildRunDetailsUrl(item, runData);
-
-            toastService.newToast({
-                text: `Started "${name}" #${runId}`,
-                action: 'Open',
-                onActionClick: () => {
-                    this.props.router.push({
-                        pathname: runDetailsUrl,
-                    });
-                },
-            });
-        } else if (event.jenkins_event === 'job_run_ended' && runData.result === 'ABORTED') {
-            toastService.newToast({
-                text: `Stopped "${name}" #${runId}`,
-            });
-        }
-    }
-
-    _buildRunDetailsUrl(pipeline, run) {
-        const names = this._extractNames(pipeline);
-        const detailPart = names.branchName || names.pipelineName;
-        return `/organizations/${uriEncodeOnce(pipeline.organization)}/` +
-            `${uriEncodeOnce(names.fullName)}/detail/` +
-            `${uriEncodeOnce(detailPart)}/${uriEncodeOnce(run.id)}/pipeline`;
-    }
-
-    _getFavoritedItem(itemUrl) {
-        if (this.props.favorites) {
-            const favorite = this.props.favorites.find(fav => fav.item._links.self.href === itemUrl);
-
-            if (favorite) {
-                return favorite.item;
-            }
-        }
-
-        return null;
     }
 
     /**
