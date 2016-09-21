@@ -1,5 +1,4 @@
-/* eslint-disable quotes,quote-props,comma-dangle */
-export const favorites = [
+[
     {
         "_class": "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
         "_links": {
@@ -260,7 +259,7 @@ export const favorites = [
             "organization": "jenkins",
             "weatherScore": 100,
             "pullRequest": null
-        },
+        }
     },
     {
         "_class": "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
@@ -828,7 +827,7 @@ export const favorites = [
             "actions": [],
             "displayName": "docker-test",
             "estimatedDurationInMillis": 433724,
-            "fullName": "jdl1/docker-test",
+            "fullName": "jdl1/docker-test2",
             "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jankins/pipelines/jdl1/branches/docker-test/runs/4/",
             "latestRun": {
                 "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
@@ -863,7 +862,7 @@ export const favorites = [
                 "estimatedDurationInMillis": 433724,
                 "id": "4",
                 "organization": "jankins",
-                "pipeline": "docker-test",
+                "pipeline": "docker-test2",
                 "result": "SUCCESS",
                 "runSummary": "stable",
                 "startTime": "2016-07-15T13:44:52.775-0400",
@@ -871,7 +870,7 @@ export const favorites = [
                 "type": "WorkflowRun",
                 "commitId": "83725791b8ddcd58fc1753417c8ac40bfc4db7cd"
             },
-            "name": "docker-test",
+            "name": "docker-test2",
             "organization": "jankins",
             "weatherScore": 100,
             "pullRequest": null
@@ -1047,5 +1046,5 @@ export const favorites = [
             "weatherScore": 100,
             "pullRequest": null
         }
-    },
-];
+    }
+]

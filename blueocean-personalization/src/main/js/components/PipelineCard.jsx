@@ -4,6 +4,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Icon } from 'react-material-icons-blue';
+import { capable } from '@jenkins-cd/blueocean-core-js';
 import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 import { RunButton, ReplayButton } from '@jenkins-cd/blueocean-core-js';
 
@@ -11,13 +12,14 @@ const stopProp = (event) => {
     event.stopPropagation();
 };
 
+const CAPABILITY_PIPELINE = 'org.jenkinsci.plugins.workflow.job.WorkflowJob';
+
 /**
  * PipelineCard displays an informational card about a Pipeline and its status.
  *
  * Properties:
  * router: instance of RouterContext
  * item: pipeline or branch
- * capabilities: array of capability strings for the item
  * status: 'result' or 'status' value e.g. 'success', 'failure', etc.
  * estimatedDuration: time in millis over which the progress indicator will update.
  * startTime: ISO-8601 string indicating when tracking of progress begins from.
