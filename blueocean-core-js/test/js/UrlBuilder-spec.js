@@ -131,11 +131,11 @@ describe('UrlBuilder', () => {
 
             it('handles nested job', () => {
                 const pipeline = createObjectFromLink(
-                    '/blue/rest/organizations/jenkins/pipelines/pipeline-failure-15s/queue/42/'
+                    '/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/queue/17/'
                 );
 
                 const url = buildRunDetailsUrlFromQueue(pipeline, false, 25);
-                assert.equal(url, '/organizations/jenkins/pipeline-failure-15s/detail/pipeline-failure-15s/25/pipeline');
+                assert.equal(url, '/organizations/jenkins/simple-pipeline-jobs%2Fpipeline-failure-1m/detail/pipeline-failure-1m/25/pipeline');
             });
         });
 
