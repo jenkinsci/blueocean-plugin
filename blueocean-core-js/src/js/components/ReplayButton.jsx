@@ -6,7 +6,7 @@ import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
 
 import { RunApi as runApi } from '../';
-import { createRunStartedToast } from './utils';
+import { ToastUtils } from '../';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -35,7 +35,7 @@ export class ReplayButton extends Component {
         });
 
         runApi.replayRun(this.props.latestRun)
-            .then((runInfo) => createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation));
+            .then((runInfo) => ToastUtils.createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation));
     }
 
     render() {

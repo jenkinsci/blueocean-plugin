@@ -7,7 +7,7 @@ import { Icon } from 'react-material-icons-blue';
 
 import { RunApi as runApi } from '../';
 import { ToastService as toastService } from '../';
-import { createRunStartedToast } from './utils';
+import { ToastUtils } from '../';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -45,7 +45,7 @@ export class RunButton extends Component {
 
     _onRunClick() {
         runApi.startRun(this.props.runnable)
-            .then((runInfo) => createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation));
+            .then((runInfo) => ToastUtils.createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation));
     }
 
     _onStopClick() {
