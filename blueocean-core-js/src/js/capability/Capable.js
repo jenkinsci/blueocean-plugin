@@ -3,26 +3,33 @@
  */
 
 /**
- * Determines whether the supplied object has the supplied capability.
+ * Determines whether the supplied object has at least one of the supplied capabilities.
+ *
  * As capabilities are typically name-spaced, this method will match on long or short names, e.g.
- * if _capabilities = ['a.b.Capability1']
+ * given: _capabilities = ['a.b.Capability1']
  * passing either 'a.b.Capability1' or 'Capability1' will match
  *
  * @param {object} subject
- * @param {string} capabilityName
+ * @param {...string} capabilityNames
  * @returns {boolean}
  */
-export const capable = (subject, capabilityName) => {
+export const capable = (subject, ...capabilityNames) => {
     if (subject._capabilities) {
-        if (subject._capabilities.indexOf(capabilityName) !== -1) {
+        // in case an array was passed in, flatten it out
+        const flattenedCapabilities = [].concat(...capabilityNames);
+
+        // find the intersection of subject's caps with the passed-in caps
+        const longNameMatches = flattenedCapabilities.filter(longName => subject._capabilities.indexOf(longName) !== -1);
+        if (longNameMatches.length > 0) {
             return true;
         }
 
-        for (const capability of subject._capabilities) {
-            const shortName = capability.split('.').slice(-1).join('');
-            if (shortName === capabilityName) {
-                return true;
-            }
+        // build short form of subject's caps, then find intersection
+        const shortNames = subject._capabilities.map(longName => longName.split('.').slice(-1).join(''));
+
+        const shortNameMatches = flattenedCapabilities.filter(longName => shortNames.indexOf(longName) !== -1);
+        if (shortNameMatches.length > 0) {
+            return true;
         }
     }
 
