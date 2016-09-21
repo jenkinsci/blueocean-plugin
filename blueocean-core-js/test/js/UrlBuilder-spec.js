@@ -34,6 +34,10 @@ describe('UrlBuilder', () => {
             it('throws sensible error for bad url', () => {
                 assert.throws(() => buildRunDetailsUrl('/a/b/c/d'), 'Could not extract URI components');
             });
+
+            it('throws sensible error for a string of chars', () => {
+                assert.throws(() => buildRunDetailsUrl('abcdefghijklmnopqrstuvwxyz'), 'Could not extract URI components');
+            });
         });
 
         describe('freestyle', () => {
