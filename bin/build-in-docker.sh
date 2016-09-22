@@ -100,7 +100,7 @@ build_inside() {
 
 make_image() {
   echo "${yellow}=> ${normal}Building BlueOcean docker development image ${tag_name}"
-  (cd "$PROJECT_ROOT/blueocean-docker-dev-image/target/docker-dev-image" && docker build -t "$tag_name" . )
+  (cd "$PROJECT_ROOT" && docker build -t "$tag_name" . )
 }
 
 build_commands="mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore"

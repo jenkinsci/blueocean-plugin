@@ -14,7 +14,7 @@
  * @returns {boolean}
  */
 export const capable = (subject, ...capabilityNames) => {
-    if (subject._capabilities) {
+    if (subject && subject._capabilities) {
         // in case an array was passed in, flatten it out
         const flattenedCapabilities = [].concat(...capabilityNames);
 

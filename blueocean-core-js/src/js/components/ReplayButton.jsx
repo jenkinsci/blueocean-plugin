@@ -5,9 +5,10 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
 
-import { capable } from '../index';
-import { RunApi as runApi } from '../index';
-import { ToastUtils } from '../index';
+import { capable, RunApi as runApi, ToastUtils } from '../index';
+import Security from '../security';
+
+const { permit } = Security;
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -52,17 +53,22 @@ export class ReplayButton extends Component {
     }
 
     render() {
+        if (!this.props.runnable || !this.props.latestRun) {
+            return null;
+        }
+
         const outerClass = this.props.className ? this.props.className : '';
         const outerClassNames = outerClass.split(' ');
         const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'btn inverse' : '';
 
         const status = this.props.latestRun ? this.props.latestRun.result : '';
-        const failedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
+        const isFailed = !!(status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted'));
         const isPipeline = capable(this.props.runnable, PIPELINE_CAPABILITIES);
+        const hasPermission = permit(this.props.runnable).start();
 
         const replayLabel = 'Re-run';
 
-        if (!isPipeline || !failedStatus) {
+        if (!isFailed || !isPipeline || !hasPermission) {
             return null;
         }
 
