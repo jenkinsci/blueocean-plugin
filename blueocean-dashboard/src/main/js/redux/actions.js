@@ -75,7 +75,9 @@ export const ACTION_TYPES = keymirror({
     SET_NODE: null,
     SET_NODES: null,
     SET_LOGS: null,
+    REMOVE_LOG: null,
     FIND_AND_UPDATE: null,
+    REMOVE_STEP: null,
 });
 
 export const actionHandlers = {
@@ -140,10 +142,22 @@ export const actionHandlers = {
         steps[payload.nodesBaseUrl] = payload;
         return state.set('steps', steps);
     },
+    [ACTION_TYPES.REMOVE_STEP](state, { payload }): State {
+        const steps = { ...state.steps } || {};
+        delete steps[payload];// we do not care about an empty slot
+        return state.set('steps', steps);
+    },
     [ACTION_TYPES.SET_LOGS](state, { payload }): State {
         const logs = { ...state.logs } || {};
         logs[payload.logUrl] = payload;
 
+        return state.set('logs', logs);
+    },
+    [ACTION_TYPES.REMOVE_LOG](state, { payload }): State {
+        const logs = { ...state.logs } || {};
+        Object.keys(logs)
+            .filter((item) => item.indexOf(payload) !== -1)
+            .map((item) => delete logs[item]);
         return state.set('logs', logs);
     },
     [ACTION_TYPES.FIND_AND_UPDATE](state, { payload }): State {
@@ -676,7 +690,31 @@ export const actions = {
             return null;
         };
     },
-    /* l
+    /**
+     * Remove steps from cache
+     *
+     * @param id {String} the step we want to remove
+     * @returns {function(*)}
+     */
+    removeStep(id) {
+        return (dispatch) => dispatch({
+            type: ACTION_TYPES.REMOVE_STEP,
+            payload: id,
+        });
+    },
+    /**
+     * Remove logs from cache
+     *
+     * @param id {String} the log we want to remove - we doing indexOf to remove all logs startingWith
+     * @returns {function(*)}
+     */
+    removeLogs(id) {
+        return (dispatch) => dispatch({
+            type: ACTION_TYPES.REMOVE_LOG,
+            payload: id,
+        });
+    },
+    /*
      Get a specific log for a node, fetch it only if needed.
      key for cache: logUrl = calculateLogUrl
      */
