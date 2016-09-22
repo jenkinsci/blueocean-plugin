@@ -196,7 +196,7 @@ export class RunDetailsPipeline extends Component {
                       */
                     if (notFinishedSteps.length >= 1) {
                         notFinishedSteps.map((step) => {
-                            console.log('fire command to remove the entries besides the last', step);
+                            //console.log('fire command to remove the entries besides the last', step);
                             return removeStep(step.nodesBaseUrl);
                         });
                     }
@@ -225,7 +225,7 @@ export class RunDetailsPipeline extends Component {
      * @returns {boolean} true when parallel, false otherwise
      */
     isParallel(nodeInfo) {
-        // in case we have edges arrays we compare the first edge, if not we know we are not in parallel modez
+        // in case we have edges arrays we compare the first edge, if not we know we are not in parallel modeq
         return this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
         this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
     }
