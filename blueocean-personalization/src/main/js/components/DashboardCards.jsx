@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
-import { capable, ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
+import { capable } from '@jenkins-cd/blueocean-core-js';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
@@ -53,37 +53,6 @@ export class DashboardCards extends Component {
         if (this.props.sortFavorites) {
             this.props.sortFavorites();
         }
-    }
-
-    _onRunAgainClick(pipeline) {
-        this.props.replayPipeline(pipeline);
-
-        const name = decodeURIComponent(pipeline.name);
-
-        toastService.newToast({
-            text: `Queued "${name}"`,
-        });
-    }
-
-    _onRunClick(pipeline) {
-        this.props.runPipeline(pipeline);
-
-        const name = decodeURIComponent(pipeline.name);
-
-        toastService.newToast({
-            text: `Queued "${name}"`,
-        });
-    }
-
-    _onStopClick(pipeline) {
-        this.props.stopPipeline(pipeline);
-
-        const name = decodeURIComponent(pipeline.name);
-        const runId = pipeline.latestRun.id;
-
-        toastService.newToast({
-            text: `Stopping "${name}" #${runId}...`,
-        });
     }
 
     _onFavoriteToggle(isFavorite, favorite) {
@@ -169,9 +138,6 @@ export class DashboardCards extends Component {
                       commitId={commitId}
                       runId={runId}
                       favorite
-                      onRunAgainClick={(pipeline1) => this._onRunAgainClick(pipeline1)}
-                      onRunClick={(pipeline2) => this._onRunClick(pipeline2)}
-                      onStopClick={(pipeline3) => this._onStopClick(pipeline3)}
                       onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                     />
                 </div>
@@ -205,9 +171,6 @@ DashboardCards.propTypes = {
     favorites: PropTypes.instanceOf(List),
     sortFavorites: PropTypes.func,
     toggleFavorite: PropTypes.func,
-    runPipeline: PropTypes.func,
-    replayPipeline: PropTypes.func,
-    stopPipeline: PropTypes.func,
     updateRun: PropTypes.func,
 };
 
