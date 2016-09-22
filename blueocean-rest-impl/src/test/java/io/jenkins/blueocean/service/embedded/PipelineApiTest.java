@@ -312,7 +312,6 @@ public class PipelineApiTest extends BaseTest {
 
         Map resp = put("/organizations/jenkins/pipelines/p1/runs/"+b.getId()+"/stop/?blocking=true&timeOutInSecs=2", Map.class);
         Assert.assertEquals("ABORTED", resp.get("result"));
-        Assert.assertEquals("FINISHED", resp.get("state"));
     }
 
 
