@@ -137,3 +137,6 @@ You can chat to folks on #jenkins-ux on freenode (IRC). You can also email the j
 # Presentations
 
 Advanced front end development with react, redux and stuff by @scherler: https://docs.google.com/presentation/d/1dbaYTIGjGT9xX1JnWnaqjMumq94M9nGwljfMQaVtUFc/edit?usp=sharing
+
+Simple change to have a diff from master
+
