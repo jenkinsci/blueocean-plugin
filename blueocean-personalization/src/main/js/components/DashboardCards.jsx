@@ -12,7 +12,6 @@ import { capable, ToastService as toastService } from '@jenkins-cd/blueocean-cor
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 import favoritesSseListener from '../model/FavoritesSseListener';
-import { uriEncodeOnce } from '../util/UrlUtils';
 
 import FavoritesProvider from './FavoritesProvider';
 import { PipelineCard } from './PipelineCard';

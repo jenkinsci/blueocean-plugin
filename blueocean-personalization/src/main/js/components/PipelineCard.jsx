@@ -3,8 +3,7 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Icon } from 'react-material-icons-blue';
-import { capable, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 import { RunButton, ReplayButton } from '@jenkins-cd/blueocean-core-js';
 
@@ -151,7 +150,6 @@ PipelineCard.propTypes = {
     router: PropTypes.object,
     item: PropTypes.object,
     latestRun: PropTypes.object,
-    capabilities: PropTypes.array,
     status: PropTypes.string,
     startTime: PropTypes.string,
     estimatedDuration: PropTypes.number,

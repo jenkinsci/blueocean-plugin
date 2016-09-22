@@ -7,19 +7,38 @@ import { shallow } from 'enzyme';
 
 import { PipelineCard } from '../../../main/js/components/PipelineCard';
 
+function clone(object) {
+    return JSON.parse(JSON.stringify(object));
+}
+
 describe('PipelineCard', () => {
     let item;
+    let status;
+    let organization;
+    let pipeline;
+    let branch;
+    let commitId;
+    let favorite;
+
+    function shallowRenderCard() {
+        return shallow(
+            <PipelineCard item={item} latestRun={item.latestRun} status={status} organization={organization} pipeline={pipeline}
+              branch={branch} commitId={commitId} favorite={favorite}
+            />
+        );
+    }
 
     beforeEach(() => {
-        item = {
-            _capabilities: ['org.jenkinsci.plugins.workflow.job.WorkflowJob'],
-            status: null,
-            organization: 'Jenkins',
-            pipeline: 'blueocean',
-            branch: 'feature/JENKINS-123',
-            commitId: '447d8e1',
-            favorite: true,
-        };
+        const favorites = clone(require('../data/favorites.json'));
+
+        item = favorites[0].item;
+        item._capabilities = ['org.jenkinsci.plugins.workflow.job.WorkflowJob'];
+        status = null;
+        organization = item.organization;
+        pipeline = item.fullName.split('/')[0];
+        branch = item.name;
+        commitId = item.latestRun.commitId;
+        favorite = true;
     });
 
     it('renders without error for empty props', () => {
@@ -31,105 +50,73 @@ describe('PipelineCard', () => {
     });
 
     it('renders basic child elements', () => {
-        item.status = 'SUCCESS';
-        const wrapper = shallow(
-            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
-              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
-            />
-        );
+        status = 'SUCCESS';
+        const wrapper = shallowRenderCard();
 
         assert.equal(wrapper.find('LiveStatusIndicator').length, 1);
         assert.equal(wrapper.find('.name').length, 1);
         assert.equal(wrapper.find('.name').text(), '<Link />');
         assert.equal(wrapper.find('.branch').length, 1);
-        assert.equal(wrapper.find('.branchText').text(), 'feature/JENKINS-123');
+        assert.equal(wrapper.find('.branchText').text(), 'UX-301');
         assert.equal(wrapper.find('.commit').length, 1);
-        assert.equal(wrapper.find('.commitId').text(), '#447d8e1');
+        assert.equal(wrapper.find('.commitId').text(), '#cfca303');
         assert.equal(wrapper.find('Favorite').length, 1);
     });
 
-    // FIXME: currently broken
     it('renders "rerun" button after failure', () => {
-        item.status = 'FAILURE';
-        const wrapper = shallow(
-            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
-              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
-            />
-        );
+        status = item.latestRun.result = 'FAILURE';
+        const wrapper = shallowRenderCard();
+        const replayButton = wrapper.find('ReplayButton').shallow();
 
-        assert.equal(wrapper.find('.actions .rerun-button').length, 1);
+        assert.isOk(replayButton.text());
     });
 
-    // TODO: needs updating
     it('renders no "rerun" button after success', () => {
-        item.status = 'SUCCESS';
-        const wrapper = shallow(
-            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
-              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
-            />
-        );
+        status = item.latestRun.result = 'SUCCESS';
+        const wrapper = shallowRenderCard();
+        const replayButton = wrapper.find('ReplayButton').shallow();
 
-        assert.equal(wrapper.find('.actions .rerun-button').length, 0);
+        assert.isNotOk(replayButton.text());
     });
 
-    // TODO: needs updating
     it('renders a "run" button when successful', () => {
-        item.status = 'SUCCESS';
-        const wrapper = shallow(
-            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
-              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
-            />
-        );
+        status = item.latestRun.result = 'SUCCESS';
+        const wrapper = shallowRenderCard();
+        const runButton = wrapper.find('RunButton').shallow();
 
-        assert.equal(wrapper.find('.actions .run-button').length, 1);
+        assert.equal(runButton.find('.run-button').length, 1);
     });
 
-    // FIXME: currently broken
     it('renders no "run" button while running', () => {
-        item.status = 'RUNNING';
-        const wrapper = shallow(
-            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
-              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
-            />
-        );
+        status = item.latestRun.state = 'RUNNING';
+        const wrapper = shallowRenderCard();
+        const runButton = wrapper.find('RunButton').shallow();
 
-        assert.equal(wrapper.find('.actions .run-button').length, 0);
+        assert.equal(runButton.find('.run-button').length, 0);
     });
 
-    // FIXME: currently broken
     it('renders a "stop" button while running', () => {
-        item.status = 'RUNNING';
-        const wrapper = shallow(
-            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
-              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
-            />
-        );
+        status = item.latestRun.state = 'RUNNING';
+        const wrapper = shallowRenderCard();
+        const runButton = wrapper.find('RunButton').shallow();
 
-        assert.equal(wrapper.find('.actions .stop-button').length, 1);
+        assert.equal(runButton.find('.stop-button').length, 1);
     });
 
-    // TODO: needs updating
     it('renders no "stop" button after success', () => {
-        item.status = 'SUCCESS';
-        const wrapper = shallow(
-            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
-              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
-            />
-        );
+        status = item.latestRun.state = 'RUNNING';
+        const wrapper = shallowRenderCard();
+        const runButton = wrapper.find('RunButton').shallow();
 
-        assert.equal(wrapper.find('.actions .stop-button').length, 0);
+        assert.equal(runButton.find('.stop-button').length, 1);
     });
 
     it('escapes the branch name', () => {
-        item.branch = encodeURIComponent('feature/JENKINS-667');
-        const wrapper = shallow(
-            <PipelineCard item={item} status={item.status} organization={item.organization} pipeline={item.pipeline}
-              branch={item.branch} commitId={item.commitId} favorite={item.favorite}
-            />
-        );
+        branch = encodeURIComponent('feature/JENKINS-667');
+        const wrapper = shallowRenderCard();
 
         const elements = wrapper.find('.branchText');
         assert.equal(elements.length, 1);
-        assert.equal(elements.at(0).text(), decodeURIComponent(item.branch));
+        assert.equal(elements.at(0).text(), decodeURIComponent(branch));
     });
 });
