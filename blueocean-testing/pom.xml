@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0.0-b05-SNAPSHOT</version>
+        <groupId>io.jenkins.blueocean</groupId>
+        <version>1.0.0-b07-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-testing</artifactId>
