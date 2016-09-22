@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>blueocean</artifactId>
-    <packaging>hpi</packaging>
+    <packaging>pom</packaging>
 
     <name>BlueOcean beta</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
@@ -34,6 +34,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-displayurl-provider</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -62,13 +66,6 @@
         </dependency>
 
         <!-- Test deps -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-rest-impl</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>

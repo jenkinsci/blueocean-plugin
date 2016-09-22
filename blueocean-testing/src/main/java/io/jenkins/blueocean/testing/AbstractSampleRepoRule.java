@@ -22,9 +22,10 @@
  * THE SOFTWARE.
  */
 
-package io.jenkins.blueocean.service.embedded.scm;
+package io.jenkins.blueocean.testing;
 
 import hudson.triggers.SCMTrigger;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.rules.ExternalResource;
@@ -34,7 +35,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import java.io.File;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.is;
 
 public abstract class AbstractSampleRepoRule extends ExternalResource {
 
@@ -49,9 +49,9 @@ public abstract class AbstractSampleRepoRule extends ExternalResource {
             int r = pb.directory(cwd).start().waitFor();
             String message = Arrays.toString(cmds) + " failed with error code";
             if (probing) {
-                Assume.assumeThat(message, r, is(0));
+                Assume.assumeThat(message, r, Matchers.is(0));
             } else {
-                Assert.assertThat(message, r, is(0));
+                Assert.assertThat(message, r, Matchers.is(0));
             }
         } catch (Exception x) {
             if (probing) {

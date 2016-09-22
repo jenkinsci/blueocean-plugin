@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.jenkins.blueocean</groupId>
+    <artifactId>blueocean-parent</artifactId>
+    <version>1.0.0-b05-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>blueocean-displayurl-provider</artifactId>
+  <packaging>hpi</packaging>
+
+  <name>Module :: BlueOcean :: Display URL Provider</name>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+
+  <dependencies>
+      <dependency>
+          <groupId>org.jenkins-ci.plugins</groupId>
+          <artifactId>display-url-api</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.jenkins-ci.plugins.workflow</groupId>
+          <artifactId>workflow-job</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.jenkins-ci.plugins</groupId>
+          <artifactId>branch-api</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>io.jenkins.blueocean</groupId>
+          <artifactId>blueocean-config</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.jenkins-ci.plugins.workflow</groupId>
+          <artifactId>workflow-multibranch</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.jenkins-ci.plugins</groupId>
+          <artifactId>git</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>blueocean-testing</artifactId>
+      </dependency>
+  </dependencies>
+ </project>

@@ -22,11 +22,10 @@
  * THE SOFTWARE.
  */
 
-package io.jenkins.blueocean.rest.impl.pipeline.scm;
+package io.jenkins.blueocean.testing;
 
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
-import io.jenkins.blueocean.rest.impl.pipeline.BlueOceanDisplayURLImplTest;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
@@ -71,7 +70,7 @@ public final class GitSampleRepoRule extends AbstractSampleDVCSRepoRule {
         return this;
     }
 
-    public GitSampleRepoRule writeJenkinsFile(BlueOceanDisplayURLImplTest.JenkinsFile file) throws IOException {
+    public GitSampleRepoRule writeJenkinsFile(JenkinsFile file) throws IOException {
         write("Jenkinsfile", file.getFileContents());
         return this;
     }

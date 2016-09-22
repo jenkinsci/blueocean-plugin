@@ -1,8 +1,9 @@
-package io.jenkins.blueocean.rest.impl.pipeline;
+package io.jenkins.blueocean.displayurlprovider;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Project;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
+import io.jenkins.blueocean.testing.GitSampleRepoRule;
+import io.jenkins.blueocean.testing.JenkinsFile;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
@@ -16,22 +17,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExternalResource;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -39,12 +32,14 @@ import static org.junit.Assert.fail;
  */
 public class BlueOceanDisplayURLImplTest {
 
+    private Pattern pathPAttern = Pattern.compile("http://.+:[0-9]+(/.*)");
+
     @Before
     public void before() throws Exception {
         repo.init();
 
     }
-    Pattern pathPAttern = Pattern.compile("http://.+:[0-9]+(/.*)");
+
     private String getPath(String url) throws URISyntaxException {
         Matcher m = pathPAttern.matcher(url);
         m.matches();
@@ -116,7 +111,7 @@ public class BlueOceanDisplayURLImplTest {
                 new DefaultBranchPropertyStrategy(new BranchProperty[0])));
 
             for (SCMSource source : mp.getSCMSources()) {
-                assertEquals(mp, source.getOwner());
+                Assert.assertEquals(mp, source.getOwner());
             }
 
             return new MultiBranchTestBuilder(j, mp);
@@ -128,7 +123,7 @@ public class BlueOceanDisplayURLImplTest {
                 new DefaultBranchPropertyStrategy(new BranchProperty[0])));
 
             for (SCMSource source : mp.getSCMSources()) {
-                assertEquals(mp, source.getOwner());
+                Assert.assertEquals(mp, source.getOwner());
             }
 
             return new MultiBranchTestBuilder(j, mp);
@@ -153,41 +148,4 @@ public class BlueOceanDisplayURLImplTest {
             return p;
         }
     }
-
-
-    public static class JenkinsFile {
-        private String file = "";
-        public static JenkinsFile createFile() {
-            return new JenkinsFile();
-        }
-
-        public JenkinsFile node() {
-            file += "node {\n";
-            return this;
-        }
-
-        public JenkinsFile endNode() {
-            file += "}\n";
-            return this;
-        }
-
-        public JenkinsFile stage(String name) {
-            file += "stage '"+name+"';\n";
-            return this;
-        }
-        public JenkinsFile sleep(int seconds) {
-            file += "sleep " + seconds + ";\n";
-            return this;
-        }
-
-        public JenkinsFile echo(String msg) {
-            file += "echo '"+msg+"'";
-            return this;
-        }
-
-        public String getFileContents() {
-            return file;
-        }
-    }
-
 }

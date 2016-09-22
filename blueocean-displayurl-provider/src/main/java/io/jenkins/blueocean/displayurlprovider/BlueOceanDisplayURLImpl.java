@@ -1,6 +1,7 @@
-package io.jenkins.blueocean;
+package io.jenkins.blueocean.displayurlprovider;
 
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -15,22 +16,11 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-/**
- * Created by ivan on 13/09/16.
- */
 @Extension
 public class BlueOceanDisplayURLImpl extends DisplayURLProvider {
     @Override
     public String getRoot() {
-        Jenkins jenkins = Jenkins.getInstance();
-        if (jenkins == null) {
-            throw new IllegalStateException("Jenkins has not started");
-        }
-        String root = jenkins.getRootUrl();
-        if (root == null) {
-            root = "http://unconfigured-jenkins-location/";
-        }
-        return root + "blue/";
+        return super.getRoot() + "blue/";
     }
 
     @Override
@@ -38,15 +28,11 @@ public class BlueOceanDisplayURLImpl extends DisplayURLProvider {
         if(run instanceof WorkflowRun) {
             WorkflowJob job =  ((WorkflowRun) run).getParent();
             if(job.getParent() instanceof MultiBranchProject) {
-                return getJobURL(((MultiBranchProject) job.getParent()))+ "detail/" +  encode(job.getDisplayName()) + "/" + run.getNumber() + "/";
+                return getJobURL(((MultiBranchProject) job.getParent()))+ "detail/" +  Util.encode(job.getDisplayName()) + "/" + run.getNumber() + "/";
             }
         }
-        if(run.getParent() instanceof Job) {
-            Job job = ((Job) run.getParent());
-            return getJobURL(job) + "detail/" + encode(job.getDisplayName()) + "/" + run.getNumber() + "/";
-        }
-
-        return null;
+        Job job = run.getParent();
+        return getJobURL(job) + "detail/" + Util.encode(job.getDisplayName()) + "/" + run.getNumber() + "/";
     }
 
     @Override
@@ -54,32 +40,26 @@ public class BlueOceanDisplayURLImpl extends DisplayURLProvider {
         return getRunURL(run) + "changes";
     }
 
-    public String getJobURL(MultiBranchProject<?, ?> project) {
-        String jobPath = encode(project.getFullName());
-
-        return getRoot() + "organizations/jenkins/pipelines/" + jobPath + "/";
-    }
     @Override
     public String getJobURL(Job<?, ?> project) {
         String jobPath;
         if(project.getParent() instanceof MultiBranchProject) {
-            jobPath = encode(project.getParent().getFullName());
+            jobPath = Util.encode(project.getParent().getFullName());
         } else {
-            jobPath = encode(project.getFullName());
+            jobPath = Util.encode(project.getFullName());
         }
 
         return getRoot() + "organizations/jenkins/pipelines/" + jobPath + "/";
     }
 
-    private String encode(String path) {
-        try {
-            return URLEncoder.encode(path, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new ServiceException.UnexpectedErrorException("Error encoding url");
-        }
-    }
     @Override
     public String getTestUrl(TestResult result) {
         return getRunURL(result.getRun()) + "/tests";
+    }
+
+    private String getJobURL(MultiBranchProject<?, ?> project) {
+        String jobPath = Util.encode(project.getFullName());
+
+        return getRoot() + "organizations/jenkins/pipelines/" + jobPath + "/";
     }
 }
