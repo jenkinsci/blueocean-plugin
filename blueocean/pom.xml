@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>blueocean</artifactId>
-    <packaging>pom</packaging>
+    <packaging>hpi</packaging>
 
     <name>BlueOcean beta</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
