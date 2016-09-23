@@ -126,6 +126,7 @@
                         linkHPI('blueocean-rest-impl');
                         linkHPI('blueocean-pipeline-api-impl')
                         linkHPI('blueocean-config')
+                        linkHPI('blueocean-events')
                     </source>
                 </configuration>
             </plugin>

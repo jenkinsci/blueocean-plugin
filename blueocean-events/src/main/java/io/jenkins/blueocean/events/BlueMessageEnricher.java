@@ -26,6 +26,7 @@ package io.jenkins.blueocean.events;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
+import hudson.model.Job;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
@@ -50,6 +51,7 @@ public class BlueMessageEnricher extends MessageEnricher {
         blueocean_job_rest_url,
         blueocean_job_pipeline_name,
         blueocean_job_branch_name,
+        blueocean_job_expected_build_number,
     }
 
     @Override
@@ -66,6 +68,11 @@ public class BlueMessageEnricher extends MessageEnricher {
 
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
             jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, job.getFullName());
+
+            if (job instanceof Job) {
+                jobChannelMessage.set(BlueEventProps.blueocean_job_expected_build_number, String.valueOf(((Job) job).getNextBuildNumber()));
+            }
+
             if (job instanceof WorkflowJob) {
                 ItemGroup<? extends Item> parent = job.getParent();
                 if (parent instanceof WorkflowMultiBranchProject) {
