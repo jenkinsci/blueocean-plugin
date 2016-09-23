@@ -7,31 +7,12 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
-import { capable } from '@jenkins-cd/blueocean-core-js';
-
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 import favoritesSseListener from '../model/FavoritesSseListener';
 
 import FavoritesProvider from './FavoritesProvider';
 import { PipelineCard } from './PipelineCard';
-
-/**
- * Extract elements from a path string deliminted with forward slashes
- * @param path
- * @param begin
- * @param end
- * @returns {string}
- */
-const extractPath = (path, begin, end) => {
-    try {
-        return path.split('/').slice(begin, end).join('/');
-    } catch (error) {
-        return path;
-    }
-};
-
-const BRANCH_CAPABILITY = 'io.jenkins.blueocean.rest.model.BlueBranch';
 
 /**
  * Renders a stack of "favorites cards" including current most recent status.
@@ -63,80 +44,19 @@ export class DashboardCards extends Component {
         this.props.updateRun(runData);
     }
 
-    /**
-     * Takes a pipeline/branch object and returns the fullName, pipelineName and branchName components
-     * @param pipeline
-     * @returns {{pipelineName: string, fullName: string, branchName: string}}
-     * @private
-     */
-    _extractNames(pipeline) {
-        const isBranch = capable(pipeline, BRANCH_CAPABILITY);
-
-        let fullName = null;
-        let pipelineName = null;
-        let branchName = null;
-
-        if (isBranch) {
-            // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
-            // extract "pipeline"
-            pipelineName = extractPath(pipeline.fullName, -2, -1);
-            // extract everything up to "branch"
-            fullName = extractPath(pipeline.fullName, 0, -1);
-            branchName = pipeline.name;
-        } else {
-            pipelineName = pipeline.name;
-            fullName = pipeline.fullName;
-        }
-
-        return {
-            pipelineName, fullName, branchName,
-        };
-    }
-
-    _renderCardStack() {
+    render() {
         if (!this.props.favorites) {
             return null;
         }
 
         const favoriteCards = this.props.favorites.map(favorite => {
             const pipeline = favorite.item;
-            const latestRun = pipeline.latestRun;
-            const names = this._extractNames(pipeline);
-
-            let status = null;
-            let startTime = null;
-            let estimatedDuration = null;
-            let commitId = null;
-            let runId = null;
-
-            if (latestRun) {
-                if (latestRun.result) {
-                    status = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
-                }
-
-                startTime = latestRun.startTime;
-                estimatedDuration = latestRun.estimatedDurationInMillis;
-                commitId = latestRun.commitId;
-                runId = latestRun.id;
-            } else {
-                status = 'NOT_BUILT';
-            }
 
             return (
                 <div key={favorite._links.self.href}>
                     <PipelineCard
                       router={this.props.router}
-                      item={pipeline}
-                      latestRun={latestRun}
-                      status={status}
-                      startTime={startTime}
-                      estimatedDuration={estimatedDuration}
-                      organization={pipeline.organization}
-                      fullName={names.fullName}
-                      pipeline={names.pipelineName}
-                      branch={names.branchName}
-                      commitId={commitId}
-                      runId={runId}
+                      runnable={pipeline}
                       favorite
                       onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                     />
@@ -145,21 +65,15 @@ export class DashboardCards extends Component {
         });
 
         return (
-            <div className="favorites-card-stack">
-                <TransitionGroup transitionName="vertical-expand-collapse"
-                  transitionEnterTimeout={300}
-                  transitionLeaveTimeout={300}
-                >
-                    {favoriteCards}
-                </TransitionGroup>
-            </div>
-        );
-    }
-
-    render() {
-        return (
             <FavoritesProvider store={this.props.store}>
-                { this._renderCardStack() }
+                <div className="favorites-card-stack">
+                    <TransitionGroup transitionName="vertical-expand-collapse"
+                      transitionEnterTimeout={300}
+                      transitionLeaveTimeout={300}
+                    >
+                        {favoriteCards}
+                    </TransitionGroup>
+                </div>
             </FavoritesProvider>
         );
     }

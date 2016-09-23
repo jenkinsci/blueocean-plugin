@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.17-beta5",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.17-beta5"
+      "version": "0.0.17-beta6",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.17-beta6"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.78",

@@ -13,18 +13,11 @@ function clone(object) {
 
 describe('PipelineCard', () => {
     let item;
-    let status;
-    let organization;
-    let pipeline;
-    let branch;
-    let commitId;
     let favorite;
 
     function shallowRenderCard() {
         return shallow(
-            <PipelineCard item={item} latestRun={item.latestRun} status={status} organization={organization} pipeline={pipeline}
-              branch={branch} commitId={commitId} favorite={favorite}
-            />
+            <PipelineCard runnable={item} favorite={favorite} />
         );
     }
 
@@ -32,12 +25,7 @@ describe('PipelineCard', () => {
         const favorites = clone(require('../data/favorites.json'));
 
         item = favorites[0].item;
-        item._capabilities = ['org.jenkinsci.plugins.workflow.job.WorkflowJob'];
-        status = null;
-        organization = item.organization;
-        pipeline = item.fullName.split('/')[0];
-        branch = item.name;
-        commitId = item.latestRun.commitId;
+        item._capabilities = ['io.jenkins.blueocean.rest.model.BlueBranch'];
         favorite = true;
     });
 
@@ -50,7 +38,7 @@ describe('PipelineCard', () => {
     });
 
     it('renders basic child elements', () => {
-        status = 'SUCCESS';
+        item.latestRun.result = 'SUCCESS';
         const wrapper = shallowRenderCard();
 
         assert.equal(wrapper.find('LiveStatusIndicator').length, 1);
@@ -64,7 +52,7 @@ describe('PipelineCard', () => {
     });
 
     it('renders "rerun" button after failure', () => {
-        status = item.latestRun.result = 'FAILURE';
+        item.latestRun.result = 'FAILURE';
         const wrapper = shallowRenderCard();
         const replayButton = wrapper.find('ReplayButton').shallow();
 
@@ -72,7 +60,7 @@ describe('PipelineCard', () => {
     });
 
     it('renders no "rerun" button after success', () => {
-        status = item.latestRun.result = 'SUCCESS';
+        item.latestRun.result = 'SUCCESS';
         const wrapper = shallowRenderCard();
         const replayButton = wrapper.find('ReplayButton').shallow();
 
@@ -80,7 +68,7 @@ describe('PipelineCard', () => {
     });
 
     it('renders a "run" button when successful', () => {
-        status = item.latestRun.result = 'SUCCESS';
+        item.latestRun.result = 'SUCCESS';
         const wrapper = shallowRenderCard();
         const runButton = wrapper.find('RunButton').shallow();
 
@@ -88,7 +76,7 @@ describe('PipelineCard', () => {
     });
 
     it('renders no "run" button while running', () => {
-        status = item.latestRun.state = 'RUNNING';
+        item.latestRun.state = 'RUNNING';
         const wrapper = shallowRenderCard();
         const runButton = wrapper.find('RunButton').shallow();
 
@@ -96,7 +84,7 @@ describe('PipelineCard', () => {
     });
 
     it('renders a "stop" button while running', () => {
-        status = item.latestRun.state = 'RUNNING';
+        item.latestRun.state = 'RUNNING';
         const wrapper = shallowRenderCard();
         const runButton = wrapper.find('RunButton').shallow();
 
@@ -104,19 +92,28 @@ describe('PipelineCard', () => {
     });
 
     it('renders no "stop" button after success', () => {
-        status = item.latestRun.state = 'RUNNING';
+        item.latestRun.state = 'RUNNING';
         const wrapper = shallowRenderCard();
         const runButton = wrapper.find('RunButton').shallow();
 
         assert.equal(runButton.find('.stop-button').length, 1);
     });
 
+    it('renders "not built" status if no latest run', () => {
+        item.latestRun = null;
+        const wrapper = shallowRenderCard();
+
+        assert.equal(wrapper.find('.not_built-bg-lite').length, 1);
+    });
+
     it('escapes the branch name', () => {
-        branch = encodeURIComponent('feature/JENKINS-667');
+        const branch = 'experiment/build-locally-docker';
+        item.fullName = `jdl1/${encodeURIComponent(branch)}`;
+        item.name = encodeURIComponent(branch);
         const wrapper = shallowRenderCard();
 
         const elements = wrapper.find('.branchText');
         assert.equal(elements.length, 1);
-        assert.equal(elements.at(0).text(), decodeURIComponent(branch));
+        assert.equal(elements.at(0).text(), branch);
     });
 });
