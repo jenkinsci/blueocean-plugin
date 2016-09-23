@@ -142,9 +142,9 @@ export const actionHandlers = {
         steps[payload.nodesBaseUrl] = payload;
         return state.set('steps', steps);
     },
-    [ACTION_TYPES.REMOVE_STEP](state, { payload }): State {
+    [ACTION_TYPES.REMOVE_STEP](state, { stepId }): State {
         const steps = { ...state.steps } || {};
-        delete steps[payload];// we do not care about an empty slot
+        delete steps[stepId];
         return state.set('steps', steps);
     },
     [ACTION_TYPES.SET_LOGS](state, { payload }): State {
@@ -153,10 +153,10 @@ export const actionHandlers = {
 
         return state.set('logs', logs);
     },
-    [ACTION_TYPES.REMOVE_LOG](state, { payload }): State {
+    [ACTION_TYPES.REMOVE_LOG](state, { key }): State {
         const logs = { ...state.logs } || {};
         Object.keys(logs)
-            .filter((item) => item.indexOf(payload) !== -1)
+            .filter((item) => item.indexOf(key) !== -1)
             .map((item) => delete logs[item]);
         return state.set('logs', logs);
     },
@@ -699,7 +699,7 @@ export const actions = {
     removeStep(id) {
         return (dispatch) => dispatch({
             type: ACTION_TYPES.REMOVE_STEP,
-            payload: id,
+            stepId: id,
         });
     },
     /**
@@ -711,7 +711,7 @@ export const actions = {
     removeLogs(id) {
         return (dispatch) => dispatch({
             type: ACTION_TYPES.REMOVE_LOG,
-            payload: id,
+            key: id,
         });
     },
     /*
