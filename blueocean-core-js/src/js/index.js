@@ -17,9 +17,12 @@ export ToastUtils from './ToastUtils';
 export Utils from './utils';
 export AppConfig from './config';
 export Security from './security';
+export QueueUtils from './QueueUtils';
 
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton } from './components/RunButton';
+
+import Rest from './rest/index';
 
 // export services as a singleton so all plugins will use the same instance
 
@@ -27,7 +30,7 @@ export { RunButton } from './components/RunButton';
 export { capable, capabilityStore, capabilityAugmenter } from './capability/index';
 
 // limit to single instance so that duplicate REST calls aren't made as events come in
-const sseBus = new SseBus(sse, Fetch.fetchJSON);
+const sseBus = new SseBus(sse, Rest);
 export { sseBus as SseBus };
 
 // required so new toasts are routed to the instance used in blueocean-web

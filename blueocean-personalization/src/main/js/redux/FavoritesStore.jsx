@@ -6,6 +6,8 @@ import keymirror from 'keymirror';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 
+import { Utils } from '@jenkins-cd/blueocean-core-js';
+
 import { AnonUser, User } from '../model/User';
 import { FavoritesSortHelper } from '../util/SortUtils';
 import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
@@ -79,12 +81,15 @@ const actionHandlers = {
         const favorites = state.get('favorites');
 
         for (const fav of favorites) {
-            const runsBaseUrl = `${fav.item._links.self.href}runs`;
+            // in order to find which favorite the updated run corresponds to, compare the HAL self hrefs
+            const jobBaseUrl = Utils.cleanSlashes(fav.item._links.self.href);
             const runUrl = jobRun._links.self.href;
 
-            // if the job's run URL starts with the favorited item's '/runs' URL,
+            // if the job's run URL starts with the favorited item's self URL,
             // then the run applies to that item, so update the 'latestRun' property
-            if (runUrl.indexOf(runsBaseUrl) === 0) {
+            // note we use the job URL since the "jobRun" could be a run OR a queue item,
+            // so we can't match against the job's /runs or /queue URLs alone
+            if (runUrl.indexOf(jobBaseUrl) === 0) {
                 const index = favorites.indexOf(fav);
                 const updatedFavorite = clone(fav);
                 updatedFavorite.item.latestRun = jobRun;

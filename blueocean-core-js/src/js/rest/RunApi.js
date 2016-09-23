@@ -7,6 +7,13 @@ import utils from '../utils';
 
 export class RunApi {
 
+    fetchRunFromEvent(runEvent, useExpectedBuildNumber) {
+        const baseUrl = config.getJenkinsRootURL();
+        const buildNumber = useExpectedBuildNumber ? runEvent.blueocean_job_expected_build_number : runEvent.jenkins_object_id;
+        const runUrl = utils.cleanSlashes(`${baseUrl}/${runEvent.blueocean_job_rest_url}/runs/${buildNumber}`);
+        return Fetch.fetchJSON(runUrl);
+    }
+
     startRun(item) {
         const path = config.getJenkinsRootURL();
         const runUrl = utils.cleanSlashes(`${path}/${item._links.self.href}/runs/`);
@@ -34,30 +41,6 @@ export class RunApi {
         };
 
         return Fetch.fetch(stopUrl, { fetchOptions });
-    }
-
-    removeFromQueue(queueItem) {
-        const path = config.getJenkinsRootURL();
-        let queueItemUrl;
-
-        // a queue item is a "pseudo run" with the queue href attached via _item
-        if (queueItem._item && queueItem._item._links) {
-            queueItemUrl = queueItem._item._links.self.href;
-        } else {
-            console.warn('could not extract data to remove item from queue; aborting');
-            return null;
-        }
-
-        const removeQueueUrl = utils.cleanSlashes(`${path}/${queueItemUrl}`);
-
-        const fetchOptions = {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
-
-        return Fetch.fetch(removeQueueUrl, { fetchOptions });
     }
 
     replayRun(run) {

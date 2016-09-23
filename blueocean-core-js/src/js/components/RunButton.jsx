@@ -5,7 +5,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
 
-import { RunApi as runApi } from '../';
+import Rest from '../rest/index';
 import { ToastService as toastService } from '../';
 import { ToastUtils } from '../';
 import Security from '../security';
@@ -47,7 +47,7 @@ export class RunButton extends Component {
     }
 
     _onRunClick() {
-        runApi.startRun(this.props.runnable)
+        Rest.runApi.startRun(this.props.runnable)
             .then((runInfo) => ToastUtils.createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation));
     }
 
@@ -61,9 +61,9 @@ export class RunButton extends Component {
         });
 
         if (this.props.latestRun.state === 'QUEUED') {
-            runApi.removeFromQueue(this.props.latestRun);
+            Rest.queueApi.removeFromQueue(this.props.latestRun);
         } else {
-            runApi.stopRun(this.props.latestRun);
+            Rest.runApi.stopRun(this.props.latestRun);
         }
 
         const name = decodeURIComponent(this.props.runnable.name);

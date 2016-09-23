@@ -1,19 +1,20 @@
 /**
  * Created by cmeyers on 7/29/16.
  */
-import defaultFetch from 'isomorphic-fetch';
 import config from '../urlconfig';
 import utils from '../utils';
+import QueueUtils from '../QueueUtils';
 
 /**
  * Wraps the SSE Gateway and fetches data related to events from REST API.
  */
 export class SseBus {
 
-    constructor(sse, fetch) {
+    constructor(sse, rest) {
         this.id = this._random();
         this.sse = sse;
-        this.fetch = fetch || defaultFetch;
+        this.runApi = rest.runApi;
+        this.queueApi = rest.queueApi;
         this.sseConnected = false;
         this.externalListeners = {};
         this.sseListeners = {};
@@ -97,9 +98,10 @@ export class SseBus {
         case 'job_crud_renamed':
             this._refetchPipelines();
             break;
-        case 'job_run_queue_buildable':
         case 'job_run_queue_enter':
             this._enqueueJob(event, interestedListeners);
+            break;
+        case 'job_run_queue_buildable':
             break;
         case 'job_run_queue_left':
         case 'job_run_queue_blocked': {
@@ -123,34 +125,23 @@ export class SseBus {
     }
 
     _enqueueJob(event, listeners) {
-        const queuedRun = {};
+        // try to fetch from the queue and swallow any error
+        // if it 404's, then very likely it's already started running
+        // that SSE will trigger 'updateJob' and update it to proper status
+        this.queueApi.fetchQueueItemFromEvent(event)
+            .then(data => {
+                const pseudoRun = QueueUtils.mapQueueImplToPseudoRun(data);
 
-        queuedRun.pipeline = event.job_ismultibranch ?
-            event.blueocean_job_branch_name :
-            event.blueocean_job_pipeline_name;
-
-        const runUrl = utils.cleanSlashes(`${event.blueocean_job_rest_url}/runs/${event.job_run_queueId}`);
-
-        queuedRun._links = {
-            self: {
-                href: runUrl,
-            },
-        };
-
-        queuedRun.state = 'QUEUED';
-        queuedRun.result = 'UNKNOWN';
-
-        for (const listener of listeners) {
-            listener(queuedRun, event);
-        }
+                for (const listener of listeners) {
+                    listener(pseudoRun, event);
+                }
+            })
+            .catch(() => {});
     }
 
     _updateJob(event, listeners) {
-        const baseUrl = config.getJenkinsRootURL();
-        const url = utils.cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
-
-        this.fetch(url)
-            .then((data) => {
+        this.runApi.fetchRunFromEvent(event)
+            .then(data => {
                 const updatedRun = utils.clone(data);
 
                 // in many cases the SSE and subsequent REST call occur so quickly
