@@ -13,6 +13,7 @@ export class SseBus {
     constructor(sse, rest) {
         this.id = this._random();
         this.sse = sse;
+        this.pipelineApi = rest.pipelineApi;
         this.runApi = rest.runApi;
         this.queueApi = rest.queueApi;
         this.sseConnected = false;
@@ -104,6 +105,8 @@ export class SseBus {
         case 'job_run_queue_buildable':
             break;
         case 'job_run_queue_left':
+            this._unEnqueueJob(event, interestedListeners);
+            break;
         case 'job_run_queue_blocked': {
             break;
         }
@@ -154,6 +157,17 @@ export class SseBus {
 
                 for (const listener of listeners) {
                     listener(updatedRun, event);
+                }
+            });
+    }
+
+    // if the job was removed / canceled from the queue, then just fetch the latest run
+    // and use that to update the pipeline's status
+    _unEnqueueJob(event, listeners) {
+        this.pipelineApi.fetchLatestRun(event.blueocean_job_rest_url)
+            .then(data => {
+                for (const listener of listeners) {
+                    listener(data, event);
                 }
             });
     }
