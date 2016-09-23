@@ -1,11 +1,10 @@
 /**
  * Created by cmeyers on 7/6/16.
  */
-
-import { ACTION_TYPES } from './FavoritesStore';
 import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
 import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js';
 
+import { ACTION_TYPES } from './FavoritesStore';
 import { cleanSlashes } from '../util/UrlUtils';
 
 const fetchFlags = {
@@ -49,6 +48,12 @@ export const actions = {
                 ACTION_TYPES.SET_FAVORITES
             ));
         };
+    },
+
+    sortFavorites() {
+        return (dispatch) => (
+            dispatch({ type: ACTION_TYPES.SORT_FAVORITES })
+        );
     },
 
     toggleFavorite(addFavorite, branch, favoriteToRemove) {
