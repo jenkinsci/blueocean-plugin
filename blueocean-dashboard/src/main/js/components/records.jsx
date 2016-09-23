@@ -5,6 +5,7 @@ since we would return a function, */
 const { Record } = Immutable;
 export class PipelineRecord extends Record({
     _class: null,
+    _capabilities: [],
     _links: null,
     branchNames: null,
     displayName: '',
@@ -47,6 +48,7 @@ export const ChangeSetRecord = Record({
 
 export class RunRecord extends Record({
     _class: null,
+    _capabilities: [],
     _links: null,
     changeSet: ChangeSetRecord,
     artifacts: null,
@@ -93,6 +95,7 @@ export const PullRequestRecord = Record({
 
 export const RunsRecord = Record({
     _class: null,
+    _capabilities: [],
     _links: null,
     latestRun: RunRecord,
     name: null,

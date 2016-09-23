@@ -2,6 +2,7 @@ const infoLog = require('debug')('smart-fetch:info');
 const debugLog = require('debug')('smart-fetch:debug');
 import dedupe from './dedupe-calls';
 import { Fetch } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js';
 
 /**
  * How many records to fetch by default
@@ -52,6 +53,7 @@ export function fetch(url, options, onData) {
         _onData({ $pending: true });
         return dedupe(url, () =>
             Fetch.fetchJSON(url, { fetchOptions: _options || {} }) // Fetch data
+                .then(data => augmenter.augmentCapabilities(data))
                 .then(successAndFreeze)) // add success field & freeze graph
                 .then((data) => {
                     debugLog(' -- success: ', url, data);
@@ -136,6 +138,7 @@ class Pager {
         infoLog('Fetching paged data: ', this);
         return dedupe(url, () =>
             Fetch.fetchJSON(url) // Fetch data
+            .then(data => augmenter.augmentCapabilities(data))
             .then(successAndFreeze)) // add success field & freeze graph
             .then((data) => {
                 debugLog(' -- success: ', url, data);
