@@ -114,7 +114,7 @@ build_inside() {
 
 build-git-description() {
   local head="$(git rev-parse --verify HEAD)"
-  echo "Built from commit <a href=\"https://github.com/jenkinsci/blueocean-plugin/commit/${head}\">${head}</a>"
+  echo "BlueOcean plugins built from commit <a href=\"https://github.com/jenkinsci/blueocean-plugin/commit/${head}\">${head}</a>"
   local pr="$(git show-ref | sed -n "s|^$head refs/remotes/.*/pr/\(.*\)$|\1|p")"
   if [[ ! -z $pr ]]; then
       echo ", <a href=\"https://github.com/jenkinsci/blueocean-plugin/pull/${pr}\">Pull Request ${pr}</a><br>"
@@ -187,8 +187,9 @@ setup_nice_output
 build_inside "cloudbees/java-build-tools"
 if [[ "$make_image" = true ]]; then
   if [[ "$git_data" = true ]]; then
-    cat > "$PROJECT_ROOT/docker/ref/git.groovy" <<EOF
-Jenkins.instance.setSystemMessage('''$(build-git-description)''')
+    mkdir -p "$PROJECT_ROOT/docker/ref/init.groovy.d"
+    cat > "$PROJECT_ROOT/docker/ref/init.groovy.d/build_data.groovy" <<EOF
+jenkins.model.Jenkins.instance.setSystemMessage('''$(build-git-description)''')
 EOF
   fi
   make_image
