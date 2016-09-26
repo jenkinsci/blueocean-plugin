@@ -51,7 +51,7 @@ EmptyState.propTypes = {
 
 export class MultiBranch extends Component {
     componentWillMount() {
-        if (this.context.config && this.context.params) {
+        if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
             this.props.fetchBranches({
                 organizationName: this.context.params.organization,
                 pipelineName: this.context.params.pipeline,
@@ -62,11 +62,7 @@ export class MultiBranch extends Component {
     render() {
         const { branches } = this.props;
 
-        if (!branches) {
-            return null;
-        }
-
-        if (!branches.$pending && pipelineBranchesUnsupported(this.context.pipeline)) {
+        if (!branches || (!branches.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
             return (<NotSupported />);
         }
 

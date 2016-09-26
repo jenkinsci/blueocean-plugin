@@ -44,6 +44,7 @@ export class PipelinePage extends Component {
     }
     
     render() {
+        console.log('pipie')
         const { pipeline } = this.props;
         const { organization, name, fullName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
