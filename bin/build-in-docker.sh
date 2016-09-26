@@ -185,12 +185,13 @@ if [[ $# -ne 0 ]]; then build_commands="$*"; fi
 
 setup_nice_output
 build_inside "cloudbees/java-build-tools"
-if [[ "$make_image" = true ]]; then
-  if [[ "$git_data" = true ]]; then
-    mkdir -p "$PROJECT_ROOT/docker/ref/init.groovy.d"
-    cat > "$PROJECT_ROOT/docker/ref/init.groovy.d/build_data.groovy" <<EOF
+if [[ "$git_data" = true ]]; then
+  mkdir -p "$PROJECT_ROOT/docker/ref/init.groovy.d"
+  cat > "$PROJECT_ROOT/docker/ref/init.groovy.d/build_data.groovy" <<EOF
 jenkins.model.Jenkins.instance.setSystemMessage('''$(build-git-description)''')
 EOF
-  fi
+fi
+
+if [[ "$make_image" = true ]]; then
   make_image
 fi
