@@ -18,8 +18,8 @@
  *********************************************************************************************/
 
 const fs = require('fs');
-// match x, tilde, gt, lt, star, carat or whitespace in version
-const IMPRECISE_VERSION_CHARS_PATTERN = /[x~><*|\^\s]+/;
+// match "1.2.3" or "1.2.3-beta5"
+const PRECISE_VERSION_CHARS_PATTERN = /^\d+\.\d+\.\d+(-[A-Za-z0-9]+)?$/;
 
 const start = new Date().getTime();
 
@@ -66,7 +66,7 @@ function checkImpreciseDependencies(dependencies) {
     Object.keys(dependencies).forEach(name => {
         const version = dependencies[name];
 
-        if (IMPRECISE_VERSION_CHARS_PATTERN.test(version)) {
+        if (!PRECISE_VERSION_CHARS_PATTERN.test(version)) {
             badDeps.push(`${name}@${version}`);
         }
     });
