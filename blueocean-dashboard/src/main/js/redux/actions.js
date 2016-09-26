@@ -70,6 +70,7 @@ export const ACTION_TYPES = keymirror({
     SET_CURRENT_PULL_REQUEST_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
+    CLEAR_CURRENT_PULL_REQUEST_DATA: null,
     SET_TEST_RESULTS: null,
     SET_STEPS: null,
     SET_NODE: null,
@@ -126,7 +127,10 @@ export const actionHandlers = {
             .set('currentRuns', runs[id]);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
-        return state.set('currentBranches', null);
+        return state.delete('currentBranches');
+    },
+    [ACTION_TYPES.CLEAR_CURRENT_PULL_REQUEST_DATA](state) {
+        return state.delete('pullRequests');
     },
     [ACTION_TYPES.SET_CURRENT_BRANCHES_DATA](state, { payload }): State {
         return state.set('currentBranches', payload);
@@ -262,6 +266,18 @@ export const actions = {
                 });
             });
         };
+    },
+
+    clearBranchData() {
+        return (dispatch) => dispatch({
+            type: ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA
+        });
+    },
+
+    clearPRData() {
+        return (dispatch) => dispatch({
+            type: ACTION_TYPES.CLEAR_CURRENT_PULL_REQUEST_DATA
+        });
     },
 
     fetchOrganizationPipelines({ organizationName }) {

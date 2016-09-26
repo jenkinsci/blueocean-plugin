@@ -56,6 +56,10 @@ export class PullRequests extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.props.clearPRData()
+    }
+
     render() {
         const { pullRequests } = this.props;
 
@@ -117,6 +121,7 @@ PullRequests.contextTypes = {
 
 PullRequests.propTypes = {
     pullRequests: array,
+    clearPRData: func,
     fetchPullRequests: func,
 };
 
