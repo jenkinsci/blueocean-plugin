@@ -55,7 +55,7 @@ export class PipelinePage extends Component {
             return <NotFound />;
         }
 
-        setTitle(`Pipeline Jenkins – ${name}`);
+        setTitle(`${organization} – ${name}`);
 
         const baseUrl = buildPipelineUrl(organization, fullName);
 

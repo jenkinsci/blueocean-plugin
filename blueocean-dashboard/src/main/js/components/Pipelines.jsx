@@ -10,7 +10,8 @@ import { documentTitle } from './DocumentTitle';
 export class Pipelines extends Component {
 
     componentDidMount() {
-        this.props.setTitle('Dashboard Jenkins – Dashboard');
+        const { organization } = this.context.params;
+        this.props.setTitle(organization);
     }
 
     render() {
