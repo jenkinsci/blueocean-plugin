@@ -6,7 +6,7 @@
  Checks for imprecise version numbers in package.json, and compares deps/devDeps between package/shrinkwrap jsons.
  Usage:
 
- node validatedeps.js
+ node checkshrinkwrap.js
 
  - Any imprecise version number (e.g. ~, ^, >=, etc) in package.json "dependencies" or "devDependencies" will fail
  - Any dependency in package.json but not in npm-shrinkwrap.json will fail
@@ -18,49 +18,38 @@
  *********************************************************************************************/
 
 const fs = require('fs');
-const start = new Date().getTime();
-
-const args = process.argv.slice(2);
-
-var projectPath = '';
-
-if (args.length === 1) {
-    const pathParts = args[0].split('=');
-
-    if (pathParts.length !== 2) {
-        console.error('you must specify a project path in the form -p=path/to/project');
-        process.exit(1);
-    }
-
-    projectPath = pathParts.slice(-1);
-}
-
-const workingPath = process.cwd();
-const resolvedPath = buildPath(`${workingPath}/${projectPath}`);
-console.log(`validating dependencies in ${resolvedPath}`);
-const packageJsonPath = buildPath(`${resolvedPath}/package.json`);
-const shrinkwrapJsonPath = buildPath(`${resolvedPath}/npm-shrinkwrap.json`);
-
 // match x, tilde, gt, lt, star, carat or whitespace in version
 const IMPRECISE_VERSION_CHARS_PATTERN = /[x~><*|\^\s]+/;
 
-const packages = require(packageJsonPath);
-const packageDeps = packages.dependencies;
-const packageDevDeps = packages.devDependencies;
+const start = new Date().getTime();
 
-checkImpreciseDependencies(packageDeps);
-checkImpreciseDependencies(packageDevDeps);
-checkDuplicateDependencies(packageDeps, packageDevDeps);
-
-const allDeps = Object.assign({}, packageDeps, packageDevDeps);
-const shrinkwrap = require(shrinkwrapJsonPath);
-validateDepsAgainstShrinkwrap(allDeps, shrinkwrap);
+checkProject('../blueocean-dashboard');
+checkProject('../blueocean-personalization');
+checkProject('../blueocean-web');
+checkProject('../blueocean-config');
 
 const ellapsed = new Date().getTime() - start;
 console.log(`dependencies look good! took ${ellapsed}ms`);
 // done!
 
+function checkProject(pathToProject) {
+    const resolvedPath = buildPath(pathToProject);
+    console.log(`validating dependencies in ${resolvedPath}`);
+    const packageJsonPath = buildPath(`${resolvedPath}/package.json`);
+    const shrinkwrapJsonPath = buildPath(`${resolvedPath}/npm-shrinkwrap.json`);
 
+    const packages = require(packageJsonPath);
+    const packageDeps = packages.dependencies;
+    const packageDevDeps = packages.devDependencies;
+
+    checkImpreciseDependencies(packageDeps);
+    checkImpreciseDependencies(packageDevDeps);
+    checkDuplicateDependencies(packageDeps, packageDevDeps);
+
+    const allDeps = Object.assign({}, packageDeps, packageDevDeps);
+    const shrinkwrap = require(shrinkwrapJsonPath);
+    validateDepsAgainstShrinkwrap(allDeps, shrinkwrap);
+}
 
 function buildPath(path) {
     try {
