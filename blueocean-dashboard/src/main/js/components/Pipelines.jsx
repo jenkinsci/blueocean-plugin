@@ -40,9 +40,11 @@ export default class Pipelines extends Component {
                             { organization && ' / ' }
                             { organization && orgLink }
                         </h1>
-                        <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
-                            New Pipeline
-                        </a>
+                        <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
+                            <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
+                                New Pipeline
+                            </a>
+                        </Extensions.Renderer>
                     </Title>
                 </PageHeader>
                 <main>
