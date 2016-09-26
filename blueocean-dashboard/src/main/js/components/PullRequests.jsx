@@ -57,7 +57,7 @@ export class PullRequests extends Component {
     }
 
     componentWillUnmount() {
-        this.props.clearPRData()
+        this.props.clearPRData();
     }
 
     render() {

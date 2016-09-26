@@ -60,7 +60,7 @@ export class MultiBranch extends Component {
     }
 
     componentWillUnmount() {
-       this.props.clearBranchData()
+        this.props.clearBranchData();
     }
 
 
@@ -126,7 +126,7 @@ MultiBranch.contextTypes = {
 MultiBranch.propTypes = {
     branches: array,
     fetchBranches: func,
-    clearBranchData:func,
+    clearBranchData: func,
     children: any,
 };
 

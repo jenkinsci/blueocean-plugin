@@ -270,13 +270,13 @@ export const actions = {
 
     clearBranchData() {
         return (dispatch) => dispatch({
-            type: ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA
+            type: ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA,
         });
     },
 
     clearPRData() {
         return (dispatch) => dispatch({
-            type: ACTION_TYPES.CLEAR_CURRENT_PULL_REQUEST_DATA
+            type: ACTION_TYPES.CLEAR_CURRENT_PULL_REQUEST_DATA,
         });
     },
 
