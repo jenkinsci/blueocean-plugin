@@ -14,6 +14,7 @@ export JWT from './jwt';
 export TestUtils from './testutils';
 export Utils from './utils';
 export AppConfig from './config';
+export Security from './security';
 
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton } from './components/RunButton';

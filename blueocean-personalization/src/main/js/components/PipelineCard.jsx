@@ -4,11 +4,14 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Icon } from 'react-material-icons-blue';
+import { capable } from '@jenkins-cd/blueocean-core-js';
 import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 
 const stopProp = (event) => {
     event.stopPropagation();
 };
+
+const CAPABILITY_PIPELINE = 'org.jenkinsci.plugins.workflow.job.WorkflowJob';
 
 /**
  * PipelineCard displays an informational card about a Pipeline and its status.
@@ -16,7 +19,6 @@ const stopProp = (event) => {
  * Properties:
  * router: instance of RouterContext
  * item: pipeline or branch
- * capabilities: array of capability strings for the item
  * status: 'result' or 'status' value e.g. 'success', 'failure', etc.
  * estimatedDuration: time in millis over which the progress indicator will update.
  * startTime: ISO-8601 string indicating when tracking of progress begins from.
@@ -106,11 +108,12 @@ export class PipelineCard extends Component {
     }
 
     render() {
-        const { capabilities, status, commitId, startTime, estimatedDuration } = this.props;
+        const { item, status, commitId, startTime, estimatedDuration } = this.props;
         const bgClass = PipelineCard._getBackgroundClass(status);
+
         const notRunningStatus = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
         const hasFailedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
-        const isPipeline = capabilities && capabilities.indexOf('org.jenkinsci.plugins.workflow.job.WorkflowJob') >= 0;
+        const isPipeline = item && capable(item, CAPABILITY_PIPELINE);
         const stopClass = this.state.stopping ? 'stopping' : '';
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
@@ -177,7 +180,6 @@ export class PipelineCard extends Component {
 PipelineCard.propTypes = {
     router: PropTypes.object,
     item: PropTypes.object,
-    capabilities: PropTypes.array,
     status: PropTypes.string,
     startTime: PropTypes.string,
     estimatedDuration: PropTypes.number,

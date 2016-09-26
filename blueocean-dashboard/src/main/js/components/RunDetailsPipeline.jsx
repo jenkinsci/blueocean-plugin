@@ -139,7 +139,7 @@ export class RunDetailsPipeline extends Component {
     // Listen for pipeline flow node events.
     // We filter them only for steps and the end event all other we let pass
     _onSseEvent(event) {
-        const { fetchNodes, fetchSteps } = this.props;
+        const { fetchNodes, fetchSteps, removeStep, removeLogs } = this.props;
         const jenkinsEvent = event.jenkins_event;
         // we are using try/catch to throw an early out error
         try {
@@ -176,6 +176,30 @@ export class RunDetailsPipeline extends Component {
                 }
             case 'pipeline_end':
                 {
+                    // get all steps from the current run, we use the nodeKey and remove the last bit
+                    const keyArray = this.mergedConfig.nodeKey.split('/');
+                    // remove last part either / or nodes
+                    keyArray.pop();
+                    // check whether we started with ending /, if so we need to pop again
+                    if (keyArray[keyArray.length - 1] === 'nodes') {
+                        keyArray.pop();
+                    }
+                    // create the base id
+                    const searchString = keyArray.join('/');
+                    // fire to remove all logs from cache
+                    removeLogs(searchString);
+                    /** we have to check now if all steps have been declared as finished,
+                     * if not we will remove them from the cache so we get the final information*/
+                    const notFinishedSteps = Object.keys(this.props.steps)
+                        .filter((item) => item.indexOf(searchString) !== -1)
+                        .map((step) => this.props.steps[step])
+                        .filter((nodeSteps) => !nodeSteps.isFinished);
+                    /**
+                     * we always should have one item in our array which is the last step of the pipeline
+                      */
+                    if (notFinishedSteps.length >= 1) {
+                        notFinishedSteps.map((step) => removeStep(step.nodesBaseUrl));
+                    }
                     // we always want to refresh if the run has finished
                     fetchNodes({ ...this.mergedConfig, refetch });
                     break;
@@ -202,7 +226,7 @@ export class RunDetailsPipeline extends Component {
     isParallel(nodeInfo) {
         // in case we have edges arrays we compare the first edge, if not we know we are not in parallel mode
         return this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
-        this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
+            this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
     }
 
     generateConfig(props) {
@@ -382,6 +406,8 @@ RunDetailsPipeline.propTypes = {
     fetchNodes: func,
     setNode: func,
     fetchSteps: func,
+    removeStep: func,
+    removeLogs: func,
     cleanNodePointer: func,
     steps: object,
     nodes: object,

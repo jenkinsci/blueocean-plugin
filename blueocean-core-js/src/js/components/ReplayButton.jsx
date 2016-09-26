@@ -8,6 +8,9 @@ import { Icon } from 'react-material-icons-blue';
 import { RunApi as runApi } from '../';
 import { ToastService as toastService } from '../';
 import { isMultiBranchRun, buildRunDetailsUrlFromQueue } from '../UrlBuilder';
+import Security from '../security';
+
+const { permit } = Security;
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -75,17 +78,20 @@ export class ReplayButton extends Component {
 
         const status = this.props.latestRun ? this.props.latestRun.result : '';
         const failedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
+        const showReplayButton = !!failedStatus && permit(this.props.runnable).start();
 
         const replayLabel = 'Re-run';
 
+        if (!showReplayButton) {
+            return null;
+        }
+
         return (
             <div className={`replay-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
-                { failedStatus &&
                 <a className={`replay-button ${innerButtonClass}`} title={replayLabel} onClick={() => this._onReplayClick()}>
                     <Icon size={24} icon="replay" />
                     <span className="button-label">{replayLabel}</span>
                 </a>
-                }
             </div>
         );
     }

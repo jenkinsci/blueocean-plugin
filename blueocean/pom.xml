@@ -129,6 +129,19 @@
                     </source>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jenkins-ci.tools</groupId>
+                <artifactId>maven-hpi-plugin</artifactId>
+                <version>1.119</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

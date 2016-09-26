@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eu -o pipefail
 
-HERE="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+PROJECT_ROOT="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd)"
 
 setup_nice_output() {
   # check if stdout is a terminal...
@@ -30,13 +30,13 @@ setup_nice_output() {
 new_build_container() {
   local build_image=$1; shift
 
-  build_container=$(docker create -i -v "$HERE":/build -w /build "$build_image" /bin/cat)
-  echo "$build_container" > "$HERE/.build_container"
+  build_container=$(docker create -i -v "$PROJECT_ROOT":/build -w /build "$build_image" /bin/cat)
+  echo "$build_container" > "$PROJECT_ROOT/.build_container"
 }
 
 delete_build_container() {
   docker rm "$build_container"
-  rm "$HERE/.build_container"
+  rm "$PROJECT_ROOT/.build_container"
 }
 
 stop_build_container() {
@@ -53,8 +53,8 @@ stop_trap() {
 
 prepare_build_container() {
   local build_image=$1; shift
-  if [[ -f $HERE/.build_container ]]; then
-    read -r build_container < "$HERE/.build_container"
+  if [[ -f $PROJECT_ROOT/.build_container ]]; then
+    read -r build_container < "$PROJECT_ROOT/.build_container"
   else
     new_build_container "$build_image"
     return
@@ -64,7 +64,7 @@ prepare_build_container() {
     echo "${yellow}=> ${normal}Removing old build container ${build_container}"
     docker kill "$build_container" || true
     docker rm "$build_container" || true
-    rm "$HERE/.build_container"
+    rm "$PROJECT_ROOT/.build_container"
   else
     local state; state=$(docker inspect --format="{{ .State.Status }}" "$build_container")
     if [[ $? -ne 0 || "$state" != "exited" ]]; then
@@ -99,12 +99,12 @@ build_inside() {
 }
 
 make_image() {
-  echo "${yellow}=> ${normal}Building BlueOcean docker image ${tag_name}"
-  (cd "$HERE" && docker build -t "$tag_name" . )
+  echo "${yellow}=> ${normal}Building BlueOcean docker development image ${tag_name}"
+  (cd "$PROJECT_ROOT" && docker build -t "$tag_name" . )
 }
 
 build_commands="mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore"
-tag_name=blueocean-local
+tag_name="blueocean-dev:local"
 
 usage() {
 cat <<EOF

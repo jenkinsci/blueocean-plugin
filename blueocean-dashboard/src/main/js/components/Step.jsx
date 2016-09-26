@@ -43,7 +43,7 @@ export default class Node extends Component {
                 // we may have a streaming log
                 const number = Number(log.newStart);
                 // in case we doing karaoke we want to see more logs
-                if (number > 0 && followAlong) {
+                if ((number > 0 || !log.logArray) && followAlong) {
                     mergedConfig.newStart = log.newStart;
                     // kill current  timeout if any
                     this.clearThisTimeout();
