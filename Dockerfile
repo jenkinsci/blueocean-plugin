@@ -1,10 +1,12 @@
-FROM jenkinsci/jenkins:latest
+#
+# Before building this Dockerfile, BlueOcean needs to be built locally using Maven
+# You can build everything needed and this Dockerfile by invoking `bin/build-in-docker.sh -m`
+#
+
+# Should be kept in sync with jenkins.properties of pom.xml (patch level doesn't count)
+FROM jenkins:2.7.4
 
 USER root
-
-# See JENKINS-34035 - disable upgrade wizard
-RUN echo -n 2.0 > /usr/share/jenkins/ref/jenkins.install.UpgradeWizard.state  && \
-    echo -n 2.0 > /usr/share/jenkins/ref/jenkins.install.InstallUtil.lastExecVersion
 
 COPY blueocean/target/plugins /usr/share/jenkins/ref/plugins/
 
@@ -13,5 +15,8 @@ RUN install-plugins.sh antisamy-markup-formatter matrix-auth # for security, you
 
 # Force use of locally built blueocean plugin
 RUN for f in /usr/share/jenkins/ref/plugins/blueocean-*.jpi; do mv "$f" "$f.override"; done
+
+# let scripts customize the reference Jenkins folder. Used in bin/build-in-docker to inject the git build data
+COPY docker/ref /usr/share/jenkins/ref
 
 USER jenkins

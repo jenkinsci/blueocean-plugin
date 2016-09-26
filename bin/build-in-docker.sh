@@ -4,6 +4,20 @@ set -eu -o pipefail
 PROJECT_ROOT="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd)"
 
 setup_nice_output() {
+
+  bold=""
+  underline=""
+  standout=""
+  normal=""
+  black=""
+  red=""
+  green=""
+  yellow=""
+  blue=""
+  magenta=""
+  cyan=""
+  white=""
+
   # check if stdout is a terminal...
   if [ -t 1 ]; then
 
@@ -98,6 +112,15 @@ build_inside() {
   stop_build_container
 }
 
+build-git-description() {
+  local head="$(git rev-parse --verify HEAD)"
+  echo "Built from commit <a href=\"https://github.com/jenkinsci/blueocean-plugin/commit/${head}\">${head}</a>"
+  local pr="$(git show-ref | sed -n "s|^$head refs/remotes/.*/pr/\(.*\)$|\1|p")"
+  if [[ ! -z $pr ]]; then
+      echo ", <a href=\"https://github.com/jenkinsci/blueocean-plugin/pull/${pr}\">Pull Request ${pr}</a><br>"
+  fi
+}
+
 make_image() {
   echo "${yellow}=> ${normal}Building BlueOcean docker development image ${tag_name}"
   (cd "$PROJECT_ROOT" && docker build -t "$tag_name" . )
@@ -108,11 +131,14 @@ tag_name="blueocean-dev:local"
 
 usage() {
 cat <<EOF
-usage: $(basename $0) [-c|--clean] [-m|--make-image[=tag_name]] [-h|--help] [BUILD_COMMAND]
+usage: $(basename $0) [-c|--clean] [-m|--make-image[=tag_name]] [-g|--git-data] [-h|--help] [BUILD_COMMAND]
 
   Build BlueOcean plugin suite locally like it would be in Jenkins, by isolating the build
   inside a Docker container. Requires a local Docker daemon to work.
-  Can also create a BlueOcean docker image if '-m' is passed.
+
+  Create a BlueOcean docker dev image with Dockerfile if '-m' is passed and inject git revision data
+  to it if '-g' is passed.
+
   In order to speed up builds, the build container is kept between builds in order to keep
   Maven / NPM caches. It can be cleaned up with '-c' option.
 
@@ -125,6 +151,7 @@ EOF
 
 clean=false
 make_image=false
+git_data=false
 
 for i in "$@"; do
     case $i in
@@ -144,6 +171,10 @@ for i in "$@"; do
         make_image=true
         shift # past argument=value
         ;;
+        -g|--git-data)
+        git_data=true
+        shift # past argument=value
+        ;;
         *)
         break
         ;;
@@ -155,5 +186,10 @@ if [[ $# -ne 0 ]]; then build_commands="$*"; fi
 setup_nice_output
 build_inside "cloudbees/java-build-tools"
 if [[ "$make_image" = true ]]; then
+  if [[ "$git_data" = true ]]; then
+    cat > "$PROJECT_ROOT/docker/ref/git.groovy" <<EOF
+Jenkins.instance.setSystemMessage('''$(build-git-description)''')
+EOF
+  fi
   make_image
 fi
