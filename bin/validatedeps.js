@@ -1,7 +1,22 @@
 #!/usr/bin/env node
-/**
- * Created by cmeyers on 9/20/16.
- */
+
+/*********************************************************************************************
+ **********************************************************************************************
+
+ Checks for imprecise version numbers in package.json, and compares deps/devDeps between package/shrinkwrap jsons.
+ Usage:
+
+ node validatedeps.js
+
+ - Any imprecise version number (e.g. ~, ^, >=, etc) in package.json "dependencies" or "devDependencies" will fail
+ - Any dependency in package.json but not in npm-shrinkwrap.json will fail
+ - Any version mismatch in the above will fail
+
+ All failures will exit(1). Otherwise, normal exit(0)
+
+ **********************************************************************************************
+ *********************************************************************************************/
+
 const fs = require('fs');
 const start = new Date().getTime();
 
