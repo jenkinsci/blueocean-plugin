@@ -10,7 +10,7 @@ import { documentTitle } from './DocumentTitle';
 export class Pipelines extends Component {
 
     componentDidMount() {
-        const { organization } = this.context.params;
+        const { organization = 'Jenkins' } = this.context.params;
         this.props.setTitle(organization);
     }
 
