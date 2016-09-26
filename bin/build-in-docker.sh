@@ -4,6 +4,20 @@ set -eu -o pipefail
 PROJECT_ROOT="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd)"
 
 setup_nice_output() {
+
+  bold=""
+  underline=""
+  standout=""
+  normal=""
+  black=""
+  red=""
+  green=""
+  yellow=""
+  blue=""
+  magenta=""
+  cyan=""
+  white=""
+
   # check if stdout is a terminal...
   if [ -t 1 ]; then
 
