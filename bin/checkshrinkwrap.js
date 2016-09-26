@@ -33,7 +33,7 @@ console.log(`dependencies look good! took ${ellapsed}ms`);
 // done!
 
 function checkProject(pathToProject) {
-    const resolvedPath = buildPath(pathToProject);
+    const resolvedPath = buildPath(`${__dirname}/${pathToProject}`);
     console.log(`validating dependencies in ${resolvedPath}`);
     const packageJsonPath = buildPath(`${resolvedPath}/package.json`);
     const shrinkwrapJsonPath = buildPath(`${resolvedPath}/npm-shrinkwrap.json`);
