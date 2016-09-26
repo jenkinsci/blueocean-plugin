@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>2.10</version>
+    </parent>
+
+    <name>Jenkins BlueOcean Pipeline Editor</name>
+    <artifactId>blueocean-pipeline-editor</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>hpi</packaging>
+
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+
+    <properties>
+        <java.level>7</java.level>
+        <jackson.version>2.2.3</jackson.version>
+        <jenkins.version>2.7.1</jenkins.version>
+        <node.version>5.8.0</node.version>
+        <npm.version>3.7.3</npm.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencies>
+    </dependencies>
+
+</project>
