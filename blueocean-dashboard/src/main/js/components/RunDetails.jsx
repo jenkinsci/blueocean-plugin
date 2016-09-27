@@ -105,7 +105,6 @@ class RunDetails extends Component {
 
         const { run, setTitle } = this.props;
         const currentRun = new RunRecord(run);
-        const pipelineClass = pipeline._class;
         const status = currentRun.getComputedResult() || '';
 
         const switchRunDetails = (newUrl) => {
