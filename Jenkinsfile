@@ -28,8 +28,7 @@ def triggerATH() {
     // Assemble and archive the HPI plugins that the ATH should use.
     // The ATH build can copy this artifact and use it, saving the time it
     // would otherwise spend building and assembling again.
-    sh 'mvn hpi:assemble-dependencies'
-    sh 'tar -czvf target/ath-plugins.tar.gz target/plugins'
+    sh 'cd blueocean && mvn hpi:assemble-dependencies && tar -czvf target/ath-plugins.tar.gz target/plugins'
     archiveArtifacts artifacts: 'target/ath-plugins.tar.gz'
 
     // Trigger the ATH, but don't wait for it.
