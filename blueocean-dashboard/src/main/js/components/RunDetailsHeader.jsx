@@ -2,9 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
-import { ReadableDate } from '@jenkins-cd/design-language';
-import { LiveStatusIndicator } from '@jenkins-cd/design-language';
-import { TimeDuration } from '@jenkins-cd/design-language';
+import { ReadableDate, LiveStatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import moment from 'moment';
 
@@ -85,7 +83,11 @@ class RunDetailsHeader extends Component {
                                 style: { fill: '#fff' },
                             }}
                             />
-                            <TimeDuration millis={durationMillis} liveUpdate={run.isRunning()} />
+                            <TimeDuration
+                                millis={durationMillis}
+                                liveUpdate={run.isRunning()}
+                                updatePeriod={1000}
+                            />
                         </div>
                         <div>
                             <Icon {...{
