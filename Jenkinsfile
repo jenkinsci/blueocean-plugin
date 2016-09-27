@@ -1,3 +1,5 @@
+#!groovy
+
 node {
   deleteDir()
   checkout scm
