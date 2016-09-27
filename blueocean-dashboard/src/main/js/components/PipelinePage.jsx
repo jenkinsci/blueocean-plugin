@@ -18,6 +18,7 @@ import {
 } from '@jenkins-cd/design-language';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
+import { documentTitle } from './DocumentTitle';
 
 /**
  * returns true if the pipeline is defined and has branchNames
@@ -36,23 +37,25 @@ export class PipelinePage extends Component {
             pipeline: this.props.pipeline,
         };
     }
-    
+
     componentWillMount() {
         if (this.props.params) {
             this.props.fetchPipeline(this.props.params.organization, this.props.params.pipeline);
         }
     }
-    
+
     render() {
-        const { pipeline } = this.props;
+        const { pipeline, setTitle } = this.props;
         const { organization, name, fullName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
         const isReady = pipeline && !pipeline.$pending;
-        
+
         if (pipeline && pipeline.$failed) {
             return <NotFound />;
         }
+
+        setTitle(`${organization} / ${name}`);
 
         const baseUrl = buildPipelineUrl(organization, fullName);
 
@@ -86,7 +89,7 @@ export class PipelinePage extends Component {
                         <TabLink to="/pr">Pull Requests</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {isReady && React.cloneElement(this.props.children, { pipeline })}
+                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle })}
             </Page>
         );
     }
@@ -97,6 +100,7 @@ PipelinePage.propTypes = {
     fetchPipeline: PropTypes.func.isRequired,
     pipeline: PropTypes.any,
     params: PropTypes.object,
+    setTitle: PropTypes.func,
 };
 
 PipelinePage.contextTypes = {
@@ -112,4 +116,4 @@ PipelinePage.childContextTypes = {
 const selectors = createSelector([pipelineSelector],
     (pipeline) => ({ pipeline }));
 
-export default connect(selectors, actions)(PipelinePage);
+export default connect(selectors, actions)(documentTitle(PipelinePage));
