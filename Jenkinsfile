@@ -1,3 +1,5 @@
+#!groovy
+
 node {
   deleteDir()
   checkout scm
@@ -10,6 +12,8 @@ node {
         sh "node ./bin/checkshrinkwrap.js"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
         step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
+
+        triggerATH();
       } catch(err) {
         currentBuild.result = "FAILURE"
       } finally {
@@ -18,6 +22,17 @@ node {
       }
     }
   }
+}
+
+def triggerATH() {
+    // Trigger the ATH, but don't wait for it.
+    try {
+        echo "Will attempt to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'."
+        build(job: "ATH-Jenkinsfile/${env.BRANCH_NAME}", parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}")], wait: false)
+    } catch (e1) {
+        echo "Failed to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'. Will try running the ATH 'master' branch."
+        build(job: 'ATH-Jenkinsfile/master', parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}")], wait: false)
+    }
 }
 
 def sendhipchat() {
