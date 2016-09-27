@@ -242,9 +242,41 @@ function clone(json) {
 }
 
 export const actions = {
-    clearPipelinesData: () => ({ type: ACTION_TYPES.CLEAR_PIPELINES_DATA }),
+    clearPipelinesData(organizationName) {
+        return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINES_DATA, payload: organizationName });
+    },
+    
     clearPipelineData() {
         return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
+    },
+    
+    /**
+     * Returns cached global pipeline list or causes a fetch
+     */
+    getAllPipelines() {
+        return (dispatch, getState) => {
+            if (!getState().adminStore.allPipelines) {
+                actions.fetchAllPipelines()(dispatch);
+            }
+        };
+    },
+
+    /**
+     * Returns cached organization pipelines or causes a fetch
+     * @param { organizationName } specific organization to fetch
+     */
+    getOrganizationPipelines({ organizationName }) {
+        return (dispatch, getState) => {
+            const orgPipelines = getState().adminStore.organizationPipelines;
+            if (!orgPipelines || !orgPipelines.length || !orgPipelines[0].organizationName === organizationName) {
+                // Doesn't match, clear existing set
+                dispatch({
+                    type: ACTION_TYPES.SET_ORG_PIPELINES_DATA,
+                    payload: null,
+                });
+                actions.fetchOrganizationPipelines({ organizationName })(dispatch);
+            }
+        };
     },
 
     /**
@@ -578,10 +610,14 @@ export const actions = {
             smartFetch(
                 getRestUrl(config),
                 data => {
-                    if (data.$failed) { // might be a queued item...
+                    if (data.$failed && runs) { // might be a queued item...
                         const found = runs.filter(r => r.id === config.runId)[0];
                         if (found) {
-                            found.$success = true;
+                            try {
+                                found.$success = true;
+                            } catch (e) {
+                                // Ignore, might be a real item
+                            }
                             dispatch({
                                 id: config.pipeline,
                                 type: ACTION_TYPES.SET_CURRENT_RUN,

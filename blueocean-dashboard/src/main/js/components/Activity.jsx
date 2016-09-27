@@ -9,7 +9,6 @@ import {
     createSelector,
     connect,
 } from '../redux';
-import PageLoading from './PageLoading';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { capabilityStore } from './Capability';
 
@@ -110,7 +109,6 @@ export class Activity extends Component {
         ];
 
         return (<main>
-            {runs.$pending && <PageLoading />}
             <article className="activity">
                 { showRunButton &&
                 <RunButton
