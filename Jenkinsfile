@@ -37,13 +37,13 @@ def triggerATH() {
         echo "Will attempt to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'."
         build(job: "ATH-Jenkinsfile/${env.BRANCH_NAME}",
                 parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}"),
-                             string(name: 'TRIGGERED_BY_JOB_NAME', value: "${env.JOB_NAME}"), string(name: 'TRIGGERED_BY_BUILD_NUM', value: "${env.BUILD_NUMBER}")],
+                             string(name: 'TRIGGERED_BY_BUILD_NUM', value: "${env.BUILD_NUMBER}")],
                 wait: false)
     } catch (e1) {
         echo "Failed to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'. Will try running the ATH 'master' branch."
         build(job: "ATH-Jenkinsfile/master",
                 parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}"),
-                             string(name: 'TRIGGERED_BY_JOB_NAME', value: "${env.JOB_NAME}"), string(name: 'TRIGGERED_BY_BUILD_NUM', value: "${env.BUILD_NUMBER}")],
+                             string(name: 'TRIGGERED_BY_BUILD_NUM', value: "${env.BUILD_NUMBER}")],
                 wait: false)
     }
 }
