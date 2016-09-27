@@ -5,10 +5,14 @@ import PageLoading from './PageLoading';
 
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
+import { documentTitle } from './DocumentTitle';
 
-const { array } = PropTypes;
+export class Pipelines extends Component {
 
-export default class Pipelines extends Component {
+    componentDidMount() {
+        const { organization = 'Jenkins' } = this.context.params;
+        this.props.setTitle(organization);
+    }
 
     render() {
         const { pipelines, config } = this.context;
@@ -83,10 +87,18 @@ export default class Pipelines extends Component {
     }
 }
 
+const { array, func, object } = PropTypes;
+
 Pipelines.contextTypes = {
-    config: PropTypes.object,
-    params: PropTypes.object,
+    config: object,
+    params: object,
     pipelines: array,
-    store: PropTypes.object,
-    router: PropTypes.object,
+    store: object,
+    router: object,
 };
+
+Pipelines.propTypes = {
+    setTitle: func,
+};
+
+export default documentTitle(Pipelines);

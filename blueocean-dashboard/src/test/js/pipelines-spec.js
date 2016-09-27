@@ -5,7 +5,7 @@ import React from 'react';
 import { assert } from 'chai';
 import { mount, shallow } from 'enzyme';
 
-import Pipelines from '../../main/js/components/Pipelines.jsx';
+import { Pipelines } from '../../main/js/components/Pipelines.jsx';
 import { pipelines } from './data/pipelines/pipelinesSingle';
 import { pipelinesDupName } from './data/pipelines/pipelinesTwoJobsSameName';
 
@@ -30,7 +30,7 @@ describe('Pipelines', () => {
             };
 
             wrapper = shallow(
-                <Pipelines />,
+                <Pipelines setTitle={()=>{}}/>,
                 {
                     context,
                 }
@@ -55,7 +55,7 @@ describe('Pipelines', () => {
             };
 
             const wrapper = mount(
-                <Pipelines />,
+                <Pipelines setTitle={()=>{}}/>,
                 { context },
             );
 
