@@ -6,7 +6,8 @@ node {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
         sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore"
-        sh "node checkdeps.js"
+        sh "node ./bin/checkdeps.js"
+        sh "node ./bin/checkshrinkwrap.js"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
         step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
       } catch(err) {
