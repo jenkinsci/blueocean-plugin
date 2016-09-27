@@ -115,7 +115,7 @@ class RunDetails extends Component {
             router.push(location);
         };
 
-        setTitle(`${currentRun.organization} – ${pipeline.fullName} #${currentRun.id}`);
+        setTitle(`${currentRun.organization} / ${pipeline.fullName} #${currentRun.id}`);
 
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
