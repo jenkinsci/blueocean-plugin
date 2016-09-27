@@ -76,7 +76,13 @@
             "name": "UX-301",
             "organization": "jenkins",
             "weatherScore": 0,
-            "pullRequest": null
+            "pullRequest": null,
+            "permissions": {
+                "read": true,
+                "create": true,
+                "start": true,
+                "stop": true
+            }
         }
     },
     {

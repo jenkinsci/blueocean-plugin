@@ -24,11 +24,9 @@ import {
     buildRunDetailsUrl,
 } from '../util/UrlUtils';
 
-import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
-import IfCapability from './IfCapability';
 
 const { func, object, any, string } = PropTypes;
 
@@ -107,7 +105,6 @@ class RunDetails extends Component {
 
         const { run, setTitle } = this.props;
         const currentRun = new RunRecord(run);
-        const pipelineClass = pipeline._class;
         const status = currentRun.getComputedResult() || '';
 
         const switchRunDetails = (newUrl) => {
@@ -156,16 +153,13 @@ class RunDetails extends Component {
                         </PageTabs>
 
                         <div className="button-bar">
-                            { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
-                            <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
-                                <ReplayButton
-                                  className="dark"
-                                  runnable={this.props.pipeline}
-                                  latestRun={currentRun}
-                                  onNavigation={switchRunDetails}
-                                  autoNavigate
-                                />
-                            </IfCapability>
+                            <ReplayButton
+                              className="dark"
+                              runnable={this.props.pipeline}
+                              latestRun={currentRun}
+                              onNavigation={switchRunDetails}
+                              autoNavigate
+                            />
 
                             <RunButton
                               className="dark"
