@@ -25,13 +25,26 @@ node {
 }
 
 def triggerATH() {
+    // Assemble and archive the HPI plugins that the ATH should use.
+    // The ATH build can copy this artifact and use it, saving the time it
+    // would otherwise spend building and assembling again.
+    sh 'mvn hpi:assemble-dependencies'
+    sh 'tar -czvf target/ath-plugins.tar.gz target/plugins'
+    archiveArtifacts artifacts: 'target/ath-plugins.tar.gz'
+
     // Trigger the ATH, but don't wait for it.
     try {
         echo "Will attempt to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'."
-        build(job: "ATH-Jenkinsfile/${env.BRANCH_NAME}", parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}")], wait: false)
+        build(job: "ATH-Jenkinsfile/${env.BRANCH_NAME}",
+                parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}"),
+                             string(name: 'TRIGGERED_BY_JOB_NAME', value: "${env.JOB_NAME}"), string(name: 'TRIGGERED_BY_BUILD_NUM', value: "${env.BUILD_NUMBER}")],
+                wait: false)
     } catch (e1) {
         echo "Failed to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'. Will try running the ATH 'master' branch."
-        build(job: 'ATH-Jenkinsfile/master', parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}")], wait: false)
+        build(job: "ATH-Jenkinsfile/master",
+                parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}"),
+                             string(name: 'TRIGGERED_BY_JOB_NAME', value: "${env.JOB_NAME}"), string(name: 'TRIGGERED_BY_BUILD_NUM', value: "${env.BUILD_NUMBER}")],
+                wait: false)
     }
 }
 
