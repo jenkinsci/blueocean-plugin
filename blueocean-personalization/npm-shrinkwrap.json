@@ -8,9 +8,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.17.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.78",
-      "from": "@jenkins-cd/design-language@0.0.78",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.78.tgz"
+      "version": "0.0.79-unpublished-thor1",
+      "from": "@jenkins-cd/design-language@0.0.79-unpublished-thor1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.79-unpublished-thor1.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -36,7 +36,8 @@
     },
     "@jenkins-cd/js-extensions": {
       "version": "0.0.25",
-      "from": "@jenkins-cd/js-extensions@0.0.25"
+      "from": "@jenkins-cd/js-extensions@0.0.25",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.25.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
