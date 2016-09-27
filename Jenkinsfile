@@ -11,12 +11,15 @@ node {
         step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
 
         // Trigger the ATH, but don't wait for it.
+        def postBuildResult = currentBuild.result;
         try {
           echo "Will attempt to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'.".
           build (job: "ATH-Jenkinsfile/${env.BRANCH_NAME}", parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}")], wait: false)
         } catch (Exception e) {
           echo "Failed to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'. Will try running the ATH 'master' branch.".
           build (job: 'ATH-Jenkinsfile/master', parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}")], wait: false)
+          // Reset the build status in case the first attempt to build the branch failed.
+          currentBuild.result = postBuildResult;
         }
 
       } catch(err) {
