@@ -4,7 +4,6 @@
 properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20'))])
 
 node {
-  deleteDir()
   checkout scm
 
   docker.image('cloudbees/java-build-tools').inside {
@@ -21,7 +20,7 @@ node {
         currentBuild.result = "FAILURE"
       } finally {
         sendhipchat()
-        deleteDir()
+        sh 'rm -rf ./node_modules'
       }
     }
   }
