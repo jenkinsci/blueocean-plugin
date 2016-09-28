@@ -1,5 +1,8 @@
 #!groovy
 
+// only 20 builds
+properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20'))])
+
 node {
   deleteDir()
   checkout scm
