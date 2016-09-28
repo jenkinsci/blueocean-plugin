@@ -22,6 +22,18 @@
       "from": "@jenkins-cd/eslint-config-jenkins@0.0.2",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/eslint-config-jenkins/-/eslint-config-jenkins-0.0.2.tgz"
     },
+    "@jenkins-cd/js-builder": {
+      "version": "0.0.40",
+      "from": "@jenkins-cd/js-builder@0.0.40",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.40.tgz",
+      "dependencies": {
+        "glob": {
+          "version": "7.1.0",
+          "from": "glob@>=7.0.0 <8.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.0.tgz"
+        }
+      }
+    },
     "@jenkins-cd/js-extensions": {
       "version": "0.0.26-beta-1",
       "from": "@jenkins-cd/js-extensions@0.0.26-beta-1"
@@ -40,6 +52,11 @@
       "version": "1.4.7",
       "from": "@kadira/react-split-pane@>=1.3.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/@kadira/react-split-pane/-/react-split-pane-1.4.7.tgz"
+    },
+    "@kadira/storybook": {
+      "version": "1.19.0",
+      "from": "@kadira/storybook@1.19.0",
+      "resolved": "https://registry.npmjs.org/@kadira/storybook/-/storybook-1.19.0.tgz"
     },
     "abab": {
       "version": "1.0.3",
@@ -294,6 +311,11 @@
       "from": "aws4@>=1.2.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/aws4/-/aws4-1.4.1.tgz"
     },
+    "babel": {
+      "version": "6.5.2",
+      "from": "babel@6.5.2",
+      "resolved": "https://registry.npmjs.org/babel/-/babel-6.5.2.tgz"
+    },
     "babel-code-frame": {
       "version": "6.11.0",
       "from": "babel-code-frame@>=6.8.0 <7.0.0",
@@ -317,6 +339,11 @@
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.6.tgz"
         }
       }
+    },
+    "babel-eslint": {
+      "version": "6.1.2",
+      "from": "babel-eslint@6.1.2",
+      "resolved": "https://registry.npmjs.org/babel-eslint/-/babel-eslint-6.1.2.tgz"
     },
     "babel-generator": {
       "version": "6.14.0",
@@ -698,6 +725,11 @@
       "version": "6.11.1",
       "from": "babel-preset-react@6.11.1",
       "resolved": "https://registry.npmjs.org/babel-preset-react/-/babel-preset-react-6.11.1.tgz"
+    },
+    "babel-preset-stage-0": {
+      "version": "6.5.0",
+      "from": "babel-preset-stage-0@6.5.0",
+      "resolved": "https://registry.npmjs.org/babel-preset-stage-0/-/babel-preset-stage-0-6.5.0.tgz"
     },
     "babel-preset-stage-1": {
       "version": "6.13.0",
@@ -2033,6 +2065,11 @@
       "from": "eslint-config-airbnb@6.0.2",
       "resolved": "https://registry.npmjs.org/eslint-config-airbnb/-/eslint-config-airbnb-6.0.2.tgz"
     },
+    "eslint-plugin-react": {
+      "version": "4.3.0",
+      "from": "eslint-plugin-react@4.3.0",
+      "resolved": "https://registry.npmjs.org/eslint-plugin-react/-/eslint-plugin-react-4.3.0.tgz"
+    },
     "espree": {
       "version": "3.1.3",
       "from": "espree@3.1.3",
@@ -3258,6 +3295,11 @@
       "version": "1.0.2",
       "from": "gulp-match@>=1.0.2 <2.0.0",
       "resolved": "https://registry.npmjs.org/gulp-match/-/gulp-match-1.0.2.tgz"
+    },
+    "gulp-mocha": {
+      "version": "2.2.0",
+      "from": "gulp-mocha@2.2.0",
+      "resolved": "https://registry.npmjs.org/gulp-mocha/-/gulp-mocha-2.2.0.tgz"
     },
     "gulp-util": {
       "version": "3.0.7",
@@ -4645,6 +4687,18 @@
       "from": "negotiator@0.6.1",
       "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-0.6.1.tgz"
     },
+    "nock": {
+      "version": "8.0.0",
+      "from": "nock@8.0.0",
+      "resolved": "https://registry.npmjs.org/nock/-/nock-8.0.0.tgz",
+      "dependencies": {
+        "qs": {
+          "version": "6.2.1",
+          "from": "qs@>=6.0.2 <7.0.0",
+          "resolved": "https://registry.npmjs.org/qs/-/qs-6.2.1.tgz"
+        }
+      }
+    },
     "node-emoji": {
       "version": "1.4.1",
       "from": "node-emoji@>=1.3.1 <2.0.0",
@@ -5339,6 +5393,11 @@
       "from": "redux@3.5.2",
       "resolved": "https://registry.npmjs.org/redux/-/redux-3.5.2.tgz"
     },
+    "redux-mock-store": {
+      "version": "1.2.0",
+      "from": "redux-mock-store@1.2.0",
+      "resolved": "https://registry.npmjs.org/redux-mock-store/-/redux-mock-store-1.2.0.tgz"
+    },
     "redux-thunk": {
       "version": "2.0.1",
       "from": "redux-thunk@2.0.1",
@@ -5552,6 +5611,11 @@
       "version": "3.0.1",
       "from": "signal-exit@>=3.0.0 <4.0.0",
       "resolved": "https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.1.tgz"
+    },
+    "skin-deep": {
+      "version": "0.16.0",
+      "from": "skin-deep@0.16.0",
+      "resolved": "https://registry.npmjs.org/skin-deep/-/skin-deep-0.16.0.tgz"
     },
     "slash": {
       "version": "1.0.0",
