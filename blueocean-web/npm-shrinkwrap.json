@@ -23,9 +23,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/eslint-config-jenkins/-/eslint-config-jenkins-0.0.2.tgz"
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.25",
-      "from": "@jenkins-cd/js-extensions@0.0.25",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.25.tgz"
+      "version": "0.0.26-beta-1",
+      "from": "@jenkins-cd/js-extensions@0.0.26-beta-1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.26-beta-1.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
