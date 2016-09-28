@@ -4,12 +4,13 @@
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
       "version": "0.0.18",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.18"
+      "from": "@jenkins-cd/blueocean-core-js@0.0.18",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.18.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.79-unpublished-thor1",
-      "from": "@jenkins-cd/design-language@0.0.79-unpublished-thor1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.79-unpublished-thor1.tgz"
+      "version": "0.0.79-unpublishedthor1",
+      "from": "@jenkins-cd/design-language@0.0.79-unpublishedthor1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.79-unpublishedthor1.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",

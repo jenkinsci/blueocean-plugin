@@ -33,8 +33,8 @@
     "react-addons-test-utils": "15.1.0"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.79-unpublishedthor1",
     "@jenkins-cd/blueocean-core-js": "0.0.18",
+    "@jenkins-cd/design-language": "0.0.79-unpublishedthor1",
     "@jenkins-cd/js-extensions": "0.0.25",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/sse-gateway": "0.0.9",
