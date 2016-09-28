@@ -105,6 +105,7 @@ function validateDepsAgainstShrinkwrap(allDeps, shrinkwrap) {
 
     if (badDeps.length) {
         badDeps.forEach(message => console.error(message));
+        console.log('You can use bin/cleanInstall to install the dominant dependency in various places.');
         process.exit(1);
     }
 }

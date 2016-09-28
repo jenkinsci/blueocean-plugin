@@ -87,5 +87,6 @@ Object.keys(allDependencies).forEach(dependency => {
 
 if (errs.length) {
     console.error(JSON.stringify(errs, null, 4));
+    console.log('You can use bin/cleanInstall to install the dominant dependency in various places.');
     process.exitCode = 1;
 }
