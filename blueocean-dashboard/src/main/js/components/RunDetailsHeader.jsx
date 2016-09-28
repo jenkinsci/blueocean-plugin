@@ -84,9 +84,9 @@ class RunDetailsHeader extends Component {
                             }}
                             />
                             <TimeDuration
-                                millis={durationMillis}
-                                liveUpdate={run.isRunning()}
-                                updatePeriod={1000}
+                              millis={durationMillis}
+                              liveUpdate={run.isRunning()}
+                              updatePeriod={1000}
                             />
                         </div>
                         <div>
