@@ -1,11 +1,12 @@
 node {
   deleteDir()
   checkout scm
+  configFileProvider([configFile(fileId: 'blueocean-maven-settings', targetLocation: 'settings.xml')]) {
 
   docker.image('cloudbees/java-build-tools').inside {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
-        sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore"
+        sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
         sh "node checkdeps.js"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
         step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
@@ -16,6 +17,8 @@ node {
         deleteDir()
       }
     }
+  }
+
   }
 }
 
