@@ -6,6 +6,7 @@ require('moment-duration-format');
 
 type Props = {
      millis: number,
+     updatePeriod: number,
      hint?: string,
      liveUpdate: bool
 };
@@ -37,8 +38,8 @@ export class TimeDuration extends Component {
         super(props);
         // track how much time has elapsed since live updating tracking started
         this.state = { elapsed: 0 };
-        // When updating, average 30s period, with jitter to spread out the work
-        this.timerPeriodMillis = 30000 + Math.ceil(Math.random() * 5000);
+        const {updatePeriod = 30000} = this.props;
+        this.timerPeriodMillis = typeof updatePeriod !== 'number' || isNaN(updatePeriod) ? 30000 : updatePeriod;
         this.clearIntervalId = 0;
         
     }
@@ -89,7 +90,10 @@ export class TimeDuration extends Component {
         const millis = parseInt(this.props.millis) + this.state.elapsed;
 
         if (!isNaN(millis)) {
-            const duration = moment.duration(millis).humanize();
+            // in case we are in live update we are interested in seconds
+            const duration = this.props.liveUpdate ?
+                moment.duration(millis).format("m[ minutes] s[ seconds]")
+                    : moment.duration(millis).humanize();
 
             const hint = this.props.hint ?
                 this.props.hint :
@@ -106,6 +110,7 @@ export class TimeDuration extends Component {
 
 TimeDuration.propTypes = {
     millis: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    updatePeriod: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     hint: PropTypes.string,
     liveUpdate: PropTypes.bool,
 };
