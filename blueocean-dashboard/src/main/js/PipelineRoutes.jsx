@@ -2,7 +2,6 @@ import { Route, Redirect, IndexRoute, IndexRedirect } from 'react-router';
 import React from 'react';
 import Dashboard from './Dashboard';
 import OrganizationPipelines from './OrganizationPipelines';
-import windowHandle from 'window-handle';
 import {
     Pipelines,
     MultiBranch,
@@ -52,7 +51,7 @@ function discardPersistedBackground() {
     if (bg) {
         const scrollY = bg.getAttribute('scrollY');
         const scrollX = bg.getAttribute('scrollX');
-        windowHandle.getWindow().scroll(scrollX, scrollY);
+        window.scroll(scrollX, scrollY);
         bg.parentElement.removeChild(bg);
     }
 }
@@ -69,10 +68,10 @@ function persistModalBackground() {
     container.id = 'modal-snap-background';
     container.appendChild(background);
     container.style.display = 'block';
-    container.style.top = `${-1 * windowHandle.getWindow().scrollY}px`;
-    container.style.left = `${-1 * windowHandle.getWindow().scrollX}px`;
-    container.setAttribute('scrollY', windowHandle.getWindow().scrollY);
-    container.setAttribute('scrollX', windowHandle.getWindow().scrollX);
+    container.style.top = `${-1 * window.scrollY}px`;
+    container.style.left = `${-1 * window.scrollX}px`;
+    container.setAttribute('scrollY', window.scrollY);
+    container.setAttribute('scrollX', window.scrollX);
     root.appendChild(container);
 }
 
