@@ -14,6 +14,7 @@ describe('ReplayButton', () => {
 
     beforeEach(() => {
         pipeline = utils.clone(require('../data/pipeline-1.json'));
+        pipeline._capabilities = ['org.jenkinsci.plugins.workflow.job.WorkflowJob'];
     });
 
     it('renders without errors when no props are specified', () => {

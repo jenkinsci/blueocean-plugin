@@ -40,12 +40,6 @@ const trimEmptyTokens = (tokens) => {
     return copy;
 };
 
-export const isMultiBranchRun = (run) => {
-    const restUrl = extractRestUrl(run);
-    const tokens = trimEmptyTokens(restUrl.split('/'));
-    return tokens[tokens.length - 4] === 'branches';
-};
-
 /**
  * Builds the proper URL to view Run Details for the specified run.
  * Run is either a run object with "_links.self.href" property, or the URL itself.
@@ -106,4 +100,8 @@ export const buildRunDetailsUrlFromQueue = (queueItem, isMultiBranch, expectedBu
     }
 
     return buildRunDetailsUrl(tokens.join('/'));
+};
+
+export default {
+    buildRunDetailsUrl, buildRunDetailsUrlFromQueue,
 };

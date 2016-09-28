@@ -42,14 +42,14 @@ function initEntry(dependency, version) {
 
 var packageFiles = [];
 
-packageFiles.push(require("./blueocean-dashboard/package.json"));
-packageFiles.push(require("./blueocean-web/package.json"));
-packageFiles.push(require("./blueocean-personalization/package.json"));
-packageFiles.push(require("./blueocean-config/package.json"));
-packageFiles.push(require("./js-extensions/package.json"));
+packageFiles.push(require("../blueocean-dashboard/package.json"));
+packageFiles.push(require("../blueocean-web/package.json"));
+packageFiles.push(require("../blueocean-personalization/package.json"));
+packageFiles.push(require("../blueocean-config/package.json"));
+packageFiles.push(require("../js-extensions/package.json"));
 
 // Add some expected dependencies, so we go another level deep just for these
-packageFiles.push(require("./blueocean-dashboard/node_modules/@jenkins-cd/design-language/package.json"));
+packageFiles.push(require("../blueocean-dashboard/node_modules/@jenkins-cd/design-language/package.json"));
 
 packageFiles.forEach(packageFile => {
 
