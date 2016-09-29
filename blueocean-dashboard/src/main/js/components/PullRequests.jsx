@@ -48,7 +48,7 @@ EmptyState.propTypes = {
 
 export class PullRequests extends Component {
     componentWillMount() {
-        if (this.context.config && this.context.params) {
+        if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
             this.props.fetchPullRequests({
                 organizationName: this.context.params.organization,
                 pipelineName: this.context.params.pipeline,
@@ -56,20 +56,21 @@ export class PullRequests extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.props.clearPRData();
+    }
+
     render() {
         const { pullRequests } = this.props;
 
-        if (!pullRequests) {
-            return null;
+        if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
+            return (<NotSupported />);
         }
 
         if (pullRequests.$pending && !pullRequests.length) {
             return <PageLoading />;
         }
 
-        if (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline)) {
-            return (<NotSupported />);
-        }
 
         if (pullRequests.$failed) {
             return <div>Error: {pullRequests.$failed}</div>;
@@ -120,6 +121,7 @@ PullRequests.contextTypes = {
 
 PullRequests.propTypes = {
     pullRequests: array,
+    clearPRData: func,
     fetchPullRequests: func,
 };
 

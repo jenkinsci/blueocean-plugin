@@ -3,12 +3,13 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.17-beta6",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.17-beta6"
+      "version": "0.0.19-beta1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.19-beta1"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.78",
-      "from": "@jenkins-cd/design-language@0.0.78"
+      "version": "0.0.80",
+      "from": "@jenkins-cd/design-language@0.0.80",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.80.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -33,9 +34,9 @@
       }
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.24",
-      "from": "@jenkins-cd/js-extensions@0.0.24",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.24.tgz"
+      "version": "0.0.25",
+      "from": "@jenkins-cd/js-extensions@0.0.25",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.25.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
@@ -1593,9 +1594,9 @@
       "resolved": "https://registry.npmjs.org/es6-map/-/es6-map-0.1.4.tgz"
     },
     "es6-promise": {
-      "version": "3.2.1",
-      "from": "es6-promise@3.2.1",
-      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.2.1.tgz"
+      "version": "3.3.1",
+      "from": "es6-promise@3.3.1",
+      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.3.1.tgz"
     },
     "es6-set": {
       "version": "0.1.4",

@@ -99,11 +99,11 @@ class RunDetails extends Component {
             return null;
         }
 
-        const { router, location, params } = this.context;
+        const { router, location, params, pipeline = {} } = this.context;
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
-        const run = this.props.run;
+        const { run, setTitle } = this.props;
         const currentRun = new RunRecord(run);
         const status = currentRun.getComputedResult() || '';
 
@@ -111,6 +111,8 @@ class RunDetails extends Component {
             location.pathname = newUrl;
             router.push(location);
         };
+
+        setTitle(`${currentRun.organization} / ${pipeline.fullName} #${currentRun.id}`);
 
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
@@ -136,7 +138,7 @@ class RunDetails extends Component {
                     <div>
                         {!run.$pending &&
                         <RunDetailsHeader
-                          pipeline={this.context.pipeline}
+                          pipeline={pipeline}
                           data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
@@ -199,6 +201,7 @@ RunDetails.propTypes = {
     fetchRun: func,
     getPipeline: func,
     previous: string,
+    setTitle: func,
 };
 
 const selectors = createSelector(

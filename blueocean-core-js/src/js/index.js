@@ -2,7 +2,6 @@
  * Created by cmeyers on 8/18/16.
  */
 
-import { Fetch } from './fetch';
 import * as sse from '@jenkins-cd/sse-gateway';
 import { RunApi } from './rest/RunApi';
 import { SseBus } from './sse/SseBus';
