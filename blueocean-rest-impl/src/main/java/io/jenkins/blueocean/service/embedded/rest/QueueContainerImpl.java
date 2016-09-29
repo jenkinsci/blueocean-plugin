@@ -7,6 +7,7 @@ import hudson.model.Queue;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
+import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -44,7 +45,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
             try {
                 StaplerResponse rsp = Stapler.getCurrentResponse();
                 // Send a redirect, not sure the specific code which would be best. substring to fix double slash
-                rsp.sendRedirect(Jenkins.getInstance().getRootUrl() + pipeline.getLink().toString().substring(1) + "runs/" + runId);
+                rsp.sendRedirect(Links.ensureTrailingSlash(Jenkins.getInstance().getRootUrl() + pipeline.getLink().toString().substring(1) + "runs/" + runId));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
