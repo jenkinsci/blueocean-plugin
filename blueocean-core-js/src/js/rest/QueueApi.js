@@ -8,6 +8,12 @@ import utils from '../utils';
 
 export class QueueApi {
 
+    fetchQueue(pipeline) {
+        const path = config.getJenkinsRootURL();
+        const queueUrl = utils.cleanSlashes(`${path}/${pipeline._links.self.href}/queue/`);
+        return Fetch.fetchJSON(queueUrl);
+    }
+
     fetchQueueItemFromEvent(queueEvent) {
         const path = config.getJenkinsRootURL();
         const queueItemUrl = utils.cleanSlashes(`${path}/${queueEvent.blueocean_job_rest_url}/queue/${queueEvent.job_run_queueId}`);
