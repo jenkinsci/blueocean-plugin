@@ -93,11 +93,23 @@ export class PipelineCard extends Component {
     }
 
     _navigateToRunDetails() {
-        const runUrl = UrlBuilder.buildRunDetailsUrl(this.props.runnable.latestRun);
+        const latestRun = this.props.runnable && this.props.runnable.latestRun;
 
-        this.props.router.push({
-            pathname: runUrl,
-        });
+        if (latestRun) {
+            const status = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
+
+            const runUrl = status !== 'QUEUED' ?
+                UrlBuilder.buildRunDetailsUrl(latestRun) :
+                UrlBuilder.buildRunDetailsUrlFromQueue(latestRun, this._isMultiBranch(this.props.runnable), latestRun.id);
+
+            this.props.router.push({
+                pathname: runUrl,
+            });
+        }
+    }
+
+    _isMultiBranch(runnableItem) {
+        return capable(runnableItem, BRANCH_CAPABILITY);
     }
 
     _updateState(props) {
@@ -130,7 +142,7 @@ export class PipelineCard extends Component {
         const runnableItem = this.props.runnable;
         const latestRun = this.props.runnable.latestRun;
 
-        const isBranch = capable(runnableItem, BRANCH_CAPABILITY);
+        const isBranch = this._isMultiBranch(runnableItem);
         const names = extractNames(runnableItem, isBranch);
         const organization = runnableItem.organization;
 
