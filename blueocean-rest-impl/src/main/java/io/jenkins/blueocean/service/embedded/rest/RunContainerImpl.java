@@ -5,6 +5,7 @@ import hudson.model.CauseAction;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Queue;
+import hudson.model.Run;
 import hudson.model.queue.ScheduleResult;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -16,6 +17,11 @@ import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import jenkins.model.Jenkins;
 
 import javax.annotation.Nonnull;
+
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerResponse;
+
+import java.io.IOException;
 import java.util.Iterator;
 
 /**
@@ -49,6 +55,20 @@ public class RunContainerImpl extends BlueRunContainer {
                 }
             }
             if (run == null) {
+                // JENKINS-38540 - To make this consistent with the activity API, check the queue
+                String queuedRun = findRunInQueue(name);
+                if (queuedRun != null) {
+                    try {
+                        StaplerResponse rsp = Stapler.getCurrentResponse();
+                        // Send a 302, temporary redirect. substring to fix double slash
+                        rsp.sendRedirect(Jenkins.getInstance().getRootUrl() + pipeline.getLink().toString().substring(1) + "queue/" + queuedRun);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return null;
+                }
+            }
+            if (run == null) {
                 throw new ServiceException.NotFoundException(
                     String.format("Run %s not found in organization %s and pipeline %s",
                         name, pipeline.getOrganization(), job.getName()));
@@ -57,6 +77,23 @@ public class RunContainerImpl extends BlueRunContainer {
             run = runList.getLastBuild();
         }
         return  AbstractRunImpl.getBlueRun(run, pipeline);
+    }
+
+    /**
+     * Finds a run in the queue based on the expectedBuildNumber, returns the queue id if found
+     */
+    private String findRunInQueue(String name) {
+        try {
+            int expectedBuildNumber = Integer.parseInt(name);
+            for (BlueQueueItem i : this.pipeline.getQueue()) {
+                if (expectedBuildNumber == i.getExpectedBuildNumber()) {
+                    return i.getId();
+                }
+            }
+        } catch(NumberFormatException e) {
+            // not an expectedBuildNumber
+        }
+        return null;
     }
 
     @Override

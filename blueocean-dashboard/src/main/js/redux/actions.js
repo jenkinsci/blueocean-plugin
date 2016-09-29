@@ -109,7 +109,7 @@ export const actionHandlers = {
         return state.set('currentRuns', payload.map((run) => _mapQueueToPsuedoRun(run)));
     },
     [ACTION_TYPES.SET_CURRENT_RUN](state, { payload }): State {
-        return state.set('currentRun', payload);
+        return state.set('currentRun', _mapQueueToPsuedoRun(payload));
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
         return state.set('node', { ...payload });

@@ -9,10 +9,15 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import jenkins.model.Jenkins;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * @author Ivan Meredith
@@ -33,9 +38,39 @@ public class QueueContainerImpl extends BlueQueueContainer {
                 return blueQueueItem;
             }
         }
+        // JENKINS-38540 - To make this consistent with the activity API, check the runs, too
+        String runId = findQueueInRuns(name);
+        if (runId != null) {
+            try {
+                StaplerResponse rsp = Stapler.getCurrentResponse();
+                // Send a redirect, not sure the specific code which would be best. substring to fix double slash
+                rsp.sendRedirect(Jenkins.getInstance().getRootUrl() + pipeline.getLink().toString().substring(1) + "runs/" + runId);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }
         return null;
     }
 
+    /**
+     * Finds a queue in the runs based on the queueId
+     */
+    private String findQueueInRuns(String name) {
+        try {
+            long queueId = Long.parseLong(name);
+            for (BlueRun run : this.pipeline.getRuns()) {
+                if (run instanceof AbstractRunImpl<?>) {
+                    if (queueId == ((AbstractRunImpl)run).getQueueId()) {
+                        return run.getId();
+                    }
+                }
+            }
+        } catch (NumberFormatException e) {
+            // not a queue id!
+        }
+        return null;
+    }
 
     @Override
     public Iterator<BlueQueueItem> iterator() {

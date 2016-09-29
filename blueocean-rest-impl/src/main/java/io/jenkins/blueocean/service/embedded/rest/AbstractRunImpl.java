@@ -78,6 +78,10 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public Date getEnQueueTime() {
         return new Date(run.getTimeInMillis());
     }
+    
+    /* package */ long getQueueId() {
+        return run.getQueueId();
+    }
 
     @Override
     public BlueRunState getStateObj() {
