@@ -242,10 +242,7 @@ function clone(json) {
 }
 
 export const actions = {
-    clearPipelinesData(organizationName) {
-        return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINES_DATA, payload: organizationName });
-    },
-    
+    clearPipelinesData: () => ({ type: ACTION_TYPES.CLEAR_PIPELINES_DATA }),
     clearPipelineData() {
         return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
     },
