@@ -10,6 +10,7 @@ import hudson.model.queue.ScheduleResult;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -61,7 +62,7 @@ public class RunContainerImpl extends BlueRunContainer {
                     try {
                         StaplerResponse rsp = Stapler.getCurrentResponse();
                         // Send a 302, temporary redirect. substring to fix double slash
-                        rsp.sendRedirect(Jenkins.getInstance().getRootUrl() + pipeline.getLink().toString().substring(1) + "queue/" + queuedRun);
+                        rsp.sendRedirect(Links.ensureTrailingSlash(Jenkins.getInstance().getRootUrl() + pipeline.getLink().toString().substring(1) + "queue/" + queuedRun));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
