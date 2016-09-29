@@ -351,6 +351,7 @@ export class RunDetailsPipeline extends Component {
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
 
         const logProps = {
+            url: logGeneral.url,
             scrollToBottom,
             ...this.props,
             ...this.state,
@@ -381,7 +382,7 @@ export class RunDetailsPipeline extends Component {
                   nodeInformation={currentSteps}
                   followAlong={followAlong}
                   router={router}
-                  {...this.props}
+                  {...logProps}
                 />
                 }
                 { isPipelineQueued && supportsNode && <QueuedState /> }

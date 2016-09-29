@@ -87,7 +87,7 @@ export default class Node extends Component {
     }
 
     render() {
-        const { logs, nodesBaseUrl, fetchLog, followAlong } = this.props;
+        const { logs, nodesBaseUrl, fetchLog, followAlong, url } = this.props;
         const node = this.expandAnchor(this.props);
         // Early out
         if (!node || !fetchLog) {
@@ -120,6 +120,7 @@ export default class Node extends Component {
             || (resultRun.toLowerCase() === 'running' && followAlong)
         ;
         const logProps = {
+            url,
             scrollToBottom,
             key: id,
             prefix: `step-${id}-`,
