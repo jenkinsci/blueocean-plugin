@@ -1,11 +1,14 @@
 /**
  * Created by cmeyers on 7/6/16.
  */
-import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
+import es6Promise from 'es6-promise'; es6Promise.polyfill();
+
+import { Fetch, QueueUtils, Rest, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js';
 
 import { ACTION_TYPES } from './FavoritesStore';
 import { cleanSlashes } from '../util/UrlUtils';
+import PersonalizationRest from '../rest/index';
 
 const fetchFlags = {
     [ACTION_TYPES.SET_USER]: false,
@@ -33,20 +36,52 @@ export const actions = {
 
     fetchFavorites(user) {
         return (dispatch) => {
-            const baseUrl = UrlConfig.getBlueOceanAppURL();
-            const username = user.id;
-            const url = cleanSlashes(`${baseUrl}/rest/users/${username}/favorites/`);
-
             if (fetchFlags[ACTION_TYPES.SET_FAVORITES]) {
                 return null;
             }
 
             fetchFlags[ACTION_TYPES.SET_FAVORITES] = true;
 
-            return dispatch(actions.generateData(
-                { url },
-                ACTION_TYPES.SET_FAVORITES
-            ));
+            // TODO: refactor this pyramid of doom into something more comprehensible
+            const promise = PersonalizationRest.favoritesApi.fetchFavorites(user)
+                .then(data => augmenter.augmentCapabilities(data))
+                .then(favorites => {
+                    // find any favorites that have at least one queued item
+                    const queuedItems = favorites
+                        .map(favorite => favorite.item)
+                        .filter(item => item.numberOfQueuedPipelines > 0);
+
+                    if (queuedItems.length) {
+                        // fetch the queue for each item that has a non-empty queue
+                        const requests = queuedItems.map(item => {
+                            return Rest.queueApi.fetchQueue(item);
+                        });
+
+                        return Promise.all(requests).then(queues => {
+                            // update each favorite's "item.latestRun" property with a pseudo-run from its queue item
+                            queues.forEach((queue, index) => {
+                                const item = queuedItems[index];
+
+                                if (queue.length) {
+                                    item.latestRun = QueueUtils.mapQueueImplToPseudoRun(queue[0]);
+                                }
+                            });
+
+                            return favorites;
+                        });
+                    } else {
+                        return favorites;
+                    }
+                });
+
+            return promise.then((favorites) => {
+                fetchFlags[ACTION_TYPES.SET_FAVORITES] = false;
+
+                return dispatch({
+                    type: ACTION_TYPES.SET_FAVORITES,
+                    payload: favorites,
+                });
+            });
         };
     },
 
