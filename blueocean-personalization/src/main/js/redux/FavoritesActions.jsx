@@ -83,60 +83,6 @@ export const actions = {
         };
     },
 
-    runPipeline(pipeline) {
-        return () => {
-            const baseUrl = UrlConfig.getJenkinsRootURL();
-            const pipelineUrl = pipeline._links.self.href;
-            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
-
-            const fetchOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-
-            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            Fetch.fetch(runPipelineUrl, { fetchOptions });
-        };
-    },
-
-    replayPipeline(pipeline) {
-        return () => {
-            const baseUrl = UrlConfig.getJenkinsRootURL();
-            const pipelineUrl = pipeline.latestRun._links.self.href;
-            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
-
-            const fetchOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-
-            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            Fetch.fetch(runPipelineUrl, { fetchOptions });
-        };
-    },
-
-    stopPipeline(pipeline) {
-        return () => {
-            const baseUrl = UrlConfig.getJenkinsRootURL();
-            const latestRunUrl = pipeline.latestRun._links.self.href;
-            const stopPipelineUrl = cleanSlashes(`${baseUrl}/${latestRunUrl}/stop/?blocking=true&timeOutInSecs=10`);
-
-            const fetchOptions = {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-
-            // once job is stopped, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            Fetch.fetch(stopPipelineUrl, fetchOptions);
-        };
-    },
-
     updateRun(jobRun) {
         return (dispatch) => {
             dispatch({

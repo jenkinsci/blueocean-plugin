@@ -28,6 +28,10 @@ export const getNodesInformation = (nodes) => {
     let wasFocused = false; // we only want one node to be focused if any
     let parallelNodes = [];
     let parent;
+    // FIXME: this assumaption is not 100% correct since a job that is in queue would be marked as finished since
+    // there will be no running nodes yet!
+    const finished = runningNodes.length === 0;
+    const error = !(errorNodes.length === 0);
     const model = nodes.map((item, index) => {
         const hasFailingNode = item.edges ? item.edges
           .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
@@ -76,17 +80,12 @@ export const getNodesInformation = (nodes) => {
             modelItem.estimatedDurationInMillis = item.estimatedDurationInMillis;
             modelItem.isMultiBranch = true;
         }
-        if ((isRunningNode || (isFailingNode && !hasFailingNode)) && !wasFocused) {
+        if ((isRunningNode || (isFailingNode && !hasFailingNode && finished)) && !wasFocused) {
             wasFocused = true;
             modelItem.isFocused = true;
         }
         return modelItem;
     });
-
-    // FIXME: this assumaption is not 100% correct since a job that is in queue would be marked as finished since
-    // there will be no running nodes yet!
-    const finished = runningNodes.length === 0;
-    const error = !(errorNodes.length === 0);
 
   // creating the response object
     const information = {

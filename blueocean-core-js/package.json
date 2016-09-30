@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   "dependencies": {
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/sse-gateway": "0.0.9",
-    "es6-promise": "3.2.1",
+    "es6-promise": "3.3.1",
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "7.1.9",
     "pem-jwk": "1.5.1",

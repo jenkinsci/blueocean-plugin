@@ -1,3 +1,8 @@
+#!groovy
+
+// only 20 builds
+properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20'))])
+
 node {
   deleteDir()
   checkout scm
@@ -7,11 +12,14 @@ node {
   docker.image('cloudbees/java-build-tools').inside {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
+        sh "node ./bin/checkshrinkwrap.js"
         sh 'cp .npmrc $HOME/.npmrc; cat .npmrc'
         sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=15"
         sh "node checkdeps.js"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
         step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
+
+        triggerATH();
       } catch(err) {
         currentBuild.result = "FAILURE"
       } finally {
@@ -23,6 +31,29 @@ node {
 
   } // configFileProvider
   } // configFileProvider
+}
+
+def triggerATH() {
+    // Assemble and archive the HPI plugins that the ATH should use.
+    // The ATH build can copy this artifact and use it, saving the time it
+    // would otherwise spend building and assembling again.
+    sh 'cd blueocean && mvn hpi:assemble-dependencies && tar -czvf target/ath-plugins.tar.gz target/plugins'
+    archiveArtifacts artifacts: 'blueocean/target/ath-plugins.tar.gz'
+
+    // Trigger the ATH, but don't wait for it.
+    try {
+        echo "Will attempt to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'."
+        build(job: "ATH-Jenkinsfile/${env.BRANCH_NAME}",
+                parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}"),
+                             string(name: 'BUILD_NUM', value: "${env.BUILD_NUMBER}")],
+                wait: false)
+    } catch (e1) {
+        echo "Failed to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'. Will try running the ATH 'master' branch."
+        build(job: "ATH-Jenkinsfile/master",
+                parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}"),
+                             string(name: 'BUILD_NUM', value: "${env.BUILD_NUMBER}")],
+                wait: false)
+    }
 }
 
 def sendhipchat() {
