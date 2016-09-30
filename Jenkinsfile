@@ -15,7 +15,7 @@ node {
         sh "node ./bin/checkshrinkwrap.js"
         sh 'cp .npmrc $HOME/.npmrc; cat .npmrc'
         sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=15"
-        sh "node checkdeps.js"
+        sh "node ./bin/checkdeps.js"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
         step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
 
