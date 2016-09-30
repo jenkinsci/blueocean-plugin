@@ -134,7 +134,7 @@ export class LogConsole extends Component {
             >
                 { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
                     <a
-                      target='_blank'
+                      target="_blank"
                       className="btn-secondary inverse"
                       key={0}
                       href={logUrl}
@@ -163,6 +163,7 @@ LogConsole.propTypes = {
     scrollBottom: func,
     prefix: string,
     hasMore: bool,
+    url: string,
 };
 
 export default scrollHelper(LogConsole);

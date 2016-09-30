@@ -4,8 +4,6 @@ import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 
-const { object, func, string, bool } = PropTypes;
-
 export default class Node extends Component {
     constructor(props) {
         super(props);
@@ -162,6 +160,7 @@ export default class Node extends Component {
     }
 }
 
+const { object, func, string, bool } = PropTypes;
 Node.propTypes = {
     node: object.isRequired,
     followAlong: bool,
@@ -169,4 +168,5 @@ Node.propTypes = {
     location: object,
     fetchLog: func,
     nodesBaseUrl: string,
+    url: string,
 };
