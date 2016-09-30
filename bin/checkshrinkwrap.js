@@ -49,6 +49,7 @@ function checkProject(pathToProject) {
     const allDeps = Object.assign({}, packageDeps, packageDevDeps);
     const shrinkwrap = require(shrinkwrapJsonPath);
     validateDepsAgainstShrinkwrap(allDeps, shrinkwrap);
+    validateShrinkwrapProperties(shrinkwrap);
 }
 
 function buildPath(path) {
@@ -73,7 +74,7 @@ function checkImpreciseDependencies(dependencies) {
 
     if (badDeps.length) {
         badDeps.forEach(dep => console.error(`${dep} must use precise version`));
-        console.error(`did you use 'npm install dep --save/-dev -E' ?`)
+        console.error(`did you use 'npm install dep --save/-dev -E' ?`);
         process.exit(1);
     }
 }
@@ -106,6 +107,36 @@ function validateDepsAgainstShrinkwrap(allDeps, shrinkwrap) {
     if (badDeps.length) {
         badDeps.forEach(message => console.error(message));
         console.log('You can use bin/cleanInstall to install the dominant dependency in various places.');
+        process.exit(1);
+    }
+}
+
+function validateShrinkwrapProperties(shrinkwrap) {
+    const dependencyMaps = [Object.assign({}, shrinkwrap.dependencies)];
+    const badDeps = [];
+
+    while (dependencyMaps.length) {
+        const dependencyObject = dependencyMaps.shift();
+
+        Object.keys(dependencyObject).forEach(name => {
+            const data = dependencyObject[name];
+
+            if (data.resolved) {
+                badDeps.push(`${name}@${data.version}`);
+            }
+
+            if (name.dependencies) {
+                dependencyMaps.push(name.dependencies);
+            }
+        });
+    }
+
+    if (badDeps.length) {
+        console.log(`${badDeps.length} entries found in npm-shrinkwrap.json containing 'resolved' property.`);
+        if (badDeps.length <= 5) {
+            badDeps.forEach(message => console.error(message));
+        }
+        console.log(`Please run 'npm install' or 'npm run postinstall' in the directory to clean shrinkwrap`);
         process.exit(1);
     }
 }
