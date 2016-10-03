@@ -69,7 +69,7 @@ class RunDetailsHeader extends Component {
                         <div>
                             <label>Commit</label>
                             <span className="commit">
-                                #{run.commitId.substring(0, 8)}
+                                {run.commitId.substring(0, 7)}
                             </span>
                         </div>
                         : null }
