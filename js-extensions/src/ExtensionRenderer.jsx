@@ -1,7 +1,5 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var importedExtensionStore = require('./ExtensionStore.js').instance;
-var importedResourceLoadTracker = require('./ResourceLoadTracker').instance;
 
 /**
  * An internal component that inserts things into the (separate) context of mounted extensions. We need this for our
@@ -33,11 +31,10 @@ ContextBridge.propTypes = {
     config: React.PropTypes.object
 };
 
-
 /**
  * Renderer for react component extensions for which other plugins can provide an implementing Component.
  */
-export class ExtensionRenderer extends React.Component {
+export default class ExtensionRenderer extends React.Component {
 
     constructor() {
         super();
@@ -185,15 +182,12 @@ export class ExtensionRenderer extends React.Component {
     }
 }
 
-// Put these in statics so we can mock them for testing. Ideally they would come from React scope.
-ExtensionRenderer.ExtensionStore = importedExtensionStore;
-ExtensionRenderer.ResourceLoadTracker = importedResourceLoadTracker;
-
 ExtensionRenderer.defaultProps = {
     wrappingElement: "div"
 };
 
 ExtensionRenderer.propTypes = {
+    children: React.PropTypes.any,
     extensionPoint: React.PropTypes.string.isRequired,
     filter: React.PropTypes.any,
     wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element])

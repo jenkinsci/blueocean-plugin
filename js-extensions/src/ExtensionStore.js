@@ -2,7 +2,7 @@
  * ExtensionStore is responsible for maintaining extension metadata
  * including type/capability info
  */
-export class ExtensionStore {
+export default class ExtensionStore {
     /**
      *  FIXME this is NOT a constructor, as there's no common way to
      *  pass around a DI singleton at the moment across everything
@@ -157,8 +157,7 @@ export class ExtensionStore {
                     extensionPointMetadatas.push(extensionMetadata);
                 }
             }
-            var ResourceLoadTracker = require('./ResourceLoadTracker').instance;
-            ResourceLoadTracker.setExtensionPointMetadata(this.extensionPointList);
+            ExtensionStore.ResourceLoadTracker.setExtensionPointMetadata(this.extensionPointList);
             if (oncomplete) oncomplete(this.extensionPointList);
         });
     }
@@ -277,7 +276,3 @@ class LoadCountMonitor {
         this.callback = callback;
     }
 }
-
-// should figure out DI with singletons so we can move
-// required providers to other injection points, ideally
-export const instance = new ExtensionStore();

@@ -1,7 +1,7 @@
 var jsTest = require('@jenkins-cd/js-test');
 var expect = require('chai').expect;
 
-var ResourceLoadTracker = require('../dist/ResourceLoadTracker').instance;
+var ResourceLoadTracker = new (require('../dist/ResourceLoadTracker').default)();
 
 describe("ResourceLoadTracker.js", function () {
 

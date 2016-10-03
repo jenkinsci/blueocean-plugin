@@ -1,9 +1,20 @@
 // Provide an ExtensionStore & ExtensionRenderer react component
-exports.store = require('./dist/ExtensionStore.js').instance;
+const ExtensionStore = require('./dist/ExtensionStore.js').default;
+exports.store = new ExtensionStore();
 
-exports.Renderer = require('./dist/ExtensionRenderer.js').ExtensionRenderer;
+exports.Renderer = require('./dist/ExtensionRenderer.js').default;
 
-exports.classMetadataStore = require('./dist/ClassMetadataStore.js').instance;
+//in lieu of DI
+const ResourceLoadTracker = require('./dist/ResourceLoadTracker.js').default;
+const resourceLoadTracker = new ResourceLoadTracker();
+exports.store.ResourceLoadTracker = resourceLoadTracker;
+
+//Put these in statics so we can mock them for testing. Ideally they would come from React scope.
+exports.Renderer.ExtensionStore = exports.store;
+exports.Renderer.ResourceLoadTracker = resourceLoadTracker;
+
+const ClassMetadataStore = require('./dist/ClassMetadataStore.js');
+exports.classMetadataStore = new ClassMetadataStore();
 
 exports.dataType = function dataType(dataType) { return exports.classMetadataStore.dataType(dataType); };
 
