@@ -350,13 +350,6 @@ export class RunDetailsPipeline extends Component {
         const shouldShowLogHeader = noSteps !== null && !noSteps;
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
 
-        const logProps = {
-            scrollToBottom,
-            ...this.props,
-            ...this.state,
-            mergedConfig: this.mergedConfig,
-        };
-
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
@@ -389,7 +382,16 @@ export class RunDetailsPipeline extends Component {
                     <p>There are no steps.</p>
                 </EmptyStateView>
                 }
-                { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
+                { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView
+                  {
+                    ...{
+                        scrollToBottom,
+                        ...this.props,
+                        ...this.state,
+                        mergedConfig: this.mergedConfig,
+                    }
+                  }
+                /> }
             </div>
         );
     }

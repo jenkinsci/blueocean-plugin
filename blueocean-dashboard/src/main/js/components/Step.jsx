@@ -120,6 +120,7 @@ export default class Node extends Component {
             || (resultRun.toLowerCase() === 'running' && followAlong)
         ;
         const logProps = {
+            ...this.props,
             scrollToBottom,
             key: id,
             prefix: `step-${id}-`,
