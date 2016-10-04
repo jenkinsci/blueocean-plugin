@@ -2,16 +2,31 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { Provider, configureStore, combineReducers} from './redux';
-import { DevelopmentFooter } from './DevelopmentFooter';
 
-import Extensions from '@jenkins-cd/js-extensions';
+import { Provider, configureStore, combineReducers} from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
 
+import Extensions from '@jenkins-cd/js-extensions';
+
 import Config from './config';
+import { ToastDrawer } from './components/ToastDrawer';
+import { DevelopmentFooter } from './DevelopmentFooter';
+
+import { AppConfig, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
 
 let config; // Holder for various app-wide state
 
+function loginOrLogout() {
+    if (AppConfig.getLoginUrl()) {
+        if (AppConfig.getInitialUser() === "anonymous") {
+            const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
+            return <a href={loginUrl} className="btn-primary inverse small">Login</a>;
+        } else {
+            const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
+            return <a href={logoutUrl} className="btn-secondary inverse small">Logout</a>;
+        }
+    }
+}
 /**
  * Root Blue Ocean UI component
  */
@@ -24,19 +39,25 @@ class App extends Component {
     render() {
         return (
             <div className="Site">
-                <div id="outer">
-                    <header className="global-header">
+                <header className="Site-header">
+                    <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
                             <Link to="/pipelines">Pipelines</Link>
                             <a href="#">Administration</a>
                         </nav>
-                    </header>
-                    <main>
-                        {this.props.children /* Set by react-router */ }
-                    </main>
-                </div>
-                <DevelopmentFooter />
+                        <div className="button-bar">
+                            { loginOrLogout() }
+                        </div>
+                    </div>
+                </header>
+                <main className="Site-content">
+                    {this.props.children /* Set by react-router */ }
+                </main>
+                <footer className="Site-footer">
+                    <DevelopmentFooter />
+                </footer>
+                <ToastDrawer />
             </div>
         );
     }
@@ -146,3 +167,6 @@ function startApp(routes, stores) {
 Extensions.store.getExtensions(['jenkins.main.routes', 'jenkins.main.stores'], (routes = [], stores = []) => {
     startApp(routes, stores);
 });
+
+// Enable page reload.
+require('./reload');

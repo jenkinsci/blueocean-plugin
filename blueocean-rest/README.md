@@ -7,6 +7,8 @@
   - [Media Type](#media-type)
   - [Date Format](#date-format)
   - [Crumbs](#crumbs)
+- [Security](#security)
+  - [API access from browser with JWT enabled](#api-access-from-browser-with-jwt-enabled)
 - [Navigability](#navigability)
   - [Links](#links)
 - [Resource discovery](#resource-discovery)
@@ -32,9 +34,11 @@
   - [MultiBranch Pipeline API](#multibranch-pipeline-api)
     - [Get MultiBranch pipeline](#get-multibranch-pipeline)
     - [Get MultiBranch pipeline branches](#get-multibranch-pipeline-branches)
+  - [Pipeline Permissions](#pipeline-permissions)
 - [Queue API](#queue-api)
   - [Fetch queue for an pipeline](#fetch-queue-for-an-pipeline)
   - [GET queue for a MultiBranch pipeline](#get-queue-for-a-multibranch-pipeline)
+  - [Remove a queued item](#remove-a-queued-item)
 - [Run API](#run-api)
   - [Get all runs in a pipeline](#get-all-runs-in-a-pipeline)
   - [Get a run details](#get-a-run-details)
@@ -42,6 +46,7 @@
   - [Find latest run on all pipelines](#find-latest-run-on-all-pipelines)
   - [Start a build](#start-a-build)
   - [Stop a build](#stop-a-build)
+    - [Stop a build as blocking call](#stop-a-build-as-blocking-call)
   - [Get MultiBranch job's branch run detail](#get-multibranch-jobs-branch-run-detail)
   - [Get all runs for all branches on a multibranch pipeline (ordered by date)](#get-all-runs-for-all-branches-on-a-multibranch-pipeline-ordered-by-date)
   - [Get change set for a run](#get-change-set-for-a-run)
@@ -103,7 +108,42 @@ All date formats are in ISO 8601 format
 
 Jenkins usually requires a "crumb" with posted requests to prevent request forgery and other shenanigans. 
 To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
-    
+
+# Security
+
+NOTE: JWT is disabled by default for now. to enable JWT authentication use FEATURE_BLUEOCEAN_JWT_AUTHENTICATION=true system property.
+
+    mvn hpi:run -DFEATURE_BLUEOCEAN_JWT_AUTHENTICATION=true
+
+With -DFEATURE_BLUEOCEAN_JWT_AUTHENTICATION=false (default)
+
+* No JWT tokens are send from the frontend.
+* Api does not look for a JWT token, and instead uses cookies for authentication.
+
+With -DFEATURE_BLUEOCEAN_JWT_AUTHENTICATION=true
+
+* JWT tokens are fetched and sent with api requests from the frontend.
+* API requires a valid JWT token, and does not use cookies for authentication.
+
+
+BlueOcean REST APIs requires JWT token for authentication. JWT APIs are provided by blueocean-jwt plugin. See 
+[JWT APIs](../blueocean-jwt/README.md) to get JWT token and to get public key needed to verify the claims.
+  
+JWT token must be sent as bearer token as value of HTTP 'Authorization' header:
+  
+    curl -H 'Authorization: Bearer eyJraWQ...' http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/
+
+## API access from browser with JWT enabled
+
+Sometimes testing API from browser is desirable. Here are steps to to do that using Postman Chrome app:
+
+* Install Postman on Chrome (chrome://apps/) or install Postman app on Mac OS (https://www.getpostman.com).
+* Launch postman
+* Create a JWT token, see [JWT APIs](../blueocean-jwt/README.md). You can customize expiry time to reuse the fetched token. You may like to save the query in Postman as collection *blueocean*. Anytime later you want to generate token use *blueocean* collection and click send on previous GET. 
+* Click on + on tab and type the API URL, e.g. http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/, then add header with *Authorization* header with value *Bearer COPIED_JWT_TOKEN*. Use this tab to invoke any Blueocean REST API. You may like to either add to 'blueocean' collection if you like.      
+  
+ 
+
 # Navigability
 
 ## Links 
@@ -177,7 +217,7 @@ Frontend can use _class in resource and classes API to serve UI based on class o
 
 ### Get detailed map of all given classes
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/classes/?q=io.jenkins.blueocean.service.embedded.rest.PipelineImpl,io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl 
+    curl -v -X POST  http://localhost:8080/jenkins/blue/rest/classes/ -d '{"q":["io.jenkins.blueocean.service.embedded.rest.PipelineImpl","io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl"] 
 
     {
       "_class" : "io.jenkins.blueocean.service.embedded.rest.ExtensionClassContainerImpl$1",
@@ -300,7 +340,9 @@ Gives authenticated user, gives HTTP 404 error if there is no authenticated user
           "startTime": "2016-04-11T17:44:28.344+1000",
           "state": "FINISHED",
           "type": "WorkflowRun",
-          "commitId": null
+          "commitId": null,
+          "numberOfQueuedPipelines" : 1,
+          "numberOfRunningPipelines" : 2
         }
     }
 
@@ -402,6 +444,8 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
             "name" : "bo1",
             "numberOfFolders" : 0,
             "numberOfSuccessfulPullRequests" : 0,
+            "numberOfQueuedPipelines" : 0,
+            "numberOfRunningPipelines" : 2,
             "actions" : [],
             "branchNames" : []
          }
@@ -423,7 +467,7 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
 
 ## Get Nested Pipeline Inside A Folder
     
-    curl -v -X GET   http://localhost:62054/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/test2/
+    curl -v -X GET   http://localhost:62054/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/test2/
     
     {
       "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineImpl",
@@ -435,7 +479,9 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
       "name" : "test2",
       "fullName" : "test2",      
       "organization" : "jenkins",
-      "weatherScore" : 100
+      "weatherScore" : 100,
+      "numberOfQueuedPipelines" : 0,
+      "numberOfRunningPipelines" : 0
     }
     
 ## Get nested Folder and Pipeline
@@ -490,11 +536,16 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "numberOfSuccessfulBranches": 0,
         "numberOfSuccessfulPullRequests": 0,
         "totalNumberOfBranches": 3,
-        "totalNumberOfPullRequests": 0
+        "totalNumberOfPullRequests": 0,
+        "numberOfQueuedPipelines" : 0,
+        "numberOfRunningPipelines" : 2
     }
 
     
-### Get MultiBranch pipeline branches 
+### Get MultiBranch pipeline branches
+
+The list of branches will be ordered by favorited branches first, and then branches that have the most recent
+activity.
 
     curl -v http://localhost:56720/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches
     
@@ -526,7 +577,10 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "name": "feature2",
             "organization": "jenkins",
             "weatherScore": 100,
-            "pullRequest": null
+            "pullRequest": null,
+            "totalNumberOfPullRequests": 0,
+            "numberOfQueuedPipelines" : 0,
+            "numberOfRunningPipelines" : 2
         },
         {
             "displayName": "master",
@@ -562,7 +616,10 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "name": "master",
             "organization": "jenkins",
             "weatherScore": 100,
-            "pullRequest": null
+            "pullRequest": null,
+            "totalNumberOfPullRequests": 0,
+            "numberOfQueuedPipelines" : 0,
+            "numberOfRunningPipelines" : 2            
         },
         {
             "displayName": "feature1",
@@ -591,7 +648,10 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
             "name": "feature1",
             "organization": "jenkins",
             "weatherScore": 100,
-            "pullRequest": null
+            "pullRequest": null,
+            "totalNumberOfPullRequests": 0,
+            "numberOfQueuedPipelines" : 0,
+            "numberOfRunningPipelines" : 2            
         }
     ]
 
@@ -669,6 +729,10 @@ For example for anonymous user with security enabled and only read permission, t
           "expectedBuildNumber" : 11
        }
     ]
+
+## Remove a queued item 
+
+    curl -X DELETE http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/
 
 # Run API
 

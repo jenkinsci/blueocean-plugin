@@ -22,7 +22,9 @@ Once the PR is no longer a __work-in-progress__, is building fine (according to 
 
 Avoid "bike shed" discussions about styles or whitespace unless it really impacts the changeset. The contributor can be encouraged to apply editor automation in future (if it is available).
 
-Squashing commits: if there are messy intermediate commits it is nice to squash things for the reviewer (but not mandatory). Always think about how to make it quick and easy for a reviewer (perhaps with more smaller PR's if needed).
+# Merging
+
+All commits should be squashed before being merged to `master` to preserve a sane history. The Merge button on the PR screen has been configured to do this automatically.
 
 # Code Style
 

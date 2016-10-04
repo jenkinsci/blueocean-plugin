@@ -85,6 +85,210 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
+    public void testBlockStage() throws Exception{
+        String pipeline = "" +
+            "node {" +
+            "   stage ('dev');" +                 //start
+            "     echo ('development'); " +
+
+            "   stage ('Build') { " +
+            "     echo ('Building'); " +
+            "   } \n" +
+            "   stage ('test') { " +
+            "     echo ('Testing'); " +
+            "     parallel firstBranch: {\n" + //1
+            "       echo 'first Branch'\n" +
+            "       sh 'sleep 1'\n" +
+            "       echo 'first Branch end'\n" +
+            "     }, secondBranch: {\n" +
+            "       echo 'Hello second Branch'\n" +
+            "       sh 'sleep 1'   \n" +
+            "       echo 'second Branch end'\n" +
+            "       \n" +
+            "    },\n" +
+            "    failFast: false\n" +
+            "   } \n" +
+            "   stage ('deploy') { " +
+            "     writeFile file: 'file.txt', text:'content'; " +
+            "     archive(includes: 'file.txt'); " +
+            "     echo ('Deploying'); " +
+            "   } \n" +
+            "}";
+
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition(pipeline));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        PipelineNodeGraphBuilder builder = new PipelineNodeGraphBuilder(b1);
+
+        List<FlowNode> stages = builder.getSages();
+        List<FlowNode> parallels = builder.getParallelBranches();
+
+        Assert.assertEquals(4, stages.size());
+        Assert.assertEquals(2, parallels.size());
+
+        //TODO: complete test
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(6, resp.size());
+
+        String testStageId=null;
+
+        for(int i=0; i< resp.size();i++){
+            Map rn = resp.get(i);
+            List<Map> edges = (List<Map>) rn.get("edges");
+
+            if(rn.get("displayName").equals("dev")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("build")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("test")){
+                testStageId = (String) rn.get("id");
+                Assert.assertEquals(2, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("firstBranch")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("secondBranch")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("deploy")){
+                Assert.assertEquals(0, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }
+        }
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+        Assert.assertEquals(12,resp.size());
+
+
+        Assert.assertNotNull(testStageId);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+testStageId+"/steps/", List.class);
+        Assert.assertEquals(7,resp.size());
+
+    }
+
+    @Test
+    public void testNestedBlockStage() throws Exception{
+        String pipeline = "" +
+            "node {" +
+            "   stage ('dev');" +                 //start
+            "     echo ('development'); " +
+
+            "   stage ('Build') { " +
+            "     echo ('Building'); " +
+            "   } \n" +
+            "   stage ('test') { " +
+            "     echo ('Testing'); " +
+            "     parallel firstBranch: {\n" + //1
+            "       echo 'first Branch'\n" +
+                "     stage('firstBranchTest') {"+
+                "       sh 'sleep 1'\n" +
+                "     }\n"+
+            "       echo 'first Branch end'\n" +
+            "     }, secondBranch: {\n" +
+            "       echo 'Hello second Branch'\n" +
+            "       sh 'sleep 1'   \n" +
+            "       echo 'second Branch end'\n" +
+            "       \n" +
+            "    },\n" +
+            "    failFast: false\n" +
+            "   } \n" +
+            "   stage ('deploy') { " +
+            "     writeFile file: 'file.txt', text:'content'; " +
+            "     archive(includes: 'file.txt'); " +
+            "     echo ('Deploying'); " +
+            "   } \n" +
+            "}";
+
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition(pipeline));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        PipelineNodeGraphBuilder builder = new PipelineNodeGraphBuilder(b1);
+
+        List<FlowNode> stages = builder.getSages();
+        List<FlowNode> parallels = builder.getParallelBranches();
+
+        Assert.assertEquals(4, stages.size());
+        Assert.assertEquals(2, parallels.size());
+
+        //TODO: complete test
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(6, resp.size());
+
+        String testStageId=null;
+
+        for(int i=0; i< resp.size();i++){
+            Map rn = resp.get(i);
+            List<Map> edges = (List<Map>) rn.get("edges");
+
+            if(rn.get("displayName").equals("dev")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("build")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("test")){
+                testStageId = (String) rn.get("id");
+                Assert.assertEquals(2, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("firstBranch")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("secondBranch")){
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("deploy")){
+                Assert.assertEquals(0, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }
+        }
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+        Assert.assertEquals(12,resp.size());
+
+
+        Assert.assertNotNull(testStageId);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+testStageId+"/steps/", List.class);
+        Assert.assertEquals(7,resp.size());
+
+        //firstBranch is parallel with nested stage. firstBranch /steps should also include steps inside nested stage
+        FlowNode firstBranch=null;
+        for(FlowNode n: parallels){
+            if(n.getDisplayName().equals("Branch: firstBranch")){
+                firstBranch = n;
+                break;
+            }
+        }
+        Assert.assertNotNull(firstBranch);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+firstBranch.getId()+"/steps/", List.class);
+        Assert.assertEquals(3,resp.size());
+
+    }
+
+    @Test
     public void nodesWithFutureTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition("node {\n" +
@@ -136,6 +340,84 @@ public class PipelineNodeTest extends PipelineBaseTest {
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
         Assert.assertEquals(2, resp.size());
     }
+
+    @Test
+    public void nodesWithPartialParallels() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition("node {\n" +
+            "    stage \"hey\"\n" +
+            "    sh \"echo yeah\"\n" +
+            "    \n" +
+            "    stage \"par\"\n" +
+            "    \n" +
+            "    parallel left : {\n" +
+            "            sh \"echo OMG BS\"\n" +
+            "            sh \"echo yeah\"\n" +
+            "        }, \n" +
+            "        \n" +
+            "        right : {\n" +
+            "            sh \"echo wozzle\"\n" +
+            "        }\n" +
+            "    \n" +
+            "    stage \"ho\"\n" +
+            "        sh \"echo done\"\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        Thread.sleep(1000);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+        Assert.assertEquals(5, resp.size());
+
+        job1.setDefinition(new CpsFlowDefinition("node {\n" +
+            "    stage \"hey\"\n" +
+            "    sh \"echo yeah\"\n" +
+            "    \n" +
+            "    stage \"par\"\n" +
+            "    \n" +
+            "    parallel left : {\n" +
+            "            sh \"echo OMG BS\"\n" +
+            "            echo \"running\"\n" +
+            "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
+            "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+            "            sh \"echo yeah\"\n" +
+            "        }, \n" +
+            "        \n" +
+            "        right : {\n" +
+            "            sh \"echo wozzle\"\n" +
+            "            def branchInput = input message: 'MF Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
+            "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+            "        }\n" +
+            "    \n" +
+            "    stage \"ho\"\n" +
+            "        sh \"echo done\"\n" +
+            "}"));
+
+        job1.scheduleBuild2(0);
+        Thread.sleep(1000);
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/", List.class);
+
+        Assert.assertEquals(5, resp.size());
+
+        Map leftNode = resp.get(2);
+        Assert.assertEquals("left", leftNode.get("displayName"));
+
+        Map rightNode = resp.get(3);
+        Assert.assertEquals("right", rightNode.get("displayName"));
+
+        List<Map> leftSteps = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/"+leftNode.get("id")+"/steps/", List.class);
+
+        //XXX: for some reason in test harness 'input' step fails and never registered as step
+        Assert.assertEquals(2, leftSteps.size());
+
+        List<Map> rightSteps = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/"+rightNode.get("id")+"/steps/", List.class);
+
+        Assert.assertEquals(1, rightSteps.size());
+    }
+
 
     @Test
     public void nodesTest() throws Exception {
@@ -1053,6 +1335,170 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/6/log/", linkToLog);
         String output = get(linkToLog.substring("/blue/rest".length()), String.class);
         Assert.assertNotNull(output);
+    }
+
+    @Test
+    public void BlockStageNodesFailureTest1() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("node{\n" +
+            "    stage ('Build') {\n" +
+            "            sh 'echo1 \"Building\"'\n" +
+            "    }\n" +
+            "    stage ('Test') {\n" +
+            "            sh 'echo testing'\n" +
+            "    }\n" +
+            "    stage ('Deploy') {\n" +
+            "            sh 'echo deploy'\n" +
+            "    }\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(1, nodes.size());
+        Assert.assertEquals("FAILURE", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+
+    }
+
+
+    @Test
+    public void BlockStageNodesFailureTest2() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("node{\n" +
+            "    stage ('Build') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "    }\n" +
+            "    stage ('Test') {\n" +
+            "            sh 'echo1 testing'\n" +
+            "    }\n" +
+            "    stage ('Deploy') {\n" +
+            "            sh 'echo deploy'\n" +
+            "    }\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(2, nodes.size());
+        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("FAILURE", nodes.get(1).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+
+    }
+
+    @Test
+    public void BlockStageNodesFailureTest3() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("node{\n" +
+            "    stage ('Build') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "    }\n" +
+            "    stage ('Test') {\n" +
+            "            sh 'echo testing'\n" +
+            "    }\n" +
+            "    stage ('Deploy') {\n" +
+            "            sh 'echo1 deploy'\n" +
+            "    }\n" +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(3, nodes.size());
+        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+        Assert.assertEquals("FAILURE", nodes.get(2).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(2).get("state"));
+    }
+
+    @Test
+    public void KyotoNodesFailureTest1() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("pipeline {\n" +
+            "    agent label:''\n" +
+            "    stages {\n" +
+            "        stage ('Build') {\n" +
+            "            sh 'echo1 \"Building\"'\n" +
+            "        }\n" +
+            "        stage ('Test') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "        }\n" +
+            "        stage ('Deploy') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(1, nodes.size());
+        Assert.assertEquals("FAILURE", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+    }
+
+    @Test
+    public void KyotoNodesFailureTest2() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("pipeline {\n" +
+            "    agent label:''\n" +
+            "    stages {\n" +
+            "        stage ('Build') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "        }\n" +
+            "        stage ('Test') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "            sh 'echo2 \"Building finished\"'\n" +
+            "        }\n" +
+            "        stage ('Deploy') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(2, nodes.size());
+        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("FAILURE", nodes.get(1).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+    }
+
+    @Test
+    public void KyotoNodesFailureTest3() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("pipeline {\n" +
+            "    agent label:''\n" +
+            "    stages {\n" +
+            "        stage ('Build') {\n" +
+            "            sh 'echo \"Building\"'\n" +
+            "        }\n" +
+            "        stage ('Test') {\n" +
+            "            sh 'echo \"Testing\"'\n" +
+            "        }\n" +
+            "        stage ('Deploy') {\n" +
+            "            sh 'echo1 \"Deploying\"'\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(3, nodes.size());
+        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+        Assert.assertEquals("FAILURE", nodes.get(2).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(2).get("state"));
     }
 
     private String getActionLink(Map resp, String capability){

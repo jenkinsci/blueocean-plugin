@@ -2,12 +2,9 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
-import { ReadableDate } from '@jenkins-cd/design-language';
-import { LiveStatusIndicator } from '@jenkins-cd/design-language';
-import { TimeDuration } from '@jenkins-cd/design-language';
+import { ReadableDate, LiveStatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
+import ChangeSetToAuthors from './ChangeSetToAuthors';
 import moment from 'moment';
-
-const { object, func } = PropTypes;
 
 class RunDetailsHeader extends Component {
     handleAuthorsClick() {
@@ -30,19 +27,25 @@ class RunDetailsHeader extends Component {
 
     render() {
         const { data: run, pipeline: { fullName = '' } } = this.props;
+        // pipeline name
+        const displayName = decodeURIComponent(run.pipeline);
         // enable folder path
         const nameArray = fullName.split('/');
-        // last part is same as run.pipeline so getting rid of it
-        nameArray.pop();
+
+        // we want the full path for folder based projects
+        if (nameArray[nameArray.length - 1] === displayName) {
+            // last part is same as run.pipeline so getting rid of it
+            nameArray.pop();
+        }
         // cleanName is in case of no folder empty
         const cleanFullName = nameArray.join(' / ');
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
-        const authors = [...(new Set(run.changeSet.map(change => change.author.fullName)):any)];
+        const changeSet = run.changeSet;
         const status = run.getComputedResult();
         const durationMillis = run.isRunning() ?
             moment().diff(moment(run.startTime)) : run.durationInMillis;
-        const displayName = decodeURIComponent(run.pipeline);
+        const onAuthorsClick = () => this.handleAuthorsClick();
         return (
         <div className="pipeline-result">
             <section className="status inverse">
@@ -71,18 +74,11 @@ class RunDetailsHeader extends Component {
                         <div>
                             <label>Commit</label>
                             <span className="commit">
-                                #{run.commitId.substring(0, 8)}
+                                {run.commitId.substring(0, 7)}
                             </span>
                         </div>
                         : null }
-                        <div>
-                       { authors.length > 0 ?
-                                   <a className="authors" onClick={() => this.handleAuthorsClick()}>
-                                        Changes by {authors.map(
-                                        author => ` ${author}`)}
-                                   </a>
-                       : 'No changes' }
-                        </div>
+                        <ChangeSetToAuthors {...{ changeSet, onAuthorsClick }} />
                     </div>
                     <div className="times">
                         <div>
@@ -90,15 +86,21 @@ class RunDetailsHeader extends Component {
                                 size: 20,
                                 icon: 'timelapse',
                                 style: { fill: '#fff' },
-                            }} />
-                            <TimeDuration millis={durationMillis} liveUpdate={run.isRunning()} />
+                            }}
+                            />
+                            <TimeDuration
+                              millis={durationMillis}
+                              liveUpdate={run.isRunning()}
+                              updatePeriod={1000}
+                            />
                         </div>
                         <div>
                             <Icon {...{
                                 size: 20,
                                 icon: 'access_time',
                                 style: { fill: '#fff' },
-                            }} />
+                            }}
+                            />
                             <ReadableDate date={run.endTime} liveUpdate />
                         </div>
                     </div>
@@ -107,6 +109,8 @@ class RunDetailsHeader extends Component {
         </div>);
     }
 }
+
+const { object, func } = PropTypes;
 
 RunDetailsHeader.propTypes = {
     data: object.isRequired,

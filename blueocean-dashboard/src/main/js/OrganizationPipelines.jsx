@@ -1,48 +1,46 @@
 import React, { Component, PropTypes } from 'react';
-import { Failure } from './util/FetchStatus';
 import {
     actions,
-    pipelines as pipelinesSelector,
+    allPipelines as allPipelinesSelector,
+    organizationPipelines as organizationPipelinesSelector,
     connect,
     createSelector,
 } from './redux';
+import loadingIndicator from './LoadingIndicator';
 import * as sse from '@jenkins-cd/sse-gateway';
 import * as pushEventUtil from './util/push-event-util';
 
 const { object, array, func, node, string } = PropTypes;
 
 class OrganizationPipelines extends Component {
-
-    // FIXME: IMO the following should be dropped
+    // FIXME: get rid of context use
     getChildContext() {
-        const {
-            params,
-            pipelines,
-        } = this.props;
-
-
-        // The specific pipeline we may be focused on
-        const pipeline = this._selectPipeline(pipelines, params);
-
+        if (this._getOrganizationName()) {
+            return {
+                pipelines: this.props.organizationPipelines,
+            };
+        }
         return {
-            pipelines,
-            pipeline,
+            pipelines: this.props.allPipelines,
         };
     }
-
+    
     componentWillMount() {
         const config = this.context.config;
         if (config) {
-            const { organization } = this.context.params;
-            this.props.fetchPipelinesIfNeeded(this.context.config, organization);
-
-            const _this = this;
-
+            const organizationName = this._getOrganizationName();
+            
+            if (organizationName) {
+                this.props.fetchOrganizationPipelines({ organizationName });
+            } else {
+                this.props.fetchAllPipelines();
+            }
+            
             // Subscribe for job channel push events
             this.jobListener = sse.subscribe('job', (event) => {
                 // Enrich the event with blueocean specific properties
                 // before passing it on to be processed.
-                const eventCopy = pushEventUtil.enrichJobEvent(event, _this.props.params.pipeline);
+                const eventCopy = pushEventUtil.enrichJobEvent(event, this.props.params.pipeline);
 
                 // See http://jenkinsci.github.io/pubsub-light-module/org/jenkins/pubsub/Events.JobChannel.html
                 switch (eventCopy.jenkins_event) {
@@ -59,25 +57,31 @@ class OrganizationPipelines extends Component {
                     // crud operations are relative low frequency, so not much
                     // benefit to be got from optimizing things here.
                     // TODO: fix https://issues.jenkins-ci.org/browse/JENKINS-35153 for delete
-                    _this.props.fetchPipelines(_this.context.config, _this.props.organization);
-                    _this.props.updateBranchList(eventCopy, _this.context.config);
+                    if (this._getOrganizationName()) {
+                        this.props.fetchOrganizationPipelines({ organizationName: this._getOrganizationName() });
+                    } else {
+                        this.props.fetchAllPipelines();
+                    }
+                    this.props.updateBranchList(eventCopy, this.context.config);
                     break;
                 case 'job_run_queue_buildable':
                 case 'job_run_queue_enter':
-                    _this.props.processJobQueuedEvent(eventCopy);
+                    this.props.processJobQueuedEvent(eventCopy);
                     break;
                 case 'job_run_queue_left':
+                    this.props.processJobLeftQueueEvent(eventCopy);
+                    break;
                 case 'job_run_queue_blocked': {
                     break;
                 }
                 case 'job_run_started': {
-                    _this.props.updateRunState(eventCopy, _this.context.config, true);
-                    _this.props.updateBranchState(eventCopy, _this.context.config);
+                    this.props.updateRunState(eventCopy, this.context.config, true);
+                    this.props.updateBranchState(eventCopy, this.context.config);
                     break;
                 }
                 case 'job_run_ended': {
-                    _this.props.updateRunState(eventCopy, _this.context.config);
-                    _this.props.updateBranchState(eventCopy, _this.context.config);
+                    this.props.updateRunState(eventCopy, this.context.config);
+                    this.props.updateBranchState(eventCopy, this.context.config);
                     break;
                 }
                 default :
@@ -87,11 +91,19 @@ class OrganizationPipelines extends Component {
         }
     }
 
+    componentDidMount() {
+        loadingIndicator.setDarkBackground();
+    }
+    
     componentWillReceiveProps(nextProps) {
-        const config = this.context.config;
-        const { pipeline } = nextProps.params;
-        config.pipeline = pipeline;
-        this.props.setPipeline(config);
+        const organizationName = this._getOrganizationName(nextProps);
+        if (this._getOrganizationName(this.props) !== organizationName) {
+            if (organizationName) {
+                this.props.fetchOrganizationPipelines({ organizationName });
+            } else {
+                this.props.fetchAllPipelines();
+            }
+        }
     }
 
     componentWillUnmount() {
@@ -99,18 +111,19 @@ class OrganizationPipelines extends Component {
             sse.unsubscribe(this.jobListener);
             delete this.jobListener;
         }
+        loadingIndicator.setLightBackground();
     }
-
-    _selectPipeline(pipelines, params) {
-        if (pipelines && params) {
-            const { pipeline } = params;
-            const p = pipelines.find(aPipeline => aPipeline.fullName === pipeline);
-            if (!p) {
-                return new Failure(`${pipeline} not found`);
-            }
-            return p;
+    
+    _getOrganizationName(nextProps) {
+        if (nextProps && nextProps.params) {
+            return nextProps.params.organization;
         }
-
+        if (this.props && this.props.params && this.props.params.organization) {
+            return this.props.params.organization;
+        }
+        if (this.context && this.context.params && this.context.params.organization) {
+            return this.context.params.organization;
+        }
         return null;
     }
 
@@ -119,6 +132,9 @@ class OrganizationPipelines extends Component {
      components and get rid of the seperate connect in each subcomponents -> see RunDetailsPipeline
      */
     render() {
+        if (!this.props.allPipelines && !this.props.organizationPipelines) {
+            return null;
+        }
         return this.props.children;
     }
 }
@@ -129,10 +145,10 @@ OrganizationPipelines.contextTypes = {
 };
 
 OrganizationPipelines.propTypes = {
-    fetchPipelines: func.isRequired,
-    fetchPipelinesIfNeeded: func.isRequired,
-    setPipeline: func,
+    fetchAllPipelines: func.isRequired,
+    fetchOrganizationPipelines: func.isRequired,
     processJobQueuedEvent: func.isRequired,
+    processJobLeftQueueEvent: func.isRequired,
     updateRunState: func.isRequired,
     updateBranchState: func.isRequired,
     updateBranchList: func.isRequired,
@@ -140,15 +156,15 @@ OrganizationPipelines.propTypes = {
     params: object, // From react-router
     children: node, // From react-router
     location: object, // From react-router
-    pipelines: array,
+    allPipelines: array,
+    organizationPipelines: array,
 };
 
 OrganizationPipelines.childContextTypes = {
     pipelines: array,
-    pipeline: object,
 };
 
-const selectors = createSelector([pipelinesSelector],
-    (pipelines) => ({ pipelines }));
+const selectors = createSelector([allPipelinesSelector, organizationPipelinesSelector],
+    (allPipelines, organizationPipelines) => ({ allPipelines, organizationPipelines }));
 
 export default connect(selectors, actions)(OrganizationPipelines);

@@ -1,0 +1,64 @@
+.replay-button-component {
+
+    display: inline-block;
+
+    .replay-button {
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    // default (text) display
+    .svg-icon {
+        display: none;
+    }
+
+    // icon display
+    &.icon-button {
+        height: 24px;
+
+        .replay-button {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: 0;
+            position: relative;
+
+            .svg-icon {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        }
+
+        .button-label {
+            display: none;
+        }
+    }
+
+    // default (light) themeing
+    .svg-icon {
+        fill: @brand-primary;
+
+        &:hover {
+            fill: @brand-primary-dark;
+        }
+    }
+
+    // dark themeing
+    &.dark {
+        .btn {
+            background: transparent;
+            color: white;
+            border-color: white;
+        }
+
+        .svg-icon {
+            fill: white;
+
+            &:hover {
+                fill: #CCC;
+            }
+        }
+    }
+}

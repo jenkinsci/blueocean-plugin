@@ -1,0 +1,84 @@
+{
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/"
+        },
+        "branches": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/branches/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/pipeline-syntax/"
+            }
+        },
+        "_class": "org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction",
+        "urlName": "pipeline-syntax"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {
+            "folder": {
+                "_class": "com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider$FolderCredentialsProperty$CredentialsStoreActionImpl"
+            }
+        },
+        "urlName": "credentials"
+    }],
+    "displayName": "jdl1",
+    "fullName": "jdl1",
+    "name": "jdl1",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true
+    },
+    "estimatedDurationInMillis": 976,
+    "numberOfFolders": 0,
+    "numberOfPipelines": 3,
+    "weatherScore": 0,
+    "branchNames": ["master", "docker-test", "experiment%2Fbuild-locally-docker"],
+    "numberOfFailingBranches": 1,
+    "numberOfFailingPullRequests": 0,
+    "numberOfSuccessfulBranches": 1,
+    "numberOfSuccessfulPullRequests": 0,
+    "totalNumberOfBranches": 3,
+    "totalNumberOfPullRequests": 0
+}

@@ -1,0 +1,83 @@
+.run-button-component {
+
+    display: inline-block;
+
+    .run-button, .stop-button {
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    // default (text) display
+    .svg-icon {
+        display: none;
+    }
+
+    // icon display
+    &.icon-button {
+        height: 24px;
+
+        .run-button, .stop-button {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: 0;
+            position: relative;
+
+            .svg-icon {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        }
+
+        .stop-button {
+            /* asset has different padding than material-icon asset used in .run-button: nudge it slightly */
+            top: 2px;
+            left: 2px;
+
+            &.stopping {
+                opacity: 0.4;
+                cursor: auto;
+            }
+        }
+
+        .button-label {
+            display: none;
+        }
+    }
+
+    // default (light) themeing
+    .svg-icon, .svg-icon-inner {
+        fill: @brand-primary;
+    }
+
+    .svg-icon:hover {
+        fill: @brand-primary-dark;
+
+        .svg-icon-inner {
+            fill: @brand-primary-dark;
+        }
+    }
+
+    // dark themeing
+    &.dark {
+        .btn {
+            background: transparent;
+            color: white;
+            border-color: white;
+        }
+
+        .svg-icon, .svg-icon-inner {
+            fill: white;
+        }
+
+        .svg-icon:hover {
+            fill: #CCC;
+
+            .svg-icon-inner {
+                fill: #CCC;
+            }
+        }
+    }
+}

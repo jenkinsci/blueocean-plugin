@@ -4,6 +4,8 @@ import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_FAVORITE;
+
 /**
  * A favorite item. The item itself must be JSON serializable bean
  *
@@ -11,7 +13,7 @@ import org.kohsuke.stapler.export.ExportedBean;
  * @author Vivek Pandey
  */
 @ExportedBean
-@Capability("io.jenkins.blueocean.rest.model.BlueFavorite")
+@Capability(BLUE_FAVORITE)
 public abstract class BlueFavorite extends Resource{
     private static final String ITEM = "item";
 

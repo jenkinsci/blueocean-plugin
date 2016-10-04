@@ -1,40 +1,34 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import PipelineRowItem from './PipelineRowItem';
-import { PipelineRecord } from './records';
+import PageLoading from './PageLoading';
 
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
+import { documentTitle } from './DocumentTitle';
 
-const { array } = PropTypes;
+export class Pipelines extends Component {
 
-export default class Pipelines extends Component {
+    componentDidMount() {
+        const { organization = 'Jenkins' } = this.context.params;
+        this.props.setTitle(organization);
+    }
 
     render() {
         const { pipelines, config } = this.context;
         const { organization } = this.context.params;
-
-        // Early out
-        if (!pipelines) {
-            return <div>No pipelines found.</div>;
-        }
 
         const orgLink = organization ?
             <Link to={`organizations/${organization}`} className="inverse">
                 {organization}
             </Link> : '';
 
-        const pipelineRecords = pipelines
-            .map(data => new PipelineRecord(data))
-            .filter(data => !data.isFolder())
-            .sort(pipeline => !!pipeline.branchNames);
-
         const headers = [
-            { label: 'Name', className: 'name' },
+            { label: 'Name', className: 'name-col' },
             'Health',
             'Branches',
             'Pull Requests',
-            { label: '', className: 'favorite' },
+            { label: '', className: 'actions-col' },
         ];
 
         const baseUrl = config.getRootURL();
@@ -43,15 +37,18 @@ export default class Pipelines extends Component {
         return (
             <Page>
                 <PageHeader>
+                    {!pipelines || pipelines.$pending && <PageLoading duration={2000} />}
                     <Title>
                         <h1>
                             <Link to="/" className="inverse">Dashboard</Link>
                             { organization && ' / ' }
                             { organization && orgLink }
                         </h1>
-                        <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
-                            New Pipeline
-                        </a>
+                        <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
+                            <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
+                                New Pipeline
+                            </a>
+                        </Extensions.Renderer>
                     </Title>
                 </PageHeader>
                 <main>
@@ -66,8 +63,8 @@ export default class Pipelines extends Component {
                           className="pipelines-table fixed"
                           headers={headers}
                         >
-                            { pipelineRecords
-                                .map(pipeline => {
+                            { pipelines &&
+                                pipelines.map(pipeline => {
                                     const key = pipeline._links.self.href;
                                     return (
                                         <PipelineRowItem
@@ -78,16 +75,30 @@ export default class Pipelines extends Component {
                                 })
                             }
                         </Table>
+
+                        { pipelines && pipelines.$pager &&
+                            <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
+                                {pipelines.$pending ? 'Loading...' : 'Show More'}
+                            </button>
+                        }
                     </article>
                 </main>
             </Page>);
     }
 }
 
+const { array, func, object } = PropTypes;
+
 Pipelines.contextTypes = {
-    config: PropTypes.object,
-    params: PropTypes.object,
+    config: object,
+    params: object,
     pipelines: array,
-    store: PropTypes.object,
-    router: PropTypes.object,
+    store: object,
+    router: object,
 };
+
+Pipelines.propTypes = {
+    setTitle: func,
+};
+
+export default documentTitle(Pipelines);

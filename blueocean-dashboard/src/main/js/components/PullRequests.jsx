@@ -4,10 +4,12 @@ import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
 import {
     actions,
-    currentBranches as branchSelector,
+    pullRequests as pullRequestSelector,
     createSelector,
     connect,
 } from '../redux';
+import PageLoading from './PageLoading';
+import { pipelineBranchesUnsupported } from './PipelinePage';
 
 const { func, object, array, string } = PropTypes;
 
@@ -45,50 +47,36 @@ EmptyState.propTypes = {
 };
 
 export class PullRequests extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            unsupportedJob: false,
-        };
+    componentWillMount() {
+        if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
+            this.props.fetchPullRequests({
+                organizationName: this.context.params.organization,
+                pipelineName: this.context.params.pipeline,
+            });
+        }
     }
 
-    componentWillMount() {
-        if (this.context.config && this.context.params) {
-            const {
-                config = {},
-                params: {
-                    pipeline: pipelineName,
-                },
-                pipeline,
-            } = this.context;
-
-            if (!pipeline.branchNames || !pipeline.branchNames.length) {
-                this.setState({
-                    unsupportedJob: true,
-                });
-                return;
-            }
-
-            config.pipeline = pipelineName;
-            this.props.fetchBranchesIfNeeded(config);
-        }
+    componentWillUnmount() {
+        this.props.clearPRData();
     }
 
     render() {
-        const { branches } = this.props;
+        const { pullRequests } = this.props;
 
-        if (this.state.unsupportedJob) {
+        if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
             return (<NotSupported />);
         }
 
-        // early out
-        if (!branches) {
-            return null;
+        if (pullRequests.$pending && !pullRequests.length) {
+            return <PageLoading />;
         }
 
-        const pullRequests = branches.filter((run) => run.pullRequest);
 
-        if (!pullRequests.length) {
+        if (pullRequests.$failed) {
+            return <div>Error: {pullRequests.$failed}</div>;
+        }
+
+        if (!pullRequests.$pending && !pullRequests.length) {
             return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
@@ -104,8 +92,9 @@ export class PullRequests extends Component {
         return (
             <main>
                 <article>
+                    {pullRequests.$pending && <PageLoading />}
                     <Table className="pr-table fixed" headers={headers}>
-                        { pullRequests.map((run, index) => {
+                        {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
                               key={index}
@@ -113,6 +102,11 @@ export class PullRequests extends Component {
                             />);
                         })}
                     </Table>
+                    {pullRequests.$pager &&
+                        <button disabled={pullRequests.$pending || !pullRequests.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pullRequests.$pager.fetchMore()}>
+                            {pullRequests.$pending ? 'Loading...' : 'Show More'}
+                        </button>
+                    }
                 </article>
             </main>
         );
@@ -126,10 +120,11 @@ PullRequests.contextTypes = {
 };
 
 PullRequests.propTypes = {
-    branches: array,
-    fetchBranchesIfNeeded: func,
+    pullRequests: array,
+    clearPRData: func,
+    fetchPullRequests: func,
 };
 
-const selectors = createSelector([branchSelector], (branches) => ({ branches }));
+const selectors = createSelector([pullRequestSelector], (pullRequests) => ({ pullRequests }));
 
 export default connect(selectors, actions)(PullRequests);

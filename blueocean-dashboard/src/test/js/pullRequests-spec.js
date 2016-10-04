@@ -9,7 +9,7 @@ const pr = branches.filter((run) => run.pullRequest);
 
 describe("PullRequests should render", () => {
   it("does renders the PullRequests with data", () => {
-    const wrapper =  shallow(<PullRequests branches={branches} />);
+    const wrapper =  shallow(<PullRequests pullRequests={pr} />);
     // does data renders?
     assert.equal(wrapper.find('PullRequest').length, pr.length);
     const table = wrapper.find('Table').node;
@@ -20,9 +20,9 @@ describe("PullRequests should render", () => {
 });
 
 describe("PullRequests should not render", () => {
-  it("does not renders the PullRequests without data", () => {
+  it("does render NotSupported the PullRequests without data", () => {
     const wrapper =  shallow(<PullRequests />);
-    assert.isNull(wrapper.node);
+    assert.equal(wrapper.find('NotSupported').length, 1);
   });
 
 });

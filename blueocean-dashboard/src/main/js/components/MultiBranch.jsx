@@ -8,8 +8,10 @@ import {
     createSelector,
     connect,
 } from '../redux';
+import PageLoading from './PageLoading';
+import { pipelineBranchesUnsupported } from './PipelinePage';
 
-const { object, array, func, string } = PropTypes;
+const { object, array, func, string, any } = PropTypes;
 
 const EmptyState = ({ repoName }) => (
     <main>
@@ -48,48 +50,32 @@ EmptyState.propTypes = {
 };
 
 export class MultiBranch extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            unsupportedJob: false,
-        };
-    }
-
     componentWillMount() {
-        if (this.context.config && this.context.params) {
-            const {
-                config = {},
-                params: {
-                    pipeline: pipelineName,
-                },
-                pipeline,
-            } = this.context;
-
-            if (!pipeline.branchNames || !pipeline.branchNames.length) {
-                this.setState({
-                    unsupportedJob: true,
-                });
-                return;
-            }
-
-            config.pipeline = pipelineName;
-            this.props.fetchBranchesIfNeeded(config);
+        if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
+            this.props.fetchBranches({
+                organizationName: this.context.params.organization,
+                pipelineName: this.context.params.pipeline,
+            });
         }
     }
+
+    componentWillUnmount() {
+        this.props.clearBranchData();
+    }
+
 
     render() {
         const { branches } = this.props;
 
-        if (this.state.unsupportedJob) {
+        if (!branches || (!branches.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
             return (<NotSupported />);
         }
 
-        // early out
-        if (!branches) {
-            return null;
+        if (branches.$failed) {
+            return <div>ERROR: {branches.$failed}</div>;
         }
 
-        if (!branches.length) {
+        if (!branches.$pending && !branches.length) {
             return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
@@ -106,10 +92,11 @@ export class MultiBranch extends Component {
         return (
             <main>
                 <article>
+                    {branches.$pending && <PageLoading />}
                     <Table className="multibranch-table fixed"
                       headers={headers}
                     >
-                        {branches.map((run, index) => {
+                        {branches.length > 0 && branches.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<Branches
                               key={index}
@@ -118,7 +105,13 @@ export class MultiBranch extends Component {
                         })
                         }
                     </Table>
+                    {branches.$pager &&
+                        <button disabled={branches.$pending || !branches.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => branches.$pager.fetchMore()}>
+                             {branches.$pending ? 'Loading...' : 'Show More'}
+                        </button>
+                    }
                 </article>
+                {this.props.children}
             </main>
         );
     }
@@ -132,7 +125,9 @@ MultiBranch.contextTypes = {
 
 MultiBranch.propTypes = {
     branches: array,
-    fetchBranchesIfNeeded: func,
+    fetchBranches: func,
+    clearBranchData: func,
+    children: any,
 };
 
 const selectors = createSelector([branchSelector], (branches) => ({ branches }));

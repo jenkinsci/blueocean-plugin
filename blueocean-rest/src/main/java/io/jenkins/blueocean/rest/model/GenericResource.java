@@ -15,11 +15,13 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.GENERIC_RESOURCE;
+
 /**
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
-@Capability("io.jenkins.blueocean.rest.model.GenericResource")
+@Capability(GENERIC_RESOURCE)
 public class GenericResource<T> extends Resource {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericResource.class);
 

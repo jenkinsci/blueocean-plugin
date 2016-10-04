@@ -28,6 +28,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @InterceptorAnnotation(PagedResponse.Processor.class)
 public @interface PagedResponse {
     class Processor extends Interceptor {
+        private static final int DEFAULT_LIMIT=100;
         @Override
         public Object invoke(StaplerRequest request, StaplerResponse response, Object instance, Object[] arguments)
             throws IllegalAccessException, InvocationTargetException, ServletException {
@@ -44,11 +45,18 @@ public @interface PagedResponse {
                     int start = (req.getParameter("start") != null) ? Integer.parseInt(req.getParameter("start")) : -1;
                     int limit = (req.getParameter("limit") != null) ? Integer.parseInt(req.getParameter("limit")) : -1;
 
+                    if(start == -1){
+                        start = 0;
+                    }
+
+                    if(limit == -1){
+                        limit = DEFAULT_LIMIT;
+                    }
                     Object[] page;
                     if (start >= 0 && limit >= 0) {
                         page = Iterators.toArray(resp.iterator(start, limit), Object.class);
-                        // TODO: this is still a toy just to show the concept
-                        rsp.setHeader("Link", "<" + req.getRequestURI() + "&start=" + (start + limit) + ">; rel=\"next\"");
+                        String separator = (req.getQueryString() != null) ? "&" : "?";
+                        rsp.setHeader("Link", "<" + req.getRequestURIWithQueryString() + separator + "start=" + (start + limit) + "&limit="+limit + ">; rel=\"next\"");
                     } else {
                         page = Iterators.toArray(resp.iterator(), Object.class);
                     }
@@ -56,5 +64,7 @@ public @interface PagedResponse {
                 }
             };
         }
+
+
     }
 }

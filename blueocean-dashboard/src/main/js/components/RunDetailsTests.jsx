@@ -3,6 +3,7 @@ import { EmptyStateView } from '@jenkins-cd/design-language';
 import { actions as selectorActions, testResults as testResultsSelector,
     connect, createSelector } from '../redux';
 import Extensions, { dataType } from '@jenkins-cd/js-extensions';
+import PageLoading from './PageLoading';
 
 const EmptyState = () => (
     <EmptyStateView tightSpacing>
@@ -38,11 +39,11 @@ export class RunDetailsTests extends Component {
     render() {
         const { testResults } = this.props;
 
-        if (!testResults) {
-            return null;
+        if (!testResults || testResults.$pending) {
+            return <PageLoading />;
         }
-
-        if (!testResults.suites) {
+        
+        if (testResults.$failed) {
             return <EmptyState />;
         }
 
