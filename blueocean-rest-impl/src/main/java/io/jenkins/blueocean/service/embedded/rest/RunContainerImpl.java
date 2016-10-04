@@ -57,12 +57,12 @@ public class RunContainerImpl extends BlueRunContainer {
             }
             if (run == null) {
                 // JENKINS-38540 - To make this consistent with the activity API, check the queue
-                String queuedRun = findRunInQueue(name);
-                if (queuedRun != null) {
+                String queueId = findQueueIdForRunId(name);
+                if (queueId != null) {
                     try {
                         StaplerResponse rsp = Stapler.getCurrentResponse();
                         // Send a 302, temporary redirect. substring to fix double slash
-                        rsp.sendRedirect(Links.ensureTrailingSlash(Jenkins.getInstance().getRootUrl() + pipeline.getLink().toString().substring(1) + "queue/" + queuedRun));
+                        rsp.sendRedirect(Links.ensureTrailingSlash(Jenkins.getInstance().getRootUrl() + pipeline.getLink().toString().substring(1) + "queue/" + queueId));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -81,11 +81,13 @@ public class RunContainerImpl extends BlueRunContainer {
     }
 
     /**
-     * Finds a run in the queue based on the expectedBuildNumber, returns the queue id if found
+     * Finds a run in the queue based on the expectedBuildNumber
+     * @param runId a potentially invalid run id
+     * @return a queue id if found, null if not
      */
-    private String findRunInQueue(String name) {
+    private String findQueueIdForRunId(String runId) {
         try {
-            int expectedBuildNumber = Integer.parseInt(name);
+            int expectedBuildNumber = Integer.parseInt(runId);
             for (BlueQueueItem i : this.pipeline.getQueue()) {
                 if (expectedBuildNumber == i.getExpectedBuildNumber()) {
                     return i.getId();
@@ -93,6 +95,7 @@ public class RunContainerImpl extends BlueRunContainer {
             }
         } catch(NumberFormatException e) {
             // not an expectedBuildNumber
+            return null;
         }
         return null;
     }

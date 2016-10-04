@@ -40,7 +40,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
             }
         }
         // JENKINS-38540 - To make this consistent with the activity API, check the runs, too
-        String runId = findQueueInRuns(name);
+        String runId = findRunIdFromQueueId(name);
         if (runId != null) {
             try {
                 StaplerResponse rsp = Stapler.getCurrentResponse();
@@ -56,19 +56,22 @@ public class QueueContainerImpl extends BlueQueueContainer {
 
     /**
      * Finds a queue in the runs based on the queueId
+     * @param queueId incoming queue id, possibly invalid
+     * @return a run id or null if not found
      */
-    private String findQueueInRuns(String name) {
+    private String findRunIdFromQueueId(String queueId) {
         try {
-            long queueId = Long.parseLong(name);
+            long id = Long.parseLong(queueId);
             for (BlueRun run : this.pipeline.getRuns()) {
                 if (run instanceof AbstractRunImpl<?>) {
-                    if (queueId == ((AbstractRunImpl)run).getQueueId()) {
+                    if (id == ((AbstractRunImpl<?>)run).getQueueId()) {
                         return run.getId();
                     }
                 }
             }
         } catch (NumberFormatException e) {
             // not a queue id!
+            return null;
         }
         return null;
     }
