@@ -4,7 +4,7 @@ import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 
-const { object, func, string, bool } = PropTypes;
+const { object, func, string, bool, shape } = PropTypes;
 
 export default class Node extends Component {
     constructor(props) {
@@ -87,7 +87,7 @@ export default class Node extends Component {
     }
 
     render() {
-        const { logs, nodesBaseUrl, fetchLog, followAlong } = this.props;
+        const { logs, nodesBaseUrl, fetchLog, followAlong, location, router } = this.props;
         const node = this.expandAnchor(this.props);
         // Early out
         if (!node || !fetchLog) {
@@ -113,7 +113,14 @@ export default class Node extends Component {
             }
             this.setState({ isFocused: true });
         };
-        const removeFocus = () => this.setState({ isFocused: false });
+        const removeFocus = () => {
+            this.setState({ isFocused: false });
+            // we need to remove the hash on collapse otherwise the result item will not be collapsed
+            if (location.hash) {
+                delete location.hash;
+                router.push(location);
+            }
+        };
         const runResult = resultRun.toLowerCase();
         const scrollToBottom =
             resultRun.toLowerCase() === 'failure'
@@ -169,4 +176,5 @@ Node.propTypes = {
     location: object,
     fetchLog: func,
     nodesBaseUrl: string,
+    router: shape,
 };
