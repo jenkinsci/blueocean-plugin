@@ -151,7 +151,7 @@ export class RunDetailsPipeline extends Component {
             // we turn on refetch so we always fetch a new Node result
             const refetch = true;
             switch (jenkinsEvent) {
-                case 'pipeline_step':
+            case 'pipeline_step':
                 {
                     // we are not using an early out for the events since we want to refresh the node if we finished
                     if (this.state.followAlong) { // if we do it means we want karaoke
@@ -175,7 +175,7 @@ export class RunDetailsPipeline extends Component {
                     }
                     break;
                 }
-                case 'pipeline_end':
+            case 'pipeline_end':
                 {
                     // get all steps from the current run, we use the nodeKey and remove the last bit
                     const keyArray = this.mergedConfig.nodeKey.split('/');
@@ -205,7 +205,7 @@ export class RunDetailsPipeline extends Component {
                     fetchNodes({ ...this.mergedConfig, refetch });
                     break;
                 }
-                default:
+            default:
                 {
                     // //console.log(event);
                 }
@@ -362,18 +362,18 @@ export class RunDetailsPipeline extends Component {
         const items = [];
         if (hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView) {
             items.push(<LogToolbar
-                fileName={logGeneral.fileName}
-                url={logGeneral.url}
-                title={title}
+              fileName={logGeneral.fileName}
+              url={logGeneral.url}
+              title={title}
             />);
         }
 
         if (hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView) {
             items.push(<Steps
-                nodeInformation={currentSteps}
-                followAlong={followAlong}
-                router={router}
-                {...this.props}
+              nodeInformation={currentSteps}
+              followAlong={followAlong}
+              router={router}
+              {...this.props}
             />);
         }
 
@@ -392,22 +392,22 @@ export class RunDetailsPipeline extends Component {
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
-                    extensionPoint="jenkins.pipeline.run.result"
-                    selectedStage={this.mergedConfig.nodeReducer}
-                    callback={afterClick}
-                    nodes={nodes[nodeKey].model}
-                    pipelineName={name}
-                    branchName={isMultiBranch ? params.branch : undefined}
-                    runId={run.id}
-                    run={run}
+                  extensionPoint="jenkins.pipeline.run.result"
+                  selectedStage={this.mergedConfig.nodeReducer}
+                  callback={afterClick}
+                  nodes={nodes[nodeKey].model}
+                  pipelineName={name}
+                  branchName={isMultiBranch ? params.branch : undefined}
+                  runId={run.id}
+                  run={run}
                 />
                 }
                 <ReactCSSTransitionGroup
-                    transitionName="stepAnimation"
-                    transitionAppear
-                    transitionAppearTimeout={transitionDuration}
-                    transitionEnterTimeout={transitionDuration}
-                    transitionLeaveTimeout={transitionDuration}
+                  transitionName="stepAnimation"
+                  transitionAppear
+                  transitionAppearTimeout={transitionDuration}
+                  transitionEnterTimeout={transitionDuration}
+                  transitionLeaveTimeout={transitionDuration}
                 >
                     <div key={this.mergedConfig.nodeReducer.id}>
                         {items}
