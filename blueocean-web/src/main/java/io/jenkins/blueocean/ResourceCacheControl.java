@@ -36,6 +36,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +94,8 @@ public final class ResourceCacheControl implements Filter {
         // it matches what we're looking for.
         if (request instanceof HttpServletRequest) {
             if (isCacheableResourceRequest((HttpServletRequest)request)) {
+                HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+
                 //
                 // Set the expiry to one year.
                 //
@@ -104,7 +107,19 @@ public final class ResourceCacheControl implements Filter {
                 // in which case the local cache is fully used (no If-Modified-Since requests for
                 // non-stale resources).
                 //
-                ((HttpServletResponse)response).setHeader("Cache-Control", "public, max-age=31536000");
+                httpServletResponse.setHeader("Cache-Control", "public, max-age=31536000");
+                response = new HttpServletResponseWrapper(httpServletResponse) {
+                    @Override
+                    public void setHeader(String name, String value) {
+                        // Block the setting of the legacy HTTP/1.0 "Expires" header.
+                        // Note that, strictly speaking, this should not be required because
+                        // the HTTP spec dictates that the Cache-Control header takes priority.
+                        // Lets eliminate it anyway in case a browser/intermediary doesn't comply.
+                        if (!name.equalsIgnoreCase("Expires")) {
+                            super.setHeader(name, value);
+                        }
+                    }
+                };
             }
         }
         // continue to execute the filer chain as normal
