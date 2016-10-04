@@ -47,6 +47,9 @@ class RunDetails extends Component {
     }
 
     _fetchRun(props, storePreviousRoute) {
+        if (props.isMultiBranch === null) {
+            return; // multiple redux selectors haven't completed
+        }
         if (this.context.config && this.context.params) {
             props.fetchRun({
                 organization: props.params.organization,
