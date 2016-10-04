@@ -355,6 +355,7 @@ export class RunDetailsPipeline extends Component {
             scrollToBottom,
             ...this.props,
             ...this.state,
+            url: logGeneral.url,
             mergedConfig: this.mergedConfig,
         };
 
