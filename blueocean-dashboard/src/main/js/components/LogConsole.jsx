@@ -173,4 +173,3 @@ LogConsole.propTypes = {
 };
 
 export default scrollHelper(LogConsole);
-
