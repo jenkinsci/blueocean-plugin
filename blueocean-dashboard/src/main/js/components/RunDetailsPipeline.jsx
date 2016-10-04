@@ -225,7 +225,7 @@ export class RunDetailsPipeline extends Component {
      */
     isParallel(nodeInfo) {
         // in case we have edges arrays we compare the first edge, if not we know we are not in parallel mode
-        return this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
+        return this.mergedConfig.nodeReducer.edges && this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
             this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
     }
 
@@ -374,7 +374,13 @@ export class RunDetailsPipeline extends Component {
                   nodeInformation={currentSteps}
                   followAlong={followAlong}
                   router={router}
-                  {...this.props}
+                  {...{
+                      scrollToBottom,
+                      ...this.props,
+                      ...this.state,
+                      url: logGeneral.url,
+                      mergedConfig: this.mergedConfig,
+                  }}
                 />
                 }
                 { isPipelineQueued && supportsNode && <QueuedState /> }
@@ -388,6 +394,7 @@ export class RunDetailsPipeline extends Component {
                         scrollToBottom,
                         ...this.props,
                         ...this.state,
+                        url: logGeneral.url,
                         mergedConfig: this.mergedConfig,
                     }
                   }

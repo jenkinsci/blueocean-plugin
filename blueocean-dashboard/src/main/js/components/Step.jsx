@@ -4,8 +4,6 @@ import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 
-const { object, func, string, bool, shape } = PropTypes;
-
 export default class Node extends Component {
     constructor(props) {
         super(props);
@@ -87,7 +85,7 @@ export default class Node extends Component {
     }
 
     render() {
-        const { logs, nodesBaseUrl, fetchLog, followAlong, location, router } = this.props;
+        const { logs, nodesBaseUrl, fetchLog, followAlong, url, location, router } = this.props;
         const node = this.expandAnchor(this.props);
         // Early out
         if (!node || !fetchLog) {
@@ -128,6 +126,7 @@ export default class Node extends Component {
         ;
         const logProps = {
             ...this.props,
+            url,
             scrollToBottom,
             key: id,
             prefix: `step-${id}-`,
@@ -169,6 +168,7 @@ export default class Node extends Component {
     }
 }
 
+const { object, func, string, bool, shape } = PropTypes;
 Node.propTypes = {
     node: object.isRequired,
     followAlong: bool,
@@ -177,4 +177,5 @@ Node.propTypes = {
     fetchLog: func,
     nodesBaseUrl: string,
     router: shape,
+    url: string,
 };
