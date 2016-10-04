@@ -35,9 +35,9 @@
       }
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.26-beta-1",
-      "from": "@jenkins-cd/js-extensions@0.0.26-beta-1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.26-beta-1.tgz"
+      "version": "0.0.27",
+      "from": "@jenkins-cd/js-extensions@0.0.27",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.27.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",

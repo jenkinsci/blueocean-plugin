@@ -35,8 +35,8 @@
       }
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.26-beta-1",
-      "from": "@jenkins-cd/js-extensions@0.0.26-beta-1"
+      "version": "0.0.27",
+      "from": "@jenkins-cd/js-extensions@0.0.27"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
