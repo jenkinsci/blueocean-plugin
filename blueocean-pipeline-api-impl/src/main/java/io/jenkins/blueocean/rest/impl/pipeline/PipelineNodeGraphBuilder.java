@@ -18,7 +18,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +33,7 @@ import static io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil.isStage;
  * Filters {@link FlowGraphTable} to BlueOcean specific model representing DAG like graph objects
  *
  * @author Vivek Pandey
+ * @deprecated Use {@link PipelineNodeGraphVisitor}
  */
 public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
 
@@ -282,11 +282,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
 
     @Override
     public List<FlowNodeWrapper> getPipelineNodes() {
-        return null;
-    }
-
-    public List<BluePipelineNode> getPipelineNodes(Link parentLink) {
-        List<BluePipelineNode> nodes = new ArrayList<>();
+        List<FlowNodeWrapper> nodes = new ArrayList<>();
         for (FlowNode n : parentToChildrenMap.keySet()) {
             NodeRunStatus status = nodeStatusMap.get(n);
 
@@ -303,7 +299,18 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
                 durationInMillis = System.currentTimeMillis()-TimingAction.getStartTime(n);
             }
             FlowNodeWrapper wrapper = new FlowNodeWrapper(n, status, new TimingInfo(durationInMillis,0,startTime));
-            nodes.add(new PipelineNodeImpl(wrapper, parentLink, run));
+            for(FlowNode c: parentToChildrenMap.get(n)){
+                wrapper.addEdge(c.getId());
+            }
+            nodes.add(wrapper);
+        }
+        return nodes;
+    }
+
+    public List<BluePipelineNode> getPipelineNodes(Link parentLink) {
+        List<BluePipelineNode> nodes = new ArrayList<>();
+        for (FlowNodeWrapper n : getPipelineNodes()) {
+            nodes.add(new PipelineNodeImpl(n, parentLink, run));
         }
         return nodes;
     }
@@ -327,25 +334,78 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
 
     @Override
     public List<BluePipelineStep> getPipelineNodeSteps(Link parent) {
-        return null;
+        return getPipelineNodeSteps(null, parent);
     }
 
     @Override
     public BluePipelineStep getPipelineNodeStep(String id, Link parent) {
+        for(BluePipelineStep step: getPipelineNodeSteps(parent)){
+            if(step.getId().equals(id)){
+                return step;
+            }
+        }
         return null;
     }
 
 
     @Override
-    public List<BluePipelineNode> union(List<FlowNodeWrapper> that, Link parent) {
-        return null;
+    public List<BluePipelineNode> union(List<FlowNodeWrapper> futureNodes, Link parentLink) {
+
+        List<FlowNodeWrapper> currentNodes = getPipelineNodes();
+
+        int currentNodeSize = currentNodes.size();
+        if (currentNodeSize < futureNodes.size()) {
+            for (int i = currentNodeSize; i < futureNodes.size(); i++) {
+
+                FlowNodeWrapper futureNode = futureNodes.get(i);
+
+                // Add the last successful pipeline's first node to the edge of current node's last node
+                if (currentNodeSize> 0 && i == currentNodeSize) {
+                    FlowNodeWrapper latestNode = currentNodes.get(currentNodeSize - 1);
+                    if (isStage(latestNode.getNode())) {
+                        addChild(latestNode.getNode(), futureNode.getNode());
+                    } else if (isParallelBranch(latestNode.getNode())) {
+                        /**
+                         * If its a parallel node, find all its siblings and add the next node as
+                         * edge (if not already present)
+                         */
+                        //parallel node has at most one paraent
+                        FlowNode parent = getParentStageOfBranch(latestNode.getNode());
+                        if (parent != null) {
+                            List<FlowNode> children = parentToChildrenMap.get(parent);
+                            for (FlowNode c : children) {
+                                // Add next node to the parallel node's edge
+                                if (isParallelBranch(c)) {
+                                    for(FlowNodeWrapper f: currentNodes){
+                                        if(f.getNode().equals(c)){
+                                            f.addEdge(futureNode.getId());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                FlowNodeWrapper n = new FlowNodeWrapper(futureNode.getNode(),
+                    new NodeRunStatus(null,null),
+                    new TimingInfo());
+                n.addEdges(futureNode.edges);
+                n.addParents(futureNode.getParents());
+                currentNodes.add(n);
+            }
+        }
+        List<BluePipelineNode> newNodes = new ArrayList<>();
+        for(FlowNodeWrapper n: currentNodes){
+            newNodes.add(new PipelineNodeImpl(n,parentLink,run));
+        }
+        return newNodes;
     }
 
     public List<FlowNode> getChildren(FlowNode parent){
         return parentToChildrenMap.get(parent);
     }
 
-    @Nullable
     public long getDurationInMillis(FlowNode node){
         long startTime = TimingAction.getStartTime(node);
         if( startTime == 0){
@@ -388,7 +448,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
                 return TimingAction.getStartTime(sortedNodes.get(i+1)) - startTime;
             }
         }
-        return run.getExecution().isComplete()
+        return run.getExecution()!= null && run.getExecution().isComplete()
             ? (run.getDuration() + run.getStartTimeInMillis()) - startTime
             : System.currentTimeMillis() - startTime;
     }
