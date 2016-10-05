@@ -24,7 +24,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     final FlowNodeWrapper node;
     private final List<Edge> edges;
     private final Long durationInMillis;
-    private final PipelineNodeGraphBuilder.NodeRunStatus status;
+    private final NodeRunStatus status;
     private final Link self;
     private final WorkflowRun run;
 

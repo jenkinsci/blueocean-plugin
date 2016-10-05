@@ -139,7 +139,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             parallelStartNode, branchStartNode, branchEnd, parallelEnd);
 
         FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode,
-            new PipelineNodeGraphBuilder.NodeRunStatus(status), times);
+            new NodeRunStatus(status), times);
 
         if(nextStage!=null) {
             branch.addEdge(nextStage.getId());
@@ -179,7 +179,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
 
         FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
-            new PipelineNodeGraphBuilder.NodeRunStatus(status), times);
+            new NodeRunStatus(status), times);
 
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);
@@ -226,7 +226,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 status = GenericStatus.NOT_EXECUTED;
             }
 
-            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, new PipelineNodeGraphBuilder.NodeRunStatus(status), times);
+            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, new NodeRunStatus(status), times);
             nodeMap.put(node.getId(), node);
         }
     }
@@ -321,7 +321,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     }
                 }
                 FlowNodeWrapper n = new FlowNodeWrapper(futureNode.getNode(),
-                    new PipelineNodeGraphBuilder.NodeRunStatus(null,null),
+                    new NodeRunStatus(null,null),
                     new TimingInfo());
                 n.addEdges(futureNode.edges);
                 n.addParents(futureNode.getParents());

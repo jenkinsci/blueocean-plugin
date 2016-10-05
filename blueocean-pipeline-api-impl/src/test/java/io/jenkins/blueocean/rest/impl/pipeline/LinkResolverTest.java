@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Project;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
@@ -123,9 +124,9 @@ public class LinkResolverTest extends PipelineBaseTest {
                 b1.getId(),parallelNodes.get(0).getId()),
                 LinkResolver.resolveLink(parallelNodes.get(0)).getHref());
 
-            PipelineNodeGraphBuilder2 graphBuilder = new PipelineNodeGraphBuilder2(b1);
+            NodeGraphBuilder graphBuilder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
 
-            List<BluePipelineStep> steps = graphBuilder.getPipelineNodeSteps(null);
+            List<BluePipelineStep> steps = graphBuilder.getPipelineNodeSteps(new Link(String.format("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/%s/steps/", b1.getId())));
 
             Assert.assertEquals(String.format("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/%s/steps/%s/",
                 b1.getId(),steps.get(0).getId()),

@@ -16,7 +16,7 @@ public class FlowNodeWrapper {
     public enum NodeType {STAGE, PARALLEL, STEP, UNKNWON}
 
     private final FlowNode node;
-    private final PipelineNodeGraphBuilder.NodeRunStatus status;
+    private final NodeRunStatus status;
     private final TimingInfo timingInfo;
     public final List<String> edges = new ArrayList<>();
     public final List<FlowNodeWrapper> steps = new ArrayList<>();
@@ -25,7 +25,7 @@ public class FlowNodeWrapper {
     private List<FlowNodeWrapper> parents = new ArrayList<>();
 
 
-    public FlowNodeWrapper(FlowNode node, PipelineNodeGraphBuilder.NodeRunStatus status, TimingInfo timingInfo) {
+    public FlowNodeWrapper(FlowNode node, NodeRunStatus status, TimingInfo timingInfo) {
         this.node = node;
         this.status = status;
         this.timingInfo = timingInfo;
@@ -40,7 +40,7 @@ public class FlowNodeWrapper {
         }
     }
 
-    public PipelineNodeGraphBuilder.NodeRunStatus getStatus(){
+    public NodeRunStatus getStatus(){
         return status;
     }
 

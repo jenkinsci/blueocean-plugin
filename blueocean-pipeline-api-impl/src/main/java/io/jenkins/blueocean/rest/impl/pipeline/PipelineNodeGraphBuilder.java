@@ -15,7 +15,6 @@ import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowGraphWalker;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.GenericStatus;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 
@@ -42,7 +41,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
 
     private final WorkflowRun run;
     private final Map<FlowNode, List<FlowNode>> parentToChildrenMap = new LinkedHashMap<>();
-    private final Map<FlowNode, PipelineNodeGraphBuilder.NodeRunStatus> nodeStatusMap = new LinkedHashMap<>();
+    private final Map<FlowNode, NodeRunStatus> nodeStatusMap = new LinkedHashMap<>();
 
 
     public PipelineNodeGraphBuilder(WorkflowRun run) {
@@ -106,10 +105,10 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
                         endNode = PipelineNodeUtil.getEndNode(sortedNodes,node);
                     }
                     if(endNode != null){
-                        nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));
+                        nodeStatusMap.put(node, new NodeRunStatus(endNode));
                     }
                 }else if(previousStage!=null){
-                    nodeStatusMap.put(previousStage, new PipelineNodeGraphBuilder.NodeRunStatus(sortedNodes.get(count - 1)));
+                    nodeStatusMap.put(previousStage, new NodeRunStatus(sortedNodes.get(count - 1)));
                 }
                 previousStage = node;
             } else if (isParallelBranch(node) && !nestedInParallel) { //branch but not nested ones
@@ -119,10 +118,10 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
                 }
                 FlowNode endNode = PipelineNodeUtil.getStepEndNode(sortedNodes,node);
                 if (endNode != null) {
-                    nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));
+                    nodeStatusMap.put(node, new NodeRunStatus(endNode));
                 }else{
                     //It's still running, report it as state: running and result: unknown
-                    nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING));
+                    nodeStatusMap.put(node, new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING));
                 }
                 previousBranch = node;
             }
@@ -130,7 +129,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
         }
         int size = parentToChildrenMap.keySet().size();
         if (size > 0) {
-            PipelineNodeGraphBuilder.NodeRunStatus runStatus = PipelineNodeUtil.getStatus(run);
+            NodeRunStatus runStatus = PipelineNodeUtil.getStatus(run);
             FlowNode lastNode = getLastStageNode();
             nodeStatusMap.put(lastNode, runStatus);
         }
@@ -193,7 +192,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
             for(int j=i+1; j < sortedNodes.size(); j++){
                 FlowNode c = sortedNodes.get(j);
                 if(c.equals(end)){
-                    nodeStatusMap.put(p, new PipelineNodeGraphBuilder.NodeRunStatus(end));
+                    nodeStatusMap.put(p, new NodeRunStatus(end));
                     break;
                 }
                 if(isParallelBranch(c)){
@@ -209,7 +208,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
 
                     FlowNode endNode = PipelineNodeUtil.getStepEndNode(sortedNodes,c);
                     if (endNode != null) {
-                        nodeStatusMap.put(c, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));
+                        nodeStatusMap.put(c, new NodeRunStatus(endNode));
                     }
                 }
             }
@@ -289,10 +288,10 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
     public List<BluePipelineNode> getPipelineNodes(Link parentLink) {
         List<BluePipelineNode> nodes = new ArrayList<>();
         for (FlowNode n : parentToChildrenMap.keySet()) {
-            PipelineNodeGraphBuilder.NodeRunStatus status = nodeStatusMap.get(n);
+            NodeRunStatus status = nodeStatusMap.get(n);
 
             if (!isExecuted(n)) {
-                status = new PipelineNodeGraphBuilder.NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED);
+                status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED);
             } else if (status == null) {
                 status = getEffectiveBranchStatus(n);
             }
@@ -453,7 +452,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
         boolean atLeastOneBranchisUnknown = false;
         for (FlowNode c : children) {
             if (isParallelBranch(c)) {
-                PipelineNodeGraphBuilder.NodeRunStatus s = nodeStatusMap.get(c);
+                NodeRunStatus s = nodeStatusMap.get(c);
                 if (s == null) {
                     continue;
                 }
@@ -478,7 +477,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
             result = BlueRun.BlueRunResult.UNKNOWN;
         }
 
-        return new PipelineNodeGraphBuilder.NodeRunStatus(result, state);
+        return new NodeRunStatus(result, state);
     }
 
     private boolean isExecuted(FlowNode node) {
@@ -503,80 +502,6 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
         }
     }
 
-    public static class NodeRunStatus {
-        private final BlueRun.BlueRunResult result;
-        private final BlueRun.BlueRunState state;
-
-        public NodeRunStatus(FlowNode endNode) {
-            if (endNode.getError() != null) {
-                this.result = BlueRun.BlueRunResult.FAILURE;
-                this.state = endNode.isRunning() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
-            }else if (endNode.isRunning()) {
-                this.result = BlueRun.BlueRunResult.UNKNOWN;
-                this.state = BlueRun.BlueRunState.RUNNING;
-            } else if (NotExecutedNodeAction.isExecuted(endNode)) {
-                this.result = PipelineNodeUtil.getStatus(endNode.getError());
-                this.state = BlueRun.BlueRunState.FINISHED;
-            } else {
-                this.result = BlueRun.BlueRunResult.NOT_BUILT;
-                this.state = BlueRun.BlueRunState.QUEUED;
-            }
-        }
-
-        public NodeRunStatus(BlueRun.BlueRunResult result, BlueRun.BlueRunState state) {
-            this.result = result;
-            this.state = state;
-        }
-
-        public BlueRun.BlueRunResult getResult() {
-            return result;
-        }
-
-        public BlueRun.BlueRunState getState() {
-            return state;
-        }
-        public NodeRunStatus(GenericStatus status){
-            if (status == null) {
-                this.result = BlueRun.BlueRunResult.NOT_BUILT;
-                this.state = BlueRun.BlueRunState.QUEUED;
-                return;
-            }
-            switch (status) {
-                case PAUSED_PENDING_INPUT:
-                    this.result =  BlueRun.BlueRunResult.UNKNOWN;
-                    this.state =  BlueRun.BlueRunState.PAUSED;
-                    break;
-                case ABORTED:
-                    this.result =  BlueRun.BlueRunResult.ABORTED;
-                    this.state =  BlueRun.BlueRunState.FINISHED;
-                    break;
-                case FAILURE:
-                    this.result =  BlueRun.BlueRunResult.FAILURE;
-                    this.state =  BlueRun.BlueRunState.FINISHED;
-                    break;
-                case IN_PROGRESS:
-                    this.result =  BlueRun.BlueRunResult.UNKNOWN;
-                    this.state =  BlueRun.BlueRunState.RUNNING;
-                    break;
-                case UNSTABLE:
-                    this.result =  BlueRun.BlueRunResult.UNSTABLE;
-                    this.state =  BlueRun.BlueRunState.FINISHED;
-                    break;
-                case SUCCESS:
-                    this.result =  BlueRun.BlueRunResult.SUCCESS;
-                    this.state =  BlueRun.BlueRunState.FINISHED;
-                    break;
-                case NOT_EXECUTED:
-                    this.result = BlueRun.BlueRunResult.NOT_BUILT;
-                    this.state = BlueRun.BlueRunState.QUEUED;
-                    break;
-                default:
-                    // Shouldn't happen, above includes all statuses
-                    this.result = BlueRun.BlueRunResult.NOT_BUILT;
-                    this.state = BlueRun.BlueRunState.QUEUED;
-            }
-        }
-    }
 
     public static class InactiveFlowNodeWrapper extends FlowNode {
 

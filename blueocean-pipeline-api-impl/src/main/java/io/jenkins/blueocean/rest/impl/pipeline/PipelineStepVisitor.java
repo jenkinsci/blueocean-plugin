@@ -38,16 +38,12 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     private final Map<String,FlowNodeWrapper> stepMap = new HashMap<>();
 
     private boolean stepCollectionCompleted = false;
-    private boolean stepCollectionStarted = false;
-
-    private FlowNode branchEnd;
 
     private boolean inStageScope;
 
     public PipelineStepVisitor(WorkflowRun run, @Nullable final FlowNode node) {
         this.node = node;
         this.run = run;
-        this.stepCollectionStarted = node == null; //if there is no node all steps to be collected
     }
 
     @Override
@@ -57,21 +53,11 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
         }
         if(node != null && branchStartNode.equals(node)){
             stepCollectionCompleted = true;
-//            stepCollectionStarted = false;
         }else if(node != null && PipelineNodeUtil.isParallelBranch(node) && !branchStartNode.equals(node)){
             steps.clear();
         }
-        branchEnd=null;
     }
 
-//    @Override
-//    public void parallelBranchEnd(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchEndNode, @Nonnull ForkScanner scanner) {
-//        this.branchEnd = branchEndNode;
-//        if(node != null && branchEndNode instanceof StepEndNode && ((StepEndNode)branchEndNode).getStartNode().equals(node)){
-//            this.stepCollectionStarted = true;
-//            this.stepCollectionCompleted = false;
-//        }
-//    }
 
     @Override
     public void chunkEnd(@Nonnull FlowNode endNode, @CheckForNull FlowNode afterChunk, @Nonnull ForkScanner scanner) {
@@ -115,7 +101,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
                 status = GenericStatus.NOT_EXECUTED;
             }
 
-            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, new PipelineNodeGraphBuilder.NodeRunStatus(status), times);
+            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, new NodeRunStatus(status), times);
             steps.push(node);
             stepMap.put(node.getId(), node);
         }
