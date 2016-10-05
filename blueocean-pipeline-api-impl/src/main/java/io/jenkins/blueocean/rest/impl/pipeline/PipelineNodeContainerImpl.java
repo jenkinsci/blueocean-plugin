@@ -35,8 +35,9 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
         if (run.getResult() != Result.SUCCESS
             && job.getLastSuccessfulBuild() != null
             && Integer.valueOf(job.getLastSuccessfulBuild().getId()) < Integer.valueOf(run.getId())) {
-            PipelineNodeGraphBuilder pastBuild = new PipelineNodeGraphBuilder(job.getLastSuccessfulBuild());
-            this.nodes = graphBuilder.union(pastBuild.getPipelineNodes(getLink()), getLink());
+
+            NodeGraphBuilder pastBuildGraph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(job.getLastSuccessfulBuild());
+            this.nodes = graphBuilder.union(pastBuildGraph.getPipelineNodes(), getLink());
         } else {
             this.nodes = graphBuilder.getPipelineNodes(getLink());
         }

@@ -38,50 +38,47 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     private final Map<String,FlowNodeWrapper> stepMap = new HashMap<>();
 
     private boolean stepCollectionCompleted = false;
+    private boolean stepCollectionStarted = false;
+
+    private FlowNode branchEnd;
+
+    private boolean inStageScope;
 
     public PipelineStepVisitor(WorkflowRun run, @Nullable final FlowNode node) {
-        //Get the bound
         this.node = node;
         this.run = run;
-
-
-//
-//        DepthFirstScanner depthFirstScanner = new DepthFirstScanner();
-//        //If blocked scope, get the end node
-//        FlowNode n = depthFirstScanner.findFirstMatch(run.getExecution().getCurrentHeads(), new Predicate<FlowNode>() {
-//            @Override
-//            public boolean apply(@Nullable FlowNode input) {
-//                if(input instanceof StepEndNode && ((StepEndNode)input).getStartNode().equals(node)){
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-//
-//        //If legacy stage, then get the next stage or end of pipeline
-//        n = depthFirstScanner.findFirstMatch(run.getExecution().getCurrentHeads(), new Predicate<FlowNode>() {
-//            @Override
-//            public boolean apply(@Nullable FlowNode input) {
-//                if(PipelineNodeUtil.isStage(input) && input.getId() > ){
-//
-//                }
-//            }
-//        })
-
+        this.stepCollectionStarted = node == null; //if there is no node all steps to be collected
     }
 
     @Override
-    public void parallelBranchEnd(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchEndNode, @Nonnull ForkScanner scanner) {
+    public void parallelBranchStart(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchStartNode, @Nonnull ForkScanner scanner) {
         if(stepCollectionCompleted){ //skip
             return;
         }
-        if(branchEndNode instanceof StepEndNode && ((StepEndNode) branchEndNode).getStartNode().equals(node)){
+        if(node != null && branchStartNode.equals(node)){
             stepCollectionCompleted = true;
-        }else{
-            // if given node is parallel and if its not ours then we clear the previously collected steps
-            if(node != null && PipelineNodeUtil.isParallelBranch(node)) {
-                steps.clear();
-            }
+//            stepCollectionStarted = false;
+        }else if(node != null && PipelineNodeUtil.isParallelBranch(node) && !branchStartNode.equals(node)){
+            steps.clear();
+        }
+        branchEnd=null;
+    }
+
+//    @Override
+//    public void parallelBranchEnd(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchEndNode, @Nonnull ForkScanner scanner) {
+//        this.branchEnd = branchEndNode;
+//        if(node != null && branchEndNode instanceof StepEndNode && ((StepEndNode)branchEndNode).getStartNode().equals(node)){
+//            this.stepCollectionStarted = true;
+//            this.stepCollectionCompleted = false;
+//        }
+//    }
+
+    @Override
+    public void chunkEnd(@Nonnull FlowNode endNode, @CheckForNull FlowNode afterChunk, @Nonnull ForkScanner scanner) {
+        super.chunkEnd(endNode, afterChunk, scanner);
+        if(node!= null && endNode instanceof StepEndNode && ((StepEndNode)endNode).getStartNode().equals(node)){
+            this.stepCollectionCompleted = false;
+            this.inStageScope = true;
         }
     }
 
@@ -93,17 +90,15 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
 
         if(node != null && chunk.getFirstNode().equals(node)){
             stepCollectionCompleted = true;
-        }else{
-            // if given node is a stage and if its not ours then we clear the previously collected steps
-            if(node != null && PipelineNodeUtil.isStage(node)) {
-                steps.clear();
-            }
+            inStageScope = false;
+        }if(node != null && PipelineNodeUtil.isStage(node) && !inStageScope && !chunk.getFirstNode().equals(node)){
+            steps.clear();
         }
     }
 
     @Override
     public void atomNode(@CheckForNull FlowNode before, @Nonnull FlowNode atomNode, @CheckForNull FlowNode after, @Nonnull ForkScanner scan) {
-        if(stepCollectionCompleted){ //no further action if already completed
+        if(stepCollectionCompleted){
             return;
         }
         long pause = PauseAction.getPauseDuration(atomNode);

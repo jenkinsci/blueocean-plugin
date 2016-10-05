@@ -281,6 +281,11 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
         return getPipelineNodes(parentLink);
     }
 
+    @Override
+    public List<FlowNodeWrapper> getPipelineNodes() {
+        return null;
+    }
+
     public List<BluePipelineNode> getPipelineNodes(Link parentLink) {
         List<BluePipelineNode> nodes = new ArrayList<>();
         for (FlowNode n : parentToChildrenMap.keySet()) {
@@ -333,7 +338,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
 
 
     @Override
-    public List<BluePipelineNode> union(List<BluePipelineNode> that, Link parent) {
+    public List<BluePipelineNode> union(List<FlowNodeWrapper> that, Link parent) {
         return null;
     }
 

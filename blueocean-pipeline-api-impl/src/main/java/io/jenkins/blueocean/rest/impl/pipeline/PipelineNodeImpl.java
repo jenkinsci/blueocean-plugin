@@ -21,7 +21,7 @@ import java.util.List;
  * @see FlowNode
  */
 public class PipelineNodeImpl extends BluePipelineNode {
-    private final FlowNodeWrapper node;
+    final FlowNodeWrapper node;
     private final List<Edge> edges;
     private final Long durationInMillis;
     private final PipelineNodeGraphBuilder.NodeRunStatus status;
@@ -49,26 +49,20 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public BlueRun.BlueRunResult getResult() {
-        if(isInactiveNode()){
-            return null;
-        }
         return status.getResult();
     }
 
     @Override
     public BlueRun.BlueRunState getStateObj() {
-        if(isInactiveNode()){
-            return null;
-        }
         return status.getState();
     }
 
     @Override
     public Date getStartTime() {
-        if(isInactiveNode()){
+        long nodeTime = node.getTiming().getStartTimeMillis();
+        if(nodeTime == 0){
             return null;
         }
-        long nodeTime = node.getTiming().getStartTimeMillis();
         return new Date(nodeTime);
     }
 
@@ -131,7 +125,4 @@ public class PipelineNodeImpl extends BluePipelineNode {
         return edges;
     }
 
-    private boolean isInactiveNode(){
-        return node.getNode() instanceof PipelineNodeGraphBuilder.InactiveFlowNodeWrapper;
-    }
 }

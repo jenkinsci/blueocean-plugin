@@ -410,12 +410,11 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> leftSteps = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/"+leftNode.get("id")+"/steps/", List.class);
 
-        //XXX: for some reason in test harness 'input' step fails and never registered as step
-        Assert.assertEquals(2, leftSteps.size());
+        Assert.assertEquals(3, leftSteps.size());
 
         List<Map> rightSteps = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/"+rightNode.get("id")+"/steps/", List.class);
 
-        Assert.assertEquals(1, rightSteps.size());
+        Assert.assertEquals(2, rightSteps.size());
     }
 
 
@@ -727,10 +726,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
-        nodeGraphTable.build();
-        List<FlowNode> nodes = getStages(nodeGraphTable);
-        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+
+        List<FlowNode> nodes = getStages(builder);
+        List<FlowNode> parallelNodes = getParallelNodes(builder);
 
         Assert.assertEquals(7, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
@@ -949,10 +948,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
-        nodeGraphTable.build();
-        List<FlowNode> nodes = getStages(nodeGraphTable);
-        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> nodes = getStages(builder);
+        List<FlowNode> parallelNodes = getParallelNodes(builder);
 
         Assert.assertEquals(7, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
@@ -1097,10 +1095,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatus(Result.FAILURE, b1);
 
-        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
-        nodeGraphTable.build();
-        List<FlowNode> nodes = getStages(nodeGraphTable);
-        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> nodes = getStages(builder);
+        List<FlowNode> parallelNodes = getParallelNodes(builder);
 
         Assert.assertEquals(5, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());

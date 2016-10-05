@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
@@ -14,6 +13,7 @@ import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.GenericStatus;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
+import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -56,59 +56,9 @@ public class PipelineNodeGraphBuilder2 implements NodeGraphBuilder{
 //    }
 
 
-
-    /**
-     * Create a union of current pipeline nodes with the one from future. Term future indicates that
-     * this list of nodes are either in the middle of processing or failed somewhere in middle and we are
-     * projecting future nodes in the pipeline.
-     * <p>
-     * Last element of this node is patched to point to the first node of given list. First node of given
-     * list is indexed at thisNodeList.size().
-     *
-     * @param other Other {@link PipelineNodeGraphBuilder} to create union with
-     * @return list of FlowNode that is union of current set of nodes and the given list of nodes. If futureNodes
-     * are not bigger than this pipeline nodes then no union is performed.
-     * @see PipelineNodeContainerImpl#PipelineNodeContainerImpl(WorkflowRun, Link)
-     */
-    public List<BluePipelineNode> union(PipelineNodeGraphBuilder2 other, Link parentLink) {
-        Map<FlowNode, List<FlowNode>> futureNodes = other.parentToChildrenMap;
-        if (parentToChildrenMap.size() < futureNodes.size()) {
-
-            // XXX: If the pipeline was modified since last successful run then
-            // the union might represent invalid future nodes.
-            List<FlowNode> nodes = ImmutableList.copyOf(parentToChildrenMap.keySet());
-            List<FlowNode> thatNodes = ImmutableList.copyOf(futureNodes.keySet());
-            int currentNodeSize = nodes.size();
-            for (int i = nodes.size(); i < futureNodes.size(); i++) {
-                PipelineNodeGraphBuilder2.InactiveFlowNodeWrapper n = new PipelineNodeGraphBuilder2.InactiveFlowNodeWrapper(thatNodes.get(i));
-
-                // Add the last successful pipeline's first node to the edge of current node's last node
-                if (currentNodeSize> 0 && i == currentNodeSize) {
-                    FlowNode latestNode = nodes.get(currentNodeSize - 1);
-                    if (PipelineNodeUtil.isStage(latestNode)) {
-                        addChild(latestNode, n);
-                    } else if (PipelineNodeUtil.isParallelBranch(latestNode)) {
-                        /**
-                         * If its a parallel node, find all its siblings and add the next node as
-                         * edge (if not already present)
-                         */
-                        //parallel node has at most one paraent
-                        FlowNode parent = getParentStageOfBranch(latestNode);
-                        if (parent != null) {
-                            List<FlowNode> children = parentToChildrenMap.get(parent);
-                            for (FlowNode c : children) {
-                                // Add next node to the parallel node's edge
-                                if (PipelineNodeUtil.isParallelBranch(c)) {
-                                    addChild(c, n);
-                                }
-                            }
-                        }
-                    }
-                }
-                parentToChildrenMap.put(n, futureNodes.get(n.inactiveNode));
-            }
-        }
-        return getPipelineNodes(parentLink);
+    @Override
+    public List<FlowNodeWrapper> getPipelineNodes() {
+        return null;
     }
 
     @Override
@@ -166,8 +116,9 @@ public class PipelineNodeGraphBuilder2 implements NodeGraphBuilder{
         return new PipelineStepImpl(node, parent);
     }
 
+
     @Override
-    public List<BluePipelineNode> union(List<BluePipelineNode> that, Link parent) {
+    public List<BluePipelineNode> union(List<FlowNodeWrapper> that, Link parent) {
         return null;
     }
 
@@ -290,18 +241,16 @@ public class PipelineNodeGraphBuilder2 implements NodeGraphBuilder{
         }
     }
 
-    public static class InactiveFlowNodeWrapper extends FlowNode {
+    public static class InactiveFlowNodeWrapper extends FlowNodeWrapper {
 
-        private final FlowNode inactiveNode;
+        private final FlowNodeWrapper inactiveNode;
 
-        public InactiveFlowNodeWrapper(FlowNode node) {
-            super(node.getExecution(), node.getId());
+        public InactiveFlowNodeWrapper(FlowNodeWrapper node) {
+            super(node.getNode(), new PipelineNodeGraphBuilder.NodeRunStatus(null,null), new TimingInfo());
+            addEdges(node.edges);
+            addParents(node.getParents());
             this.inactiveNode = node;
         }
 
-        @Override
-        protected String getTypeDisplayName() {
-            return PipelineNodeUtil.getDisplayName(inactiveNode);
-        }
     }
 }
