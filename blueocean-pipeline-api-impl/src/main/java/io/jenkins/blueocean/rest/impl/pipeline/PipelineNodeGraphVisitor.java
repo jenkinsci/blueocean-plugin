@@ -31,8 +31,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor {
 
     public final Map<FlowNodeWrapper, List<FlowNodeWrapper>> parentToChildrenMap = new LinkedHashMap<>();
 
-//    private final ArrayDeque<FlowNodeWrapper> steps = new ArrayDeque<>();
-
     private final List<FlowNodeWrapper> parallelBranches = new ArrayList<>();
 
     public final ArrayDeque<FlowNodeWrapper> nodes = new ArrayDeque<>();
@@ -58,7 +56,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor {
         if (NotExecutedNodeAction.isExecuted(startNode)) {
             firstExecuted = startNode;
         }
-        System.out.println(String.format("chunkStart=> id: %s, name: %s, function: %s", startNode.getId(),
+        dump(String.format("chunkStart=> id: %s, name: %s, function: %s", startNode.getId(),
             startNode.getDisplayName(), startNode.getDisplayFunctionName()));
     }
 
@@ -66,7 +64,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor {
     public void chunkEnd(@Nonnull FlowNode endNode, @CheckForNull FlowNode afterBlock, @Nonnull ForkScanner scanner) {
         super.chunkEnd(endNode, afterBlock, scanner);
 
-        System.out.println(String.format("chunkEnd=> id: %s, name: %s, function: %s, type:%s", endNode.getId(),
+        dump(String.format("chunkEnd=> id: %s, name: %s, function: %s, type:%s", endNode.getId(),
             endNode.getDisplayName(), endNode.getDisplayFunctionName(), endNode.getClass()));
         if(endNode instanceof StepEndNode){
             System.out.println("\tStartNode: "+((StepEndNode) endNode).getStartNode());
@@ -83,9 +81,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor {
     @Override
     public void parallelStart(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchNode, @Nonnull ForkScanner scanner) {
         super.parallelStart(parallelStartNode, branchNode, scanner);
-        System.out.println(String.format("parallelStart=> id: %s, name: %s, function: %s", parallelStartNode.getId(),
+        dump(String.format("parallelStart=> id: %s, name: %s, function: %s", parallelStartNode.getId(),
             parallelStartNode.getDisplayName(), parallelStartNode.getDisplayFunctionName()));
-        System.out.println(String.format("\tbranch=> id: %s, name: %s, function: %s", branchNode.getId(),
+        dump(String.format("\tbranch=> id: %s, name: %s, function: %s", branchNode.getId(),
             branchNode.getDisplayName(), branchNode.getDisplayFunctionName()));
 
         for(FlowNodeWrapper p:parallelBranches){
@@ -99,7 +97,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor {
     @Override
     public void parallelEnd(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode parallelEndNode, @Nonnull ForkScanner scanner) {
         super.parallelEnd(parallelStartNode, parallelEndNode, scanner);
-        System.out.println(String.format("parallelEnd=> id: %s, name: %s, function: %s", parallelEndNode.getId(),
+        dump(String.format("parallelEnd=> id: %s, name: %s, function: %s", parallelEndNode.getId(),
             parallelEndNode.getDisplayName(), parallelEndNode.getDisplayFunctionName()));
 
         this.parallelEnd = parallelEndNode;
@@ -108,7 +106,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor {
     @Override
     public void parallelBranchStart(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchStartNode, @Nonnull ForkScanner scanner) {
         super.parallelBranchStart(parallelStartNode, branchStartNode, scanner);
-        System.out.println(String.format("parallelBranchStart=> id: %s, name: %s, function: %s", branchStartNode.getId(),
+        dump(String.format("parallelBranchStart=> id: %s, name: %s, function: %s", branchStartNode.getId(),
             branchStartNode.getDisplayName(), branchStartNode.getDisplayFunctionName()));
 
         TimingInfo times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), branchStartNode, branchEnd,
@@ -134,7 +132,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor {
     @Override
     public void parallelBranchEnd(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchEndNode, @Nonnull ForkScanner scanner) {
         super.parallelBranchEnd(parallelStartNode, branchEndNode, scanner);
-        System.out.println(String.format("parallelBranchEnd=> id: %s, name: %s, function: %s, type: %s", branchEndNode.getId(),
+        dump(String.format("parallelBranchEnd=> id: %s, name: %s, function: %s, type: %s", branchEndNode.getId(),
             branchEndNode.getDisplayName(), branchEndNode.getDisplayFunctionName(), branchEndNode.getClass()));
         this.branchEnd = branchEndNode;
     }
@@ -142,7 +140,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor {
     // This gets triggered on encountering a new chunk (stage or branch)
     @Override
     protected void handleChunkDone(@Nonnull MemoryFlowChunk chunk) {
-        System.out.println(String.format("handleChunkDone=> id: %s, name: %s, function: %s", chunk.getFirstNode().getId(),
+        dump(String.format("handleChunkDone=> id: %s, name: %s, function: %s", chunk.getFirstNode().getId(),
             chunk.getFirstNode().getDisplayName(), chunk.getFirstNode().getDisplayFunctionName()));
         TimingInfo times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
 
@@ -180,7 +178,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor {
 
     @Override
     public void atomNode(@CheckForNull FlowNode before, @Nonnull FlowNode atomNode, @CheckForNull FlowNode after, @Nonnull ForkScanner scan) {
-        System.out.println(String.format("atomNode=> id: %s, name: %s, function: %s, type: %s", atomNode.getId(),
+        dump(String.format("atomNode=> id: %s, name: %s, function: %s, type: %s", atomNode.getId(),
             atomNode.getDisplayName(), atomNode.getDisplayFunctionName(), atomNode.getClass()));
 
         if (NotExecutedNodeAction.isExecuted(atomNode)) {
@@ -201,13 +199,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor {
             }
 
             FlowNodeWrapper node = new FlowNodeWrapper(atomNode, new PipelineNodeGraphBuilder.NodeRunStatus(status), times);
-//            steps.push(node);
             nodeMap.put(node.getId(), node);
         }
     }
 
-//    public FlowNodeWrapper getStep(String id){
-//        return nodeMap.get(id);
-//    }
+    private void dump(String str){
+//        System.out.println(str);
+    }
 
 }
