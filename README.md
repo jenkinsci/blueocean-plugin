@@ -120,7 +120,7 @@ In case you want to update your dependencies with something like ```npm-check-up
 ncu -a
 rm -rf node_modules npm-shrinkwrap.json
 npm i
-npm shrinkwrap
+npm shrinkwrap --dev
 ```
 
 # Debug and live reload with IntelliJ
