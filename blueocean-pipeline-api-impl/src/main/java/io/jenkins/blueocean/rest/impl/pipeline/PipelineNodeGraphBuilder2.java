@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
@@ -8,12 +9,15 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.graphanalysis.DepthFirstScanner;
 import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.GenericStatus;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,35 +25,35 @@ import java.util.Map;
 /**
  * @author Vivek Pandey
  */
-public class PipelineNodeGraphBuilder2{
+public class PipelineNodeGraphBuilder2 implements NodeGraphBuilder{
     //TODO: This goes away once union is implemented using ForkScanner
     private final Map<FlowNode, List<FlowNode>> parentToChildrenMap = new LinkedHashMap<>();
 
-    public final PipelineNodeGraphVisitor visitor;
+    public final WorkflowRun run;
+
     public PipelineNodeGraphBuilder2(WorkflowRun run) {
-        this.visitor = new PipelineNodeGraphVisitor(run);
-        ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
+        this.run = run;
     }
 
-    public List<BluePipelineStep> getAllSteps(Link parent){
-        List<BluePipelineStep> steps = new ArrayList<>();
-        for(FlowNodeWrapper n: visitor.nodes){
-            for(FlowNodeWrapper s:n.steps){
-                steps.add(new PipelineStepImpl(s,parent));
-            }
-        }
-        return steps;
-    }
-
-    public List<FlowNodeWrapper> getAllSteps(){
-        List<FlowNodeWrapper> steps = new ArrayList<>();
-        for(FlowNodeWrapper n: visitor.nodes){
-            for(FlowNodeWrapper s:n.steps){
-                steps.add(s);
-            }
-        }
-        return steps;
-    }
+//    public List<BluePipelineStep> getAllSteps(Link parent){
+//        List<BluePipelineStep> steps = new ArrayList<>();
+//        for(FlowNodeWrapper n: visitor.nodes){
+//            for(FlowNodeWrapper s:n.steps){
+//                steps.add(new PipelineStepImpl(s,parent));
+//            }
+//        }
+//        return steps;
+//    }
+//
+//    public List<FlowNodeWrapper> getAllSteps(){
+//        List<FlowNodeWrapper> steps = new ArrayList<>();
+//        for(FlowNodeWrapper n: visitor.nodes){
+//            for(FlowNodeWrapper s:n.steps){
+//                steps.add(s);
+//            }
+//        }
+//        return steps;
+//    }
 
 
 
@@ -107,14 +111,65 @@ public class PipelineNodeGraphBuilder2{
         return getPipelineNodes(parentLink);
     }
 
+    @Override
     public List<BluePipelineNode> getPipelineNodes(Link parentLink) {
+        PipelineNodeGraphVisitor visitor = new PipelineNodeGraphVisitor(run);
+        ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
+
         List<BluePipelineNode> nodes = new ArrayList<>();
         for(FlowNodeWrapper n: visitor.nodes){
-            nodes.add(new PipelineNodeImpl(n,parentLink));
+            nodes.add(new PipelineNodeImpl(n,parentLink, run));
         }
         return nodes;
     }
 
+    @Override
+    public List<BluePipelineStep> getPipelineNodeSteps(final String nodeId, Link parent) {
+        DepthFirstScanner depthFirstScanner = new DepthFirstScanner();
+        //If blocked scope, get the end node
+        FlowNode n = depthFirstScanner.findFirstMatch(run.getExecution().getCurrentHeads(), new Predicate<FlowNode>() {
+            @Override
+            public boolean apply(@Nullable FlowNode input) {
+                return (input!= null && input.getId().equals(nodeId) &&
+                    (PipelineNodeUtil.isStage(input) || PipelineNodeUtil.isParallelBranch(input)));
+            }
+        });
+
+        if(n == null){ //if no node found or the node is not stage or parallel we return empty steps
+            return Collections.emptyList();
+        }
+        PipelineStepVisitor visitor = new PipelineStepVisitor(run, n);
+        ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
+        List<BluePipelineStep> steps = new ArrayList<>();
+        for(FlowNodeWrapper node: visitor.getSteps()){
+            steps.add(new PipelineStepImpl(node, parent));
+        }
+        return steps;
+    }
+
+    @Override
+    public List<BluePipelineStep> getPipelineNodeSteps(Link parent) {
+        PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
+        ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
+        List<BluePipelineStep> steps = new ArrayList<>();
+        for(FlowNodeWrapper node: visitor.getSteps()){
+            steps.add(new PipelineStepImpl(node, parent));
+        }
+        return steps;
+    }
+
+    @Override
+    public BluePipelineStep getPipelineNodeStep(String id, Link parent) {
+        PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
+        ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
+        FlowNodeWrapper node = visitor.getStep(id);
+        return new PipelineStepImpl(node, parent);
+    }
+
+    @Override
+    public List<BluePipelineNode> union(List<BluePipelineNode> that, Link parent) {
+        return null;
+    }
 
     private boolean isEnd(FlowNode n){
         return n instanceof StepEndNode;
@@ -144,19 +199,19 @@ public class PipelineNodeGraphBuilder2{
         return children;
     }
 
-    public void dumpNodes(List<FlowNode> nodes) {
-        for(FlowNodeWrapper n: visitor.nodes){
-            System.out.println(String.format("id: %s, name: %s, startTime: %s, type: %s", n.getId(),
-                n.getNode().getDisplayName(), n.getTiming().getStartTimeMillis(), n.getClass()));
-            System.out.print("\tChildren: ");
-            for(String e: n.edges){
-                FlowNodeWrapper c = visitor.nodeMap.get(e);
-                System.out.print(String.format("\n\tid: %s, name: %s, startTime: %s, type: %s", c.getId(),
-                    c.getNode().getDisplayName(), c.getTiming().getStartTimeMillis(), c.getClass()));
-            }
-            System.out.println("");
-        }
-    }
+//    public void dumpNodes(List<FlowNode> nodes) {
+//        for(FlowNodeWrapper n: visitor.nodes){
+//            System.out.println(String.format("id: %s, name: %s, startTime: %s, type: %s", n.getId(),
+//                n.getNode().getDisplayName(), n.getTiming().getStartTimeMillis(), n.getClass()));
+//            System.out.print("\tChildren: ");
+//            for(String e: n.edges){
+//                FlowNodeWrapper c = visitor.nodeMap.get(e);
+//                System.out.print(String.format("\n\tid: %s, name: %s, startTime: %s, type: %s", c.getId(),
+//                    c.getNode().getDisplayName(), c.getTiming().getStartTimeMillis(), c.getClass()));
+//            }
+//            System.out.println("");
+//        }
+//    }
 
     public static class NodeRunStatus {
         private final BlueRun.BlueRunResult result;

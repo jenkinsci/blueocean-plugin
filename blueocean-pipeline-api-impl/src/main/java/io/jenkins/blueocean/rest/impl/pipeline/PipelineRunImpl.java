@@ -83,7 +83,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Override
     public BluePipelineStepContainer getSteps() {
-        return new PipelineStepContainerImpl(null, new PipelineNodeGraphBuilder(run), getLink());
+        return new PipelineStepContainerImpl(run, getLink());
     }
 
     @Override

@@ -3,10 +3,9 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Vivek Pandey
@@ -14,36 +13,34 @@ import java.util.List;
 public class PipelineStepContainerImpl extends BluePipelineStepContainer {
     private final FlowNodeWrapper node;
     private final Link self;
+    private final WorkflowRun run;
 
-    public PipelineStepContainerImpl(FlowNodeWrapper node, Link parentLink) {
+
+    public PipelineStepContainerImpl(FlowNodeWrapper node, Link parentLink, WorkflowRun run) {
         this.self = parentLink.rel("steps");
         this.node = node;
+        this.run = run;
+
+    }
+
+    public PipelineStepContainerImpl(WorkflowRun run, Link parentLink) {
+        this.self = parentLink.rel("steps");
+        this.node = null;
+        this.run = run;
     }
 
     @Override
     public BluePipelineStep get(String name) {
-//        FlowNodeWrapper node = graphBuilder.visitor.getStep(name);
-//        if(node == null){
-//            throw new ServiceException.NotFoundException(String.format("Node %s is not found", name));
-//        }
-//        return new PipelineStepImpl(node, getLink());
-        //XXX: Fixme
-        return null;
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        return  builder.getPipelineNodeStep(name, getLink());
     }
 
     @Override
     public Iterator<BluePipelineStep> iterator() {
-        if(node!=null) {
-            List<BluePipelineStep> pipelineSteps = new ArrayList<>();
-            List<FlowNodeWrapper> nodes = node.steps;
-            for (FlowNodeWrapper node : nodes) {
-                pipelineSteps.add( new PipelineStepImpl(node,getLink()));
-            }
-            return pipelineSteps.iterator();
-        }else{
-            //XXXFixme
-            return null;//graphBuilder.getAllSteps(getLink()).iterator();
-        }
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        return (node == null)
+            ? builder.getPipelineNodeSteps(getLink()).iterator()
+            : builder.getPipelineNodeSteps(node.getId(), getLink()).iterator();
     }
 
     @Override

@@ -55,6 +55,11 @@ public class FlowNodeWrapper {
         return node.equals(obj);
     }
 
+    public FlowNode getFlowNode(){
+        return node;
+    }
+
+
     @Override
     public int hashCode() {
         return node.hashCode();

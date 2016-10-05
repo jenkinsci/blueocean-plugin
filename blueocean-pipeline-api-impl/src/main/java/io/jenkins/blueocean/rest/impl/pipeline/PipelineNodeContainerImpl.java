@@ -29,37 +29,19 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
         this.self = parentLink.rel("nodes");
 
         WorkflowJob job = run.getParent();
+        NodeGraphBuilder graphBuilder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
 
-        if(Boolean.getBoolean("LEGACY_PIPELINE_NODE_PARSER")) {
-            PipelineNodeGraphBuilder graphBuilder = new PipelineNodeGraphBuilder(run);
-
-            //If build either failed or is in progress then return union with last successful pipeline run
-            if (run.getResult() != Result.SUCCESS
-                && job.getLastSuccessfulBuild() != null
-                && Integer.valueOf(job.getLastSuccessfulBuild().getId()) < Integer.valueOf(run.getId())) {
-                PipelineNodeGraphBuilder pastBuild = new PipelineNodeGraphBuilder(job.getLastSuccessfulBuild());
-                this.nodes = graphBuilder.union(pastBuild, getLink());
-            } else {
-                this.nodes = graphBuilder.getPipelineNodes(getLink());
-            }
-            for (BluePipelineNode node : nodes) {
-                nodeMap.put(node.getId(), node);
-            }
-        }else{
-            PipelineNodeGraphBuilder2 graphBuilder = new PipelineNodeGraphBuilder2(run);
-
-            //If build either failed or is in progress then return union with last successful pipeline run
-            if (run.getResult() != Result.SUCCESS
-                && job.getLastSuccessfulBuild() != null
-                && Integer.valueOf(job.getLastSuccessfulBuild().getId()) < Integer.valueOf(run.getId())) {
-                PipelineNodeGraphBuilder2 pastBuild = new PipelineNodeGraphBuilder2(job.getLastSuccessfulBuild());
-                this.nodes = graphBuilder.union(pastBuild, getLink());
-            } else {
-                this.nodes = graphBuilder.getPipelineNodes(getLink());
-            }
-            for (BluePipelineNode node : nodes) {
-                nodeMap.put(node.getId(), node);
-            }
+        //If build either failed or is in progress then return union with last successful pipeline run
+        if (run.getResult() != Result.SUCCESS
+            && job.getLastSuccessfulBuild() != null
+            && Integer.valueOf(job.getLastSuccessfulBuild().getId()) < Integer.valueOf(run.getId())) {
+            PipelineNodeGraphBuilder pastBuild = new PipelineNodeGraphBuilder(job.getLastSuccessfulBuild());
+            this.nodes = graphBuilder.union(pastBuild.getPipelineNodes(getLink()), getLink());
+        } else {
+            this.nodes = graphBuilder.getPipelineNodes(getLink());
+        }
+        for (BluePipelineNode node : nodes) {
+            nodeMap.put(node.getId(), node);
         }
     }
 

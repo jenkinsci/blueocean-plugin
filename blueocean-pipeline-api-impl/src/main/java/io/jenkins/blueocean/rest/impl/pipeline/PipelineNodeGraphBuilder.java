@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
+import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
@@ -35,7 +36,7 @@ import static io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil.isStage;
  *
  * @author Vivek Pandey
  */
-public class PipelineNodeGraphBuilder {
+public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
 
     private final List<FlowNode> sortedNodes;
 
@@ -298,9 +299,42 @@ public class PipelineNodeGraphBuilder {
                 durationInMillis = System.currentTimeMillis()-TimingAction.getStartTime(n);
             }
             FlowNodeWrapper wrapper = new FlowNodeWrapper(n, status, new TimingInfo(durationInMillis,0,startTime));
-            nodes.add(new PipelineNodeImpl(wrapper, parentLink));
+            nodes.add(new PipelineNodeImpl(wrapper, parentLink, run));
         }
         return nodes;
+    }
+
+    @Override
+    public List<BluePipelineStep> getPipelineNodeSteps(String nodeId, Link parent) {
+        List<BluePipelineStep> steps = new ArrayList<>();
+        List<FlowNode> flowNodes = new ArrayList<>();
+        if(nodeId == null){
+            flowNodes.addAll(getAllSteps());
+        }else{
+            flowNodes.addAll(getSteps(getNodeById(nodeId)));
+        }
+        for(FlowNode node: flowNodes){
+            steps.add(new PipelineStepImpl(new FlowNodeWrapper(node,
+                new NodeRunStatus(node),
+                new TimingInfo(getDurationInMillis(node), 0, 0)), parent));
+        }
+        return steps;
+    }
+
+    @Override
+    public List<BluePipelineStep> getPipelineNodeSteps(Link parent) {
+        return null;
+    }
+
+    @Override
+    public BluePipelineStep getPipelineNodeStep(String id, Link parent) {
+        return null;
+    }
+
+
+    @Override
+    public List<BluePipelineNode> union(List<BluePipelineNode> that, Link parent) {
+        return null;
     }
 
     public List<FlowNode> getChildren(FlowNode parent){

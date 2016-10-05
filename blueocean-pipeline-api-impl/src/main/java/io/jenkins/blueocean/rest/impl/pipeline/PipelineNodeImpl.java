@@ -7,6 +7,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,9 +26,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final Long durationInMillis;
     private final PipelineNodeGraphBuilder.NodeRunStatus status;
     private final Link self;
+    private final WorkflowRun run;
 
-    public PipelineNodeImpl(FlowNodeWrapper node, Link parentLink) {
+    public PipelineNodeImpl(FlowNodeWrapper node, Link parentLink, WorkflowRun run) {
         this.node = node;
+        this.run = run;
         this.edges = buildEdges(node.edges);
         this.status = node.getStatus();
         this.durationInMillis = node.getTiming().getTotalDurationMillis();
@@ -91,7 +94,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public BluePipelineStepContainer getSteps() {
-        return new PipelineStepContainerImpl(node, self);
+        return new PipelineStepContainerImpl(node, self, run);
     }
 
     @Override
