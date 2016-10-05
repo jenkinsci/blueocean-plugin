@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n'; // initialized i18next instance
 
 import { Provider, configureStore, combineReducers} from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
@@ -155,12 +157,15 @@ function startApp(routes, stores) {
             payload: newLocation.pathname,
         });
     });
+    console.log('i18n', i18n)
 
     // Start React
     render(
-        <Provider store={store}>
-            <Router history={history}>{ makeRoutes(routes) }</Router>
-        </Provider>
+          <I18nextProvider i18n={ i18n }>
+            <Provider store={store}>
+                <Router history={history}>{ makeRoutes(routes) }</Router>
+            </Provider>
+          </I18nextProvider>
       , rootElement);
 }
 

@@ -2364,6 +2364,11 @@
       "from": "https-browserify@>=0.0.0 <0.1.0",
       "resolved": "https://registry.npmjs.org/https-browserify/-/https-browserify-0.0.1.tgz"
     },
+    "i18next": {
+      "version": "3.4.3",
+      "from": "i18next@latest",
+      "resolved": "https://registry.npmjs.org/i18next/-/i18next-3.4.3.tgz"
+    },
     "iconv-lite": {
       "version": "0.4.13",
       "from": "iconv-lite@>=0.4.13 <0.5.0",
@@ -3858,6 +3863,11 @@
       "version": "15.1.0",
       "from": "react-dom@15.1.0",
       "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.1.0.tgz"
+    },
+    "react-i18next": {
+      "version": "1.10.1",
+      "from": "react-i18next@latest",
+      "resolved": "https://registry.npmjs.org/react-i18next/-/react-i18next-1.10.1.tgz"
     },
     "react-material-icons-blue": {
       "version": "1.0.4",
