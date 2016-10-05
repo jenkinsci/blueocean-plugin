@@ -5,7 +5,7 @@ import LogConsoleView from './LogConsoleView';
 import * as sse from '@jenkins-cd/sse-gateway';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
-const ReactCSSTransitionGroup = require('react-addons-css-transition-group');
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
@@ -66,7 +66,6 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentDidMount() {
-        console.log('done');
         const { result } = this.props;
 
         if (!result.isQueued()) {// FIXME: when https://issues.jenkins-ci.org/browse/JENKINS-37708 is fixed, test whether it breaks karaoke on freestyle
@@ -152,7 +151,7 @@ export class RunDetailsPipeline extends Component {
             // we turn on refetch so we always fetch a new Node result
             const refetch = true;
             switch (jenkinsEvent) {
-            case 'pipeline_step':
+                case 'pipeline_step':
                 {
                     // we are not using an early out for the events since we want to refresh the node if we finished
                     if (this.state.followAlong) { // if we do it means we want karaoke
@@ -176,7 +175,7 @@ export class RunDetailsPipeline extends Component {
                     }
                     break;
                 }
-            case 'pipeline_end':
+                case 'pipeline_end':
                 {
                     // get all steps from the current run, we use the nodeKey and remove the last bit
                     const keyArray = this.mergedConfig.nodeKey.split('/');
@@ -206,7 +205,7 @@ export class RunDetailsPipeline extends Component {
                     fetchNodes({ ...this.mergedConfig, refetch });
                     break;
                 }
-            default:
+                default:
                 {
                     // //console.log(event);
                 }
@@ -227,8 +226,8 @@ export class RunDetailsPipeline extends Component {
      */
     isParallel(nodeInfo) {
         // in case we have edges arrays we compare the first edge, if not we know we are not in parallel mode
-        return this.mergedConfig.nodeReducer.edges && this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
-            this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
+        return this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
+        this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
     }
 
     generateConfig(props) {
@@ -356,25 +355,24 @@ export class RunDetailsPipeline extends Component {
             scrollToBottom,
             ...this.props,
             ...this.state,
-            url: logGeneral.url,
             mergedConfig: this.mergedConfig,
         };
 
         const items = [];
         if (hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView) {
             items.push(<LogToolbar
-              fileName={logGeneral.fileName}
-              url={logGeneral.url}
-              title={title}
+                fileName={logGeneral.fileName}
+                url={logGeneral.url}
+                title={title}
             />);
         }
 
         if (hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView) {
             items.push(<Steps
-              nodeInformation={currentSteps}
-              followAlong={followAlong}
-              router={router}
-              {...this.props}
+                nodeInformation={currentSteps}
+                followAlong={followAlong}
+                router={router}
+                {...this.props}
             />);
         }
 
@@ -389,34 +387,31 @@ export class RunDetailsPipeline extends Component {
         }
 
         const transitionDuration = 500;
-        const transition = <ReactCSSTransitionGroup
-          transitionName="stepAnimation"
-          transitionAppear
-          transitionAppearTimeout={transitionDuration}
-          transitionEnterTimeout={transitionDuration}
-          transitionLeaveTimeout={transitionDuration}
-        >
-            <div key={this.mergedConfig.nodeReducer.id}>
-                {items}
-            </div>
-        </ReactCSSTransitionGroup>;
 
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
-                  extensionPoint="jenkins.pipeline.run.result"
-                  selectedStage={this.mergedConfig.nodeReducer}
-                  callback={afterClick}
-                  nodes={nodes[nodeKey].model}
-                  pipelineName={name}
-                  branchName={isMultiBranch ? params.branch : undefined}
-                  runId={run.id}
-                  run={run}
+                    extensionPoint="jenkins.pipeline.run.result"
+                    selectedStage={this.mergedConfig.nodeReducer}
+                    callback={afterClick}
+                    nodes={nodes[nodeKey].model}
+                    pipelineName={name}
+                    branchName={isMultiBranch ? params.branch : undefined}
+                    runId={run.id}
+                    run={run}
                 />
                 }
-
-                {transition}
-
+                <ReactCSSTransitionGroup
+                    transitionName="stepAnimation"
+                    transitionAppear
+                    transitionAppearTimeout={transitionDuration}
+                    transitionEnterTimeout={transitionDuration}
+                    transitionLeaveTimeout={transitionDuration}
+                >
+                    <div key={this.mergedConfig.nodeReducer.id}>
+                        {items}
+                    </div>
+                </ReactCSSTransitionGroup>
                 { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
             </div>
         );
