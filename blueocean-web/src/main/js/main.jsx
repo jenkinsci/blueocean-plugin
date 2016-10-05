@@ -157,7 +157,6 @@ function startApp(routes, stores) {
             payload: newLocation.pathname,
         });
     });
-    console.log('i18n', i18n)
 
     // Start React
     render(
