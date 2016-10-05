@@ -9,7 +9,8 @@
     "test": "gulp test",
     "test:watch": "gulp test:watch",
     "bundle": "gulp bundle",
-    "bundle:watch": "gulp bundle:watch"
+    "bundle:watch": "gulp bundle:watch",
+    "postinstall": "node ../bin/cleanshrink.js"
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",

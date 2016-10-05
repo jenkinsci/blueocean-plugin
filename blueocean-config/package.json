@@ -3,7 +3,8 @@
     "version": "0.0.1",
     "description": "Configuration injected in BlueOcean UI",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "postinstall": "node ../bin/cleanshrink.js"
     },
     "author": "Vivek Pandey <vivek.pandey@gmail.com> (https://github.com/vivek)",
     "license": "MIT",
