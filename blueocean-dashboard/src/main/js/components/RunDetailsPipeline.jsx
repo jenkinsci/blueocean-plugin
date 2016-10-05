@@ -5,7 +5,8 @@ import LogConsoleView from './LogConsoleView';
 import * as sse from '@jenkins-cd/sse-gateway';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+// const ReactCSSTransitionGroup = require('react-addons-css-transition-group');
+const ReactCSSTransitionGroup = require('react-addons-css-transition-group');
 
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
@@ -66,6 +67,7 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentDidMount() {
+        console.log('done');
         const { result } = this.props;
 
         if (!result.isQueued()) {// FIXME: when https://issues.jenkins-ci.org/browse/JENKINS-37708 is fixed, test whether it breaks karaoke on freestyle
@@ -387,6 +389,16 @@ export class RunDetailsPipeline extends Component {
             items.push(<QueuedState />);
         }
 
+        const wasGeht = <ReactCSSTransitionGroup
+          transitionName="stepAnimation"
+          transitionEnterTimeout={500}
+          transitionLeaveTimeout={300}
+        >
+            <div key={this.mergedConfig.nodeReducer.id}>
+                {items}
+            </div>
+        </ReactCSSTransitionGroup>;
+        console.log('wasGeht', wasGeht)
         const transitionDuration = 500;
 
         return (
@@ -402,23 +414,28 @@ export class RunDetailsPipeline extends Component {
                   run={run}
                 />
                 }
-                <ReactCSSTransitionGroup
-                  transitionName="stepAnimation"
-                  transitionAppear
-                  transitionAppearTimeout={transitionDuration}
-                  transitionEnterTimeout={transitionDuration}
-                  transitionLeaveTimeout={transitionDuration}
-                >
-                    <div key={this.mergedConfig.nodeReducer.id}>
-                        {items}
-                    </div>
-                </ReactCSSTransitionGroup>
+
+                {wasGeht}
+
+
+
                 { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
             </div>
         );
     }
 
 }
+
+        /*
+         <ReactCSSTransitionGroup
+         transitionName="stepAnimation"
+         transitionAppear
+         transitionAppearTimeout={transitionDuration}
+         transitionEnterTimeout={transitionDuration}
+         transitionLeaveTimeout={transitionDuration}
+         >
+         </ReactCSSTransitionGroup>
+         */
 
 RunDetailsPipeline.propTypes = {
     pipeline: object,
