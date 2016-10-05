@@ -255,6 +255,13 @@
             <version>1.4.9</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.1.0</version>
+            <scope>test</scope>
+        </dependency>
+
       <dependency> <!-- TODO pending https://github.com/jenkinsci/jenkins-test-harness/pull/2 -->
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.plexus</artifactId>

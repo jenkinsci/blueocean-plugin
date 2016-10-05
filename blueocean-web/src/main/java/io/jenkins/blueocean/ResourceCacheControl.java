@@ -53,14 +53,10 @@ public final class ResourceCacheControl implements Filter {
 
     private final List<String> resourcePrefixes = new ArrayList<>();
 
-    private ResourceCacheControl() {
-        // Add paths to resources that we want to set the
-        // cache-control header.
-        addPath(Jenkins.RESOURCE_PATH); // "/static/VERSION" resources - e.g. JDL assets (fonts etc)
-        addPath(Jenkins.getInstance().getAdjuncts("").rootURL);
+    ResourceCacheControl() {
     }
 
-    private void addPath(String path) {
+    String addPath(String path) {
         // Make sure the paths always start and end with a slash.
         // This simplifies later comparison with the request path.
         if (!path.startsWith("/")) {
@@ -70,6 +66,8 @@ public final class ResourceCacheControl implements Filter {
             path =  path + "/";
         }
         resourcePrefixes.add(path);
+
+        return path;
     }
 
     public static synchronized void install() {
@@ -82,8 +80,13 @@ public final class ResourceCacheControl implements Filter {
         // to do a hard reload (bypassing the cache), which may confuse people during dev.
         if (!Boolean.getBoolean("hudson.hpi.run")) {
             try {
+                // Add paths to resources that we want to set the
+                // cache-control header.
+                INSTANCE.addPath(Jenkins.RESOURCE_PATH); // "/static/VERSION" resources - e.g. JDL assets (fonts etc)
+                INSTANCE.addPath(Jenkins.getInstance().getAdjuncts("").rootURL);
+
                 PluginServletFilter.addFilter(INSTANCE);
-            } catch (ServletException e) {
+            } catch (Exception e) {
                 throw new IllegalStateException("Unexpected Exception installing Blue Web Resource Adjunct cache control filter.", e);
             }
         }
