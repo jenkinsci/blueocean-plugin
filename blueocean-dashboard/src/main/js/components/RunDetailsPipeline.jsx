@@ -66,7 +66,6 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentDidMount() {
-        console.log('done');
         const { result } = this.props;
 
         if (!result.isQueued()) {// FIXME: when https://issues.jenkins-ci.org/browse/JENKINS-37708 is fixed, test whether it breaks karaoke on freestyle
@@ -389,7 +388,7 @@ export class RunDetailsPipeline extends Component {
         }
 
         const transitionDuration = 500;
-        const transition = <ReactCSSTransitionGroup
+        const transition = (<ReactCSSTransitionGroup
           transitionName="stepAnimation"
           transitionAppear
           transitionAppearTimeout={transitionDuration}
@@ -399,7 +398,7 @@ export class RunDetailsPipeline extends Component {
             <div key={this.mergedConfig.nodeReducer.id}>
                 {items}
             </div>
-        </ReactCSSTransitionGroup>;
+        </ReactCSSTransitionGroup>);
 
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
