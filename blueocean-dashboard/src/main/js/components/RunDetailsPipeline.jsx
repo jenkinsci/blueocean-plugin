@@ -5,6 +5,7 @@ import LogConsoleView from './LogConsoleView';
 import * as sse from '@jenkins-cd/sse-gateway';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
+const ReactCSSTransitionGroup = require('react-addons-css-transition-group');
 
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
@@ -196,7 +197,7 @@ export class RunDetailsPipeline extends Component {
                         .filter((nodeSteps) => !nodeSteps.isFinished);
                     /**
                      * we always should have one item in our array which is the last step of the pipeline
-                      */
+                     */
                     if (notFinishedSteps.length >= 1) {
                         notFinishedSteps.map((step) => removeStep(step.nodesBaseUrl));
                     }
@@ -351,12 +352,53 @@ export class RunDetailsPipeline extends Component {
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
 
         const logProps = {
-            url: logGeneral.url,
             scrollToBottom,
             ...this.props,
             ...this.state,
+            url: logGeneral.url,
             mergedConfig: this.mergedConfig,
         };
+
+        const items = [];
+        if (hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView) {
+            items.push(<LogToolbar
+              fileName={logGeneral.fileName}
+              url={logGeneral.url}
+              title={title}
+            />);
+        }
+
+        if (hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView) {
+            items.push(<Steps
+              nodeInformation={currentSteps}
+              followAlong={followAlong}
+              router={router}
+              {...this.props}
+            />);
+        }
+
+        if (!isPipelineQueued && hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView) {
+            items.push(<EmptyStateView tightSpacing>
+                <p>There are no steps.</p>
+            </EmptyStateView>);
+        }
+
+        if (isPipelineQueued && supportsNode) {
+            items.push(<QueuedState />);
+        }
+
+        const transitionDuration = 500;
+        const transition = (<ReactCSSTransitionGroup
+          transitionName="stepAnimation"
+          transitionAppear
+          transitionAppearTimeout={transitionDuration}
+          transitionEnterTimeout={transitionDuration}
+          transitionLeaveTimeout={transitionDuration}
+        >
+            <div key={this.mergedConfig.nodeReducer.id}>
+                {items}
+            </div>
+        </ReactCSSTransitionGroup>);
 
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
@@ -371,25 +413,9 @@ export class RunDetailsPipeline extends Component {
                   run={run}
                 />
                 }
-                { hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView &&
-                    <LogToolbar
-                      fileName={logGeneral.fileName}
-                      url={logGeneral.url}
-                      title={title}
-                    />
-                }
-                { hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView && <Steps
-                  nodeInformation={currentSteps}
-                  followAlong={followAlong}
-                  router={router}
-                  {...logProps}
-                />
-                }
-                { isPipelineQueued && supportsNode && <QueuedState /> }
-                { !isPipelineQueued && hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
-                    <p>There are no steps.</p>
-                </EmptyStateView>
-                }
+
+                {transition}
+
                 { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
             </div>
         );
