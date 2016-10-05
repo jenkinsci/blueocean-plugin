@@ -77,10 +77,15 @@ public final class ResourceCacheControl implements Filter {
             return;
         }
         INSTANCE = new ResourceCacheControl();
-        try {
-            PluginServletFilter.addFilter(INSTANCE);
-        } catch (ServletException e) {
-            throw new IllegalStateException("Unexpected Exception installing Blue Web Resource Adjunct cache control filter.", e);
+
+        // Don't add the filter if we are running with hpi:run. Otherwise, people need
+        // to do a hard reload (bypassing the cache), which may confuse people during dev.
+        if (!Boolean.getBoolean("hudson.hpi.run")) {
+            try {
+                PluginServletFilter.addFilter(INSTANCE);
+            } catch (ServletException e) {
+                throw new IllegalStateException("Unexpected Exception installing Blue Web Resource Adjunct cache control filter.", e);
+            }
         }
     }
 
