@@ -47,6 +47,8 @@ builder.bundle('src/main/js/blueocean.js')
     .export('react')
     .export('react-dom')
     .export('redux')
+    .export('mobx')
+    .export('mobx-react')
     .generateNoImportsBundle();
 
 //

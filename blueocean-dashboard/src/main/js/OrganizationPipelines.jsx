@@ -9,9 +9,11 @@ import {
 import loadingIndicator from './LoadingIndicator';
 import * as sse from '@jenkins-cd/sse-gateway';
 import * as pushEventUtil from './util/push-event-util';
+import { observer } from 'mobx-react';
 
 const { object, array, func, node, string } = PropTypes;
 
+@observer
 class OrganizationPipelines extends Component {
     // FIXME: get rid of context use
     getChildContext() {
@@ -21,21 +23,21 @@ class OrganizationPipelines extends Component {
             };
         }
         return {
-            pipelines: this.props.allPipelines,
+            pipelines: this.context.pipelinesService.allPipelines,
         };
     }
-    
+
     componentWillMount() {
         const config = this.context.config;
         if (config) {
             const organizationName = this._getOrganizationName();
-            
+
             if (organizationName) {
                 this.props.fetchOrganizationPipelines({ organizationName });
             } else {
-                this.props.fetchAllPipelines();
+                this.context.pipelinesService.fetchAllPipelines();
             }
-            
+
             // Subscribe for job channel push events
             this.jobListener = sse.subscribe('job', (event) => {
                 // Enrich the event with blueocean specific properties
@@ -94,7 +96,7 @@ class OrganizationPipelines extends Component {
     componentDidMount() {
         loadingIndicator.setDarkBackground();
     }
-    
+
     componentWillReceiveProps(nextProps) {
         const organizationName = this._getOrganizationName(nextProps);
         if (this._getOrganizationName(this.props) !== organizationName) {
@@ -113,7 +115,7 @@ class OrganizationPipelines extends Component {
         }
         loadingIndicator.setLightBackground();
     }
-    
+
     _getOrganizationName(nextProps) {
         if (nextProps && nextProps.params) {
             return nextProps.params.organization;
@@ -132,9 +134,6 @@ class OrganizationPipelines extends Component {
      components and get rid of the seperate connect in each subcomponents -> see RunDetailsPipeline
      */
     render() {
-        if (!this.props.allPipelines && !this.props.organizationPipelines) {
-            return null;
-        }
         return this.props.children;
     }
 }
@@ -142,6 +141,7 @@ class OrganizationPipelines extends Component {
 OrganizationPipelines.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
+    pipelinesService: object.isRequired,
 };
 
 OrganizationPipelines.propTypes = {

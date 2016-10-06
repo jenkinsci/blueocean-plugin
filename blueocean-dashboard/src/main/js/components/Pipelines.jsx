@@ -6,7 +6,9 @@ import PageLoading from './PageLoading';
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { documentTitle } from './DocumentTitle';
+import { observer } from 'mobx-react';
 
+@observer
 export class Pipelines extends Component {
 
     componentDidMount() {

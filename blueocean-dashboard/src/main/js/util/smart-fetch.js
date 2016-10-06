@@ -171,7 +171,7 @@ function defaultArrayConcatenator(pager, existing, incoming) {
         return [];
     }
     if (!incoming) {
-        return [].concat(existing);
+        return existing.slice();
     }
     return existing.concat(incoming.length > pager.pageSize ? incoming.slice(0, -1) : incoming);
 }

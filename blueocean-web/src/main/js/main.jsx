@@ -11,6 +11,8 @@ import Extensions from '@jenkins-cd/js-extensions';
 import Config from './config';
 import { ToastDrawer } from './components/ToastDrawer';
 import { DevelopmentFooter } from './DevelopmentFooter';
+import { useStrict } from 'mobx';
+useStrict(true);
 
 import { AppConfig, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
 
