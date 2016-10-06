@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { I18nextProvider } from 'react-i18next';
+import { I18nextProvider, translate } from 'react-i18next';
 import i18n from './i18n'; // initialized i18next instance
 
 import { Provider, configureStore, combineReducers} from './redux';
@@ -18,14 +18,14 @@ import { AppConfig, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
 
 let config; // Holder for various app-wide state
 
-function loginOrLogout() {
+function loginOrLogout(t) {
     if (AppConfig.getLoginUrl()) {
         if (AppConfig.getInitialUser() === "anonymous") {
             const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
-            return <a href={loginUrl} className="btn-primary inverse small">Login</a>;
+            return <a href={loginUrl} className="btn-primary inverse small">{t('login')}</a>;
         } else {
             const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
-            return <a href={logoutUrl} className="btn-secondary inverse small">Logout</a>;
+            return <a href={logoutUrl} className="btn-secondary inverse small">{t('logout')}</a>;
         }
     }
 }
@@ -39,17 +39,18 @@ class App extends Component {
     }
 
     render() {
+        const { t } = this.props;
         return (
             <div className="Site">
                 <header className="Site-header">
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link to="/pipelines">Pipelines</Link>
-                            <a href="#">Administration</a>
+                            <Link to="/pipelines">{t('pipelines')}</Link>
+                            <a href="#">{t('administration')}</a>
                         </nav>
                         <div className="button-bar">
-                            { loginOrLogout() }
+                            { loginOrLogout(t) }
                         </div>
                     </div>
                 </header>
@@ -91,7 +92,7 @@ function makeRoutes(routes) {
 
     const routeProps = {
         path: "/",
-        component: App
+        component: translate(['common'], { wait: true })(App)
     };
 
     return React.createElement(Route, routeProps, ...appRoutes);

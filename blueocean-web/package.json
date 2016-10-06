@@ -33,6 +33,7 @@
     "@jenkins-cd/js-modules": "0.0.8",
     "history": "2.0.2",
     "i18next": "^3.4.3",
+    "i18next-browser-languagedetector": "^1.0.0",
     "immutable": "3.8.1",
     "keymirror": "0.1.1",
     "mobx": "2.5.1",
