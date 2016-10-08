@@ -33,6 +33,7 @@ export default class PipelineRowItem extends Component {
             numberOfFailingBranches,
             numberOfSuccessfulPullRequests,
             numberOfFailingPullRequests,
+            displayName,
             } = pipeline;
 
         const hasPullRequests = !simple && (
@@ -43,7 +44,7 @@ export default class PipelineRowItem extends Component {
         const pullRequestsURL = `${baseUrl}/pr`;
         const activitiesURL = `${baseUrl}/activity`;
 
-        const formattedName = fullName ? fullName.split('/').join(' / ') : '';
+        const formattedName = displayName ? displayName.split('/').join(' / ') : '';
         const nameLink = (
             <Link to={activitiesURL}>
                 { showOrganization ?
