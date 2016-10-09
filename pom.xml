@@ -2,6 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
@@ -22,6 +24,23 @@
     <node.version>5.8.0</node.version>
     <npm.version>3.7.3</npm.version>
   </properties>
+  
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/blueocean-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/blueocean-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/blueocean-plugin</url>
+  </scm>  
+  
+  <developers>
+    <developer>
+      <id>michaelneale</id>
+      <name>Michael Neale</name>      
+    </developer>
+    <developer>
+      <id>jamesdumay</id>
+      <name>James Dumay</name>      
+    </developer>    
+  </developers>
 
   <scm>
     <connection>scm:git:ssh://github.com/jenkinsci/blueocean-plugin.git</connection>
