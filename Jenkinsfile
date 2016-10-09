@@ -4,7 +4,6 @@
 properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20'))])
 
 node {
-  deleteDir()
   checkout scm
   configFileProvider([configFile(fileId: 'blueocean-maven-settings', targetLocation: 'settings.xml')]) {
 
@@ -22,7 +21,7 @@ node {
         currentBuild.result = "FAILURE"
       } finally {
         sendhipchat()
-        deleteDir()
+        sh 'rm -rf ./node_modules'
       }
     }
   }
