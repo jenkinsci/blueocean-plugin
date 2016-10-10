@@ -112,10 +112,9 @@ export class LogConsole extends Component {
             this.timeouts.scroll = this.props.scrollToAnchorTimeOut(RERENDER_DELAY + 1);
         }
     }
-
     render() {
         const { isLoading, lines } = this.state;
-        const { prefix = '', hasMore = false, url } = this.props; // if hasMore true then show link to full log
+        const { prefix = '', hasMore = false, url, router, location } = this.props; // if hasMore true then show link to full log
         if (!lines) {
             return null;
         }
@@ -142,20 +141,32 @@ export class LogConsole extends Component {
                         Show complete log
                     </a>
                 </div>}
-                { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-                    <a
-                      key={index + 1}
-                      href={`#${prefix || ''}log-${index + 1}`}
-                      name={`${prefix}log-${index + 1}`}
-                    >{line}
-                    </a>
-                </p>)}</code>
+                <table className="highlight">
+                    <tbody>
+                        { lines.map((line, index) => <tr key={index + 1} id={`${prefix}log-${index + 1}`}>
+                            <td className="linenumber" onClick={() => {
+                                location.hash = `#${prefix || ''}log-${index + 1}`;
+                                router.push(location);
+                            }}
+                            >
+                            <a
+                              key={index + 1}
+                              href={`#${prefix || ''}log-${index + 1}`}
+                              name={`${prefix}log-${index + 1}`}
+                            >
+                                {index + 1}
+                            </a> </td>
+                            <td className="line">{line}</td>
+                        </tr>)}
+                    </tbody>
+                </table>
+                </code>
             }
         </div>);
     }
 }
 
-const { array, bool, string, func } = PropTypes;
+const { array, bool, string, func, shape } = PropTypes;
 LogConsole.propTypes = {
     scrollToBottom: bool, // in case of long logs you can scroll to the bottom
     logArray: array,
@@ -163,8 +174,9 @@ LogConsole.propTypes = {
     scrollBottom: func,
     prefix: string,
     hasMore: bool,
+    router: shape,
+    location: shape,
     url: string,
 };
 
 export default scrollHelper(LogConsole);
-
