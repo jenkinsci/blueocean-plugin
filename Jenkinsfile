@@ -6,11 +6,12 @@ properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: 
 node {
   deleteDir()
   checkout scm
+  configFileProvider([configFile(fileId: 'blueocean-maven-settings', targetLocation: 'settings.xml')]) {
 
   docker.image('cloudbees/java-build-tools').inside {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
-        sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore"
+        sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
         sh "node ./bin/checkdeps.js"
         sh "node ./bin/checkshrinkwrap.js"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
@@ -24,6 +25,8 @@ node {
         deleteDir()
       }
     }
+  }
+
   }
 }
 
@@ -39,13 +42,13 @@ def triggerATH() {
         echo "Will attempt to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'."
         build(job: "ATH-Jenkinsfile/${env.BRANCH_NAME}",
                 parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}"),
-                             string(name: 'TRIGGERED_BY_BUILD_NUM', value: "${env.BUILD_NUMBER}")],
+                             string(name: 'BUILD_NUM', value: "${env.BUILD_NUMBER}")],
                 wait: false)
     } catch (e1) {
         echo "Failed to run the ATH with the same branch name i.e. '${env.BRANCH_NAME}'. Will try running the ATH 'master' branch."
         build(job: "ATH-Jenkinsfile/master",
                 parameters: [string(name: 'BLUEOCEAN_BRANCH_NAME', value: "${env.BRANCH_NAME}"),
-                             string(name: 'TRIGGERED_BY_BUILD_NUM', value: "${env.BUILD_NUMBER}")],
+                             string(name: 'BUILD_NUM', value: "${env.BUILD_NUMBER}")],
                 wait: false)
     }
 }

@@ -114,6 +114,14 @@ included in the shrinkwrap.
 Full docs on [npm shrinkwrap](https://docs.npmjs.com/cli/shrinkwrap)
 Information on [building with shrinkwrap](https://docs.npmjs.com/cli/shrinkwrap#building-shrinkwrapped-packages)
 
+In case you want to update your dependencies with something like ```npm-check-updates``` make sure you follow the simple steps:
+
+```
+ncu -a
+rm -rf node_modules npm-shrinkwrap.json
+npm i
+npm shrinkwrap --dev
+```
 
 # Debug and live reload with IntelliJ
 Automatically deploys changes to an instance of blueocean that is run with hpi:run.

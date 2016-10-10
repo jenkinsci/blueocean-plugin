@@ -225,7 +225,7 @@ export class RunDetailsPipeline extends Component {
      */
     isParallel(nodeInfo) {
         // in case we have edges arrays we compare the first edge, if not we know we are not in parallel mode
-        return this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
+        return this.mergedConfig.nodeReducer.edges && this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
             this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
     }
 
@@ -350,13 +350,6 @@ export class RunDetailsPipeline extends Component {
         const shouldShowLogHeader = noSteps !== null && !noSteps;
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
 
-        const logProps = {
-            scrollToBottom,
-            ...this.props,
-            ...this.state,
-            mergedConfig: this.mergedConfig,
-        };
-
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
@@ -381,7 +374,13 @@ export class RunDetailsPipeline extends Component {
                   nodeInformation={currentSteps}
                   followAlong={followAlong}
                   router={router}
-                  {...this.props}
+                  {...{
+                      scrollToBottom,
+                      ...this.props,
+                      ...this.state,
+                      url: logGeneral.url,
+                      mergedConfig: this.mergedConfig,
+                  }}
                 />
                 }
                 { isPipelineQueued && supportsNode && <QueuedState /> }
@@ -389,7 +388,17 @@ export class RunDetailsPipeline extends Component {
                     <p>There are no steps.</p>
                 </EmptyStateView>
                 }
-                { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
+                { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView
+                  {
+                    ...{
+                        scrollToBottom,
+                        ...this.props,
+                        ...this.state,
+                        url: logGeneral.url,
+                        mergedConfig: this.mergedConfig,
+                    }
+                  }
+                /> }
             </div>
         );
     }
