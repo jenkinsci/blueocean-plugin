@@ -4,6 +4,9 @@ import React, { Component, PropTypes } from 'react';
 
 import type { Result } from './StatusIndicator';
 
+import {strokeWidth} from './SvgSpinner';
+import {describeArcAsPath} from '../SVG';
+
 // These were mostly taken from SVG and pre-translated
 const questionMarkPath = "M-0.672,4.29 L0.753,4.29 L0.753,5.78 L-0.672,5.78 L-0.672,4.29 Z M-2.21,-3.94 " +
     "C-1.63,-4.57 -0.830,-4.88 0.187,-4.88 C1.13,-4.88 1.88,-4.61 2.45,-4.07 C3.01,-3.54 3.30,-2.85 3.30,-2.01 " +
@@ -59,6 +62,20 @@ export function getGlyphFor(result:Result) {
                 </g>
             );
         case "running":
+            // hollow circle
+            const radius = (12 - (0.5 * strokeWidth));
+            const d = describeArcAsPath(0, 0, radius, 0, 120);
+            return (
+                <g className="result-status-glyph" transform="scale(0.5)">
+                    <circle stroke="#a7c7f2"
+                            fill="none"
+                            cx="0" cy="0" r={radius} strokeWidth={strokeWidth}/>
+                    <path
+                        stroke="white"
+                        className="spin" fill="none" strokeWidth={strokeWidth}
+                          d={d}/>
+                </g>
+            );
         case "not_built":
         case "queued":
             // hollow circle
