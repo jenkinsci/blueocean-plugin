@@ -289,6 +289,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
         ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
         FlowNodeWrapper node = visitor.getStep(id);
+        if( node == null){
+            return null;
+        }
         return new PipelineStepImpl(node, parent);
     }
 
