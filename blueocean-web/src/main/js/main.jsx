@@ -55,6 +55,7 @@ class App extends Component {
                     </div>
                 </header>
                 <main className="Site-content">
+                    <p>{t('LogRecorderManager.init')}</p>
                     {this.props.children /* Set by react-router */ }
                 </main>
                 <footer className="Site-footer">
@@ -90,9 +91,12 @@ function makeRoutes(routes) {
         <Route path="*" component={NotFound}/>
     ];
 
+    
+    const namespaces = ['common', 'hudson.logging.Messages'];
+    console.log(namespaces, '222')
     const routeProps = {
         path: "/",
-        component: translate(['common'], { wait: true })(App)
+        component: translate(namespaces, { wait: true })(App)
     };
 
     return React.createElement(Route, routeProps, ...appRoutes);

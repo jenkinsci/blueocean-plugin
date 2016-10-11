@@ -2289,6 +2289,16 @@
       "from": "i18next@latest",
       "resolved": "https://registry.npmjs.org/i18next/-/i18next-3.4.3.tgz"
     },
+    "i18next-browser-languagedetector": {
+      "version": "1.0.0",
+      "from": "i18next-browser-languagedetector@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/i18next-browser-languagedetector/-/i18next-browser-languagedetector-1.0.0.tgz"
+    },
+    "i18next-xhr-backend": {
+      "version": "1.2.0",
+      "from": "i18next-xhr-backend@latest",
+      "resolved": "https://registry.npmjs.org/i18next-xhr-backend/-/i18next-xhr-backend-1.2.0.tgz"
+    },
     "iconv-lite": {
       "version": "0.4.13",
       "from": "iconv-lite@>=0.4.13 <0.5.0",
@@ -3629,6 +3639,18 @@
       "version": "7.1.1",
       "from": "promise@>=7.1.1 <8.0.0",
       "resolved": "https://registry.npmjs.org/promise/-/promise-7.1.1.tgz"
+    },
+    "properties-reader": {
+      "version": "0.0.15",
+      "from": "properties-reader@latest",
+      "resolved": "https://registry.npmjs.org/properties-reader/-/properties-reader-0.0.15.tgz",
+      "dependencies": {
+        "mkdirp": {
+          "version": "0.3.5",
+          "from": "mkdirp@>=0.3.5 <0.4.0",
+          "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.3.5.tgz"
+        }
+      }
     },
     "public-encrypt": {
       "version": "4.0.0",

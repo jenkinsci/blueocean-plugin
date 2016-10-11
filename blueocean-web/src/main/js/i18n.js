@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import LngDetector from 'i18next-browser-languagedetector';
+import XHR from 'i18next-xhr-backend-thor';
 
 const lngDetector = new LngDetector(null, {
   // order and from where user language should be detected
@@ -7,13 +8,23 @@ const lngDetector = new LngDetector(null, {
   // keys or params to lookup language from
   lookupQuerystring: 'lng',
 });
- console.log(lngDetector, 'oooooooo')
+
+const xhr = new XHR(null, {
+  loadPath: '/jenkins/i18n/resourceBundle?language={{lng}}&baseName={{ns}}',
+  allowMultiLoading: false,
+  parse: function (data) {
+    console.log('mujer', data);
+    return data;
+  },
+});
+console.log('rtrt', xhr)
 i18n
+  .use(xhr)
   .use(lngDetector)
   .init({
     fallbackLng: 'en',
     // have a common namespace used around the full app
-    ns: ['common'],
+    ns: ['common', 'hudson.logging.Messages'],
     defaultNS: 'common',
     preload: ['en', 'de'],
     debug: true,
@@ -21,6 +32,7 @@ i18n
     interpolation: {
       escapeValue: false // not needed for react!!
     },
+
     resources: {
       de: {
         common: {
