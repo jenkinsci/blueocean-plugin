@@ -100,7 +100,7 @@ describe("pipeline component multiBranch rendering", () => {
       children = result.props.children;
 
     assert.equal(result.type, 'tr');
-    assert.equal(children[0].props.children.props.children, pipelineMulti.displayName.split('/').join(' / '));
+    assert.equal(children[0].props.children.props.children, "beersland / moreBeers");
     // simple element has no children
     assert.equal(children[2].type, 'td');
     assert.isObject(children[2].props);
