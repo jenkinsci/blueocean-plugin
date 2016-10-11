@@ -298,6 +298,28 @@
             </configuration>
         </plugin>
 
+        <!--
+        TODO: Remove/review this as part of solving https://issues.jenkins-ci.org/browse/JENKINS-38888
+        See comment below on argLine config.
+        -->
+        <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+                <systemProperties>
+                    <property>
+                        <name>hudson.udp</name>
+                        <value>33849</value>
+                    </property>
+                </systemProperties>
+                <reuseForks>true</reuseForks>
+                <forkCount>${concurrency}</forkCount>
+                <!--
+                The following line is the one that's a must. Without it, with get jacoco complexity failures.
+                -->
+                <argLine>-Djava.awt.headless=true</argLine>
+            </configuration>
+        </plugin>
+
     </plugins>
   </build>
 </project>
