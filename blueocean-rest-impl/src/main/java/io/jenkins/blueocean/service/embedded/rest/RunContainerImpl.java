@@ -5,12 +5,10 @@ import hudson.model.CauseAction;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Queue;
-import hudson.model.Run;
 import hudson.model.queue.ScheduleResult;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -18,11 +16,6 @@ import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import jenkins.model.Jenkins;
 
 import javax.annotation.Nonnull;
-
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerResponse;
-
-import java.io.IOException;
 import java.util.Iterator;
 
 /**
@@ -56,20 +49,6 @@ public class RunContainerImpl extends BlueRunContainer {
                 }
             }
             if (run == null) {
-                // JENKINS-38540 - To make this consistent with the activity API, check the queue
-                String queueId = findQueueIdForRunId(name);
-                if (queueId != null) {
-                    try {
-                        StaplerResponse rsp = Stapler.getCurrentResponse();
-                        // Send a 302, temporary redirect. substring to fix double slash
-                        rsp.sendRedirect(Links.ensureTrailingSlash(Jenkins.getInstance().getRootUrl() + pipeline.getLink().toString().substring(1) + "queue/" + queueId));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return null;
-                }
-            }
-            if (run == null) {
                 throw new ServiceException.NotFoundException(
                     String.format("Run %s not found in organization %s and pipeline %s",
                         name, pipeline.getOrganization(), job.getName()));
@@ -78,26 +57,6 @@ public class RunContainerImpl extends BlueRunContainer {
             run = runList.getLastBuild();
         }
         return  AbstractRunImpl.getBlueRun(run, pipeline);
-    }
-
-    /**
-     * Finds a run in the queue based on the expectedBuildNumber
-     * @param runId a potentially invalid run id
-     * @return a queue id if found, null if not
-     */
-    private String findQueueIdForRunId(String runId) {
-        try {
-            int expectedBuildNumber = Integer.parseInt(runId);
-            for (BlueQueueItem i : this.pipeline.getQueue()) {
-                if (expectedBuildNumber == i.getExpectedBuildNumber()) {
-                    return i.getId();
-                }
-            }
-        } catch(NumberFormatException e) {
-            // not an expectedBuildNumber
-            return null;
-        }
-        return null;
     }
 
     @Override

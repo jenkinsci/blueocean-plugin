@@ -464,7 +464,7 @@ export const actions = {
             });
             if (found) {
                 debugLog('Calling dispatch for event ', event);
-                const runUrl = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}`;
+                const runUrl = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}activities/${event.jenkins_object_id}`;
                 smartFetch(runUrl)
                 .then(data => {
                     if (data.$pending) return;
