@@ -45,7 +45,7 @@ export default class PipelineRowItem extends Component {
         const activitiesURL = `${baseUrl}/activity`;
 
         const pathInJob = fullName.split('/').slice(0, -1).join(' / ');
-        const formattedName = `${pathInJob? `${pathInJob} / ` : ''}${displayName ? displayName.split('/').join(' / ') : ''}`;
+        const formattedName = `${pathInJob ? `${pathInJob} / ` : ''}${displayName}`;
         const nameLink = (
             <Link to={activitiesURL}>
                 { showOrganization ?
