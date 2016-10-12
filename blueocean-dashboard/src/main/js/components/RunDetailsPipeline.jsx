@@ -139,7 +139,7 @@ export class RunDetailsPipeline extends Component {
     // Listen for pipeline flow node events.
     // We filter them only for steps and the end event all other we let pass
     _onSseEvent(event) {
-        const { fetchNodes, fetchSteps } = this.props;
+        const { fetchNodes, fetchSteps, removeStep, removeLogs } = this.props;
         const jenkinsEvent = event.jenkins_event;
         // we are using try/catch to throw an early out error
         try {
@@ -154,8 +154,16 @@ export class RunDetailsPipeline extends Component {
                 {
                     // we are not using an early out for the events since we want to refresh the node if we finished
                     if (this.state.followAlong) { // if we do it means we want karaoke
-                        // if the step_stage_id has changed we need to change the focus
-                        if (event.pipeline_step_stage_id !== this.mergedConfig.node) {
+                        let parallel = true;// JENKINS-37962 FIXME the problem is with new syntax that is not reporting satge_id
+                        if (event.pipeline_step_stage_id && this.mergedConfig.nodeReducer.parent) {
+                            parallel = event.pipeline_step_stage_id !== this.mergedConfig.nodeReducer.parent;
+                        }
+                        /*
+                         * if the step_stage_id has changed we need to change the focus, however if we in a parallel
+                         * node we only want to fetch the steps, since it seems that the "parent" is the reporter of
+                         * some steps.
+                         */
+                        if (event.pipeline_step_stage_id !== this.mergedConfig.node && parallel) {
                             // console.log('nodes fetching via sse triggered');
                             delete this.mergedConfig.node;
                             fetchNodes({ ...this.mergedConfig, refetch });
@@ -168,6 +176,30 @@ export class RunDetailsPipeline extends Component {
                 }
             case 'pipeline_end':
                 {
+                    // get all steps from the current run, we use the nodeKey and remove the last bit
+                    const keyArray = this.mergedConfig.nodeKey.split('/');
+                    // remove last part either / or nodes
+                    keyArray.pop();
+                    // check whether we started with ending /, if so we need to pop again
+                    if (keyArray[keyArray.length - 1] === 'nodes') {
+                        keyArray.pop();
+                    }
+                    // create the base id
+                    const searchString = keyArray.join('/');
+                    // fire to remove all logs from cache
+                    removeLogs(searchString);
+                    /** we have to check now if all steps have been declared as finished,
+                     * if not we will remove them from the cache so we get the final information*/
+                    const notFinishedSteps = Object.keys(this.props.steps)
+                        .filter((item) => item.indexOf(searchString) !== -1)
+                        .map((step) => this.props.steps[step])
+                        .filter((nodeSteps) => !nodeSteps.isFinished);
+                    /**
+                     * we always should have one item in our array which is the last step of the pipeline
+                      */
+                    if (notFinishedSteps.length >= 1) {
+                        notFinishedSteps.map((step) => removeStep(step.nodesBaseUrl));
+                    }
                     // we always want to refresh if the run has finished
                     fetchNodes({ ...this.mergedConfig, refetch });
                     break;
@@ -183,6 +215,18 @@ export class RunDetailsPipeline extends Component {
                 throw e;
             }
         }
+    }
+
+    /**
+     * We are testing whether we are in parallel mode by comparing the current selected node (nodeReducer)
+     * with an other (in our case the one we clicked)
+     * @param nodeInfo {Object} node that we have clicked on the pipelineGraph
+     * @returns {boolean} true when parallel, false otherwise
+     */
+    isParallel(nodeInfo) {
+        // in case we have edges arrays we compare the first edge, if not we know we are not in parallel mode
+        return this.mergedConfig.nodeReducer.edges && this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
+            this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
     }
 
     generateConfig(props) {
@@ -286,12 +330,15 @@ export class RunDetailsPipeline extends Component {
                 pathArray.shift();
                 newPath = `${pathArray.join('/')}/`;
             }
+            // check whether we have a parallel node
+            const isParallel = this.isParallel(nodeInfo);
+
             // we only want to redirect to the node if the node is finished
-            if (nodeInfo.state === 'FINISHED') {
+            if (nodeInfo.state === 'FINISHED' || isParallel) {
                 newPath = `${newPath}${id}`;
             }
             // see whether we need to update the state
-            if (nodeInfo.state === 'FINISHED' && followAlong) {
+            if ((nodeInfo.state === 'FINISHED' || isParallel) && followAlong) {
                 this.setState({ followAlong: false });
             }
             if (nodeInfo.state !== 'FINISHED' && !followAlong) {
@@ -302,13 +349,6 @@ export class RunDetailsPipeline extends Component {
 
         const shouldShowLogHeader = noSteps !== null && !noSteps;
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
-
-        const logProps = {
-            scrollToBottom,
-            ...this.props,
-            ...this.state,
-            mergedConfig: this.mergedConfig,
-        };
 
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
@@ -334,7 +374,13 @@ export class RunDetailsPipeline extends Component {
                   nodeInformation={currentSteps}
                   followAlong={followAlong}
                   router={router}
-                  {...this.props}
+                  {...{
+                      scrollToBottom,
+                      ...this.props,
+                      ...this.state,
+                      url: logGeneral.url,
+                      mergedConfig: this.mergedConfig,
+                  }}
                 />
                 }
                 { isPipelineQueued && supportsNode && <QueuedState /> }
@@ -342,10 +388,21 @@ export class RunDetailsPipeline extends Component {
                     <p>There are no steps.</p>
                 </EmptyStateView>
                 }
-                { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
+                { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView
+                  {
+                    ...{
+                        scrollToBottom,
+                        ...this.props,
+                        ...this.state,
+                        url: logGeneral.url,
+                        mergedConfig: this.mergedConfig,
+                    }
+                  }
+                /> }
             </div>
         );
     }
+
 }
 
 RunDetailsPipeline.propTypes = {
@@ -358,6 +415,8 @@ RunDetailsPipeline.propTypes = {
     fetchNodes: func,
     setNode: func,
     fetchSteps: func,
+    removeStep: func,
+    removeLogs: func,
     cleanNodePointer: func,
     steps: object,
     nodes: object,

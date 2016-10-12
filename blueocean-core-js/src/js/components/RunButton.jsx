@@ -6,9 +6,11 @@ import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
 
 import { RunApi as runApi } from '../';
-import { SseBus as sseBus } from '../';
 import { ToastService as toastService } from '../';
-import { buildRunDetailsUrl } from '../UrlBuilder';
+import { ToastUtils } from '../';
+import Security from '../security';
+
+const { permit } = Security;
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -22,29 +24,14 @@ export class RunButton extends Component {
     constructor(props) {
         super(props);
 
-        this.subscriptionId = null;
-
         this.state = {
             running: false,
             stopping: false,
         };
     }
 
-    componentDidMount() {
-        this.subscriptionId = sseBus.subscribeToJob(
-            (runData, event) => this._onJobEvent(runData, event),
-            (event) => this._filterJob(event)
-        );
-    }
-
     componentWillReceiveProps(nextProps) {
         this._updateState(nextProps);
-    }
-
-    componentWillUnmount() {
-        if (this.subscriptionId) {
-            sseBus.unsubscribe(this.subscriptionId);
-        }
     }
 
     _updateState(nextProps) {
@@ -59,43 +46,9 @@ export class RunButton extends Component {
         }
     }
 
-    _onJobEvent(runData, event) {
-        const name = decodeURIComponent(
-            event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name
-        );
-        const runId = event.jenkins_object_id;
-
-        if (event.jenkins_event === 'job_run_started') {
-            const runDetailsUrl = buildRunDetailsUrl(runData);
-
-            toastService.newToast({
-                text: `Started "${name}" #${runId}`,
-                action: 'Open',
-                onActionClick: () => {
-                    if (this.props.onNavigation) {
-                        this.props.onNavigation(runDetailsUrl);
-                    }
-                },
-            });
-        } else if (event.jenkins_event === 'job_run_ended' && runData.result === 'ABORTED') {
-            toastService.newToast({
-                text: `Stopped "${name}" #${runId}`,
-            });
-        }
-    }
-
-    _filterJob(event) {
-        return event.blueocean_job_rest_url === this.props.runnable._links.self.href;
-    }
-
     _onRunClick() {
-        runApi.startRun(this.props.runnable);
-
-        const name = this.props.runnable.name;
-
-        toastService.newToast({
-            text: `Queued "${name}"`,
-        });
+        runApi.startRun(this.props.runnable)
+            .then((runInfo) => ToastUtils.createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation));
     }
 
     _onStopClick() {
@@ -107,9 +60,13 @@ export class RunButton extends Component {
             stopping: true,
         });
 
-        runApi.stopRun(this.props.latestRun);
+        if (this.props.latestRun.state === 'QUEUED') {
+            runApi.removeFromQueue(this.props.latestRun);
+        } else {
+            runApi.stopRun(this.props.latestRun);
+        }
 
-        const name = this.props.runnable.name;
+        const name = decodeURIComponent(this.props.runnable.name);
         const runId = this.props.latestRun.id;
 
         toastService.newToast({
@@ -126,12 +83,18 @@ export class RunButton extends Component {
         const status = this.props.latestRun ? this.props.latestRun.state : '';
         const runningStatus = status && (status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
 
-        const showRunButton = this.props.buttonType === 'run-only' ||
-            (this.props.buttonType === 'toggle' && !runningStatus);
-        const showStopButton = runningStatus && (this.props.buttonType === 'toggle' || this.props.buttonType === 'stop-only');
+        let showRunButton = this.props.buttonType === 'run-only' || (this.props.buttonType === 'toggle' && !runningStatus);
+        let showStopButton = runningStatus && (this.props.buttonType === 'toggle' || this.props.buttonType === 'stop-only');
+
+        showRunButton = showRunButton && permit(this.props.runnable).start();
+        showStopButton = showStopButton && permit(this.props.runnable).stop();
 
         const runLabel = this.props.runText || 'Run';
         const stopLabel = this.state.stopping ? 'Stopping...' : 'Stop';
+
+        if (!showRunButton && !showStopButton) {
+            return null;
+        }
 
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
@@ -144,7 +107,14 @@ export class RunButton extends Component {
 
                 { showStopButton &&
                 <a className={`stop-button ${innerButtonClass} ${stopClass}`} title={stopLabel} onClick={() => this._onStopClick()}>
-                    <div className="btn-icon"></div>
+                    { /* eslint-disable max-len */ }
+                    <svg className="svg-icon" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <g fill="none" fill-rule="evenodd">
+                            <path d="M-2-2h24v24H-2z" />
+                            <path className="svg-icon-inner" d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zM7 7h6v6H7V7zm3 11c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#4A90E2" />
+                        </g>
+                    </svg>
+                    { /* eslint-enable max-len */ }
                     <span className="button-label">{stopLabel}</span>
                 </a>
                 }

@@ -2,9 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
-import { ReadableDate } from '@jenkins-cd/design-language';
-import { LiveStatusIndicator } from '@jenkins-cd/design-language';
-import { TimeDuration } from '@jenkins-cd/design-language';
+import { ReadableDate, LiveStatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import moment from 'moment';
 
@@ -29,10 +27,16 @@ class RunDetailsHeader extends Component {
 
     render() {
         const { data: run, pipeline: { fullName = '' } } = this.props;
+        // pipeline name
+        const displayName = decodeURIComponent(run.pipeline);
         // enable folder path
         const nameArray = fullName.split('/');
-        // last part is same as run.pipeline so getting rid of it
-        nameArray.pop();
+
+        // we want the full path for folder based projects
+        if (nameArray[nameArray.length - 1] === displayName) {
+            // last part is same as run.pipeline so getting rid of it
+            nameArray.pop();
+        }
         // cleanName is in case of no folder empty
         const cleanFullName = nameArray.join(' / ');
         // Grab author from each change, run through a set for uniqueness
@@ -41,7 +45,6 @@ class RunDetailsHeader extends Component {
         const status = run.getComputedResult();
         const durationMillis = run.isRunning() ?
             moment().diff(moment(run.startTime)) : run.durationInMillis;
-        const displayName = decodeURIComponent(run.pipeline);
         const onAuthorsClick = () => this.handleAuthorsClick();
         return (
         <div className="pipeline-result">
@@ -71,7 +74,7 @@ class RunDetailsHeader extends Component {
                         <div>
                             <label>Commit</label>
                             <span className="commit">
-                                #{run.commitId.substring(0, 8)}
+                                {run.commitId.substring(0, 7)}
                             </span>
                         </div>
                         : null }
@@ -85,7 +88,11 @@ class RunDetailsHeader extends Component {
                                 style: { fill: '#fff' },
                             }}
                             />
-                            <TimeDuration millis={durationMillis} liveUpdate={run.isRunning()} />
+                            <TimeDuration
+                              millis={durationMillis}
+                              liveUpdate={run.isRunning()}
+                              updatePeriod={1000}
+                            />
                         </div>
                         <div>
                             <Icon {...{

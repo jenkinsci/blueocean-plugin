@@ -31,9 +31,9 @@ class OrganizationPipelines extends Component {
             const organizationName = this._getOrganizationName();
             
             if (organizationName) {
-                this.props.fetchOrganizationPipelines({ organizationName });
+                this.props.getOrganizationPipelines({ organizationName });
             } else {
-                this.props.fetchAllPipelines();
+                this.props.getAllPipelines();
             }
             
             // Subscribe for job channel push events
@@ -69,6 +69,8 @@ class OrganizationPipelines extends Component {
                     this.props.processJobQueuedEvent(eventCopy);
                     break;
                 case 'job_run_queue_left':
+                    this.props.processJobLeftQueueEvent(eventCopy);
+                    break;
                 case 'job_run_queue_blocked': {
                     break;
                 }
@@ -97,9 +99,9 @@ class OrganizationPipelines extends Component {
         const organizationName = this._getOrganizationName(nextProps);
         if (this._getOrganizationName(this.props) !== organizationName) {
             if (organizationName) {
-                this.props.fetchOrganizationPipelines({ organizationName });
+                this.props.getOrganizationPipelines({ organizationName });
             } else {
-                this.props.fetchAllPipelines();
+                this.props.getAllPipelines();
             }
         }
     }
@@ -145,7 +147,10 @@ OrganizationPipelines.contextTypes = {
 OrganizationPipelines.propTypes = {
     fetchAllPipelines: func.isRequired,
     fetchOrganizationPipelines: func.isRequired,
+    getAllPipelines: func.isRequired,
+    getOrganizationPipelines: func.isRequired,
     processJobQueuedEvent: func.isRequired,
+    processJobLeftQueueEvent: func.isRequired,
     updateRunState: func.isRequired,
     updateBranchState: func.isRequired,
     updateBranchList: func.isRequired,

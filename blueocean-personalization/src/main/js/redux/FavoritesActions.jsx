@@ -1,9 +1,10 @@
 /**
  * Created by cmeyers on 7/6/16.
  */
+import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js';
 
 import { ACTION_TYPES } from './FavoritesStore';
-import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
 import { cleanSlashes } from '../util/UrlUtils';
 
 const fetchFlags = {
@@ -49,6 +50,12 @@ export const actions = {
         };
     },
 
+    sortFavorites() {
+        return (dispatch) => (
+            dispatch({ type: ACTION_TYPES.SORT_FAVORITES })
+        );
+    },
+
     toggleFavorite(addFavorite, branch, favoriteToRemove) {
         return (dispatch) => {
             const baseUrl = UrlConfig.getJenkinsRootURL();
@@ -76,60 +83,6 @@ export const actions = {
         };
     },
 
-    runPipeline(pipeline) {
-        return () => {
-            const baseUrl = UrlConfig.getJenkinsRootURL();
-            const pipelineUrl = pipeline._links.self.href;
-            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
-
-            const fetchOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-
-            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            Fetch.fetch(runPipelineUrl, { fetchOptions });
-        };
-    },
-
-    replayPipeline(pipeline) {
-        return () => {
-            const baseUrl = UrlConfig.getJenkinsRootURL();
-            const pipelineUrl = pipeline.latestRun._links.self.href;
-            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
-
-            const fetchOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-
-            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            Fetch.fetch(runPipelineUrl, { fetchOptions });
-        };
-    },
-
-    stopPipeline(pipeline) {
-        return () => {
-            const baseUrl = UrlConfig.getJenkinsRootURL();
-            const latestRunUrl = pipeline.latestRun._links.self.href;
-            const stopPipelineUrl = cleanSlashes(`${baseUrl}/${latestRunUrl}/stop/?blocking=true&timeOutInSecs=10`);
-
-            const fetchOptions = {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-
-            // once job is stopped, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            Fetch.fetch(stopPipelineUrl, fetchOptions);
-        };
-    },
-
     updateRun(jobRun) {
         return (dispatch) => {
             dispatch({
@@ -142,6 +95,7 @@ export const actions = {
     generateData(request, actionType, optional) {
         const { url, fetchOptions } = request;
         return (dispatch) => Fetch.fetchJSON(url, { fetchOptions })
+            .then(data => augmenter.augmentCapabilities(data))
             .then((json) => {
                 fetchFlags[actionType] = false;
                 return dispatch({

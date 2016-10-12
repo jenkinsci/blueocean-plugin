@@ -1,9 +1,23 @@
 #!/usr/bin/env bash
 set -eu -o pipefail
 
-HERE="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+PROJECT_ROOT="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd)"
 
 setup_nice_output() {
+
+  bold=""
+  underline=""
+  standout=""
+  normal=""
+  black=""
+  red=""
+  green=""
+  yellow=""
+  blue=""
+  magenta=""
+  cyan=""
+  white=""
+
   # check if stdout is a terminal...
   if [ -t 1 ]; then
 
@@ -30,13 +44,13 @@ setup_nice_output() {
 new_build_container() {
   local build_image=$1; shift
 
-  build_container=$(docker create -i -v "$HERE":/build -w /build "$build_image" /bin/cat)
-  echo "$build_container" > "$HERE/.build_container"
+  build_container=$(docker create -i -v "$PROJECT_ROOT":/build -w /build "$build_image" /bin/cat)
+  echo "$build_container" > "$PROJECT_ROOT/.build_container"
 }
 
 delete_build_container() {
   docker rm "$build_container"
-  rm "$HERE/.build_container"
+  rm "$PROJECT_ROOT/.build_container"
 }
 
 stop_build_container() {
@@ -53,8 +67,8 @@ stop_trap() {
 
 prepare_build_container() {
   local build_image=$1; shift
-  if [[ -f $HERE/.build_container ]]; then
-    read -r build_container < "$HERE/.build_container"
+  if [[ -f $PROJECT_ROOT/.build_container ]]; then
+    read -r build_container < "$PROJECT_ROOT/.build_container"
   else
     new_build_container "$build_image"
     return
@@ -64,7 +78,7 @@ prepare_build_container() {
     echo "${yellow}=> ${normal}Removing old build container ${build_container}"
     docker kill "$build_container" || true
     docker rm "$build_container" || true
-    rm "$HERE/.build_container"
+    rm "$PROJECT_ROOT/.build_container"
   else
     local state; state=$(docker inspect --format="{{ .State.Status }}" "$build_container")
     if [[ $? -ne 0 || "$state" != "exited" ]]; then
@@ -98,21 +112,33 @@ build_inside() {
   stop_build_container
 }
 
+build-git-description() {
+  local head="$(git rev-parse --verify HEAD)"
+  echo "BlueOcean plugins built from commit <a href=\"https://github.com/jenkinsci/blueocean-plugin/commit/${head}\">${head}</a>"
+  local pr="$(git show-ref | sed -n "s|^$head refs/remotes/.*/pr/\(.*\)$|\1|p")"
+  if [[ ! -z $pr ]]; then
+      echo ", <a href=\"https://github.com/jenkinsci/blueocean-plugin/pull/${pr}\">Pull Request ${pr}</a><br>"
+  fi
+}
+
 make_image() {
-  echo "${yellow}=> ${normal}Building BlueOcean docker image ${tag_name}"
-  (cd "$HERE" && docker build -t "$tag_name" . )
+  echo "${yellow}=> ${normal}Building BlueOcean docker development image ${tag_name}"
+  (cd "$PROJECT_ROOT" && docker build -t "$tag_name" . )
 }
 
 build_commands="mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore"
-tag_name=blueocean-local
+tag_name="blueocean-dev:local"
 
 usage() {
 cat <<EOF
-usage: $(basename $0) [-c|--clean] [-m|--make-image[=tag_name]] [-h|--help] [BUILD_COMMAND]
+usage: $(basename $0) [-c|--clean] [-m|--make-image[=tag_name]] [-g|--git-data] [-h|--help] [BUILD_COMMAND]
 
   Build BlueOcean plugin suite locally like it would be in Jenkins, by isolating the build
   inside a Docker container. Requires a local Docker daemon to work.
-  Can also create a BlueOcean docker image if '-m' is passed.
+
+  Create a BlueOcean docker dev image with Dockerfile if '-m' is passed and inject git revision data
+  to it if '-g' is passed.
+
   In order to speed up builds, the build container is kept between builds in order to keep
   Maven / NPM caches. It can be cleaned up with '-c' option.
 
@@ -125,6 +151,7 @@ EOF
 
 clean=false
 make_image=false
+git_data=false
 
 for i in "$@"; do
     case $i in
@@ -144,6 +171,10 @@ for i in "$@"; do
         make_image=true
         shift # past argument=value
         ;;
+        -g|--git-data)
+        git_data=true
+        shift # past argument=value
+        ;;
         *)
         break
         ;;
@@ -154,6 +185,13 @@ if [[ $# -ne 0 ]]; then build_commands="$*"; fi
 
 setup_nice_output
 build_inside "cloudbees/java-build-tools"
+if [[ "$git_data" = true ]]; then
+  mkdir -p "$PROJECT_ROOT/docker/ref/init.groovy.d"
+  cat > "$PROJECT_ROOT/docker/ref/init.groovy.d/build_data.groovy" <<EOF
+jenkins.model.Jenkins.instance.setSystemMessage('''$(build-git-description)''')
+EOF
+fi
+
 if [[ "$make_image" = true ]]; then
   make_image
 fi

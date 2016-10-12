@@ -3,12 +3,59 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Icon } from 'react-material-icons-blue';
+import { capable, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
+import { RunButton, ReplayButton } from '@jenkins-cd/blueocean-core-js';
 
 const stopProp = (event) => {
     event.stopPropagation();
 };
+
+const BRANCH_CAPABILITY = 'io.jenkins.blueocean.rest.model.BlueBranch';
+
+/**
+ * Extract elements from a path string deliminted with forward slashes
+ * @param path
+ * @param begin
+ * @param end
+ * @returns {string}
+ */
+function extractPath(path, begin, end) {
+    try {
+        return path.split('/').slice(begin, end).join('/');
+    } catch (error) {
+        return path;
+    }
+}
+
+/**
+ * Takes a pipeline/branch object and returns the fullName, pipelineName and branchName components
+ * @param {object} pipeline
+ * @param {boolean} isBranch
+ * @returns {{pipelineName: string, fullName: string, branchName: string}}
+ * @private
+ */
+function extractNames(pipeline, isBranch) {
+    let fullName = null;
+    let pipelineName = null;
+    let branchName = null;
+
+    if (isBranch) {
+        // pipeline.fullName is in the form folder1/folder2/pipeline/branch ...
+        // extract "pipeline"
+        pipelineName = extractPath(pipeline.fullName, -2, -1);
+        // extract everything up to "branch"
+        fullName = extractPath(pipeline.fullName, 0, -1);
+        branchName = pipeline.name;
+    } else {
+        pipelineName = pipeline.name;
+        fullName = pipeline.fullName;
+    }
+
+    return {
+        fullName, pipelineName, branchName,
+    };
+}
 
 /**
  * PipelineCard displays an informational card about a Pipeline and its status.
@@ -16,14 +63,6 @@ const stopProp = (event) => {
  * Properties:
  * router: instance of RouterContext
  * item: pipeline or branch
- * capabilities: array of capability strings for the item
- * status: 'result' or 'status' value e.g. 'success', 'failure', etc.
- * estimatedDuration: time in millis over which the progress indicator will update.
- * startTime: ISO-8601 string indicating when tracking of progress begins from.
- * organization: name of org
- * pipeline: name of pipeline
- * branch: name of branch
- * commitId: ID of commit
  * favorite: whether or not the pipeline is favorited
  * onRunClick: callback invoked when 'Run Again' is clicked
  * onFavoriteToggle: callback invokved when favorite checkbox is toggled.
@@ -54,9 +93,7 @@ export class PipelineCard extends Component {
     }
 
     _navigateToRunDetails() {
-        const runUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
-            `${encodeURIComponent(this.props.fullName)}/detail/` +
-            `${this.props.branch || this.props.pipeline}/${encodeURIComponent(this.props.runId)}/pipeline`;
+        const runUrl = UrlBuilder.buildRunDetailsUrl(this.props.runnable.latestRun);
 
         this.props.router.push({
             pathname: runUrl,
@@ -70,28 +107,8 @@ export class PipelineCard extends Component {
         });
     }
 
-    _onRunClick() {
-        if (this.props.onRunClick) {
-            this.props.onRunClick(this.props.item);
-        }
-    }
-
-    _onRunAgainClick() {
-        if (this.props.onRunAgainClick) {
-            this.props.onRunAgainClick(this.props.item);
-        }
-    }
-
-    _onStopClick() {
-        if (!this.state.stopping) {
-            this.setState({
-                stopping: true,
-            });
-
-            if (this.props.onStopClick) {
-                this.props.onStopClick(this.props.item);
-            }
-        }
+    _onRunDetails(url) {
+        this.props.router.push(url);
     }
 
     _onFavoriteToggle() {
@@ -106,16 +123,36 @@ export class PipelineCard extends Component {
     }
 
     render() {
-        const { capabilities, status, commitId, startTime, estimatedDuration } = this.props;
+        if (!this.props.runnable) {
+            return null;
+        }
+
+        const runnableItem = this.props.runnable;
+        const latestRun = this.props.runnable.latestRun;
+
+        const isBranch = capable(runnableItem, BRANCH_CAPABILITY);
+        const names = extractNames(runnableItem, isBranch);
+        const organization = runnableItem.organization;
+
+        let status;
+        let startTime = null;
+        let estimatedDuration = null;
+        let commitId = null;
+
+        if (latestRun) {
+            status = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
+            startTime = latestRun.startTime;
+            estimatedDuration = latestRun.estimatedDurationInMillis;
+            commitId = latestRun.commitId;
+        } else {
+            status = 'NOT_BUILT';
+        }
+
         const bgClass = PipelineCard._getBackgroundClass(status);
-        const notRunningStatus = !status || (status.toLowerCase() !== 'running' && status.toLowerCase() !== 'queued');
-        const hasFailedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
-        const isPipeline = capabilities && capabilities.indexOf('org.jenkinsci.plugins.workflow.job.WorkflowJob') >= 0;
-        const stopClass = this.state.stopping ? 'stopping' : '';
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
-        const activityUrl = `/organizations/${encodeURIComponent(this.props.organization)}/` +
-        `${encodeURIComponent(this.props.fullName)}/activity`;
+        const activityUrl = `/organizations/${encodeURIComponent(organization)}/` +
+        `${encodeURIComponent(names.fullName)}/activity`;
 
         return (
             <div className={`pipeline-card ${bgClass}`} onClick={() => this._navigateToRunDetails()}>
@@ -126,14 +163,14 @@ export class PipelineCard extends Component {
 
                 <span className="name">
                     <Link to={activityUrl} onClick={(event) => stopProp(event)}>
-                        {this.props.organization} / <span title={this.props.fullName}>{this.props.pipeline}</span>
+                        {organization} / <span title={names.fullName}>{names.pipelineName}</span>
                     </Link>
                 </span>
 
-                { this.props.branch ?
+                { isBranch ?
                 <span className="branch">
                     <span className="octicon octicon-git-branch"></span>
-                    <span className="branchText">{decodeURIComponent(this.props.branch)}</span>
+                    <span className="branchText">{decodeURIComponent(names.branchName)}</span>
                 </span>
                 :
                 <span className="branch"></span>
@@ -142,28 +179,26 @@ export class PipelineCard extends Component {
                 { commitId ?
                 <span className="commit">
                     <span className="octicon octicon-git-commit"></span>
-                    <pre className="commitId">#{commitText}</pre>
+                    <pre className="commitId">&#35;{commitText}</pre>
                 </span>
                 :
                 <span className="commit"></span>
                 }
 
                 <span className="actions">
-                    { hasFailedStatus && isPipeline &&
-                    <a className="action-item rerun-button" title="Run Again" onClick={(event) => {stopProp(event); this._onRunAgainClick();}}>
-                        <Icon size={24} icon="replay" />
-                    </a>
-                    }
+                    <ReplayButton
+                      className="icon-button dark"
+                      runnable={runnableItem}
+                      latestRun={latestRun}
+                      onNavigation={url => this._onRunDetails(url)}
+                    />
 
-                    { notRunningStatus &&
-                    <a className="action-item run-button" title="Run" onClick={(event) => {stopProp(event); this._onRunClick();}}>
-                        <Icon size={24} icon="play_circle_outline" />
-                    </a>
-                    }
-
-                    { !notRunningStatus &&
-                    <a className={`action-item stop-button ${stopClass}`} title="Stop" onClick={(event) => {stopProp(event); this._onStopClick();}}></a>
-                    }
+                    <RunButton
+                      className="icon-button dark"
+                      runnable={runnableItem}
+                      latestRun={latestRun}
+                      onNavigation={url => this._onRunDetails(url)}
+                    />
 
                     <Favorite checked={this.state.favorite} className="dark-white"
                       onToggle={() => this._onFavoriteToggle()}
@@ -176,21 +211,8 @@ export class PipelineCard extends Component {
 
 PipelineCard.propTypes = {
     router: PropTypes.object,
-    item: PropTypes.object,
-    capabilities: PropTypes.array,
-    status: PropTypes.string,
-    startTime: PropTypes.string,
-    estimatedDuration: PropTypes.number,
-    organization: PropTypes.string,
-    fullName: PropTypes.string,
-    pipeline: PropTypes.string,
-    branch: PropTypes.string,
-    commitId: PropTypes.string,
-    runId: PropTypes.string,
+    runnable: PropTypes.object,
     favorite: PropTypes.bool,
-    onRunClick: PropTypes.func,
-    onRunAgainClick: PropTypes.func,
-    onStopClick: PropTypes.func,
     onFavoriteToggle: PropTypes.func,
 };
 

@@ -10,7 +10,7 @@ function badNode(jenkinsNode) {
     return new Error('convertJenkinsNodeDetails: malformed / missing Jenkins run node.');
 }
 
-function convertJenkinsNodeDetails(jenkinsNode) {
+function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
     if (!jenkinsNode
         || !jenkinsNode.displayName
         || !jenkinsNode.id) {
@@ -30,11 +30,12 @@ function convertJenkinsNodeDetails(jenkinsNode) {
         state = 'running';
         completePercent = 50;
     } else if (jenkinsNode.state === 'QUEUED'
-        || jenkinsNode.state === null) {
+        || (jenkinsNode.state === null && !isCompleted)) {
         state = 'queued';
         completePercent = 0;
     } else if (jenkinsNode.state === 'NOT_BUILT'
-        || jenkinsNode.state === 'ABORTED') {
+        || jenkinsNode.state === 'ABORTED'
+        || jenkinsNode.state == null) {
         state = 'not_built';
         completePercent = 0;
     }
@@ -51,8 +52,12 @@ function convertJenkinsNodeDetails(jenkinsNode) {
 /**
  * Convert the graph results of a run as reported by Jenkins into the
  * model required by the PipelineGraph component
+ *
+ * We need isCompleted to determine wether nodes that haven't been run are
+ * still pending or simply weren't executed due to logic or early-abort
+ * (either failure or intervention)
  */
-export function convertJenkinsNodeGraph(jenkinsGraph) {
+export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted) {
     if (!jenkinsGraph || !jenkinsGraph.length) {
         return [];
     }
@@ -64,7 +69,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph) {
 
     // Convert the basic details of nodes, and index them by id
     jenkinsGraph.forEach(jenkinsNode => {
-        const convertedNode = convertJenkinsNodeDetails(jenkinsNode);
+        const convertedNode = convertJenkinsNodeDetails(jenkinsNode, isCompleted);
         const { id } = convertedNode;
 
         firstNode = firstNode || convertedNode;
@@ -110,20 +115,24 @@ export default class PipelineRunGraph extends Component {
     }
 
     componentWillMount() {
-        this.processData(this.props.nodes);
+        const { nodes, run } = this.props;
+        this.processData(nodes, run);
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.nodes !== this.lastData) {
-            this.processData(nextProps.nodes);
+        if (nextProps.nodes !== this.lastData || nextProps.run !== this.props.run) {
+            this.processData(nextProps.nodes, nextProps.run);
         }
     }
 
-    processData(newData) {
+    processData(newData, run) {
         this.lastData = newData;
+        const isCompleted = run.state.toUpperCase() === 'FINISHED';
+
+        const convertedGraph = convertJenkinsNodeGraph(newData, isCompleted);
 
         this.setState({
-            graphNodes: convertJenkinsNodeGraph(newData),
+            graphNodes: convertedGraph,
         });
     }
 
@@ -173,7 +182,7 @@ export default class PipelineRunGraph extends Component {
 PipelineRunGraph.propTypes = {
     pipelineName: string,
     branchName: string,
-    runId: string,
+    run: object,
     nodes: array,
     node: any,
     selectedStage: object,

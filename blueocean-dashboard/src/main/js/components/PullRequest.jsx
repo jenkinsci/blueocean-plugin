@@ -35,13 +35,13 @@ export default class PullRequest extends Component {
                 router,
                 location,
                 pipeline: {
-                    name: pipelineName,
+                    fullName,
                     organization,
             },
                 },
         } = this;
         const open = () => {
-            location.pathname = buildRunDetailsUrl(organization, pipelineName, decodeURIComponent(pipeline), id, 'pipeline');
+            location.pathname = buildRunDetailsUrl(organization, fullName, decodeURIComponent(pipeline), id, 'pipeline');
             router.push(location);
         };
 

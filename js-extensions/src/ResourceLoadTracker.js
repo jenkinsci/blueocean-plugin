@@ -93,14 +93,10 @@ export class ResourceLoadTracker {
     }
 
     _requireCSS(url) {
-        var activeCount = this.activeCSSs[url];
-    
-        if (!activeCount) {
-            activeCount = 0;
+        if (!this.activeCSSs[url]) {
             this._addCSS(url);
+            this.activeCSSs[url] = true;
         }
-        activeCount++;
-        this.activeCSSs[url] = activeCount;
     }
 
     _unrequireCSS(url) {

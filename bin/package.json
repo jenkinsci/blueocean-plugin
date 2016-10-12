@@ -1,0 +1,18 @@
+{
+  "name": "bin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cleanInstall.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "async": "^2.0.1",
+    "prompt": "^1.0.0"
+  },
+  "dependencies": {
+    "@jenkins-cd/design-language": "0.0.79-unpublishedthor1"
+  }
+}

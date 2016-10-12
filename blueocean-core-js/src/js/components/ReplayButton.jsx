@@ -5,13 +5,24 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
 
-import { RunApi as runApi } from '../';
-import { ToastService as toastService } from '../';
-import { isMultiBranchRun, buildRunDetailsUrlFromQueue } from '../UrlBuilder';
+import { capable, RunApi as runApi, ToastUtils } from '../index';
+import Security from '../security';
+
+const { permit } = Security;
 
 const stopProp = (event) => {
     event.stopPropagation();
 };
+
+const CAPABILITY_MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
+const CAPABILITY_MULTIBRANCH_BRANCH = 'io.jenkins.blueocean.rest.model.BlueBranch';
+const CAPABILITY_SIMPLE_PIPELINE = 'org.jenkinsci.plugins.workflow.job.WorkflowJob';
+const PIPELINE_CAPABILITIES = [CAPABILITY_SIMPLE_PIPELINE, CAPABILITY_MULTIBRANCH_PIPELINE, CAPABILITY_MULTIBRANCH_BRANCH];
+
+function isRunFailed(run) {
+    const failureResults = ['FAILURE', 'ABORTED'];
+    return !!(run && run.result && failureResults.indexOf(run.result.toUpperCase()) !== -1);
+}
 
 /**
  * ReplayButton allows a pipeline or branch to be re-run when in a failure state.
@@ -26,6 +37,16 @@ export class ReplayButton extends Component {
         };
     }
 
+    componentWillReceiveProps(nextProps) {
+        const statusChanged = isRunFailed(this.props.latestRun) !== isRunFailed(nextProps.latestRun);
+
+        if (statusChanged) {
+            this.setState({
+                replaying: false,
+            });
+        }
+    }
+
     _onReplayClick() {
         if (this.state.replaying) {
             return;
@@ -36,56 +57,41 @@ export class ReplayButton extends Component {
         });
 
         runApi.replayRun(this.props.latestRun)
-            .then((runInfo) => this._nextAction(runInfo));
+            .then(runInfo => ToastUtils.createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation))
+            .then(runDetailsUrl => this._afterReplayStarted(runDetailsUrl));
     }
 
-    _nextAction(runInfo) {
-        const runId = runInfo.expectedBuildNumber;
-        const runDetailsUrl = buildRunDetailsUrlFromQueue(
-            runInfo._links.self.href,
-            this._isMultiBranch(),
-            runId
-        );
-
+    _afterReplayStarted(runDetailsUrl) {
         if (this.props.autoNavigate && this.props.onNavigation) {
             this.props.onNavigation(runDetailsUrl);
-        } else {
-            const name = this.props.runnable.name;
-
-            toastService.newToast({
-                text: `Started "${name}" #${runId}`,
-                action: 'Open',
-                onActionClick: () => {
-                    if (this.props.onNavigation) {
-                        this.props.onNavigation(runDetailsUrl);
-                    }
-                },
-            });
         }
     }
 
-    _isMultiBranch() {
-        return isMultiBranchRun(this.props.latestRun._links.self.href);
-    }
-
     render() {
+        if (!this.props.runnable || !this.props.latestRun) {
+            return null;
+        }
+
         const outerClass = this.props.className ? this.props.className : '';
         const outerClassNames = outerClass.split(' ');
         const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'btn inverse' : '';
 
-        const status = this.props.latestRun ? this.props.latestRun.result : '';
-        const failedStatus = status && (status.toLowerCase() === 'failure' || status.toLowerCase() === 'aborted');
+        const isFailed = isRunFailed(this.props.latestRun);
+        const isPipeline = capable(this.props.runnable, PIPELINE_CAPABILITIES);
+        const hasPermission = permit(this.props.runnable).start();
 
         const replayLabel = 'Re-run';
 
+        if (!isFailed || !isPipeline || !hasPermission) {
+            return null;
+        }
+
         return (
             <div className={`replay-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
-                { failedStatus &&
                 <a className={`replay-button ${innerButtonClass}`} title={replayLabel} onClick={() => this._onReplayClick()}>
                     <Icon size={24} icon="replay" />
                     <span className="button-label">{replayLabel}</span>
                 </a>
-                }
             </div>
         );
     }
@@ -95,6 +101,6 @@ ReplayButton.propTypes = {
     className: PropTypes.string,
     runnable: PropTypes.object,
     latestRun: PropTypes.object,
-    autoNavigate: PropTypes.object,
+    autoNavigate: PropTypes.bool,
     onNavigation: PropTypes.func,
 };

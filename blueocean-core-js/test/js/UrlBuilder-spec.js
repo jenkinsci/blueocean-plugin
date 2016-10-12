@@ -34,6 +34,10 @@ describe('UrlBuilder', () => {
             it('throws sensible error for bad url', () => {
                 assert.throws(() => buildRunDetailsUrl('/a/b/c/d'), 'Could not extract URI components');
             });
+
+            it('throws sensible error for a string of chars', () => {
+                assert.throws(() => buildRunDetailsUrl('abcdefghijklmnopqrstuvwxyz'), 'Could not extract URI components');
+            });
         });
 
         describe('freestyle', () => {
@@ -131,22 +135,22 @@ describe('UrlBuilder', () => {
 
             it('handles nested job', () => {
                 const pipeline = createObjectFromLink(
-                    '/blue/rest/organizations/jenkins/pipelines/pipeline-failure-15s/queue/42/'
+                    '/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/queue/17/'
                 );
 
                 const url = buildRunDetailsUrlFromQueue(pipeline, false, 25);
-                assert.equal(url, '/organizations/jenkins/pipeline-failure-15s/detail/pipeline-failure-15s/25/pipeline');
+                assert.equal(url, '/organizations/jenkins/simple-pipeline-jobs%2Fpipeline-failure-1m/detail/pipeline-failure-1m/25/pipeline');
             });
         });
 
         describe('multibranch pipeline', () => {
             it('handles top-level job', () => {
                 const multibranch = createObjectFromLink(
-                    '/blue/rest/organizations/jenkins/pipelines/jenkinsfile-experiments/pipelines/PR-2/queue/31/'
+                    '/blue/rest/organizations/jenkins/pipelines/jdl1/pipelines/experiment%252Fbuild-locally-docker/queue/42/'
                 );
 
                 const url = buildRunDetailsUrlFromQueue(multibranch, true, 55);
-                assert.equal(url, '/organizations/jenkins/jenkinsfile-experiments/detail/PR-2/55/pipeline');
+                assert.equal(url, '/organizations/jenkins/jdl1/detail/experiment%2Fbuild-locally-docker/55/pipeline');
             });
 
             it('handles nested job', () => {

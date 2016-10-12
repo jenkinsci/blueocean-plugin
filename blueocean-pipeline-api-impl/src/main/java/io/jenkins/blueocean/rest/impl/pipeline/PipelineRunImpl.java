@@ -30,12 +30,14 @@ import org.kohsuke.stapler.export.Exported;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_RUN;
+
 /**
  * Pipeline Run
  *
  * @author Vivek Pandey
  */
-@Capability("org.jenkinsci.plugins.workflow.job.WorkflowRun")
+@Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);

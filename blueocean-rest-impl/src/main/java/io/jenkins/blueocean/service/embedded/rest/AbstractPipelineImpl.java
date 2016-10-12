@@ -43,12 +43,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
+
 /**
  * Pipeline abstraction implementation. Use it to extend other kind of jenkins jobs
  *
  * @author Vivek Pandey
  */
-@Capability("hudson.model.Job")
+@Capability(JENKINS_JOB)
 public class AbstractPipelineImpl extends BluePipeline {
     private final Job job;
 

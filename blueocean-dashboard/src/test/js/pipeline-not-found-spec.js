@@ -28,10 +28,10 @@ describe("PipelinePage", () => {
 
   it("shows 404 for failure", () => {
     let wrapper;
-    wrapper = shallow(<PipelinePage />);
+    wrapper = shallow(<PipelinePage  setTitle={()=>{}}/>);
     expect(wrapper.find('PageLoading')).to.have.length(1);
-    
-    wrapper = shallow(<PipelinePage pipeline={{ $failed: true }} />);
+
+    wrapper = shallow(<PipelinePage  setTitle={()=>{}} pipeline={{ $failed: true }} />);
     expect(wrapper.find('PageLoading')).to.have.length(0);
     expect(wrapper.html()).to.contain('404')
   });

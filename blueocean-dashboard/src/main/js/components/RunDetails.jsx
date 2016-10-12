@@ -24,11 +24,9 @@ import {
     buildRunDetailsUrl,
 } from '../util/UrlUtils';
 
-import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
-import IfCapability from './IfCapability';
 
 const { func, object, any, string } = PropTypes;
 
@@ -49,6 +47,9 @@ class RunDetails extends Component {
     }
 
     _fetchRun(props, storePreviousRoute) {
+        if (props.isMultiBranch === null) {
+            return; // multiple redux selectors haven't completed
+        }
         if (this.context.config && this.context.params) {
             props.fetchRun({
                 organization: props.params.organization,
@@ -101,19 +102,24 @@ class RunDetails extends Component {
             return null;
         }
 
-        const { router, location, params } = this.context;
+        if (this.props.run.$pending || this.context.pipeline.$pending) {
+            return <PageLoading />;
+        }
+
+        const { router, location, params, pipeline = {} } = this.context;
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
-        const run = this.props.run;
+        const { run, setTitle } = this.props;
         const currentRun = new RunRecord(run);
-        const pipelineClass = this.context.pipeline._class;
         const status = currentRun.getComputedResult() || '';
 
         const switchRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
+
+        setTitle(`${currentRun.organization} / ${pipeline.fullName} #${currentRun.id}`);
 
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
@@ -137,15 +143,13 @@ class RunDetails extends Component {
             >
                 <ModalHeader>
                     <div>
-                        {!run.$pending &&
                         <RunDetailsHeader
-                          pipeline={this.context.pipeline}
+                          pipeline={pipeline}
                           data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
-                        }
                         <PageTabs base={baseUrl}>
                             <TabLink to="/pipeline">Pipeline</TabLink>
                             <TabLink to="/changes">Changes</TabLink>
@@ -154,16 +158,13 @@ class RunDetails extends Component {
                         </PageTabs>
 
                         <div className="button-bar">
-                            { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
-                            <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
-                                <ReplayButton
-                                  className="dark"
-                                  runnable={this.props.pipeline}
-                                  latestRun={currentRun}
-                                  onNavigation={switchRunDetails}
-                                  autoNavigate
-                                />
-                            </IfCapability>
+                            <ReplayButton
+                              className="dark"
+                              runnable={this.props.pipeline}
+                              latestRun={currentRun}
+                              onNavigation={switchRunDetails}
+                              autoNavigate
+                            />
 
                             <RunButton
                               className="dark"
@@ -176,7 +177,6 @@ class RunDetails extends Component {
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {run.$pending && <PageLoading />}
                         {run.$success && React.cloneElement(
                             this.props.children,
                             { baseUrl, result: currentRun, ...this.props }
@@ -205,6 +205,7 @@ RunDetails.propTypes = {
     fetchRun: func,
     getPipeline: func,
     previous: string,
+    setTitle: func,
 };
 
 const selectors = createSelector(

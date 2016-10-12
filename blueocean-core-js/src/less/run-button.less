@@ -16,7 +16,7 @@
     &.icon-button {
         height: 24px;
 
-        .run-button {
+        .run-button, .stop-button {
             width: 24px;
             height: 24px;
             background: transparent;
@@ -32,17 +32,9 @@
         }
 
         .stop-button {
-            padding: 2px;
-
-            .btn-icon {
-                width: 20px;
-                height: 20px;
-                background-image: url('./icons/stop-button-blue.svg');
-
-                &:hover {
-                    background-image: url('./icons/stop-button-blue-dark.svg');
-                }
-            }
+            /* asset has different padding than material-icon asset used in .run-button: nudge it slightly */
+            top: 2px;
+            left: 2px;
 
             &.stopping {
                 opacity: 0.4;
@@ -56,10 +48,14 @@
     }
 
     // default (light) themeing
-    .svg-icon {
+    .svg-icon, .svg-icon-inner {
         fill: @brand-primary;
+    }
 
-        &:hover {
+    .svg-icon:hover {
+        fill: @brand-primary-dark;
+
+        .svg-icon-inner {
             fill: @brand-primary-dark;
         }
     }
@@ -72,12 +68,16 @@
             border-color: white;
         }
 
-        .svg-icon {
+        .svg-icon, .svg-icon-inner {
             fill: white;
         }
 
-        .stop-button .btn-icon {
-            background-image: url('./icons/stop-button-white.svg');
+        .svg-icon:hover {
+            fill: #CCC;
+
+            .svg-icon-inner {
+                fill: #CCC;
+            }
         }
     }
 }

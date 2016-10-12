@@ -14,6 +14,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_RUN;
+
 /**
  * BlueOCean Run model.
  *
@@ -22,7 +24,7 @@ import java.util.Date;
  *
  * @author Vivek Pandey
  */
-@Capability("io.jenkins.blueocean.rest.model.BlueRun")
+@Capability(BLUE_RUN)
 public abstract class BlueRun extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String ID="id";
