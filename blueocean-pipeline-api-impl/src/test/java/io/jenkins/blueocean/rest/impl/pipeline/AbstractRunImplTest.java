@@ -2,7 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Label;
 import hudson.model.Queue;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
+import io.jenkins.blueocean.testing.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;

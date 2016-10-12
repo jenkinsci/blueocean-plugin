@@ -37,6 +37,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-displayurl-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jwt</artifactId>
         </dependency>
         <dependency>
@@ -62,13 +66,6 @@
         </dependency>
 
         <!-- Test deps -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-rest-impl</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>

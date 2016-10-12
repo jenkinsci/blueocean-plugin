@@ -22,11 +22,13 @@
  * THE SOFTWARE.
  */
 
-package io.jenkins.blueocean.rest.impl.pipeline.scm;
+package io.jenkins.blueocean.testing;
 
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import org.jvnet.hudson.test.JenkinsRule;
+
+import java.io.IOException;
 
 /**
  * Manages a sample Git repository.
@@ -45,7 +47,7 @@ public final class GitSampleRepoRule extends AbstractSampleDVCSRepoRule {
         git("commit", "--message=init");
     }
 
-    public void notifyCommit(JenkinsRule r) throws Exception {
+    public GitSampleRepoRule notifyCommit(JenkinsRule r) throws Exception {
         synchronousPolling(r);
         WebResponse webResponse = r.createWebClient().goTo("git/notifyCommit?url=" + bareUrl(), "text/plain").getWebResponse();
         System.out.println(webResponse.getContentAsString());
@@ -55,6 +57,32 @@ public final class GitSampleRepoRule extends AbstractSampleDVCSRepoRule {
             }
         }
         r.waitUntilNoActivity();
+        return this;
+    }
+
+    public GitSampleRepoRule checkoutNewBranch(String branchName) throws Exception {
+        git("checkout", "-b", branchName);
+        return this;
+    }
+
+    public GitSampleRepoRule writeFile(String fileName, String fileContents) throws IOException {
+        write(fileName, fileContents);
+        return this;
+    }
+
+    public GitSampleRepoRule writeJenkinsFile(JenkinsFile file) throws IOException {
+        write("Jenkinsfile", file.getFileContents());
+        return this;
+    }
+
+    public GitSampleRepoRule addFile(String fileName) throws Exception {
+        git("add", fileName);
+        return this;
+    }
+
+    public GitSampleRepoRule commit(String msg) throws Exception {
+        git("commit", "--all", "--message='"+msg+"'");
+        return this;
     }
 
 }

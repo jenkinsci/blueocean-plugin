@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package io.jenkins.blueocean.service.embedded.scm;
+package io.jenkins.blueocean.testing;
 
 import org.apache.commons.io.FileUtils;
 
@@ -57,7 +57,7 @@ public abstract class AbstractSampleDVCSRepoRule extends AbstractSampleRepoRule 
         List<String> args = new ArrayList<String>();
         args.add(tool);
         args.addAll(Arrays.asList(cmds));
-        run(false, sampleRepo, args.toArray(new String[args.size()]));
+        AbstractSampleRepoRule.run(false, sampleRepo, args.toArray(new String[args.size()]));
     }
 
     public final String bareUrl() throws UnsupportedEncodingException {
