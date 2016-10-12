@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.20-beta3",
+  "version": "0.0.20",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@jenkins-cd/js-modules": "0.0.8",
-    "@jenkins-cd/sse-gateway": "0.0.10-beta3",
+    "@jenkins-cd/sse-gateway": "0.0.10",
     "es6-promise": "4.0.5",
     "eslint": "2.13.1",
     "eslint-plugin-react": "4.3.0",
