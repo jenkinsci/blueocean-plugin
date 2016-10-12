@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { WeatherIcon } from '@jenkins-cd/design-language';
+import { ExpandablePath, WeatherIcon } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
 
@@ -44,16 +44,11 @@ export default class PipelineRowItem extends Component {
         const pullRequestsURL = `${baseUrl}/pr`;
         const activitiesURL = `${baseUrl}/activity`;
 
-        const pathInJob = fullName.split('/').slice(0, -1).join(' / ');
-        const formattedName = `${pathInJob ? `${pathInJob} / ` : ''}${displayName}`;
-        const nameLink = (
-            <Link to={activitiesURL}>
-                { showOrganization ?
-                    `${organization} / ${formattedName}` :
-                    formattedName
-                }
-            </Link>
-        );
+        let pipelinePath = showOrganization ? `${organization}/${fullName}` : fullName;
+
+        if (displayName) {
+            pipelinePath = ExpandablePath.replaceLastPathElement(pipelinePath, displayName);
+        }
 
         let multiBranchLabel = ' - ';
         let multiPrLabel = ' - ';
@@ -79,7 +74,11 @@ export default class PipelineRowItem extends Component {
         // FIXME: Visual alignment of the last column
         return (
             <tr data-name={name} data-organization={organization}>
-                <td>{nameLink}</td>
+                <td>
+                    <Link to={activitiesURL}>
+                        <ExpandablePath path={pipelinePath} />
+                    </Link>
+                </td>
                 <td><WeatherIcon score={weatherScore} /></td>
                 {
                     // fixme refactor the next 2 lines and the prior logic
