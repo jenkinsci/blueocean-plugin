@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { UrlConfig } from '@jenkins-cd/blueocean-core-js';
 const { object, node } = PropTypes;
 
 class Dashboard extends Component {
