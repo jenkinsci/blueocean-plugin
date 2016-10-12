@@ -28,7 +28,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @InterceptorAnnotation(PagedResponse.Processor.class)
 public @interface PagedResponse {
     class Processor extends Interceptor {
-        private static final int DEFAULT_LIMIT=100;
+        public static final int DEFAULT_LIMIT=100;
         @Override
         public Object invoke(StaplerRequest request, StaplerResponse response, Object instance, Object[] arguments)
             throws IllegalAccessException, InvocationTargetException, ServletException {
