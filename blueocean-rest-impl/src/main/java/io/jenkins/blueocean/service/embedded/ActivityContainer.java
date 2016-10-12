@@ -1,8 +1,11 @@
 package io.jenkins.blueocean.service.embedded;
 
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
+import io.jenkins.blueocean.rest.model.BlueQueueItem;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
@@ -33,9 +36,19 @@ public class ActivityContainer extends Container<Resource> {
 
     @Override
     public Resource get(String name) {
-        // We can't make this work reliably as queue id/expectedBuildNumber can potentially collide with run ids.
-        // Instead of calling /activities/:id client should call _links.self.href for each item in the activities array.
-        return null;
+        long expectedBuildNumber = Long.parseLong(name);
+        for (BlueQueueItem item : queueContainer) {
+            if (expectedBuildNumber == item.getExpectedBuildNumber()) {
+                return item;
+            }
+        }
+        for (BlueRun run : runContainer) {
+            if (name.equals(run.getId())) {
+                return run;
+            }
+        }
+
+        throw new ServiceException.NotFoundException(String.format("Activity %s not found", name));
     }
 
     @Override
