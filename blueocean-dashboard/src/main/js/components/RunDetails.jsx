@@ -47,6 +47,9 @@ class RunDetails extends Component {
     }
 
     _fetchRun(props, storePreviousRoute) {
+        if (props.isMultiBranch === null) {
+            return; // multiple redux selectors haven't completed
+        }
         if (this.context.config && this.context.params) {
             props.fetchRun({
                 organization: props.params.organization,
@@ -99,6 +102,10 @@ class RunDetails extends Component {
             return null;
         }
 
+        if (this.props.run.$pending || this.context.pipeline.$pending) {
+            return <PageLoading />;
+        }
+
         const { router, location, params, pipeline = {} } = this.context;
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
@@ -136,7 +143,6 @@ class RunDetails extends Component {
             >
                 <ModalHeader>
                     <div>
-                        {!run.$pending &&
                         <RunDetailsHeader
                           pipeline={pipeline}
                           data={currentRun}
@@ -144,7 +150,6 @@ class RunDetails extends Component {
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
-                        }
                         <PageTabs base={baseUrl}>
                             <TabLink to="/pipeline">Pipeline</TabLink>
                             <TabLink to="/changes">Changes</TabLink>
@@ -172,7 +177,6 @@ class RunDetails extends Component {
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {run.$pending && <PageLoading />}
                         {run.$success && React.cloneElement(
                             this.props.children,
                             { baseUrl, result: currentRun, ...this.props }
