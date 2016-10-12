@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 import LogConsoleView from './LogConsoleView';
-import * as sse from '@jenkins-cd/sse-gateway';
+import { sseConnection } from '@jenkins-cd/blueocean-core-js';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
 
@@ -61,7 +61,7 @@ export class RunDetailsPipeline extends Component {
             }
         }
 
-        this.listener.sse = sse.subscribe('pipeline', this._onSseEvent);
+        this.listener.sse = sseConnection.subscribe('pipeline', this._onSseEvent);
     }
 
     componentDidMount() {
@@ -105,7 +105,7 @@ export class RunDetailsPipeline extends Component {
 
     componentWillUnmount() {
         if (this.listener.sse) {
-            sse.unsubscribe(this.listener.sse);
+            sseConnection.unsubscribe(this.listener.sse);
             delete this.listener.sse;
         }
 
