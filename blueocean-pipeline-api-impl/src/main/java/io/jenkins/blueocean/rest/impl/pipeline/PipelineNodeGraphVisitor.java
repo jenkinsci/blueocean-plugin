@@ -19,6 +19,8 @@ import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StatusAndTiming;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -53,6 +55,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     public final Map<String, FlowNodeWrapper> nodeMap = new HashMap<>();
 
+    private static final Logger logger = LoggerFactory.getLogger(PipelineNodeGraphVisitor.class);
 
     public PipelineNodeGraphVisitor(WorkflowRun run) {
         this.run = run;
@@ -232,7 +235,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     }
 
     private void dump(String str){
-        System.out.println(str);
+        logger.debug(str);
     }
 
     @Override
