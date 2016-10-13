@@ -36,11 +36,10 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.19",
+    "@jenkins-cd/blueocean-core-js": "0.0.20",
     "@jenkins-cd/design-language": "0.0.83",
     "@jenkins-cd/js-extensions": "0.0.27",
     "@jenkins-cd/js-modules": "0.0.8",
-    "@jenkins-cd/sse-gateway": "0.0.9",
     "es6-promise": "4.0.5",
     "immutable": "3.8.1",
     "isomorphic-fetch": "2.2.1",
@@ -60,7 +59,6 @@
   },
   "jenkinscd": {
     "import": [
-      "@jenkins-cd/sse-gateway",
       "immutable",
       "keymirror",
       "react-redux",

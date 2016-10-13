@@ -7,7 +7,7 @@ import {
     createSelector,
 } from './redux';
 import loadingIndicator from './LoadingIndicator';
-import * as sse from '@jenkins-cd/sse-gateway';
+import { sseConnection } from '@jenkins-cd/blueocean-core-js';
 import * as pushEventUtil from './util/push-event-util';
 
 const { object, array, func, node, string } = PropTypes;
@@ -24,20 +24,20 @@ class OrganizationPipelines extends Component {
             pipelines: this.props.allPipelines,
         };
     }
-    
+
     componentWillMount() {
         const config = this.context.config;
         if (config) {
             const organizationName = this._getOrganizationName();
-            
+
             if (organizationName) {
                 this.props.getOrganizationPipelines({ organizationName });
             } else {
                 this.props.getAllPipelines();
             }
-            
+
             // Subscribe for job channel push events
-            this.jobListener = sse.subscribe('job', (event) => {
+            this.jobListener = sseConnection.subscribe('job', (event) => {
                 // Enrich the event with blueocean specific properties
                 // before passing it on to be processed.
                 const eventCopy = pushEventUtil.enrichJobEvent(event, this.props.params.pipeline);
@@ -94,7 +94,7 @@ class OrganizationPipelines extends Component {
     componentDidMount() {
         loadingIndicator.setDarkBackground();
     }
-    
+
     componentWillReceiveProps(nextProps) {
         const organizationName = this._getOrganizationName(nextProps);
         if (this._getOrganizationName(this.props) !== organizationName) {
@@ -108,12 +108,12 @@ class OrganizationPipelines extends Component {
 
     componentWillUnmount() {
         if (this.jobListener) {
-            sse.unsubscribe(this.jobListener);
+            sseConnection.unsubscribe(this.jobListener);
             delete this.jobListener;
         }
         loadingIndicator.setLightBackground();
     }
-    
+
     _getOrganizationName(nextProps) {
         if (nextProps && nextProps.params) {
             return nextProps.params.organization;
