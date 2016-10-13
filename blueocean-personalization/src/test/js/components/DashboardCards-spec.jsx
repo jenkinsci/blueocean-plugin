@@ -29,7 +29,7 @@ describe('DashboardCards', () => {
         testUtils.unbindAll();
     });
 
-    it('renders without error for empty props', () => {
+    xit('renders without error for empty props', () => {
         const wrapper = shallow(
             <DashboardCards />
         );
