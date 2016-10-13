@@ -46,7 +46,7 @@ class App extends Component {
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link to="/pipelines">{t('pipelines', {name: 'thor'})}</Link>
+                            <Link to="/pipelines">{t('pipelines')}</Link>
                             <a href="#">{t('administration')}</a>
                         </nav>
                         <div className="button-bar">
@@ -55,7 +55,6 @@ class App extends Component {
                     </div>
                 </header>
                 <main className="Site-content">
-                    <p>{t('LogRecorderManager.init')}</p>
                     {this.props.children /* Set by react-router */ }
                 </main>
                 <footer className="Site-footer">
@@ -92,7 +91,6 @@ function makeRoutes(routes) {
         <Route path="*" component={NotFound}/>
     ];
 
-    
     const namespaces = ['org.jenkinsci.plugins.blueocean.web.Messages'];
     const routeProps = {
         path: "/",
