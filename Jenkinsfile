@@ -4,6 +4,9 @@ node {
         def environment  = docker.build 'cloudbees-node'
 
         environment.inside {
+            stage "Validate deps and shrinkwrap"
+                sh "./bin/checkshrinkwrap.js"
+
             stage "Checkout and build deps"
                 sh "npm install"
 

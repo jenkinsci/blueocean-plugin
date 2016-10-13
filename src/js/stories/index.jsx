@@ -1,5 +1,6 @@
 require('./buttons.jsx');
 require('./emptystateview.jsx');
+require('./ExpandablePathStories');
 require('./FavoriteStories.jsx');
 require('./filesize.jsx');
 require('./modalview.jsx');

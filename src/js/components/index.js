@@ -32,3 +32,4 @@ export {Toaster} from './Toaster';
 export {ResultItem} from './ResultItem';
 export {TimeDuration} from './TimeDuration';
 export { Progress } from './Progress';
+export {ExpandablePath} from './ExpandablePath';
