@@ -6,51 +6,36 @@ const lngDetector = new LngDetector(null, {
   // order and from where user language should be detected
   order: ['querystring', 'navigator'],
   // keys or params to lookup language from
-  lookupQuerystring: 'lng',
+  lookupQuerystring: 'language',
 });
 
 const xhr = new XHR(null, {
-  loadPath: '/jenkins/i18n/resourceBundle?language={{lng}}&baseName={{ns}}',
+  loadPath: '/jenkins/i18n/resourceBundle?language=##lng##&baseName=##ns##',
   allowMultiLoading: false,
   parse: function (data) {
-    console.log('mujer', data);
-    return data;
+    const response = JSON.parse(data);
+    return response.data;
   },
 });
-console.log('rtrt', xhr)
+
 i18n
   .use(xhr)
   .use(lngDetector)
   .init({
     fallbackLng: 'en',
     // have a common namespace used around the full app
-    ns: ['common', 'hudson.logging.Messages'],
-    defaultNS: 'common',
+    ns: ['org.jenkinsci.plugins.blueocean.web.Messages', 'hudson.logging.Messages'],
+    defaultNS: 'org.jenkinsci.plugins.blueocean.web.Messages',
     preload: ['en', 'de'],
+    keySeparator: '#',
     debug: true,
     load: 'all',
     interpolation: {
+      prefix: '##',
+      suffix: '##',
       escapeValue: false // not needed for react!!
     },
 
-    resources: {
-      de: {
-        common: {
-          login: 'Einloggen',
-          logout: 'Ausloggen',
-          pipelines: "Röhren",
-          administration: "Verwaltung",
-        }
-      },
-      en: {
-        common: {
-          login: 'Login',
-          logout: 'Logout',
-          pipelines: "Pipelines",
-          administration: "Administration",
-        }
-      }
-    }
   });
 
 export default i18n;

@@ -46,7 +46,7 @@ class App extends Component {
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link to="/pipelines">{t('pipelines')}</Link>
+                            <Link to="/pipelines">{t('pipelines', {name: 'thor'})}</Link>
                             <a href="#">{t('administration')}</a>
                         </nav>
                         <div className="button-bar">
@@ -68,7 +68,8 @@ class App extends Component {
 }
 
 App.propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
+    t: PropTypes.func
 };
 
 App.childContextTypes = {
@@ -92,8 +93,7 @@ function makeRoutes(routes) {
     ];
 
     
-    const namespaces = ['common', 'hudson.logging.Messages'];
-    console.log(namespaces, '222')
+    const namespaces = ['org.jenkinsci.plugins.blueocean.web.Messages'];
     const routeProps = {
         path: "/",
         component: translate(namespaces, { wait: true })(App)

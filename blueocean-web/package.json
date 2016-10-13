@@ -36,7 +36,7 @@
     "history": "2.0.2",
     "i18next": "^3.4.3",
     "i18next-browser-languagedetector": "^1.0.0",
-    "i18next-xhr-backend-thor": "^1.2.0-thor2",
+    "i18next-xhr-backend-thor": "^1.2.0-thor3",
     "immutable": "3.8.1",
     "keymirror": "0.1.1",
     "mobx": "2.6.0",
