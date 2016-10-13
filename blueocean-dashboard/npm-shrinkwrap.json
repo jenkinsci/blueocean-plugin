@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.19",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.19",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.19.tgz"
+      "version": "0.0.20",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.20",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.20.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.84",
@@ -40,9 +40,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.8.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.9",
-      "from": "@jenkins-cd/sse-gateway@0.0.9",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.9.tgz"
+      "version": "0.0.10",
+      "from": "@jenkins-cd/sse-gateway@0.0.10",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.10.tgz"
     },
     "@kadira/react-split-pane": {
       "version": "1.4.7",
@@ -509,9 +509,9 @@
       "optional": true
     },
     "aws4": {
-      "version": "1.4.1",
+      "version": "1.5.0",
       "from": "aws4@>=1.2.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/aws4/-/aws4-1.4.1.tgz",
+      "resolved": "https://registry.npmjs.org/aws4/-/aws4-1.5.0.tgz",
       "dev": true
     },
     "babel": {
@@ -1507,9 +1507,9 @@
       "resolved": "https://registry.npmjs.org/camelcase-keys/-/camelcase-keys-1.0.0.tgz"
     },
     "caniuse-db": {
-      "version": "1.0.30000551",
+      "version": "1.0.30000554",
       "from": "caniuse-db@>=1.0.30000540 <2.0.0",
-      "resolved": "https://registry.npmjs.org/caniuse-db/-/caniuse-db-1.0.30000551.tgz",
+      "resolved": "https://registry.npmjs.org/caniuse-db/-/caniuse-db-1.0.30000554.tgz",
       "dev": true
     },
     "cardinal": {
@@ -4183,9 +4183,9 @@
       "dev": true
     },
     "ignore": {
-      "version": "3.1.5",
+      "version": "3.2.0",
       "from": "ignore@>=3.1.2 <4.0.0",
-      "resolved": "https://registry.npmjs.org/ignore/-/ignore-3.1.5.tgz"
+      "resolved": "https://registry.npmjs.org/ignore/-/ignore-3.2.0.tgz"
     },
     "immutable": {
       "version": "3.8.1",
@@ -5610,7 +5610,7 @@
       "dependencies": {
         "qs": {
           "version": "6.2.1",
-          "from": "qs@^6.0.2",
+          "from": "qs@>=6.0.2 <7.0.0",
           "resolved": "https://registry.npmjs.org/qs/-/qs-6.2.1.tgz",
           "dev": true
         }
@@ -7360,9 +7360,9 @@
       }
     },
     "symbol-observable": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "from": "symbol-observable@>=1.0.2 <2.0.0",
-      "resolved": "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.0.3.tgz"
     },
     "symbol-tree": {
       "version": "3.1.4",
@@ -8016,9 +8016,9 @@
       }
     },
     "webpack-hot-middleware": {
-      "version": "2.12.2",
+      "version": "2.13.0",
       "from": "webpack-hot-middleware@>=2.10.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/webpack-hot-middleware/-/webpack-hot-middleware-2.12.2.tgz",
+      "resolved": "https://registry.npmjs.org/webpack-hot-middleware/-/webpack-hot-middleware-2.13.0.tgz",
       "dev": true
     },
     "whatwg-fetch": {
