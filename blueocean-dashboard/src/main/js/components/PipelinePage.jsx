@@ -47,7 +47,7 @@ export class PipelinePage extends Component {
 
     render() {
         const { pipeline, setTitle } = this.props;
-        const { organization, name, fullName } = pipeline || {};
+        const { organization, name, fullName, displayName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
         const isReady = pipeline && !pipeline.$pending;
@@ -58,6 +58,7 @@ export class PipelinePage extends Component {
 
         setTitle(`${organization} / ${name}`);
 
+        const fullDisplayName = ExpandablePath.replaceLastPathElement(fullName, displayName);
         const baseUrl = buildPipelineUrl(organization, fullName);
 
         return (
@@ -76,7 +77,7 @@ export class PipelinePage extends Component {
                             <Link to={orgUrl}>{organization}</Link>
                             <span>&nbsp;/&nbsp;</span>
                             <Link to={activityUrl}>
-                                <ExpandablePath path={fullName} iconSize={20} hideFirst />
+                                <ExpandablePath path={fullDisplayName} iconSize={20} hideFirst />
                             </Link>
                         </h1>
                         <Extensions.Renderer

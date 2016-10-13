@@ -133,6 +133,10 @@ export class PipelineCard extends Component {
         const isBranch = capable(runnableItem, BRANCH_CAPABILITY);
         const names = extractNames(runnableItem, isBranch);
         const organization = runnableItem.organization;
+        // TODO: need the proper value of "displayName" for multi-branch pipeline
+        const fullDisplayName = runnableItem.displayName ?
+            ExpandablePath.replaceLastPathElement(names.fullName, runnableItem.displayName) :
+            names.fullName;
 
         let status;
         let startTime = null;
@@ -163,7 +167,7 @@ export class PipelineCard extends Component {
 
                 <span className="name">
                     <Link to={activityUrl} onClick={(event) => stopProp(event)}>
-                        <ExpandablePath path={`${organization}/${names.fullName}`} />
+                        <ExpandablePath path={`${organization}/${fullDisplayName}`} />
                     </Link>
                 </span>
 

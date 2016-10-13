@@ -26,9 +26,12 @@ class RunDetailsHeader extends Component {
     }
 
     render() {
-        const { data: run, pipeline: { fullName = '' } } = this.props;
+        const { data: run, pipeline } = this.props;
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
+        const fullDisplayName = pipeline.displayName ?
+            ExpandablePath.replaceLastPathElement(pipeline.fullName, pipeline.displayName) :
+            pipeline.fullName;
 
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
@@ -50,7 +53,7 @@ class RunDetailsHeader extends Component {
                     <a onClick={() => this.handleOrganizationClick()}>{run.organization}</a>
                     <span>&nbsp;/&nbsp;</span>
                     <a className="path-link" onClick={() => this.handleNameClick()}>
-                        <ExpandablePath path={fullName} iconSize={20} hideFirst />
+                        <ExpandablePath path={fullDisplayName} iconSize={20} hideFirst />
                     </a>
                     <span>&nbsp;#{run.id}</span>
                 </h4>
