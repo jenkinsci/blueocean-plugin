@@ -3,8 +3,6 @@ import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
 import { I18nextProvider, translate } from 'react-i18next';
-import i18n from './i18n'; // initialized i18next instance
-
 import { Provider, configureStore, combineReducers} from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
 
@@ -14,7 +12,7 @@ import Config from './config';
 import { ToastDrawer } from './components/ToastDrawer';
 import { DevelopmentFooter } from './DevelopmentFooter';
 
-import { AppConfig, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, UrlConfig, Utils, i18n} from '@jenkins-cd/blueocean-core-js';
 
 let config; // Holder for various app-wide state
 
