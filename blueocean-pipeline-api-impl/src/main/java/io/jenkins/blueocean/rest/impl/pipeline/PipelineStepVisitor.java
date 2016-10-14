@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Gives steps inside
  *
- * - Stage boudary: Stage boundry ends where another another stage start or this stage block ends
+ * - Stage boundary: Stage boundary ends where another another stage start or this stage block ends
  * - branch boundary: branch block boundary
  *
  * @author Vivek Pandey

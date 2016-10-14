@@ -13,7 +13,7 @@ import java.util.List;
  * @author Vivek Pandey
  */
 public class FlowNodeWrapper {
-    public enum NodeType {STAGE, PARALLEL, STEP, UNKNWON}
+    public enum NodeType {STAGE, PARALLEL, STEP}
 
     private final FlowNode node;
     private final NodeRunStatus status;
@@ -29,15 +29,18 @@ public class FlowNodeWrapper {
         this.node = node;
         this.status = status;
         this.timingInfo = timingInfo;
+        this.type = getNodeType(node);
+    }
+
+    private static NodeType getNodeType(FlowNode node){
         if(PipelineNodeUtil.isStage(node)){
-            this.type = NodeType.STAGE;
+            return NodeType.STAGE;
         }else if(PipelineNodeUtil.isParallelBranch(node)){
-            this.type = NodeType.PARALLEL;
+            return NodeType.PARALLEL;
         }else if(node instanceof AtomNode){
-            this.type = NodeType.STEP;
-        }else{
-            this.type = NodeType.UNKNWON;
+            return NodeType.STEP;
         }
+        throw new IllegalArgumentException(String.format("Unknown FlowNode %s, type: %s",node.getId(),node.getClass()));
     }
 
     public NodeRunStatus getStatus(){
