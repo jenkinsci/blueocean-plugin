@@ -340,9 +340,7 @@ Gives authenticated user, gives HTTP 404 error if there is no authenticated user
           "startTime": "2016-04-11T17:44:28.344+1000",
           "state": "FINISHED",
           "type": "WorkflowRun",
-          "commitId": null,
-          "numberOfQueuedPipelines" : 1,
-          "numberOfRunningPipelines" : 2
+          "commitId": null
         }
     }
 
@@ -443,9 +441,7 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
             "numberOfPipelines" : 0,
             "name" : "bo1",
             "numberOfFolders" : 0,
-            "numberOfSuccessfulPullRequests" : 0,
-            "numberOfQueuedPipelines" : 0,
-            "numberOfRunningPipelines" : 2,
+            "numberOfSuccessfulPullRequests" : 0,     
             "actions" : [],
             "branchNames" : []
          }
@@ -479,9 +475,7 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
       "name" : "test2",
       "fullName" : "test2",      
       "organization" : "jenkins",
-      "weatherScore" : 100,
-      "numberOfQueuedPipelines" : 0,
-      "numberOfRunningPipelines" : 0
+      "weatherScore" : 100
     }
     
 ## Get nested Folder and Pipeline
@@ -536,9 +530,7 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "numberOfSuccessfulBranches": 0,
         "numberOfSuccessfulPullRequests": 0,
         "totalNumberOfBranches": 3,
-        "totalNumberOfPullRequests": 0,
-        "numberOfQueuedPipelines" : 0,
-        "numberOfRunningPipelines" : 2
+        "totalNumberOfPullRequests": 0
     }
 
     
@@ -586,9 +578,7 @@ activity.
                 "title":"Fixes for stuff",
                 "url":"https://github.com/jenkinsci/some-plugin/pull/543"
             },
-            "totalNumberOfPullRequests": 0,
-            "numberOfQueuedPipelines" : 0,
-            "numberOfRunningPipelines" : 2
+            "totalNumberOfPullRequests": 0
         },
         {
             "displayName": "master",
@@ -625,9 +615,7 @@ activity.
             "organization": "jenkins",
             "weatherScore": 100,
             "pullRequest": null,
-            "totalNumberOfPullRequests": 0,
-            "numberOfQueuedPipelines" : 0,
-            "numberOfRunningPipelines" : 2            
+            "totalNumberOfPullRequests": 0           
         },
         {
             "displayName": "feature1",
@@ -657,9 +645,7 @@ activity.
             "organization": "jenkins",
             "weatherScore": 100,
             "pullRequest": null,
-            "totalNumberOfPullRequests": 0,
-            "numberOfQueuedPipelines" : 0,
-            "numberOfRunningPipelines" : 2            
+            "totalNumberOfPullRequests": 0           
         }
     ]
 
