@@ -15,6 +15,7 @@ const pipelineMulti = {
     'displayName': 'moreBeers',
     'name': 'morebeers',
     'fullName': 'beersland/morebeers',
+    'fullDisplayName': 'beersland/moreBeers',
     'organization': 'jenkins',
     'weatherScore': 0,
     'branchNames': ['master'],
@@ -29,6 +30,7 @@ const pipelineMultiSuccess = {
     'displayName': 'moreBeersSuccess',
     'name': 'morebeersSuccess',
     'fullName': 'morebeersSuccess',
+    'fullDisplayName': 'moreBeersSuccess',
     'organization': 'jenkins',
     'weatherScore': 0,
     'branchNames': ['master'],
@@ -43,6 +45,7 @@ const pipelineSimple = {
     'displayName': 'beers',
     'name': 'beers',
     'fullName': 'beers',
+    'fullDisplayName': 'beers',
     'organization': 'jenkins',
     'weatherScore': 0,
 };
@@ -70,7 +73,7 @@ describe('PipelineRowItem', () => {
 
         const nameCol = columns.at(0);
         const path = nameCol.find('Link').shallow().find('ExpandablePath');
-        assert.equal(path.props().path, pipelineSimple.fullName);
+        assert.equal(path.props().path, pipelineSimple.fullDisplayName);
 
         const weatherCol = columns.at(1);
         assert.equal(weatherCol.text(), '<WeatherIcon />');
@@ -96,7 +99,7 @@ describe('PipelineRowItem', () => {
 
             const nameCol = columns.at(0);
             const path = nameCol.find('Link').shallow().find('ExpandablePath');
-            assert.equal(path.props().path, 'beersland/moreBeers');
+            assert.equal(path.props().path, pipelineMulti.fullDisplayName);
 
             const multibranchCol = columns.at(2).find('Link').shallow();
             assert.equal(multibranchCol.text(), '1 failing');
@@ -118,7 +121,7 @@ describe('PipelineRowItem', () => {
 
             const nameCol = columns.at(0);
             const path = nameCol.find('Link').shallow().find('ExpandablePath');
-            assert.equal(path.props().path, pipelineMultiSuccess.displayName);
+            assert.equal(path.props().path, pipelineMultiSuccess.fullDisplayName);
 
             const multibranchCol = columns.at(2).find('Link').shallow();
             assert.equal(multibranchCol.text(), '3 passing');

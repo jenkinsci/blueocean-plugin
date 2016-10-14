@@ -29,9 +29,7 @@ class RunDetailsHeader extends Component {
         const { data: run, pipeline } = this.props;
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
-        const fullDisplayName = pipeline.displayName ?
-            ExpandablePath.replaceLastPathElement(pipeline.fullName, pipeline.displayName) :
-            pipeline.fullName;
+        const fullDisplayName = pipeline.fullDisplayName;
 
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059

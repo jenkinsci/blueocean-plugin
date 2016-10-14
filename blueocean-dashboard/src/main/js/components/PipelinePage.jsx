@@ -47,7 +47,7 @@ export class PipelinePage extends Component {
 
     render() {
         const { pipeline, setTitle } = this.props;
-        const { organization, name, fullName, displayName } = pipeline || {};
+        const { organization, name, fullName, fullDisplayName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
         const isReady = pipeline && !pipeline.$pending;
@@ -58,7 +58,6 @@ export class PipelinePage extends Component {
 
         setTitle(`${organization} / ${name}`);
 
-        const fullDisplayName = ExpandablePath.replaceLastPathElement(fullName, displayName);
         const baseUrl = buildPipelineUrl(organization, fullName);
 
         return (

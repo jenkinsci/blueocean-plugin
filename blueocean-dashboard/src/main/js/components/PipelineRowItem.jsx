@@ -27,13 +27,13 @@ export default class PipelineRowItem extends Component {
         const {
             name,
             fullName,
+            fullDisplayName,
             organization,
             weatherScore,
             numberOfSuccessfulBranches,
             numberOfFailingBranches,
             numberOfSuccessfulPullRequests,
             numberOfFailingPullRequests,
-            displayName,
             } = pipeline;
 
         const hasPullRequests = !simple && (
@@ -44,12 +44,7 @@ export default class PipelineRowItem extends Component {
         const pullRequestsURL = `${baseUrl}/pr`;
         const activitiesURL = `${baseUrl}/activity`;
 
-        let pipelinePath = showOrganization ? `${organization}/${fullName}` : fullName;
-
-        if (displayName) {
-            pipelinePath = ExpandablePath.replaceLastPathElement(pipelinePath, displayName);
-        }
-
+        const fullDisplayPath = showOrganization ? `${organization}/${fullDisplayName}` : fullDisplayName;
         let multiBranchLabel = ' - ';
         let multiPrLabel = ' - ';
         let multiBranchLink = null;
@@ -76,7 +71,7 @@ export default class PipelineRowItem extends Component {
             <tr data-name={name} data-organization={organization}>
                 <td>
                     <Link to={activitiesURL}>
-                        <ExpandablePath path={pipelinePath} />
+                        <ExpandablePath path={fullDisplayPath} />
                     </Link>
                 </td>
                 <td><WeatherIcon score={weatherScore} /></td>
