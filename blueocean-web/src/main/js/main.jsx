@@ -15,6 +15,7 @@ import { DevelopmentFooter } from './DevelopmentFooter';
 import { AppConfig, UrlConfig, Utils, i18n} from '@jenkins-cd/blueocean-core-js';
 
 let config; // Holder for various app-wide state
+const namespaces = ['jenkins.plugins.blueocean.web.Messages'];
 
 function loginOrLogout(t) {
     if (AppConfig.getLoginUrl()) {
@@ -38,14 +39,15 @@ class App extends Component {
 
     render() {
         const { t } = this.props;
+
         return (
             <div className="Site">
                 <header className="Site-header">
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link to="/pipelines">{t('pipelines')}</Link>
-                            <a href="#">{t('administration')}</a>
+                            <Link to="/pipelines">{t('bo.web.pipelines')}</Link>
+                            <a href="#">{t('bo.web.administration')}</a>
                         </nav>
                         <div className="button-bar">
                             { loginOrLogout(t) }
@@ -89,7 +91,6 @@ function makeRoutes(routes) {
         <Route path="*" component={NotFound}/>
     ];
 
-    const namespaces = ['org.jenkinsci.plugins.blueocean.web.Messages'];
     const routeProps = {
         path: "/",
         component: translate(namespaces, { wait: true })(App)

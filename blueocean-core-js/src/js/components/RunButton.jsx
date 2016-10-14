@@ -10,6 +10,8 @@ import { ToastService as toastService } from '../';
 import { ToastUtils } from '../';
 import Security from '../security';
 
+import i18n from '../i18n/i18n';
+
 const { permit } = Security;
 
 const stopProp = (event) => {
@@ -68,10 +70,12 @@ export class RunButton extends Component {
 
         const name = decodeURIComponent(this.props.runnable.name);
         const runId = this.props.latestRun.id;
-
-        toastService.newToast({
-            text: `Stopping "${name}" #${runId}...`,
+        const text = i18n.t('bo.core.js.toast.run.stopping', {
+            0: name,
+            1: runId,
         });
+
+        toastService.newToast({ text });
     }
 
     render() {
@@ -89,8 +93,8 @@ export class RunButton extends Component {
         showRunButton = showRunButton && permit(this.props.runnable).start();
         showStopButton = showStopButton && permit(this.props.runnable).stop();
 
-        const runLabel = this.props.runText || 'Run';
-        const stopLabel = this.state.stopping ? 'Stopping...' : 'Stop';
+        const runLabel = this.props.runText || i18n.t('bo.core.js.toast.run');
+        const stopLabel = this.state.stopping ? i18n.t('bo.core.js.toast.stopping') : i18n.t('bo.core.js.toast.stop');
 
         if (!showRunButton && !showStopButton) {
             return null;
