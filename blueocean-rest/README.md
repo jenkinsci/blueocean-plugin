@@ -569,7 +569,15 @@ activity.
             "name": "feature2",
             "organization": "jenkins",
             "weatherScore": 100,
-            "pullRequest": null,
+            "pullRequest": {
+                "_links": {
+                    "self":null
+                },
+                "author":"<githubuser>",
+                "id":"543",
+                "title":"Fixes for stuff",
+                "url":"https://github.com/jenkinsci/some-plugin/pull/543"
+            },
             "totalNumberOfPullRequests": 0
         },
         {
