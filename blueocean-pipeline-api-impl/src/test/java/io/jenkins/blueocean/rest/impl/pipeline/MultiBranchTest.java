@@ -124,6 +124,7 @@ public class MultiBranchTest extends PipelineBaseTest {
     public void getMultiBranchPipelineInsideFolder() throws IOException, ExecutionException, InterruptedException {
         MockFolder folder1 = j.createFolder("folder1");
         WorkflowMultiBranchProject mp = folder1.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.setDisplayName("My MBP");
 
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
             new DefaultBranchPropertyStrategy(new BranchProperty[0])));
@@ -138,6 +139,9 @@ public class MultiBranchTest extends PipelineBaseTest {
         validateMultiBranchPipeline(mp, r, 3);
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/p/",
             ((Map)((Map)r.get("_links")).get("self")).get("href"));
+        Assert.assertEquals("folder1/My%20MBP", r.get("fullDisplayName"));
+        r = get("/organizations/jenkins/pipelines/folder1/pipelines/p/master/");
+        Assert.assertEquals("folder1/My%20MBP/master", r.get("fullDisplayName"));
     }
 
     @Test

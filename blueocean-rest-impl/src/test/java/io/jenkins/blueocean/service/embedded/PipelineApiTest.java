@@ -70,6 +70,7 @@ public class PipelineApiTest extends BaseTest {
         MockFolder folder1 = j.createFolder("folder1");
         Project p1 = folder1.createProject(FreeStyleProject.class, "test1");
         MockFolder folder2 = folder1.createProject(MockFolder.class, "folder2");
+        folder2.setDisplayName("My folder2");
         MockFolder folder3 = folder1.createProject(MockFolder.class, "folder3");
         Project p2 = folder2.createProject(FreeStyleProject.class, "test2");
 
@@ -88,6 +89,7 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals(3, pipelines.size());
         Assert.assertEquals("folder2", pipelines.get(0).get("name"));
         Assert.assertEquals("folder1/folder2", pipelines.get(0).get("fullName"));
+        Assert.assertEquals("folder1/My%20folder2", pipelines.get(0).get("fullDisplayName"));
 
         response = get("/organizations/jenkins/pipelines/folder1");
         Assert.assertEquals("folder1", response.get("name"));
