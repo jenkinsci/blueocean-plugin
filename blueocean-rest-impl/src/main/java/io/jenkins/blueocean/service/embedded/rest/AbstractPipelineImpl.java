@@ -6,10 +6,12 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.AbstractItem;
 import hudson.model.Action;
 import hudson.model.BuildableItem;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
@@ -143,6 +145,26 @@ public class AbstractPipelineImpl extends BluePipeline {
     @Override
     public String getFullName(){
         return job.getFullName();
+    }
+
+    @Override
+    public String getFullDisplayName() {
+        return getFullDisplayName(job.getParent(), job.getDisplayName());
+    }
+
+    public static String getFullDisplayName(ItemGroup parent, String displayName){
+        String name = parent.getDisplayName();
+        if(name.length() == 0 ) return displayName;
+
+
+        if(name.length() > 0  && parent instanceof AbstractItem) {
+            if(displayName == null){
+                return getFullDisplayName(((AbstractItem)parent).getParent(), String.format("%s", Util.encode(name)));
+            }else {
+                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.encode(name),Util.encode(displayName)));
+            }
+        }
+        return displayName;
     }
 
     @Override
