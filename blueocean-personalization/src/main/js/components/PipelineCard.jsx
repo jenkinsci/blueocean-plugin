@@ -133,7 +133,9 @@ export class PipelineCard extends Component {
         const isBranch = capable(runnableItem, BRANCH_CAPABILITY);
         const names = extractNames(runnableItem, isBranch);
         const organization = runnableItem.organization;
-        const fullDisplayName = runnableItem.fullDisplayName;
+        const fullDisplayName = isBranch ?
+            runnableItem.fullDisplayName.split('/').slice(0, -1).join('/') :
+            runnableItem.fullDisplayName;
 
         let status;
         let startTime = null;
