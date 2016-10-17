@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import PipelineRowItem from './PipelineRowItem';
-import PageLoading from './PageLoading';
 
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
+import { translate } from 'react-i18next';
 import { documentTitle } from './DocumentTitle';
+import PipelineRowItem from './PipelineRowItem';
+import PageLoading from './PageLoading';
 
 export class Pipelines extends Component {
 
@@ -15,8 +16,8 @@ export class Pipelines extends Component {
     }
 
     render() {
-        const { pipelines, config } = this.context;
-        const { organization } = this.context.params;
+        const { pipelines, config, params: { organization } } = this.context;
+        const { t } = this.props;
 
         const orgLink = organization ?
             <Link to={`organizations/${organization}`} className="inverse">
@@ -25,9 +26,9 @@ export class Pipelines extends Component {
 
         const headers = [
             { label: 'Name', className: 'name-col' },
-            'Health',
-            'Branches',
-            'Pull Requests',
+            t('bo.dashboard.pipelines.table.health'),
+            t('bo.dashboard.pipelines.table.branches'),
+            t('bo.dashboard.pipelines.table.pr'),
             { label: '', className: 'actions-col' },
         ];
 
@@ -40,13 +41,13 @@ export class Pipelines extends Component {
                     {!pipelines || pipelines.$pending && <PageLoading duration={2000} />}
                     <Title>
                         <h1>
-                            <Link to="/" className="inverse">Dashboard</Link>
+                            <Link to="/" className="inverse">{ t('bo.dashboard.pipelines.heading') }</Link>
                             { organization && ' / ' }
                             { organization && orgLink }
                         </h1>
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                             <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
-                                New Pipeline
+                                { t('bo.dashboard.pipelines.new.pipeline') }
                             </a>
                         </Extensions.Renderer>
                     </Title>
@@ -78,7 +79,7 @@ export class Pipelines extends Component {
 
                         { pipelines && pipelines.$pager &&
                             <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
-                                {pipelines.$pending ? 'Loading...' : 'Show More'}
+                                {pipelines.$pending ? t('bo.dashboard.loading') : t('bo.dashboard.more')}
                             </button>
                         }
                     </article>
@@ -99,6 +100,7 @@ Pipelines.contextTypes = {
 
 Pipelines.propTypes = {
     setTitle: func,
+    t: func,
 };
 
-export default documentTitle(Pipelines);
+export default translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true })(documentTitle(Pipelines));

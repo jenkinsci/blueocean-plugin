@@ -2,16 +2,18 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { WeatherIcon } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
+import { translate } from 'react-i18next';
 import { buildPipelineUrl } from '../util/UrlUtils';
 
-export default class PipelineRowItem extends Component {
+export class PipelineRowItem extends Component {
 
     calculateResponse(passing, failing) {
+        const { t } = this.props;
         let response = '-';
         if (failing > 0) {
-            response = (`${failing} failing`);
+            response = t('bo.dashboard.failing', { 0: failing});
         } else if (passing > 0) {
-            response = (`${passing} passing`);
+            response = t('bo.dashboard.passing', { 0: passing});
         }
         return response;
     }
@@ -102,9 +104,12 @@ export default class PipelineRowItem extends Component {
 PipelineRowItem.propTypes = {
     pipeline: PropTypes.object.isRequired,
     showOrganization: PropTypes.bool,
+    t: PropTypes.func,
 };
 
 PipelineRowItem.contextTypes = {
     location: PropTypes.object,
     store: PropTypes.object,
 };
+
+export default translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true })(PipelineRowItem);

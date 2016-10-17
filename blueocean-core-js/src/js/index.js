@@ -42,4 +42,4 @@ const runApi = new RunApi();
 export { runApi as RunApi };
 
 // export i18n provider
-export i18n from './i18n/i18n';
+export i18n, { lngDetector, xhr } from './i18n/i18n';

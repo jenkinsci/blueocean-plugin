@@ -1,13 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    actions,
-    pipeline as pipelineSelector,
-    connect,
-    createSelector,
-} from '../redux';
 import { Link } from 'react-router';
 import Extensions from '@jenkins-cd/js-extensions';
-import NotFound from './NotFound';
 import {
     Page,
     PageHeader,
@@ -16,6 +9,14 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
+import {
+    actions,
+    pipeline as pipelineSelector,
+    connect,
+    createSelector,
+} from '../redux';
+import NotFound from './NotFound';
+import { translate } from 'react-i18next';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
@@ -45,7 +46,7 @@ export class PipelinePage extends Component {
     }
 
     render() {
-        const { pipeline, setTitle } = this.props;
+        const { pipeline, setTitle, t } = this.props;
         const { organization, name, fullName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
@@ -84,9 +85,9 @@ export class PipelinePage extends Component {
                     </Title>
                     }
                     <PageTabs base={baseUrl}>
-                        <TabLink to="/activity">Activity</TabLink>
-                        <TabLink to="/branches">Branches</TabLink>
-                        <TabLink to="/pr">Pull Requests</TabLink>
+                        <TabLink to="/activity">t('bo.dashboard.activity')</TabLink>
+                        <TabLink to="/branches">t('bo.dashboard.branches')</TabLink>
+                        <TabLink to="/pr">t('bo.dashboard.pr')</TabLink>
                     </PageTabs>
                 </PageHeader>
                 {isReady && React.cloneElement(this.props.children, { pipeline, setTitle })}
@@ -101,6 +102,7 @@ PipelinePage.propTypes = {
     pipeline: PropTypes.any,
     params: PropTypes.object,
     setTitle: PropTypes.func,
+    t: PropTypes.func,
 };
 
 PipelinePage.contextTypes = {
@@ -116,4 +118,4 @@ PipelinePage.childContextTypes = {
 const selectors = createSelector([pipelineSelector],
     (pipeline) => ({ pipeline }));
 
-export default connect(selectors, actions)(documentTitle(PipelinePage));
+export default translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true })(connect(selectors, actions)(documentTitle(PipelinePage)));

@@ -21,10 +21,10 @@ function loginOrLogout(t) {
     if (AppConfig.getLoginUrl()) {
         if (AppConfig.getInitialUser() === "anonymous") {
             const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
-            return <a href={loginUrl} className="btn-primary inverse small">{t('login')}</a>;
+            return <a href={loginUrl} className="btn-primary inverse small">{t('bo.web.login')}</a>;
         } else {
             const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
-            return <a href={logoutUrl} className="btn-secondary inverse small">{t('logout')}</a>;
+            return <a href={logoutUrl} className="btn-secondary inverse small">{t('bo.web.logout')}</a>;
         }
     }
 }
