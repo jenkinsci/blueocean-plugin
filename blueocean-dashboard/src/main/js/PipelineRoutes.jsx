@@ -87,8 +87,10 @@ function persistModalBackground() {
 function handleNavigationChangeToFromModal(prevState, nextState, replace, callback) {
     const enterRunDetails = nextState.params.runId && (prevState == null || !prevState.params.runId);
     const leaveRunDetails = (prevState !== null && prevState.params.runId) && !nextState.params.runId;
-    const enterCreatePipeline = nextState.location.pathname.indexOf('/create-pipeline') !== -1;
-    const leaveCreatePipeline = prevState.location.pathname.indexOf('/create-pipeline') !== -1;
+    const enterCreatePipeline = nextState.location.pathname.indexOf('/create-pipeline') !== -1 &&
+        (prevState == null || prevState.location.pathname.indexOf('/create-pipeline') === -1);
+    const leaveCreatePipeline = nextState.location.pathname.indexOf('/create-pipeline') === -1 &&
+        (prevState == null || prevState.location.pathname.indexOf('/create-pipeline') !== -1);
 
     if (enterRunDetails || enterCreatePipeline) {
         persistModalBackground();
