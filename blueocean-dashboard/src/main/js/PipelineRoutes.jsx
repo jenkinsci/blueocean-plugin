@@ -85,9 +85,14 @@ function persistModalBackground() {
  * the background context.
  */
 function handleNavigationChangeToFromModal(prevState, nextState, replace, callback) {
-    if (nextState.params.runId && (prevState == null || !prevState.params.runId)) {
+    const enterRunDetails = nextState.params.runId && (prevState == null || !prevState.params.runId);
+    const leaveRunDetails = (prevState !== null && prevState.params.runId) && !nextState.params.runId;
+    const enterCreatePipeline = nextState.location.pathname.indexOf('/create-pipeline') !== -1;
+    const leaveCreatePipeline = prevState.location.pathname.indexOf('/create-pipeline') !== -1;
+
+    if (enterRunDetails || enterCreatePipeline) {
         persistModalBackground();
-    } else if (!nextState.params.runId) {
+    } else if (leaveRunDetails || leaveCreatePipeline) {
          // need to delay this a little to let the route re-render
         setTimeout(discardPersistedBackground, 200);
     }
