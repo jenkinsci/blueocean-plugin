@@ -14,6 +14,9 @@ import {
     RunDetailsArtifacts,
     RunDetailsTests,
 } from './components';
+import {
+    CreatePipeline
+} from './creation';
 
 /**
  * gets the background element used for the modal underlay
@@ -118,6 +121,7 @@ export default (
         <Route path="/pipelines" component={OrganizationPipelines}>
             <IndexRoute component={Pipelines} />
         </Route>
+        <Route path="/create-pipeline" component={CreatePipeline} />
         <IndexRedirect to="pipelines" />
     </Route>
 );

@@ -15,7 +15,7 @@ export class Pipelines extends Component {
     }
 
     render() {
-        const { pipelines, config } = this.context;
+        const { pipelines } = this.context;
         const { organization } = this.context.params;
 
         const orgLink = organization ?
@@ -31,9 +31,6 @@ export class Pipelines extends Component {
             { label: '', className: 'actions-col' },
         ];
 
-        const baseUrl = config.getRootURL();
-        const newJobUrl = `${baseUrl}/view/All/newJob`;
-
         return (
             <Page>
                 <PageHeader>
@@ -45,9 +42,9 @@ export class Pipelines extends Component {
                             { organization && orgLink }
                         </h1>
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
-                            <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
+                            <Link to="/create-pipeline" className="btn-secondary inverse">
                                 New Pipeline
-                            </a>
+                            </Link>
                         </Extensions.Renderer>
                     </Title>
                 </PageHeader>
