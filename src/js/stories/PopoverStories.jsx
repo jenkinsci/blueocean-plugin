@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import { storiesOf } from '@kadira/storybook';
 
 import { Popover } from '../components';
@@ -102,6 +102,6 @@ class ExampleBasic extends Component {
     }
 
     static propTypes = {
-        position: PropTypes.oneOf(positions)
+        position: PropTypes.string
     }
 }
