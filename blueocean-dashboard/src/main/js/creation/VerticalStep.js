@@ -6,9 +6,10 @@ import { StepIndicator } from './StepIndicator';
 
 export function VerticalStep(props) {
     const complete = props.status === 'complete';
+    const classNames = `${props.status || ''} ${props.className || ''}`.trim();
 
     return (
-        <div className={`vertical-step-component ${props.status}`}>
+        <div className={`vertical-step-component ${classNames}`}>
             <div className="step-progress">
                 <div className="step-stroke-top"></div>
                 <StepIndicator complete={complete} />
@@ -23,6 +24,7 @@ export function VerticalStep(props) {
 
 VerticalStep.propTypes = {
     children: PropTypes.node,
+    className: PropTypes.string,
     status: PropTypes.oneOf(['complete', 'active', 'incomplete']),
 };
 

@@ -51,9 +51,11 @@ export class CreatePipeline extends React.Component {
     }
 
     render() {
+        const firstStepStatus = this.state.activePlugin ? 'complete' : 'incomplete';
+
         return (
             <DialogPlaceholder onClose={() => this._onExit()}>
-                <VerticalStep status="complete">
+                <VerticalStep className="first-step" status={firstStepStatus}>
                     <h1>Where do you store your code?</h1>
 
                     <CreatePipelineScmListRenderer
@@ -67,7 +69,7 @@ export class CreatePipeline extends React.Component {
                   activePlugin={this.state.activePlugin}
                 />
 
-                <VerticalStep>
+                <VerticalStep className="last-step">
                     <h1>Completed</h1>
                 </VerticalStep>
             </DialogPlaceholder>
