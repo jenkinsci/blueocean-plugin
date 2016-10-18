@@ -25,7 +25,7 @@
       <!-- Jenkins Design Language -->
       <link rel="stylesheet" href="${resURL}/plugin/blueocean-web/assets/css/jenkins-design-language.css" type="text/css"/>
       <link rel="stylesheet" href="${rootURL}/${j.getAdjuncts('').rootURL}/io/jenkins/blueocean/blueocean.css" type="text/css"/>
-      <link rel="stylesheet" href="${rootURL}/${j.getAdjuncts('').rootURL}/org/jenkins/ui/jsmodules/blueocean_dashboard/extensions.css" type="text/css"/>
+      <link rel="stylesheet" href="${rootURL}/${j.getAdjuncts('').rootURL}/org/jenkins/ui/jsmodules/blueocean-dashboard/extensions.css" type="text/css"/>
     </head>
 
     <body>
