@@ -11,13 +11,27 @@ import { observer } from 'mobx-react';
 @observer
 export class Pipelines extends Component {
 
+    componentWillMount() {
+        this.context.pipelinesService.fetchPipelines(this.props.params.organization);
+    }
+
     componentDidMount() {
-        const { organization = 'Jenkins' } = this.context.params;
-        this.props.setTitle(organization);
+        // TODO: re-enable this
+        //const { organization = 'Jenkins' } = this.context.params;
+        //this.props.setTitle(organization);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.context.pipelinesService.fetchPipelines(nextProps.params.organization);
     }
 
     render() {
-        const { pipelines, config } = this.context;
+        // TODO: should just be able to reference pipelineService.pipelineList here
+        const pipelines1 = this.context.pipelinesService._organizationList;
+        const pipelines2 = this.context.pipelinesService._allPipelines;
+        const pipelines = this.props.params.organization ? pipelines1 : pipelines2;
+
+        const { config } = this.context;
         const { organization } = this.context.params;
 
         const orgLink = organization ?
@@ -97,10 +111,11 @@ Pipelines.contextTypes = {
     pipelines: array,
     store: object,
     router: object,
+    pipelinesService: object,
 };
 
 Pipelines.propTypes = {
     setTitle: func,
 };
 
-export default documentTitle(Pipelines);
+export default Pipelines;

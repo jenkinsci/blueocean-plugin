@@ -7,7 +7,7 @@ import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js'
 /**
  * How many records to fetch by default
  */
-export const defaultPageSize = 25;
+export const defaultPageSize = 5;
 
 /**
  * Freezes an object and all child properties

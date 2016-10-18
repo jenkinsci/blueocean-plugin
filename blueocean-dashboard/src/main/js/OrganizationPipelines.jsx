@@ -30,14 +30,6 @@ class OrganizationPipelines extends Component {
     componentWillMount() {
         const config = this.context.config;
         if (config) {
-            const organizationName = this._getOrganizationName();
-
-            if (organizationName) {
-                this.props.fetchOrganizationPipelines({ organizationName });
-            } else {
-                this.context.pipelinesService.fetchAllPipelines();
-            }
-
             // Subscribe for job channel push events
             this.jobListener = sse.subscribe('job', (event) => {
                 // Enrich the event with blueocean specific properties
@@ -97,6 +89,7 @@ class OrganizationPipelines extends Component {
         loadingIndicator.setDarkBackground();
     }
 
+    /*
     componentWillReceiveProps(nextProps) {
         const organizationName = this._getOrganizationName(nextProps);
         if (this._getOrganizationName(this.props) !== organizationName) {
@@ -107,6 +100,7 @@ class OrganizationPipelines extends Component {
             }
         }
     }
+    */
 
     componentWillUnmount() {
         if (this.jobListener) {

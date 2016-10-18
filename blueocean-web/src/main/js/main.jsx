@@ -14,6 +14,8 @@ import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
 useStrict(true);
 
+import DevTools from 'mobx-react-devtools';
+
 import { AppConfig, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
 
 let config; // Holder for various app-wide state
@@ -60,6 +62,7 @@ class App extends Component {
                     <DevelopmentFooter />
                 </footer>
                 <ToastDrawer />
+                <DevTools />
             </div>
         );
     }
