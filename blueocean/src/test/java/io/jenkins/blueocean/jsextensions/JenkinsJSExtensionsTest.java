@@ -50,7 +50,7 @@ public class JenkinsJSExtensionsTest extends BaseTest {
             String pluginId = (String) extension.get("hpiPluginId");
 
             if ("blueocean-dashboard".equals(pluginId)) {
-                Assert.assertEquals(5, extensionPoints.size());
+                Assert.assertEquals(9, extensionPoints.size());
                 Assert.assertEquals("AdminNavLink", extensionPoints.get(0).get("component"));
                 Assert.assertEquals("jenkins.logo.top", extensionPoints.get(0).get("extensionPoint"));
             } else if ("blueocean-personalization".equals(pluginId)) {

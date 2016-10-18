@@ -14,9 +14,7 @@ import {
     RunDetailsArtifacts,
     RunDetailsTests,
 } from './components';
-import {
-    CreatePipeline
-} from './creation';
+import { CreatePipeline } from './creation';
 
 /**
  * gets the background element used for the modal underlay
