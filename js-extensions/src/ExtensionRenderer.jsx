@@ -44,14 +44,20 @@ export class ExtensionRenderer extends React.Component {
         // Initial state is empty. See the componentDidMount and render functions.
         this.state = { extensions: null };
     }
-    
+
     componentWillMount() {
-        this._setExtensions();
+        this._setExtensions(this.props);
     }
-    
+
     componentDidMount() {
         ExtensionRenderer.ResourceLoadTracker.onMount(this.props.extensionPoint);
         this._renderAllExtensions();
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        if (!nextState.extensions) {
+            this._setExtensions(nextProps);
+        }
     }
 
     componentDidUpdate() {
@@ -61,13 +67,24 @@ export class ExtensionRenderer extends React.Component {
     componentWillUnmount() {
         this._unmountAllExtensions();
     }
-    
-    _setExtensions() {
-        ExtensionRenderer.ExtensionStore.getExtensions(this.props.extensionPoint, this.props.filter,
+
+    /**
+     * Force a reload and re-render of all extensions registered with this ExtensionPoint.
+     * Useful if the props (such as 'filter') have changed and need to be re-evaluated.
+     */
+    reloadExtensions() {
+        // triggers a reload of extensions via componentWillUpdate
+        this.setState({
+            extensions: null,
+        });
+    }
+
+    _setExtensions(props) {
+        ExtensionRenderer.ExtensionStore.getExtensions(props.extensionPoint, props.filter,
             extensions => this.setState({extensions: extensions})
         );
     }
-    
+
     /**
      * This method renders the "leaf node" container divs, one for each registered extension, that live in the same
      * react hierarchy as the &lt;ExtensionRenderer&gt; instance itself. As far as our react is concerned, these are
@@ -85,7 +102,7 @@ export class ExtensionRenderer extends React.Component {
         }
 
         var newChildren = [];
-        
+
         // Add a <div> for each of the extensions. See the __renderAllExtensions function.
         for (var i = 0; i < extensions.length; i++) {
             newChildren.push(<div key={i}/>);
@@ -193,6 +210,7 @@ ExtensionRenderer.defaultProps = {
 };
 
 ExtensionRenderer.propTypes = {
+    children: React.PropTypes.node,
     extensionPoint: React.PropTypes.string.isRequired,
     filter: React.PropTypes.any,
     wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element])
