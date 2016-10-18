@@ -3,6 +3,7 @@
  */
 import React, { PropTypes } from 'react';
 
+// temporary component until JDL Dialog is ready
 function DialogPlaceholder(props) {
     function closeHandler() {
         if (props.onClose) {
@@ -11,7 +12,7 @@ function DialogPlaceholder(props) {
     }
 
     return (
-        <div style={{ position: 'fixed', zIndex: 50, top: 50, left: 100, right: 100, bottom: 50, background: '#fff' }}>
+        <div style={{ position: 'fixed', zIndex: 50, top: 50, left: 100, right: 100, bottom: 50, background: '#fff', border: '1px solid black' }}>
             <div style={{ position: 'absolute', zIndex: 100, top: 0, left: 0, right: 0, bottom: 0 }}>
                 {props.children}
             </div>

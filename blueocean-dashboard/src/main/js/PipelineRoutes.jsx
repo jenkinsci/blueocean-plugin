@@ -76,23 +76,44 @@ function persistModalBackground() {
     root.appendChild(container);
 }
 
-/**
- * Handles navigating to/from run details dialogs...  note this
- * must be done early and can't wait until a modal will mount
- * due to the fact react router will have already changed the
- * the background context.
- */
-function handleNavigationChangeToFromModal(prevState, nextState, replace, callback) {
-    const enterRunDetails = nextState.params.runId && (prevState == null || !prevState.params.runId);
-    const leaveRunDetails = (prevState !== null && prevState.params.runId) && !nextState.params.runId;
-    const enterCreatePipeline = nextState.location.pathname.indexOf('/create-pipeline') !== -1 &&
-        (prevState == null || prevState.location.pathname.indexOf('/create-pipeline') === -1);
-    const leaveCreatePipeline = nextState.location.pathname.indexOf('/create-pipeline') === -1 &&
-        (prevState == null || prevState.location.pathname.indexOf('/create-pipeline') !== -1);
+function isEnteringRunDetails(prevState, nextState) {
+    return nextState.params.runId && (prevState == null || !prevState.params.runId);
+}
 
-    if (enterRunDetails || enterCreatePipeline) {
+function isLeavingRunDetails(prevState, nextState) {
+    return (prevState !== null && prevState.params.runId) && !nextState.params.runId;
+}
+
+function isEnteringCreatePipeline(prevState, nextState) {
+    return nextState.location.pathname.indexOf('/create-pipeline') !== -1 &&
+        (prevState == null || prevState.location.pathname.indexOf('/create-pipeline') === -1);
+}
+
+function isLeavingCreatePipeline(prevState, nextState) {
+    return nextState.location.pathname.indexOf('/create-pipeline') === -1 &&
+        (prevState == null || prevState.location.pathname.indexOf('/create-pipeline') !== -1);
+}
+
+function isPersistBackgroundRoute(prevState, nextState) {
+    return isEnteringRunDetails(prevState, nextState) ||
+        isEnteringCreatePipeline(prevState, nextState);
+}
+
+function isRemovePersistedBackgroundRoute(prevState, nextState) {
+    return isLeavingRunDetails(prevState, nextState) ||
+        isLeavingCreatePipeline(prevState, nextState);
+}
+
+/**
+ * Persists the application's DOM as a "background" when navigating to a route w/ a modal or dialog.
+ * Also removes the "background" when navigating away.
+ * Note this must be done early (from top-level onChange handler) and can't wait until a modal/dialog will mount
+ * due to the fact react router will have already changed the background context.
+ */
+function persistBackgroundOnNavigationChange(prevState, nextState, replace, callback) {
+    if (isPersistBackgroundRoute(prevState, nextState)) {
         persistModalBackground();
-    } else if (leaveRunDetails || leaveCreatePipeline) {
+    } else if (isRemovePersistedBackgroundRoute(prevState, nextState)) {
          // need to delay this a little to let the route re-render
         setTimeout(discardPersistedBackground, 200);
     }
@@ -100,7 +121,7 @@ function handleNavigationChangeToFromModal(prevState, nextState, replace, callba
 }
 
 export default (
-    <Route path="/" component={Dashboard} onChange={handleNavigationChangeToFromModal}>
+    <Route path="/" component={Dashboard} onChange={persistBackgroundOnNavigationChange}>
         <Route path="organizations/:organization" component={OrganizationPipelines}>
             <IndexRedirect to="pipelines" />
             <Route path="pipelines" component={Pipelines} />
