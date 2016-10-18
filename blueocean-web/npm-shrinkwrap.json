@@ -30,9 +30,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.27",
-      "from": "@jenkins-cd/js-extensions@0.0.27",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.27.tgz"
+      "version": "0.0.28-beta1",
+      "from": "@jenkins-cd/js-extensions@0.0.28-beta1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.28-beta1.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
@@ -3114,7 +3114,8 @@
           "dependencies": {
             "tough-cookie": {
               "version": "2.3.1",
-              "from": "tough-cookie@>=2.3.0 <2.4.0",
+              "from": "tough-cookie@2.3.1",
+              "resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.3.1.tgz",
               "dev": true
             }
           }
