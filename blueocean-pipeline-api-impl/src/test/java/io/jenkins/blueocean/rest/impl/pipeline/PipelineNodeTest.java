@@ -185,9 +185,11 @@ public class PipelineNodeTest extends PipelineBaseTest {
             "node {" +
             "   stage ('dev');" +                 //start
             "     echo ('development'); " +
-
             "   stage ('Build') { " +
             "     echo ('Building'); " +
+            "     stage('Packaging') {" +
+            "         echo 'packaging...'" +
+            "     }" +
             "   } \n" +
             "   stage ('test') { " +
             "     echo ('Testing'); " +
@@ -220,10 +222,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        PipelineNodeGraphBuilder builder = new PipelineNodeGraphBuilder(b1);
 
-        List<FlowNode> stages = builder.getSages();
-        List<FlowNode> parallels = builder.getParallelBranches();
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> stages = getStages(builder);
+        List<FlowNode> parallels = getParallelNodes(builder);
 
         Assert.assertEquals(4, stages.size());
         Assert.assertEquals(2, parallels.size());
@@ -267,7 +269,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         }
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
-        Assert.assertEquals(12,resp.size());
+        Assert.assertEquals(13,resp.size());
 
 
         Assert.assertNotNull(testStageId);
@@ -728,7 +730,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
 
-        List<FlowNode> nodes = getStages(builder);
+        List<FlowNode> nodes = getStagesAndParallels(builder);
         List<FlowNode> parallelNodes = getParallelNodes(builder);
 
         Assert.assertEquals(7, nodes.size());
@@ -949,7 +951,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         j.assertBuildStatusSuccess(b1);
 
         NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
-        List<FlowNode> nodes = getStages(builder);
+        List<FlowNode> nodes = getStagesAndParallels(builder);
         List<FlowNode> parallelNodes = getParallelNodes(builder);
 
         Assert.assertEquals(7, nodes.size());
@@ -1096,7 +1098,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         j.assertBuildStatus(Result.FAILURE, b1);
 
         NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
-        List<FlowNode> nodes = getStages(builder);
+        List<FlowNode> nodes = getStagesAndParallels(builder);
         List<FlowNode> parallelNodes = getParallelNodes(builder);
 
         Assert.assertEquals(5, nodes.size());

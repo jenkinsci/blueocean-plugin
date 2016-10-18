@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * @author Vivek Pandey
@@ -48,15 +49,16 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     private FlowNodeWrapper nextStage;
 
-    private FlowNode branchEnd;
-
     private FlowNode parallelEnd;
 
     public final Map<String, FlowNodeWrapper> nodeMap = new LinkedHashMap<>();
 
     private static final Logger logger = LoggerFactory.getLogger(PipelineNodeGraphVisitor.class);
 
-    private static final boolean isNodeVisitorDumpEnabled = Boolean.getBoolean("NODE_DUMP_ENABLED");
+    private static final boolean isNodeVisitorDumpEnabled = Boolean.getBoolean("NODE-DUMP-ENABLED");
+
+    private final Stack<FlowNode> nestedStages = new Stack<>();
+    private final Stack<FlowNode> nestedbranches = new Stack<>();
 
     public PipelineNodeGraphVisitor(WorkflowRun run) {
         this.run = run;
@@ -68,16 +70,14 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     @Override
     public void chunkStart(@Nonnull FlowNode startNode, @CheckForNull FlowNode beforeBlock, @Nonnull ForkScanner scanner) {
         super.chunkStart(startNode, beforeBlock, scanner);
-        if(isNested()){
-            return;
-        }
+        if(isNodeVisitorDumpEnabled)
+            dump(String.format("chunkStart=> id: %s, name: %s, function: %s", startNode.getId(),
+                startNode.getDisplayName(), startNode.getDisplayFunctionName()));
 
         if (NotExecutedNodeAction.isExecuted(startNode)) {
             firstExecuted = startNode;
         }
-        if(isNodeVisitorDumpEnabled)
-            dump(String.format("chunkStart=> id: %s, name: %s, function: %s", startNode.getId(),
-                startNode.getDisplayName(), startNode.getDisplayFunctionName()));
+
     }
 
     @Override
@@ -87,14 +87,15 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         if(isNodeVisitorDumpEnabled)
             dump(String.format("chunkEnd=> id: %s, name: %s, function: %s, type:%s", endNode.getId(),
                 endNode.getDisplayName(), endNode.getDisplayFunctionName(), endNode.getClass()));
-        if(isNested()){
-            return;
-        }
 
         if(isNodeVisitorDumpEnabled && endNode instanceof StepEndNode){
             dump("\tStartNode: "+((StepEndNode) endNode).getStartNode());
         }
 
+        //if block stage node push it to stack as it may have nested stages
+        if(endNode instanceof StepEndNode && PipelineNodeUtil.isStage(((StepEndNode) endNode).getStartNode())) {
+            nestedStages.push(endNode);
+        }
         firstExecuted = null;
 
         // if we're using marker-based (and not block-scoped) stages, add the last node as part of its contents
@@ -134,7 +135,15 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             dump(String.format("parallelBranchStart=> id: %s, name: %s, function: %s", branchStartNode.getId(),
                 branchStartNode.getDisplayName(), branchStartNode.getDisplayFunctionName()));
 
-        TimingInfo times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), branchStartNode, branchEnd,
+        if(nestedbranches.size() > 1){
+            nestedbranches.pop();
+            if(nestedbranches.size() > 1) {
+                return;
+            }
+        }
+        FlowNode endNode = nestedbranches.pop();
+
+        TimingInfo times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), branchStartNode, endNode,
             chunk.getNodeAfter());
 
         if(times == null){
@@ -142,7 +151,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
         GenericStatus status = StatusAndTiming.computeChunkStatus(run,
-            parallelStartNode, branchStartNode, branchEnd, parallelEnd);
+            parallelStartNode, branchStartNode, endNode, parallelEnd);
 
         FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode,
             new NodeRunStatus(status), times);
@@ -151,7 +160,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             branch.addEdge(nextStage.getId());
         }
         parallelBranches.push(branch);
-        this.branchEnd = null;
     }
 
     @Override
@@ -159,11 +167,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         if(isNodeVisitorDumpEnabled)
             dump(String.format("parallelBranchEnd=> id: %s, name: %s, function: %s, type: %s", branchEndNode.getId(),
                 branchEndNode.getDisplayName(), branchEndNode.getDisplayFunctionName(), branchEndNode.getClass()));
-        this.branchEnd = branchEndNode;
-    }
-
-    private boolean isNested(){
-        return branchEnd!=null;
+        nestedbranches.push(branchEndNode);
     }
 
     // This gets triggered on encountering a new chunk (stage or branch)
@@ -172,8 +176,13 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         if(isNodeVisitorDumpEnabled)
             dump(String.format("handleChunkDone=> id: %s, name: %s, function: %s", chunk.getFirstNode().getId(),
                 chunk.getFirstNode().getDisplayName(), chunk.getFirstNode().getDisplayFunctionName()));
-        if(isNested()){
-            return;
+
+
+        if(!nestedStages.empty()){
+            nestedStages.pop(); //we throw away nested stages
+            if(!nestedStages.empty()){ //there is still a nested stage, return
+                return;
+            }
         }
         TimingInfo times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
 
