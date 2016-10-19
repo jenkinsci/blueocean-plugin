@@ -270,6 +270,10 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     @Override
     public List<BluePipelineStep> getPipelineNodeSteps(final String nodeId, Link parent) {
         DepthFirstScanner depthFirstScanner = new DepthFirstScanner();
+        if(run.getExecution() == null){
+            logger.debug(String.format("Pipeline %s, runid %s  has null execution", run.getParent().getName(), run.getId()));
+            return Collections.emptyList();
+        }
         //If blocked scope, get the end node
         FlowNode n = depthFirstScanner.findFirstMatch(run.getExecution().getCurrentHeads(), new Predicate<FlowNode>() {
             @Override
