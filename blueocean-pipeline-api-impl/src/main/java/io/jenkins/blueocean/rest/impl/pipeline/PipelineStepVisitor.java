@@ -60,6 +60,13 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
 
 
     @Override
+    public void parallelBranchEnd(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchEndNode, @Nonnull ForkScanner scanner) {
+        if(!stepCollectionCompleted && node != null && PipelineNodeUtil.isParallelBranch(node) && branchEndNode instanceof StepEndNode){
+            steps.clear();
+        }
+    }
+
+    @Override
     public void chunkEnd(@Nonnull FlowNode endNode, @CheckForNull FlowNode afterChunk, @Nonnull ForkScanner scanner) {
         super.chunkEnd(endNode, afterChunk, scanner);
         if(node!= null && endNode instanceof StepEndNode && ((StepEndNode)endNode).getStartNode().equals(node)){

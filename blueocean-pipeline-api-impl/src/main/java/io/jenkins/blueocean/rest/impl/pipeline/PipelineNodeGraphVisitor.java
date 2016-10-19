@@ -5,7 +5,6 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
-import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -27,7 +26,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,6 +113,18 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 parallelStartNode.getDisplayName(), parallelStartNode.getDisplayFunctionName()));
             dump(String.format("\tbranch=> id: %s, name: %s, function: %s", branchNode.getId(),
                 branchNode.getDisplayName(), branchNode.getDisplayFunctionName()));
+        }
+        FlowNodeWrapper[] sortedBranches = parallelBranches.toArray(new FlowNodeWrapper[parallelBranches.size()]);
+        Arrays.sort(sortedBranches, new Comparator<FlowNodeWrapper>() {
+            @Override
+            public int compare(FlowNodeWrapper o1, FlowNodeWrapper o2) {
+                return o1.getDisplayName().compareTo(o2.getDisplayName());
+            }
+        });
+
+        parallelBranches.clear();
+        for(int i=0; i< sortedBranches.length; i++){
+            parallelBranches.push(sortedBranches[i]);
         }
         for(FlowNodeWrapper p:parallelBranches){
             nodes.push(p);
@@ -200,7 +214,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);
         if(!parallelBranches.isEmpty()){
-            for(FlowNodeWrapper p:parallelBranches){
+            Iterator<FlowNodeWrapper> branches = parallelBranches.descendingIterator();
+            while(branches.hasNext()){
+                FlowNodeWrapper p = branches.next();
                 p.addParent(stage);
                 stage.addEdge(p.getId());
             }
@@ -231,21 +247,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
         long pause = PauseAction.getPauseDuration(atomNode);
         chunk.setPauseTimeMillis(chunk.getPauseTimeMillis()+pause);
-
-        if(atomNode instanceof StepAtomNode) {
-            TimingInfo times = StatusAndTiming.computeChunkTiming(run, pause, atomNode, atomNode, after); // TODO pipeline graph analysis adds this to TimingInfo
-
-            if(times == null){
-                times = new TimingInfo();
-            }
-            GenericStatus status = StatusAndTiming.computeChunkStatus(run, before, atomNode, atomNode, after);
-            if (status == null) {
-                status = GenericStatus.NOT_EXECUTED;
-            }
-
-            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, new NodeRunStatus(status), times);
-            nodeMap.put(node.getId(), node);
-        }
     }
 
     private void dump(String str){

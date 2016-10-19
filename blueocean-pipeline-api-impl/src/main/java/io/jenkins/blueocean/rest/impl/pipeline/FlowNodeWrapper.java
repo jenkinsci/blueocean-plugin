@@ -21,6 +21,7 @@ public class FlowNodeWrapper {
     public final List<String> edges = new ArrayList<>();
     public final List<FlowNodeWrapper> steps = new ArrayList<>();
     public final NodeType type;
+    private final String displayName;
 
     private List<FlowNodeWrapper> parents = new ArrayList<>();
 
@@ -30,6 +31,11 @@ public class FlowNodeWrapper {
         this.status = status;
         this.timingInfo = timingInfo;
         this.type = getNodeType(node);
+        this.displayName = PipelineNodeUtil.getDisplayName(node);
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     private static NodeType getNodeType(FlowNode node){
