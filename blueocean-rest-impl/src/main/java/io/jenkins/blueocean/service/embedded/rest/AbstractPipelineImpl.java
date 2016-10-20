@@ -39,6 +39,8 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -149,19 +151,26 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public String getFullDisplayName() {
-        return getFullDisplayName(job.getParent(), job.getDisplayName());
+        return getFullDisplayName(job.getParent(), Util.rawEncode(job.getDisplayName()));
     }
 
-    public static String getFullDisplayName(ItemGroup parent, String displayName){
+    /**
+     * Returns full display name. Each display name is separated by '/' and each display name is url encoded.
+     *
+     * @param parent parent folder
+     * @param displayName URL encoded display name. Caller must pass urlencoded name
+     *
+     * @return full display name
+     */
+    public static String getFullDisplayName(@Nonnull ItemGroup parent, @Nullable String displayName){
         String name = parent.getDisplayName();
         if(name.length() == 0 ) return displayName;
 
-
         if(name.length() > 0  && parent instanceof AbstractItem) {
             if(displayName == null){
-                return getFullDisplayName(((AbstractItem)parent).getParent(), String.format("%s", Util.encode(name)));
+                return getFullDisplayName(((AbstractItem)parent).getParent(), String.format("%s", Util.rawEncode(name)));
             }else {
-                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.encode(name),Util.encode(displayName)));
+                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.rawEncode(name),displayName));
             }
         }
         return displayName;
