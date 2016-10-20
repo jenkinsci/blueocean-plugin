@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
+import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
 import org.jenkinsci.plugins.workflow.graphanalysis.MemoryFlowChunk;
@@ -54,7 +55,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
         if(node != null && branchStartNode.equals(node)){
             stepCollectionCompleted = true;
         }else if(node != null && PipelineNodeUtil.isParallelBranch(node) && !branchStartNode.equals(node)){
-            steps.clear();
+            resetSteps();
         }
     }
 
@@ -62,7 +63,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     @Override
     public void parallelBranchEnd(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchEndNode, @Nonnull ForkScanner scanner) {
         if(!stepCollectionCompleted && node != null && PipelineNodeUtil.isParallelBranch(node) && branchEndNode instanceof StepEndNode){
-            steps.clear();
+            resetSteps();
         }
     }
 
@@ -72,6 +73,10 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
         if(node!= null && endNode instanceof StepEndNode && ((StepEndNode)endNode).getStartNode().equals(node)){
             this.stepCollectionCompleted = false;
             this.inStageScope = true;
+        }
+        // if we're using marker-based (and not block-scoped) stages, add the last node as part of its contents
+        if (!(endNode instanceof BlockEndNode)) {
+            atomNode(null, endNode, afterChunk, scanner);
         }
     }
 
@@ -85,7 +90,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             stepCollectionCompleted = true;
             inStageScope = false;
         }if(node != null && PipelineNodeUtil.isStage(node) && !inStageScope && !chunk.getFirstNode().equals(node)){
-            steps.clear();
+            resetSteps();
         }
     }
 
@@ -94,10 +99,14 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
         if(stepCollectionCompleted){
             return;
         }
-        long pause = PauseAction.getPauseDuration(atomNode);
-        chunk.setPauseTimeMillis(chunk.getPauseTimeMillis()+pause);
 
         if(atomNode instanceof StepAtomNode) {
+            if(stepMap.get(atomNode.getId()) != null){ // if already added then skip it
+                return;
+            }
+            long pause = PauseAction.getPauseDuration(atomNode);
+            chunk.setPauseTimeMillis(chunk.getPauseTimeMillis()+pause);
+
             TimingInfo times = StatusAndTiming.computeChunkTiming(run, pause, atomNode, atomNode, after); // TODO pipeline graph analysis adds this to TimingInfo
 
             if(times == null){
@@ -120,6 +129,11 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
 
     public FlowNodeWrapper getStep(String id){
         return stepMap.get(id);
+    }
+
+    private void resetSteps(){
+        steps.clear();
+        stepMap.clear();
     }
 
 }

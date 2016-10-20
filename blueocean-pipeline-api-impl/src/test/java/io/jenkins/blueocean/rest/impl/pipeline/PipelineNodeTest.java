@@ -180,6 +180,61 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
+    public void testNonblockStageSteps() throws Exception{
+        String pipeline = "node {\n" +
+            "  stage 'Checkout'\n" +
+            "      echo 'checkingout'\n" +
+            "  stage 'Build'\n" +
+            "      echo 'building'\n" +
+            "  stage 'Archive'\n" +
+            "      echo 'archiving...'\n" +
+            "}";
+
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition(pipeline));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> stages = getStages(builder);
+        List<FlowNode> parallels = getParallelNodes(builder);
+
+        Assert.assertEquals(3, stages.size());
+        Assert.assertEquals(0, parallels.size());
+
+        //TODO: complete test
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(3, resp.size());
+
+        String checkoutId = (String) resp.get(0).get("id");
+        String buildId = (String) resp.get(0).get("id");
+        String archiveId = (String) resp.get(0).get("id");
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+        Assert.assertEquals(3,resp.size());
+
+
+        Assert.assertNotNull(checkoutId);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+checkoutId+"/steps/", List.class);
+        Assert.assertEquals(1,resp.size());
+
+
+        Assert.assertNotNull(buildId);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+buildId+"/steps/", List.class);
+        Assert.assertEquals(1,resp.size());
+
+
+        Assert.assertNotNull(archiveId);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+archiveId+"/steps/", List.class);
+        Assert.assertEquals(1,resp.size());
+    }
+
+
+    @Test
     public void testNestedBlockStage() throws Exception{
         String pipeline = "" +
             "node {" +
@@ -246,12 +301,14 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         String testStageId=null;
 
+        String devNodeId = null;
         for(int i=0; i< resp.size();i++){
             Map rn = resp.get(i);
             List<Map> edges = (List<Map>) rn.get("edges");
 
             if(rn.get("displayName").equals("dev")){
                 Assert.assertEquals(0, i);
+                devNodeId = (String) rn.get("id");
                 Assert.assertEquals(1, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
@@ -323,6 +380,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertNotNull(thirdBranch);
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+thirdBranch.getId()+"/steps/", List.class);
         Assert.assertEquals(5,resp.size());
+
+        Assert.assertNotNull(devNodeId);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+devNodeId+"/steps/", List.class);
+        Assert.assertEquals(1,resp.size());
 
     }
 
