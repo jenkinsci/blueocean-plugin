@@ -16,3 +16,4 @@ require('./ToasterStories.jsx');
 require('./resultItemStories.jsx');
 require('./typography.jsx');
 require('./progressBarStories');
+require('./PopoverStories');
