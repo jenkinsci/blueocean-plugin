@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.20",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.20",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.20.tgz"
+      "version": "0.0.21-security1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.21-security1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.21-security1.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.83",
@@ -3114,7 +3114,8 @@
           "dependencies": {
             "tough-cookie": {
               "version": "2.3.1",
-              "from": "tough-cookie@>=2.3.0 <2.4.0",
+              "from": "tough-cookie@2.3.1",
+              "resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.3.1.tgz",
               "dev": true
             }
           }
