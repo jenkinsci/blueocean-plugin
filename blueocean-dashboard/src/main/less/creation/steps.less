@@ -26,12 +26,17 @@
     }
 
     .step-content {
-        min-height: 100px;
+        min-height: 75px;
+        padding-bottom: 10px;
 
         h1 {
             margin-top: 2px;
             font-size: 24px;
         }
+    }
+
+    &.incomplete {
+        opacity: 0.5;
     }
 
     &.incomplete, &.active {

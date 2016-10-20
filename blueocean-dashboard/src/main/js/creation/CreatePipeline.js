@@ -5,7 +5,7 @@ import React, { PropTypes } from 'react';
 
 import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
-import { VerticalStep } from './VerticalStep';
+import VerticalStep from './VerticalStep';
 
 // temporary component until JDL Dialog is ready
 function DialogPlaceholder(props) {
@@ -46,12 +46,16 @@ export class CreatePipeline extends React.Component {
         });
     }
 
+    _onCompleteFlow() {
+        this._onExit();
+    }
+
     _onExit() {
         this.context.router.goBack();
     }
 
     render() {
-        const firstStepStatus = this.state.activePlugin ? 'complete' : 'incomplete';
+        const firstStepStatus = this.state.activePlugin ? 'complete' : 'active';
 
         return (
             <DialogPlaceholder onClose={() => this._onExit()}>
@@ -67,11 +71,8 @@ export class CreatePipeline extends React.Component {
                 <CreatePipelineStepsRenderer
                   extensionPoint="jenkins.pipeline.create.scm.steps"
                   activePlugin={this.state.activePlugin}
+                  onCompleteFlow={() => this._onCompleteFlow()}
                 />
-
-                <VerticalStep className="last-step">
-                    <h1>Completed</h1>
-                </VerticalStep>
             </DialogPlaceholder>
         );
     }

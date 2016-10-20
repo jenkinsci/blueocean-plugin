@@ -3,10 +3,11 @@
  */
 import React, { PropTypes } from 'react';
 import { StepIndicator } from './StepIndicator';
+import status from './FlowStatus';
 
-export function VerticalStep(props) {
-    const complete = props.status === 'complete';
-    const classNames = `${props.status || ''} ${props.className || ''}`.trim();
+export default function VerticalStep(props) {
+    const complete = props.status === status.COMPLETE;
+    const classNames = `${props.status || ''} ${props.className || ''} ${props.isLastStep ? 'last-step' : ''}`.trim();
 
     return (
         <div className={`vertical-step-component ${classNames}`}>
@@ -25,7 +26,8 @@ export function VerticalStep(props) {
 VerticalStep.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
-    status: PropTypes.oneOf(['complete', 'active', 'incomplete']),
+    isLastStep: PropTypes.bool,
+    status: PropTypes.oneOf(status.values()),
 };
 
 VerticalStep.defaultProps = {

@@ -3,6 +3,7 @@
  */
 import React, { PropTypes } from 'react';
 import Extensions from '@jenkins-cd/js-extensions';
+import VerticalStep from './VerticalStep';
 
 export class CreatePipelineStepsRenderer extends React.Component {
 
@@ -28,7 +29,11 @@ export class CreatePipelineStepsRenderer extends React.Component {
 
     render() {
         if (!this.props.activePlugin) {
-            return null;
+            return (
+                <VerticalStep className="last-step">
+                    <h1>Completed</h1>
+                </VerticalStep>
+            );
         }
 
         return (
@@ -36,6 +41,7 @@ export class CreatePipelineStepsRenderer extends React.Component {
               ref={(renderer) => { this._renderer = renderer; }}
               extensionPoint={this.props.extensionPoint}
               filter={(a, b) => this._filterByPlugin(a, b)}
+              onCompleteFlow={this.props.onCompleteFlow}
             />
         );
     }
@@ -44,4 +50,5 @@ export class CreatePipelineStepsRenderer extends React.Component {
 CreatePipelineStepsRenderer.propTypes = {
     extensionPoint: PropTypes.string,
     activePlugin: PropTypes.string,
+    onCompleteFlow: PropTypes.func,
 };

@@ -10,7 +10,6 @@ export class CreatePipelineScmListRenderer extends React.Component {
         super(props);
 
         this.state = {
-            pending: false,
             providers: [],
         };
     }
@@ -20,10 +19,6 @@ export class CreatePipelineScmListRenderer extends React.Component {
     }
 
     _initialize() {
-        this.setState({
-            pending: true,
-        });
-
         Extensions.store.getExtensions(this.props.extensionPoint, (extensions) => {
             const providers = extensions.map(Provider => {
                 const prov = new Provider();
@@ -35,7 +30,6 @@ export class CreatePipelineScmListRenderer extends React.Component {
             });
 
             this.setState({
-                pending: false,
                 providers,
             });
         });
@@ -48,10 +42,6 @@ export class CreatePipelineScmListRenderer extends React.Component {
     }
 
     render() {
-        if (this.state.pending) {
-            return null;
-        }
-
         return (
             <div className="scm-provider-list">
                 { this.state.providers.map((provider, index) => (

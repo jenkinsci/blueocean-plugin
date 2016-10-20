@@ -1,18 +1,20 @@
 /**
  * Created by cmeyers on 10/17/16.
  */
-import React from 'react';
-import { VerticalStep } from '../VerticalStep';
+import React, { PropTypes } from 'react';
 
-export default function GitScmSteps() {
-    return (
-        <div>
-            <VerticalStep>
-                <h1>Git Step</h1>
-            </VerticalStep>
-            <VerticalStep>
-                <h1>Another Git Step</h1>
-            </VerticalStep>
-        </div>
-    );
+import MultiStepFlow from '../MultiStepFlow';
+
+import ConnectStep from './ConnectStep';
+import CompletedStep from './CompletedStep';
+
+export default class GitScmSteps extends React.Component {
+    render() {
+        return (
+            <MultiStepFlow {...this.props}>
+                <ConnectStep />
+                <CompletedStep />
+            </MultiStepFlow>
+        );
+    }
 }
