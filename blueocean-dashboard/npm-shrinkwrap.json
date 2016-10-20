@@ -8,9 +8,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.20.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.85-beta1",
-      "from": "@jenkins-cd/design-language@0.0.85-beta1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.85-beta1.tgz"
+      "version": "0.0.85",
+      "from": "@jenkins-cd/design-language@0.0.85",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.85.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
