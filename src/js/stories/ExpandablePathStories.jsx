@@ -38,12 +38,26 @@ storiesOf('ExpandablePath', module)
             <ExpandablePath path={path} hideFirst />
         );
     })
-    .add('with link', () => {
+    .add('with uri-encoded parts', () => {
+        const path = 'jenkins / Pipeline%20Jobs / pipeline1';
+        return (
+            <ExpandablePath path={path} />
+        );
+    })
+    .add('style: with link', () => {
         const path = 'Jenkins / folder1 / folder2 / pipeline';
         return (
             <a href="http://jenkins.io" target="_blank">
                 <ExpandablePath path={path} />
             </a>
+        );
+    })
+    .add('style: large', () => {
+        const path = 'Jenkins / folder1 / folder2 / pipeline';
+        return (
+            <div style={ { fontSize: 24 } }>
+                <ExpandablePath path={path} iconSize={28} />
+            </div>
         );
     })
     .add('custom label', () => {
@@ -53,13 +67,5 @@ storiesOf('ExpandablePath', module)
             <a href="http://jenkins.io" target="_blank">
                 <ExpandablePath path={path} />
             </a>
-        );
-    })
-    .add('large', () => {
-        const path = 'Jenkins / folder1 / folder2 / pipeline';
-        return (
-            <div style={ { fontSize: 24 } }>
-                <ExpandablePath path={path} iconSize={28} />
-            </div>
         );
     });

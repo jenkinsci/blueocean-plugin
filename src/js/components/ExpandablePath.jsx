@@ -17,6 +17,7 @@ const SHOW_FOLDER_CLASS = 'show-folder';
  *      iconSize: for folder icons, in pixels
  *      path: a forward-slash delimited string of a path, e.g. 'folder1/folder2/pipeline'
  *      hideFirst: set to true to display the first path element as a folder.
+ *      uriDecode: set to true to show uri-decoded form of each path element.
  */
 export class ExpandablePath extends Component {
 
@@ -48,6 +49,8 @@ export class ExpandablePath extends Component {
                         const isSecondLast = (index + 1) === (elements.length - 1);
                         const isLast = (index + 1) === elements.length;
 
+                        const label = this.props.uriDecode ? decodeURIComponent(pathElem) : pathElem;
+
                         let displayClass = SHOW_FOLDER_CLASS;
 
                         if ((isFirst && !this.props.hideFirst) || isSecondLast || isLast) {
@@ -57,7 +60,7 @@ export class ExpandablePath extends Component {
                         return (
                             <li key={index} className={`path-item ${displayClass}`}>
                                 <Icon size={this.props.iconSize} icon="folder" style={ { fill: '#ccc' } }/>
-                                <span className="path-text">{pathElem}</span>
+                                <span className="path-text">{label.trim()}</span>
                                 <span className="separator">&nbsp;/&nbsp;</span>
                             </li>
                         );
@@ -73,9 +76,11 @@ ExpandablePath.propTypes = {
     iconSize: PropTypes.number,
     path: PropTypes.string,
     hideFirst: PropTypes.bool,
+    uriDecode: PropTypes.bool,
 };
 
 ExpandablePath.defaultProps = {
     iconSize: 16,
     hideFirst: false,
+    uriDecode: true,
 };
