@@ -1,11 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, i18n } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 const { object } = PropTypes;
+
+const t = (key) => i18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 
 export default class PullRequest extends Component {
     render() {
@@ -59,7 +61,15 @@ export default class PullRequest extends Component {
             <td>{id}</td>
             <td>{title || '-'}</td>
             <td>{author || '-'}</td>
-            <td><ReadableDate date={endTime} liveUpdate /></td>
+            <td>
+                <ReadableDate
+                  date={endTime}
+                  liveUpdate
+                  locale={i18n.language}
+                  shortFormat={t('Date.readable.short')}
+                  longFormat={t('Date.readable.long')}
+                />
+            </td>
             <td>
                 <RunButton
                   className="icon-button"

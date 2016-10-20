@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { WeatherIcon } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
-import { translate } from 'react-i18next';
 import { buildPipelineUrl } from '../util/UrlUtils';
 
 export class PipelineRowItem extends Component {
@@ -11,9 +10,9 @@ export class PipelineRowItem extends Component {
         const { t } = this.props;
         let response = '-';
         if (failing > 0) {
-            response = t('bo.dashboard.failing', { 0: failing});
+            response = t('Failing', { 0: failing });
         } else if (passing > 0) {
-            response = t('bo.dashboard.passing', { 0: passing});
+            response = t('Passing', { 0: passing });
         }
         return response;
     }
@@ -112,4 +111,4 @@ PipelineRowItem.contextTypes = {
     store: PropTypes.object,
 };
 
-export default translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true })(PipelineRowItem);
+export default PipelineRowItem;

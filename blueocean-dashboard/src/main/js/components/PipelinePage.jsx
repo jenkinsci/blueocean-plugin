@@ -85,12 +85,12 @@ export class PipelinePage extends Component {
                     </Title>
                     }
                     <PageTabs base={baseUrl}>
-                        <TabLink to="/activity">t('bo.dashboard.activity')</TabLink>
-                        <TabLink to="/branches">t('bo.dashboard.branches')</TabLink>
-                        <TabLink to="/pr">t('bo.dashboard.pr')</TabLink>
+                        <TabLink to="/activity">{ t('Activity') }</TabLink>
+                        <TabLink to="/branches">{ t('Branches') }</TabLink>
+                        <TabLink to="/pr">{ t('PR') }</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle })}
+                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t })}
             </Page>
         );
     }

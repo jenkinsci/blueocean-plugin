@@ -26,9 +26,9 @@ export class Pipelines extends Component {
 
         const headers = [
             { label: 'Name', className: 'name-col' },
-            t('bo.dashboard.pipelines.table.health'),
-            t('bo.dashboard.pipelines.table.branches'),
-            t('bo.dashboard.pipelines.table.pr'),
+            t('Health'),
+            t('Branches'),
+            t('PR'),
             { label: '', className: 'actions-col' },
         ];
 
@@ -41,13 +41,13 @@ export class Pipelines extends Component {
                     {!pipelines || pipelines.$pending && <PageLoading duration={2000} />}
                     <Title>
                         <h1>
-                            <Link to="/" className="inverse">{ t('bo.dashboard.pipelines.heading') }</Link>
+                            <Link to="/" className="inverse">{ t('Dashboard') }</Link>
                             { organization && ' / ' }
                             { organization && orgLink }
                         </h1>
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                             <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
-                                { t('bo.dashboard.pipelines.new.pipeline') }
+                                { t('New.Pipeline') }
                             </a>
                         </Extensions.Renderer>
                     </Title>
@@ -69,6 +69,7 @@ export class Pipelines extends Component {
                                     const key = pipeline._links.self.href;
                                     return (
                                         <PipelineRowItem
+                                          t={t}
                                           key={key} pipeline={pipeline}
                                           showOrganization={!organization}
                                         />
@@ -79,7 +80,7 @@ export class Pipelines extends Component {
 
                         { pipelines && pipelines.$pager &&
                             <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
-                                {pipelines.$pending ? t('bo.dashboard.loading') : t('bo.dashboard.more')}
+                                {pipelines.$pending ? t('Loading') : t('More')}
                             </button>
                         }
                     </article>

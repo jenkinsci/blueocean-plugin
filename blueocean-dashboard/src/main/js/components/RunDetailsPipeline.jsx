@@ -290,7 +290,7 @@ export class RunDetailsPipeline extends Component {
     render() {
         const { location, router } = this.context;
 
-        const { isMultiBranch, nodes, result: run, params } = this.props;
+        const { isMultiBranch, nodes, result: run, params, t } = this.props;
 
         if (run.isQueued()) {
             return <QueuedState />;
@@ -361,6 +361,7 @@ export class RunDetailsPipeline extends Component {
                   branchName={isMultiBranch ? params.branch : undefined}
                   runId={run.id}
                   run={run}
+                  t={t}
                 />
                 }
                 { hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView &&
@@ -385,12 +386,13 @@ export class RunDetailsPipeline extends Component {
                 }
                 { isPipelineQueued && supportsNode && <QueuedState /> }
                 { !isPipelineQueued && hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
-                    <p>There are no steps.</p>
+                    <p>{t('noSteps')}</p>
                 </EmptyStateView>
                 }
                 { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView
                   {
                     ...{
+                        t,
                         scrollToBottom,
                         ...this.props,
                         ...this.state,
@@ -421,6 +423,7 @@ RunDetailsPipeline.propTypes = {
     steps: object,
     nodes: object,
     nodeReducer: object,
+    t: func,
 };
 
 RunDetailsPipeline.contextTypes = {

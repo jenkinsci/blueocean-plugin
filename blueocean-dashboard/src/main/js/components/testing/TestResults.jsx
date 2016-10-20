@@ -6,7 +6,7 @@ import moment from 'moment';
 
 const ConsoleLog = ({ text, className, key = 'console' }) =>
     <div className={`${className} console-log insert-line-numbers`}>
-        {text.trim().split('\n').map((line, idx) =>
+        {text.trim().splitranslation('\n').map((line, idx) =>
             <div className="line" id={`#${key}-L${idx}`} key={`#${key}-L${idx}`}>{line}</div>
         )}
     </div>;
@@ -73,7 +73,7 @@ TestCaseResultRow.propTypes = {
 export default class TestResult extends Component {
 
     render() {
-        const testResults = this.props.testResults;
+        const { t: translation, testResults } = this.props;
         const suites = this.props.testResults.suites;
         const tests = [].concat.apply([], suites.map(t => t.cases));
         
@@ -93,9 +93,9 @@ export default class TestResult extends Component {
         if (testResults.failCount === 0) {
             passBlock = (
                 <EmptyStateView iconName="done_all">
-                    <h1 style={{ marginTop: '2.4rem' }}>All tests are passing</h1>
-                    <p>Nice one! All {testResults.passCount} tests for this pipeline are passing.</p>
-                    <p>How's the serenity?</p>
+                    <h1 style={{ marginTop: '2.4rem' }}>{translation('Tests.passing')}</h1>
+                    <p>{translation('Tests.passing.count', { 0: testResults.passCount })}</p>
+                    <p>{translation('Serenity')}</p>
                 </EmptyStateView>
             );
         } else {
@@ -103,23 +103,23 @@ export default class TestResult extends Component {
                 <div className="test-summary">
                     <div className={`new-passed count-${fixed.length}`}>
                         <div className="count">{fixed.length}</div>
-                        <label>Fixed</label>
+                        <label>{translation('Fixed')}</label>
                     </div>
                     <div className={`new-failed count-${newFailures.length}`}>
                         <div className="count">{newFailures.length}</div>
-                        <label>New Failures</label>
+                        <label>{translation('New.failures')}</label>
                     </div>
                     <div className={`failed count-${testResults.failCount}`}>
                         <div className="count">{testResults.failCount}</div>
-                        <label>Failures</label>
+                        <label>{translation('Failures')}</label>
                     </div>
                     <div className={`passed count-${testResults.passCount}`}>
                         <div className="count">{testResults.passCount}</div>
-                        <label>Passing</label>
+                        <label>{translation('Passing.singular')}</label>
                     </div>
                     <div className={`skipped count-${testResults.skipCount}`}>
                         <div className="count">{testResults.skipCount}</div>
-                        <label>Skipped</label>
+                        <label>{translation('Skipped.singular')}</label>
                     </div>
                 </div>
             );
@@ -169,4 +169,5 @@ export default class TestResult extends Component {
 
 TestResult.propTypes = {
     testResults: PropTypes.object,
+    t: PropTypes.func,
 };

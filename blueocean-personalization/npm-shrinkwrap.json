@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.21-unreleased2",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.21-unreleased2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.21-unreleased2.tgz"
+      "version": "0.0.21-unreleased4",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.21-unreleased4",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.21-unreleased4.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.83",
-      "from": "@jenkins-cd/design-language@0.0.83",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.83.tgz"
+      "version": "0.0.85-unpublishedThor",
+      "from": "@jenkins-cd/design-language@0.0.85-unpublishedThor",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.85-unpublishedThor.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -4819,6 +4819,7 @@
         "qs": {
           "version": "6.2.1",
           "from": "qs@>=6.0.2 <7.0.0",
+          "resolved": "https://registry.npmjs.org/qs/-/qs-6.2.1.tgz",
           "dev": true
         }
       }

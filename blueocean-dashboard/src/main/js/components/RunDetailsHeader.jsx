@@ -26,7 +26,7 @@ class RunDetailsHeader extends Component {
     }
 
     render() {
-        const { data: run, pipeline: { fullName = '' } } = this.props;
+        const { data: run, pipeline: { fullName = '' }, t } = this.props;
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
         // enable folder path
@@ -67,18 +67,18 @@ class RunDetailsHeader extends Component {
                 <div className="row">
                     <div className="commons">
                         <div>
-                            <label>Branch</label>
+                            <label>{ t('Branch') }</label>
                             <span>{displayName}</span>
                         </div>
                         { run.commitId ?
                         <div>
-                            <label>Commit</label>
+                            <label>{t('Commit')}</label>
                             <span className="commit">
                                 {run.commitId.substring(0, 7)}
                             </span>
                         </div>
                         : null }
-                        <ChangeSetToAuthors {...{ changeSet, onAuthorsClick }} />
+                        <ChangeSetToAuthors {...{ changeSet, onAuthorsClick, t }} />
                     </div>
                     <div className="times">
                         <div>
@@ -101,7 +101,13 @@ class RunDetailsHeader extends Component {
                                 style: { fill: '#fff' },
                             }}
                             />
-                            <ReadableDate date={run.endTime} liveUpdate />
+                            <ReadableDate
+                              date={run.endTime}
+                              liveUpdate
+                              locale={i18n.language}
+                              shortFormat={t('Date.readable.short')}
+                              longFormat={t('Date.readable.long')}
+                            />
                         </div>
                     </div>
                 </div>
@@ -110,7 +116,7 @@ class RunDetailsHeader extends Component {
     }
 }
 
-const { object, func } = PropTypes;
+const { object, func, string } = PropTypes;
 
 RunDetailsHeader.propTypes = {
     data: object.isRequired,
@@ -119,6 +125,8 @@ RunDetailsHeader.propTypes = {
     onOrganizationClick: func,
     onNameClick: func,
     onAuthorsClick: func,
+    t: func,
+    locale: string,
 };
 
 export { RunDetailsHeader };

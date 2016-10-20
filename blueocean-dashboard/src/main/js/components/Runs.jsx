@@ -3,7 +3,7 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
-import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { ReplayButton, RunButton, i18n } from '@jenkins-cd/blueocean-core-js';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 
@@ -12,7 +12,7 @@ import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 
-const { object, string, any } = PropTypes;
+const t = (key) => i18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
@@ -69,7 +69,6 @@ export default class Runs extends Component {
             location.pathname = newUrl;
             router.push(location);
         };
-
         return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
             <td>
                 <LiveStatusIndicator result={resultRun} startTime={startTime}
@@ -82,10 +81,26 @@ export default class Runs extends Component {
                 <td>{decodeURIComponent(pipeline)}</td>
             </IfCapability>
             <td>{changeset && changeset.msg || '-'}</td>
-            <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
-            <td><ReadableDate date={endTime} liveUpdate /></td>
             <td>
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
+                <TimeDuration
+                  millis={durationMillis}
+                  liveUpdate={running}
+                  locale={i18n.language}
+                  liveFormat={t('Date.duration.format')}
+                  hintFormat={t('Date.duration.hint.format')}
+                />
+            </td>
+            <td>
+                <ReadableDate
+                  date={endTime}
+                  liveUpdate
+                  locale={i18n.language}
+                  shortFormat={t('Date.readable.short')}
+                  longFormat={t('Date.readable.long')}
+                />
+            </td>
+            <td>
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
                 { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
                 <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
@@ -96,12 +111,15 @@ export default class Runs extends Component {
     }
 }
 
+const { object, string, any, func } = PropTypes;
+
 Runs.propTypes = {
-    run: PropTypes.object,
-    pipeline: PropTypes.object,
+    run: object,
+    pipeline: object,
     result: any.isRequired, // FIXME: create a shape
     data: string,
     changeset: object.isRequired,
+    t: func,
 };
 Runs.contextTypes = {
     pipeline: object,

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import PullRequest from './PullRequest';
+import Markdown from 'react-remarkable';
 import { RunsRecord } from './records';
 import {
     actions,
@@ -13,37 +14,34 @@ import { pipelineBranchesUnsupported } from './PipelinePage';
 
 const { func, object, array, string } = PropTypes;
 
-const EmptyState = ({ repoName }) => (
+const EmptyState = ({ repoName, t }) => (
     <main>
         <EmptyStateView iconName="goat">
-            <h1>Push me, pull you</h1>
-
-            <p>
-                When a Pull Request is opened on the repository <em>{repoName}</em>,
-                Jenkins will test it and report the status of
-                your changes back to the pull request on Github.
-            </p>
-
-            <button>Enable</button>
+            <Markdown>
+                {t('EmptyState.pr', { 0: repoName })}
+            </Markdown>
+            <button>{t('Enable')}</button>
         </EmptyStateView>
     </main>
 );
 
-const NotSupported = () => (
+const NotSupported = ({ t }) => (
     <main>
         <EmptyStateView>
-            <h1>Pull Requests are unsupported</h1>
-            <p>
-            Validated pull request builds only work with the <i>Multibranch Pipeline</i> job type.
-            This is just one of the many reasons to switch to Jenkins Pipeline.
-            </p>
-            <a href="https://jenkins.io/doc/book/pipeline-as-code/" target="_blank">Learn more</a>
+            <Markdown>
+                {t('EmptyState.pr.notSupported')}
+            </Markdown>
         </EmptyStateView>
     </main>
 );
 
 EmptyState.propTypes = {
     repoName: string,
+    t: func,
+};
+
+NotSupported.propTypes = {
+    t: func,
 };
 
 export class PullRequests extends Component {
@@ -61,10 +59,10 @@ export class PullRequests extends Component {
     }
 
     render() {
-        const { pullRequests } = this.props;
+        const { pullRequests, t } = this.props;
 
         if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
-            return (<NotSupported />);
+            return (<NotSupported t={t} />);
         }
 
         if (pullRequests.$pending && !pullRequests.length) {
@@ -77,15 +75,15 @@ export class PullRequests extends Component {
         }
 
         if (!pullRequests.$pending && !pullRequests.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} />);
+            return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
         }
 
         const headers = [
-            'Status',
-            { label: 'Latest Build', className: 'build' },
-            { label: 'Summary', className: 'summary' },
-            'Author',
-            { label: 'Completed', className: 'completed' },
+            t('Status'),
+            { label: t('Latest.build'), className: 'build' },
+            { label: t('Summary'), className: 'summary' },
+            t('Author'),
+            { label: t('Completed'), className: 'completed' },
             { label: '', className: 'run' },
         ];
 
@@ -123,6 +121,7 @@ PullRequests.propTypes = {
     pullRequests: array,
     clearPRData: func,
     fetchPullRequests: func,
+    t: func,
 };
 
 const selectors = createSelector([pullRequestSelector], (pullRequests) => ({ pullRequests }));

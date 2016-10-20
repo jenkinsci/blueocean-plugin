@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, i18n } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
@@ -9,6 +9,8 @@ import { buildRunDetailsUrl } from '../util/UrlUtils';
 const { object } = PropTypes;
 
 const stopProp = (event) => event.stopPropagation();
+
+const t = (key) => i18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 
 export default class Branches extends Component {
     constructor(props) {
@@ -63,7 +65,15 @@ export default class Branches extends Component {
                 <td>{cleanBranchName}</td>
                 <td><CommitHash commitId={commitId} /></td>
                 <td>{msg || '-'}</td>
-                <td><ReadableDate date={endTime} liveUpdate /></td>
+                <td>
+                  <ReadableDate
+                    date={endTime}
+                    liveUpdate
+                    locale={i18n.language}
+                    shortFormat={t('Date.readable.short')}
+                    longFormat={t('Date.readable.long')}
+                  />
+                </td>
                 { /* suppress all click events from extension points */ }
                 <td className="actions" onClick={(event) => stopProp(event)}>
                     <RunButton

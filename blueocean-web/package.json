@@ -29,8 +29,8 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.21-unreleased2",
-    "@jenkins-cd/design-language": "0.0.83",
+    "@jenkins-cd/blueocean-core-js": "0.0.21-unreleased4",
+    "@jenkins-cd/design-language": "0.0.85-unpublishedThor",
     "@jenkins-cd/js-extensions": "0.0.27",
     "@jenkins-cd/js-modules": "0.0.8",
     "history": "2.0.2",
@@ -43,7 +43,7 @@
     "react": "15.3.2",
     "react-addons-css-transition-group": "15.3.2",
     "react-dom": "15.3.2",
-    "react-i18next": "^1.10.1",
+    "react-i18next": "1.10.1",
     "react-redux": "4.4.5",
     "react-router": "2.3.0",
     "redux": "3.6.0",

@@ -7,7 +7,8 @@ import {
     TabLink,
 } from '@jenkins-cd/design-language';
 
-import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { ReplayButton, RunButton, i18n } from '@jenkins-cd/blueocean-core-js';
+import { translate } from 'react-i18next';
 
 import {
     actions,
@@ -110,7 +111,7 @@ class RunDetails extends Component {
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
-        const { run, setTitle } = this.props;
+        const { run, setTitle, t } = this.props;
         const currentRun = new RunRecord(run);
         const status = currentRun.getComputedResult() || '';
 
@@ -144,6 +145,7 @@ class RunDetails extends Component {
                 <ModalHeader>
                     <div>
                         <RunDetailsHeader
+                          t={ t }
                           pipeline={pipeline}
                           data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
@@ -151,10 +153,10 @@ class RunDetails extends Component {
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
                         <PageTabs base={baseUrl}>
-                            <TabLink to="/pipeline">Pipeline</TabLink>
-                            <TabLink to="/changes">Changes</TabLink>
-                            <TabLink to="/tests">Tests</TabLink>
-                            <TabLink to="/artifacts">Artifacts</TabLink>
+                            <TabLink to="/pipeline">{t('Pipeline')}</TabLink>
+                            <TabLink to="/changes">{t('Changes')}</TabLink>
+                            <TabLink to="/tests">{t('Tests')}</TabLink>
+                            <TabLink to="/artifacts">{t('Artifacts')}</TabLink>
                         </PageTabs>
 
                         <div className="button-bar">
@@ -179,7 +181,7 @@ class RunDetails extends Component {
                     <div>
                         {run.$success && React.cloneElement(
                             this.props.children,
-                            { baseUrl, result: currentRun, ...this.props }
+                            { locale: i18n.language, baseUrl, result: currentRun, ...this.props }
                         )}
                     </div>
                 </ModalBody>
@@ -206,10 +208,11 @@ RunDetails.propTypes = {
     getPipeline: func,
     previous: string,
     setTitle: func,
+    t: func,
 };
 
 const selectors = createSelector(
     [runSelector, isMultiBranchSelector, previousSelector],
     (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
 
-export default connect(selectors, actions)(RunDetails);
+export default translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true })(connect(selectors, actions)(RunDetails));

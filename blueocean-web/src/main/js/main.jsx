@@ -21,10 +21,10 @@ function loginOrLogout(t) {
     if (AppConfig.getLoginUrl()) {
         if (AppConfig.getInitialUser() === "anonymous") {
             const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
-            return <a href={loginUrl} className="btn-primary inverse small">{t('bo.web.login')}</a>;
+            return <a href={loginUrl} className="btn-primary inverse small">{t('login')}</a>;
         } else {
             const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
-            return <a href={logoutUrl} className="btn-secondary inverse small">{t('bo.web.logout')}</a>;
+            return <a href={logoutUrl} className="btn-secondary inverse small">{t('logout')}</a>;
         }
     }
 }
@@ -46,8 +46,8 @@ class App extends Component {
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link to="/pipelines">{t('bo.web.pipelines')}</Link>
-                            <a href="#">{t('bo.web.administration')}</a>
+                            <Link to="/pipelines">{t('pipelines')}</Link>
+                            <a href="#">{t('administration')}</a>
                         </nav>
                         <div className="button-bar">
                             { loginOrLogout(t) }
@@ -81,7 +81,7 @@ class NotFound extends Component {
         return <h1>Not found</h1>;
     }
 }
-
+const closeHandler = (props) => props.onClose || {};
 function makeRoutes(routes) {
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
     const appRoutes = [

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import Markdown from 'react-remarkable';
 import Runs from './Runs';
 import { RunRecord, ChangeSetRecord } from './records';
 import {
@@ -14,27 +15,20 @@ import { capabilityStore } from './Capability';
 
 const { object, array, func, string, bool } = PropTypes;
 
-const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation }) => (
-    <main>
+const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation, t }) =>
+    (<main>
         <EmptyStateView iconName="shoes">
-            <h1>Ready, get set...</h1>
-
-            <p>
-                Hmm, looks like there are no runs in this pipeline’s history.
-            </p>
-
-            <p>
-                Commit to the repository <em>{repoName}</em> or run the pipeline manually.
-            </p>
-
-        { showRunButton &&
-            <RunButton
-              runnable={pipeline}
-              buttonType="run-only"
-              runLabel="Run Now"
-              onNavigation={onNavigation}
-            />
-        }
+            <Markdown>
+                {t('EmptyState.activity', { 0: repoName })}
+            </Markdown>
+            { showRunButton &&
+                <RunButton
+                  runnable={pipeline}
+                  buttonType="run-only"
+                  runLabel={ t('Run.now') }
+                  onNavigation={onNavigation}
+                />
+            }
         </EmptyStateView>
     </main>
 );
@@ -44,6 +38,7 @@ EmptyState.propTypes = {
     pipeline: object,
     showRunButton: bool,
     onNavigation: func,
+    t: func,
 };
 
 export class Activity extends Component {
@@ -64,7 +59,7 @@ export class Activity extends Component {
     }
 
     render() {
-        const { runs, pipeline } = this.props;
+        const { runs, pipeline, t } = this.props;
 
         if (!runs || !pipeline || pipeline.$pending) {
             return null;
@@ -84,27 +79,32 @@ export class Activity extends Component {
         };
 
         if (runs.$success && !runs.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
+            return (<EmptyState
+              repoName={this.context.params.pipeline}
+              showRunButton={showRunButton}
+              pipeline={pipeline}
+              t={t}
+            />);
         }
 
         const latestRun = runs[0];
 
         const headers = isMultiBranchPipeline ? [
-            'Status',
-            'Build',
-            'Commit',
-            { label: 'Branch', className: 'branch' },
-            { label: 'Message', className: 'message' },
-            { label: 'Duration', className: 'duration' },
-            { label: 'Completed', className: 'completed' },
+            t('Status'),
+            t('Build'),
+            t('Commit'),
+            { label: t('Branch'), className: 'branch' },
+            { label: t('Message'), className: 'message' },
+            { label: t('Duration'), className: 'duration' },
+            { label: t('Completed'), className: 'completed' },
             { label: '', className: 'actions' },
         ] : [
-            'Status',
-            'Build',
-            'Commit',
-            { label: 'Message', className: 'message' },
-            { label: 'Duration', className: 'duration' },
-            { label: 'Completed', className: 'completed' },
+            t('Status'),
+            t('Build'),
+            t('Commit'),
+            { label: t('Message'), className: 'message' },
+            { label: t('Duration'), className: 'duration' },
+            { label: t('Completed'), className: 'completed' },
             { label: '', className: 'actions' },
         ];
 
@@ -146,7 +146,7 @@ export class Activity extends Component {
                 }
                 {runs.$pager && runs.length > 0 &&
                 <button disabled={runs.$pending || !runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
-                    {runs.$pending ? 'Loading...' : 'Show More'}
+                    {runs.$pending ? t('Loading') : t('More')}
                 </button>
                 }
             </article>
@@ -167,6 +167,7 @@ Activity.propTypes = {
     pipeline: object,
     capabilities: object,
     fetchRuns: func,
+    t: func,
 };
 
 const selectors = createSelector([currentRunsSelector], (runs) => ({ runs }));

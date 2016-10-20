@@ -32,14 +32,14 @@ export default {
         );
 
         const name = decodeURIComponent(runnable.name);
-        const text = i18n.t('bo.core.js.toast.run.started', {
+        const text = i18n.t('toast.run.started', {
             0: name,
             1: runId,
         });
 
         toastService.newToast({
             text,
-            action: i18n.t('bo.core.js.toast.run.open'),
+            action: i18n.t('toast.run.open'),
             onActionClick: () => {
                 if (toastAction) {
                     toastAction(runDetailsUrl);

@@ -70,7 +70,7 @@ export class RunButton extends Component {
 
         const name = decodeURIComponent(this.props.runnable.name);
         const runId = this.props.latestRun.id;
-        const text = i18n.t('bo.core.js.toast.run.stopping', {
+        const text = i18n.t('toast.run.stopping', {
             0: name,
             1: runId,
         });
@@ -93,8 +93,8 @@ export class RunButton extends Component {
         showRunButton = showRunButton && permit(this.props.runnable).start();
         showStopButton = showStopButton && permit(this.props.runnable).stop();
 
-        const runLabel = this.props.runText || i18n.t('bo.core.js.toast.run');
-        const stopLabel = this.state.stopping ? i18n.t('bo.core.js.toast.stopping') : i18n.t('bo.core.js.toast.stop');
+        const runLabel = this.props.runText || i18n.t('toast.run');
+        const stopLabel = this.state.stopping ? i18n.t('toast.stopping') : i18n.t('toast.stop');
 
         if (!showRunButton && !showStopButton) {
             return null;

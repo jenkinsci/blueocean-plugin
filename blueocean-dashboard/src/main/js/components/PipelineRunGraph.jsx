@@ -137,11 +137,11 @@ export default class PipelineRunGraph extends Component {
     }
 
     render() {
-        const { graphNodes } = this.state;
+        const { graphNodes, t } = this.state;
 
         if (!graphNodes) {
             // FIXME: Make a placeholder empty state when nodes is null (loading)
-            return <div>Loading...</div>;
+            return <div>{t('Loading')}</div>;
         } else if (graphNodes.length === 0) {
             // Do nothing when there's no nodes
             return null;
@@ -187,4 +187,5 @@ PipelineRunGraph.propTypes = {
     node: any,
     selectedStage: object,
     callback: func,
+    t: func,
 };

@@ -36,8 +36,8 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.21-unreleased2",
-    "@jenkins-cd/design-language": "0.0.83",
+    "@jenkins-cd/blueocean-core-js": "0.0.21-unreleased4",
+    "@jenkins-cd/design-language": "0.0.85-unpublishedThor",
     "@jenkins-cd/js-extensions": "0.0.27",
     "@jenkins-cd/js-modules": "0.0.8",
     "es6-promise": "4.0.5",
@@ -53,6 +53,7 @@
     "react-i18next": "^1.10.1",
     "react-material-icons-blue": "1.0.4",
     "react-redux": "4.4.5",
+    "react-remarkable": "1.1.1",
     "react-router": "2.3.0",
     "redux": "3.6.0",
     "redux-thunk": "2.1.0",
