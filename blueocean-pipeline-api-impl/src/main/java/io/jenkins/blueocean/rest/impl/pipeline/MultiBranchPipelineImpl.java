@@ -104,6 +104,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
+    public String getFullDisplayName() {
+        return AbstractPipelineImpl.getFullDisplayName(mbp, null);
+    }
+
+    @Override
     public int getTotalNumberOfBranches(){
         return countJobs(false);
     }
