@@ -5,7 +5,7 @@ import React from 'react';
 import MultiStepFlow from '../MultiStepFlow';
 import VerticalStep from '../VerticalStep';
 
-export default function GithubScmSteps() {
+export default function GithubDefaultFlow() {
     return (
         <MultiStepFlow>
             <VerticalStep>

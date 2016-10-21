@@ -1,15 +1,23 @@
 /**
- * Created by cmeyers on 10/17/16.
+ * Created by cmeyers on 10/21/16.
  */
 
 export default class ScmProvider {
 
-    getDisplayName() {
-        throw new Error("must implement 'getDisplayName()'");
+    getDefaultOption() {
+        throw new Error('must implement getDefaultOption');
     }
 
-    getComponentName() {
-        throw new Error("must implement 'getComponent()");
+    getDefaultFlow() {
+        throw new Error('must implement getDefaultFlow');
+    }
+
+    getRentrantOption() {
+        return null;
+    }
+
+    getRentrantFlow() {
+        return null;
     }
 
 }

@@ -21,12 +21,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
     _initialize() {
         Extensions.store.getExtensions(this.props.extensionPoint, (extensions) => {
             const providers = extensions.map(Provider => {
-                const prov = new Provider();
-
-                return {
-                    name: prov.getDisplayName(),
-                    component: prov.getComponentName(),
-                };
+                return new Provider();
             });
 
             this.setState({
@@ -35,24 +30,22 @@ export class CreatePipelineScmListRenderer extends React.Component {
         });
     }
 
-    _onSelection(component) {
+    _onSelection(provider) {
         if (this.props.onSelection) {
-            this.props.onSelection(component);
+            this.props.onSelection(provider);
         }
     }
 
     render() {
         return (
             <div className="scm-provider-list">
-                { this.state.providers.map((provider, index) => (
-                    <button
-                      className="provider-button"
-                      key={index}
-                      onClick={() => this._onSelection(provider.component)}
-                    >
-                        {provider.name}
-                    </button>
-                ))}
+                { this.state.providers.map(provider => {
+                    const props = {
+                        onSelect: () => this._onSelection(provider),
+                    };
+
+                    return React.cloneElement(provider.getDefaultOption(), props);
+                })}
             </div>
         );
     }

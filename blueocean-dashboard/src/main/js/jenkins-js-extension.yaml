@@ -16,10 +16,6 @@ extensions:
 # creation for Git repos
   - component: creation/git/GitScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
-  - component: creation/git/GitScmSteps
-    extensionPoint: jenkins.pipeline.create.scm.steps
 # creation for Github
   - component: creation/github/GithubScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
-  - component: creation/github/GithubScmSteps
-    extensionPoint: jenkins.pipeline.create.scm.steps

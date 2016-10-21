@@ -3,14 +3,16 @@
  */
 import React from 'react';
 import ScmProvider from '../ScmProvider';
+import GithubDefaultOption from './GithubDefaultOption';
+import GithubDefaultFlow from './GithubDefaultFlow';
 
 export default class GithubScmProvider extends ScmProvider {
 
-    getDisplayName() {
-        return 'Github';
+    getDefaultOption() {
+        return <GithubDefaultOption />;
     }
 
-    getComponentName() {
-        return 'GithubScmSteps';
+    getDefaultFlow() {
+        return <GithubDefaultFlow />;
     }
 }

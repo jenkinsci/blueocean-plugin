@@ -7,28 +7,8 @@ import VerticalStep from './VerticalStep';
 
 export class CreatePipelineStepsRenderer extends React.Component {
 
-    constructor(props) {
-        super(props);
-
-        this._renderer = null;
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (this.props.activePlugin !== nextProps.activePlugin && this._renderer) {
-            this._renderer.reloadExtensions();
-        }
-    }
-
-    _filterByPlugin(extensions, nextFilter) {
-        const filtered = extensions.filter(extension => (
-            extension.component.indexOf(this.props.activePlugin) !== -1
-        ));
-
-        nextFilter(filtered);
-    }
-
     render() {
-        if (!this.props.activePlugin) {
+        if (!this.props.selectedProvider) {
             return (
                 <VerticalStep className="last-step">
                     <h1>Completed</h1>
@@ -36,19 +16,15 @@ export class CreatePipelineStepsRenderer extends React.Component {
             );
         }
 
-        return (
-            <Extensions.Renderer
-              ref={(renderer) => { this._renderer = renderer; }}
-              extensionPoint={this.props.extensionPoint}
-              filter={(a, b) => this._filterByPlugin(a, b)}
-              onCompleteFlow={this.props.onCompleteFlow}
-            />
-        );
+        const props = {
+            onCompleteFlow: this.props.onCompleteFlow,
+        };
+
+        return React.cloneElement(this.props.selectedProvider.getDefaultFlow(), props);
     }
 }
 
 CreatePipelineStepsRenderer.propTypes = {
-    extensionPoint: PropTypes.string,
-    activePlugin: PropTypes.string,
+    selectedProvider: PropTypes.object,
     onCompleteFlow: PropTypes.func,
 };

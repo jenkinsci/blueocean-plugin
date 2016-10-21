@@ -30,19 +30,19 @@ DialogPlaceholder.propTypes = {
     onClose: PropTypes.function,
 };
 
-export class CreatePipeline extends React.Component {
+export default class CreatePipeline extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            activePlugin: null,
+            selectedProvider: null,
         };
     }
 
-    _onSelection(activePlugin) {
+    _onSelection(selectedProvider) {
         this.setState({
-            activePlugin,
+            selectedProvider,
         });
     }
 
@@ -55,7 +55,7 @@ export class CreatePipeline extends React.Component {
     }
 
     render() {
-        const firstStepStatus = this.state.activePlugin ? 'complete' : 'active';
+        const firstStepStatus = this.state.selectedProvider ? 'complete' : 'active';
 
         return (
             <DialogPlaceholder onClose={() => this._onExit()}>
@@ -64,13 +64,12 @@ export class CreatePipeline extends React.Component {
 
                     <CreatePipelineScmListRenderer
                       extensionPoint="jenkins.pipeline.create.scm.provider"
-                      onSelection={(plugin) => this._onSelection(plugin)}
+                      onSelection={(provider) => this._onSelection(provider)}
                     />
                 </VerticalStep>
 
                 <CreatePipelineStepsRenderer
-                  extensionPoint="jenkins.pipeline.create.scm.steps"
-                  activePlugin={this.state.activePlugin}
+                  selectedProvider={this.state.selectedProvider}
                   onCompleteFlow={() => this._onCompleteFlow()}
                 />
             </DialogPlaceholder>
