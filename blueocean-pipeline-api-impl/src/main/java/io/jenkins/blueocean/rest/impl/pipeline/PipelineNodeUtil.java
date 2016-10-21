@@ -38,7 +38,7 @@ public class PipelineNodeUtil {
         }
     }
 
-    public static PipelineNodeGraphBuilder.NodeRunStatus getStatus(WorkflowRun run){
+    public static NodeRunStatus getStatus(WorkflowRun run){
         FlowExecution execution = run.getExecution();
         BlueRun.BlueRunResult result;
         BlueRun.BlueRunState state;
@@ -55,7 +55,7 @@ public class PipelineNodeUtil {
             result = BlueRun.BlueRunResult.UNKNOWN;
             state = BlueRun.BlueRunState.RUNNING;
         }
-        return new PipelineNodeGraphBuilder.NodeRunStatus(result,state);
+        return new NodeRunStatus(result,state);
     }
 
 
