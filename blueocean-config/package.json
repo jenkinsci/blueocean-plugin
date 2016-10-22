@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "Configuration injected in BlueOcean UI",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "jjsbuilder",
+    "mvnbuild": "jjsbuilder --tasks bundle",
+    "mvntest": "jjsbuilder --tasks test,lint"
   },
   "author": "Vivek Pandey <vivek.pandey@gmail.com> (https://github.com/vivek)",
   "license": "MIT",
@@ -16,5 +18,10 @@
     "babel-eslint": "6.1.2",
     "eslint-plugin-react": "4.3.0",
     "gulp": "3.9.1"
+  },
+  "jenkinscd": {
+    "bundle": [
+      "src/main/js/rollbar.js"
+    ]
   }
 }
