@@ -3,15 +3,15 @@
   "version": "0.0.1",
   "scripts": {
     "storybook": "start-storybook -p 9001 -s node_modules/@jenkins-cd/design-language/dist/assets/,target/classes/org/jenkins/ui/jsmodules/blueocean_personalization/",
-    "lint": "gulp lint",
-    "lint:fix": "gulp lint --fixLint",
-    "lint:watch": "gulp lint:watch --continueOnLint",
-    "test": "gulp test",
-    "test:watch": "gulp test:watch",
-    "bundle": "gulp bundle",
-    "bundle:watch": "gulp bundle:watch",
-    "mvnbuild": "gulp bundle",
-    "mvntest": "gulp test lint"
+    "lint": "jjsbuilder --tasks lint",
+    "lint:fix": "jjsbuilder --tasks lint --fixLint",
+    "lint:watch": "jjsbuilder --tasks lint:watch --continueOnLint",
+    "test": "jjsbuilder --tasks test",
+    "test:watch": "jjsbuilder --tasks test:watch",
+    "bundle": "jjsbuilder --tasks bundle",
+    "bundle:watch": "jjsbuilder --tasks bundle:watch",
+    "mvnbuild": "jjsbuilder --tasks bundle",
+    "mvntest": "jjsbuilder --tasks test,lint"
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
