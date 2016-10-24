@@ -5,7 +5,13 @@ import React, { PropTypes } from 'react';
 import Extensions from '@jenkins-cd/js-extensions';
 import VerticalStep from './VerticalStep';
 
+const Sandbox = Extensions.SandboxedComponent;
+
 export class CreatePipelineStepsRenderer extends React.Component {
+
+   shouldComponentUpdate(nextProps) {
+        return this.props.selectedProvider !== nextProps.selectedProvider;
+    }
 
     render() {
         if (!this.props.selectedProvider) {
@@ -20,7 +26,20 @@ export class CreatePipelineStepsRenderer extends React.Component {
             onCompleteFlow: this.props.onCompleteFlow,
         };
 
-        return React.cloneElement(this.props.selectedProvider.getDefaultFlow(), props);
+        let defaultFlow;
+
+        try {
+            defaultFlow = this.props.selectedProvider.getDefaultFlow();
+        } catch (error) {
+            console.warn('Error rendering:', this.props.selectedProvider, error);
+            return Extensions.ErrorUtils.errorToElement(error);
+        }
+
+        return (
+            <Sandbox>
+                {React.cloneElement(defaultFlow, props)}
+            </Sandbox>
+        );
     }
 }
 

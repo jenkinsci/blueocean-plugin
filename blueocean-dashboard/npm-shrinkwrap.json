@@ -30,9 +30,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.28-beta1",
-      "from": "@jenkins-cd/js-extensions@0.0.28-beta1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.28-beta1.tgz"
+      "version": "0.0.28-beta2",
+      "from": "@jenkins-cd/js-extensions@0.0.28-beta2",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.28-beta2.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",

@@ -4,6 +4,8 @@
 import React, { PropTypes } from 'react';
 import Extensions from '@jenkins-cd/js-extensions';
 
+const Sandbox = Extensions.SandboxedComponent;
+
 export class CreatePipelineScmListRenderer extends React.Component {
 
     constructor(props) {
@@ -20,8 +22,17 @@ export class CreatePipelineScmListRenderer extends React.Component {
 
     _initialize() {
         Extensions.store.getExtensions(this.props.extensionPoint, (extensions) => {
-            const providers = extensions.map(Provider => {
-                return new Provider();
+            let providers = extensions.map(Provider => {
+                try {
+                    return new Provider();
+                } catch (error) {
+                    console.warn('error initializing ScmProvider', Provider, error);
+                    return null;
+                }
+            });
+
+            providers = providers.filter(provider => {
+                return !!provider;
             });
 
             this.setState({
@@ -40,11 +51,24 @@ export class CreatePipelineScmListRenderer extends React.Component {
         return (
             <div className="scm-provider-list">
                 { this.state.providers.map(provider => {
+                    let defaultOption;
+
+                    try {
+                        defaultOption = provider.getDefaultOption();
+                    } catch (error) {
+                        console.warn('error invoking getDefaultOption for Provider', provider, error);
+                        return Extensions.ErrorUtils.errorToElement(error);
+                    }
+
                     const props = {
                         onSelect: () => this._onSelection(provider),
                     };
 
-                    return React.cloneElement(provider.getDefaultOption(), props);
+                    return (
+                        <Sandbox>
+                            {React.cloneElement(defaultOption, props)}
+                        </Sandbox>
+                    );
                 })}
             </div>
         );
