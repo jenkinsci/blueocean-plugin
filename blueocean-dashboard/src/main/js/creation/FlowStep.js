@@ -11,6 +11,7 @@ export default class FlowStep extends React.Component {
         return (
             <VerticalStep
               status={this.props.status}
+              percentage={this.props.percentage}
               isLastStep={this.props.isLastStep}
             >
                 <h1>{this.props.title}</h1>
@@ -28,6 +29,7 @@ FlowStep.propTypes = {
     children: PropTypes.node,
     title: PropTypes.string,
     status: PropTypes.string,
+    percentage: PropTypes.number,
     isLastStep: PropTypes.bool,
     onStatusUpdate: PropTypes.func,
     onCompleteStep: PropTypes.func,

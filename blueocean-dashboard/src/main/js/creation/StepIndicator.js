@@ -3,21 +3,33 @@
  */
 import React, { PropTypes } from 'react';
 import { StatusIndicator } from '@jenkins-cd/design-language';
+import status from './FlowStatus';
 
-export function StepIndicator(props) {
-    const result = props.complete ? 'success' : 'not_built';
+export default function StepIndicator(props) {
+    const newProps = {};
+
+    if (0 <= props.percentage && props.percentage < 100 && props.status !== status.COMPLETE) {
+        newProps.result = 'running';
+        newProps.percentage = props.percentage;
+    } else if (props.status === status.COMPLETE) {
+        newProps.result = 'success';
+    } else {
+        newProps.result = 'not_built';
+    }
 
     return (
         <div className="step-indicator-component">
-            <StatusIndicator result={result} />
+            <StatusIndicator {...newProps} />
         </div>
     );
 }
 
 StepIndicator.propTypes = {
-    complete: PropTypes.bool,
+    status: PropTypes.oneOf(status.values()),
+    percentage: PropTypes.number,
 };
 
 StepIndicator.defaultProps = {
-    complete: false,
+    status: 'incomplete',
+    percentage: -1,
 };
