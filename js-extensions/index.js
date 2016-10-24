@@ -3,7 +3,11 @@ exports.store = require('./dist/ExtensionStore.js').instance;
 
 exports.Renderer = require('./dist/ExtensionRenderer.js').ExtensionRenderer;
 
+exports.SandboxedComponent = require('./dist/SandboxedComponent.js').SandboxedComponent;
+
 exports.classMetadataStore = require('./dist/ClassMetadataStore.js').instance;
+
+exports.ErrorUtils = require('./dist/ErrorUtils.js').default;
 
 exports.dataType = function dataType(dataType) { return exports.classMetadataStore.dataType(dataType); };
 
