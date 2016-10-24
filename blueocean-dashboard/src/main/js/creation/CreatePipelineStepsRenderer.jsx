@@ -9,7 +9,7 @@ const Sandbox = Extensions.SandboxedComponent;
 
 export class CreatePipelineStepsRenderer extends React.Component {
 
-   shouldComponentUpdate(nextProps) {
+    shouldComponentUpdate(nextProps) {
         return this.props.selectedProvider !== nextProps.selectedProvider;
     }
 

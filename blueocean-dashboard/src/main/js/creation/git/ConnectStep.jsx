@@ -95,23 +95,15 @@ export default class ConnectStep extends React.Component {
             createButtonDisabled: true,
         });
 
-        let promise = null;
-
         if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
-            promise = this._gitApi.saveSshKeyCredential(this.state.sshKeyValue);
+            this.props.manager.createWithSshKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
-            promise = this._gitApi.saveUsernamePasswordCredential(this.state.usernameValue, this.state.passwordValue);
+            this.props.manager.createWithUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH) {
-            promise = this._gitApi.useSystemSshCredential();
+            this.props.manager.createWithSystemSshCredential(this.state.repositoryUrl);
         }
 
-        promise
-            .then((credentialId) => {
-                return this._gitApi.createPipeline(this.state.repositoryUrl, credentialId);
-            })
-            .then(() => {
-                this.props.onCompleteFlow(this);
-            });
+        this.props.onCompleteStep();
     }
 
     render() {
@@ -187,5 +179,7 @@ export default class ConnectStep extends React.Component {
 }
 
 ConnectStep.propTypes = {
+    manager: PropTypes.object,
+    onCompleteStep: PropTypes.func,
     onCompleteFlow: PropTypes.func,
 };
