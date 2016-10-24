@@ -47,6 +47,7 @@ export default class CompletedStep extends React.Component {
 }
 
 CompletedStep.propTypes = {
+    status: PropTypes.string,
     flowStatus: PropTypes.string,
     onCompleteFlow: PropTypes.func,
 };

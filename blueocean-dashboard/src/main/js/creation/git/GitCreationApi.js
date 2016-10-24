@@ -21,6 +21,7 @@ export default class GitCreationApi {
         return promise;
     }
 
+    // eslint-disable-next-line
     saveUsernamePasswordCredential(username, password) {
         return this.saveSshKeyCredential();
     }

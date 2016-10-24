@@ -31,9 +31,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
                 }
             });
 
-            providers = providers.filter(provider => {
-                return !!provider;
-            });
+            providers = providers.filter(provider => !!provider);
 
             this.setState({
                 providers,

@@ -14,9 +14,10 @@ export default class GitCreationManager {
         this._onStatusChanged(status.CREATE_CREDS);
 
         return this._creationApi.saveSshKeyCredential(sshKey)
-            .then(credentialId => {
-                return this._createPipeline(repositoryUrl, credentialId);
-            });
+            .then(credentialId => (
+                this._createPipeline(repositoryUrl, credentialId)
+            )
+        );
     }
 
     // eslint-disable-next-line

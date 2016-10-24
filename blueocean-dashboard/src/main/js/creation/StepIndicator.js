@@ -8,6 +8,7 @@ import status from './FlowStatus';
 export default function StepIndicator(props) {
     const newProps = {};
 
+    // eslint-disable-next-line
     if (0 <= props.percentage && props.percentage < 100 && props.status !== status.COMPLETE) {
         newProps.result = 'running';
         newProps.percentage = props.percentage;
