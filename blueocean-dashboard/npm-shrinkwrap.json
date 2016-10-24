@@ -8,9 +8,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.21-unreleased4.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.85-unpublishedThor",
-      "from": "@jenkins-cd/design-language@0.0.85-unpublishedThor",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.85-unpublishedThor.tgz"
+      "version": "0.0.86-unpublishedThor1",
+      "from": "@jenkins-cd/design-language@0.0.86-unpublishedThor1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.86-unpublishedThor1.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
