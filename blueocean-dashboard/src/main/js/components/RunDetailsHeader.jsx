@@ -26,7 +26,7 @@ class RunDetailsHeader extends Component {
     }
 
     render() {
-        const { data: run, pipeline: { fullName = '' }, t } = this.props;
+        const { data: run, pipeline: { fullName = '' }, t, locale } = this.props;
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
         // enable folder path
@@ -104,7 +104,7 @@ class RunDetailsHeader extends Component {
                             <ReadableDate
                               date={run.endTime}
                               liveUpdate
-                              locale={i18n.language}
+                              locale={locale}
                               shortFormat={t('Date.readable.short')}
                               longFormat={t('Date.readable.long')}
                             />
