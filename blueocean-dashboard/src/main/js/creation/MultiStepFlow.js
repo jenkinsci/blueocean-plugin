@@ -10,40 +10,17 @@ export default class MultiStepFlow extends React.Component {
         super(props);
 
         this.state = {
-            activeStep: null,
+            currentIndex: 0,
         };
     }
 
-    componentWillMount() {
-        this._initialize(this.props);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this._initialize(nextProps);
-    }
-
-    _initialize(props) {
-        if (props.children) {
-            const activeStep = props.children[0];
-
-            this.setState({
-                activeStep,
-            });
-        }
-    }
-
-    _onCompleteStep() {
-        const activeIndex = this.props.children.indexOf(this.state.activeStep);
-
-        if (activeIndex + 1 < this.props.children.length) {
-            this.setState({
-                activeStep: this.props.children[activeIndex + 1],
-            });
-        }
+    _onCompleteStep(currentIndex) {
+        this.setState({
+            currentIndex: currentIndex + 1,
+        });
     }
 
     _onCompleteFlow() {
-        console.log('flow complete');
         this.props.onCompleteFlow();
     }
 
@@ -51,12 +28,12 @@ export default class MultiStepFlow extends React.Component {
         return (
             <div className="multi-step-flow-component">
                 { this.props.children && this.props.children.map((child, index, children) => {
-                    const activeIndex = children.indexOf(this.state.activeStep);
+                    const { currentIndex } = this.state;
                     /* eslint-disable */
                     const status =
-                        index < activeIndex ? FlowStatus.COMPLETE :
-                        index === activeIndex ? FlowStatus.ACTIVE :
-                        index > activeIndex ? FlowStatus.INCOMPLETE :
+                        index < currentIndex ? FlowStatus.COMPLETE :
+                        index === currentIndex ? FlowStatus.ACTIVE :
+                        index > currentIndex ? FlowStatus.INCOMPLETE :
                         null;
                     /* eslint-enable */
 
@@ -64,7 +41,7 @@ export default class MultiStepFlow extends React.Component {
 
                     const extraProps = {
                         status, isLastStep,
-                        onCompleteStep: (step) => this._onCompleteStep(step),
+                        onCompleteStep: (step) => this._onCompleteStep(index, step),
                         onCompleteFlow: () => this._onCompleteFlow(),
                     };
 
