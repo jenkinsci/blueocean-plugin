@@ -6,7 +6,7 @@ import moment from 'moment';
 
 const ConsoleLog = ({ text, className, key = 'console' }) =>
     <div className={`${className} console-log insert-line-numbers`}>
-        {text.trim().splitranslation('\n').map((line, idx) =>
+        {text.trim().split('\n').map((line, idx) =>
             <div className="line" id={`#${key}-L${idx}`} key={`#${key}-L${idx}`}>{line}</div>
         )}
     </div>;
@@ -18,7 +18,7 @@ ConsoleLog.propTypes = {
 };
 
 const TestCaseResultRow = (props) => {
-    const t = props.testCase;
+    const {testCase: t, translation } = props;
     const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
 
     let testDetails = null;
@@ -31,9 +31,9 @@ const TestCaseResultRow = (props) => {
                 </div>
             </div>
             <div className="test-console">
-                <h4>Error</h4>
+                <h4>{translation('Error')}</h4>
                 <ConsoleLog className="error-message" text={t.errorDetails} key={`${t}-message`} />
-                <h4>Output</h4>
+                <h4>{translation('Output')}</h4>
                 <ConsoleLog className="stack-trace" text={t.errorStackTrace} key={`${t}-stack-trace`} />
             </div>
         </div>);
@@ -126,22 +126,22 @@ export default class TestResult extends Component {
 
             if (newFailures.length > 0) {
                 newFailureBlock = (<div className="test-result-block new-failure-block">
-                    <h4>New failing - {newFailures.length}</h4>
-                    {newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
+                    <h4>{translation('New.error', {0: newFailures.length})}</h4>
+                    {newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t}  translation={translation} />)}
                 </div>);
             }
 
             if (existingFailures.length > 0) {
                 existingFailureBlock = (<div className="test-result-block existing-failure-block">
-                    <h4>Existing failures - {existingFailures.length}</h4>
-                    {existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
+                    <h4>{translation('Existing.error', {0: existingFailures.length})}</h4>
+                    {existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t}  translation={translation} />)}
                 </div>);
             }
 
             if (skipped.length > 0) {
                 skippedBlock = (<div className="test-result-block skipped-block">
-                    <h4>Skipped - {skipped.length}</h4>
-                    {skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
+                    <h4>{translation('Skipped', {0: skipped.length})}</h4>
+                    {skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t}  translation={translation} />)}
                 </div>);
             }
         }
@@ -149,8 +149,8 @@ export default class TestResult extends Component {
         // always show fixed, whether showing totals or the encouraging message
         if (fixed.length > 0) {
             fixedBlock = (<div className="test-result-block fixed-block">
-                <h4>Fixed</h4>
-                {fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
+                <h4>{translation('Fixed')}</h4>
+                {fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t}  translation={translation} />)}
             </div>);
         }
 
