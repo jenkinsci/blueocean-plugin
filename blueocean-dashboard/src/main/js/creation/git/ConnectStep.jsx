@@ -10,6 +10,10 @@ const CREDENTIAL_CHOICE = {
     USER_PASS: 'USER_PASS',
 };
 
+/**
+ * Component that accepts repository URL and credentials to initiate
+ * creation of a new pipeline.
+ */
 export default class ConnectStep extends React.Component {
 
     constructor(props) {
@@ -60,6 +64,10 @@ export default class ConnectStep extends React.Component {
         });
     }
 
+    /**
+     * Enables/disables the create button based on the state of the form.
+     * @private
+     */
     _updateCreateButton() {
         let disabled = false;
 
@@ -79,6 +87,7 @@ export default class ConnectStep extends React.Component {
             disabled = true;
         }
 
+        // only set the new button state if it's out of sync; prevents nasty update loop
         if (this.state.createButtonDisabled !== disabled) {
             this.setState({
                 createButtonDisabled: disabled,

@@ -13,6 +13,10 @@ import GitCreationManager from './GitCreationManager';
 import ConnectStep from './ConnectStep';
 import CompletedStep from './CompletedStep';
 
+/**
+ * Handles the overall two-step of creating a pipeline from a Git repo.
+ * Updates the status of the "CompletedStep" as the manager reports back status.
+ */
 export default class GitCreationFlow extends React.Component {
 
     constructor(props) {

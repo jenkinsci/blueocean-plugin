@@ -3,6 +3,9 @@
  */
 import status from './GitCreationStatus';
 
+/**
+ * Initiates creation of the pipeline and updates the status as various API calls complete.
+ */
 export default class GitCreationManager {
 
     constructor(creationApi, onStatusChanged) {

@@ -8,6 +8,9 @@ import StepStatus from '../FlowStepStatus';
 
 import FlowStatus from './GitCreationStatus';
 
+/**
+ * Shows the current progress after creation was initiated.
+ */
 export default class CompletedStep extends React.Component {
     render() {
         let status = this.props.status;

@@ -7,6 +7,9 @@ import VerticalStep from './VerticalStep';
 
 const Sandbox = Extensions.SandboxedComponent;
 
+/**
+ * Displays the current steps based on the selection in the SCM provider list.
+ */
 export class CreatePipelineStepsRenderer extends React.Component {
 
     shouldComponentUpdate(nextProps) {

@@ -2,6 +2,9 @@
  * Created by cmeyers on 10/24/16.
  */
 
+/**
+ * Valid statuses for CompletedStep.
+ */
 const status = {
     NOT_STARTED: 'not_started',
     CREATE_CREDS: 'create_creds',

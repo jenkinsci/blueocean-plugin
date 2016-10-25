@@ -6,6 +6,9 @@ import Extensions from '@jenkins-cd/js-extensions';
 
 const Sandbox = Extensions.SandboxedComponent;
 
+/**
+ * Displays the initial set of options to begin a creation flow from a SCM Provider.
+ */
 export class CreatePipelineScmListRenderer extends React.Component {
 
     constructor(props) {
@@ -21,6 +24,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
     }
 
     _initialize() {
+        // load and store the SCM providers that contributed the specified extension point
         Extensions.store.getExtensions(this.props.extensionPoint, (extensions) => {
             let providers = extensions.map(Provider => {
                 try {
@@ -63,7 +67,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
                     };
 
                     return (
-                        <Sandbox>
+                        <Sandbox className="provider-button">
                             {React.cloneElement(defaultOption, props)}
                         </Sandbox>
                     );

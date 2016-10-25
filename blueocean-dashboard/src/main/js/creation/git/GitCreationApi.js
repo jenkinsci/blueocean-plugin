@@ -3,6 +3,10 @@
  */
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
 
+/**
+ * Proxy to the backend REST API.
+ * Currently implemented as a mock.
+ */
 export default class GitCreationApi {
 
     // eslint-disable-next-line no-unused-vars
