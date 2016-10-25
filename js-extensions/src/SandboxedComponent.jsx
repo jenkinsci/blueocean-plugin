@@ -66,16 +66,20 @@ export class SandboxedComponent extends React.Component {
     }
 
     render() {
+        const extraClass = this.props.className || '';
+
         return (
-            <div className="sandbox-component" ref={(node) => { this.domNode = node; }}></div>
+            <div className={`sandbox-component ${extraClass}`} ref={(node) => { this.domNode = node; }}></div>
         );
     }
 }
 
 SandboxedComponent.propTypes = {
     children: PropTypes.node,
+    className: PropTypes.string,
 };
 
 SandboxedComponent.contextTypes = {
     router: PropTypes.object,
+    config: PropTypes.object,
 };

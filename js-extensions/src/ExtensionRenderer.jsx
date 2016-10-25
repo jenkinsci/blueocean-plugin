@@ -1,38 +1,8 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var ContextBridge = require('./ContextBridge').ContextBridge;
 var importedExtensionStore = require('./ExtensionStore.js').instance;
 var importedResourceLoadTracker = require('./ResourceLoadTracker').instance;
-
-/**
- * An internal component that inserts things into the (separate) context of mounted extensions. We need this for our
- * configuration object, which helps resolve URLs for media, REST endpoints, etc, and we also need to bridge the
- * "router" context property in order for extensions to be able to use &lt;Link&gt; from react-router.
- */
-class ContextBridge extends React.Component {
-
-    getChildContext() {
-        return {
-            router: this.props.router,
-            config: this.props.config
-        };
-    }
-
-    render() {
-        return this.props.children;
-    }
-}
-
-ContextBridge.childContextTypes = {
-    router: React.PropTypes.object,
-    config: React.PropTypes.object
-};
-
-ContextBridge.propTypes = {
-    children: React.PropTypes.any,
-    router: React.PropTypes.object,
-    config: React.PropTypes.object
-};
-
 
 /**
  * Renderer for react component extensions for which other plugins can provide an implementing Component.
