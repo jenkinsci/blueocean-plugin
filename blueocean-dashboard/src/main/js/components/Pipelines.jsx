@@ -17,7 +17,6 @@ export class Pipelines extends Component {
     }
 
     render() {
-        console.log('sexy')
         const { pipelines, config, params: { organization } } = this.context;
         const { t } = this.props;
 

@@ -7,9 +7,20 @@
  * the result explodes outwards through each layer.
  *
  * @param {...(Function|Function[])} [funcs] The functions to invoke.
+ * @returns {Function} Returns the new composite function.
+ *
+ * @example
+ * const composed  = compose(
+ *   translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true }),
+ *   documentTitle
+ * );
+ *
+ * export default composed(Pipelines);
  *
  */
-export default compose  = (fn, ...rest) =>
+const compose  = (fn, ...rest) =>
   rest.length === 0 ?
     fn :
     (...args) => fn(compose(...rest)(...args));
+
+export default compose;
