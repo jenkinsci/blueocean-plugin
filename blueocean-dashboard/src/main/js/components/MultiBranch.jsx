@@ -78,7 +78,7 @@ export class MultiBranch extends Component {
             t('Health'),
             t('Status'),
             { label: t('Branch'), className: 'branch' },
-            { label: t('Last.commit'), className: 'lastcommit' },
+            { label: t('Commit'), className: 'lastcommit' },
             { label: t('Latest.message'), className: 'message' },
             { label: t('Completed'), className: 'completed' },
             { label: '', className: 'run' },

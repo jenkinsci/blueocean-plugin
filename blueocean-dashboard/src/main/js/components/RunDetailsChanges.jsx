@@ -48,7 +48,7 @@ export default class RunDetailsChanges extends Component {
                             <ReadableDate
                               date={commit.timestamp}
                               liveUpdate
-                              locale={i18n.language}
+                              locale={locale}
                               shortFormat={t('Date.readable.short')}
                               longFormat={t('Date.readable.long')}
                             />

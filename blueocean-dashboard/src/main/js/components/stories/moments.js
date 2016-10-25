@@ -1,6 +1,6 @@
 import React from 'react';
-import {storiesOf} from '@kadira/storybook';
-import {TimeDuration, ReadableDate} from '@jenkins-cd/design-language';
+import { storiesOf } from '@kadira/storybook';
+import { TimeDuration, ReadableDate } from '@jenkins-cd/design-language';
 
 storiesOf('TimeDuration', module)
   .add('short duration - locale de', () => (

@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { ResultItem, StatusIndicator, EmptyStateView } from '@jenkins-cd/design-language';
 import moment from 'moment';
+// needs to be loaded since the moment lib will use require which in run time will fail
+import 'moment/min/locales.min';
 
 /* eslint-disable max-len */
 
@@ -18,7 +20,8 @@ ConsoleLog.propTypes = {
 };
 
 const TestCaseResultRow = (props) => {
-    const {testCase: t, translation } = props;
+    const { testCase: t, translation, locale = 'en' } = props;
+    moment.locale(locale);
     const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
 
     let testDetails = null;
@@ -68,12 +71,14 @@ const TestCaseResultRow = (props) => {
 
 TestCaseResultRow.propTypes = {
     testCase: PropTypes.object,
+    translation: PropTypes.func,
+    locale: PropTypes.string,
 };
 
 export default class TestResult extends Component {
 
     render() {
-        const { t: translation, testResults } = this.props;
+        const { t: translation, testResults, locale } = this.props;
         const suites = this.props.testResults.suites;
         const tests = [].concat.apply([], suites.map(t => t.cases));
         
@@ -126,22 +131,22 @@ export default class TestResult extends Component {
 
             if (newFailures.length > 0) {
                 newFailureBlock = (<div className="test-result-block new-failure-block">
-                    <h4>{translation('New.error', {0: newFailures.length})}</h4>
-                    {newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t}  translation={translation} />)}
+                    <h4>{translation('New.error', { 0: newFailures.length })}</h4>
+                    {newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
                 </div>);
             }
 
             if (existingFailures.length > 0) {
                 existingFailureBlock = (<div className="test-result-block existing-failure-block">
-                    <h4>{translation('Existing.error', {0: existingFailures.length})}</h4>
-                    {existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t}  translation={translation} />)}
+                    <h4>{translation('Existing.error', { 0: existingFailures.length })}</h4>
+                    {existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
                 </div>);
             }
 
             if (skipped.length > 0) {
                 skippedBlock = (<div className="test-result-block skipped-block">
-                    <h4>{translation('Skipped', {0: skipped.length})}</h4>
-                    {skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t}  translation={translation} />)}
+                    <h4>{translation('Skipped', { 0: skipped.length })}</h4>
+                    {skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
                 </div>);
             }
         }
@@ -150,7 +155,7 @@ export default class TestResult extends Component {
         if (fixed.length > 0) {
             fixedBlock = (<div className="test-result-block fixed-block">
                 <h4>{translation('Fixed')}</h4>
-                {fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t}  translation={translation} />)}
+                {fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
             </div>);
         }
 
@@ -170,4 +175,5 @@ export default class TestResult extends Component {
 TestResult.propTypes = {
     testResults: PropTypes.object,
     t: PropTypes.func,
+    locale: PropTypes.string,
 };

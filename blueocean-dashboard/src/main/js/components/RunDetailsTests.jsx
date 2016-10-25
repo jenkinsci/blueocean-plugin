@@ -21,7 +21,7 @@ export class RunDetailsTests extends Component {
     }
 
     render() {
-        const { testResults, t } = this.props;
+        const { testResults, t, locale } = this.props;
 
         if (!testResults || testResults.$pending) {
             return <PageLoading />;
@@ -51,6 +51,7 @@ export class RunDetailsTests extends Component {
               extensionPoint="jenkins.test.result"
               filter={dataType(testResults)}
               testResults={testResults}
+              locale={locale}
               t={t}
             />
         </div>);
@@ -66,6 +67,7 @@ RunDetailsTests.propTypes = {
     fetchTestResults: PropTypes.func,
     fetchTypeInfo: PropTypes.func,
     t: PropTypes.func,
+    locale: PropTypes.string,
 };
 
 RunDetailsTests.contextTypes = {
