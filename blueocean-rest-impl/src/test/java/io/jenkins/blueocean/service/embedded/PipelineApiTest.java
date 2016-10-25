@@ -47,9 +47,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 
-import static io.jenkins.blueocean.rest.model.BluePipeline.NUMBER_OF_QUEUED_PIPELINES;
-import static io.jenkins.blueocean.rest.model.BluePipeline.NUMBER_OF_RUNNING_PIPELINES;
-
 /**
  * @author Vivek Pandey
  */
@@ -70,6 +67,7 @@ public class PipelineApiTest extends BaseTest {
         MockFolder folder1 = j.createFolder("folder1");
         Project p1 = folder1.createProject(FreeStyleProject.class, "test1");
         MockFolder folder2 = folder1.createProject(MockFolder.class, "folder2");
+        folder2.setDisplayName("My folder2");
         MockFolder folder3 = folder1.createProject(MockFolder.class, "folder3");
         Project p2 = folder2.createProject(FreeStyleProject.class, "test2");
 
@@ -88,6 +86,7 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals(3, pipelines.size());
         Assert.assertEquals("folder2", pipelines.get(0).get("name"));
         Assert.assertEquals("folder1/folder2", pipelines.get(0).get("fullName"));
+        Assert.assertEquals("folder1/My%20folder2", pipelines.get(0).get("fullDisplayName"));
 
         response = get("/organizations/jenkins/pipelines/folder1");
         Assert.assertEquals("folder1", response.get("name"));
@@ -431,10 +430,6 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals(queue.size(),2);
         Assert.assertEquals(((Map) queue.get(0)).get("expectedBuildNumber"), 4);
         Assert.assertEquals(((Map) queue.get(1)).get("expectedBuildNumber"), 3);
-        Map resp = request().get("/organizations/jenkins/pipelines/pipeline1/").build(Map.class);
-
-        Assert.assertEquals(2, resp.get(NUMBER_OF_RUNNING_PIPELINES));
-        Assert.assertEquals(2, resp.get(NUMBER_OF_QUEUED_PIPELINES));
     }
 
     @Test

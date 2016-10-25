@@ -24,9 +24,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.40",
-      "from": "@jenkins-cd/js-builder@0.0.40",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.40.tgz",
+      "version": "0.0.47",
+      "from": "@jenkins-cd/js-builder@0.0.47",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.47.tgz",
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
@@ -1131,6 +1131,12 @@
       "resolved": "https://registry.npmjs.org/browserify-transform-tools/-/browserify-transform-tools-1.6.0.tgz",
       "dev": true
     },
+    "browserify-tree": {
+      "version": "0.0.2",
+      "from": "browserify-tree@0.0.2",
+      "resolved": "https://registry.npmjs.org/browserify-tree/-/browserify-tree-0.0.2.tgz",
+      "dev": true
+    },
     "browserify-zlib": {
       "version": "0.1.4",
       "from": "browserify-zlib@>=0.1.2 <0.2.0",
@@ -1742,9 +1748,9 @@
       }
     },
     "duplexify": {
-      "version": "3.4.6",
+      "version": "3.5.0",
       "from": "duplexify@>=3.4.2 <4.0.0",
-      "resolved": "https://registry.npmjs.org/duplexify/-/duplexify-3.4.6.tgz",
+      "resolved": "https://registry.npmjs.org/duplexify/-/duplexify-3.5.0.tgz",
       "dev": true,
       "dependencies": {
         "end-of-stream": {
@@ -2413,21 +2419,15 @@
       "dev": true
     },
     "gulp-jshint": {
-      "version": "2.0.1",
+      "version": "2.0.2",
       "from": "gulp-jshint@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/gulp-jshint/-/gulp-jshint-2.0.1.tgz",
+      "resolved": "https://registry.npmjs.org/gulp-jshint/-/gulp-jshint-2.0.2.tgz",
       "dev": true,
       "dependencies": {
         "isarray": {
           "version": "0.0.1",
           "from": "isarray@0.0.1",
           "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
-          "dev": true
-        },
-        "minimatch": {
-          "version": "2.0.10",
-          "from": "minimatch@>=2.0.1 <3.0.0",
-          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-2.0.10.tgz",
           "dev": true
         },
         "readable-stream": {
@@ -2486,6 +2486,12 @@
       "version": "1.0.2",
       "from": "gulp-match@>=1.0.2 <2.0.0",
       "resolved": "https://registry.npmjs.org/gulp-match/-/gulp-match-1.0.2.tgz",
+      "dev": true
+    },
+    "gulp-runner": {
+      "version": "0.1.4",
+      "from": "gulp-runner@>=0.1.4 <0.2.0",
+      "resolved": "https://registry.npmjs.org/gulp-runner/-/gulp-runner-0.1.4.tgz",
       "dev": true
     },
     "gulp-util": {

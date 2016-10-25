@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import Extensions from '@jenkins-cd/js-extensions';
 import {
+    ExpandablePath,
     Page,
     PageHeader,
     Title,
@@ -47,7 +48,7 @@ export class PipelinePage extends Component {
 
     render() {
         const { pipeline, setTitle, t } = this.props;
-        const { organization, name, fullName } = pipeline || {};
+        const { organization, name, fullName, fullDisplayName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
         const isReady = pipeline && !pipeline.$pending;
@@ -74,8 +75,10 @@ export class PipelinePage extends Component {
                         <WeatherIcon score={pipeline.weatherScore} size="large" />
                         <h1>
                             <Link to={orgUrl}>{organization}</Link>
-                            <span> / </span>
-                            <Link to={activityUrl}>{name}</Link>
+                            <span>&nbsp;/&nbsp;</span>
+                            <Link to={activityUrl}>
+                                <ExpandablePath path={fullDisplayName} iconSize={20} hideFirst />
+                            </Link>
                         </h1>
                         <Extensions.Renderer
                           extensionPoint="jenkins.pipeline.detail.header.action"

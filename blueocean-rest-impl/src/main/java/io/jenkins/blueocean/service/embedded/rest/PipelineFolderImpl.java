@@ -41,7 +41,10 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public String getName() {
-        return folder.getDisplayName();
+        if(folder instanceof AbstractItem)
+            return ((AbstractItem) folder).getName();
+        else
+            return folder.getDisplayName();
     }
 
     @Override
@@ -52,6 +55,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     @Override
     public String getFullName() {
         return folder.getFullName();
+    }
+
+    @Override
+    public String getFullDisplayName() {
+        return AbstractPipelineImpl.getFullDisplayName(folder, null);
     }
 
     @Override
@@ -106,16 +114,6 @@ public class PipelineFolderImpl extends BluePipelineFolder {
             return null;
         }
 
-    }
-
-    @Override
-    public int getNumberOfRunningPipelines() {
-        return 0; //Folder is not represented itself as main item on dashboard so its left as 0
-    }
-
-    @Override
-    public int getNumberOfQueuedPipelines() {
-        return 0; //Folder is not represented itself as main item on dashboard so its left as 0
     }
 
     @Override

@@ -337,6 +337,38 @@ public abstract class PipelineBaseTest{
         return nodes;
     }
 
+    protected List<FlowNode> getStages(NodeGraphBuilder builder){
+        List<FlowNode> nodes = new ArrayList<>();
+        for(FlowNodeWrapper node: builder.getPipelineNodes()){
+            if(node.type == FlowNodeWrapper.NodeType.STAGE){
+                nodes.add(node.getNode());
+            }
+        }
+
+        return nodes;
+    }
+    protected List<FlowNode> getStagesAndParallels(NodeGraphBuilder builder){
+        List<FlowNode> nodes = new ArrayList<>();
+        for(FlowNodeWrapper node: builder.getPipelineNodes()){
+            if(node.type == FlowNodeWrapper.NodeType.STAGE || node.type == FlowNodeWrapper.NodeType.PARALLEL){
+                nodes.add(node.getNode());
+            }
+        }
+
+        return nodes;
+    }
+
+    protected List<FlowNode> getParallelNodes(NodeGraphBuilder builder){
+        List<FlowNode> nodes = new ArrayList<>();
+        for(FlowNodeWrapper node: builder.getPipelineNodes()){
+            if(node.type == FlowNodeWrapper.NodeType.PARALLEL){
+                nodes.add(node.getNode());
+            }
+        }
+
+        return nodes;
+    }
+
     protected String getHrefFromLinks(Map resp, String link){
         Map links = (Map) resp.get("_links");
         if(links == null){

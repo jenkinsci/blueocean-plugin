@@ -2,19 +2,18 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.AbstractItem;
 import hudson.model.Action;
-import hudson.model.BuildableItem;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
-import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
@@ -31,12 +30,13 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
-import jenkins.model.Jenkins;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -146,6 +146,33 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     @Override
+    public String getFullDisplayName() {
+        return getFullDisplayName(job.getParent(), Util.rawEncode(job.getDisplayName()));
+    }
+
+    /**
+     * Returns full display name. Each display name is separated by '/' and each display name is url encoded.
+     *
+     * @param parent parent folder
+     * @param displayName URL encoded display name. Caller must pass urlencoded name
+     *
+     * @return full display name
+     */
+    public static String getFullDisplayName(@Nonnull ItemGroup parent, @Nullable String displayName){
+        String name = parent.getDisplayName();
+        if(name.length() == 0 ) return displayName;
+
+        if(name.length() > 0  && parent instanceof AbstractItem) {
+            if(displayName == null){
+                return getFullDisplayName(((AbstractItem)parent).getParent(), String.format("%s", Util.rawEncode(name)));
+            }else {
+                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.rawEncode(name),displayName));
+            }
+        }
+        return displayName;
+    }
+
+    @Override
     public Link getLink() {
         return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
@@ -213,20 +240,6 @@ public class AbstractPipelineImpl extends BluePipeline {
             }
             return null;
         }
-    }
-
-    @Override
-    public int getNumberOfRunningPipelines(){
-        RunList runningJobs =  job.getBuilds().filter(isRunning);
-        return Iterators.size(runningJobs.iterator());
-    }
-
-    @Override
-    public int getNumberOfQueuedPipelines() {
-        if(job instanceof BuildableItem) {
-            return Iterables.size(Jenkins.getInstance().getQueue().getItems((BuildableItem)job));
-        }
-        return 0;
     }
 
     @Override

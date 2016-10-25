@@ -180,29 +180,96 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
+    public void testNonblockStageSteps() throws Exception{
+        String pipeline = "node {\n" +
+            "  stage 'Checkout'\n" +
+            "      echo 'checkingout'\n" +
+            "  stage 'Build'\n" +
+            "      echo 'building'\n" +
+            "  stage 'Archive'\n" +
+            "      echo 'archiving...'\n" +
+            "}";
+
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition(pipeline));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> stages = getStages(builder);
+        List<FlowNode> parallels = getParallelNodes(builder);
+
+        Assert.assertEquals(3, stages.size());
+        Assert.assertEquals(0, parallels.size());
+
+        //TODO: complete test
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(3, resp.size());
+
+        String checkoutId = (String) resp.get(0).get("id");
+        String buildId = (String) resp.get(0).get("id");
+        String archiveId = (String) resp.get(0).get("id");
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+        Assert.assertEquals(3,resp.size());
+
+
+        Assert.assertNotNull(checkoutId);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+checkoutId+"/steps/", List.class);
+        Assert.assertEquals(1,resp.size());
+
+
+        Assert.assertNotNull(buildId);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+buildId+"/steps/", List.class);
+        Assert.assertEquals(1,resp.size());
+
+
+        Assert.assertNotNull(archiveId);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+archiveId+"/steps/", List.class);
+        Assert.assertEquals(1,resp.size());
+    }
+
+
+    @Test
     public void testNestedBlockStage() throws Exception{
         String pipeline = "" +
             "node {" +
             "   stage ('dev');" +                 //start
             "     echo ('development'); " +
-
             "   stage ('Build') { " +
             "     echo ('Building'); " +
+            "     stage('Packaging') {" +
+            "         echo 'packaging...'" +
+            "     }" +
             "   } \n" +
             "   stage ('test') { " +
             "     echo ('Testing'); " +
-            "     parallel firstBranch: {\n" + //1
-            "       echo 'first Branch'\n" +
-                "     stage('firstBranchTest') {"+
-                "       sh 'sleep 1'\n" +
-                "     }\n"+
+            "     parallel firstBranch: {\n" +
+            "       echo 'Hello first Branch'\n" +
+            "       echo 'first Branch 1'\n" +
             "       echo 'first Branch end'\n" +
-            "     }, secondBranch: {\n" +
-            "       echo 'Hello second Branch'\n" +
-            "       sh 'sleep 1'   \n" +
-            "       echo 'second Branch end'\n" +
             "       \n" +
             "    },\n" +
+            "    thirdBranch: {\n" +
+            "       echo 'Hello third Branch'\n" +
+            "       sh 'sleep 1'   \n" +
+            "       echo 'third Branch 1'\n" +
+            "       echo 'third Branch 2'\n" +
+            "       echo 'third Branch end'\n" +
+            "       \n" +
+            "    },\n" +
+            "    secondBranch: {"+
+            "       echo 'first Branch'\n" +
+                "     stage('firstBranchTest') {"+
+                "       echo 'running firstBranchTest'\n" +
+                "       sh 'sleep 1'\n" +
+                "     }\n"+
+                "       echo 'first Branch end'\n" +
+                "     },\n"+
             "    failFast: false\n" +
             "   } \n" +
             "   stage ('deploy') { " +
@@ -220,46 +287,59 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        PipelineNodeGraphBuilder builder = new PipelineNodeGraphBuilder(b1);
 
-        List<FlowNode> stages = builder.getSages();
-        List<FlowNode> parallels = builder.getParallelBranches();
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> stages = getStages(builder);
+        List<FlowNode> parallels = getParallelNodes(builder);
 
         Assert.assertEquals(4, stages.size());
-        Assert.assertEquals(2, parallels.size());
+        Assert.assertEquals(3, parallels.size());
 
         //TODO: complete test
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
-        Assert.assertEquals(6, resp.size());
+        Assert.assertEquals(7, resp.size());
 
         String testStageId=null;
 
+        String devNodeId = null;
         for(int i=0; i< resp.size();i++){
             Map rn = resp.get(i);
             List<Map> edges = (List<Map>) rn.get("edges");
 
             if(rn.get("displayName").equals("dev")){
+                Assert.assertEquals(0, i);
+                devNodeId = (String) rn.get("id");
                 Assert.assertEquals(1, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
             }else if(rn.get("displayName").equals("build")){
+                Assert.assertEquals(1, i);
                 Assert.assertEquals(1, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
             }else if(rn.get("displayName").equals("test")){
+                Assert.assertEquals(2, i);
                 testStageId = (String) rn.get("id");
-                Assert.assertEquals(2, edges.size());
+                Assert.assertEquals(3, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
             }else if(rn.get("displayName").equals("firstBranch")){
+                Assert.assertEquals(3, i);
                 Assert.assertEquals(1, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
             }else if(rn.get("displayName").equals("secondBranch")){
+                Assert.assertEquals(4, i);
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("thirdBranch")){
+                Assert.assertEquals(5, i);
                 Assert.assertEquals(1, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
             }else if(rn.get("displayName").equals("deploy")){
+                Assert.assertEquals(6, i);
                 Assert.assertEquals(0, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
@@ -267,24 +347,43 @@ public class PipelineNodeTest extends PipelineBaseTest {
         }
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
-        Assert.assertEquals(12,resp.size());
+        Assert.assertEquals(19,resp.size());
 
 
         Assert.assertNotNull(testStageId);
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+testStageId+"/steps/", List.class);
-        Assert.assertEquals(7,resp.size());
+        Assert.assertEquals(13,resp.size());
 
         //firstBranch is parallel with nested stage. firstBranch /steps should also include steps inside nested stage
         FlowNode firstBranch=null;
+        FlowNode secondBranch=null;
+        FlowNode thirdBranch=null;
         for(FlowNode n: parallels){
             if(n.getDisplayName().equals("Branch: firstBranch")){
                 firstBranch = n;
-                break;
+            }
+            if(n.getDisplayName().equals("Branch: secondBranch")){
+                secondBranch = n;
+            }
+            if(n.getDisplayName().equals("Branch: thirdBranch")){
+                thirdBranch = n;
             }
         }
         Assert.assertNotNull(firstBranch);
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+firstBranch.getId()+"/steps/", List.class);
         Assert.assertEquals(3,resp.size());
+
+        Assert.assertNotNull(secondBranch);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+secondBranch.getId()+"/steps/", List.class);
+        Assert.assertEquals(4,resp.size());
+
+        Assert.assertNotNull(thirdBranch);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+thirdBranch.getId()+"/steps/", List.class);
+        Assert.assertEquals(5,resp.size());
+
+        Assert.assertNotNull(devNodeId);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+devNodeId+"/steps/", List.class);
+        Assert.assertEquals(1,resp.size());
 
     }
 
@@ -410,12 +509,11 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> leftSteps = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/"+leftNode.get("id")+"/steps/", List.class);
 
-        //XXX: for some reason in test harness 'input' step fails and never registered as step
-        Assert.assertEquals(2, leftSteps.size());
+        Assert.assertEquals(3, leftSteps.size());
 
         List<Map> rightSteps = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/"+rightNode.get("id")+"/steps/", List.class);
 
-        Assert.assertEquals(1, rightSteps.size());
+        Assert.assertEquals(2, rightSteps.size());
     }
 
 
@@ -727,10 +825,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
-        nodeGraphTable.build();
-        List<FlowNode> nodes = getStages(nodeGraphTable);
-        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+
+        List<FlowNode> nodes = getStagesAndParallels(builder);
+        List<FlowNode> parallelNodes = getParallelNodes(builder);
 
         Assert.assertEquals(7, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
@@ -949,10 +1047,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
-        nodeGraphTable.build();
-        List<FlowNode> nodes = getStages(nodeGraphTable);
-        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> nodes = getStagesAndParallels(builder);
+        List<FlowNode> parallelNodes = getParallelNodes(builder);
 
         Assert.assertEquals(7, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
@@ -1097,10 +1194,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatus(Result.FAILURE, b1);
 
-        FlowGraphTable nodeGraphTable = new FlowGraphTable(b1.getExecution());
-        nodeGraphTable.build();
-        List<FlowNode> nodes = getStages(nodeGraphTable);
-        List<FlowNode> parallelNodes = getParallelNodes(nodeGraphTable);
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> nodes = getStagesAndParallels(builder);
+        List<FlowNode> parallelNodes = getParallelNodes(builder);
 
         Assert.assertEquals(5, nodes.size());
         Assert.assertEquals(3, parallelNodes.size());
