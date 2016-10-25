@@ -3,13 +3,16 @@
  */
 import React, { PropTypes } from 'react';
 import { StatusIndicator } from '@jenkins-cd/design-language';
-import status from './FlowStatus';
+import status from './FlowStepStatus';
 
+/**
+ * Visual indicator that displays a workflow step as either completed, active or incomplete state.
+ * Can show partial completion via 'percentage' prop.
+ */
 export default function StepIndicator(props) {
     const newProps = {};
 
-    // eslint-disable-next-line
-    if (0 <= props.percentage && props.percentage < 100 && props.status !== status.COMPLETE) {
+    if (props.percentage >= 0 && props.percentage < 100 && props.status !== status.COMPLETE) {
         newProps.result = 'running';
         newProps.percentage = props.percentage;
     } else if (props.status === status.COMPLETE) {

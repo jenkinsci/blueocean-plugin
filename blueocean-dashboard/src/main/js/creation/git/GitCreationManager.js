@@ -20,17 +20,16 @@ export default class GitCreationManager {
         );
     }
 
-    // eslint-disable-next-line
+    // eslint-disable-next-line no-unused-vars
     createWithUsernamePasswordCredential(repositoryUrl, username, password) {
         return this.createWithSshKeyCredential();
     }
 
-    // eslint-disable-next-line
+    // eslint-disable-next-line no-unused-vars
     createWithSystemSshCredential(repositoryUrl) {
         return this.createWithSshKeyCredential();
     }
 
-    // eslint-disable-next-line
     _createPipeline(repositoryUrl, credentialId) {
         this._onStatusChanged(status.CREATE_PIPELINE);
 

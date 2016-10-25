@@ -3,8 +3,13 @@
  */
 import React, { PropTypes } from 'react';
 import StepIndicator from './StepIndicator';
-import status from './FlowStatus';
+import status from './FlowStepStatus';
 
+/**
+ * Visual component that displays a progress indicator along with its children.
+ * These components are intended to be stacked vertically.
+ * Status / progress indicator displayed on left; children display on the right.
+ */
 export default function VerticalStep(props) {
     const classNames = `${props.status || ''} ${props.className || ''} ${props.isLastStep ? 'last-step' : ''}`.trim();
 

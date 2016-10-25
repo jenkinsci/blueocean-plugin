@@ -3,7 +3,6 @@
  */
 import React, { PropTypes } from 'react';
 import FlowStep from '../FlowStep';
-import GitApi from './GitCreationApi';
 
 const CREDENTIAL_CHOICE = {
     SSH: 'SSH',
@@ -25,8 +24,6 @@ export default class ConnectStep extends React.Component {
             createButtonDisabled: true,
             createInProgress: false,
         };
-
-        this._gitApi = new GitApi();
     }
 
     componentDidUpdate() {
@@ -181,5 +178,4 @@ export default class ConnectStep extends React.Component {
 ConnectStep.propTypes = {
     manager: PropTypes.object,
     onCompleteStep: PropTypes.func,
-    onCompleteFlow: PropTypes.func,
 };

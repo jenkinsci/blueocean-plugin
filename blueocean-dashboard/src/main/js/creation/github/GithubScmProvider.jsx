@@ -4,7 +4,7 @@
 import React from 'react';
 import ScmProvider from '../ScmProvider';
 import GithubDefaultOption from './GithubDefaultOption';
-import GithubDefaultFlow from './GithubDefaultFlow';
+import GithubCreationFlow from './GithubCreationFlow';
 
 export default class GithubScmProvider extends ScmProvider {
 
@@ -12,7 +12,7 @@ export default class GithubScmProvider extends ScmProvider {
         return <GithubDefaultOption />;
     }
 
-    getDefaultFlow() {
-        return <GithubDefaultFlow />;
+    getCreationFlow() {
+        return <GithubCreationFlow />;
     }
 }

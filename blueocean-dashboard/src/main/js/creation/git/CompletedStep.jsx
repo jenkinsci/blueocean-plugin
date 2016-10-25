@@ -4,7 +4,7 @@
 import React, { PropTypes } from 'react';
 
 import FlowStep from '../FlowStep';
-import StepStatus from '../FlowStatus';
+import StepStatus from '../FlowStepStatus';
 
 import FlowStatus from './GitCreationStatus';
 

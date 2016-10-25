@@ -3,26 +3,28 @@
  */
 import React, { PropTypes } from 'react';
 import VerticalStep from './VerticalStep';
-import status from './FlowStatus';
+import status from './FlowStepStatus';
 
-export default class FlowStep extends React.Component {
-
-    render() {
-        return (
-            <VerticalStep
-              status={this.props.status}
-              percentage={this.props.percentage}
-              isLastStep={this.props.isLastStep}
-            >
-                <h1>{this.props.title}</h1>
-                {
-                    this.props.status !== status.INCOMPLETE &&
-                    this.props.children
-                }
-            </VerticalStep>
-        );
-    }
-
+/**
+ * Visual/logic component that defines an individual step of a multi-step workflow.
+ * Intended to be used within a MultiStepFlow component.
+ * Hides all content except for the title until the step becomes active.
+ * Complete the step by calling 'props.onCompleteStep'; complete entire flow by calling 'props.onCompleteFlow'
+ */
+export default function FlowStep(props) {
+    return (
+        <VerticalStep
+          status={props.status}
+          percentage={props.percentage}
+          isLastStep={props.isLastStep}
+        >
+            <h1>{props.title}</h1>
+            {
+                props.status !== status.INCOMPLETE &&
+                props.children
+            }
+        </VerticalStep>
+    );
 }
 
 FlowStep.propTypes = {
@@ -31,6 +33,6 @@ FlowStep.propTypes = {
     status: PropTypes.string,
     percentage: PropTypes.number,
     isLastStep: PropTypes.bool,
-    onStatusUpdate: PropTypes.func,
     onCompleteStep: PropTypes.func,
+    onCompleteFlow: PropTypes.func,
 };

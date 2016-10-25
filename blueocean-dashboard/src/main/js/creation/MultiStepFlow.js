@@ -2,8 +2,12 @@
  * Created by cmeyers on 10/18/16.
  */
 import React, { PropTypes } from 'react';
-import FlowStatus from './FlowStatus';
+import StepStatus from './FlowStepStatus';
 
+/**
+ * Used to create a multi-step workflow with one or more FlowStep children.
+ * Handles navigating forward through the flow and updating the state of each step.
+ */
 export default class MultiStepFlow extends React.Component {
 
     constructor(props) {
@@ -29,13 +33,13 @@ export default class MultiStepFlow extends React.Component {
             <div className="multi-step-flow-component">
                 { this.props.children && this.props.children.map((child, index, children) => {
                     const { currentIndex } = this.state;
-                    /* eslint-disable */
-                    const status =
-                        index < currentIndex ? FlowStatus.COMPLETE :
-                        index === currentIndex ? FlowStatus.ACTIVE :
-                        index > currentIndex ? FlowStatus.INCOMPLETE :
-                        null;
-                    /* eslint-enable */
+                    let status = StepStatus.INCOMPLETE;
+
+                    if (index < currentIndex) {
+                        status = StepStatus.COMPLETE;
+                    } else if (index === currentIndex) {
+                        status = StepStatus.ACTIVE;
+                    }
 
                     const isLastStep = index === children.length - 1;
 

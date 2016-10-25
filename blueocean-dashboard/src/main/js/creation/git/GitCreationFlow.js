@@ -13,7 +13,7 @@ import GitCreationManager from './GitCreationManager';
 import ConnectStep from './ConnectStep';
 import CompletedStep from './CompletedStep';
 
-export default class GitDefaultFlow extends React.Component {
+export default class GitCreationFlow extends React.Component {
 
     constructor(props) {
         super(props);

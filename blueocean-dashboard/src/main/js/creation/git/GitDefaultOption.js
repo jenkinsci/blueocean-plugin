@@ -3,7 +3,6 @@
  */
 import React, { PropTypes } from 'react';
 
-
 export default function GitDefaultOption(props) {
     function onSelect() {
         if (props.onSelect) {

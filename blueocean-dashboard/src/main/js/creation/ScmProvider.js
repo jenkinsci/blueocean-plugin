@@ -8,8 +8,8 @@ export default class ScmProvider {
         throw new Error('must implement getDefaultOption');
     }
 
-    getDefaultFlow() {
-        throw new Error('must implement getDefaultFlow');
+    getCreationFlow() {
+        throw new Error('must implement getCreationFlow');
     }
 
     getRentrantOption() {

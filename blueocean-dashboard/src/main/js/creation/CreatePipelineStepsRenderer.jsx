@@ -26,10 +26,10 @@ export class CreatePipelineStepsRenderer extends React.Component {
             onCompleteFlow: this.props.onCompleteFlow,
         };
 
-        let defaultFlow;
+        let creationFlow;
 
         try {
-            defaultFlow = this.props.selectedProvider.getDefaultFlow();
+            creationFlow = this.props.selectedProvider.getCreationFlow();
         } catch (error) {
             console.warn('Error rendering:', this.props.selectedProvider, error);
             return Extensions.ErrorUtils.errorToElement(error);
@@ -37,7 +37,7 @@ export class CreatePipelineStepsRenderer extends React.Component {
 
         return (
             <Sandbox>
-                {React.cloneElement(defaultFlow, props)}
+                {React.cloneElement(creationFlow, props)}
             </Sandbox>
         );
     }
