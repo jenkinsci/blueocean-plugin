@@ -25,6 +25,8 @@ import {
     buildRunDetailsUrl,
 } from '../util/UrlUtils';
 
+import compose from '../util/compose';
+
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
@@ -215,4 +217,9 @@ const selectors = createSelector(
     [runSelector, isMultiBranchSelector, previousSelector],
     (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
 
-export default translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true })(connect(selectors, actions)(RunDetails));
+const composed  = compose(
+  translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true }),
+  connect(selectors, actions)
+);
+
+export default composed(RunDetails);

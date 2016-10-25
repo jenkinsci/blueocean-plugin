@@ -21,6 +21,7 @@ import { translate } from 'react-i18next';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
+import compose from '../util/compose';
 
 /**
  * returns true if the pipeline is defined and has branchNames
@@ -121,4 +122,10 @@ PipelinePage.childContextTypes = {
 const selectors = createSelector([pipelineSelector],
     (pipeline) => ({ pipeline }));
 
-export default translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true })(connect(selectors, actions)(documentTitle(PipelinePage)));
+const composed  = compose(
+  translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true }),
+  connect(selectors, actions),
+  documentTitle
+);
+
+export default composed(PipelinePage);

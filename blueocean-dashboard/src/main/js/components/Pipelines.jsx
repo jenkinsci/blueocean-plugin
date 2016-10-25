@@ -7,6 +7,7 @@ import { translate } from 'react-i18next';
 import { documentTitle } from './DocumentTitle';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
+import compose from '../util/compose';
 
 export class Pipelines extends Component {
 
@@ -16,6 +17,7 @@ export class Pipelines extends Component {
     }
 
     render() {
+        console.log('sexy')
         const { pipelines, config, params: { organization } } = this.context;
         const { t } = this.props;
 
@@ -104,4 +106,9 @@ Pipelines.propTypes = {
     t: func,
 };
 
-export default translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true })(documentTitle(Pipelines));
+const composed  = compose(
+  translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true }),
+  documentTitle
+);
+
+export default composed(Pipelines);
