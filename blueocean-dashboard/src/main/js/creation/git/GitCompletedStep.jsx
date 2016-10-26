@@ -11,7 +11,7 @@ import FlowStatus from './GitCreationStatus';
 /**
  * Shows the current progress after creation was initiated.
  */
-export default class CompletedStep extends React.Component {
+export default class GitCompletedStep extends React.Component {
     render() {
         let status = this.props.status;
         let percentage = -1;
@@ -49,7 +49,7 @@ export default class CompletedStep extends React.Component {
     }
 }
 
-CompletedStep.propTypes = {
+GitCompletedStep.propTypes = {
     status: PropTypes.string,
     flowStatus: PropTypes.string,
     onCompleteFlow: PropTypes.func,

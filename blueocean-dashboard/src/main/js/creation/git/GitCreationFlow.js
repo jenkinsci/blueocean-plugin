@@ -10,8 +10,8 @@ import GitStatus from './GitCreationStatus';
 import GitCreationApi from './GitCreationApi';
 import GitCreationManager from './GitCreationManager';
 
-import ConnectStep from './ConnectStep';
-import CompletedStep from './CompletedStep';
+import ConnectStep from './GitConnectStep';
+import CompletedStep from './GitCompletedStep';
 
 /**
  * Handles the overall two-step of creating a pipeline from a Git repo.

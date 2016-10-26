@@ -14,7 +14,7 @@ const CREDENTIAL_CHOICE = {
  * Component that accepts repository URL and credentials to initiate
  * creation of a new pipeline.
  */
-export default class ConnectStep extends React.Component {
+export default class GitConnectStep extends React.Component {
 
     constructor(props) {
         super(props);
@@ -184,7 +184,7 @@ export default class ConnectStep extends React.Component {
     }
 }
 
-ConnectStep.propTypes = {
+GitConnectStep.propTypes = {
     manager: PropTypes.object,
     onCompleteStep: PropTypes.func,
 };
