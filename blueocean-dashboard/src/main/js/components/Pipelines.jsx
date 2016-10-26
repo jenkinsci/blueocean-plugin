@@ -17,16 +17,20 @@ export class Pipelines extends Component {
     }
 
     render() {
-        const { pipelines, config, params: { organization } } = this.context;
+        const { pipelines, config, params: { organization }, location: { query } } = this.context;
         const { t } = this.props;
 
         const orgLink = organization ?
-            <Link to={`organizations/${organization}`} className="inverse">
+            <Link
+              to={`organizations/${organization}`}
+              className="inverse"
+              query={query}
+            >
                 {organization}
             </Link> : '';
 
         const headers = [
-            { label: 'Name', className: 'name-col' },
+            { label: t('Name'), className: 'name-col' },
             t('Health'),
             t('Branches'),
             t('PR'),
@@ -42,7 +46,13 @@ export class Pipelines extends Component {
                     {!pipelines || pipelines.$pending && <PageLoading duration={2000} />}
                     <Title>
                         <h1>
-                            <Link to="/" className="inverse">{ t('Dashboard') }</Link>
+                            <Link
+                              to="/"
+                              query={query}
+                              className="inverse"
+                            >
+                                { t('Dashboard') }
+                            </Link>
                             { organization && ' / ' }
                             { organization && orgLink }
                         </h1>
@@ -98,6 +108,7 @@ Pipelines.contextTypes = {
     pipelines: array,
     store: object,
     router: object,
+    location: object.isRequired, // From react-router
 };
 
 Pipelines.propTypes = {

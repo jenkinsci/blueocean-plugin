@@ -60,7 +60,7 @@ export class MultiBranch extends Component {
 
 
     render() {
-        const { branches, t } = this.props;
+        const { branches, t, locale } = this.props;
 
         if (!branches || (!branches.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
             return (<NotSupported t={t} />);
@@ -96,6 +96,8 @@ export class MultiBranch extends Component {
                             return (<Branches
                               key={index}
                               data={result}
+                              t={t}
+                              locale={locale}
                             />);
                         })
                         }
@@ -124,6 +126,7 @@ MultiBranch.propTypes = {
     clearBranchData: func,
     children: any,
     t: func,
+    locale: string,
 };
 
 const selectors = createSelector([branchSelector], (branches) => ({ branches }));

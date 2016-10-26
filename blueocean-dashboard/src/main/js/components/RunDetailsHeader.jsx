@@ -83,6 +83,9 @@ class RunDetailsHeader extends Component {
                               millis={durationMillis}
                               liveUpdate={run.isRunning()}
                               updatePeriod={1000}
+                              locale={locale}
+                              liveFormat={t('Date.duration.format')}
+                              hintFormat={t('Date.duration.hint.format')}
                             />
                         </div>
                         <div>

@@ -59,7 +59,7 @@ export class Activity extends Component {
     }
 
     render() {
-        const { runs, pipeline, t } = this.props;
+        const { runs, pipeline, t, locale } = this.props;
 
         if (!runs || !pipeline || pipeline.$pending) {
             return null;
@@ -132,9 +132,11 @@ export class Activity extends Component {
 
                             return (
                                 <Runs {...{
-                                    key: index,
+                                    t,
+                                    locale,
                                     run,
                                     pipeline,
+                                    key: index,
                                     changeset: latestRecord,
                                     result: new RunRecord(run),
                                 }}
@@ -167,6 +169,7 @@ Activity.propTypes = {
     pipeline: object,
     capabilities: object,
     fetchRuns: func,
+    locale: string,
     t: func,
 };
 

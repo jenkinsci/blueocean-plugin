@@ -1,16 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
-import { RunButton, i18n } from '@jenkins-cd/blueocean-core-js';
+import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
-const { object } = PropTypes;
-
 const stopProp = (event) => event.stopPropagation();
-
-const t = (key) => i18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 
 export default class Branches extends Component {
     constructor(props) {
@@ -18,21 +14,19 @@ export default class Branches extends Component {
         this.state = { isVisible: false };
     }
     render() {
-        const { data } = this.props;
+        const { data, t, locale } = this.props;
         // early out
         if (!data || !this.context.pipeline) {
             return null;
         }
         const {
-            context: {
-                router,
-                location,
-                pipeline: {
-                    fullName,
-                    organization,
-                    },
-                },
-            } = this;
+              router,
+              location,
+              pipeline: {
+                  fullName,
+                  organization,
+              },
+            } = this.context;
         const {
             latestRun: { id, result, startTime, endTime, changeSet, state, commitId, estimatedDurationInMillis },
             weatherScore,
@@ -69,7 +63,7 @@ export default class Branches extends Component {
                   <ReadableDate
                     date={endTime}
                     liveUpdate
-                    locale={i18n.language}
+                    locale={locale}
                     shortFormat={t('Date.readable.short')}
                     longFormat={t('Date.readable.long')}
                   />
@@ -93,8 +87,11 @@ export default class Branches extends Component {
     }
 }
 
+const { func, object, string } = PropTypes;
 Branches.propTypes = {
     data: object.isRequired,
+    t: func,
+    locale: string
 };
 
 Branches.contextTypes = {

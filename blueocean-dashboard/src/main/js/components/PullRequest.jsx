@@ -1,17 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
-import { RunButton, i18n } from '@jenkins-cd/blueocean-core-js';
+import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
-const { object } = PropTypes;
-
-const t = (key) => i18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
-
 export default class PullRequest extends Component {
     render() {
-        const { pr } = this.props;
+        const { pr, t, locale } = this.props;
         if (!pr || !pr.pullRequest || !pr.latestRun || !this.context.pipeline) {
             return null;
         }
@@ -65,7 +61,7 @@ export default class PullRequest extends Component {
                 <ReadableDate
                   date={endTime}
                   liveUpdate
-                  locale={i18n.language}
+                  locale={locale}
                   shortFormat={t('Date.readable.short')}
                   longFormat={t('Date.readable.long')}
                 />
@@ -83,8 +79,12 @@ export default class PullRequest extends Component {
     }
 }
 
+const { func, object, string } = PropTypes;
+
 PullRequest.propTypes = {
     pr: object,
+    locale: string,
+    t: func,
 };
 
 PullRequest.contextTypes = {

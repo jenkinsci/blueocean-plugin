@@ -6,7 +6,6 @@ import {
     PageTabs,
     TabLink,
 } from '@jenkins-cd/design-language';
-
 import { ReplayButton, RunButton, i18n } from '@jenkins-cd/blueocean-core-js';
 import { translate } from 'react-i18next';
 
@@ -76,16 +75,21 @@ class RunDetails extends Component {
 
     navigateToOrganization() {
         const { organization } = this.props.pipeline;
+        const { location } = this.context;
         const organizationUrl = buildOrganizationUrl(organization);
-        this.context.router.push(organizationUrl);
+        location.pathname = organizationUrl;
+        this.context.router.push(location);
     }
     navigateToPipeline() {
         const { organization, fullName } = this.props.pipeline;
+        const { location } = this.context;
         const pipelineUrl = buildPipelineUrl(organization, fullName);
-        this.context.router.push(pipelineUrl);
+        location.pathname = pipelineUrl;
+        this.context.router.push(location);
     }
     navigateToChanges() {
         const {
+            location,
             params: {
                 organization,
                 pipeline,
@@ -95,7 +99,8 @@ class RunDetails extends Component {
         } = this.context;
 
         const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
-        this.context.router.push(changesUrl);
+        location.pathname = changesUrl;
+        this.context.router.push(location);
     }
     render() {
         // early out
@@ -113,7 +118,7 @@ class RunDetails extends Component {
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
-        const { run, setTitle, t } = this.props;
+        const { run, setTitle, t, locale } = this.props;
         const currentRun = new RunRecord(run);
         const status = currentRun.getComputedResult() || '';
 
@@ -148,6 +153,7 @@ class RunDetails extends Component {
                     <div>
                         <RunDetailsHeader
                           t={ t }
+                          locale={locale}
                           pipeline={pipeline}
                           data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}

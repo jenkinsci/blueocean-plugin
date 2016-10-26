@@ -39,6 +39,7 @@ class App extends Component {
 
     render() {
         const { t } = this.props;
+        const { location } = this.context;
 
         return (
             <div className="Site">
@@ -46,7 +47,7 @@ class App extends Component {
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link to="/pipelines">{t('pipelines')}</Link>
+                            <Link query={location.query} to="/pipelines">{t('pipelines')}</Link>
                             <a href="#">{t('administration')}</a>
                         </nav>
                         <div className="button-bar">
@@ -73,6 +74,10 @@ App.propTypes = {
 
 App.childContextTypes = {
     config: PropTypes.object
+};
+
+App.contextTypes = {
+    location: PropTypes.object.isRequired,
 };
 
 class NotFound extends Component {

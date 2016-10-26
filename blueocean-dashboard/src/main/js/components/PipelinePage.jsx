@@ -10,6 +10,8 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
+import { translate } from 'react-i18next';
+import { i18n } from '@jenkins-cd/blueocean-core-js';
 import {
     actions,
     pipeline as pipelineSelector,
@@ -17,7 +19,6 @@ import {
     createSelector,
 } from '../redux';
 import NotFound from './NotFound';
-import { translate } from 'react-i18next';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
@@ -49,6 +50,7 @@ export class PipelinePage extends Component {
 
     render() {
         const { pipeline, setTitle, t } = this.props;
+        const { location =  {} } = this.context;
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
@@ -75,9 +77,9 @@ export class PipelinePage extends Component {
                     <Title>
                         <WeatherIcon score={pipeline.weatherScore} size="large" />
                         <h1>
-                            <Link to={orgUrl}>{organization}</Link>
+                            <Link to={orgUrl} query={location.query}>{organization}</Link>
                             <span>&nbsp;/&nbsp;</span>
-                            <Link to={activityUrl}>
+                            <Link to={activityUrl} query={location.query}>
                                 <ExpandablePath path={fullDisplayName} iconSize={20} hideFirst />
                             </Link>
                         </h1>
@@ -94,7 +96,7 @@ export class PipelinePage extends Component {
                         <TabLink to="/pr">{ t('PR') }</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t })}
+                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t, locale: i18n.language })}
             </Page>
         );
     }

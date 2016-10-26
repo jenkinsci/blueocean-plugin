@@ -3,7 +3,7 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
-import { ReplayButton, RunButton, i18n } from '@jenkins-cd/blueocean-core-js';
+import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 
@@ -11,8 +11,6 @@ import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
-
-const t = (key) => i18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
@@ -38,6 +36,8 @@ export default class Runs extends Component {
                 },
             },
             props: {
+                changeset,
+                locale,
                 result: {
                     durationInMillis,
                     estimatedDurationInMillis,
@@ -49,7 +49,7 @@ export default class Runs extends Component {
                     endTime,
                     commitId,
                 },
-                changeset,
+                t,
             },
         } = this;
 
@@ -85,7 +85,7 @@ export default class Runs extends Component {
                 <TimeDuration
                   millis={durationMillis}
                   liveUpdate={running}
-                  locale={i18n.language}
+                  locale={locale}
                   liveFormat={t('Date.duration.format')}
                   hintFormat={t('Date.duration.hint.format')}
                 />
@@ -94,7 +94,7 @@ export default class Runs extends Component {
                 <ReadableDate
                   date={endTime}
                   liveUpdate
-                  locale={i18n.language}
+                  locale={locale}
                   shortFormat={t('Date.readable.short')}
                   longFormat={t('Date.readable.long')}
                 />
@@ -118,6 +118,7 @@ Runs.propTypes = {
     pipeline: object,
     result: any.isRequired, // FIXME: create a shape
     data: string,
+    locale: string,
     changeset: object.isRequired,
     t: func,
 };

@@ -59,7 +59,7 @@ export class PullRequests extends Component {
     }
 
     render() {
-        const { pullRequests, t } = this.props;
+        const { pullRequests, t, locale } = this.props;
 
         if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
             return (<NotSupported t={t} />);
@@ -95,6 +95,8 @@ export class PullRequests extends Component {
                         {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
+                              t={t}
+                              locale={locale}
                               key={index}
                               pr={result}
                             />);
@@ -120,6 +122,7 @@ PullRequests.contextTypes = {
 PullRequests.propTypes = {
     pullRequests: array,
     clearPRData: func,
+    locale: string,
     fetchPullRequests: func,
     t: func,
 };
