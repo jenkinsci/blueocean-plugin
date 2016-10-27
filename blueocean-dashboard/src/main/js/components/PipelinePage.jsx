@@ -76,7 +76,7 @@ export class PipelinePage extends Component {
                             <Link to={orgUrl}>{organization}</Link>
                             <span>&nbsp;/&nbsp;</span>
                             <Link to={activityUrl}>
-                                <ExpandablePath path={fullDisplayName} iconSize={20} hideFirst />
+                                <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
                             </Link>
                         </h1>
                         <Extensions.Renderer
