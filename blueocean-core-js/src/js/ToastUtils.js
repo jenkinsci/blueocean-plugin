@@ -4,14 +4,13 @@
 
 import { ToastService as toastService } from './index';
 import { buildRunDetailsUrlFromQueue } from './UrlBuilder';
-import i18n from './i18n/i18n';
+import { I18n } from './i18n/i18n';
 
 const CAPABILITY_MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
 const CAPABILITY_MULTIBRANCH_BRANCH = 'io.jenkins.blueocean.rest.model.BlueBranch';
-
+const { translate } = I18n;
 
 export default {
-
     /**
      *
      * @param runnable
@@ -32,14 +31,14 @@ export default {
         );
 
         const name = decodeURIComponent(runnable.name);
-        const text = i18n.t('toast.run.started', {
+        const text = translate('toast.run.started', {
             0: name,
             1: runId,
         });
 
         toastService.newToast({
             text,
-            action: i18n.t('toast.run.open'),
+            action: translate('toast.run.open'),
             onActionClick: () => {
                 if (toastAction) {
                     toastAction(runDetailsUrl);

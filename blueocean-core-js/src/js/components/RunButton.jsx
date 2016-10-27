@@ -10,7 +10,9 @@ import { ToastService as toastService } from '../';
 import { ToastUtils } from '../';
 import Security from '../security';
 
-import i18n from '../i18n/i18n';
+import { I18n } from '../i18n/i18n';
+
+const { translate } = I18n;
 
 const { permit } = Security;
 
@@ -70,7 +72,7 @@ export class RunButton extends Component {
 
         const name = decodeURIComponent(this.props.runnable.name);
         const runId = this.props.latestRun.id;
-        const text = i18n.t('toast.run.stopping', {
+        const text = translate('toast.run.stopping', {
             0: name,
             1: runId,
         });
@@ -93,8 +95,8 @@ export class RunButton extends Component {
         showRunButton = showRunButton && permit(this.props.runnable).start();
         showStopButton = showStopButton && permit(this.props.runnable).stop();
 
-        const runLabel = this.props.runText || i18n.t('toast.run');
-        const stopLabel = this.state.stopping ? i18n.t('toast.stopping') : i18n.t('toast.stop');
+        const runLabel = this.props.runText || translate('toast.run');
+        const stopLabel = this.state.stopping ? translate('toast.stopping') : translate('toast.stop');
 
         if (!showRunButton && !showStopButton) {
             return null;

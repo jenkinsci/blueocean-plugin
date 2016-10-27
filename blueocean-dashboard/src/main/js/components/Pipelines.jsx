@@ -9,6 +9,8 @@ import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
 import compose from '../util/compose';
 
+import I18nWrapper from '../util/i18n';
+
 export class Pipelines extends Component {
 
     componentDidMount() {
@@ -18,8 +20,13 @@ export class Pipelines extends Component {
 
     render() {
         const { pipelines, config, params: { organization }, location: { query } } = this.context;
-        const { t } = this.props;
-
+        // this.i18n = new I18nWrapper('jenkins.plugins.blueocean.dashboard.Messages');
+        // this.i18n.on('i18nChanged', (date) => {
+        //    console.log('xxx - i18nChanged', date);
+        // });
+        // this.i18n.t && console.log('xxxx', this.i18n.t('Name'))
+        const { t } = new I18nWrapper('jenkins.plugins.blueocean.dashboard.Messages');
+console.log('ttt'). t('Name')
         const orgLink = organization ?
             <Link
               to={`organizations/${organization}`}
@@ -39,7 +46,6 @@ export class Pipelines extends Component {
 
         const baseUrl = config.getRootURL();
         const newJobUrl = `${baseUrl}/view/All/newJob`;
-
         return (
             <Page>
                 <PageHeader>
