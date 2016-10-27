@@ -60,6 +60,14 @@ storiesOf('ExpandablePath', module)
             </div>
         );
     })
+    .add('style: dark theme', () => {
+        const path = 'Jenkins / folder1 / folder2 / pipeline';
+        return (
+            <div style={ { background: '#4A90E2' } }>
+                <ExpandablePath className="dark-theme" path={path} />
+            </div>
+        );
+    })
     .add('custom label', () => {
         let path = 'Jenkins / folder1 / folder2 / pipeline';
         path = ExpandablePath.replaceLastPathElement(path, 'Fancy Pipeline Name');
