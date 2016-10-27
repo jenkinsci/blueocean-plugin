@@ -3,21 +3,17 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
-import io.jenkins.blueocean.rest.model.BluePipelineCreatorFactory;
 import jenkins.model.Jenkins;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -74,17 +70,5 @@ public class PipelineContainerImpl extends BluePipelineContainer {
             }
         }
         return pipelines.iterator();
-    }
-
-    @Override
-    public BluePipeline create(@JsonBody Map<String,Object> request) throws IOException {
-        for(BluePipelineCreatorFactory f: BluePipelineCreatorFactory.all()){
-            BluePipeline pipeline = f.create(request, this);
-            if(pipeline == null){
-                continue;
-            }
-            return pipeline;
-        }
-        return null;
     }
 }

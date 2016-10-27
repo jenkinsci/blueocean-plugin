@@ -121,7 +121,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
         return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
     }
 
-    @Extension(ordinal = 0)
+    @Extension(ordinal = -10)
     public static class PipelineFactoryImpl extends BluePipelineFactory{
 
         @Override

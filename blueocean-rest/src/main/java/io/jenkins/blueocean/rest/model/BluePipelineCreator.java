@@ -5,12 +5,17 @@ import hudson.ExtensionPoint;
 import io.jenkins.blueocean.rest.Reachable;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * @author Vivek Pandey
  */
-public abstract class BluePipelineCreatorFactory implements ExtensionPoint {
+public abstract class BluePipelineCreator implements ExtensionPoint {
+
+    /**
+     * Id of the creator
+     */
+    public abstract String getId();
+
     /**
      * Create an instance of {@link BluePipeline} from the given request.
      *
@@ -20,9 +25,9 @@ public abstract class BluePipelineCreatorFactory implements ExtensionPoint {
      *
      * @return created pipeline
      */
-    public abstract BluePipeline create(Map<String,Object> request, Reachable parent) throws IOException;
+    public abstract BluePipeline create(BluePipelineCreateRequest request, Reachable parent) throws IOException;
 
-    public static ExtensionList<BluePipelineCreatorFactory> all(){
-        return ExtensionList.lookup(BluePipelineCreatorFactory.class);
+    public static ExtensionList<BluePipelineCreator> all(){
+        return ExtensionList.lookup(BluePipelineCreator.class);
     }
 }
