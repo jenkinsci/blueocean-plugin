@@ -476,8 +476,8 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             String orgName = null;
             String apiUrl = null;
 
-            if(request.get("orgName") instanceof String){
-                orgName = (String) request.get("orgName");
+            if(request.get("name") instanceof String){
+                orgName = (String) request.get("name");
             }
 
             if(request.get("apiUrl") instanceof String){
