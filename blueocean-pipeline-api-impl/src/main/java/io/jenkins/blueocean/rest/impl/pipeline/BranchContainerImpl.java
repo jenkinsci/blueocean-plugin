@@ -2,7 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.Ordering;
 import hudson.model.Job;
-
+import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -142,5 +143,11 @@ public class BranchContainerImpl extends BluePipelineContainer {
     @Override
     public Link getLink() {
         return self;
+    }
+
+
+    @Override
+    public BluePipeline create(@JsonBody Map<String, Object> request) {
+        return null;
     }
 }

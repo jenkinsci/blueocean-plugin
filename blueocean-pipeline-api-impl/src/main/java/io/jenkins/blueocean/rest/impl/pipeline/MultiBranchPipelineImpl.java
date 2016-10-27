@@ -4,9 +4,13 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
+import hudson.model.Items;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
+import hudson.model.TopLevelItemDescriptor;
+import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
@@ -19,6 +23,8 @@ import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BluePipelineCreatorFactory;
+import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -31,12 +37,18 @@ import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
+import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
+import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.MultiBranchProject;
+import jenkins.branch.OrganizationFolder;
+import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
+import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.kohsuke.stapler.json.JsonBody;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -357,6 +369,160 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         }
 
     }
+
+    @Extension
+    public static class PipelineCreatorFactoryImpl extends BluePipelineCreatorFactory{
+        @Override
+        public BluePipeline create(Map<String, Object> request, Reachable parent) throws IOException {
+            ScmOrganizationPipelineRequest scmOrganizationPipelineRequest = ScmOrganizationPipelineRequest.getInstance(request);
+            if(scmOrganizationPipelineRequest == null){
+                return null;
+            }
+            ScmProvider scmProvider=null;
+            for(ScmProviderFactory f:ScmProviderFactory.all()){
+                scmProvider = f.getScmProvider(scmOrganizationPipelineRequest.scmProviderId);
+                if(scmProvider == null){
+                    continue;
+                }
+                break;
+            }
+            if(scmProvider == null){
+                throw new ServiceException.BadRequestExpception("Unkown scmProviderId: "+ scmOrganizationPipelineRequest.scmProviderId);
+            }
+
+//            CredentialsMatcher matcher = CredentialsMatchers.withId(scmOrganizationPipelineRequest.credentialId);
+//            List<StandardUsernamePasswordCredentials> credentials=CredentialsProvider.lookupCredentials(StandardUsernamePasswordCredentials.class);
+//            StandardUsernamePasswordCredentials cred = CredentialsMatchers.firstOrNull(credentials, matcher);
+//            if(cred == null){
+//                throw new ServiceException.BadRequestExpception("Credential with id: "+ scmOrganizationPipelineRequest.credentialId+" not found");
+//            }
+
+            return scmProvider.createProjects(scmOrganizationPipelineRequest, Jenkins.getInstance(), parent.getLink());
+        }
+    }
+
+    @Extension
+    public static class GithubScmProviderFactory extends ScmProviderFactory implements ScmProvider{
+        private static final String NAVIGATOR = "jenkins.branch.OrganizationFolder.org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator";
+        private CustomOrganizationFolderDescriptor descriptor;
+        @Override
+        public ScmProvider getScmProvider(String id) {
+            if(id != null && id.equals("github")){
+                TopLevelItemDescriptor descriptor = Items.all().findByName(NAVIGATOR);
+                if(descriptor == null || !(descriptor instanceof CustomOrganizationFolderDescriptor)){
+                    return null;
+                }
+                descriptor.checkApplicableIn(Jenkins.getInstance());
+                this.descriptor = (CustomOrganizationFolderDescriptor) descriptor;
+                return this;
+            }
+            return null;
+        }
+
+        @Override
+        public BluePipelineFolder createProjects(ScmOrganizationPipelineRequest request, ItemGroup parent, Link parentLink) throws IOException{
+            ACL acl = Jenkins.getInstance().getACL();
+            acl.checkPermission(Item.CREATE);
+            descriptor.checkApplicableIn(parent);
+            acl.checkCreatePermission(parent, descriptor);
+            Item item = Jenkins.getInstance().createProject(descriptor, request.orgName, true);
+
+            GitHubSCMNavigator gitHubSCMNavigator = new GitHubSCMNavigator(request.apiUrl, request.getOrgName(), request.credentialId, request.credentialId);
+            StringBuilder sb = new StringBuilder();
+            for(String r:request.repos){
+                sb.append(String.format("(%s\\b)?", r));
+            }
+
+            if(sb.length() > 0){
+                gitHubSCMNavigator.setPattern(sb.toString());
+            }
+
+            if(item instanceof OrganizationFolder){
+                OrganizationFolder organizationFolder = (OrganizationFolder) item;
+                organizationFolder.getNavigators().replace(gitHubSCMNavigator);
+                organizationFolder.scheduleBuild();
+                return new PipelineFolderImpl(organizationFolder, parentLink);
+            }
+            return null;
+        }
+    }
+
+    public static class ScmOrganizationPipelineRequest {
+        private final String scmProviderId;
+        private final String orgName;
+        private final String apiUrl;
+        private final String credentialId;
+        private final List<String> repos = new ArrayList<>();
+
+        public ScmOrganizationPipelineRequest(String apiUrl, String orgName, String scmProviderId, String credentialId) {
+            this.orgName = orgName;
+            this.scmProviderId = scmProviderId;
+            this.credentialId = credentialId;
+            this.apiUrl = apiUrl;
+        }
+
+        public String getOrgName() {
+            return orgName;
+        }
+
+        public String getApiUrl() {
+            return apiUrl;
+        }
+
+        @SuppressWarnings("unchecked")
+        public static ScmOrganizationPipelineRequest getInstance(Map<String, Object> request){
+            String scmProviderId=null;
+            String credentialId=null;
+            String orgName = null;
+            String apiUrl = null;
+
+            if(request.get("orgName") instanceof String){
+                orgName = (String) request.get("orgName");
+            }
+
+            if(request.get("apiUrl") instanceof String){
+                apiUrl = (String) request.get("apiUrl");
+            }
+
+
+            if(request.get("scmProviderId") instanceof String){
+                scmProviderId = (String) request.get("scmProviderId");
+            }
+
+            if(request.get("credentialId") instanceof String){
+                credentialId = (String) request.get("credentialId");
+            }
+
+            if(scmProviderId != null && orgName != null) {
+                ScmOrganizationPipelineRequest scmOrganizationPipelineRequest = new ScmOrganizationPipelineRequest(apiUrl, orgName, scmProviderId, credentialId);
+                if(request.get("repos") instanceof List){
+                    scmOrganizationPipelineRequest.repos.addAll((Collection<? extends String>) request.get("repos"));
+                }
+                return scmOrganizationPipelineRequest;
+            }else{
+                return null;
+            }
+        }
+
+        public String getScmProviderId() {
+            return scmProviderId;
+        }
+
+
+        public String getCredentialId() {
+            return credentialId;
+        }
+
+        public List<String> getRepos() {
+            return repos;
+        }
+
+        public void addRepos(List<String> repos){
+            this.repos.addAll(repos);
+        }
+    }
+
+
 
     @Extension(ordinal = 1)
     public static class FavoriteResolverImpl extends BlueFavoriteResolver {
