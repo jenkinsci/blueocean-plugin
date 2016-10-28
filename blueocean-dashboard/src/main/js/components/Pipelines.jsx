@@ -24,7 +24,7 @@ export class Pipelines extends Component {
         // this.i18n.on('i18nChanged', (date) => {
         //    console.log('xxx - i18nChanged', date);
         // });
-        // this.i18n.t && console.log('xxxx', this.i18n.t('Name'))
+        // this.i18n.t && console.log('xxxx', this.i18n.t('home.pipelineslist.header.name'))
         const { t } = new I18nWrapper('jenkins.plugins.blueocean.dashboard.Messages');
         console.log('ttt', t('home.pipelineslist.header.name'));
         const orgLink = organization ?

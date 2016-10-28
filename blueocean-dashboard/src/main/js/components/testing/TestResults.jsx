@@ -25,7 +25,7 @@ const TestCaseResultRow = (props) => {
     const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
 
     let testDetails = null;
-    
+
     if (t.errorStackTrace) {
         testDetails = (<div>
             <div className="test-details">
@@ -34,14 +34,14 @@ const TestCaseResultRow = (props) => {
                 </div>
             </div>
             <div className="test-console">
-                <h4>{translation('Error')}</h4>
+                <h4>{translation('rundetail.tests.results.error.message')}</h4>
                 <ConsoleLog className="error-message" text={t.errorDetails} key={`${t}-message`} />
-                <h4>{translation('Output')}</h4>
+                <h4>{translation('rundetail.tests.results.error.output')}</h4>
                 <ConsoleLog className="stack-trace" text={t.errorStackTrace} key={`${t}-stack-trace`} />
             </div>
         </div>);
     }
-    
+
     let statusIndicator = null;
     switch (t.status) {
     case 'REGRESSION':
@@ -57,7 +57,7 @@ const TestCaseResultRow = (props) => {
         break;
     default:
     }
-    
+
     return (<ResultItem
       result={statusIndicator}
       expanded={false}
@@ -81,7 +81,7 @@ export default class TestResult extends Component {
         const { t: translation, testResults, locale } = this.props;
         const suites = this.props.testResults.suites;
         const tests = [].concat.apply([], suites.map(t => t.cases));
-        
+
         // one of 5 possible statuses: PASSED, FIXED, SKIPPED, FAILED, REGRESSION  see: hudson.tasks.junit.CaseResult$Status :(
         const fixed = tests.filter(t => t.status === 'FIXED');
         const skipped = tests.filter(t => t.status === 'SKIPPED');
@@ -94,13 +94,13 @@ export default class TestResult extends Component {
         let fixedBlock = null;
         let skippedBlock = null;
         let summaryBlock = null;
-        
+
         if (testResults.failCount === 0) {
             passBlock = (
                 <EmptyStateView iconName="done_all">
-                    <h1 style={{ marginTop: '2.4rem' }}>{translation('Tests.passing')}</h1>
-                    <p>{translation('Tests.passing.count', { 0: testResults.passCount })}</p>
-                    <p>{translation('Serenity')}</p>
+                    <h1 style={{ marginTop: '2.4rem' }}>{translation('rundetail.tests.results.passing.all')}</h1>
+                    <p>{translation('rundetail.tests.results.passing.count', { 0: testResults.passCount })}</p>
+                    <p>{translation('rundetail.tests.results.passing.msg')}</p>
                 </EmptyStateView>
             );
         } else {
@@ -108,44 +108,44 @@ export default class TestResult extends Component {
                 <div className="test-summary">
                     <div className={`new-passed count-${fixed.length}`}>
                         <div className="count">{fixed.length}</div>
-                        <label>{translation('Fixed')}</label>
+                        <label>{translation('rundetail.tests.results.fixed')}</label>
                     </div>
                     <div className={`new-failed count-${newFailures.length}`}>
                         <div className="count">{newFailures.length}</div>
-                        <label>{translation('New.failures')}</label>
+                        <label>{translation('rundetail.tests.results.failures.new')}</label>
                     </div>
                     <div className={`failed count-${testResults.failCount}`}>
                         <div className="count">{testResults.failCount}</div>
-                        <label>{translation('Failures')}</label>
+                        <label>{translation('rundetail.tests.results.failures')}</label>
                     </div>
                     <div className={`passed count-${testResults.passCount}`}>
                         <div className="count">{testResults.passCount}</div>
-                        <label>{translation('Passing.singular')}</label>
+                        <label>{translation('rundetail.tests.results.passing')}</label>
                     </div>
                     <div className={`skipped count-${testResults.skipCount}`}>
                         <div className="count">{testResults.skipCount}</div>
-                        <label>{translation('Skipped.singular')}</label>
+                        <label>{translation('rundetail.tests.results.skipped')}</label>
                     </div>
                 </div>
             );
 
             if (newFailures.length > 0) {
                 newFailureBlock = (<div className="test-result-block new-failure-block">
-                    <h4>{translation('New.error', { 0: newFailures.length })}</h4>
+                    <h4>{translation('rundetail.tests.results.errors.new.count', { 0: newFailures.length })}</h4>
                     {newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
                 </div>);
             }
 
             if (existingFailures.length > 0) {
                 existingFailureBlock = (<div className="test-result-block existing-failure-block">
-                    <h4>{translation('Existing.error', { 0: existingFailures.length })}</h4>
+                    <h4>{translation('rundetail.tests.results.errors.existing,count', { 0: existingFailures.length })}</h4>
                     {existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
                 </div>);
             }
 
             if (skipped.length > 0) {
                 skippedBlock = (<div className="test-result-block skipped-block">
-                    <h4>{translation('Skipped', { 0: skipped.length })}</h4>
+                    <h4>{translation('rundetail.tests.results.skipped.count', { 0: skipped.length })}</h4>
                     {skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
                 </div>);
             }
@@ -154,7 +154,7 @@ export default class TestResult extends Component {
         // always show fixed, whether showing totals or the encouraging message
         if (fixed.length > 0) {
             fixedBlock = (<div className="test-result-block fixed-block">
-                <h4>{translation('Fixed')}</h4>
+                <h4>{translation('rundetail.tests.results.fixed')}</h4>
                 {fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
             </div>);
         }

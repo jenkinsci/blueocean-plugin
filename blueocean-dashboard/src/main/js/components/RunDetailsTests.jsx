@@ -26,7 +26,7 @@ export class RunDetailsTests extends Component {
         if (!testResults || testResults.$pending) {
             return <PageLoading />;
         }
-        
+
         if (testResults.$failed) {
             return (<EmptyStateView tightSpacing>
                  <Markdown>
@@ -41,10 +41,10 @@ export class RunDetailsTests extends Component {
         return (<div className="test-results-container">
             <div className="test=result-summary" style={{ display: 'none' }}>
                 <div className={`test-result-bar ${percentComplete}%`}></div>
-                <div className="test-result-passed">{t('Passed', { 0: testResults.passCount })}</div>
-                <div className="test-result-failed">{t('Failed', { 0: testResults.failCount })}</div>
-                <div className="test-result-skipped">{t('Skipped', { 0: testResults.skipCount })}</div>
-                <div className="test-result-duration">{t('Duration.param', { 0: testResults.duration })}</div>
+                <div className="test-result-passed">{t('rundetail.tests.passed', { 0: testResults.passCount })}</div>
+                <div className="test-result-failed">{t('rundetail.tests.failed', { 0: testResults.failCount })}</div>
+                <div className="test-result-skipped">{t('rundetail.tests.skipped', { 0: testResults.skipCount })}</div>
+                <div className="test-result-duration">{t('rundetail.tests.duration', { 0: testResults.duration })}</div>
             </div>
 
             <Extensions.Renderer

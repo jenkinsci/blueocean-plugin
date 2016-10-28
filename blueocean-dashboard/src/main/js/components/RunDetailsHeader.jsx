@@ -58,12 +58,12 @@ class RunDetailsHeader extends Component {
                 <div className="row">
                     <div className="commons">
                         <div>
-                            <label>{ t('Branch') }</label>
+                            <label>{ t('rundetail.header.branch') }</label>
                             <span>{displayName}</span>
                         </div>
                         { run.commitId ?
                         <div>
-                            <label>{t('Commit')}</label>
+                            <label>{t('rundetail.header.commit')}</label>
                             <span className="commit">
                                 {run.commitId.substring(0, 7)}
                             </span>
@@ -84,8 +84,8 @@ class RunDetailsHeader extends Component {
                               liveUpdate={run.isRunning()}
                               updatePeriod={1000}
                               locale={locale}
-                              liveFormat={t('Date.duration.format')}
-                              hintFormat={t('Date.duration.hint.format')}
+                              liveFormat={t('common.date.duration.format')}
+                              hintFormat={t('common.date.duration.hint.format')}
                             />
                         </div>
                         <div>
@@ -99,8 +99,8 @@ class RunDetailsHeader extends Component {
                               date={run.endTime}
                               liveUpdate
                               locale={locale}
-                              shortFormat={t('Date.readable.short')}
-                              longFormat={t('Date.readable.long')}
+                              shortFormat={t('common.date.readable.short')}
+                              longFormat={t('common.date.readable.long')}
                             />
                         </div>
                     </div>
