@@ -11,7 +11,7 @@ node {
   docker.image('cloudbees/java-build-tools').inside {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
-        sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
+        sh "mvn install -B -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
         sh "node ./bin/checkdeps.js"
         sh "node ./bin/checkshrinkwrap.js"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
