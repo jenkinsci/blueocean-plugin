@@ -64,8 +64,8 @@ export default class Branches extends Component {
                     date={endTime}
                     liveUpdate
                     locale={locale}
-                    shortFormat={t('Date.readable.short')}
-                    longFormat={t('Date.readable.long')}
+                    shortFormat={t('common.date.readable.short')}
+                    longFormat={t('common.date.readable.long')}
                   />
                 </td>
                 { /* suppress all click events from extension points */ }
@@ -91,7 +91,7 @@ const { func, object, string } = PropTypes;
 Branches.propTypes = {
     data: object.isRequired,
     t: func,
-    locale: string
+    locale: string,
 };
 
 Branches.contextTypes = {

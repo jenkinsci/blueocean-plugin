@@ -74,13 +74,15 @@ export class MultiBranch extends Component {
             return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
         }
 
+        const head = 'pipelinedetail.branches.header';
+
         const headers = [
-            t('Health'),
-            t('Status'),
-            { label: t('Branch'), className: 'branch' },
-            { label: t('Commit'), className: 'lastcommit' },
-            { label: t('Latest.message'), className: 'message' },
-            { label: t('Completed'), className: 'completed' },
+            t(`${head}.health`),
+            t(`${head}.status`),
+            { label: t(`${head}.branch`), className: 'branch' },
+            { label: t(`${head}.commit`), className: 'lastcommit' },
+            { label: t(`${head}.message`), className: 'message' },
+            { label: t(`${head}.completed`), className: 'completed' },
             { label: '', className: 'run' },
         ];
 
