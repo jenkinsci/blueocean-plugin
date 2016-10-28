@@ -97,7 +97,7 @@ export class Pipelines extends Component {
 
                         { pipelines && pipelines.$pager &&
                             <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
-                                {pipelines.$pending ? t('Loading') : t('More')}
+                                {pipelines.$pending ? t('common.pager.loading') : t('common.pager.more')}
                             </button>
                         }
                     </article>

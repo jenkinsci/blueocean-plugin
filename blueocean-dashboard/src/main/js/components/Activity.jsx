@@ -149,7 +149,7 @@ export class Activity extends Component {
                 }
                 {runs.$pager && runs.length > 0 &&
                 <button disabled={runs.$pending || !runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
-                    {runs.$pending ? t('Loading') : t('More')}
+                    {runs.$pending ? t('common.pager.loading') : t('common.pager.more')}
                 </button>
                 }
             </article>

@@ -106,7 +106,7 @@ export class MultiBranch extends Component {
                     </Table>
                     {branches.$pager &&
                         <button disabled={branches.$pending || !branches.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => branches.$pager.fetchMore()}>
-                             {branches.$pending ? t('Loading') : t('More')}
+                             {branches.$pending ? t('common.pager.loading') : t('common.pager.more')}
                         </button>
                     }
                 </article>
