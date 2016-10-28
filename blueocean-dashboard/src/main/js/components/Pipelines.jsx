@@ -26,7 +26,7 @@ export class Pipelines extends Component {
         // });
         // this.i18n.t && console.log('xxxx', this.i18n.t('Name'))
         const { t } = new I18nWrapper('jenkins.plugins.blueocean.dashboard.Messages');
-console.log('ttt'). t('Name')
+        console.log('ttt'). t('home.pipelineslist.header.name');
         const orgLink = organization ?
             <Link
               to={`organizations/${organization}`}
@@ -37,10 +37,10 @@ console.log('ttt'). t('Name')
             </Link> : '';
 
         const headers = [
-            { label: t('Name'), className: 'name-col' },
-            t('Health'),
-            t('Branches'),
-            t('PR'),
+            { label: t('home.pipelineslist.header.name'), className: 'name-col' },
+            t('home.pipelineslist.header.health'),
+            t('home.pipelineslist.header.branches'),
+            t('home.pipelineslist.header.pullrequests'),
             { label: '', className: 'actions-col' },
         ];
 
@@ -57,14 +57,14 @@ console.log('ttt'). t('Name')
                               query={query}
                               className="inverse"
                             >
-                                { t('Dashboard') }
+                                { t('home.header.dashboard') }
                             </Link>
                             { organization && ' / ' }
                             { organization && orgLink }
                         </h1>
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                             <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
-                                { t('New.Pipeline') }
+                                { t('home.header.button.createpipeline') }
                             </a>
                         </Extensions.Renderer>
                     </Title>
