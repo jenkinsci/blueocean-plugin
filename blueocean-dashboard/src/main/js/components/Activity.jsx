@@ -25,7 +25,7 @@ const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation, t }) =>
                 <RunButton
                   runnable={pipeline}
                   buttonType="run-only"
-                  runLabel={ t('Run.now') }
+                  runLabel={ t('pipelinedetail.activity.button.run') }
                   onNavigation={onNavigation}
                 />
             }
@@ -88,23 +88,24 @@ export class Activity extends Component {
         }
 
         const latestRun = runs[0];
+        const head = 'pipelinedetail.activity.header';
 
         const headers = isMultiBranchPipeline ? [
-            t('Status'),
-            t('Build'),
-            t('Commit'),
-            { label: t('Branch'), className: 'branch' },
-            { label: t('Message'), className: 'message' },
-            { label: t('Duration'), className: 'duration' },
-            { label: t('Completed'), className: 'completed' },
+            t(`${head}.status`),
+            t(`${head}.build`),
+            t(`${head}.commit`),
+            { label: t(`${head}.branch`), className: 'branch' },
+            { label: t(`${head}.message`), className: 'message' },
+            { label: t(`${head}.duration`), className: 'duration' },
+            { label: t(`${head}.completed`), className: 'completed' },
             { label: '', className: 'actions' },
         ] : [
-            t('Status'),
-            t('Build'),
-            t('Commit'),
-            { label: t('Message'), className: 'message' },
-            { label: t('Duration'), className: 'duration' },
-            { label: t('Completed'), className: 'completed' },
+            t(`${head}.status`),
+            t(`${head}.build`),
+            t(`${head}.commit`),
+            { label: t(`${head}.message`), className: 'message' },
+            { label: t(`${head}.duration`), className: 'duration' },
+            { label: t(`${head}.completed`), className: 'completed' },
             { label: '', className: 'actions' },
         ];
 
