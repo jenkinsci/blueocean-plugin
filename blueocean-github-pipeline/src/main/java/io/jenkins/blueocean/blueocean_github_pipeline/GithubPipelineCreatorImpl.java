@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import hudson.Extension;
+import hudson.model.Cause;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Items;
@@ -79,7 +80,7 @@ public class GithubPipelineCreatorImpl extends BluePipelineCreator {
         if(item instanceof OrganizationFolder){
             OrganizationFolder organizationFolder = (OrganizationFolder) item;
             organizationFolder.getNavigators().replace(gitHubSCMNavigator);
-            organizationFolder.scheduleBuild();
+            organizationFolder.scheduleBuild(new Cause.UserIdCause());
             return new OrganizationFolderPipelineImpl(organizationFolder, parent.getLink());
         }
         return null;
