@@ -84,6 +84,72 @@ public class PipelineNodeTest extends PipelineBaseTest {
         }
     }
 
+    //JENKINS-39203
+    @Test
+    public void stepStatusForUnstableBuild() throws Exception{
+        String p = "node {\n" +
+                "   echo 'Hello World'\n" +
+                "   try{\n" +
+                "    echo 'Inside try'\n" +
+                "   }finally{\n" +
+                "    sh 'echo \"blah\"' \n" +
+                "    currentBuild.result = \"UNSTABLE\"\n" +
+                "   }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition(p));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.UNSTABLE,b1);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+        Assert.assertEquals(resp.size(),3);
+
+        for(int i=0; i< resp.size();i++) {
+            Map rn = resp.get(i);
+            Assert.assertEquals(rn.get("result"), "SUCCESS");
+            Assert.assertEquals(rn.get("state"), "FINISHED");
+        }
+
+    }
+
+    //JENKINS-39296
+    @Test
+    public void stepStatusForFailedBuild() throws Exception{
+        String p = "node {\n" +
+                "   echo 'Hello World'\n" +
+                "   try{\n" +
+                "    echo 'Inside try'\n" +
+                "    sh 'this should fail'" +
+                "   }finally{\n" +
+                "    sh 'echo \"blah\"' \n" +
+                "   }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition(p));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE,b1);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+        Assert.assertEquals(resp.size(),4);
+
+        for(int i=0; i< resp.size();i++) {
+            Map rn = resp.get(i);
+            if(i==2){
+                Assert.assertEquals("FAILURE", rn.get("result"));
+            }else {
+                Assert.assertEquals("SUCCESS", rn.get("result"));
+            }
+            Assert.assertEquals("FINISHED", rn.get("state"));
+        }
+
+    }
+
     @Test
     public void testBlockStage() throws Exception{
         String pipeline = "" +

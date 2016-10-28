@@ -297,6 +297,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     @Override
     public List<BluePipelineStep> getPipelineNodeSteps(Link parent) {
+        if(run.getExecution() == null){
+            return Collections.emptyList();
+        }
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
         ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
         List<BluePipelineStep> steps = new ArrayList<>();
@@ -308,6 +311,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     @Override
     public BluePipelineStep getPipelineNodeStep(String id, Link parent) {
+        if(run.getExecution() == null){
+            return null;
+        }
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
         ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
         FlowNodeWrapper node = visitor.getStep(id);

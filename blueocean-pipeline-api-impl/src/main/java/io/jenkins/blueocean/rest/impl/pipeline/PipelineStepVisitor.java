@@ -8,7 +8,6 @@ import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
 import org.jenkinsci.plugins.workflow.graphanalysis.MemoryFlowChunk;
 import org.jenkinsci.plugins.workflow.graphanalysis.StandardChunkVisitor;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.GenericStatus;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StatusAndTiming;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
@@ -112,12 +111,8 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             if(times == null){
                 times = new TimingInfo();
             }
-            GenericStatus status = StatusAndTiming.computeChunkStatus(run, before, atomNode, atomNode, after);
-            if (status == null) {
-                status = GenericStatus.NOT_EXECUTED;
-            }
 
-            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, new NodeRunStatus(status), times);
+            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, new NodeRunStatus(atomNode), times);
             steps.push(node);
             stepMap.put(node.getId(), node);
         }
