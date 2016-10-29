@@ -10,12 +10,6 @@ import org.kohsuke.stapler.verb.POST;
  * @author Vivek Pandey
  */
 public abstract class BlueRunContainer extends Container<BlueRun> {
-    /**
-     *
-     * @param name pipeline name
-     * @return pipeline with the given name as parameter
-     */
-    public abstract BluePipeline getPipeline(String name);
 
     @POST
     @WebMethod(name = "")

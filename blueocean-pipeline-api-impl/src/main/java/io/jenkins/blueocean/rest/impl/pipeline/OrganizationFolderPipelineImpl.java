@@ -2,9 +2,12 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.Extension;
 import hudson.model.Item;
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
@@ -14,7 +17,7 @@ import jenkins.branch.OrganizationFolder;
  * @author Vivek Pandey
  */
 public class OrganizationFolderPipelineImpl extends PipelineFolderImpl {
-    private final OrganizationFolder folder;
+    final OrganizationFolder folder;
 
     public OrganizationFolderPipelineImpl(OrganizationFolder folder, Link parent) {
         super(folder, parent);
@@ -22,8 +25,20 @@ public class OrganizationFolderPipelineImpl extends PipelineFolderImpl {
 
     }
 
+    @Navigable
     public BluePipelineContainer getPipelines(){
         return new MultiBranchPipelineContainerImpl(folder, this);
+    }
+
+    @Override
+    @Navigable
+    public BlueRunContainer getRuns() {
+        return new OrganizationFolderRunContainerImpl(this, this);
+    }
+
+    @Override
+    public BlueRun getLatestRun() {
+        return super.getLatestRun();
     }
 
     @Extension(ordinal = 0)
