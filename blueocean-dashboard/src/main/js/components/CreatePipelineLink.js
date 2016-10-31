@@ -1,11 +1,26 @@
 /**
  * Created by cmeyers on 10/20/16.
  */
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Security } from '@jenkins-cd/blueocean-core-js';
+import { Security, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
-export default function CreatePipelineLink() {
+const QUERY_STRING_KEY = 'blueCreate';
+
+export default function CreatePipelineLink(props, context) {
+    // if special key is not defined, create a link to classic UI
+    if (!context.location || !context.location.query || !(QUERY_STRING_KEY in context.location.query)) {
+        const baseUrl = UrlConfig.getJenkinsRootURL();
+        const newJobUrl = `${baseUrl}/view/All/newJob`;
+
+        return (
+            <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
+                New Pipeline
+            </a>
+        );
+    }
+
+    // show no creation link if insufficient permissions
     if (Security.isSecurityEnabled() && Security.isAnonymousUser()) {
         return null;
     }
@@ -16,3 +31,7 @@ export default function CreatePipelineLink() {
         </Link>
     );
 }
+
+CreatePipelineLink.contextTypes = {
+    location: PropTypes.object,
+};
