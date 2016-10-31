@@ -1,9 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import hudson.Extension;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
+import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -100,8 +102,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
-
-        FavoriteUtil.favoriteJob(folder.getFullName(), favoriteAction.isFavorite());
+        if (!(folder instanceof AbstractFolder)) {
+            throw new ServiceException.BadRequestExpception("Not a folder");
+        }
+        Job job = FavoriteUtil.resolveDefaultBranch((AbstractFolder) folder);
+        FavoriteUtil.favoriteJob(job, favoriteAction.isFavorite());
         return FavoriteUtil.getFavorite(folder.getFullName(), this);
     }
 

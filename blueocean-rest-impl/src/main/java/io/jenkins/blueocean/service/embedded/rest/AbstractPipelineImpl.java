@@ -130,7 +130,7 @@ public class AbstractPipelineImpl extends BluePipeline {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
 
-        FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
+        FavoriteUtil.favoriteJob(job, favoriteAction.isFavorite());
         return FavoriteUtil.getFavorite(job, new Reachable() {
             @Override
             public Link getLink() {

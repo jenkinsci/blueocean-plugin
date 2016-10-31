@@ -1,6 +1,9 @@
 package io.jenkins.blueocean.service.embedded.util;
 
+import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import hudson.model.Item;
+import hudson.model.Job;
+import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.plugins.favorite.FavoritePlugin;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
@@ -25,15 +28,22 @@ import java.net.URLDecoder;
  * @author Ivan Meredith
  */
 public class FavoriteUtil {
-    public static void favoriteJob(String fullName, boolean favorite) {
+
+    private static final String DEFAULT_BRANCH = "master";
+
+    public static void favoriteJob(Job job, boolean favorite) {
         User user = User.current();
         if(user == null) {
             throw new ServiceException.ForbiddenException("Must be logged in to use set favorites");
         }
+        favoriteJob(job, user, favorite);
+    }
+
+    public static void favoriteJob(Job job, User user, boolean favorite) {
         boolean set = false;
         FavoriteUserProperty fup = user.getProperty(FavoriteUserProperty.class);
         if(fup != null) {
-            set = fup.isJobFavorite(fullName);
+            set = fup.isJobFavorite(job.getFullName());
         }
         //TODO: FavoritePlugin is null
         FavoritePlugin plugin = Jenkins.getInstance().getPlugin(FavoritePlugin.class);
@@ -42,8 +52,8 @@ public class FavoriteUtil {
         }
         if(favorite != set) {
             try {
-                plugin.doToggleFavorite(Stapler.getCurrentRequest(), Stapler.getCurrentResponse(), fullName, Jenkins.getAuthentication().getName(), false);
-            } catch (IOException e) {
+                plugin.toggleFavourite(user, job.getFullName());
+            } catch (Throwable e) {
                 throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
             }
         }
@@ -57,6 +67,17 @@ public class FavoriteUtil {
         }
     }
 
+    /**
+     * Checks if the user has a favorite entry for this job
+     * e.g. this is true when the user has favoriteted or unfavoriteted a job
+     * but not true for when a job has not been favorited by this user
+     * @param job path
+     * @return favorite
+     */
+    public static boolean hasFavourite(User user, Job job) {
+        FavoriteUserProperty fup = user.getProperty(FavoriteUserProperty.class);
+        return fup != null && fup.hasFavourite(job.getFullName());
+    }
 
     public static BlueFavorite getFavorite(String fullName, Reachable parent){
         Item item = Jenkins.getInstance().getItem(fullName);
@@ -107,4 +128,20 @@ public class FavoriteUtil {
         return null;
     }
 
+    /**
+     * Resolves the default branch for a folder
+     * @param folder to check within
+     * @return default branch
+     */
+    public static Job resolveDefaultBranch(AbstractFolder folder) {
+        // TODO: lookup the multibranch project and look for a default branch property
+        TopLevelItem job = folder.getJob(DEFAULT_BRANCH);
+        if(job == null) {
+            throw new ServiceException.BadRequestExpception("no master branch to favorite");
+        }
+        if (!(job instanceof Job)) {
+            throw new ServiceException.MethodNotAllowedException(DEFAULT_BRANCH + " is not a job");
+        }
+        return (Job) job;
+    }
 }
