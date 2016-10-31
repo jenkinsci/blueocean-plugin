@@ -94,7 +94,7 @@ Look in following README's for:
 
 *Maven* is used for most building. The project is configured to grab all the tools you need from the JavaScript ecosystem to get started. 
 
-If you are working on the Javascript, you will need node and gulp installed.
+If you are working on the Javascript, you will need node installed.
 
 
 __NOTE__: look in the README.md of the respective modules for more detailed dev docs. 
