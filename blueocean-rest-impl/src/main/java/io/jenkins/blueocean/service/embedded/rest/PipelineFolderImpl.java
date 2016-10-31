@@ -41,7 +41,10 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public String getName() {
-        return folder.getDisplayName();
+        if(folder instanceof AbstractItem)
+            return ((AbstractItem) folder).getName();
+        else
+            return folder.getDisplayName();
     }
 
     @Override
@@ -52,6 +55,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     @Override
     public String getFullName() {
         return folder.getFullName();
+    }
+
+    @Override
+    public String getFullDisplayName() {
+        return AbstractPipelineImpl.getFullDisplayName(folder, null);
     }
 
     @Override

@@ -6,8 +6,6 @@ import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
-import org.jenkinsci.plugins.workflow.actions.TimingAction;
-import org.jenkinsci.plugins.workflow.graph.FlowNode;
 
 import java.util.Collection;
 import java.util.Date;
@@ -16,18 +14,13 @@ import java.util.Date;
  * @author Vivek Pandey
  */
 public class PipelineStepImpl extends BluePipelineStep {
-    private final FlowNode node;
-    private final PipelineNodeGraphBuilder.NodeRunStatus status;
-    private final Long durationInMillis;
+    private final FlowNodeWrapper node;
     private final Link self;
 
-    public PipelineStepImpl(FlowNode node, PipelineNodeGraphBuilder graphBuilder, Link parent) {
-        assert graphBuilder != null;
+    public PipelineStepImpl(FlowNodeWrapper node, Link parent) {
         assert node != null;
         this.self = parent.rel(node.getId());
         this.node = node;
-        this.status = new PipelineNodeGraphBuilder.NodeRunStatus(node);
-        this.durationInMillis = graphBuilder.getDurationInMillis(node);
     }
 
     @Override
@@ -37,41 +30,41 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public String getDisplayName() {
-        return node.getDisplayName();
+        return node.getNode().getDisplayName();
     }
 
     @Override
     public BlueRun.BlueRunResult getResult() {
-        return status.getResult();
+        return node.getStatus().getResult();
     }
 
     @Override
     public BlueRun.BlueRunState getStateObj() {
-        return status.getState();
+        return node.getStatus().getState();
     }
 
     @Override
     public Date getStartTime() {
-        return new Date(TimingAction.getStartTime(node));
+        return new Date(node.getTiming().getStartTimeMillis());
     }
 
     @Override
     public Long getDurationInMillis() {
-        return durationInMillis;
+        return node.getTiming().getTotalDurationMillis();
     }
 
     @Override
     public Object getLog() {
-        if(PipelineNodeUtil.isLoggable.apply(node)){
-            return new LogResource(node.getAction(LogAction.class).getLogText());
+
+        if(PipelineNodeUtil.isLoggable.apply(node.getNode())){
+            return new LogResource(node.getNode().getAction(LogAction.class).getLogText());
         }
         return null;
     }
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-
-        return PipelineImpl.getActionProxies(node.getActions(), this);
+        return PipelineImpl.getActionProxies(node.getNode().getActions(), this);
     }
 
     @Override

@@ -24,6 +24,7 @@ public abstract class BluePipeline extends Resource {
     public static final String NAME="name";
     public static final String DISPLAY_NAME="displayName";
     public static final String FULL_NAME="fullName";
+    public static final String FULL_DISPLAY_NAME="fullDisplayName";
     public static final String WEATHER_SCORE ="weatherScore";
     public static final String LATEST_RUN = "latestRun";
     public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
@@ -62,10 +63,18 @@ public abstract class BluePipeline extends Resource {
     public abstract String getDisplayName();
 
     /**
-     * @return Includes parentLink folders if any. For example folder1/folder2/p1
+     * @return Includes parent folders names if any. For example folder1/folder2/p1
      */
     @Exported(name = FULL_NAME)
     public abstract String getFullName();
+
+
+    /**
+     * @return Includes display names of parent folders if any. For example folder1/myFolder2/p1
+     */
+    @Exported(name = FULL_DISPLAY_NAME)
+    public abstract String getFullDisplayName();
+
 
     /**
      * @return weather health score percentile

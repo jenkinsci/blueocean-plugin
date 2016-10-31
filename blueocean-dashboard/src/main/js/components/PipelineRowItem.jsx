@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { WeatherIcon } from '@jenkins-cd/design-language';
+import { ExpandablePath, WeatherIcon } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
 
@@ -27,13 +27,13 @@ export default class PipelineRowItem extends Component {
         const {
             name,
             fullName,
+            fullDisplayName,
             organization,
             weatherScore,
             numberOfSuccessfulBranches,
             numberOfFailingBranches,
             numberOfSuccessfulPullRequests,
             numberOfFailingPullRequests,
-            displayName,
             } = pipeline;
 
         const hasPullRequests = !simple && (
@@ -44,17 +44,7 @@ export default class PipelineRowItem extends Component {
         const pullRequestsURL = `${baseUrl}/pr`;
         const activitiesURL = `${baseUrl}/activity`;
 
-        const pathInJob = fullName.split('/').slice(0, -1).join(' / ');
-        const formattedName = `${pathInJob ? `${pathInJob} / ` : ''}${displayName}`;
-        const nameLink = (
-            <Link to={activitiesURL}>
-                { showOrganization ?
-                    `${organization} / ${formattedName}` :
-                    formattedName
-                }
-            </Link>
-        );
-
+        const fullDisplayPath = showOrganization ? `${organization}/${fullDisplayName}` : fullDisplayName;
         let multiBranchLabel = ' - ';
         let multiPrLabel = ' - ';
         let multiBranchLink = null;
@@ -79,7 +69,11 @@ export default class PipelineRowItem extends Component {
         // FIXME: Visual alignment of the last column
         return (
             <tr data-name={name} data-organization={organization}>
-                <td>{nameLink}</td>
+                <td>
+                    <Link to={activitiesURL}>
+                        <ExpandablePath path={fullDisplayPath} />
+                    </Link>
+                </td>
                 <td><WeatherIcon score={weatherScore} /></td>
                 {
                     // fixme refactor the next 2 lines and the prior logic

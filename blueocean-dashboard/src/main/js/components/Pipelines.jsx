@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
+import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
 
@@ -42,9 +43,7 @@ export class Pipelines extends Component {
                             { organization && orgLink }
                         </h1>
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
-                            <Link to="/create-pipeline" className="btn-secondary inverse">
-                                New Pipeline
-                            </Link>
+                            <CreatePipelineLink />
                         </Extensions.Renderer>
                     </Title>
                 </PageHeader>

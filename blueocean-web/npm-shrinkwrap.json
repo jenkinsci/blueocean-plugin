@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.20",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.20",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.20.tgz"
+      "version": "0.0.21-security1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.21-security1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.21-security1.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.83",
-      "from": "@jenkins-cd/design-language@0.0.83",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.83.tgz"
+      "version": "0.0.86",
+      "from": "@jenkins-cd/design-language@0.0.86",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.86.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -24,9 +24,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.40",
-      "from": "@jenkins-cd/js-builder@0.0.40",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.40.tgz",
+      "version": "0.0.47",
+      "from": "@jenkins-cd/js-builder@0.0.47",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.47.tgz",
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
@@ -1131,6 +1131,12 @@
       "resolved": "https://registry.npmjs.org/browserify-transform-tools/-/browserify-transform-tools-1.6.0.tgz",
       "dev": true
     },
+    "browserify-tree": {
+      "version": "0.0.2",
+      "from": "browserify-tree@0.0.2",
+      "resolved": "https://registry.npmjs.org/browserify-tree/-/browserify-tree-0.0.2.tgz",
+      "dev": true
+    },
     "browserify-zlib": {
       "version": "0.1.4",
       "from": "browserify-zlib@>=0.1.2 <0.2.0",
@@ -1736,9 +1742,9 @@
       }
     },
     "duplexify": {
-      "version": "3.4.5",
+      "version": "3.4.6",
       "from": "duplexify@>=3.4.2 <4.0.0",
-      "resolved": "https://registry.npmjs.org/duplexify/-/duplexify-3.4.5.tgz",
+      "resolved": "https://registry.npmjs.org/duplexify/-/duplexify-3.4.6.tgz",
       "dev": true,
       "dependencies": {
         "end-of-stream": {
@@ -2482,6 +2488,12 @@
       "resolved": "https://registry.npmjs.org/gulp-match/-/gulp-match-1.0.2.tgz",
       "dev": true
     },
+    "gulp-runner": {
+      "version": "0.1.4",
+      "from": "gulp-runner@>=0.1.4 <0.2.0",
+      "resolved": "https://registry.npmjs.org/gulp-runner/-/gulp-runner-0.1.4.tgz",
+      "dev": true
+    },
     "gulp-util": {
       "version": "3.0.7",
       "from": "gulp-util@>=3.0.6 <4.0.0",
@@ -3148,9 +3160,9 @@
       "dev": true
     },
     "jshint": {
-      "version": "2.9.3",
+      "version": "2.9.4",
       "from": "jshint@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/jshint/-/jshint-2.9.3.tgz",
+      "resolved": "https://registry.npmjs.org/jshint/-/jshint-2.9.4.tgz",
       "dev": true,
       "dependencies": {
         "lodash": {
