@@ -24,26 +24,7 @@
 package io.jenkins.blueocean;
 
 import hudson.Extension;
-import hudson.model.Item;
-import hudson.model.ItemGroup;
-import hudson.model.Job;
 import hudson.model.PageDecorator;
-import hudson.model.Run;
-import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl;
-import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
-import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
-import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
-import jenkins.model.Jenkins;
-import org.kohsuke.stapler.Ancestor;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
 
 /**
  * Stapler page decorator for decorating classic Jenkins pages with visual
@@ -55,100 +36,7 @@ import java.util.List;
 @Extension
 public class TryBlueOceanPageDecorator extends PageDecorator {
 
-    public String getBlueOceanURL() throws IOException {
-        StaplerRequest staplerRequest = Stapler.getCurrentRequest();
-        List<Ancestor> list = staplerRequest.getAncestors();
-
-        // reverse iterate on the list of ancestors, looking for a
-        // Blue Ocean page we can link onto.
-        for (int i = list.size() - 1; i >= 0; i--) {
-            Ancestor ancestor = list.get(i);
-            Object object = ancestor.getObject();
-
-            if (object instanceof Job) {
-                BlueOceanModelMapping pipelineModelMapping = getPipelineModelMapping((Job) object);
-                if (pipelineModelMapping.blueModelObject instanceof BlueMultiBranchPipeline) {
-                    return pipelineModelMapping.blueUiUrl + "/branches";
-                } else {
-                    return pipelineModelMapping.blueUiUrl;
-                }
-            } else if (object instanceof Run) {
-                Run run = (Run) object;
-                Job job = run.getParent();
-                BlueOceanModelMapping pipelineModelMapping = getPipelineModelMapping(job);
-                return pipelineModelMapping.blueUiUrl + "/detail/" + urlEncode(job.getName()) + "/" + urlEncode(run.getId()); // Or is it the run number?
-            } else if (object instanceof Item) {
-                Resource blueResource = BluePipelineFactory.resolve((Item) object);
-                if (blueResource != null) {
-                    if (blueResource instanceof BlueMultiBranchPipeline) {
-                        return getOrgPrefix() + "/" +  encodeJobFullName(((BluePipeline)blueResource).getFullName()) + "/branches";
-                    } else if (blueResource instanceof BluePipeline) {
-                        return getOrgPrefix() + "/" + encodeJobFullName(((BluePipeline)blueResource).getFullName());
-                    }
-                }
-            }
-        }
-
-        // Otherwise just return Blue Ocean home.
-        return getBlueHome();
-    }
-
-    private BlueOceanModelMapping getPipelineModelMapping(Job job) throws UnsupportedEncodingException {
-        BluePipeline blueResource = (BluePipeline) BluePipelineFactory.resolve(job);
-
-        if (blueResource instanceof BranchImpl) { // No abstract "Branch" type?
-            ItemGroup multibranchJob = job.getParent();
-            BluePipeline multibranchJobResource = (BluePipeline) BluePipelineFactory.resolve((Item) multibranchJob);
-
-            return new BlueOceanModelMapping(
-                multibranchJob,
-                multibranchJobResource,
-                getOrgPrefix() + "/" + encodeJobFullName(multibranchJobResource.getFullName())
-            );
-        } else {
-            return new BlueOceanModelMapping(
-                job,
-                blueResource,
-                getOrgPrefix() + "/" + encodeJobFullName(blueResource.getFullName())
-            );
-        }
-    }
-
-    private String getOrgPrefix() throws UnsupportedEncodingException {
-        return getBlueHome() + "/organizations/" + urlEncode(OrganizationImpl.INSTANCE.getName());
-    }
-
-    private String getBlueHome() {
-        String rootUrl = Jenkins.getInstance().getRootUrl();
-
-        if (rootUrl.endsWith("/")) {
-            rootUrl = rootUrl.substring(0, rootUrl.length() - 1);
-        }
-
-        return rootUrl + "/blue";
-    }
-
-    private class BlueOceanModelMapping {
-
-        private Object classJenkinsModelObject;
-        private Resource blueModelObject;
-        private String blueUiUrl;
-
-        public BlueOceanModelMapping(Object classJenkinsModelObject, Resource blueModelObject, String blueUiUrl) {
-            this.classJenkinsModelObject = classJenkinsModelObject;
-            this.blueModelObject = blueModelObject;
-            this.blueUiUrl = blueUiUrl;
-        }
-    }
-
-    private String encodeJobFullName(String jobFullName) throws UnsupportedEncodingException {
-        // The individual path tokens are already URL encoded, so we
-        // do not want to do a URL encode on the fill string. Instead,
-        // just encode the path separators i.e. replace "/" with "%2F"
-        return jobFullName.replace("/", "%2F");
-    }
-
-    private String urlEncode(String string) throws UnsupportedEncodingException {
-        return URLEncoder.encode(string, "UTF-8");
+    public String getBlueOceanURL() {
+        return BlueOceanWebURLBuilder.toBlueOceanURL();
     }
 }
