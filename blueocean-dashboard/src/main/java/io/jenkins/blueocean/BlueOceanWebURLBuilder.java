@@ -162,7 +162,7 @@ public class BlueOceanWebURLBuilder {
         }
     }
 
-    private static String encodeURIComponent(String string) {
+    static String encodeURIComponent(String string) {
         try {
             // The Java URLEncoder encodes spaces as "+", while the javascript
             // encodeURIComponent function encodes them as "%20". We need to make them
