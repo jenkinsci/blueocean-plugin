@@ -81,9 +81,9 @@ public class TryBlueOceanPageDecorator extends PageDecorator {
                 Resource blueResource = BluePipelineFactory.resolve((Item) object);
                 if (blueResource != null) {
                     if (blueResource instanceof BlueMultiBranchPipeline) {
-                        return getOrgPrefix() + "/" + urlEncode(((BluePipeline)blueResource).getFullName()) + "/branches";
+                        return getOrgPrefix() + "/" +  urlEncode(((BluePipeline)blueResource).getFullName()) + "/branches";
                     } else if (blueResource instanceof BluePipeline) {
-                        return getOrgPrefix() + "/" + ((BluePipeline)blueResource).getFullName();
+                        return getOrgPrefix() + "/" + urlEncode(((BluePipeline)blueResource).getFullName());
                     }
                 }
             }
@@ -100,22 +100,16 @@ public class TryBlueOceanPageDecorator extends PageDecorator {
             ItemGroup multibranchJob = job.getParent();
             BluePipeline multibranchJobResource = (BluePipeline) BluePipelineFactory.resolve((Item) multibranchJob);
 
-            // TODO verify url encoding
-            // fullName is already escaped, but it sems like we need to double escape it for
-            // multibranch urls.
             return new BlueOceanModelMapping(
                 multibranchJob,
                 multibranchJobResource,
                 getOrgPrefix() + "/" + urlEncode(multibranchJobResource.getFullName())
             );
         } else {
-            // TODO verify url encoding
-            // fullName is already escaped, but I don't think we double encode for
-            // non multibranch (see above).
             return new BlueOceanModelMapping(
                 job,
                 blueResource,
-                getOrgPrefix() + "/" + blueResource.getFullName()
+                getOrgPrefix() + "/" + urlEncode(blueResource.getFullName())
             );
         }
     }
