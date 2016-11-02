@@ -1,11 +1,15 @@
 package io.jenkins.blueocean.service.embedded.util;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.plugins.favorite.FavoritePlugin;
+import hudson.plugins.favorite.Favorites;
+import hudson.plugins.favorite.Favorites.FavoriteException;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -45,15 +49,10 @@ public class FavoriteUtil {
         if(fup != null) {
             set = fup.isJobFavorite(job.getFullName());
         }
-        //TODO: FavoritePlugin is null
-        FavoritePlugin plugin = Jenkins.getInstance().getPlugin(FavoritePlugin.class);
-        if(plugin == null) {
-            throw new ServiceException.UnexpectedErrorException("Can not find instance of Favorite Plugin");
-        }
         if(favorite != set) {
             try {
-                plugin.toggleFavourite(user, job.getFullName());
-            } catch (Throwable e) {
+                Favorites.toggleFavorite(user, job);
+            } catch (FavoriteException e) {
                 throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
             }
         }
@@ -75,8 +74,11 @@ public class FavoriteUtil {
      * @return favorite
      */
     public static boolean hasFavourite(User user, Job job) {
-        FavoriteUserProperty fup = user.getProperty(FavoriteUserProperty.class);
-        return fup != null && fup.hasFavourite(job.getFullName());
+        try {
+            return Favorites.hasFavorite(user, job);
+        } catch (FavoriteException e) {
+            throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
+        }
     }
 
     public static BlueFavorite getFavorite(String fullName, Reachable parent){
