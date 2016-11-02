@@ -198,7 +198,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 return;
             }
         }
-        TimingInfo times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
+
+        TimingInfo times = null;
+        if (firstExecuted != null) {
+            times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
+        }
 
         if(times == null){
             times = new TimingInfo();
