@@ -81,9 +81,9 @@ public class TryBlueOceanPageDecorator extends PageDecorator {
                 Resource blueResource = BluePipelineFactory.resolve((Item) object);
                 if (blueResource != null) {
                     if (blueResource instanceof BlueMultiBranchPipeline) {
-                        return getOrgPrefix() + "/" +  urlEncode(((BluePipeline)blueResource).getFullName()) + "/branches";
+                        return getOrgPrefix() + "/" +  encodeJobFullName(((BluePipeline)blueResource).getFullName()) + "/branches";
                     } else if (blueResource instanceof BluePipeline) {
-                        return getOrgPrefix() + "/" + urlEncode(((BluePipeline)blueResource).getFullName());
+                        return getOrgPrefix() + "/" + encodeJobFullName(((BluePipeline)blueResource).getFullName());
                     }
                 }
             }
@@ -103,13 +103,13 @@ public class TryBlueOceanPageDecorator extends PageDecorator {
             return new BlueOceanModelMapping(
                 multibranchJob,
                 multibranchJobResource,
-                getOrgPrefix() + "/" + urlEncode(multibranchJobResource.getFullName())
+                getOrgPrefix() + "/" + encodeJobFullName(multibranchJobResource.getFullName())
             );
         } else {
             return new BlueOceanModelMapping(
                 job,
                 blueResource,
-                getOrgPrefix() + "/" + urlEncode(blueResource.getFullName())
+                getOrgPrefix() + "/" + encodeJobFullName(blueResource.getFullName())
             );
         }
     }
@@ -139,6 +139,13 @@ public class TryBlueOceanPageDecorator extends PageDecorator {
             this.blueModelObject = blueModelObject;
             this.blueUiUrl = blueUiUrl;
         }
+    }
+
+    private String encodeJobFullName(String jobFullName) throws UnsupportedEncodingException {
+        // The individual path tokens are already URL encoded, so we
+        // do not want to do a URL encode on the fill string. Instead,
+        // just encode the path separators i.e. replace "/" with "%2F"
+        return jobFullName.replace("/", "%2F");
     }
 
     private String urlEncode(String string) throws UnsupportedEncodingException {
