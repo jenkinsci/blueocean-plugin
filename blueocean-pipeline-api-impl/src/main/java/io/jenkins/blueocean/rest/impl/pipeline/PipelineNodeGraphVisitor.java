@@ -200,7 +200,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
         TimingInfo times = null;
-        if (firstExecuted != null && chunk.getLastNode() != null && chunk.getNodeAfter() != null) {
+        if (firstExecuted != null) {
             times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
         }
 
