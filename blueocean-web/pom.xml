@@ -33,6 +33,16 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jvnet.maven-jellydoc-plugin</groupId>
+            <artifactId>jellydoc-annotations</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kohsuke.stapler</groupId>
+            <artifactId>stapler-jelly</artifactId>
+            <version>1.243</version>
+        </dependency>
     </dependencies>
 
     <build>
