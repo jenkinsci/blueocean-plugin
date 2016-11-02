@@ -108,14 +108,14 @@ public class BlueOceanWebURLBuilder {
             Run run = (Run) classicModelObject;
             Job job = run.getParent();
             BlueOceanModelMapping pipelineModelMapping = getPipelineModelMapping(job);
-            return pipelineModelMapping.blueUiUrl + "/detail/" + urlEncode(job.getName()) + "/" + urlEncode(run.getId());
+            return pipelineModelMapping.blueUiUrl + "/detail/" + encodeURIComponent(job.getName()) + "/" + encodeURIComponent(run.getId());
         } else if (classicModelObject instanceof Item) {
             Resource blueResource = BluePipelineFactory.resolve((Item) classicModelObject);
             if (blueResource != null) {
                 if (blueResource instanceof BlueMultiBranchPipeline) {
-                    return getOrgPrefix() + "/" + encodeJobFullName(((BluePipeline) blueResource).getFullName()) + "/branches";
+                    return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
                 } else if (blueResource instanceof BluePipeline) {
-                    return getOrgPrefix() + "/" + encodeJobFullName(((BluePipeline) blueResource).getFullName());
+                    return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName());
                 }
             }
         }
@@ -124,7 +124,7 @@ public class BlueOceanWebURLBuilder {
     }
 
     private static String getOrgPrefix() {
-        return getBlueHome() + "/organizations/" + urlEncode(OrganizationImpl.INSTANCE.getName());
+        return getBlueHome() + "/organizations/" + encodeURIComponent(OrganizationImpl.INSTANCE.getName());
     }
 
     private static String getBlueHome() {
@@ -151,27 +151,24 @@ public class BlueOceanWebURLBuilder {
             return new BlueOceanModelMapping(
                 multibranchJob,
                 multibranchJobResource,
-                getOrgPrefix() + "/" + encodeJobFullName(multibranchJobResource.getFullName())
+                getOrgPrefix() + "/" + encodeURIComponent(multibranchJobResource.getFullName())
             );
         } else {
             return new BlueOceanModelMapping(
                 job,
                 blueResource,
-                getOrgPrefix() + "/" + encodeJobFullName(blueResource.getFullName())
+                getOrgPrefix() + "/" + encodeURIComponent(blueResource.getFullName())
             );
         }
     }
 
-    private static String encodeJobFullName(String jobFullName) {
-        // The individual path tokens are already URL encoded, so we
-        // do not want to do a URL encode on the fill string. Instead,
-        // just encode the path separators i.e. replace "/" with "%2F"
-        return jobFullName.replace("/", "%2F");
-    }
-
-    private static String urlEncode(String string) {
+    private static String encodeURIComponent(String string) {
         try {
-            return URLEncoder.encode(string, "UTF-8");
+            // The Java URLEncoder encodes spaces as "+", while the javascript
+            // encodeURIComponent function encodes them as "%20". We need to make them
+            // consistent with how it's done in encodeURIComponent, so replace the
+            // "+" with "%20".
+            return URLEncoder.encode(string, "UTF-8").replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Unexpected UTF-8 encoding error.", e);
         }
