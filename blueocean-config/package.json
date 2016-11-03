@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@jenkins-cd/js-modules": "0.0.8",
-    "rollbar-browser": "1.9.1"
+    "rollbar-browser": "1.9.2"
   },
   "devDependencies": {
     "@jenkins-cd/js-builder": "0.0.47",

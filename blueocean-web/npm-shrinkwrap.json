@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.20",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.20",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.20.tgz"
+      "version": "0.0.21",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.21",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.21.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.85",
-      "from": "@jenkins-cd/design-language@0.0.85",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.85.tgz"
+      "version": "0.0.86",
+      "from": "@jenkins-cd/design-language@0.0.86",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.86.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -872,9 +872,9 @@
       "dev": true
     },
     "base64-url": {
-      "version": "1.3.2",
+      "version": "1.3.3",
       "from": "base64-url@>=1.2.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/base64-url/-/base64-url-1.3.2.tgz"
+      "resolved": "https://registry.npmjs.org/base64-url/-/base64-url-1.3.3.tgz"
     },
     "base64url": {
       "version": "1.0.6",

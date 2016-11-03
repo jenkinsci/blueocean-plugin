@@ -26,6 +26,9 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
     } else if (jenkinsNode.result === 'FAILURE') {
         state = 'failure';
         completePercent = 100;
+    } else if (jenkinsNode.result === 'UNSTABLE') {
+        state = 'unstable';
+        completePercent = 100;
     } else if (jenkinsNode.state === 'RUNNING') {
         state = 'running';
         completePercent = 50;

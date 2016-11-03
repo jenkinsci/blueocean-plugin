@@ -5,19 +5,19 @@ const root = (typeof self === 'object' && self.self === self && self) ||
   (typeof global === 'object' && global.global === global && global) ||
   this;
 
-const config = root.$blueoceanConfig;
+const config = root.$blueoceanConfig || {};
 
 export default {
     getJenkinsConfig() {
-        return config.jenkinsConfig;
+        return config.jenkinsConfig || {};
     },
 
     getSecurityConfig() {
-        return config.jenkinsConfig.security;
+        return this.getJenkinsConfig().security || {};
     },
 
     isJWTEnabled() {
-        return this.getSecurityConfig().enableJWT;
+        return !!this.getSecurityConfig().enableJWT;
     },
 
     getInitialUser() {
@@ -26,5 +26,15 @@ export default {
 
     getLoginUrl() {
         return this.getSecurityConfig().loginUrl;
+    },
+
+    /**
+     * Set a new "jenkinsConfig" object.
+     * Useful for testing in a headless environment.
+     * @param newConfig
+     * @private
+     */
+    _setJenkinsConfig(newConfig) {
+        config.jenkinsConfig = newConfig;
     },
 };
