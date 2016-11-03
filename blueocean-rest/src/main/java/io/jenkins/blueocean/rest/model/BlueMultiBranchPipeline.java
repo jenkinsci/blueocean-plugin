@@ -84,11 +84,6 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
             }
 
             @Override
-            public BluePipeline getPipeline(String name) {
-                return null;
-            }
-
-            @Override
             public BlueRun get(String name) {
                 throw new ServiceException.NotFoundException(
                     String.format("It is multi-branch project. No run with name: %s found.", name));

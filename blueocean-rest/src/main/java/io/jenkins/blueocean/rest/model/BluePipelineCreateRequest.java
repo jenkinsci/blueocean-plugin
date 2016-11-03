@@ -1,48 +1,67 @@
 package io.jenkins.blueocean.rest.model;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
- * Pipeline create request
+ * Pipeline create request.
  *
  * @author Vivek Pandey
  */
 public class BluePipelineCreateRequest {
-    /** Name of the new plugin */
+
     private String name;
 
-    /** Mode of the new plugin to be created. It must be the id of factory
-     * implementation that can create inctance of this pipeline
-     */
     private String creatorId;
 
-    /**
-     * Map of configuration item specific to this pipeline creation
-     */
-    private Map<String, Object> config = new LinkedHashMap<>();
+    private BlueScmConfig scmConfig;
 
-    public String getName() {
+    /**
+     * Gives name of the new plugin
+     */
+    public @Nonnull String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    /**
+     * Set name of the pipeline
+     *
+     * @param name name of the pipeline, always non-null
+     */
+    public void setName(@Nonnull String name) {
         this.name = name;
     }
 
-    public String getCreatorId() {
+
+    /**
+     *
+     * Mode of the new plugin to be created. It must be the id of factory
+     * implementation that can create inctance of this pipeline
+     *
+     * @return id of pipeline creator class
+     * @see BluePipelineCreator#getId()
+     */
+    public @Nonnull String getCreatorId() {
         return creatorId;
     }
 
+    /**
+     * Id of the pipeline creator class
+     *
+     * @param creatorId id of pipeline creator class
+     * @see BluePipelineCreator#getId()
+     */
     public void setCreatorId(String creatorId) {
         this.creatorId = creatorId;
     }
 
-    public Map<String, Object> getConfig() {
-        return config;
+    /**
+     * Gives SCM configuration {@link BlueScmConfig}
+     */
+    public @Nonnull BlueScmConfig getScmConfig() {
+        return scmConfig;
     }
 
-    public void setConfig(Map<String, Object> config) {
-        this.config.putAll(config);
+    public void setScmConfig(@Nonnull BlueScmConfig scmConfig) {
+        this.scmConfig = scmConfig;
     }
 }

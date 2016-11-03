@@ -2,16 +2,12 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import hudson.Extension;
 import hudson.model.Cause;
-import hudson.model.Item;
-import hudson.model.ItemGroup;
-import hudson.model.Items;
-import hudson.model.TopLevelItemDescriptor;
-import hudson.security.ACL;
+import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.OrganizationFolderPipelineImpl;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineCreateRequest;
-import io.jenkins.blueocean.rest.model.BluePipelineCreator;
+import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreatorImpl;
 import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
@@ -24,8 +20,8 @@ import java.util.List;
  * @author Vivek Pandey
  */
 @Extension
-public class GithubPipelineCreatorImpl extends BluePipelineCreator {
-    private static final String NAVIGATOR = "jenkins.branch.OrganizationFolder.org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator";
+public class GithubPipelineCreatorImpl extends AbstractPipelineCreatorImpl {
+    private static final String DESCRIPTOR = "jenkins.branch.OrganizationFolder.org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator";
 
     private static final String CREATOR_ID = GithubPipelineCreatorImpl.class.getName();
 
@@ -37,38 +33,21 @@ public class GithubPipelineCreatorImpl extends BluePipelineCreator {
     @SuppressWarnings("unchecked")
     @Override
     public BluePipeline create(BluePipelineCreateRequest request, Reachable parent) throws IOException {
-        ACL acl = Jenkins.getInstance().getACL();
-        acl.checkPermission(Item.CREATE);
-        TopLevelItemDescriptor descriptor = Items.all().findByName(NAVIGATOR);
-        if(descriptor == null || !(descriptor instanceof CustomOrganizationFolderDescriptor)){
-            return null;
-        }
-        ItemGroup p = Jenkins.getInstance();
-        descriptor.checkApplicableIn(p);
 
-        acl.checkCreatePermission(p, descriptor);
-        Item item = Jenkins.getInstance().createProject(descriptor, request.getName(), true);
+        String apiUrl = request.getScmConfig().getUri();
 
-
-        String apiUrl = null;
-        if(request.getConfig().get("apiUrl") != null && request.getConfig().get("apiUrl") instanceof String){
-            apiUrl = (String) request.getConfig().get("apiUrl");
+        String orgName = null; //default
+        if(request.getScmConfig().getConfig().get("orgName") instanceof String){
+            orgName = (String) request.getScmConfig().getConfig().get("orgName");
         }
 
-        String orgName = request.getName(); //default
-        if(request.getConfig().get("orgName") != null && request.getConfig().get("orgName") instanceof String){
-            orgName = (String) request.getConfig().get("orgName");
-        }
+        String credentialId = request.getScmConfig().getCredentialId();
 
-        String credentialId = null;
-        if(request.getConfig().get("credentialId") != null && request.getConfig().get("credentialId") instanceof String){
-            credentialId = (String) request.getConfig().get("credentialId");
-        }
 
         GitHubSCMNavigator gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
         StringBuilder sb = new StringBuilder();
-        if(request.getConfig().get("repos") instanceof List) {
-            for (String r : (List<String>)request.getConfig().get("repos")) {
+        if(request.getScmConfig().getConfig().get("repos") instanceof List) {
+            for (String r : (List<String>)request.getScmConfig().getConfig().get("repos")) {
                 sb.append(String.format("(%s\\b)?", r));
             }
         }
@@ -76,6 +55,8 @@ public class GithubPipelineCreatorImpl extends BluePipelineCreator {
         if(sb.length() > 0){
             gitHubSCMNavigator.setPattern(sb.toString());
         }
+
+        TopLevelItem item = create(Jenkins.getInstance(),request.getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class);
 
         if(item instanceof OrganizationFolder){
             OrganizationFolder organizationFolder = (OrganizationFolder) item;

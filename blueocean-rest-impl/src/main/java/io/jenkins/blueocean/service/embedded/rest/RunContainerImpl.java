@@ -64,10 +64,6 @@ public class RunContainerImpl extends BlueRunContainer {
         return RunSearch.findRuns(job, pipeline.getLink()).iterator();
     }
 
-    @Override
-    public BluePipeline getPipeline(String name) {
-        return pipeline;
-    }
 
     /**
      * Schedules a build. If build already exists in the queue and the pipeline does not

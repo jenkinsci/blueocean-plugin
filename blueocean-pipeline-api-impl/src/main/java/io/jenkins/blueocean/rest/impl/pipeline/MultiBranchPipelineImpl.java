@@ -282,10 +282,6 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 return MultiBranchPipelineImpl.this.getLink().rel("runs");
             }
 
-            @Override
-            public BluePipeline getPipeline(String name) {
-                return null;
-            }
 
             @Override
             public BlueRun get(String name) {
