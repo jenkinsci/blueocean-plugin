@@ -85,7 +85,7 @@ export class PipelinePage extends Component {
                           store={this.context.store}
                           pipeline={this.props.pipeline}
                         />
-                        <a href={buildClassicConfigUrl(pipeline)} target='_blank'><Icon size={24} icon="settings" style={{ fill: "#fff" }} /></a>
+                        <a href={buildClassicConfigUrl(window, pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>
                     </Title>
                     }
 
@@ -123,7 +123,6 @@ PipelinePage.childContextTypes = {
 
 const selectors = createSelector([pipelineSelector],
     (pipeline) => ({ pipeline }));
-
 
 
 export default connect(selectors, actions)(documentTitle(PipelinePage));
