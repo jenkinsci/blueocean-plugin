@@ -3,6 +3,7 @@ require('./emptystateview.jsx');
 require('./ExpandablePathStories');
 require('./FavoriteStories.jsx');
 require('./filesize.jsx');
+require('./FloatingElementStories');
 require('./modalview.jsx');
 require('./pipelinegraph.jsx');
 require('./pipelineresult.jsx');
