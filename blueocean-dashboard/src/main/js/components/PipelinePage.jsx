@@ -85,7 +85,7 @@ export class PipelinePage extends Component {
                           store={this.context.store}
                           pipeline={this.props.pipeline}
                         />
-                        <a href={buildClassicConfigUrl(window, pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>
+                        <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>
                     </Title>
                     }
 

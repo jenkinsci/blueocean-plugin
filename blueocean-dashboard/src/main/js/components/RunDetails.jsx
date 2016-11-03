@@ -176,7 +176,7 @@ class RunDetails extends Component {
                               buttonType="stop-only"
                             />
 
-                            <a href={buildClassicConfigUrl(window, pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>
+                            <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>
 
                         </div>
                     </div>

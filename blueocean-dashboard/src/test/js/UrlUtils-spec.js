@@ -125,17 +125,14 @@ describe('UrlUtils', () => {
     });
 
     describe('build classicConfigUrl', () => {
-        const wdow = {
-            jenkinsCIGlobal: {rootURL : 'Boo'},
-        };
 
         const testData = {
             fullDisplayName : 'foldey/nesty/woozle%20wozzle/mazzig'
         };
 
         it('should build the url for classic config', () => {
-            const url = buildClassicConfigUrl(wdow, testData);
-            assert.equal(url, 'Boo/job/foldey/job/nesty/job/woozle%20wozzle/job/mazzig/configure');
+            const url = buildClassicConfigUrl(testData);
+            assert.equal(url, '/jenkins/job/foldey/job/nesty/job/woozle%20wozzle/job/mazzig/configure');
         });
 
     });

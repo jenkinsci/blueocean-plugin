@@ -19,9 +19,10 @@ export const buildPipelineUrl = (organization, fullName, tabName) => {
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
 
-export const buildClassicConfigUrl = (window, pipeline) => {
+export const buildClassicConfigUrl = (pipeline) => {
     if (pipeline && pipeline.fullDisplayName) {
-        return `${window.jenkinsCIGlobal.rootURL}/job/${pipeline.fullDisplayName.split('/').join('/job/')}/configure`;
+        const jenkinsUrl = require('../config').getJenkinsRootURL();
+        return `${jenkinsUrl}/job/${pipeline.fullDisplayName.split('/').join('/job/')}/configure`;
     }
     return null;
 };
