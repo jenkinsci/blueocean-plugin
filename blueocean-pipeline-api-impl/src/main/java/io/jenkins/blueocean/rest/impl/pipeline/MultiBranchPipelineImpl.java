@@ -72,10 +72,12 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
-
         Job job = FavoriteUtil.resolveDefaultBranch(mbp);
-        FavoriteUtil.favoriteJob(job, favoriteAction.isFavorite());
-
+        if (favoriteAction.isFavorite()) {
+            FavoriteUtil.setFavorite(job);
+        } else {
+            FavoriteUtil.unsetFavorite(job);
+        }
         return new FavoriteImpl(new BranchImpl(job,getLink().rel("branches")), getLink().rel("favorite"));
     }
 

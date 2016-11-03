@@ -106,7 +106,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
             throw new ServiceException.BadRequestExpception("Not a folder");
         }
         Job job = FavoriteUtil.resolveDefaultBranch((AbstractFolder) folder);
-        FavoriteUtil.favoriteJob(job, favoriteAction.isFavorite());
+        if (favoriteAction.isFavorite()) {
+            FavoriteUtil.setFavorite(job);
+        } else {
+            FavoriteUtil.unsetFavorite(job);
+        }
         return FavoriteUtil.getFavorite(folder.getFullName(), this);
     }
 

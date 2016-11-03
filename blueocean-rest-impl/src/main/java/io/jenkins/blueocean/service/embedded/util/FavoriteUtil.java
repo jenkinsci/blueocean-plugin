@@ -35,26 +35,19 @@ public class FavoriteUtil {
 
     private static final String DEFAULT_BRANCH = "master";
 
-    public static void favoriteJob(Job job, boolean favorite) {
-        User user = User.current();
-        if(user == null) {
-            throw new ServiceException.ForbiddenException("Must be logged in to use set favorites");
+    public static void setFavorite(Job job) {
+        try {
+            Favorites.addFavorite(getUser(), job);
+        } catch (FavoriteException e) {
+            throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
         }
-        favoriteJob(job, user, favorite);
     }
 
-    public static void favoriteJob(Job job, User user, boolean favorite) {
-        boolean set = false;
-        FavoriteUserProperty fup = user.getProperty(FavoriteUserProperty.class);
-        if(fup != null) {
-            set = fup.isJobFavorite(job.getFullName());
-        }
-        if(favorite != set) {
-            try {
-                Favorites.toggleFavorite(user, job);
-            } catch (FavoriteException e) {
-                throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
-            }
+    public static void unsetFavorite(Job job) {
+        try {
+            Favorites.addFavorite(getUser(), job);
+        } catch (FavoriteException e) {
+            throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
         }
     }
 
@@ -145,5 +138,13 @@ public class FavoriteUtil {
             throw new ServiceException.MethodNotAllowedException(DEFAULT_BRANCH + " is not a job");
         }
         return (Job) job;
+    }
+
+    private static User getUser() {
+        User user = User.current();
+        if(user == null) {
+            throw new ServiceException.ForbiddenException("Must be logged in to use set favorites");
+        }
+        return user;
     }
 }
