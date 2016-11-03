@@ -16,6 +16,7 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
+import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
@@ -56,21 +57,6 @@ public class FavoriteUtil {
             return URLDecoder.decode(URLDecoder.decode(name, "UTF-8"), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new ServiceException.UnexpectedErrorException("Something went wrong URL decoding fullName: "+name, e);
-        }
-    }
-
-    /**
-     * Checks if the user has a favorite entry for this job
-     * e.g. this is true when the user has favoriteted or unfavoriteted a job
-     * but not true for when a job has not been favorited by this user
-     * @param job path
-     * @return favorite
-     */
-    public static boolean hasFavourite(User user, Job job) {
-        try {
-            return Favorites.hasFavorite(user, job);
-        } catch (FavoriteException e) {
-            throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
         }
     }
 
