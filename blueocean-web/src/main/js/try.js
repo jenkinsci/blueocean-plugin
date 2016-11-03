@@ -10,7 +10,7 @@ function getAppUrl() {
 }
 
 $(document).ready(() => {
-    var tryBlueOcean = $('<div class="try-blueocean header-callout">Try Blue Ocean UI ...</div>');
+    var tryBlueOcean = $('<a id="open-blueocean-in-context" class="try-blueocean header-callout">Open Blue Ocean</a>');
     var contextUrlDiv = $('#blueocean-context-url');
     var tryBlueOceanUrl;
 
@@ -19,10 +19,7 @@ $(document).ready(() => {
     } else {
         tryBlueOceanUrl = `${getAppUrl()}/blue`;
     }
-
-    tryBlueOcean.click(() => {
-        window.location.replace(tryBlueOceanUrl);
-    });
+    tryBlueOcean.attr('href', tryBlueOceanUrl);
 
     $('#page-head #header').append(tryBlueOcean);
 });
