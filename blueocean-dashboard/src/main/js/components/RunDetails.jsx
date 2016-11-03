@@ -9,6 +9,8 @@ import {
 
 import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
+import { Icon } from 'react-material-icons-blue';
+
 import {
     actions,
     currentRun as runSelector,
@@ -172,6 +174,9 @@ class RunDetails extends Component {
                               latestRun={currentRun}
                               buttonType="stop-only"
                             />
+
+                            <a href={classicConfig(pipeline)} target='_blank'><Icon size={24} icon="settings" style={{ fill: "#fff" }} /></a>
+
                         </div>
                     </div>
                 </ModalHeader>
@@ -211,5 +216,15 @@ RunDetails.propTypes = {
 const selectors = createSelector(
     [runSelector, isMultiBranchSelector, previousSelector],
     (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
+
+
+const classicConfig = (pipeline) => {
+
+    if (pipeline && pipeline.fullDisplayName) {
+        console.log(pipeline);
+        return window.jenkinsCIGlobal.rootURL + '/job/' + pipeline.fullDisplayName.split('/').join('/job/') + "/configure";
+    } else return null;
+}
+
 
 export default connect(selectors, actions)(RunDetails);
