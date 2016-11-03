@@ -24,6 +24,7 @@ import {
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
+    buildClassicConfigUrl,
 } from '../util/UrlUtils';
 
 import { RunDetailsHeader } from './RunDetailsHeader';
@@ -175,7 +176,7 @@ class RunDetails extends Component {
                               buttonType="stop-only"
                             />
 
-                            <a href={classicConfig(pipeline)} target='_blank'><Icon size={24} icon="settings" style={{ fill: "#fff" }} /></a>
+                            <a href={buildClassicConfigUrl(pipeline)} target='_blank'><Icon size={24} icon="settings" style={{ fill: "#fff" }} /></a>
 
                         </div>
                     </div>
@@ -216,15 +217,6 @@ RunDetails.propTypes = {
 const selectors = createSelector(
     [runSelector, isMultiBranchSelector, previousSelector],
     (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
-
-
-const classicConfig = (pipeline) => {
-
-    if (pipeline && pipeline.fullDisplayName) {
-        console.log(pipeline);
-        return window.jenkinsCIGlobal.rootURL + '/job/' + pipeline.fullDisplayName.split('/').join('/job/') + "/configure";
-    } else return null;
-}
 
 
 export default connect(selectors, actions)(RunDetails);

@@ -18,7 +18,7 @@ import {
     WeatherIcon,
 } from '@jenkins-cd/design-language';
 import PageLoading from './PageLoading';
-import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
+import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
 import { Icon } from 'react-material-icons-blue';
 
@@ -85,7 +85,7 @@ export class PipelinePage extends Component {
                           store={this.context.store}
                           pipeline={this.props.pipeline}
                         />
-                        <a href={classicConfig(fullDisplayName)} target='_blank'><Icon size={24} icon="settings" style={{ fill: "#fff" }} /></a>
+                        <a href={buildClassicConfigUrl(pipeline)} target='_blank'><Icon size={24} icon="settings" style={{ fill: "#fff" }} /></a>
                     </Title>
                     }
 
@@ -124,12 +124,6 @@ PipelinePage.childContextTypes = {
 const selectors = createSelector([pipelineSelector],
     (pipeline) => ({ pipeline }));
 
-
-const classicConfig = (displayName) => {
-    if (displayName) {
-        return window.jenkinsCIGlobal.rootURL + '/job/' + displayName.split('/').join('/job/') + "/configure";
-    } else return null;
-}
 
 
 export default connect(selectors, actions)(documentTitle(PipelinePage));
