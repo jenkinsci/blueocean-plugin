@@ -127,7 +127,7 @@ describe('UrlUtils', () => {
     describe('build classicConfigUrl', () => {
 
         const testData = {
-            fullDisplayName : 'foldey/nesty/woozle%20wozzle/mazzig'
+            fullName : 'foldey/nesty/woozle%20wozzle/mazzig'
         };
 
         it('should build the url for classic config', () => {
