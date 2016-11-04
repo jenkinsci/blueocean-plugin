@@ -3,6 +3,7 @@ import jwt from './jwt';
 import isoFetch from 'isomorphic-fetch';
 import utils from './utils';
 import config from './config';
+import dedupe from './utils/dedupe-calls';
 
 let refreshToken = null;
 export const FetchFunctions = {
@@ -106,6 +107,14 @@ export const FetchFunctions = {
         };
     },
     
+
+    dedupeFetch(url, fetchOptions, { disableDedupe } = {}) {
+        if (disableDedupe) {
+            return isoFetch(url, fetchOptions);
+        }
+
+        return dedupe(url, () => isoFetch(url, fetchOptions));
+    },
      /**
      * Raw fetch that returns the json body.
      *
@@ -120,7 +129,7 @@ export const FetchFunctions = {
      * @returns JSON body
      */
     rawFetchJSON(url, { onSuccess, onError, fetchOptions } = {}) {
-        const request = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+        const request = FetchFunctions.dedupeFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
             .then(FetchFunctions.checkRefreshHeader)
             .then(FetchFunctions.checkStatus)
             .then(FetchFunctions.parseJSON);
@@ -145,7 +154,7 @@ export const FetchFunctions = {
      * @returns fetch response
      */
     rawFetch(url, { onSuccess, onError, fetchOptions } = {}) {
-        const request = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+        const request = FetchFunctions.dedupeFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
             .then(FetchFunctions.checkRefreshHeader)
             .then(FetchFunctions.checkStatus);
 

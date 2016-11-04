@@ -7,7 +7,7 @@ import {
     createSelector,
 } from './redux';
 import loadingIndicator from './LoadingIndicator';
-import * as sse from '@jenkins-cd/sse-gateway';
+import { sseConnection } from '@jenkins-cd/blueocean-core-js';
 import * as pushEventUtil from './util/push-event-util';
 import { observer } from 'mobx-react';
 
@@ -15,23 +15,13 @@ const { object, array, func, node, string } = PropTypes;
 
 @observer
 class OrganizationPipelines extends Component {
-    // FIXME: get rid of context use
-    getChildContext() {
-        if (this._getOrganizationName()) {
-            return {
-                pipelines: this.props.organizationPipelines,
-            };
-        }
-        return {
-            pipelines: this.context.pipelinesService.allPipelines,
-        };
-    }
-
+    
     componentWillMount() {
         const config = this.context.config;
         if (config) {
+
             // Subscribe for job channel push events
-            this.jobListener = sse.subscribe('job', (event) => {
+            this.jobListener = sseConnection.subscribe('job', (event) => {
                 // Enrich the event with blueocean specific properties
                 // before passing it on to be processed.
                 const eventCopy = pushEventUtil.enrichJobEvent(event, this.props.params.pipeline);
@@ -90,13 +80,14 @@ class OrganizationPipelines extends Component {
     }
 
     /*
+
     componentWillReceiveProps(nextProps) {
         const organizationName = this._getOrganizationName(nextProps);
         if (this._getOrganizationName(this.props) !== organizationName) {
             if (organizationName) {
-                this.props.fetchOrganizationPipelines({ organizationName });
+                this.props.getOrganizationPipelines({ organizationName });
             } else {
-                this.props.fetchAllPipelines();
+                this.props.getAllPipelines();
             }
         }
     }
@@ -104,7 +95,7 @@ class OrganizationPipelines extends Component {
 
     componentWillUnmount() {
         if (this.jobListener) {
-            sse.unsubscribe(this.jobListener);
+            sseConnection.unsubscribe(this.jobListener);
             delete this.jobListener;
         }
         loadingIndicator.setLightBackground();
@@ -141,6 +132,8 @@ OrganizationPipelines.contextTypes = {
 OrganizationPipelines.propTypes = {
     fetchAllPipelines: func.isRequired,
     fetchOrganizationPipelines: func.isRequired,
+    getAllPipelines: func.isRequired,
+    getOrganizationPipelines: func.isRequired,
     processJobQueuedEvent: func.isRequired,
     processJobLeftQueueEvent: func.isRequired,
     updateRunState: func.isRequired,

@@ -1,31 +1,17 @@
-import * as sse from '@jenkins-cd/sse-gateway';
 import React, { Component, PropTypes } from 'react';
-import { UrlConfig } from '@jenkins-cd/blueocean-core-js';
-import { PipelinesService } from './model/PipelinesService';
-
-
-// Connect to the SSE Gateway and allocate a
-// dispatcher for blueocean.
-// TODO: We might want to move this code to a local SSE util module.
-sse.connect({
-    clientId: 'jenkins_blueocean',
-    onConnect: undefined,
-    jenkinsUrl: `${UrlConfig.getJenkinsRootURL()}/`, // FIXME sse should not require this to end with a /
-});
+import { pipelineService } from '@jenkins-cd/blueocean-core-js';
 
 class Dashboard extends Component {
 
+    constructor(props) {
+        super(props);
+        this._context = {};
+        this._context.pipelineService = pipelineService;
+    }
     getChildContext() {
-        const {
-            params,
-            location,
-        } = this.props;
-
-        return {
-            params,
-            location,
-            pipelinesService: new PipelinesService(),
-        };
+        this._context.params = this.props.params;
+        this._context.location = this.location;
+        return this._context;
     }
 
     render() {
@@ -42,7 +28,7 @@ Dashboard.propTypes = {
 Dashboard.childContextTypes = {
     params: PropTypes.object, // From react-router
     location: PropTypes.object, // From react-router
-    pipelinesService: PropTypes.object,
+    pipelineService: PropTypes.object,
 };
 
 export default Dashboard;

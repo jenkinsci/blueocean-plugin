@@ -11,6 +11,12 @@ var builder = require('@jenkins-cd/js-builder');
 
 // create a dummy revisionInfo so developmentFooter will not fail
 const revisionInfo = '// Do not edit, it is generated and will be on each build.\nexport default {};';
+
+// Create the dir path. This gets executed by mvn before the
+// Java src is compiled, so it's not already created for
+// the revisionInfo stuff below to work without write failures.
+builder.paths.mkdirp('target/classes/io/jenkins/blueocean');
+
 fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', revisionInfo, err => {
   if (err) throw err;
 });
