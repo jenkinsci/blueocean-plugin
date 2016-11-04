@@ -56,7 +56,7 @@ export default class Runs extends Component {
             <td>{run.id}</td>
             <td><CommitHash commitId={run.commitId} /></td>
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
-                <td>{decodeURIComponent(pipeline)}</td>
+                <td>{decodeURIComponent(pipeline.name)}</td>
             </IfCapability>
             <td>{changeset && changeset.msg || '-'}</td>
             <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>

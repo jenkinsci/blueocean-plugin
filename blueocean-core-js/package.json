@@ -5,7 +5,8 @@
   "main": "dist/js/index.js",
   "scripts": {
     "gulp": "gulp",
-    "test": "gulp test"
+    "test": "gulp test",
+    "flow": "flow"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
   "contributors": [
@@ -51,6 +52,7 @@
     "chai": "3.5.0",
     "enzyme": "2.4.1",
     "eslint-plugin-react": "6.3.0",
+    "flow-bin": "^0.34.0",
     "gulp": "3.9.1",
     "gulp-babel": "6.1.2",
     "gulp-clean": "0.3.2",

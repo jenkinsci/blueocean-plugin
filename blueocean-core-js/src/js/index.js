@@ -51,5 +51,5 @@ export const sseService = new SSEService(sseConnection);
 export const activityService = new ActivityService(pagerService, sseService);
 export const pipelineService = new PipelineService(pagerService, sseService, activityService);
 
-export const branchService = new BranchService(pagerService, sseService);
+export const branchService = new BranchService(pagerService, sseService, activityService);
 sseService._initListeners();

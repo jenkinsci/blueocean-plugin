@@ -16,29 +16,17 @@ export default class Branches extends Component {
         this.state = { isVisible: false };
     }
     render() {
-        const { data } = this.props;
+        const branch = this.props.data;
+        console.log('branch', branch);
         // early out
-        if (!data || !this.context.pipeline) {
+        if (!branch || !this.context.pipeline) {
             return null;
         }
-        const {
-            context: {
-                router,
-                location,
-                pipeline: {
-                    fullName,
-                    organization,
-                    },
-                },
-            } = this;
-        const {
-            latestRun: { id, result, startTime, endTime, changeSet, state, commitId, estimatedDurationInMillis },
-            weatherScore,
-            name: branchName,
-        } = data;
-
-        const cleanBranchName = decodeURIComponent(branchName);
-        const url = buildRunDetailsUrl(organization, fullName, cleanBranchName, id, 'pipeline');
+        const { router, location, pipeline } = this.context;
+        const latestRun = branch.latestRun || {};
+    
+        const cleanBranchName = decodeURIComponent(branch.name);
+        const url = buildRunDetailsUrl(branch.organization, branch.fullName, cleanBranchName, latestRun.id, 'pipeline');
 
         const open = () => {
             location.pathname = url;
@@ -50,31 +38,30 @@ export default class Branches extends Component {
             router.push(location);
         };
 
-        const { msg } = changeSet[0] || {};
-
+        const { msg } = (branch.changeSet && branch.changeSet.length > 0) ? (branch.changeSet[0] || {}) :  {};
         return (
-            <tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${id}`} >
-                <td><WeatherIcon score={weatherScore} /></td>
+            <tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${latestRun.id}`} >
+                <td><WeatherIcon score={branch.weatherScore} /></td>
                 <td onClick={open}>
-                    <LiveStatusIndicator result={result === 'UNKNOWN' ? state : result}
-                      startTime={startTime} estimatedDuration={estimatedDurationInMillis}
+                    <LiveStatusIndicator result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
+                      startTime={latestRun.startTime} estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
                 </td>
                 <td>{cleanBranchName}</td>
-                <td><CommitHash commitId={commitId} /></td>
+                <td><CommitHash commitId={latestRun.commitId} /></td>
                 <td>{msg || '-'}</td>
-                <td><ReadableDate date={endTime} liveUpdate /></td>
+                <td><ReadableDate date={latestRun.endTime} liveUpdate /></td>
                 { /* suppress all click events from extension points */ }
                 <td className="actions" onClick={(event) => stopProp(event)}>
                     <RunButton
                       className="icon-button"
-                      runnable={data}
-                      latestRun={data.latestRun}
+                      runnable={branch}
+                      latestRun={branch.latestRun}
                       onNavigation={openRunDetails}
                     />
                     <Extensions.Renderer
                       extensionPoint="jenkins.pipeline.branches.list.action"
-                      pipeline={data}
+                      pipeline={branch }
                       store={this.context.store}
                     />
                 </td>

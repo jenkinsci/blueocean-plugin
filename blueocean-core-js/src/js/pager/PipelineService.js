@@ -1,3 +1,4 @@
+// @flow
 import { observable } from 'mobx';
 import { Pager } from '../Pager';
 import { AppPaths, RestPaths } from '../utils/paths';
@@ -5,15 +6,24 @@ import { DataBunker } from '../model/DataBunker';
 import { PipelineModel } from '../model/PipelineModel';
 import { Fetch } from '../fetch';
 import utils from '../utils';
+import type PagerService from './PagerService';
+import type SSEService from './SSEService';
+import type ActivityService from './ActivityService';
+import type { PipelineModelType } from '../model/Types'
 
 export default class PipelineService {
-    constructor(pagerService, sseService, activityService) {
+    pagerService : PagerService;
+    sseService: SSEService;
+    activityService: ActivityService;
+    
+    constructor(pagerService: PagerService, sseService: SSEService, activityService: ActivityService) {
         this.pagerService = pagerService;
+        this.activityService = activityService;
         this.sseService = sseService;
         this.sseService.registerHandler((event) => this._sseEventHandler(event));
     }
     @observable
-    bunker = new DataBunker(this._keyFn, this._mapperFn);
+    bunker = new DataBunker(this._keyFn, this._mapperFn, this._instanceFn);
 
     allPipelinesPager() {
         return {
@@ -22,33 +32,36 @@ export default class PipelineService {
         };
     }
 
-    organiztionPipelinesPager(organization) {
+    organiztionPipelinesPager(organization: string) {
         return {
             key: `Pipelines/${organization}`,
             lazyPager: () => new Pager(RestPaths.organizationPipelines(organization), 25, this.bunker),
         };
     }
 
-    _keyFn(item) {
+    _keyFn(item: Object): string {
         return item._links.self.href;
     }
 
-    _mapperFn(item) {
-        return new PipelineModel(item, (x) => this._pipelineModelMapper(x));
+    _instanceFn(item: PipelineModelType): PipelineModel {
+        return new PipelineModel(item);
     }
 
-    _pipelineModelMapper(pipelineData) {
+
+    _mapperFn = (pipelineData: Object) => {
         const data = utils.clone(pipelineData);
         const latestRun = data.latestRun;
 
+        const ret: PipelineModelType = data;
+        
         if (latestRun) {
-            data.latestRun = this.activityService.getOrAddActivity(latestRun);
+            ret.latestRun = this.activityService.getOrAddActivity(latestRun);
         }
 
         return data;
     }
 
-    fetchPipelineByHref(href) {
+    fetchPipelineByHref(href: string) {
         return Fetch.fetchJSON(href)
             .then(data => {
                 this.bunker.setItem(data);
@@ -56,7 +69,7 @@ export default class PipelineService {
             });
     }
 
-    _sseEventHandler(event) {
+    _sseEventHandler(event: Object) {
         console.log('_sseEventHandler', event);
         switch (event.jenkins_event) {
         case 'job_crud_created':

@@ -56,13 +56,14 @@ export class MultiBranch extends Component {
     componentWillMount() {
         if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
             const { organization, pipeline } = this.context.params;
+            console.log('branchservice', branchService);
             this.pager = branchService.branchPager(organization, pipeline);
         }
     }
 
     render() {
         const branches = this.pager.data;
-
+        console.log('branches', branches);
         if (!branches || (!this.pager.pending && pipelineBranchesUnsupported(this.context.pipeline))) {
             return (<NotSupported />);
         }

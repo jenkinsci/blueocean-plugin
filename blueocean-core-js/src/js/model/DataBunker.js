@@ -1,10 +1,12 @@
+
 import { observable, action, asMap } from 'mobx';
 export class DataBunker {
     @observable _data = asMap();
 
-    constructor(keyFn, mapperFn) {
+    constructor(keyFn, mapperFn, newInstanceFn) {
         this._keyFn = keyFn;
         this._mapperFn = mapperFn;
+        this._newInstanceFn = newInstanceFn;
     }
 
     @action
@@ -12,10 +14,10 @@ export class DataBunker {
         const keyItem = this._keyFn(item);
         const currentItem = this.getItem(keyItem);
         if (currentItem) {
-            currentItem.data = item;
+            currentItem.setData(this._mapperFn(item));
             return currentItem;
         } else {
-            const mappedItem = this._mapperFn(item);    
+            const mappedItem = this._newInstanceFn(this._mapperFn(item));    
             this._data.set(keyItem, mappedItem);
             return mappedItem;
         }

@@ -1,56 +1,54 @@
+// @flow
 import { observable } from 'mobx';
-import Model from './Model';
-export class ActivityModel extends Model {
+import { Model } from './Model';
+import type { ActivityModelType, LinkObject } from './Types';
+export class ActivityModel extends Model<ActivityModelType> {
 
-    get organization() {
+    get organization(): string {
         return this._data.organization;
     }
-    get pipeline() {
+    get pipeline(): string {
         return this._data.pipeline;
     }
 
-    get _links() {
+    get _links(): LinkObject {
         return this._data._links;
     }
 
-    get changeSet() {
+    get changeSet(): Object {
         return this._data.changeSet;
     }
 
-    get durationInMillis() {
+    get durationInMillis(): number {
         return this._data.durationInMillis;
     }
 
 
-    get estimatedDurationInMillis() {
+    get estimatedDurationInMillis(): number {
         return this._data.estimatedDurationInMillis;
     }
 
-    get pipeline() {
-        return this._data.pipeline;
-    }
-
-    get id() {
+    get id(): string {
         return this._data.id;
     }
 
-    get result() {
+    get result(): string {
         return this._data.result;
     }
 
-    get state() {
+    get state(): string {
         return this._data.state;
     }
 
-    get startTime() {
+    get startTime(): string {
         return this._data.startTime;
     }
 
-    get endTime() {
+    get endTime(): string {
         return this._data.endTime;
     }
 
-    get commitId() {
+    get commitId(): string {
         return this._data.commitId;
     }
 }

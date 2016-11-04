@@ -1,17 +1,14 @@
+// @flow
 import { observable } from 'mobx';
 
-export default class Model {
-    @observable
-    _data = {}
+export class Model<T> {
+    @observable _data: T;
 
-    constructor(data, mapper) {
-        if (!mapper) {
-            throw new Error('mapper is a requirement');
-        }
-        this.data = data;
+    constructor(data: T) {
+        this._data = data;
     }
 
-    set data(data) {
-        this._data = this.mapper(data);
+    setData(data: T) {
+        this._data = data;
     }
 }
