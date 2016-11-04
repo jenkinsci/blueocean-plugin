@@ -1,16 +1,6 @@
-// Browser functions missing from built-ins for some reason.
-
-declare function requestAnimationFrame(fun: Function): number;
-
-declare function cancelAnimationFrame(id: number): void;
+// Browser functions missing from built-ins
 
 declare var performance: {
     now: () => number
 };
 
-type HTMLEvent = Event & {target: HTMLElement}; // So we can actually *use* event.target
-type HTMLKeyEvent = HTMLEvent & {keyCode: number};
-
-type HTMLEventHandler = (event: HTMLEvent) => *;
-type HTMLKeyEventHandler = (event: HTMLKeyEvent) => *;
-type FrameCallback = (time: number) => void;

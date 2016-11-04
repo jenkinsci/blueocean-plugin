@@ -9,7 +9,7 @@ export class Popover extends Component {
     //  User Interaction
     //--------------------------------------
 
-    modalScreenClicked:HTMLEventHandler = () => {
+    modalScreenClicked = () => {
         const { onDismiss } = this.props;
 
         if (onDismiss) {
@@ -17,7 +17,7 @@ export class Popover extends Component {
         }
     };
 
-    keyPressed:HTMLKeyEventHandler = (event) => {
+    keyPressed = (event: KeyboardEvent) => {
         const { onDismiss, ignoreEscapeKey } = this.props;
 
         if (!ignoreEscapeKey && onDismiss && event.keyCode === 27) {
