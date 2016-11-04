@@ -1,13 +1,8 @@
 import { observable } from 'mobx';
+import Model from './Model';
 
-export class PipelineModel {
-    @observable _data = {};
+export class PipelineModel extends Model {
 
-    constructor(pipelineData) {
-        this._data = pipelineData;
-    }
-
-  
     get name() {
         return this._data.name;
     }

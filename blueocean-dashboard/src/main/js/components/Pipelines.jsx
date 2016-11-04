@@ -5,14 +5,14 @@ import PageLoading from './PageLoading';
 
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
-import { documentTitle } from './DocumentTitle';
 import { observer } from 'mobx-react';
+
+import { pagerService, pipelineService } from '@jenkins-cd/blueocean-core-js';
 
 @observer
 export class Pipelines extends Component {
-
     componentWillMount() {
-        this.context.pipelinesService.fetchPipelines(this.props.params.organization);
+        this._initPager(this.props);
     }
 
     componentDidMount() {
@@ -22,18 +22,23 @@ export class Pipelines extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.context.pipelinesService.fetchPipelines(nextProps.params.organization);
+        this._initPager(nextProps);
+    }
+
+    _initPager(props) {
+        const org = props.params.organization;
+        if (org) {
+            this.pager = pagerService.getPager(pipelineService.organiztionPipelinesPager(org));
+        } else {
+            this.pager = pagerService.getPager(pipelineService.allPipelinesPager());
+        }
     }
 
     render() {
-        // TODO: should just be able to reference pipelineService.pipelineList here
-        const pipelines1 = this.context.pipelinesService._organizationList;
-        const pipelines2 = this.context.pipelinesService._allPipelines;
-        const pipelines = this.props.params.organization ? pipelines1 : pipelines2;
-
+        const pipelines = this.pager.data;
         const { config } = this.context;
         const { organization } = this.context.params;
-
+      
         const orgLink = organization ?
             <Link to={`organizations/${organization}`} className="inverse">
                 {organization}
@@ -92,9 +97,9 @@ export class Pipelines extends Component {
                             }
                         </Table>
 
-                        { pipelines && pipelines.$pager &&
-                            <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
-                                {pipelines.$pending ? 'Loading...' : 'Show More'}
+                        { pipelines && 
+                            <button disabled={!this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
+                                {this.pager.pending ? 'Loading...' : 'Show More'}
                             </button>
                         }
                     </article>

@@ -24,44 +24,21 @@ export default class Runs extends Component {
     }
     render() {
         // early out
-        if (!this.props.result || !this.context.pipeline) {
+        if (!this.props.run || !this.context.pipeline) {
             return null;
         }
-        const {
-            context: {
-                router,
-                location,
-                pipeline: {
-                    _class: pipelineClass,
-                    fullName,
-                    organization,
-                },
-            },
-            props: {
-                result: {
-                    durationInMillis,
-                    estimatedDurationInMillis,
-                    pipeline,
-                    id,
-                    result,
-                    state,
-                    startTime,
-                    endTime,
-                    commitId,
-                },
-                changeset,
-            },
-        } = this;
-
-        const resultRun = result === 'UNKNOWN' ? state : result;
+        const { router, location, pipeline } = this.context;
+        const { run, changeset } = this.props;
+          
+        const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const running = resultRun === 'RUNNING';
         const durationMillis = !running ?
-            durationInMillis :
-            moment().diff(moment(startTime));
+            run.durationInMillis :
+            moment().diff(moment(run.startTime));
 
         const open = () => {
-            const pipelineName = decodeURIComponent(pipeline);
-            location.pathname = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
+            const pipelineName = decodeURIComponent(pipeline.name);
+            location.pathname = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, pipelineName, run.id, 'pipeline');
             router.push(location);
         };
 
@@ -70,26 +47,26 @@ export default class Runs extends Component {
             router.push(location);
         };
 
-        return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
+        return (<tr key={run.id} onClick={open} id={`${pipeline}-${run.id}`} >
             <td>
-                <LiveStatusIndicator result={resultRun} startTime={startTime}
-                  estimatedDuration={estimatedDurationInMillis}
+                <LiveStatusIndicator result={resultRun} startTime={run.startTime}
+                  estimatedDuration={run.estimatedDurationInMillis}
                 />
             </td>
-            <td>{id}</td>
-            <td><CommitHash commitId={commitId} /></td>
-            <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
+            <td>{run.id}</td>
+            <td><CommitHash commitId={run.commitId} /></td>
+            <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
                 <td>{decodeURIComponent(pipeline)}</td>
             </IfCapability>
             <td>{changeset && changeset.msg || '-'}</td>
             <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
-            <td><ReadableDate date={endTime} liveUpdate /></td>
+            <td><ReadableDate date={run.endTime} liveUpdate /></td>
             <td>
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
                 { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
-                <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
-                    <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} onNavigation={openRunDetails} />
+                <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
+                    <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
                 </IfCapability>
             </td>
         </tr>);

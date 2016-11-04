@@ -10,6 +10,8 @@ import {
 } from '../redux';
 import PageLoading from './PageLoading';
 import { pipelineBranchesUnsupported } from './PipelinePage';
+import { branchService } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
 
 const { object, array, func, string, any } = PropTypes;
 
@@ -49,33 +51,23 @@ EmptyState.propTypes = {
     repoName: string,
 };
 
+@observer
 export class MultiBranch extends Component {
     componentWillMount() {
         if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
-            this.props.fetchBranches({
-                organizationName: this.context.params.organization,
-                pipelineName: this.context.params.pipeline,
-            });
+            const { organization, pipeline } = this.context.params;
+            this.pager = branchService.branchPager(organization, pipeline);
         }
     }
 
-    componentWillUnmount() {
-        this.props.clearBranchData();
-    }
-
-
     render() {
-        const { branches } = this.props;
+        const branches = this.pager.data;
 
-        if (!branches || (!branches.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
+        if (!branches || (!this.pager.pending && pipelineBranchesUnsupported(this.context.pipeline))) {
             return (<NotSupported />);
         }
 
-        if (branches.$failed) {
-            return <div>ERROR: {branches.$failed}</div>;
-        }
-
-        if (!branches.$pending && !branches.length) {
+        if (!this.pager.pending && !branches.length) {
             return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
@@ -96,18 +88,17 @@ export class MultiBranch extends Component {
                     <Table className="multibranch-table fixed"
                       headers={headers}
                     >
-                        {branches.length > 0 && branches.map((run, index) => {
-                            const result = new RunsRecord(run);
+                        {branches.length > 0 && branches.map((branch, index) => {
                             return (<Branches
                               key={index}
-                              data={result}
+                              data={branch}
                             />);
                         })
                         }
                     </Table>
-                    {branches.$pager &&
-                        <button disabled={branches.$pending || !branches.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => branches.$pager.fetchMore()}>
-                             {branches.$pending ? 'Loading...' : 'Show More'}
+                    {this.pager.pending &&
+                        <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
+                             {this.pager.pending ? 'Loading...' : 'Show More'}
                         </button>
                     }
                 </article>

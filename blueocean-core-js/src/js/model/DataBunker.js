@@ -9,13 +9,21 @@ export class DataBunker {
 
     @action
     setItem(item) {
-        this._data.set(this._keyFn(item), this._mapperFn(item));
+        const keyItem = this._keyFn(item);
+        const currentItem = this.getItem(keyItem);
+        if (currentItem) {
+            currentItem.data = item;
+            return currentItem;
+        } else {
+            const mappedItem = this._mapperFn(item);    
+            this._data.set(keyItem, mappedItem);
+            return mappedItem;
+        }
+        
     }
 
     setItems(items) {
-        for (const item of items) {
-            this.setItem(item);
-        }
+        return items.map(item => this.setItem(item));
     }
 
     getItem(key) {

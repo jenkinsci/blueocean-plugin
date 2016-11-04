@@ -21,7 +21,7 @@ export AppConfig from './config';
 export Security from './security';
 
 
-import { Pager, PagerService, PipelineService, SSEService, ActivityService } from './pager/index';
+import { Pager, PagerService, PipelineService, SSEService, ActivityService, BranchService } from './pager/index';
 export { Pager };
 
 export { ReplayButton } from './components/ReplayButton';
@@ -48,7 +48,8 @@ const runApi = new RunApi();
 export { runApi as RunApi };
 export const pagerService = new PagerService();
 export const sseService = new SSEService(sseConnection);
-export const pipelineService = new PipelineService(pagerService, sseService);
 export const activityService = new ActivityService(pagerService, sseService);
+export const pipelineService = new PipelineService(pagerService, sseService, activityService);
 
+export const branchService = new BranchService(pagerService, sseService);
 sseService._initListeners();

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, activityService } from '@jenkins-cd/blueocean-core-js';
 import Runs from './Runs';
 import { RunRecord, ChangeSetRecord } from './records';
 import {
@@ -11,6 +11,9 @@ import {
 } from '../redux';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { capabilityStore } from './Capability';
+import { observer } from 'mobx-react';
+import { paginateUrl } from '../util/UrlUtils';
+import UrlConfig from '../config';
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -45,31 +48,26 @@ EmptyState.propTypes = {
     showRunButton: bool,
     onNavigation: func,
 };
-
+@observer
 export class Activity extends Component {
+
     componentWillMount() {
         if (this.context.config && this.context.params) {
-            const {
-                params: {
-                    pipeline,
-                    organization,
-                },
-                config = {},
-            } = this.context;
+            const organization = this.context.params.organization;
+            const pipeline = this.context.params.pipeline;
+           
+            this.pager = activityService.activityPager(organization, pipeline);
 
-            config.pipeline = pipeline;
-            config.organization = organization;
-            this.props.fetchRuns(config);
         }
     }
 
     render() {
-        const { runs, pipeline } = this.props;
-
-        if (!runs || !pipeline || pipeline.$pending) {
+        const { pipeline } = this.props;
+        const runs = this.pager.data;
+        if (!runs || !pipeline) {
             return null;
         }
-
+        
         const { capabilities } = this.props;
         const isMultiBranchPipeline = capabilities[pipeline._class].contains(MULTIBRANCH_PIPELINE);
 
@@ -83,7 +81,7 @@ export class Activity extends Component {
             this.context.router.push(this.context.location);
         };
 
-        if (runs.$success && !runs.length) {
+        if (!runs.length) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
         }
 
@@ -136,7 +134,7 @@ export class Activity extends Component {
                                     run,
                                     pipeline,
                                     changeset: latestRecord,
-                                    result: new RunRecord(run),
+                                   
                                 }}
                                 />
                             );
@@ -144,9 +142,9 @@ export class Activity extends Component {
                     }
                 </Table>
                 }
-                {runs.$pager && runs.length > 0 &&
-                <button disabled={runs.$pending || !runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
-                    {runs.$pending ? 'Loading...' : 'Show More'}
+                {runs && runs.length > 0 &&
+                <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
+                    {this.pager.pending ? 'Loading...' : 'Show More'}
                 </button>
                 }
             </article>

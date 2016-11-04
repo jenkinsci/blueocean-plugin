@@ -4,9 +4,10 @@ import { AppPaths, RestPaths } from '../utils/paths';
 import { DataBunker } from '../model/DataBunker';
 import { PipelineModel } from '../model/PipelineModel';
 import { Fetch } from '../fetch';
+import utils from '../utils';
 
 export default class PipelineService {
-    constructor(pagerService, sseService) {
+    constructor(pagerService, sseService, activityService) {
         this.pagerService = pagerService;
         this.sseService = sseService;
         this.sseService.registerHandler((event) => this._sseEventHandler(event));
@@ -33,10 +34,21 @@ export default class PipelineService {
     }
 
     _mapperFn(item) {
-        return new PipelineModel(item);
+        return new PipelineModel(item, (x) => this._pipelineModelMapper(x));
     }
 
-    fetchPipeline(href) {
+    _pipelineModelMapper(pipelineData) {
+        const data = utils.clone(pipelineData);
+        const latestRun = data.latestRun;
+
+        if (latestRun) {
+            data.latestRun = this.activityService.getOrAddActivity(latestRun);
+        }
+
+        return data;
+    }
+
+    fetchPipelineByHref(href) {
         return Fetch.fetchJSON(href)
             .then(data => {
                 this.bunker.setItem(data);
@@ -48,7 +60,7 @@ export default class PipelineService {
         console.log('_sseEventHandler', event);
         switch (event.jenkins_event) {
         case 'job_crud_created':
-            this.fetchPipeline(`${AppPaths.getJenkinsRootURL}/${event.blueocean_job_rest_url}`);
+            this.fetchPipelineByHref(`${AppPaths.getJenkinsRootURL}/${event.blueocean_job_rest_url}`);
             this.pagerService.invalidatePagerHrefs();
             break;
         case 'job_crud_deleted':

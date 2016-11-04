@@ -63,7 +63,5 @@ export const RestPaths = {
 
     pullRequests(organization, pipeline) {
         return `${RestPaths.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/branches/?filter=pull-requests`;
-    },
-
-    
+    },  
 };

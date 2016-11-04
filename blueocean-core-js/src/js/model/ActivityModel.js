@@ -1,11 +1,6 @@
 import { observable } from 'mobx';
-
-export class ActivityModel {
-    @observable _data = {};
-
-    constructor(runData) {
-        this._data = runData;
-    }
+import Model from './Model';
+export class ActivityModel extends Model {
 
     get organization() {
         return this._data.organization;
