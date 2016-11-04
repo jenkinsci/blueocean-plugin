@@ -30,8 +30,18 @@ import {
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 const { func, object, any, string } = PropTypes;
+
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (AppConfig.getInitialUser() !== 'anonymous') {
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
+    }
+    return link;
+};
+
 
 class RunDetails extends Component {
 
@@ -175,9 +185,7 @@ class RunDetails extends Component {
                               latestRun={currentRun}
                               buttonType="stop-only"
                             />
-
-                            <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>
-
+                            {classicConfigLink(pipeline)}
                         </div>
                     </div>
                 </ModalHeader>

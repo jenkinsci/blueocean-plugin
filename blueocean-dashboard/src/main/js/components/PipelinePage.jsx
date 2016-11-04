@@ -21,6 +21,7 @@ import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
 import { Icon } from 'react-material-icons-blue';
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 /**
  * returns true if the pipeline is defined and has branchNames
@@ -32,6 +33,15 @@ export function pipelineBranchesUnsupported(pipeline) {
     }
     return false;
 }
+
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (AppConfig.getInitialUser() !== 'anonymous') {
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
+    }
+    return link;
+};
+
 
 export class PipelinePage extends Component {
     getChildContext() {
@@ -85,7 +95,7 @@ export class PipelinePage extends Component {
                           store={this.context.store}
                           pipeline={this.props.pipeline}
                         />
-                        <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>
+                        {classicConfigLink(pipeline)}
                     </Title>
                     }
 
@@ -110,6 +120,7 @@ PipelinePage.propTypes = {
     params: PropTypes.object,
     setTitle: PropTypes.func,
 };
+
 
 PipelinePage.contextTypes = {
     config: PropTypes.object.isRequired,
