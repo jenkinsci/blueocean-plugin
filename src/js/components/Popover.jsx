@@ -2,6 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import FloatingElement, { positions, positionValues, sanitizePosition } from './FloatingElement';
+import {ModalContainer} from '.';
 
 export class Popover extends Component {
 
@@ -35,8 +36,7 @@ export class Popover extends Component {
         const pointClassName = 'Popover-point Popover-point--' + position;
 
         return (
-            <div className="Popover">
-                <div className="Popover-modalScreen" onClick={this.modalScreenClicked}/>
+            <ModalContainer onScreenClick={this.modalScreenClicked}>
                 <FloatingElement
                     targetElement={this.props.targetElement}
                     position={this.props.position}
@@ -50,7 +50,7 @@ export class Popover extends Component {
                         </div>
                     </div>
                 </FloatingElement>
-            </div>
+            </ModalContainer>
         );
     }
 

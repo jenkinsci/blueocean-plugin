@@ -1,4 +1,43 @@
-.Popover-modalScreen {
+// TODO: Rename this file because it's for assorted modal popups not just popover
+
+//--------------------------------------------------------------------------
+//
+//  Popups, popovers, and dialogs
+//
+//--------------------------------------------------------------------------
+
+//--------------------------------------
+//  Mixins
+//--------------------------------------
+
+.popup-shadow {
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+@popup-border-radius: 3px;
+
+.popup-appearance {
+    background: white;
+    border: none;
+    border-radius: @popup-border-radius;
+}
+
+//--------------------------------------
+//  Container / shade screen
+//--------------------------------------
+
+.ModalContainer {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ModalContainer-modalScreen {
     position: fixed;
     top: 0;
     right: 0;
@@ -9,14 +48,49 @@
     z-index: 99;
 }
 
-.Popover-wrapper {
-    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5));
+//--------------------------------------
+//  Dialog
+//--------------------------------------
+
+.Dialog {
+    .popup-appearance;
+    .popup-shadow;
+    z-index: 100; // Above -modalScreen, below .Popover
+
+    max-width: 95%;  // So there's always at least some background to show it's a popup
+    max-height: 90%;
+
+    display:flex;
+    flex-direction: column;
+}
+
+.Dialog-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 80px;
+    min-height: 80px;
+    background: @brand-primary;
+    color: white;
+    border-top-left-radius: @popup-border-radius;
+    border-top-right-radius: @popup-border-radius;
+    padding: 0 32px;
+}
+
+//--------------------------------------
+//  Popover
+//--------------------------------------
+
+.Popover {
+    position: fixed;
+    z-index: 120;
+    left: 0;
+    top: 0;
+    .popup-shadow;
 }
 
 .Popover-content {
-    background: white;
-    border: none;
-    border-radius: 2px;
+    .popup-appearance;
     padding: 2em 2em;
 }
 
