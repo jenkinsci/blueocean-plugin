@@ -13,6 +13,7 @@ import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
+import hudson.plugins.favorite.Favorites;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
@@ -129,11 +130,7 @@ public class AbstractPipelineImpl extends BluePipeline {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
-        if (favoriteAction.isFavorite()) {
-            FavoriteUtil.setFavorite(job);
-        } else {
-            FavoriteUtil.unsetFavorite(job);
-        }
+        FavoriteUtil.toggle(favoriteAction, job);
         return FavoriteUtil.getFavorite(job, new Reachable() {
             @Override
             public Link getLink() {
@@ -267,12 +264,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     public boolean isFavorite() {
         User user = User.current();
-        if(user != null) {
-            FavoriteUserProperty prop = user.getProperty(FavoriteUserProperty.class);
-            return prop != null && prop.isJobFavorite(job.getFullName());
-        }
-
-        return false;
+        return user != null && Favorites.isFavorite(user, job);
     }
 
 }

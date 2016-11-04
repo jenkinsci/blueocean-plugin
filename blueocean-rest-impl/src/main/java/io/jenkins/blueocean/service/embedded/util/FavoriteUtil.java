@@ -1,16 +1,12 @@
 package io.jenkins.blueocean.service.embedded.util;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
-import hudson.plugins.favorite.FavoritePlugin;
 import hudson.plugins.favorite.Favorites;
 import hudson.plugins.favorite.Favorites.FavoriteException;
-import hudson.plugins.favorite.user.FavoriteUserProperty;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -22,10 +18,8 @@ import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import jenkins.model.Jenkins;
-import org.kohsuke.stapler.Stapler;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -36,19 +30,19 @@ public class FavoriteUtil {
 
     private static final String DEFAULT_BRANCH = "master";
 
-    public static void setFavorite(Job job) {
-        try {
-            Favorites.addFavorite(getUser(), job);
-        } catch (FavoriteException e) {
-            throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
-        }
-    }
-
-    public static void unsetFavorite(Job job) {
-        try {
-            Favorites.addFavorite(getUser(), job);
-        } catch (FavoriteException e) {
-            throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
+    public static void toggle(BlueFavoriteAction action, Item item) {
+        if (action.isFavorite()) {
+            try {
+                Favorites.addFavorite(getUser(), item);
+            } catch (FavoriteException e) {
+                throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
+            }
+        } else {
+            try {
+                Favorites.removeFavorite(getUser(), item);
+            } catch (FavoriteException e) {
+                throw new ServiceException.UnexpectedErrorException("Something went wrong removing the favorite", e);
+            }
         }
     }
 

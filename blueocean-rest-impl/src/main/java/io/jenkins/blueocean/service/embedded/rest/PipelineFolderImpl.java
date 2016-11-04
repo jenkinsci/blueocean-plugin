@@ -99,19 +99,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
-        if(favoriteAction == null) {
-            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
-        }
-        if (!(folder instanceof AbstractFolder)) {
-            throw new ServiceException.BadRequestExpception("Not a folder");
-        }
-        Job job = FavoriteUtil.resolveDefaultBranch((AbstractFolder) folder);
-        if (favoriteAction.isFavorite()) {
-            FavoriteUtil.setFavorite(job);
-        } else {
-            FavoriteUtil.unsetFavorite(job);
-        }
-        return FavoriteUtil.getFavorite(folder.getFullName(), this);
+        throw new ServiceException.MethodNotAllowedException("Cannot favorite a folder");
     }
 
     @Override

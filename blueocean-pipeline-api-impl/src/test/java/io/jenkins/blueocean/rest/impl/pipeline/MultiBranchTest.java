@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
+import hudson.plugins.favorite.Favorites;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
@@ -560,7 +561,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         c = (String) branch.get("_class");
         Assert.assertEquals(BranchImpl.class.getName(), c);
 
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/favorite/", getHrefFromLinks((Map)l.get(0), "self"));
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/master/favorite/", getHrefFromLinks((Map)l.get(0), "self"));
 
         String ref = getHrefFromLinks((Map)l.get(0), "self");
 
@@ -681,12 +682,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
         j.waitUntilNoActivity();
 
-        FavoriteUserProperty fup = user.getProperty(FavoriteUserProperty.class);
-        if (fup == null) {
-            user.addProperty(new FavoriteUserProperty());
-            fup = user.getProperty(FavoriteUserProperty.class);
-        }
-        fup.toggleFavorite(mp.getFullName());
+        Favorites.toggleFavorite(user, p);
         user.save();
 
         String token = getJwtToken(j.jenkins,"alice", "alice");
@@ -706,7 +702,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         Assert.assertEquals(BranchImpl.class.getName(), c);
 
         String href = getHrefFromLinks((Map)l.get(0), "self");
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/favorite/", href);
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/master/favorite/", href);
 
 
 
