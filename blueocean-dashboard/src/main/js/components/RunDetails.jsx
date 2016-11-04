@@ -9,6 +9,8 @@ import {
 
 import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
+import { Icon } from 'react-material-icons-blue';
+
 import {
     actions,
     currentRun as runSelector,
@@ -22,13 +24,24 @@ import {
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
+    buildClassicConfigUrl,
 } from '../util/UrlUtils';
 
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 const { func, object, any, string } = PropTypes;
+
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (AppConfig.getInitialUser() !== 'anonymous') {
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
+    }
+    return link;
+};
+
 
 class RunDetails extends Component {
 
@@ -172,6 +185,7 @@ class RunDetails extends Component {
                               latestRun={currentRun}
                               buttonType="stop-only"
                             />
+                            {classicConfigLink(pipeline)}
                         </div>
                     </div>
                 </ModalHeader>
@@ -211,5 +225,6 @@ RunDetails.propTypes = {
 const selectors = createSelector(
     [runSelector, isMultiBranchSelector, previousSelector],
     (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
+
 
 export default connect(selectors, actions)(RunDetails);
