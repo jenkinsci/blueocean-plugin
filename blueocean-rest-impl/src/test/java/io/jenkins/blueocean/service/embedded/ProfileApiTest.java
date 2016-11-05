@@ -222,34 +222,19 @@ public class ProfileApiTest extends BaseTest{
         Assert.assertEquals(0, l.size());
 
 
-        map = new RequestBuilder(baseUrl)
+        new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/folder1/favorite/")
             .jwtToken(token)
             .data(ImmutableMap.of("favorite", true))
+            .status(405)
             .build(Map.class);
 
-        validateFolder(folder1, (Map) map.get("item"));
-        l = new RequestBuilder(baseUrl)
-            .get("/users/"+user.getId()+"/favorites/")
-            .jwtToken(token)
-            .build(List.class);
-
-        Assert.assertEquals(1, l.size());
-        Map folder = (Map)((Map)l.get(0)).get("item");
-
-        validateFolder(folder1, folder);
-
-        href = getHrefFromLinks((Map)l.get(0),"self");
-
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/favorite/", href);
-
-        map = new RequestBuilder(baseUrl)
-            .put(href.substring("/blue/rest".length()))
+        new RequestBuilder(baseUrl)
+            .put("/organizations/jenkins/pipelines/folder1/favorite/")
             .jwtToken(token)
             .data(ImmutableMap.of("favorite", false))
+            .status(405)
             .build(Map.class);
-
-        validateFolder(folder1, (Map) map.get("item"));
 
         l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -257,14 +242,6 @@ public class ProfileApiTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(0, l.size());
-
-
-
-        new RequestBuilder(baseUrl)
-            .get("/users/"+user.getId()+"/favorites/")
-            .jwtToken(getJwtToken(j.jenkins,"bob","bob"))
-            .status(403)
-            .build(String.class);
 
     }
 

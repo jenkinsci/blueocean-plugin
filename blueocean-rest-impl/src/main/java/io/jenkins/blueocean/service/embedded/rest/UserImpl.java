@@ -20,7 +20,7 @@ import java.util.Collections;
  * @author Vivek Pandey
  */
 public class UserImpl extends BlueUser {
-    private final User user;
+    protected final User user;
 
     private final Reachable parent;
     public UserImpl(User user, Reachable parent) {
@@ -58,16 +58,6 @@ public class UserImpl extends BlueUser {
 
         Mailer.UserProperty p = user.getProperty(Mailer.UserProperty.class);
         return p != null ? p.getAddress() : null;
-    }
-
-    protected boolean isFavorite(final String name) {
-        FavoriteUserProperty prop = user.getProperty(FavoriteUserProperty.class);
-        return prop != null && prop.isJobFavorite(name);
-    }
-
-
-    protected FavoriteUserProperty getFavoriteProperty(){
-        return user.getProperty(FavoriteUserProperty.class);
     }
 
     @Override
