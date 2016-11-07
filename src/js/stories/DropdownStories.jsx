@@ -25,6 +25,7 @@ const style2 = {
 
 function createOptions(count) {
     const options = [];
+    options.push('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
     for (let index = 0; index < count; index++) {
         options.push(index + 1);
     }
