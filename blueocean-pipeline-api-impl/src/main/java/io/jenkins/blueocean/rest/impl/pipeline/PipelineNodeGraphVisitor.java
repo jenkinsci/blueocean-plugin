@@ -198,7 +198,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 return;
             }
         }
-        TimingInfo times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
+
+        TimingInfo times = null;
+        if (firstExecuted != null) {
+            times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
+        }
 
         if(times == null){
             times = new TimingInfo();
@@ -297,6 +301,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     @Override
     public List<BluePipelineStep> getPipelineNodeSteps(Link parent) {
+        if(run.getExecution() == null){
+            return Collections.emptyList();
+        }
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
         ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
         List<BluePipelineStep> steps = new ArrayList<>();
@@ -308,6 +315,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     @Override
     public BluePipelineStep getPipelineNodeStep(String id, Link parent) {
+        if(run.getExecution() == null){
+            return null;
+        }
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
         ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
         FlowNodeWrapper node = visitor.getStep(id);

@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { translate } from 'react-i18next';
+import CreatePipelineLink from './CreatePipelineLink';
 import { documentTitle } from './DocumentTitle';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
@@ -45,7 +45,6 @@ console.log('ttt'). t('Name')
         ];
 
         const baseUrl = config.getRootURL();
-        const newJobUrl = `${baseUrl}/view/All/newJob`;
         return (
             <Page>
                 <PageHeader>
@@ -63,9 +62,7 @@ console.log('ttt'). t('Name')
                             { organization && orgLink }
                         </h1>
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
-                            <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
-                                { t('New.Pipeline') }
-                            </a>
+                            <CreatePipelineLink />
                         </Extensions.Renderer>
                     </Title>
                 </PageHeader>

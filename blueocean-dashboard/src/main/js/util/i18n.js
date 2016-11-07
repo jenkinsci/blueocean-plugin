@@ -1,20 +1,20 @@
-import { i18n } from "@jenkins-cd/blueocean-core-js";
+import { I18n } from "@jenkins-cd/blueocean-core-js";
 import EventEmitter from 'events';
 
-export default class I18n extends EventEmitter {
+export default class I18nHelper extends EventEmitter {
 
-    constructor(namespaces = i18n.options.defaultNS, options = {}) {
+    constructor(namespaces = I18n.options.defaultNS, options = {}) {
         super();
         const { wait = true, bindI18n = 'languageChanged loaded', bindStore = 'added removed' } = options;
-        this.t = i18n.getFixedT(i18n.language, namespaces);
-        this.locale = i18n.language;
+        this.t = I18n.getFixedT(I18n.language, namespaces);
+        this.locale = I18n.language;
         this.unmount = () => {
             if (this.onI18nChanged) {
                 bindI18n.split(' ').forEach((event) => {
-                    i18n.off(event, this.onI18nChanged);
+                    I18n.off(event, this.onI18nChanged);
                 });
                 bindStore.split(' ').forEach((event) => {
-                    i18n.store.off(event, this.onI18nChanged);
+                    I18n.store.off(event, this.onI18nChanged);
                 });
             }
             this.mounted = false;
@@ -22,19 +22,19 @@ export default class I18n extends EventEmitter {
 
         this.onI18nChanged = () => {
             if (!this.mounted) return;
-            this.emit('i18nChanged',  new Date());
+            this.emit('I18nChanged',  new Date());
         };
 
-        this.on('i18nChanged', (date) => {
-           console.log('i18nChanged', date);
+        this.on('I18nChanged', (date) => {
+           console.log('I18nChanged', date);
         });
 
         const bind = () => {
-            bindI18n && i18n.on(bindI18n, this.onI18nChanged);
-            bindStore && i18n.store && i18n.store.on(bindStore, this.onI18nChanged);
+            bindI18n && I18n.on(bindI18n, this.onI18nChanged);
+            bindStore && I18n.store && I18n.store.on(bindStore, this.onI18nChanged);
         };
 
-        i18n.loadNamespaces(namespaces, () => {
+        I18n.loadNamespaces(namespaces, () => {
             this.mounted = true;
             if (wait) bind();
         });

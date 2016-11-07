@@ -1,9 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import hudson.Extension;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
+import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -97,12 +99,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
-        if(favoriteAction == null) {
-            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
-        }
-
-        FavoriteUtil.favoriteJob(folder.getFullName(), favoriteAction.isFavorite());
-        return FavoriteUtil.getFavorite(folder.getFullName(), this);
+        throw new ServiceException.MethodNotAllowedException("Cannot favorite a folder");
     }
 
     @Override

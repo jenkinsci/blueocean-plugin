@@ -72,14 +72,8 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
-
-        Job job = mbp.getItem("master");
-        if(job == null) {
-            throw new ServiceException.BadRequestExpception("no master branch to favorite");
-        }
-
-        FavoriteUtil.favoriteJob(mbp.getFullName(), favoriteAction.isFavorite());
-
+        Job job = FavoriteUtil.resolveDefaultBranch(mbp);
+        FavoriteUtil.toggle(favoriteAction, job);
         return new FavoriteImpl(new BranchImpl(job,getLink().rel("branches")), getLink().rel("favorite"));
     }
 
@@ -364,7 +358,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         public BlueFavorite resolve(Item item, Reachable parent) {
             if(item instanceof MultiBranchProject){
                 MultiBranchProject project = (MultiBranchProject) item;
-                Job job = project.getItem("master");
+                Job job = FavoriteUtil.resolveDefaultBranch(project);
                 if(job != null){
                     Resource resource = BluePipelineFactory.resolve(job);
                     Link l = LinkResolver.resolveLink(project);

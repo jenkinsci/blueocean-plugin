@@ -6,8 +6,10 @@ import {
     PageTabs,
     TabLink,
 } from '@jenkins-cd/design-language';
-import { ReplayButton, RunButton, i18n } from '@jenkins-cd/blueocean-core-js';
+import { ReplayButton, RunButton, I18n } from '@jenkins-cd/blueocean-core-js';
 import { translate } from 'react-i18next';
+
+import { Icon } from 'react-material-icons-blue';
 
 import {
     actions,
@@ -22,6 +24,7 @@ import {
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
+    buildClassicConfigUrl,
 } from '../util/UrlUtils';
 
 import compose from '../util/compose';
@@ -29,8 +32,18 @@ import compose from '../util/compose';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 const { func, object, any, string } = PropTypes;
+
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (AppConfig.getInitialUser() !== 'anonymous') {
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
+    }
+    return link;
+};
+
 
 class RunDetails extends Component {
 
@@ -182,6 +195,7 @@ class RunDetails extends Component {
                               latestRun={currentRun}
                               buttonType="stop-only"
                             />
+                            {classicConfigLink(pipeline)}
                         </div>
                     </div>
                 </ModalHeader>
@@ -189,7 +203,7 @@ class RunDetails extends Component {
                     <div>
                         {run.$success && React.cloneElement(
                             this.props.children,
-                            { locale: i18n.language, baseUrl, result: currentRun, ...this.props }
+                            { locale: I18n.language, baseUrl, result: currentRun, ...this.props }
                         )}
                     </div>
                 </ModalBody>

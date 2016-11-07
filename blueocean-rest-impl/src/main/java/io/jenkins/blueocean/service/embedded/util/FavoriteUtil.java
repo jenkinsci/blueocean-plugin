@@ -1,23 +1,25 @@
 package io.jenkins.blueocean.service.embedded.util;
 
+import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import hudson.model.Item;
+import hudson.model.Job;
+import hudson.model.TopLevelItem;
 import hudson.model.User;
-import hudson.plugins.favorite.FavoritePlugin;
-import hudson.plugins.favorite.user.FavoriteUserProperty;
+import hudson.plugins.favorite.Favorites;
+import hudson.plugins.favorite.Favorites.FavoriteException;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
+import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import jenkins.model.Jenkins;
-import org.kohsuke.stapler.Stapler;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -25,26 +27,21 @@ import java.net.URLDecoder;
  * @author Ivan Meredith
  */
 public class FavoriteUtil {
-    public static void favoriteJob(String fullName, boolean favorite) {
-        User user = User.current();
-        if(user == null) {
-            throw new ServiceException.ForbiddenException("Must be logged in to use set favorites");
-        }
-        boolean set = false;
-        FavoriteUserProperty fup = user.getProperty(FavoriteUserProperty.class);
-        if(fup != null) {
-            set = fup.isJobFavorite(fullName);
-        }
-        //TODO: FavoritePlugin is null
-        FavoritePlugin plugin = Jenkins.getInstance().getPlugin(FavoritePlugin.class);
-        if(plugin == null) {
-            throw new ServiceException.UnexpectedErrorException("Can not find instance of Favorite Plugin");
-        }
-        if(favorite != set) {
+
+    private static final String DEFAULT_BRANCH = "master";
+
+    public static void toggle(BlueFavoriteAction action, Item item) {
+        if (action.isFavorite()) {
             try {
-                plugin.doToggleFavorite(Stapler.getCurrentRequest(), Stapler.getCurrentResponse(), fullName, Jenkins.getAuthentication().getName(), false);
-            } catch (IOException e) {
+                Favorites.addFavorite(getUser(), item);
+            } catch (FavoriteException e) {
                 throw new ServiceException.UnexpectedErrorException("Something went wrong setting the favorite", e);
+            }
+        } else {
+            try {
+                Favorites.removeFavorite(getUser(), item);
+            } catch (FavoriteException e) {
+                throw new ServiceException.UnexpectedErrorException("Something went wrong removing the favorite", e);
             }
         }
     }
@@ -56,7 +53,6 @@ public class FavoriteUtil {
             throw new ServiceException.UnexpectedErrorException("Something went wrong URL decoding fullName: "+name, e);
         }
     }
-
 
     public static BlueFavorite getFavorite(String fullName, Reachable parent){
         Item item = Jenkins.getInstance().getItem(fullName);
@@ -107,4 +103,28 @@ public class FavoriteUtil {
         return null;
     }
 
+    /**
+     * Resolves the default branch for a folder
+     * @param folder to check within
+     * @return default branch
+     */
+    public static Job resolveDefaultBranch(AbstractFolder folder) {
+        // TODO: lookup the multibranch project and look for a default branch property
+        TopLevelItem job = folder.getJob(DEFAULT_BRANCH);
+        if(job == null) {
+            throw new ServiceException.BadRequestExpception("no master branch to favorite");
+        }
+        if (!(job instanceof Job)) {
+            throw new ServiceException.MethodNotAllowedException(DEFAULT_BRANCH + " is not a job");
+        }
+        return (Job) job;
+    }
+
+    private static User getUser() {
+        User user = User.current();
+        if(user == null) {
+            throw new ServiceException.ForbiddenException("Must be logged in to use set favorites");
+        }
+        return user;
+    }
 }

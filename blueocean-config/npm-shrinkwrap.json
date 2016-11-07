@@ -3663,9 +3663,9 @@
       "dev": true
     },
     "rollbar-browser": {
-      "version": "1.9.1",
-      "from": "rollbar-browser@1.9.1",
-      "resolved": "https://registry.npmjs.org/rollbar-browser/-/rollbar-browser-1.9.1.tgz"
+      "version": "1.9.2",
+      "from": "rollbar-browser@1.9.2",
+      "resolved": "https://registry.npmjs.org/rollbar-browser/-/rollbar-browser-1.9.2.tgz"
     },
     "run-async": {
       "version": "0.1.0",
