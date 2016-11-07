@@ -1,9 +1,9 @@
 import React from 'react';
 import Fullscreen from './Fullscreen';
 import { Link } from 'react-router';
-import { i18n } from '@jenkins-cd/blueocean-core-js';
+import { I18n } from '@jenkins-cd/blueocean-core-js';
 
-const t = (key) => i18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
+const t = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 /**
  * Simple component to render a fullscreen 404 page
  */

@@ -12,14 +12,14 @@ import Config from './config';
 import { ToastDrawer } from './components/ToastDrawer';
 import { DevelopmentFooter } from './DevelopmentFooter';
 
-import { AppConfig, UrlConfig, Utils, i18n} from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, Security, UrlConfig, Utils, I18n} from '@jenkins-cd/blueocean-core-js';
 
 let config; // Holder for various app-wide state
 const namespaces = ['jenkins.plugins.blueocean.web.Messages'];
 
 function loginOrLogout(t) {
-    if (AppConfig.getLoginUrl()) {
-        if (AppConfig.getInitialUser() === "anonymous") {
+    if (Security.isSecurityEnabled()) {
+        if (Security.isAnonymousUser()) {
             const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
             return <a href={loginUrl} className="btn-primary inverse small">{t('login')}</a>;
         } else {
@@ -167,7 +167,7 @@ function startApp(routes, stores) {
 
     // Start React
     render(
-          <I18nextProvider i18n={ i18n }>
+          <I18nextProvider i18n={ I18n }>
             <Provider store={store}>
                 <Router history={history}>{ makeRoutes(routes) }</Router>
             </Provider>

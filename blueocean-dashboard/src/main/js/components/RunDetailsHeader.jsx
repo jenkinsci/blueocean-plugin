@@ -50,7 +50,7 @@ class RunDetailsHeader extends Component {
                     <a onClick={() => this.handleOrganizationClick()}>{run.organization}</a>
                     <span>&nbsp;/&nbsp;</span>
                     <a className="path-link" onClick={() => this.handleNameClick()}>
-                        <ExpandablePath path={fullDisplayName} iconSize={20} hideFirst />
+                        <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
                     </a>
                     <span>&nbsp;#{run.id}</span>
                 </h4>

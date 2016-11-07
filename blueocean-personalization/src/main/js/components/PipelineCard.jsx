@@ -166,7 +166,7 @@ export class PipelineCard extends Component {
 
                 <span className="name">
                     <Link to={activityUrl} onClick={(event) => stopProp(event)}>
-                        <ExpandablePath path={`${organization}/${fullDisplayName}`} />
+                        <ExpandablePath path={`${organization}/${fullDisplayName}`} className="dark-theme" />
                     </Link>
                 </span>
 

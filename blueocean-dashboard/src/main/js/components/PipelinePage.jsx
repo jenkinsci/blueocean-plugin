@@ -11,7 +11,8 @@ import {
     WeatherIcon,
 } from '@jenkins-cd/design-language';
 import { translate } from 'react-i18next';
-import { i18n } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, I18n } from '@jenkins-cd/blueocean-core-js';
+import { Icon } from 'react-material-icons-blue';
 import {
     actions,
     pipeline as pipelineSelector,
@@ -20,7 +21,7 @@ import {
 } from '../redux';
 import NotFound from './NotFound';
 import PageLoading from './PageLoading';
-import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
+import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
 import compose from '../util/compose';
 
@@ -28,12 +29,18 @@ import compose from '../util/compose';
  * returns true if the pipeline is defined and has branchNames
  */
 export function pipelineBranchesUnsupported(pipeline) {
-    if ((pipeline && !pipeline.branchNames) ||
-        (pipeline && !pipeline.branchNames.length)) {
-        return true;
-    }
-    return false;
+    return (pipeline && !pipeline.branchNames) ||
+      (pipeline && !pipeline.branchNames.length);
 }
+
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (AppConfig.getInitialUser() !== 'anonymous') {
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
+    }
+    return link;
+};
+
 
 export class PipelinePage extends Component {
     getChildContext() {
@@ -80,7 +87,7 @@ export class PipelinePage extends Component {
                             <Link to={orgUrl} query={location.query}>{organization}</Link>
                             <span>&nbsp;/&nbsp;</span>
                             <Link to={activityUrl} query={location.query}>
-                                <ExpandablePath path={fullDisplayName} iconSize={20} hideFirst />
+                                <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
                             </Link>
                         </h1>
                         <Extensions.Renderer
@@ -88,19 +95,22 @@ export class PipelinePage extends Component {
                           store={this.context.store}
                           pipeline={this.props.pipeline}
                         />
+                        {classicConfigLink(pipeline)}
                     </Title>
                     }
+
                     <PageTabs base={baseUrl}>
                         <TabLink to="/activity">{ t('pipelinedetail.common.tab.activity') }</TabLink>
                         <TabLink to="/branches">{ t('pipelinedetail.common.tab.branches') }</TabLink>
                         <TabLink to="/pr">{ t('pipelinedetail.common.tab.pullrequests') }</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t, locale: i18n.language })}
+                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t, locale: I18n.language })}
             </Page>
         );
     }
 }
+
 
 PipelinePage.propTypes = {
     children: PropTypes.any,
@@ -110,6 +120,7 @@ PipelinePage.propTypes = {
     setTitle: PropTypes.func,
     t: PropTypes.func,
 };
+
 
 PipelinePage.contextTypes = {
     config: PropTypes.object.isRequired,
