@@ -184,10 +184,10 @@ export default class Dropdown extends React.Component {
         if (position === POSITION.NEXT || position === POSITION.PREV) {
             const focusedListItem = document.activeElement.parentNode;
             const focusedIndex = allListItems.indexOf(focusedListItem);
-            const nextFocusIndex = focusedIndex + position;
+            const nextFocusIndex = focusedIndex + (position === POSITION.NEXT ? 1 : -1);
 
             if (0 <= nextFocusIndex && (nextFocusIndex <= allListItems.length - 1)) {
-                const nextListItem = allListItems[focusedIndex + position];
+                const nextListItem = allListItems[nextFocusIndex];
                 nextListItem.children[0].focus();
             }
         } else if (position === POSITION.LAST) {
@@ -289,7 +289,6 @@ Dropdown.propTypes = {
     labelField: PropTypes.string,
     labelFunction: PropTypes.func,
     onChange: PropTypes.func,
-    onBlur: PropTypes.func,
 };
 
 Dropdown.defaultProps = {
