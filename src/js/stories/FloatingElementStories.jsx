@@ -2,13 +2,14 @@ import React, {Component, PropTypes} from 'react';
 import { storiesOf } from '@kadira/storybook';
 
 import { FloatingElement } from '../components';
+import Position from '../components/Position';
 
 
 storiesOf('FloatingElement', module)
-    .add('Above', () => <ExampleBasic position="above"/>)
-    .add('Below', () => <ExampleBasic position="below"/>)
-    .add('Left', () => <ExampleBasic position="left"/>)
-    .add('Right', () => <ExampleBasic position="right"/>)
+    .add('Above', () => <ExampleBasic positionStrategy={Position.above}/>)
+    .add('Below', () => <ExampleBasic positionStrategy={Position.below}/>)
+    .add('Left', () => <ExampleBasic positionStrategy={Position.left}/>)
+    .add('Right', () => <ExampleBasic positionStrategy={Position.right}/>)
 ;
 
 const triggerStyle = {
@@ -78,7 +79,7 @@ class ExampleBasic extends Component {
     render() {
 
         const {targetElement} = this.state;
-        const {position} = this.props;
+        const {positionStrategy} = this.props;
 
         return (
             <div>
@@ -89,7 +90,7 @@ class ExampleBasic extends Component {
                 <button style={triggerStyleSE} onClick={this.triggerClicked}>Trigger</button>
 
                 { targetElement &&
-                <FloatingElement position={position}
+                <FloatingElement positionStrategy={positionStrategy}
                          targetElement={targetElement}
                          onDismiss={this.popoverDismissed}
                          style={popoverStyle}>
@@ -104,6 +105,6 @@ class ExampleBasic extends Component {
     }
 
     static propTypes = {
-        position: PropTypes.string
+        positionStrategy: PropTypes.object,
     }
 }

@@ -1,6 +1,7 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
+import AbstractPositionStrategy from './AbstractPositionStrategy';
 
 //--------------------------------------------------------------------------
 //
@@ -10,22 +11,6 @@ import React, { Component, PropTypes } from 'react';
 
 const pollingInterval = 50; // ms
 const fixedAnimationDuration = 500; // ms
-
-const positionAbove = 'above';
-const positionBelow = 'below';
-const positionLeft = 'left';
-const positionRight = 'right';
-
-export const positionValues = {
-    above: 'above',
-    below: 'below',
-    left: 'left',
-    right: 'right'
-};
-
-export type Position = $Keys<typeof positionValues>;
-
-export const positions: Array<Position> = Object.keys(positionValues);
 
 const stateInit = 'init'; // Created, not yet correctly positioned
 const stateStable = 'stable'; // Correctly positioned, all good
@@ -40,7 +25,7 @@ const lifecycleStates = {
 export type LifecycleState = $Keys<typeof lifecycleStates>;
 
 type Props = {
-    position?: Position
+    positionStrategy?: AbstractPositionStrategy,
 };
 
 //--------------------------------------------------------------------------
@@ -49,18 +34,7 @@ type Props = {
 //
 //--------------------------------------------------------------------------
 
-//--------------------------------------
-//  Position enum
-//--------------------------------------
 
-export function sanitizePosition(input:Position) {
-
-    if (positions.indexOf(input) === -1) {
-        return positionAbove;
-    }
-
-    return input;
-}
 
 //--------------------------------------
 //  Animation easing
@@ -263,10 +237,6 @@ export default class Popover extends Component {
      */
     calculateAndSetPopupPosition() {
 
-        const margin = 5; // PX
-
-        let newLeft, newTop;
-        const preferred = sanitizePosition(this.props.position || positionAbove);
         this.measureDOMNodes();
 
         const {
@@ -280,46 +250,18 @@ export default class Popover extends Component {
             viewportHeight
         } = this;
 
-        console.log(targetWidth, targetHeight, targetLeft, targetTop);
+        const newPositions = this.props.positionStrategy.positionTarget(
+            selfWidth,
+            selfHeight,
+            targetWidth,
+            targetHeight,
+            targetLeft,
+            targetTop,
+            viewportWidth,
+            viewportHeight
+        );
 
-        // Initial calculations
-        switch (preferred) {
-            default:
-            case positionAbove:
-                newLeft = targetLeft - Math.floor((selfWidth - targetWidth) / 2);
-                newTop = targetTop - selfHeight - margin;
-                break;
-            case positionBelow:
-                newLeft = targetLeft - Math.floor((selfWidth - targetWidth) / 2);
-                newTop = targetTop + targetHeight + margin;
-                break;
-            case positionLeft:
-                newLeft = targetLeft - selfWidth - margin;
-                newTop = targetTop - Math.floor((selfHeight - targetHeight) / 2);
-                break;
-            case positionRight:
-                newLeft = targetLeft + targetWidth + margin;
-                newTop = targetTop - Math.floor((selfHeight - targetHeight) / 2);
-                break;
-        }
-
-        // Do a basic adjustment to make sure it's within the viewport if possible
-        if (newLeft < margin) {
-            newLeft = margin;
-        } else if (newLeft + selfWidth + margin > viewportWidth) {
-            newLeft = viewportWidth - selfWidth - margin;
-        }
-
-        if (newTop < margin) {
-            newTop = margin;
-        } else if (newTop + selfHeight + margin > viewportHeight) {
-            newTop = viewportHeight - selfHeight - margin;
-        }
-
-        // Wishlist: Try other preferred positions rather than just shifting
-        // into viewport?
-
-        console.log(newLeft, newTop);
+        const { newLeft, newTop } = newPositions;
 
         this.movePopover(newLeft, newTop);
         this.positioningValid = true;
@@ -466,7 +408,7 @@ export default class Popover extends Component {
     }
 
     componentWillReceiveProps(nextProps:Props) {
-        if (nextProps.position !== this.props.position
+        if (nextProps.positionStrategy !== this.props.positionStrategy
             || nextProps.targetElement !== this.props.targetElement) {
             this.invalidatePositioning();
         }
@@ -501,7 +443,7 @@ export default class Popover extends Component {
 
     static propTypes = {
         targetElement: PropTypes.object,
-        position: PropTypes.oneOf(positions),
+        positionStrategy: PropTypes.object,
         style: PropTypes.object,
         children: PropTypes.node
     }
