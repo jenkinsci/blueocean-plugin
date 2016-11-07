@@ -15,7 +15,6 @@ export const defaultLngDetector = new LngDetector(null, {
     lookupQuerystring: 'language',
 });
 const prefix = urlConfig.getJenkinsRootURL() || '/';
-console.log('sssssss', urlConfig, prefix);
 
 const loadPath = `${prefix}/i18n/resourceBundle?language={lng}&baseName={ns}`;
 /**
