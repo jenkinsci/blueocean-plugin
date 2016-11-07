@@ -30,9 +30,6 @@ export default class Dropdown extends React.Component {
     componentDidMount() {
         document.addEventListener('keydown', this._handleKeyEvent);
         document.addEventListener('mousedown', this._handleMouseEvent);
-
-        // TOOD: why!
-        this.forceUpdate();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -214,7 +211,6 @@ export default class Dropdown extends React.Component {
             <div ref={dropdown => { this.dropdownRef = dropdown; }}
                 className={`Dropdown ${openClass} ${extraClass}`}>
                 <button ref={button => { this.buttonRef = button; }}
-                   href="#"
                    className="Dropdown-button btn-secondary"
                    onClick={this._onDropdownMouseEvent}
                    onKeyUp={this._onDropdownKeyEvent}
@@ -225,7 +221,7 @@ export default class Dropdown extends React.Component {
                     </div>
                 </button>
 
-                { this.buttonRef && this.state.menuOpen &&
+                { this.state.menuOpen &&
                 <FloatingElement targetElement={this.buttonRef} positionStrategy={this.position}>
                     <ul
                         ref={list => { this.menuRef = list; }}
