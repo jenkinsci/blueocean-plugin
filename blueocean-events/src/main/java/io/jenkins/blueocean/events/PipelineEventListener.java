@@ -174,6 +174,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
 
     @Override
     public void onStarted(final Run<?,?> run, TaskListener listener) {
+	LOGGER.log(Level.INFO, "Pipeline Listener Registered");
         super.onStarted(run, listener);
         if (run instanceof WorkflowRun) {
             ListenableFuture<FlowExecution> promise = ((WorkflowRun) run).getExecutionPromise();
