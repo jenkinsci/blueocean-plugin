@@ -9,6 +9,8 @@ import {
 
 import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
+import { Icon } from 'react-material-icons-blue';
+
 import {
     actions,
     currentRun as runSelector,
@@ -22,13 +24,24 @@ import {
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
+    buildClassicConfigUrl,
 } from '../util/UrlUtils';
 
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 const { func, object, any, string } = PropTypes;
+
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (AppConfig.getInitialUser() !== 'anonymous') {
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
+    }
+    return link;
+};
+
 
 class RunDetails extends Component {
 
@@ -47,6 +60,9 @@ class RunDetails extends Component {
     }
 
     _fetchRun(props, storePreviousRoute) {
+        if (props.isMultiBranch === null) {
+            return; // multiple redux selectors haven't completed
+        }
         if (this.context.config && this.context.params) {
             props.fetchRun({
                 organization: props.params.organization,
@@ -99,6 +115,10 @@ class RunDetails extends Component {
             return null;
         }
 
+        if (this.props.run.$pending || this.context.pipeline.$pending) {
+            return <PageLoading />;
+        }
+
         const { router, location, params, pipeline = {} } = this.context;
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
@@ -136,7 +156,6 @@ class RunDetails extends Component {
             >
                 <ModalHeader>
                     <div>
-                        {!run.$pending &&
                         <RunDetailsHeader
                           pipeline={pipeline}
                           data={currentRun}
@@ -144,7 +163,6 @@ class RunDetails extends Component {
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
-                        }
                         <PageTabs base={baseUrl}>
                             <TabLink to="/pipeline">Pipeline</TabLink>
                             <TabLink to="/changes">Changes</TabLink>
@@ -167,12 +185,12 @@ class RunDetails extends Component {
                               latestRun={currentRun}
                               buttonType="stop-only"
                             />
+                            {classicConfigLink(pipeline)}
                         </div>
                     </div>
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {run.$pending && <PageLoading />}
                         {run.$success && React.cloneElement(
                             this.props.children,
                             { baseUrl, result: currentRun, ...this.props }
@@ -207,5 +225,6 @@ RunDetails.propTypes = {
 const selectors = createSelector(
     [runSelector, isMultiBranchSelector, previousSelector],
     (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
+
 
 export default connect(selectors, actions)(RunDetails);

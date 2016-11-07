@@ -21,13 +21,17 @@ export Security from './security';
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton } from './components/RunButton';
 
+// Create and export the SSE connection that will be shared by other
+// Blue Ocean components via this package.
+export const sseConnection = sse.connect('jenkins-blueocean-core-js');
+
 // export services as a singleton so all plugins will use the same instance
 
 // capabilities
 export { capable, capabilityStore, capabilityAugmenter } from './capability/index';
 
 // limit to single instance so that duplicate REST calls aren't made as events come in
-const sseBus = new SseBus(sse, Fetch.fetchJSON);
+const sseBus = new SseBus(sseConnection, Fetch.fetchJSON);
 export { sseBus as SseBus };
 
 // required so new toasts are routed to the instance used in blueocean-web
