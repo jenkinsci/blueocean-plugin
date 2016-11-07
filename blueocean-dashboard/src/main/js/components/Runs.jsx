@@ -86,8 +86,8 @@ export default class Runs extends Component {
                   millis={durationMillis}
                   liveUpdate={running}
                   locale={locale}
-                  liveFormat={t('Date.duration.format')}
-                  hintFormat={t('Date.duration.hint.format')}
+                  liveFormat={t('common.date.duration.format')}
+                  hintFormat={t('common.date.duration.hint.format')}
                 />
             </td>
             <td>
@@ -95,8 +95,8 @@ export default class Runs extends Component {
                   date={endTime}
                   liveUpdate
                   locale={locale}
-                  shortFormat={t('Date.readable.short')}
-                  longFormat={t('Date.readable.long')}
+                  shortFormat={t('common.date.readable.short')}
+                  longFormat={t('common.date.readable.long')}
                 />
             </td>
             <td>

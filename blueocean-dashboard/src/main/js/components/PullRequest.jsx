@@ -62,8 +62,8 @@ export default class PullRequest extends Component {
                   date={endTime}
                   liveUpdate
                   locale={locale}
-                  shortFormat={t('Date.readable.short')}
-                  longFormat={t('Date.readable.long')}
+                  shortFormat={t('common.date.readable.short')}
+                  longFormat={t('common.date.readable.long')}
                 />
             </td>
             <td>

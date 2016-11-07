@@ -78,12 +78,14 @@ export class PullRequests extends Component {
             return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
         }
 
+        const head = 'pipelinedetail.pullrequests.header';
+
         const headers = [
-            t('Status'),
-            { label: t('Latest.build'), className: 'build' },
-            { label: t('Summary'), className: 'summary' },
-            t('Author'),
-            { label: t('Completed'), className: 'completed' },
+            t(`${head}.status`),
+            { label: t(`${head}.build`), className: 'build' },
+            { label: t(`${head}.summary`), className: 'summary' },
+            t(`${head}.author`),
+            { label: t(`${head}.completed`), className: 'completed' },
             { label: '', className: 'run' },
         ];
 

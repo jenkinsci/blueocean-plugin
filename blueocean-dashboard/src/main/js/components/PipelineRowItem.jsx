@@ -10,9 +10,9 @@ export class PipelineRowItem extends Component {
         const { t } = this.props;
         let response = '-';
         if (failing > 0) {
-            response = t('Failing', { 0: failing });
+            response = t('home.pipelineslist.row.failing', { 0: failing });
         } else if (passing > 0) {
-            response = t('Passing', { 0: passing });
+            response = t('home.pipelineslist.row.passing', { 0: passing });
         }
         return response;
     }

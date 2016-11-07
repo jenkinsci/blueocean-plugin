@@ -386,7 +386,7 @@ export class RunDetailsPipeline extends Component {
                 }
                 { isPipelineQueued && supportsNode && <QueuedState /> }
                 { !isPipelineQueued && hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
-                    <p>{t('noSteps')}</p>
+                    <p>{t('rundetail.pipeline.nosteps')}</p>
                 </EmptyStateView>
                 }
                 { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView

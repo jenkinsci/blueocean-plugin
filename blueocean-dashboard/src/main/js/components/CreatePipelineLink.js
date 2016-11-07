@@ -28,7 +28,7 @@ export default function CreatePipelineLink(props, context) {
 
     return (
         <Link to="/create-pipeline" className="btn-secondary inverse">
-            { translate('New Pipeline') }
+            { translate('home.header.button.createpipeline') }
         </Link>
     );
 }

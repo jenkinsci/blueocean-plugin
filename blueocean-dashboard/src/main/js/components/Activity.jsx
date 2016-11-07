@@ -25,7 +25,7 @@ const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation, t }) =>
                 <RunButton
                   runnable={pipeline}
                   buttonType="run-only"
-                  runLabel={ t('Run.now') }
+                  runLabel={ t('pipelinedetail.activity.button.run') }
                   onNavigation={onNavigation}
                 />
             }
@@ -88,23 +88,24 @@ export class Activity extends Component {
         }
 
         const latestRun = runs[0];
+        const head = 'pipelinedetail.activity.header';
 
         const headers = isMultiBranchPipeline ? [
-            t('Status'),
-            t('Build'),
-            t('Commit'),
-            { label: t('Branch'), className: 'branch' },
-            { label: t('Message'), className: 'message' },
-            { label: t('Duration'), className: 'duration' },
-            { label: t('Completed'), className: 'completed' },
+            t(`${head}.status`),
+            t(`${head}.build`),
+            t(`${head}.commit`),
+            { label: t(`${head}.branch`), className: 'branch' },
+            { label: t(`${head}.message`), className: 'message' },
+            { label: t(`${head}.duration`), className: 'duration' },
+            { label: t(`${head}.completed`), className: 'completed' },
             { label: '', className: 'actions' },
         ] : [
-            t('Status'),
-            t('Build'),
-            t('Commit'),
-            { label: t('Message'), className: 'message' },
-            { label: t('Duration'), className: 'duration' },
-            { label: t('Completed'), className: 'completed' },
+            t(`${head}.status`),
+            t(`${head}.build`),
+            t(`${head}.commit`),
+            { label: t(`${head}.message`), className: 'message' },
+            { label: t(`${head}.duration`), className: 'duration' },
+            { label: t(`${head}.completed`), className: 'completed' },
             { label: '', className: 'actions' },
         ];
 
@@ -148,7 +149,7 @@ export class Activity extends Component {
                 }
                 {runs.$pager && runs.length > 0 &&
                 <button disabled={runs.$pending || !runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
-                    {runs.$pending ? t('Loading') : t('More')}
+                    {runs.$pending ? t('common.pager.loading') : t('common.pager.more')}
                 </button>
                 }
             </article>

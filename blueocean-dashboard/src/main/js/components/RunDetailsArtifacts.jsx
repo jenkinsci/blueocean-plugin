@@ -26,8 +26,8 @@ export default class RunDetailsArtifacts extends Component {
         }
 
         const headers = [
-            { label: t('Name'), className: 'name' },
-            { label: t('Size'), className: 'size' },
+            { label: t('rundetail.artifacts.header.name'), className: 'name' },
+            { label: t('rundetail.artifacts.header.size'), className: 'size' },
             { label: '', className: 'actions' },
         ];
 
@@ -42,7 +42,7 @@ export default class RunDetailsArtifacts extends Component {
                             <FileSize bytes={artifact.size} />
                         </td>
                         <td className="download">
-                            <a target="_blank" title={t('Download.artifact')} href={artifact.url}>
+                            <a target="_blank" title={t('rundetail.artifacts.button.download')} href={artifact.url}>
                                 <Icon style={style} icon="file_download" />
                             </a>
                         </td>

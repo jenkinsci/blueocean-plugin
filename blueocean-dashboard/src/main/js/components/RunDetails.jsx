@@ -174,10 +174,10 @@ class RunDetails extends Component {
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
                         <PageTabs base={baseUrl}>
-                            <TabLink to="/pipeline">{t('Pipeline')}</TabLink>
-                            <TabLink to="/changes">{t('Changes')}</TabLink>
-                            <TabLink to="/tests">{t('Tests')}</TabLink>
-                            <TabLink to="/artifacts">{t('Artifacts')}</TabLink>
+                            <TabLink to="/pipeline">{t('rundetail.header.tab.pipeline')}</TabLink>
+                            <TabLink to="/changes">{t('rundetail.header.tab.changes')}</TabLink>
+                            <TabLink to="/tests">{t('rundetail.header.tab.tests')}</TabLink>
+                            <TabLink to="/artifacts">{t('rundetail.header.tab.artifacts')}</TabLink>
                         </PageTabs>
 
                         <div className="button-bar">

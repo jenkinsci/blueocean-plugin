@@ -30,11 +30,13 @@ export default class RunDetailsChanges extends Component {
             </EmptyStateView>);
         }
 
+        const head = 'rundetail.changes.header';
+
         const headers = [
-            t('Commit'),
-            { label: t('Author'), className: 'author' },
-            { label: t('Message'), className: 'message' },
-            { label: t('Date'), className: 'date' },
+            t(`${head}.commit`),
+            { label: t(`${head}.author`), className: 'author' },
+            { label: t(`${head}.message`), className: 'message' },
+            { label: t(`${head}.date`), className: 'date' },
         ];
 
         return (
@@ -49,8 +51,8 @@ export default class RunDetailsChanges extends Component {
                               date={commit.timestamp}
                               liveUpdate
                               locale={locale}
-                              shortFormat={t('Date.readable.short')}
-                              longFormat={t('Date.readable.long')}
+                              shortFormat={t('common.date.readable.short')}
+                              longFormat={t('common.date.readable.long')}
                             />
                         </td>
                     </tr>
