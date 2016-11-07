@@ -42,4 +42,4 @@ const runApi = new RunApi();
 export { runApi as RunApi };
 
 // export i18n provider
-export I18n, { defaultLngDetector, defaultI18n, defaultXhr, initOptions, I18nApi } from './i18n/i18n';
+export { defaultLngDetector, defaultI18n, defaultXhr, initOptions, I18nApi } from './i18n/i18n';

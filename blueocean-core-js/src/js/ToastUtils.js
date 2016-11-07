@@ -4,11 +4,11 @@
 
 import { ToastService as toastService } from './index';
 import { buildRunDetailsUrlFromQueue } from './UrlBuilder';
-import { I18n } from './i18n/i18n';
+import { I18nApi as I18n } from './i18n/i18n';
 
 const CAPABILITY_MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
 const CAPABILITY_MULTIBRANCH_BRANCH = 'io.jenkins.blueocean.rest.model.BlueBranch';
-const { translate } = I18n;
+const { translate } = new I18n();
 
 export default {
     /**

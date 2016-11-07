@@ -129,5 +129,3 @@ export class I18nApi extends EventEmitter {
         if (!wait) bindToI18n();
     }
 }
-
-export const I18n = new I18nApi();

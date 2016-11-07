@@ -10,9 +10,9 @@ import { ToastService as toastService } from '../';
 import { ToastUtils } from '../';
 import Security from '../security';
 
-import { I18n } from '../i18n/i18n';
+import { I18nApi as I18n } from '../i18n/i18n';
 
-const { translate } = I18n;
+const { translate } = new I18n();
 
 const { permit } = Security;
 
