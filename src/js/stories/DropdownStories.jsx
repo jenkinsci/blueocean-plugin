@@ -39,6 +39,7 @@ function Dropdown1() {
                 <button>Test 1</button>
 
                 <select>
+                    <option disabled selected>- Select -</option>
                     { createOptions(200).map((option, index) =>
                         <option key={index}>{option}</option>
                     )}

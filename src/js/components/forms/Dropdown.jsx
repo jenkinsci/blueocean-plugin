@@ -6,6 +6,17 @@ import FloatingElement from '../FloatingElement';
 import DropdownMenuPosition from './DropdownMenuPosition';
 import KeyCodes from '../../KeyCodes';
 
+const POSITION = {
+    FIRST: 'first',
+    PREV: 'prev',
+    NEXT: 'next',
+    LAST: 'last',
+
+    values: () => {
+        return [POSITION.FIRST, POSITION.PREV, POSITION.NEXT, POSITION.LAST];
+    }
+};
+
 export default class Dropdown extends React.Component {
 
     constructor(props) {
@@ -107,20 +118,26 @@ export default class Dropdown extends React.Component {
                 break;
             case KeyCodes.ARROW_DOWN:
                 event.preventDefault();
-                this._changeFocusPosition(1);
+                this._changeFocusPosition(POSITION.NEXT);
                 break;
             case KeyCodes.ARROW_UP:
                 event.preventDefault();
-                this._changeFocusPosition(-1);
+                this._changeFocusPosition(POSITION.PREV);
+                break;
+            case KeyCodes.PAGE_DOWN:
+            case KeyCodes.PAGE_UP:
+                // TODO: should scroll and focus an item
+                break;
+            case KeyCodes.HOME:
+                this._changeFocusPosition(POSITION.FIRST);
+                break;
+            case KeyCodes.END:
+                this._changeFocusPosition(POSITION.LAST);
                 break;
             case KeyCodes.SPACEBAR:
             case KeyCodes.ENTER:
                 event.preventDefault();
-                this._selectFocusItem();
-                break;
-            case KeyCodes.PAGE_DOWN:
-            case KeyCodes.PAGE_UP:
-                console.log('TODO');
+                this._selectFocusedItem();
                 break;
             default:
                 break;
@@ -146,16 +163,16 @@ export default class Dropdown extends React.Component {
             const selectedListItem = this.menuRef.children[selectedIndex];
             selectedListItem.children[0].focus();
         } else {
-            this._changeFocusPosition(0);
+            this._changeFocusPosition(POSITION.FIRST);
         }
     }
 
     _changeFocusPosition(position) {
-        if ([-1,0,1].indexOf(position) === -1) {
+        if (POSITION.values().indexOf(position) === -1) {
             return;
         }
 
-        if (position === 0 || !this.menuRef.contains(document.activeElement)) {
+        if (position === POSITION.FIRST || !this.menuRef.contains(document.activeElement)) {
             const listItem = this.menuRef.children[0];
             const link = listItem.children[0];
             link.focus();
@@ -163,17 +180,22 @@ export default class Dropdown extends React.Component {
         }
 
         const allListItems = [].slice.call(this.menuRef.children);
-        const focusedListItem = document.activeElement.parentNode;
-        const focusedIndex = allListItems.indexOf(focusedListItem);
-        const nextFocusIndex = focusedIndex + position;
 
-        if (0 <= nextFocusIndex && (nextFocusIndex <= allListItems.length - 1)) {
-            const nextListItem = allListItems[focusedIndex + position];
-            nextListItem.children[0].focus();
+        if (position === POSITION.NEXT || position === POSITION.PREV) {
+            const focusedListItem = document.activeElement.parentNode;
+            const focusedIndex = allListItems.indexOf(focusedListItem);
+            const nextFocusIndex = focusedIndex + position;
+
+            if (0 <= nextFocusIndex && (nextFocusIndex <= allListItems.length - 1)) {
+                const nextListItem = allListItems[focusedIndex + position];
+                nextListItem.children[0].focus();
+            }
+        } else if (position === POSITION.LAST) {
+            allListItems[allListItems.length - 1].children[0].focus();
         }
     }
 
-    _selectFocusItem() {
+    _selectFocusedItem() {
         if (this.menuRef.contains(document.activeElement)) {
             const allListItems = [].slice.call(this.menuRef.children);
             const focusedListItem = document.activeElement.parentNode;
