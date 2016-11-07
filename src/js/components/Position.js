@@ -28,14 +28,17 @@ export function sanitizePosition(input:Position) {
  */
 class SimplePositionStrategy extends AbstractPositionStrategy {
 
+    position:Position;
+
     constructor(position:Position) {
         super();
         this.position = position;
     }
 
-    positionTarget(selfWidth, selfHeight, targetWidth, targetHeight, targetLeft, targetTop, viewportWidth, viewportHeight) {
-        let newLeft, newTop;
-        const margin = 5; // PX
+    // eslint-disable-next-line max-len
+    positionTarget(selfWidth:number, selfHeight:number, targetWidth:number, targetHeight:number, targetLeft:number, targetTop:number, viewportWidth:number, viewportHeight:number) {
+        let newLeft:number, newTop:number;
+        const margin:number = 5; // PX
         const preferred = sanitizePosition(this.position || positionValues.above);
 
         // Initial calculations
