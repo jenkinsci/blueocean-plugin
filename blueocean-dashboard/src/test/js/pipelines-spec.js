@@ -24,13 +24,12 @@ describe('Pipelines', () => {
 
         beforeEach(() => {
             context = {
-                pipelines,
                 params,
                 config,
             };
 
             wrapper = shallow(
-                <Pipelines setTitle={()=>{}}/>,
+                <Pipelines pipelines={pipelines} setTitle={()=>{}}/>,
                 {
                     context,
                 }
@@ -51,11 +50,10 @@ describe('Pipelines', () => {
             const context = {
                 config,
                 params,
-                pipelines: pipelinesDupName,
             };
 
             const wrapper = mount(
-                <Pipelines setTitle={()=>{}}/>,
+                <Pipelines pipelines={pipelinesDupName} setTitle={()=>{}}/>,
                 { context },
             );
 
