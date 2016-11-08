@@ -1,7 +1,6 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import AbstractPositionStrategy from './AbstractPositionStrategy';
 
 //--------------------------------------------------------------------------
 //
@@ -25,7 +24,7 @@ const lifecycleStates = {
 export type LifecycleState = $Keys<typeof lifecycleStates>;
 
 type Props = {
-    positionStrategy?: AbstractPositionStrategy,
+    positionFunction?: Function,
 };
 
 //--------------------------------------------------------------------------
@@ -250,7 +249,7 @@ export default class Popover extends Component {
             viewportHeight
         } = this;
 
-        const newPositions = this.props.positionStrategy.positionTarget(
+        const newPositions = this.props.positionFunction(
             selfWidth,
             selfHeight,
             targetWidth,
@@ -408,7 +407,7 @@ export default class Popover extends Component {
     }
 
     componentWillReceiveProps(nextProps:Props) {
-        if (nextProps.positionStrategy !== this.props.positionStrategy
+        if (nextProps.positionFunction !== this.props.positionFunction
             || nextProps.targetElement !== this.props.targetElement) {
             this.invalidatePositioning();
         }
@@ -443,7 +442,7 @@ export default class Popover extends Component {
 
     static propTypes = {
         targetElement: PropTypes.object,
-        positionStrategy: PropTypes.object,
+        positionFunction: PropTypes.func,
         style: PropTypes.object,
         children: PropTypes.node
     }
