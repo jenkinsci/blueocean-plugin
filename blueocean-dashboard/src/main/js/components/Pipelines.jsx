@@ -95,7 +95,6 @@ Pipelines.contextTypes = {
 Pipelines.propTypes = {
     setTitle: func,
     pipelines: array,
- 
 };
 
 export default documentTitle(Pipelines);
