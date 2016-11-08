@@ -1,0 +1,25 @@
+.radio-button-group {
+
+    .radio-button-wrapper {
+        // default layout is vertical
+        display: inline-flex;
+        flex-direction: column;
+
+        .radio-item {
+            display: inline-flex;
+            min-height: 16px;
+
+            .radio-button {
+                margin-right: 5px;
+            }
+        }
+    }
+
+    &.horizontal-layout .radio-button-wrapper {
+        flex-direction: row;
+
+        .radio-item {
+            margin-right: 10px;
+        }
+    }
+}

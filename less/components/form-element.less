@@ -1,0 +1,22 @@
+.form-element {
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    margin-bottom: 10px;
+
+    .error-section {
+        display: table;
+        color: #f00;
+        border: 1px solid #f00;
+        background: rgba(255, 0, 0, 0.25);
+        margin-top: 5px;
+        padding: 2px;
+    }
+}
+
+.form-element.error-state {
+    .text-field {
+        border-color: #f00;
+        outline-color: #f00;
+    }
+}
