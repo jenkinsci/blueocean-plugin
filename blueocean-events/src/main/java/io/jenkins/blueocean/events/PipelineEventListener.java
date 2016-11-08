@@ -183,6 +183,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 public void run() {
                     try {
                         FlowExecution ex = ((WorkflowRun) run).getExecutionPromise().get();
+                        LOGGER.log(Level.INFO, "run");
                         ex.addListener(new StageEventPublisher(run));
                     } catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
