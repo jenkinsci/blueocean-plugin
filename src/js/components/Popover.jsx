@@ -34,14 +34,14 @@ export class Popover extends Component {
         const { children, style } = this.props;
         const position = sanitizePosition(this.props.position);
         const pointClassName = 'Popover-point Popover-point--' + position;
-        const strategy = Position[position];
+        const positionFunction = Position[position];
 
         return (
             <div className="Popover">
                 <div className="Popover-modalScreen" onClick={this.modalScreenClicked}/>
                 <FloatingElement
                     targetElement={this.props.targetElement}
-                    positionStrategy={strategy}
+                    positionFunction={positionFunction}
                 >
                     <div className="Popover-wrapper" style={style}>
                         <svg className={pointClassName} viewBox="0 0 2 2" width="20" height="20">

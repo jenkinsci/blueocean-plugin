@@ -1,7 +1,5 @@
 // @flow
 
-import AbstractPositionStrategy from './AbstractPositionStrategy';
-
 export const positionValues = {
     above: 'above',
     below: 'below',
@@ -22,24 +20,12 @@ export function sanitizePosition(input:Position) {
     return input;
 }
 
-/**
- * Positioning strategy that places target above, below, left or right of target
- * while ensuring it is not placed outside of the viewport.
- */
-class SimplePositionStrategy extends AbstractPositionStrategy {
-
-    position:Position;
-
-    constructor(position:Position) {
-        super();
-        this.position = position;
-    }
-
-    // eslint-disable-next-line max-len
-    positionTarget(selfWidth:number, selfHeight:number, targetWidth:number, targetHeight:number, targetLeft:number, targetTop:number, viewportWidth:number, viewportHeight:number) {
+function makePosition(position:Position) {
+    // eslint-disable-next-line max-len, unused-var
+    return function simplePositionFunction(selfWidth:number, selfHeight:number, targetWidth:number, targetHeight:number, targetLeft:number, targetTop:number, viewportWidth:number, viewportHeight:number) {
         let newLeft:number, newTop:number;
         const margin:number = 5; // PX
-        const preferred = sanitizePosition(this.position || positionValues.above);
+        const preferred = sanitizePosition(position || positionValues.above);
 
         // Initial calculations
         switch (preferred) {
@@ -82,13 +68,12 @@ class SimplePositionStrategy extends AbstractPositionStrategy {
             newLeft,
             newTop,
         };
-    }
-
+    };
 }
 
 export default {
-    above: new SimplePositionStrategy(positionValues.above),
-    below: new SimplePositionStrategy(positionValues.below),
-    left: new SimplePositionStrategy(positionValues.left),
-    right: new SimplePositionStrategy(positionValues.right)
+    above: makePosition(positionValues.above),
+    below: makePosition(positionValues.below),
+    left: makePosition(positionValues.left),
+    right: makePosition(positionValues.right)
 };
