@@ -24,18 +24,13 @@ export default class Runs extends Component {
     }
     render() {
         // early out
-        if (!this.props.result || !this.context.pipeline) {
+        if (!this.props.result || !this.props.pipeline) {
             return null;
         }
         const {
             context: {
                 router,
                 location,
-                pipeline: {
-                    _class: pipelineClass,
-                    fullName,
-                    organization,
-                },
             },
             props: {
                 result: {
@@ -48,6 +43,11 @@ export default class Runs extends Component {
                     startTime,
                     endTime,
                     commitId,
+                },
+                pipeline: {
+                    _class: pipelineClass,
+                    fullName,
+                    organization,
                 },
                 changeset,
             },
@@ -97,14 +97,13 @@ export default class Runs extends Component {
 }
 
 Runs.propTypes = {
-    run: PropTypes.object,
-    pipeline: PropTypes.object,
+    run: object,
+    pipeline: object,
     result: any.isRequired, // FIXME: create a shape
     data: string,
     changeset: object.isRequired,
 };
 Runs.contextTypes = {
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };

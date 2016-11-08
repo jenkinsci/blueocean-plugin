@@ -131,7 +131,7 @@ class OrganizationPipelines extends Component {
         } else if (organizationPipelines && organizationPipelines.$success) {
             pipelines = organizationPipelines;
         }
-        return React.cloneElement(this.props.children, { pipelines, ...this.props });
+        return React.cloneElement(this.props.children, { pipelines });
     }
 }
 
