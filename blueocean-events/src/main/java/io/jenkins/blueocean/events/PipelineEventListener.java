@@ -164,6 +164,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
         private void publishEvent(Message message) {
             try {
                 pubSubBus.publish(message);
+                LOGGER.log(Level.INFO, "publish event: " + message);
             } catch (MessageException e) {
                 LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
             }
@@ -174,7 +175,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
 
     @Override
     public void onStarted(final Run<?,?> run, TaskListener listener) {
-	LOGGER.log(Level.INFO, "Pipeline Listener Registered " + run);
+        LOGGER.log(Level.INFO, "Pipeline Listener Registered " + run);
         super.onStarted(run, listener);
         if (run instanceof WorkflowRun) {
             ListenableFuture<FlowExecution> promise = ((WorkflowRun) run).getExecutionPromise();
