@@ -2,6 +2,8 @@
  * Created by cmeyers on 11/2/16.
  */
 import React, { PropTypes } from 'react';
+import debounce from 'lodash.debounce';
+
 import FloatingElement from '../FloatingElement';
 import DropdownMenuPosition from './DropdownMenuPosition';
 import KeyCodes from '../../KeyCodes';
@@ -27,6 +29,7 @@ export default class Dropdown extends React.Component {
         this.dropdownRef = null;
         this.buttonRef = null;
         this.menuRef = null;
+        this.lastScrollTop = 0;
 
         this.state = {
             menuOpen: false,
@@ -116,6 +119,7 @@ export default class Dropdown extends React.Component {
             case KeyCodes.ESC:
                 this._closeDropdownMenu();
                 break;
+            // don't let arrow keys scroll the content; focus change will do that for us
             case KeyCodes.ARROW_DOWN:
                 event.preventDefault();
                 this._changeFocusPosition(POSITION.NEXT);
@@ -124,9 +128,10 @@ export default class Dropdown extends React.Component {
                 event.preventDefault();
                 this._changeFocusPosition(POSITION.PREV);
                 break;
+            // page/up down scrolls as normal but applies focus
             case KeyCodes.PAGE_DOWN:
             case KeyCodes.PAGE_UP:
-                // TODO: should scroll and focus an item
+                this._syncFocusAfterScroll();
                 break;
             case KeyCodes.HOME:
                 this._changeFocusPosition(POSITION.FIRST);
@@ -157,11 +162,30 @@ export default class Dropdown extends React.Component {
         }
     };
 
+    _onMenuScrollEvent = () => {
+        this._syncFocusAfterScroll();
+    };
+
+    _syncFocusAfterScroll = debounce(() => {
+        if (this.menuRef.scrollTop === this.lastScrollTop) {
+            return;
+        }
+
+        const scrollDown = this.menuRef.scrollTop > this.lastScrollTop;
+        this.lastScrollTop = this.menuRef.scrollTop;
+        const rect = this.menuRef.getBoundingClientRect();
+        const nextFocusItem = scrollDown ?
+            document.elementFromPoint(rect.left + 1, rect.top + rect.height - 2) :
+            document.elementFromPoint(rect.left + 1, rect.top + 1);
+
+        this._focusListItem(nextFocusItem.parentNode);
+    }, 200);
+
     _setInitialFocus() {
         if (this.state.selectedOption) {
             const selectedIndex = this.props.options.indexOf(this.state.selectedOption);
             const selectedListItem = this.menuRef.children[selectedIndex];
-            selectedListItem.children[0].focus();
+            this._focusListItem(selectedListItem);
         } else {
             this._changeFocusPosition(POSITION.FIRST);
         }
@@ -174,8 +198,7 @@ export default class Dropdown extends React.Component {
 
         if (position === POSITION.FIRST || !this.menuRef.contains(document.activeElement)) {
             const listItem = this.menuRef.children[0];
-            const link = listItem.children[0];
-            link.focus();
+            this._focusListItem(listItem);
             return;
         }
 
@@ -188,13 +211,33 @@ export default class Dropdown extends React.Component {
 
             if (0 <= nextFocusIndex && (nextFocusIndex <= allListItems.length - 1)) {
                 const nextListItem = allListItems[nextFocusIndex];
-                nextListItem.children[0].focus();
+                this._focusListItem(nextListItem);
             }
         } else if (position === POSITION.LAST) {
-            allListItems[allListItems.length - 1].children[0].focus();
+            this._focusListItem(allListItems[allListItems.length - 1]);
         }
     }
 
+    _focusListItem(listItemNode) {
+        if (this.menuRef.contains(listItemNode)) {
+            listItemNode.children[0].focus();
+
+            const listItemRect = listItemNode.getBoundingClientRect();
+            const menuRect = this.menuRef.getBoundingClientRect();
+
+            // make the focused item "stick" to top or bottom edge
+            if (listItemRect.top < menuRect.top) {
+                this.menuRef.scrollTop = listItemNode.offsetTop;
+            } else if (listItemRect.bottom > menuRect.bottom) {
+                this.menuRef.scrollTop += listItemRect.bottom - menuRect.bottom;
+            }
+        }
+    }
+
+    /**
+     * Updates the dropdown's state such that its selectedOption corresponds to the item which currently has focus.
+     * @private
+     */
     _selectFocusedItem() {
         if (this.menuRef.contains(document.activeElement)) {
             const allListItems = [].slice.call(this.menuRef.children);
@@ -248,6 +291,7 @@ export default class Dropdown extends React.Component {
                     <ul
                         ref={list => { this.menuRef = list; }}
                         className="Dropdown-menu"
+                        onWheel={this._onMenuScrollEvent}
                     >
                         { this.props.options.map((option, index) => {
                             const selectedClass = this.state.selectedOption === option ? 'Dropdown-menu-item-selected' : '';
@@ -262,7 +306,7 @@ export default class Dropdown extends React.Component {
                             }
 
                             return (
-                                <li key={index}>
+                                <li key={index} data-position={index}>
                                     <a className={`Dropdown-menu-item ${selectedClass}`}
                                        href="#"
                                        onClick={() => this._onMenuItemClick(option, index)}

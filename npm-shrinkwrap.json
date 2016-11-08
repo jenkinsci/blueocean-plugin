@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/design-language",
-  "version": "0.0.86-unpublished",
+  "version": "0.0.87-unpublished",
   "dependencies": {
     "@kadira/react-split-pane": {
       "version": "1.4.7",
@@ -6492,6 +6492,11 @@
       "from": "lodash.create@3.1.1",
       "resolved": "https://registry.npmjs.org/lodash.create/-/lodash.create-3.1.1.tgz",
       "dev": true
+    },
+    "lodash.debounce": {
+      "version": "4.0.8",
+      "from": "lodash.debounce@latest",
+      "resolved": "https://registry.npmjs.org/lodash.debounce/-/lodash.debounce-4.0.8.tgz"
     },
     "lodash.deburr": {
       "version": "3.2.0",
