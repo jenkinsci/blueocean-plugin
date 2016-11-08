@@ -14,4 +14,9 @@ public interface ApiRoutable extends Routable, ExtensionPoint {
      * See {@link Action#getUrlName()} for contract.
      */
     String getUrlName();
+
+    /**
+     * Tells if this {@link Routable} route is parent to this route
+     */
+    boolean isChildOf(Routable parent);
 }
