@@ -30,7 +30,7 @@ export default class Branches extends Component {
             weatherScore,
             name: branchName,
         } = data;
-        const  { fullName, organization } = pipeline;
+        const { fullName, organization } = pipeline;
 
         const cleanBranchName = decodeURIComponent(branchName);
         const url = buildRunDetailsUrl(organization, fullName, cleanBranchName, id, 'pipeline');
@@ -80,11 +80,11 @@ export default class Branches extends Component {
 
 Branches.propTypes = {
     data: object.isRequired,
+    pipeline: object,
 };
 
 Branches.contextTypes = {
     store: object,
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };

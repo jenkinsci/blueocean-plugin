@@ -116,7 +116,7 @@ class RunDetails extends Component {
         }
 
         const { router, location, params } = this.context;
-        const { pipeline, run,  setTitle } = this.props;
+        const { pipeline, run, setTitle } = this.props;
 
         if (run.$pending || pipeline.$pending) {
             return <PageLoading />;

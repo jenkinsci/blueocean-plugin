@@ -9,7 +9,7 @@ const { object } = PropTypes;
 
 export default class PullRequest extends Component {
     render() {
-        const { pr, pipeline: contextPipeline} = this.props;
+        const { pr, pipeline: contextPipeline } = this.props;
         if (!pr || !pr.pullRequest || !pr.latestRun || !contextPipeline) {
             return null;
         }
@@ -70,10 +70,10 @@ export default class PullRequest extends Component {
 
 PullRequest.propTypes = {
     pr: object,
+    pipeline: object,
 };
 
 PullRequest.contextTypes = {
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };
