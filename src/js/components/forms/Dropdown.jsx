@@ -5,7 +5,6 @@ import React, { PropTypes } from 'react';
 import debounce from 'lodash.debounce';
 
 import FloatingElement from '../FloatingElement';
-import DropdownMenuPosition from './DropdownMenuPosition';
 import KeyCodes from '../../KeyCodes';
 
 const POSITION = {
@@ -23,8 +22,6 @@ export default class Dropdown extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.position = new DropdownMenuPosition();
 
         this.dropdownRef = null;
         this.buttonRef = null;
@@ -287,7 +284,7 @@ export default class Dropdown extends React.Component {
                 </button>
 
                 { this.state.menuOpen &&
-                <FloatingElement targetElement={this.buttonRef} positionStrategy={this.position}>
+                <FloatingElement targetElement={this.buttonRef} positionFunction={positionMenu}>
                     <ul
                         ref={list => { this.menuRef = list; }}
                         className="Dropdown-menu"
@@ -323,6 +320,16 @@ export default class Dropdown extends React.Component {
         );
     }
 
+}
+
+const BORDER_OFFSET:number = 1;
+
+// eslint-disable-next-line max-len, no-unused-vars
+function positionMenu(selfWidth:number, selfHeight:number, targetWidth:number, targetHeight:number, targetLeft:number, targetTop:number, viewportWidth:number, viewportHeight:number) {
+    return {
+        newLeft: targetLeft,
+        newTop: targetTop + targetHeight - BORDER_OFFSET,
+    };
 }
 
 Dropdown.propTypes = {
