@@ -57,27 +57,40 @@ public class GenericResource<T> extends Resource {
             // TODO: this only take care of getXyz() style methods. It needs to take care of other types of url
             // path handling
             Method m = clz.getMethod("get"+ Character.toUpperCase(token.charAt(0))+token.substring(1));
-
-            Link subResLink = getLink().rel(token+"/");
-
-            final Object v = m.invoke(value);
-            if(v instanceof List){
-                return Containers.from(subResLink,(List)v);
-            }else if(v instanceof Map){
-                return Containers.from(subResLink,(Map)v);
-            }else if(v instanceof String){
-                return new PrimitiveTypeResource(subResLink,v);
+            return getResource(token, m);
+        } catch (NoSuchMethodException e) {
+            for(Method m:clz.getMethods()){
+                Exported exported = m.getAnnotation(Exported.class);
+                if(exported != null && exported.name().equals(token)){
+                    return getResource(token, m);
+                }
             }
-            return new GenericResource<>(v);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new ServiceException.NotFoundException("Path "+token+" is not found");
+            return null;
         }
     }
 
     @Override
     public Link getLink() {
         return (self !=null) ? self.getLink() : new Link(Stapler.getCurrentRequest().getPathInfo());
+    }
+
+    private Object getResource(String token, Method m){
+        final Object v;
+        try {
+            v = m.invoke(value);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new ServiceException.NotFoundException("Path "+token+" is not found");
+        }
+        Link subResLink = getLink().rel(token+"/");
+        if(v instanceof List){
+            return Containers.from(subResLink,(List)v);
+        }else if(v instanceof Map){
+            return Containers.from(subResLink,(Map)v);
+        }else if(v instanceof String){
+            return new PrimitiveTypeResource(subResLink,v);
+        }
+        return new GenericResource<>(v);
     }
 
 

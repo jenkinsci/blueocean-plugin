@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.model.Action;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
@@ -9,8 +10,10 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
+import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.PUT;
 
@@ -85,6 +88,26 @@ public class OrganizationImpl extends BlueOrganization {
         return ApiHead.INSTANCE().getLink().rel("organizations/"+getName());
     }
 
+    /**
+     * Have available actions handle unknwon path
+     * @param token current token in the path
+     * @return {@link Action} instance. null if none.
+     */
+//    public Object getDynamic(String token){
+//        for(Action action:Jenkins.getInstance().getActions()){
+//            if(action.getUrlName() != null && action.getUrlName().equals(token)){
+//                if(isExportedBean(action.getClass())){
+//                    return action;
+//                }else {
+//                    return new GenericResource<>(action);
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
+    private boolean isExportedBean(Class clz){
+        return clz.getAnnotation(ExportedBean.class) != null;
+    }
 
 }

@@ -26,7 +26,7 @@ public abstract class BlueOrganization extends Resource implements Routable{
 
     public BlueOrganization() {
         for(ApiRoutable api: ExtensionList.lookup(ApiRoutable.class)){
-            if(api.isParent(this)) {
+            if(api.isChildOf(this)) {
                 apis.put(api.getUrlName(), api);
             }
         }
@@ -34,7 +34,7 @@ public abstract class BlueOrganization extends Resource implements Routable{
 
     @Override
     public String getUrlName() {
-        return null;
+        return getName();
     }
 
     @Exported(name = NAME)
