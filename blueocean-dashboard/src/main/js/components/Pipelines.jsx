@@ -16,7 +16,7 @@ export class Pipelines extends Component {
     }
 
     render() {
-        const { pipelines } = this.context;
+        const { pipelines } = this.props;
         const { organization } = this.context.params;
 
         const orgLink = organization ?
@@ -88,13 +88,14 @@ const { array, func, object } = PropTypes;
 Pipelines.contextTypes = {
     config: object,
     params: object,
-    pipelines: array,
     store: object,
     router: object,
 };
 
 Pipelines.propTypes = {
     setTitle: func,
+    pipelines: array,
+ 
 };
 
 export default documentTitle(Pipelines);
