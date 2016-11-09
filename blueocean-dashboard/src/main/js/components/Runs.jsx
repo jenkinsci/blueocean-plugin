@@ -22,18 +22,13 @@ export default class Runs extends Component {
     }
     render() {
         // early out
-        if (!this.props.result || !this.context.pipeline) {
+        if (!this.props.result || !this.props.pipeline) {
             return null;
         }
         const {
             context: {
                 router,
                 location,
-                pipeline: {
-                    _class: pipelineClass,
-                    fullName,
-                    organization,
-                },
             },
             props: {
                 changeset,
@@ -50,6 +45,11 @@ export default class Runs extends Component {
                     commitId,
                 },
                 t,
+                pipeline: {
+                    _class: pipelineClass,
+                    fullName,
+                    organization,
+                },
             },
         } = this;
 
@@ -123,7 +123,6 @@ Runs.propTypes = {
     t: func,
 };
 Runs.contextTypes = {
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };

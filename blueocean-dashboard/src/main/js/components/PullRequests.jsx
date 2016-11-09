@@ -46,7 +46,7 @@ NotSupported.propTypes = {
 
 export class PullRequests extends Component {
     componentWillMount() {
-        if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
+        if (this.props.pipeline && this.context.params && !pipelineBranchesUnsupported(this.props.pipeline)) {
             this.props.fetchPullRequests({
                 organizationName: this.context.params.organization,
                 pipelineName: this.context.params.pipeline,
@@ -59,9 +59,9 @@ export class PullRequests extends Component {
     }
 
     render() {
-        const { pullRequests, t, locale } = this.props;
+        const { pullRequests, t, locale, pipeline } = this.props;
 
-        if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
+        if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(pipeline))) {
             return (<NotSupported t={t} />);
         }
 
@@ -99,6 +99,7 @@ export class PullRequests extends Component {
                             return (<PullRequest
                               t={t}
                               locale={locale}
+                              pipeline={pipeline}
                               key={index}
                               pr={result}
                             />);
@@ -118,7 +119,6 @@ export class PullRequests extends Component {
 PullRequests.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
-    pipeline: object,
 };
 
 PullRequests.propTypes = {
@@ -127,6 +127,7 @@ PullRequests.propTypes = {
     locale: string,
     fetchPullRequests: func,
     t: func,
+    pipeline: object,
 };
 
 const selectors = createSelector([pullRequestSelector], (pullRequests) => ({ pullRequests }));

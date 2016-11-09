@@ -7,8 +7,8 @@ import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 export default class PullRequest extends Component {
     render() {
-        const { pr, t, locale } = this.props;
-        if (!pr || !pr.pullRequest || !pr.latestRun || !this.context.pipeline) {
+        const { pr, t, locale, pipeline: contextPipeline  } = this.props;
+        if (!pr || !pr.pullRequest || !pr.latestRun || !contextPipeline) {
             return null;
         }
         const {
@@ -29,15 +29,10 @@ export default class PullRequest extends Component {
         } = pr;
         const result = resultString === 'UNKNOWN' ? state : resultString;
         const {
-            context: {
-                router,
-                location,
-                pipeline: {
-                    fullName,
-                    organization,
-            },
-                },
-        } = this;
+            router,
+            location,
+        } = this.context;
+        const { fullName, organization } = contextPipeline;
         const open = () => {
             location.pathname = buildRunDetailsUrl(organization, fullName, decodeURIComponent(pipeline), id, 'pipeline');
             router.push(location);
@@ -85,10 +80,10 @@ PullRequest.propTypes = {
     pr: object,
     locale: string,
     t: func,
+    pipeline: object,
 };
 
 PullRequest.contextTypes = {
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };
