@@ -44,11 +44,6 @@ const classicConfigLink = (pipeline) => {
 
 
 export class PipelinePage extends Component {
-    getChildContext() {
-        return {
-            pipeline: this.props.pipeline,
-        };
-    }
 
     componentWillMount() {
         if (this.props.params) {
@@ -93,7 +88,7 @@ export class PipelinePage extends Component {
                         <Extensions.Renderer
                           extensionPoint="jenkins.pipeline.detail.header.action"
                           store={this.context.store}
-                          pipeline={this.props.pipeline}
+                          pipeline={pipeline}
                         />
                         {classicConfigLink(pipeline)}
                     </Title>
@@ -112,7 +107,6 @@ export class PipelinePage extends Component {
     }
 }
 
-
 PipelinePage.propTypes = {
     children: PropTypes.any,
     fetchPipeline: PropTypes.func.isRequired,
@@ -126,10 +120,6 @@ PipelinePage.contextTypes = {
     config: PropTypes.object.isRequired,
     location: PropTypes.object,
     store: PropTypes.object,
-};
-
-PipelinePage.childContextTypes = {
-    pipeline: PropTypes.any,
 };
 
 const selectors = createSelector([pipelineSelector],

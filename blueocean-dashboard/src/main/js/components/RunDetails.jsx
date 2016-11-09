@@ -115,15 +115,15 @@ class RunDetails extends Component {
             return null;
         }
 
-        if (this.props.run.$pending || this.context.pipeline.$pending) {
+        const { router, location, params } = this.context;
+        const { pipeline, run, setTitle } = this.props;
+
+        if (run.$pending || pipeline.$pending) {
             return <PageLoading />;
         }
 
-        const { router, location, params, pipeline = {} } = this.context;
-
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
-        const { run, setTitle } = this.props;
         const currentRun = new RunRecord(run);
         const status = currentRun.getComputedResult() || '';
 
@@ -207,7 +207,6 @@ RunDetails.contextTypes = {
     params: object,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
-    pipeline: object,
 };
 
 RunDetails.propTypes = {

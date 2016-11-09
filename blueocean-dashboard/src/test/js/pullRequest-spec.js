@@ -13,9 +13,8 @@ describe('PullRequest should render', () => {
     let tree = null;
     beforeEach(() => {
         const immData = new RunsRecord(pr[0]);
-        tree = sd.shallowRender(<PullRequest pr={immData} />,{
+        tree = sd.shallowRender(<PullRequest pr={immData} pipeline={{}} />,{
             router: {},
-            pipeline: {},
             location: {},
         });
     });
@@ -44,15 +43,14 @@ describe('PullRequest should not render', () => {
 describe('PullRequest', () => {
     it('opens correctly', (done) => {
         const immData = new RunsRecord(pr[0]);
-        const tree = sd.shallowRender(<PullRequest pr={immData} />, {
+        const tree = sd.shallowRender(<PullRequest pr={immData} pipeline={{
+            fullName: 'asdf/blah',
+            organization: 'jenkins',
+            }} />, {
                 router: {push: function(url) {
                     assert(url.pathname == '/organizations/jenkins/asdf%2Fblah/detail/PR-6/1/pipeline', "Incorrect URL for pull request");
                     done();
                 }
-            },
-            pipeline: {
-                fullName: 'asdf/blah',
-                organization: 'jenkins',
             },
             location: {},
         });
