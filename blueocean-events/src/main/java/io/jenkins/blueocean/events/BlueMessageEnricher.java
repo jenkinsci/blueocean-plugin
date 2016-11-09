@@ -59,22 +59,27 @@ public class BlueMessageEnricher extends MessageEnricher {
         message.set(EventProps.Jenkins.jenkins_org, OrganizationImpl.INSTANCE.getName());
 
         String channelName = message.getChannelName();
-        if (channelName.equals(Events.JobChannel.NAME)) {
-            JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
-            ParameterizedJobMixIn.ParameterizedJob job = jobChannelMessage.getJob();
-            Link jobUrl = LinkResolver.resolveLink(job);
 
-            jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
-            jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, job.getFullName());
-            if (job instanceof WorkflowJob) {
-                ItemGroup<? extends Item> parent = job.getParent();
-                if (parent instanceof WorkflowMultiBranchProject) {
-                    String multiBranchProjectName = parent.getFullName();
-                    jobChannelMessage.set(EventProps.Job.job_ismultibranch, "true");
-                    jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, multiBranchProjectName);
-                    jobChannelMessage.set(BlueEventProps.blueocean_job_branch_name, job.getName());
-                }
-            }
+        if (!channelName.equals(Events.JobChannel.NAME)) {
+            return;
+        }
+
+        JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
+        ParameterizedJobMixIn.ParameterizedJob job = jobChannelMessage.getJob();
+        Link jobUrl = LinkResolver.resolveLink(job);
+        if (jobUrl == null) {
+            return;
+        }
+
+        jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
+        jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, job.getFullName());
+
+        ItemGroup<? extends Item> parent = job.getParent();
+        if (job instanceof WorkflowJob && parent instanceof WorkflowMultiBranchProject) {
+            String multiBranchProjectName = parent.getFullName();
+            jobChannelMessage.set(EventProps.Job.job_ismultibranch, "true");
+            jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, multiBranchProjectName);
+            jobChannelMessage.set(BlueEventProps.blueocean_job_branch_name, job.getName());
         }
     }
 }
