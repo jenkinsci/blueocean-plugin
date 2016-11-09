@@ -18,7 +18,7 @@
  * export default composed(Pipelines);
  *
  */
-const compose  = (fn, ...rest) =>
+const compose = (fn, ...rest) =>
   rest.length === 0 ?
     fn :
     (...args) => fn(compose(...rest)(...args));

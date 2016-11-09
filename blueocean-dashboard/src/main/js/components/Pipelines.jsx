@@ -36,7 +36,6 @@ export class Pipelines extends Component {
             translate('home.pipelineslist.header.pullrequests'),
             { label: '', className: 'actions-col' },
         ];
-        const baseUrl = config.getRootURL();
         return (
             <Page>
                 <PageHeader>

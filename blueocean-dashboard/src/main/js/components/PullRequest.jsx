@@ -7,7 +7,7 @@ import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 export default class PullRequest extends Component {
     render() {
-        const { pr, t, locale, pipeline: contextPipeline  } = this.props;
+        const { pr, t, locale, pipeline: contextPipeline } = this.props;
         if (!pr || !pr.pullRequest || !pr.latestRun || !contextPipeline) {
             return null;
         }

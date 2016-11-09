@@ -41,7 +41,7 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const translate  = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
+const translate = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 
 class RunDetails extends Component {
 
@@ -227,6 +227,8 @@ RunDetails.propTypes = {
     getPipeline: func,
     previous: string,
     setTitle: func,
+    locale: string,
+    t: func,
 };
 
 const selectors = createSelector(

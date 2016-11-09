@@ -40,7 +40,7 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const translate  = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
+const translate = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 
 export class PipelinePage extends Component {
 
@@ -52,7 +52,7 @@ export class PipelinePage extends Component {
 
     render() {
         const { pipeline, setTitle } = this.props;
-        const { location =  {} } = this.context;
+        const { location = {} } = this.context;
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
@@ -124,7 +124,7 @@ PipelinePage.contextTypes = {
 const selectors = createSelector([pipelineSelector],
     (pipeline) => ({ pipeline }));
 
-const composed  = compose(
+const composed = compose(
   connect(selectors, actions),
   documentTitle
 );

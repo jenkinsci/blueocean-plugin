@@ -5,7 +5,7 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { I18n, Security, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
-const translate  = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
+const translate = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 const QUERY_STRING_KEY = 'blueCreate';
 
 export default function CreatePipelineLink(props, context) {
