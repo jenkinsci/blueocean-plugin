@@ -6,8 +6,7 @@ import {
     PageTabs,
     TabLink,
 } from '@jenkins-cd/design-language';
-import { ReplayButton, RunButton, I18n } from '@jenkins-cd/blueocean-core-js';
-import { translate } from 'react-i18next';
+import { I18n, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import { Icon } from 'react-material-icons-blue';
 
@@ -27,8 +26,6 @@ import {
     buildClassicConfigUrl,
 } from '../util/UrlUtils';
 
-import compose from '../util/compose';
-
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
@@ -44,6 +41,7 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
+const translate  = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 
 class RunDetails extends Component {
 
@@ -203,7 +201,7 @@ class RunDetails extends Component {
                     <div>
                         {run.$success && React.cloneElement(
                             this.props.children,
-                            { locale: I18n.language, baseUrl, result: currentRun, ...this.props }
+                            { locale: I18n.language, baseUrl, t: translate, result: currentRun, ...this.props }
                         )}
                     </div>
                 </ModalBody>
@@ -230,16 +228,10 @@ RunDetails.propTypes = {
     getPipeline: func,
     previous: string,
     setTitle: func,
-    t: func,
 };
 
 const selectors = createSelector(
     [runSelector, isMultiBranchSelector, previousSelector],
     (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
 
-const composed  = compose(
-  translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true }),
-  connect(selectors, actions)
-);
-
-export default composed(RunDetails);
+export default connect(selectors, actions)(RunDetails);

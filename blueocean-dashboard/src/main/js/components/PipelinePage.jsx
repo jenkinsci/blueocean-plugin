@@ -10,8 +10,7 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { translate } from 'react-i18next';
-import { AppConfig, I18n } from '@jenkins-cd/blueocean-core-js';
+import { I18n, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from 'react-material-icons-blue';
 import {
     actions,
@@ -41,6 +40,7 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
+const translate  = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
 
 export class PipelinePage extends Component {
     getChildContext() {
@@ -56,7 +56,7 @@ export class PipelinePage extends Component {
     }
 
     render() {
-        const { pipeline, setTitle, t } = this.props;
+        const { pipeline, setTitle } = this.props;
         const { location =  {} } = this.context;
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
@@ -100,12 +100,12 @@ export class PipelinePage extends Component {
                     }
 
                     <PageTabs base={baseUrl}>
-                        <TabLink to="/activity">{ t('pipelinedetail.common.tab.activity') }</TabLink>
-                        <TabLink to="/branches">{ t('pipelinedetail.common.tab.branches') }</TabLink>
-                        <TabLink to="/pr">{ t('pipelinedetail.common.tab.pullrequests') }</TabLink>
+                        <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity') }</TabLink>
+                        <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches') }</TabLink>
+                        <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests') }</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t, locale: I18n.language })}
+                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: I18n.language })}
             </Page>
         );
     }
@@ -118,7 +118,6 @@ PipelinePage.propTypes = {
     pipeline: PropTypes.any,
     params: PropTypes.object,
     setTitle: PropTypes.func,
-    t: PropTypes.func,
 };
 
 
@@ -136,7 +135,6 @@ const selectors = createSelector([pipelineSelector],
     (pipeline) => ({ pipeline }));
 
 const composed  = compose(
-  translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true }),
   connect(selectors, actions),
   documentTitle
 );

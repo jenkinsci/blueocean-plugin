@@ -2,20 +2,19 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { I18nextProvider, translate } from 'react-i18next';
-import { Provider, configureStore, combineReducers} from './redux';
-import rootReducer, { ACTION_TYPES } from './redux/router';
-
+import { I18n, AppConfig, Security, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
+import { Provider, configureStore, combineReducers} from './redux';
+import rootReducer, { ACTION_TYPES } from './redux/router';
 import Config from './config';
 import { ToastDrawer } from './components/ToastDrawer';
 import { DevelopmentFooter } from './DevelopmentFooter';
 
-import { AppConfig, Security, UrlConfig, Utils, I18n} from '@jenkins-cd/blueocean-core-js';
-
 let config; // Holder for various app-wide state
-const namespaces = ['jenkins.plugins.blueocean.web.Messages'];
+function translate(key){
+    return I18n.t(key, { ns: 'jenkins.plugins.blueocean.web.Messages' });
+}
 
 function loginOrLogout(t) {
     if (Security.isSecurityEnabled()) {
@@ -38,7 +37,6 @@ class App extends Component {
     }
 
     render() {
-        const { t } = this.props;
         const { location } = this.context;
 
         return (
@@ -47,11 +45,11 @@ class App extends Component {
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link query={location.query} to="/pipelines">{t('pipelines')}</Link>
-                            <a href="#">{t('administration')}</a>
+                            <Link query={location.query} to="/pipelines">{translate('pipelines')}</Link>
+                            <a href="#">{translate('administration')}</a>
                         </nav>
                         <div className="button-bar">
-                            { loginOrLogout(t) }
+                            { loginOrLogout(translate) }
                         </div>
                     </div>
                 </header>
@@ -69,7 +67,6 @@ class App extends Component {
 
 App.propTypes = {
     children: PropTypes.node,
-    t: PropTypes.func
 };
 
 App.childContextTypes = {
@@ -98,7 +95,7 @@ function makeRoutes(routes) {
 
     const routeProps = {
         path: "/",
-        component: translate(namespaces, { wait: true })(App)
+        component: App,
     };
 
     return React.createElement(Route, routeProps, ...appRoutes);
@@ -167,11 +164,9 @@ function startApp(routes, stores) {
 
     // Start React
     render(
-          <I18nextProvider i18n={ I18n }>
-            <Provider store={store}>
-                <Router history={history}>{ makeRoutes(routes) }</Router>
-            </Provider>
-          </I18nextProvider>
+        <Provider store={store}>
+            <Router history={history}>{ makeRoutes(routes) }</Router>
+        </Provider>
       , rootElement);
 }
 

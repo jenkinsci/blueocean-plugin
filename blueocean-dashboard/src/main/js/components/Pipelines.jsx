@@ -1,15 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
+import { I18n } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
-import { translate } from 'react-i18next';
 import CreatePipelineLink from './CreatePipelineLink';
 import { documentTitle } from './DocumentTitle';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
-import compose from '../util/compose';
 
-import I18nWrapper from '../util/i18n';
+const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
 
 export class Pipelines extends Component {
 
@@ -20,13 +19,6 @@ export class Pipelines extends Component {
 
     render() {
         const { pipelines, config, params: { organization }, location: { query } } = this.context;
-        // this.i18n = new I18nWrapper('jenkins.plugins.blueocean.dashboard.Messages');
-        // this.i18n.on('i18nChanged', (date) => {
-        //    console.log('xxx - i18nChanged', date);
-        // });
-        // this.i18n.t && console.log('xxxx', this.i18n.t('home.pipelineslist.header.name'))
-        const { t } = new I18nWrapper('jenkins.plugins.blueocean.dashboard.Messages');
-        console.log('ttt', t('home.pipelineslist.header.name'));
         const orgLink = organization ?
             <Link
               to={`organizations/${organization}`}
@@ -37,13 +29,12 @@ export class Pipelines extends Component {
             </Link> : '';
 
         const headers = [
-            { label: t('home.pipelineslist.header.name'), className: 'name-col' },
-            t('home.pipelineslist.header.health'),
-            t('home.pipelineslist.header.branches'),
-            t('home.pipelineslist.header.pullrequests'),
+            { label: translate('home.pipelineslist.header.name'), className: 'name-col' },
+            translate('home.pipelineslist.header.health'),
+            translate('home.pipelineslist.header.branches'),
+            translate('home.pipelineslist.header.pullrequests'),
             { label: '', className: 'actions-col' },
         ];
-
         const baseUrl = config.getRootURL();
         return (
             <Page>
@@ -56,7 +47,7 @@ export class Pipelines extends Component {
                               query={query}
                               className="inverse"
                             >
-                                { t('home.header.dashboard') }
+                                { translate('home.header.dashboard') }
                             </Link>
                             { organization && ' / ' }
                             { organization && orgLink }
@@ -83,7 +74,7 @@ export class Pipelines extends Component {
                                     const key = pipeline._links.self.href;
                                     return (
                                         <PipelineRowItem
-                                          t={t}
+                                          t={translate}
                                           key={key} pipeline={pipeline}
                                           showOrganization={!organization}
                                         />
@@ -94,7 +85,7 @@ export class Pipelines extends Component {
 
                         { pipelines && pipelines.$pager &&
                             <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
-                                {pipelines.$pending ? t('common.pager.loading') : t('common.pager.more')}
+                                {pipelines.$pending ? translate('common.pager.loading') : translate('common.pager.more')}
                             </button>
                         }
                     </article>
@@ -116,12 +107,6 @@ Pipelines.contextTypes = {
 
 Pipelines.propTypes = {
     setTitle: func,
-    t: func,
 };
 
-const composed  = compose(
-  translate(['jenkins.plugins.blueocean.dashboard.Messages'], { wait: true }),
-  documentTitle
-);
-
-export default composed(Pipelines);
+export default documentTitle(Pipelines);

@@ -97,7 +97,6 @@ export class PipelineRowItem extends Component {
 PipelineRowItem.propTypes = {
     pipeline: PropTypes.object.isRequired,
     showOrganization: PropTypes.bool,
-    t: PropTypes.func,
 };
 
 PipelineRowItem.contextTypes = {

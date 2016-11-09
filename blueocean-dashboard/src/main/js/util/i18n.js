@@ -1,4 +1,4 @@
-import { I18n } from "@jenkins-cd/blueocean-core-js";
+import I18n from "@jenkins-cd/blueocean-core-js";
 import EventEmitter from 'events';
 
 export default class I18nHelper extends EventEmitter {
