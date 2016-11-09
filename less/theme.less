@@ -26,12 +26,13 @@ html {
 
 body {
     color: @text-color;
-  text-rendering: optimizeSpeed;
-  font-feature-settings: "kern" on, "liga" off;
-  -moz-font-feature-settings: "kern" on, "liga" off;
-  // Want to change this? Pick a fight with i386
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
+    font-feature-settings: "kern" on, "liga" off;
+    -moz-font-feature-settings: "kern" on, "liga" off;
+    // Want to change this? Pick a fight with i386
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.2;
 }
 
 //
@@ -40,6 +41,10 @@ body {
 
 * {
     box-sizing: border-box;
+}
+
+p {
+    margin: 1em 0;
 }
 
 // Default All headings to basically "bold and display:block"

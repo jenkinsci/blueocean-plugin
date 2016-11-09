@@ -1,5 +1,3 @@
-// TODO: Rename this file because it's for assorted modal popups not just popover
-
 //--------------------------------------------------------------------------
 //
 //  Popups, popovers, and dialogs
@@ -69,12 +67,54 @@
     align-items: center;
     width: 100%;
     height: 80px;
-    min-height: 80px;
+    flex-shrink: 0;
     background: @brand-primary;
     color: white;
     border-top-left-radius: @popup-border-radius;
     border-top-right-radius: @popup-border-radius;
     padding: 0 32px;
+
+    .Dialog--input & {
+        background: @brand-input-required;
+    }
+
+    .Dialog--error & {
+        background: @brand-danger;
+    }
+
+    .Dialog--success & {
+        background: @brand-success;
+    }
+
+    .Dialog--warning & {
+        background: @brand-warning;
+    }
+}
+
+.Dialog-content-scroll {
+    overflow: auto;
+    flex-shrink: 1;
+}
+
+.Dialog-content-margin {
+    margin:32px 32px 16px 32px;
+}
+
+.Dialog-button-bar {
+    padding: 0 32px;
+    margin: 16px 0 32px;
+    display: flex;
+    width:100%;
+    justify-content: flex-end;
+    flex-shrink: 0;
+
+    //.Dialog-content-scroll+& {
+    //    padding-top: 0;
+    //}
+
+    &>Button+Button {
+        margin-left:0.5em;
+    }
 }
 
 //--------------------------------------

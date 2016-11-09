@@ -18,3 +18,4 @@ require('./resultItemStories.jsx');
 require('./typography.jsx');
 require('./progressBarStories');
 require('./PopoverStories');
+require('./DialogStories');
