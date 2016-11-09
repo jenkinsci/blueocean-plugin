@@ -1,3 +1,4 @@
+
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import PipelineRowItem from './PipelineRowItem';
@@ -7,7 +8,7 @@ import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 
-import { pagerService, pipelineService } from '@jenkins-cd/blueocean-core-js';
+import { pagerService, pipelineService, PagerService } from '@jenkins-cd/blueocean-core-js';
 
 @observer
 export class Pipelines extends Component {
@@ -38,7 +39,7 @@ export class Pipelines extends Component {
         const pipelines = this.pager.data;
         const { config } = this.context;
         const { organization } = this.context.params;
-      
+
         const orgLink = organization ?
             <Link to={`organizations/${organization}`} className="inverse">
                 {organization}
@@ -97,7 +98,7 @@ export class Pipelines extends Component {
                             }
                         </Table>
 
-                        { pipelines && 
+                        { pipelines &&
                             <button disabled={!this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
                                 {this.pager.pending ? 'Loading...' : 'Show More'}
                             </button>

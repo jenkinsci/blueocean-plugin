@@ -1,77 +1,68 @@
-// @flow
 import { observable } from 'mobx';
-import { Pager } from '../Pager';
+import { Pager } from './Pager';
 import { AppPaths, RestPaths } from '../utils/paths';
 import { DataBunker } from '../model/DataBunker';
-import { ActivityModel } from '../model/ActivityModel';
 import { Fetch } from '../fetch';
-import type PagerService from './PagerService';
-import type SSEService from './SSEService';
-import type { ActivityModelType } from '../model/Types'
+import { BunkerService } from './BunkerService';
 
-export default class ActivityService {
-    pagerService: PagerService;
-    sseService: SSEService;
-    constructor(pagerService: PagerService, sseService: SSEService) {
-        this.pagerService = pagerService;
-        this.sseService = sseService;
-        this.sseService.registerHandler((event) => this._sseEventHandler(event));
+export class ActivityService extends BunkerService {
+  
+    pagerKey(organization, pipeline) {
+        return `Activities/${organization}-${pipeline}`;
     }
-    @observable
-    bunker = new DataBunker(this._keyFn, this._mapperFn, this._instanceFn);
-
-    activityPager(organization: string, pipeline: string): Pager {
+    activityPager(organization, pipeline) {
         return this.pagerService.getPager({
-            key: `Activities/${organization}-${pipeline}`,
-            lazyPager: () => new Pager(RestPaths.activities(organization, pipeline), 25, this.bunker),
+            key: this.pagerKey(organization, pipeline),
+            lazyPager: () => new Pager(RestPaths.activities(organization, pipeline), 25, this),
         });
     }
 
-    getOrAddActivity(activityData: Object) {
-        const activity = this.bunker.getItem(activityData._links.self.href);
+
+    getOrAddActivity(activityData) {
+        const activity = this.getItem(activityData._links.self.href);
         if (activity) {
             return activity;
         }
         
-        return this.bunker.setItem(activityData);
+        return this.setItem(activityData);
     }
 
-    _keyFn(item: Object) {
-        return item._links.self.href;
+    bunkerMapper(data) {
+        return this._mapQueueToPsuedoRun(data);
     }
-
-    _instanceFn(item: ActivityModelType) {
-        return new ActivityModel(item);
-    }
-
-    _mapperFn(x: any) { 
-        return x;
-    }
-    _sseEventHandler(event: Object) {
-        switch (event.jenkins_event) {
-        case 'job_run_queue_buildable':
-        case 'job_run_queue_enter':
-          //  this.props.processJobQueuedEvent(eventCopy);
-            break;
-        case 'job_run_queue_left':
-           // this.props.processJobLeftQueueEvent(eventCopy);
-            break;
-        case 'job_run_queue_blocked': {
-            break;
+    
+    fetchActivity({ organization, pipeline, branch, runId }) {
+        return Fetch.fetchJSON(RestPaths.run({ organization, pipeline, branch, runId }))
+            .then(data => this.setItem(data));
+    }  
+    /**
+     * This function maps a queue item into a run instancce.
+     *
+     * We do this because the api returns us queued items as well
+     * as runs and its easier to deal with them if they are modeled
+     * as the same thing. If the raw data is needed if can be fetched
+     * from _item.
+     */
+    _mapQueueToPsuedoRun(run) {
+        if (run._class === 'io.jenkins.blueocean.service.embedded.rest.QueueItemImpl') {
+            return {
+                id: String(run.expectedBuildNumber),
+                state: 'QUEUED',
+                pipeline: run.pipeline,
+                type: 'QueuedItem',
+                result: 'UNKNOWN',
+                job_run_queueId: run.id,
+                enQueueTime: run.queuedTime,
+                organization: run.organization,
+                changeSet: [],
+                _links: {
+                    self: {
+                        href: run._links.self.href
+                    }
+                },
+                _item: run,
+            };
         }
-        case 'job_run_started': {
-           // this.props.updateRunState(eventCopy, this.context.config, true);
-           // this.props.updateBranchState(eventCopy, this.context.config);
-            break;
-        }
-        case 'job_run_ended': {
-           // this.props.updateRunState(eventCopy, this.context.config);
-           // this.props.updateBranchState(eventCopy, this.context.config);
-            break;
-        }
-        default :
-        // Else ignore the event.
-
-        }
+        return run;
     }
 }

@@ -1,10 +1,9 @@
 // @flow
-import type { ActivityModel } from './ActivityModel';
 export type LinkObject = {
     [ id: string ] : { href: string}
 }
 
-export type PipelineModelType = {
+export type PipelineModel = {
     name: string, 
     fullName: string,
     organization: string, 
@@ -19,11 +18,11 @@ export type PipelineModelType = {
     latestRun: ActivityModel
 }
 
-export type BranchModelType = PipelineModelType & {
+export type BranchModel = PipelineModel & {
     pullRequest: Object
 }
 
-export type ActivityModelType = {
+export type ActivityModel = {
     organization: string,
     pipeline: string,
     _links: LinkObject,

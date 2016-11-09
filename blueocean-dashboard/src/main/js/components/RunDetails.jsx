@@ -27,7 +27,7 @@ import {
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
-
+import { activityService } from '@jenkins-cd/blueocean-core-js';
 const { func, object, any, string } = PropTypes;
 
 class RunDetails extends Component {

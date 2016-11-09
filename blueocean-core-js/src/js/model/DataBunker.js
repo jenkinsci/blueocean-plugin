@@ -6,22 +6,19 @@ export class DataBunker {
     constructor(keyFn, mapperFn, newInstanceFn) {
         this._keyFn = keyFn;
         this._mapperFn = mapperFn;
-        this._newInstanceFn = newInstanceFn;
+        if(!mapperFn) {
+            // identity function.
+            this._mapperFn = x => x;
+        }
+    
     }
 
     @action
     setItem(item) {
         const keyItem = this._keyFn(item);
-        const currentItem = this.getItem(keyItem);
-        if (currentItem) {
-            currentItem.setData(this._mapperFn(item));
-            return currentItem;
-        } else {
-            const mappedItem = this._newInstanceFn(this._mapperFn(item));    
-            this._data.set(keyItem, mappedItem);
-            return mappedItem;
-        }
-        
+        const mappedItem = this._mapperFn(item);    
+        this._data.set(keyItem, mappedItem);
+        return mappedItem;
     }
 
     setItems(items) {

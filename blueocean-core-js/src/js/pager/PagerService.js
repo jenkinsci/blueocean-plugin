@@ -1,4 +1,4 @@
-export default class PagerService {
+export class PagerService {
     _pagerMap = new Map();
 
     registerPager(key, pager) {
@@ -18,17 +18,34 @@ export default class PagerService {
         if (this._pagerMap.has(key)) {
             return this._pagerMap.get(key);
         }
-        const pager = lazyPager();
-        this.registerPager(key, pager);
-        return pager;
+        if(lazyPager) {
+            const pager = lazyPager();
+            this.registerPager(key, pager);
+            return pager;
+        }
+
+        return null;
     }
 
-    invalidatePagerHrefs(bunker) {
+    refresh(bunker) {
+        console.log('invalidate bunker', bunker);
         this._pagerMap.forEach(pager => {
             if (bunker === pager.bunker) {
-                pager.refetchHrefs();
+                console.log('refresh bunker');
+                pager.refresh();
             }
         });
+    }
+
+    getPagers(bunker) {
+        const ret = [];
+        this._pagerMap.forEach(pager => {
+            if (bunker === pager.bunker) {
+                ret.push(bunker);
+            }
+        });
+
+        return ret;
     }
 }
 

@@ -10,7 +10,7 @@ class Dashboard extends Component {
     }
     getChildContext() {
         this._context.params = this.props.params;
-        this._context.location = this.location;
+        this._context.location = this.props.location;
         return this._context;
     }
 

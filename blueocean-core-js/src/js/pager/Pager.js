@@ -1,26 +1,34 @@
+// @flow
 import { observable, action, computed } from 'mobx';
 import { Fetch } from '../fetch';
+import { DataBunker } from '../model/DataBunker';
 /**
  * Provide a pagination function for the generic
  * blueocean pagination
  */
-export function paginateUrl(url) {
+export function paginateUrl(url: string) {
     const sep = url.indexOf('?') >= 0 ? '&' : '?';
-    return (start, limit) => `${url}${sep}start=${start}&limit=${limit}`;
+    return (start: number, limit: number) => `${url}${sep}start=${start}&limit=${limit}`;
 }
-
-export default class Pager {
-
+type PagedUrl = (start: number, end: number) => string;
+type UrlProvider = (url: string) => PagedUrl;
+export class Pager {
+    pageSize: number;
+    url: string;
+    bunker: DataBunker;
+    urlProvider: UrlProvider;
+    pagedUrl: PagedUrl;
     @observable hrefs = [];
     @observable pending = false;
     @observable err = null;
     @observable currentPage = 0;
     @observable hasMore = true;
+   
     @computed
-    get data() {
+    get data(): Array<Object> {
         return this.hrefs.map(x => this.bunker.getItem(x)).filter(x => x !== undefined);
     }
-    constructor(url, pageSize, bunker, urlProvider = paginateUrl) {
+    constructor(url: string, pageSize: number, bunker: toString, urlProvider: UrlProvider = paginateUrl) {
         this.pageSize = pageSize;
         this.url = url;
         this.urlProvider = urlProvider;
@@ -53,7 +61,7 @@ export default class Pager {
     }
 
     @action
-    refetchHrefs() {
+    refresh() {
         const url = this.pagedUrl(0, this.currentPage * this.pageSize + 1);
         this.pending = true;
         return Fetch.fetchJSON(url) // Fetch data
@@ -67,5 +75,10 @@ export default class Pager {
                 console.error('Error fetching page', err);
                 this.err = err;
             });
+    }
+
+    @action
+    insert(href, pos = 0) {
+        this.hrefs.splice(pos, 0, href);
     }
 }

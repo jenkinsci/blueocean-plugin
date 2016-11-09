@@ -28,6 +28,7 @@ export default class Runs extends Component {
             return null;
         }
         const { router, location, pipeline } = this.context;
+      
         const { run, changeset } = this.props;
           
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
@@ -38,7 +39,9 @@ export default class Runs extends Component {
 
         const open = () => {
             const pipelineName = decodeURIComponent(pipeline.name);
+            console.log('pipelineName',run.id);
             location.pathname = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, pipelineName, run.id, 'pipeline');
+            
             router.push(location);
         };
 

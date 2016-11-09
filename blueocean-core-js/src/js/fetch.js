@@ -207,6 +207,7 @@ export const Fetch = {
         if (!config.isJWTEnabled()) {
             return FetchFunctions.rawFetch(url, { onSuccess, onError, fetchOptions });
         }
+        
         return jwt.getToken()
             .then(token => FetchFunctions.rawFetch(url, {
                 onSuccess,

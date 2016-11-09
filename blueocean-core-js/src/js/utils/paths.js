@@ -56,7 +56,18 @@ export const RestPaths = {
     activities(organization, pipeline) {
         return `${RestPaths.apiRoot()}/organizations/${organization}/pipelines/${pipeline}/activities/`;
     },
+
+    run({ organization, pipeline, branch, runId }) {
+        if (branch) {
+            return `${RestPaths.pipeline(organization, pipeline)}branches/${branch}/runs/${runId}/`;
+        }
+
+        return `${RestPaths.pipeline(organization, pipeline)}runs/${runId}/`;
+    },
     
+    pipeline(organization, pipeline) {
+        return `${RestPaths.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/`;
+    },
     branches(organization, pipeline) {
         return `${RestPaths.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/branches/?filter=origin`;  
     },
@@ -64,4 +75,8 @@ export const RestPaths = {
     pullRequests(organization, pipeline) {
         return `${RestPaths.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/branches/?filter=pull-requests`;
     },  
+
+    queuedItem(organization, pipeline, queueId) {
+        return `${RestPaths.pipeline(organization, pipeline)}queue/${queueId}/`;
+    },
 };

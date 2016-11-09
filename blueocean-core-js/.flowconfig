@@ -10,7 +10,7 @@
 
 .*/node_modules/config-chain/test/broken.json
 .*/node_modules/npmconf/test/fixtures/package.json
-
+.*dist/.*
 [libs]
 src/js/declarations
 
@@ -24,3 +24,5 @@ src/js/declarations/browser.js.flow
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
 unsafe.enable_getters_and_setters=true
+esproposal.export_star_as=enable
+esproposal.decorators=ignore
