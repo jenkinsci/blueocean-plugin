@@ -58,12 +58,12 @@ class RunDetailsHeader extends Component {
                 <div className="row">
                     <div className="commons">
                         <div>
-                            <label>{ t('rundetail.header.branch') }</label>
+                            <label>{ t('rundetail.header.branch', { defaultValue: 'Branch' }) }</label>
                             <span>{displayName}</span>
                         </div>
                         { run.commitId ?
                         <div>
-                            <label>{t('rundetail.header.commit')}</label>
+                            <label>{t('rundetail.header.commit', { defaultValue: 'Commit' })}</label>
                             <span className="commit">
                                 {run.commitId.substring(0, 7)}
                             </span>
@@ -84,8 +84,8 @@ class RunDetailsHeader extends Component {
                               liveUpdate={run.isRunning()}
                               updatePeriod={1000}
                               locale={locale}
-                              liveFormat={t('common.date.duration.format')}
-                              hintFormat={t('common.date.duration.hint.format')}
+                              liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+                              hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
                             />
                         </div>
                         <div>
@@ -99,8 +99,8 @@ class RunDetailsHeader extends Component {
                               date={run.endTime}
                               liveUpdate
                               locale={locale}
-                              shortFormat={t('common.date.readable.short')}
-                              longFormat={t('common.date.readable.long')}
+                              shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                              longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                             />
                         </div>
                     </div>

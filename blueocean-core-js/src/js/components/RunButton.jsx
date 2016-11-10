@@ -1,15 +1,16 @@
 /**
  * Created by cmeyers on 8/26/16.
  */
-
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
-
-import { RunApi as runApi } from '../';
-import { ToastService as toastService } from '../';
-import { ToastUtils } from '../';
+import {
+    RunApi as runApi,
+    ToastService as toastService,
+    ToastUtils,
+    I18n,
+} from '../';
 import Security from '../security';
-import I18n from '../i18n/i18n';
+const translate = I18n ? I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.web.Messages') : function() {};
 
 const { permit } = Security;
 
@@ -29,8 +30,6 @@ export class RunButton extends Component {
             running: false,
             stopping: false,
         };
-
-        this.translate = I18n.t;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -71,9 +70,10 @@ export class RunButton extends Component {
 
         const name = decodeURIComponent(this.props.runnable.name);
         const runId = this.props.latestRun.id;
-        const text = this.translate('toast.run.stopping', {
+        const text = translate('toast.run.stopping', {
             0: name,
             1: runId,
+            defaultValue: 'Stoppping "{0}" #{1}',
         });
 
         toastService.newToast({ text });
@@ -94,8 +94,14 @@ export class RunButton extends Component {
         showRunButton = showRunButton && permit(this.props.runnable).start();
         showStopButton = showStopButton && permit(this.props.runnable).stop();
 
-        const runLabel = this.props.runText || this.translate('toast.run');
-        const stopLabel = this.state.stopping ? this.translate('toast.stopping') : this.translate('toast.stop');
+        const runLabel = this.props.runText || translate('toast.run', {
+              defaultValue: 'Run',
+          });
+        const stopLabel = this.state.stopping ? translate('toast.stopping', {
+            defaultValue: 'Stopping ...',
+        }) : translate('toast.stop', {
+            defaultValue: 'Stop',
+        });
 
         if (!showRunButton && !showStopButton) {
             return null;

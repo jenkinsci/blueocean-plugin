@@ -25,7 +25,7 @@ export default class RunDetailsChanges extends Component {
         if (!changeSet || !changeSet.length) {
             return (<EmptyStateView tightSpacing>
                 <Markdown>
-                    {t('EmptyState.changes')}
+                    {t('EmptyState.changes', { defaultValue: 'There are no changes for this pipeline run.\n\n' })}
                 </Markdown>
             </EmptyStateView>);
         }
@@ -34,9 +34,9 @@ export default class RunDetailsChanges extends Component {
 
         const headers = [
             t(`${head}.commit`),
-            { label: t(`${head}.author`), className: 'author' },
-            { label: t(`${head}.message`), className: 'message' },
-            { label: t(`${head}.date`), className: 'date' },
+            { label: t(`${head}.author`, { defaultValue: 'Author' }), className: 'author' },
+            { label: t(`${head}.message`, { defaultValue: 'Message' }), className: 'message' },
+            { label: t(`${head}.date`, { defaultValue: 'Date' }), className: 'date' },
         ];
 
         return (
@@ -51,8 +51,8 @@ export default class RunDetailsChanges extends Component {
                               date={commit.timestamp}
                               liveUpdate
                               locale={locale}
-                              shortFormat={t('common.date.readable.short')}
-                              longFormat={t('common.date.readable.long')}
+                              shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                              longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                             />
                         </td>
                     </tr>

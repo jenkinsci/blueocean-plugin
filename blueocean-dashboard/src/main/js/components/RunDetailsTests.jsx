@@ -30,7 +30,9 @@ export class RunDetailsTests extends Component {
         if (testResults.$failed) {
             return (<EmptyStateView tightSpacing>
                  <Markdown>
-                    {t('EmptyState.tests')}
+                    {t('EmptyState.tests', {
+                        defaultValue: 'There are no tests run for this build.\n\n',
+                    })}
                 </Markdown>
             </EmptyStateView>);
         }
@@ -41,10 +43,22 @@ export class RunDetailsTests extends Component {
         return (<div className="test-results-container">
             <div className="test=result-summary" style={{ display: 'none' }}>
                 <div className={`test-result-bar ${percentComplete}%`}></div>
-                <div className="test-result-passed">{t('rundetail.tests.passed', { 0: testResults.passCount })}</div>
-                <div className="test-result-failed">{t('rundetail.tests.failed', { 0: testResults.failCount })}</div>
-                <div className="test-result-skipped">{t('rundetail.tests.skipped', { 0: testResults.skipCount })}</div>
-                <div className="test-result-duration">{t('rundetail.tests.duration', { 0: testResults.duration })}</div>
+                <div className="test-result-passed">{t('rundetail.tests.passed', {
+                    0: testResults.passCount,
+                    defaultValue: 'Passed {0}',
+                })}</div>
+                <div className="test-result-failed">{t('rundetail.tests.failed', {
+                    0: testResults.failCount,
+                    defaultValue: 'Failed {0}',
+                })}</div>
+                <div className="test-result-skipped">{t('rundetail.tests.skipped', {
+                    0: testResults.skipCount,
+                    defaultValue: 'Skipped {0}',
+                })}</div>
+                <div className="test-result-duration">{t('rundetail.tests.duration', {
+                    0: testResults.duration,
+                    defaultValue: 'Duration {0}',
+                })}</div>
             </div>
 
             <Extensions.Renderer

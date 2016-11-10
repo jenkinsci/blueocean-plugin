@@ -40,7 +40,7 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const translate = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
+const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
 
 export class PipelinePage extends Component {
 
@@ -65,7 +65,6 @@ export class PipelinePage extends Component {
         setTitle(`${organization} / ${name}`);
 
         const baseUrl = buildPipelineUrl(organization, fullName);
-
         return (
             <Page>
                 <PageHeader>
@@ -95,9 +94,9 @@ export class PipelinePage extends Component {
                     }
 
                     <PageTabs base={baseUrl}>
-                        <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity') }</TabLink>
-                        <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches') }</TabLink>
-                        <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests') }</TabLink>
+                        <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>
+                        <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' }) }</TabLink>
+                        <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>
                     </PageTabs>
                 </PageHeader>
                 {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: I18n.language })}

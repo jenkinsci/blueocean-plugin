@@ -16,23 +16,20 @@ describe('Pipelines', () => {
         getRootURL: () => '/',
     };
 
-    const params = {};
+    const context = {
+        params: {},
+        location: {},
+        config,
+    };
 
     describe('basic table rendering', () => {
         let wrapper;
-        let context;
 
         beforeEach(() => {
-            context = {
-                params,
-                config,
-            };
 
             wrapper = shallow(
                 <Pipelines pipelines={pipelines} setTitle={()=>{}}/>,
-                {
-                    context,
-                }
+                { context }
             );
         });
 
@@ -47,10 +44,6 @@ describe('Pipelines', () => {
 
     describe('duplicate job names', () => {
         it('should render two rows when job names are duplicated across folders', () => {
-            const context = {
-                config,
-                params,
-            };
 
             const wrapper = mount(
                 <Pipelines pipelines={pipelinesDupName} setTitle={()=>{}}/>,

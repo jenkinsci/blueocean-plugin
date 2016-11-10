@@ -20,10 +20,14 @@ function loginOrLogout(t) {
     if (Security.isSecurityEnabled()) {
         if (Security.isAnonymousUser()) {
             const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
-            return <a href={loginUrl} className="btn-primary inverse small">{t('login')}</a>;
+            return <a href={loginUrl} className="btn-primary inverse small">{t('login', {
+                defaultValue: 'login',
+            })}</a>;
         } else {
             const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
-            return <a href={logoutUrl} className="btn-secondary inverse small">{t('logout')}</a>;
+            return <a href={logoutUrl} className="btn-secondary inverse small">{t('logout', {
+                defaultValue: 'logout',
+            })}</a>;
         }
     }
 }
@@ -45,8 +49,12 @@ class App extends Component {
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link query={location.query} to="/pipelines">{translate('pipelines')}</Link>
-                            <a href="#">{translate('administration')}</a>
+                            <Link query={location.query} to="/pipelines">{translate('pipelines', {
+                                defaultValue: 'Pipelines',
+                            })}</Link>
+                            <a href="#">{translate('administration', {
+                                defaultValue: 'Administation',
+                            })}</a>
                         </nav>
                         <div className="button-bar">
                             { loginOrLogout(translate) }

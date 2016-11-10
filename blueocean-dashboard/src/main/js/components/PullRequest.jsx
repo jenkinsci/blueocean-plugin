@@ -57,8 +57,8 @@ export default class PullRequest extends Component {
                   date={endTime}
                   liveUpdate
                   locale={locale}
-                  shortFormat={t('common.date.readable.short')}
-                  longFormat={t('common.date.readable.long')}
+                  shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                  longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                 />
             </td>
             <td>

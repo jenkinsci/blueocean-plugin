@@ -18,7 +18,7 @@ export class Pipelines extends Component {
     }
 
     render() {
-        const { config, params: { organization }, location: { query } } = this.context;
+        const { params: { organization }, location: { query } } = this.context;
         const { pipelines } = this.props;
         const orgLink = organization ?
             <Link
@@ -30,10 +30,10 @@ export class Pipelines extends Component {
             </Link> : '';
 
         const headers = [
-            { label: translate('home.pipelineslist.header.name'), className: 'name-col' },
-            translate('home.pipelineslist.header.health'),
-            translate('home.pipelineslist.header.branches'),
-            translate('home.pipelineslist.header.pullrequests'),
+            { label: translate('home.pipelineslist.header.name', { defaultValue: 'Name' }), className: 'name-col' },
+            translate('home.pipelineslist.header.health', { defaultValue: 'Health' }),
+            translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' }),
+            translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' }),
             { label: '', className: 'actions-col' },
         ];
         return (
@@ -47,7 +47,7 @@ export class Pipelines extends Component {
                               query={query}
                               className="inverse"
                             >
-                                { translate('home.header.dashboard') }
+                                { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
                             </Link>
                             { organization && ' / ' }
                             { organization && orgLink }
@@ -85,7 +85,7 @@ export class Pipelines extends Component {
 
                         { pipelines && pipelines.$pager &&
                             <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
-                                {pipelines.$pending ? translate('common.pager.loading') : translate('common.pager.more')}
+                                {pipelines.$pending ? translate('common.pager.loading', { defaultValue: 'Loading...' }) : translate('common.pager.more', { defaultValue: 'Show more' })}
                             </button>
                         }
                     </article>

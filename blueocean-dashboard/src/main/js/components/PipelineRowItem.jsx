@@ -10,9 +10,15 @@ export class PipelineRowItem extends Component {
         const { t } = this.props;
         let response = '-';
         if (failing > 0) {
-            response = t('home.pipelineslist.row.failing', { 0: failing });
+            response = t('home.pipelineslist.row.failing', {
+                0: failing,
+                defaultValue: '{0} failing',
+            });
         } else if (passing > 0) {
-            response = t('home.pipelineslist.row.passing', { 0: passing });
+            response = t('home.pipelineslist.row.passing', {
+                0: passing,
+                defaultValue: '{0} passing',
+            });
         }
         return response;
     }
@@ -24,6 +30,7 @@ export class PipelineRowItem extends Component {
         if (!pipeline) {
             return null;
         }
+        const { location = {} } = this.context;
         const simple = !pipeline.branchNames;
         const {
             name,
@@ -66,12 +73,11 @@ export class PipelineRowItem extends Component {
             multiBranchLink = multiBranchLabel;
             pullRequestsLink = multiPrLabel;
         }
-
         // FIXME: Visual alignment of the last column
         return (
             <tr data-name={name} data-organization={organization}>
                 <td>
-                    <Link to={activitiesURL}>
+                    <Link to={activitiesURL} query={location.query}>
                         <ExpandablePath path={fullDisplayPath} />
                     </Link>
                 </td>
@@ -97,7 +103,7 @@ export class PipelineRowItem extends Component {
 PipelineRowItem.propTypes = {
     pipeline: PropTypes.object.isRequired,
     showOrganization: PropTypes.bool,
-    t: func,
+    t: PropTypes.func,
 };
 
 PipelineRowItem.contextTypes = {

@@ -19,13 +19,16 @@ const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation, t }) =>
     (<main>
         <EmptyStateView iconName="shoes">
             <Markdown>
-                {t('EmptyState.activity', { 0: repoName })}
+                {t('EmptyState.activity', {
+                    0: repoName,
+                    defaultValue: '# Ready, get set...\nHmm, looks like there are no runs in this pipeline\u2019s history.\n\nCommit to the repository _{0}_ or run the pipeline manually.',
+                })}
             </Markdown>
             { showRunButton &&
                 <RunButton
                   runnable={pipeline}
                   buttonType="run-only"
-                  runLabel={ t('pipelinedetail.activity.button.run') }
+                  runLabel={ t('pipelinedetail.activity.button.run', { defaultValue: 'Run now' }) }
                   onNavigation={onNavigation}
                 />
             }
@@ -90,22 +93,29 @@ export class Activity extends Component {
         const latestRun = runs[0];
         const head = 'pipelinedetail.activity.header';
 
+        const status = t(`${head}.status`, { defaultValue: 'Status' });
+        const build = t(`${head}.build`, { defaultValue: 'Build' });
+        const commit = t(`${head}.commit`, { defaultValue: 'Commit' });
+        const message = t(`${head}.message`, { defaultValue: 'Message' });
+        const duration = t(`${head}.duration`, { defaultValue: 'Duration' });
+        const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
+        const branch = t(`${head}.branch`, { defaultValue: 'Branch' });
         const headers = isMultiBranchPipeline ? [
-            t(`${head}.status`),
-            t(`${head}.build`),
-            t(`${head}.commit`),
-            { label: t(`${head}.branch`), className: 'branch' },
-            { label: t(`${head}.message`), className: 'message' },
-            { label: t(`${head}.duration`), className: 'duration' },
-            { label: t(`${head}.completed`), className: 'completed' },
+            status,
+            build,
+            commit,
+            { label: branch, className: 'branch' },
+            { label: message, className: 'message' },
+            { label: duration, className: 'duration' },
+            { label: completed, className: 'completed' },
             { label: '', className: 'actions' },
         ] : [
-            t(`${head}.status`),
-            t(`${head}.build`),
-            t(`${head}.commit`),
-            { label: t(`${head}.message`), className: 'message' },
-            { label: t(`${head}.duration`), className: 'duration' },
-            { label: t(`${head}.completed`), className: 'completed' },
+            status,
+            build,
+            commit,
+            { label: message, className: 'message' },
+            { label: duration, className: 'duration' },
+            { label: completed, className: 'completed' },
             { label: '', className: 'actions' },
         ];
 
@@ -149,7 +159,7 @@ export class Activity extends Component {
                 }
                 {runs.$pager && runs.length > 0 &&
                 <button disabled={runs.$pending || !runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
-                    {runs.$pending ? t('common.pager.loading') : t('common.pager.more')}
+                    {runs.$pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
                 </button>
                 }
             </article>

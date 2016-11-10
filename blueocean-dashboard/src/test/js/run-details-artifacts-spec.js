@@ -5,6 +5,7 @@ import sd from 'skin-deep';
 import { latestRuns } from './data/runs/latestRuns';
 import RunDetailsArtifacts from '../../main/js/components/RunDetailsArtifacts';
 
+const t = () => {};
 describe('RunDetailsArtifacts', () => {
     let component;
     let tree;
@@ -13,7 +14,7 @@ describe('RunDetailsArtifacts', () => {
     describe('bad data', () => {
         before(() => {
             component = (
-                <RunDetailsArtifacts />
+                <RunDetailsArtifacts t={t} />
             );
             tree = sd.shallowRender(component);
             output = tree.getRenderOutput();
@@ -28,6 +29,7 @@ describe('RunDetailsArtifacts', () => {
         before(() => {
             component = (
                 <RunDetailsArtifacts
+                  t={t}
                   result={{ artifacts: [] }}
                 />
             );
@@ -45,6 +47,7 @@ describe('RunDetailsArtifacts', () => {
             const runs = latestRuns.map(run => (run.latestRun));
             component = (
                 <RunDetailsArtifacts
+                  t={t}
                   result={runs[0]}
                 />
             );

@@ -9,11 +9,13 @@ import { latestRuns as data } from './data/runs/latestRuns';
 
 const pr = data.filter((run) => run.pullRequest);
 
+const t = () => {};
+
 describe('PullRequest should render', () => {
     let tree = null;
     beforeEach(() => {
         const immData = new RunsRecord(pr[0]);
-        tree = sd.shallowRender(<PullRequest pr={immData} pipeline={{}} />,{
+        tree = sd.shallowRender(<PullRequest t={t} pr={immData} pipeline={{}} />,{
             router: {},
             location: {},
         });
@@ -32,7 +34,7 @@ describe('PullRequest should render', () => {
 describe('PullRequest should not render', () => {
     let tree = null;
     beforeEach(() => {
-        tree = sd.shallowRender(<PullRequest />);
+        tree = sd.shallowRender(<PullRequest t={t}/>);
     });
 
     it('does renders the PullRequest without data', () => {
@@ -43,7 +45,7 @@ describe('PullRequest should not render', () => {
 describe('PullRequest', () => {
     it('opens correctly', (done) => {
         const immData = new RunsRecord(pr[0]);
-        const tree = sd.shallowRender(<PullRequest pr={immData} pipeline={{
+        const tree = sd.shallowRender(<PullRequest t={t} pr={immData} pipeline={{
             fullName: 'asdf/blah',
             organization: 'jenkins',
             }} />, {

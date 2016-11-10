@@ -20,14 +20,14 @@ export default class RunDetailsArtifacts extends Component {
         if (!artifacts || !artifacts.length) {
             return (<EmptyStateView tightSpacing>
                 <Markdown>
-                    {t('EmptyState.artifacts')}
+                    {t('EmptyState.artifacts', { defaultValue: 'There are no artifacts for this pipeline run.\n\n' })}
                 </Markdown>
             </EmptyStateView>);
         }
 
         const headers = [
-            { label: t('rundetail.artifacts.header.name'), className: 'name' },
-            { label: t('rundetail.artifacts.header.size'), className: 'size' },
+            { label: t('rundetail.artifacts.header.name', { defaultValue: 'Name' }), className: 'name' },
+            { label: t('rundetail.artifacts.header.size', { defaultValue: 'Header' }), className: 'size' },
             { label: '', className: 'actions' },
         ];
 
@@ -42,7 +42,7 @@ export default class RunDetailsArtifacts extends Component {
                             <FileSize bytes={artifact.size} />
                         </td>
                         <td className="download">
-                            <a target="_blank" title={t('rundetail.artifacts.button.download')} href={artifact.url}>
+                            <a target="_blank" title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })} href={artifact.url}>
                                 <Icon style={style} icon="file_download" />
                             </a>
                         </td>

@@ -144,7 +144,9 @@ export default class PipelineRunGraph extends Component {
 
         if (!graphNodes) {
             // FIXME: Make a placeholder empty state when nodes is null (loading)
-            return <div>{t('Loading')}</div>;
+            return (<div>{t('common.pager.loading', {
+                defaultValue: 'Loading...',
+            })}</div>);
         } else if (graphNodes.length === 0) {
             // Do nothing when there's no nodes
             return null;

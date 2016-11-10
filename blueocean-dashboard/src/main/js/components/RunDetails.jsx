@@ -41,7 +41,7 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const translate = (key) => I18n.t(key, { ns: 'jenkins.plugins.blueocean.dashboard.Messages' });
+const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
 
 class RunDetails extends Component {
 
@@ -172,10 +172,18 @@ class RunDetails extends Component {
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
                         <PageTabs base={baseUrl}>
-                            <TabLink to="/pipeline">{t('rundetail.header.tab.pipeline')}</TabLink>
-                            <TabLink to="/changes">{t('rundetail.header.tab.changes')}</TabLink>
-                            <TabLink to="/tests">{t('rundetail.header.tab.tests')}</TabLink>
-                            <TabLink to="/artifacts">{t('rundetail.header.tab.artifacts')}</TabLink>
+                            <TabLink to="/pipeline">{t('rundetail.header.tab.pipeline', {
+                                defaultValue: 'Pipeline',
+                            })}</TabLink>
+                            <TabLink to="/changes">{t('rundetail.header.tab.changes', {
+                                defaultValue: 'Changes',
+                            })}</TabLink>
+                            <TabLink to="/tests">{t('rundetail.header.tab.tests', {
+                                defaultValue: 'Tests',
+                            })}</TabLink>
+                            <TabLink to="/artifacts">{t('rundetail.header.tab.artifacts', {
+                                defaultValue: 'Artifacts',
+                            })}</TabLink>
                         </PageTabs>
 
                         <div className="button-bar">
