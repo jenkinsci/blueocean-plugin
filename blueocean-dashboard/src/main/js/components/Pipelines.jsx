@@ -9,7 +9,7 @@ import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 
-import { pagerService, pipelineService, PagerService } from '@jenkins-cd/blueocean-core-js';
+import { pagerService, pipelineService } from '@jenkins-cd/blueocean-core-js';
 
 @observer
 export class Pipelines extends Component {
@@ -38,7 +38,6 @@ export class Pipelines extends Component {
 
     render() {
         const pipelines = this.pager.data;
-        const { config } = this.context;
         const { organization } = this.context.params;
 
         const orgLink = organization ?
@@ -105,19 +104,17 @@ export class Pipelines extends Component {
     }
 }
 
-const { array, func, object } = PropTypes;
+const { func, object } = PropTypes;
 
 Pipelines.contextTypes = {
     config: object,
     params: object,
     store: object,
     router: object,
-    pipelinesService: object,
 };
 
 Pipelines.propTypes = {
     setTitle: func,
-    pipelines: array,
 };
 
 export default Pipelines;

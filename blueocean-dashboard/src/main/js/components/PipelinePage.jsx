@@ -21,8 +21,9 @@ import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
 import { Icon } from 'react-material-icons-blue';
-import { AppConfig } from '@jenkins-cd/blueocean-core-js';
-
+import { AppConfig, pipelineService, RestPaths } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
+import { observable, action } from 'mobx';
 /**
  * returns true if the pipeline is defined and has branchNames
  */
@@ -42,25 +43,32 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-
+@observer
 export class PipelinePage extends Component {
 
     componentWillMount() {
+        console.log('aaaaaaaaa');
         if (this.props.params) {
-            this.props.fetchPipeline(this.props.params.organization, this.props.params.pipeline);
+            this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
+            pipelineService.fetchPipeline(this.href)    
         }
     }
-
+   
     render() {
-        const { pipeline, setTitle } = this.props;
+       // const data = pipelineService._data.keys();
+        //console.log(data);
+        const pipeline = pipelineService.getPipeline(this.href);
+        console.log('ppp', pipeline);
+        
+        const { setTitle } = this.props;
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
-        const isReady = pipeline && !pipeline.$pending;
+        const isReady = !!pipeline;
 
-        if (pipeline && pipeline.$failed) {
-            return <NotFound />;
-        }
+        //if (pipeline && pipeline.failed) {
+        //    return <NotFound />;
+        //}
 
         setTitle(`${organization} / ${name}`);
 

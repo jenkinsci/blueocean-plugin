@@ -3,12 +3,16 @@ import { AppPaths, RestPaths } from '../utils/paths';
 import { Fetch } from '../fetch';
 import utils from '../utils';
 import { BunkerService } from './BunkerService';
+import { computed, createTransformer } from 'mobx';
 export class PipelineService extends BunkerService {
     constructor(pagerService, activityService) {
         super(pagerService);
         this.activityService = activityService;
     }
+
+
    
+
     allPipelinesPager() {
         console.log('aaaaa');
         return {
@@ -36,8 +40,10 @@ export class PipelineService extends BunkerService {
 
         return data;
     }
-
-    fetchPipelineByHref(href: string) {
+    getPipeline(href) {
+        return computed(() => this.getItem(href)).get();
+    }
+    fetchPipeline(href) {
         return Fetch.fetchJSON(href)
             .then(data => {
                 this.setItem(data);

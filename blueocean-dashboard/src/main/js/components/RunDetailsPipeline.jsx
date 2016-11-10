@@ -291,7 +291,6 @@ export class RunDetailsPipeline extends Component {
         const { location, router } = this.context;
 
         const { isMultiBranch, nodes, result: run, params } = this.props;
-
         if (run.isQueued()) {
             return <QueuedState />;
         }

@@ -24,7 +24,7 @@ export default class Runs extends Component {
     }
     render() {
         // early out
-        if (!this.props.run || !this.context.pipeline) {
+        if (!this.props.run || !this.props.pipeline) {
             return null;
         }
         const { router, location } = this.context;
@@ -38,7 +38,7 @@ export default class Runs extends Component {
             moment().diff(moment(run.startTime));
 
         const open = () => {
-            const pipelineName = decodeURIComponent(pipeline.name);
+            const pipelineName = decodeURIComponent(run.pipeline);
             location.pathname = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, pipelineName, run.id, 'pipeline');
             router.push(location);
         };
@@ -57,7 +57,7 @@ export default class Runs extends Component {
             <td>{run.id}</td>
             <td><CommitHash commitId={run.commitId} /></td>
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
-                <td>{decodeURIComponent(pipeline.name)}</td>
+                <td>{decodeURIComponent(run.name)}</td>
             </IfCapability>
             <td>{changeset && changeset.msg || '-'}</td>
             <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>

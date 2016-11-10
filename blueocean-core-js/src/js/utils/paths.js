@@ -42,7 +42,7 @@ export const AppPaths = {
 
 export const RestPaths = {
     apiRoot() {
-        return `${AppPaths.getJenkinsRootURL()}/blue/rest`;
+        return '/blue/rest';
     },
 
     organizationPipelines(organizationName) {

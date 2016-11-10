@@ -4,7 +4,8 @@ import isoFetch from 'isomorphic-fetch';
 import utils from './utils';
 import config from './config';
 import dedupe from './utils/dedupe-calls';
-
+import { AppPaths } from './utils/paths';
+import { capabilityAugmenter } from './capability/index';
 let refreshToken = null;
 export const FetchFunctions = {
     checkRefreshHeader(response) {
@@ -35,6 +36,7 @@ export const FetchFunctions = {
         if (response.status >= 300 || response.status < 200) {
             const error = new Error(response.statusText);
             error.response = response;
+            console.log('error',response);
             throw error;
         }
         return response;
@@ -179,16 +181,29 @@ export const Fetch = {
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
      * @returns JSON body.
      */
-    fetchJSON(url, { onSuccess, onError, fetchOptions } = {}) {
-        if (!config.isJWTEnabled()) {
-            return FetchFunctions.rawFetchJSON(url, { onSuccess, onError, fetchOptions });
+    fetchJSON(url, { onSuccess, onError, fetchOptions, caps } = {}) {
+        let fixedUrl = url;
+        if (AppPaths.getJenkinsRootURL() !== '' && !url.startsWith(AppPaths.getJenkinsRootURL())) {
+            fixedUrl = `${AppPaths.getJenkinsRootURL()}${url}`;
         }
-        return jwt.getToken()
-            .then(token => FetchFunctions.rawFetchJSON(url, {
-                onSuccess,
-                onError,
-                fetchOptions: FetchFunctions.jwtFetchOption(token, fetchOptions),
-            }));
+        let future;
+        if (!config.isJWTEnabled()) {
+            future = FetchFunctions.rawFetchJSON(fixedUrl, { onSuccess, onError, fetchOptions });
+        } else {
+            future = jwt.getToken()
+                .then(token => FetchFunctions.rawFetchJSON(fixedUrl, {
+                    onSuccess,
+                    onError,
+                    fetchOptions: FetchFunctions.jwtFetchOption(token, fetchOptions),
+                }));
+        }
+
+       // if (!!caps) {
+        //    console.log('fetching caps');
+          //  return future.then(data => capabilityAugmenter.augmentCapabilities(data))
+        //} 
+
+        return future;
     },
 
     /**
@@ -204,12 +219,16 @@ export const Fetch = {
      * @returns fetch body.
      */
     fetch(url, { onSuccess, onError, fetchOptions } = {}) {
+        let fixedUrl = url;
+        if (AppPaths.getJenkinsRootURL() !== '' && !url.startsWith(AppPaths.getJenkinsRootURL())) {
+            fixedUrl = `${AppPaths.getJenkinsRootURL()}${url}`;
+        }
         if (!config.isJWTEnabled()) {
-            return FetchFunctions.rawFetch(url, { onSuccess, onError, fetchOptions });
+            return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions });
         }
         
         return jwt.getToken()
-            .then(token => FetchFunctions.rawFetch(url, {
+            .then(token => FetchFunctions.rawFetch(fixedUrl, {
                 onSuccess,
                 onError,
                 fetchOptions: FetchFunctions.jwtFetchOption(token, fetchOptions),

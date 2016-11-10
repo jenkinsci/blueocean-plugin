@@ -4,6 +4,7 @@ import { AppPaths, RestPaths } from '../utils/paths';
 import { DataBunker } from '../model/DataBunker';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
+import { computed } from 'mobx';
 
 export class ActivityService extends BunkerService {
   
@@ -31,10 +32,13 @@ export class ActivityService extends BunkerService {
         return this._mapQueueToPsuedoRun(data);
     }
     
-    fetchActivity({ organization, pipeline, branch, runId }) {
-        return Fetch.fetchJSON(RestPaths.run({ organization, pipeline, branch, runId }))
+    getActivity(href) {
+        return computed(() => this.getItem(href)).get();
+    }
+    fetchActivity(href) {
+        return Fetch.fetchJSON(href)
             .then(data => this.setItem(data));
-    }  
+    }
     /**
      * This function maps a queue item into a run instancce.
      *

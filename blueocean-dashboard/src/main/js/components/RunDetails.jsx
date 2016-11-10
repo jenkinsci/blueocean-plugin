@@ -12,27 +12,18 @@ import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from 'react-material-icons-blue';
 
 import {
-    actions,
-    currentRun as runSelector,
-    isMultiBranch as isMultiBranchSelector,
-    previous as previousSelector,
-    createSelector,
-    connect,
-} from '../redux';
-
-import {
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
     buildClassicConfigUrl,
 } from '../util/UrlUtils';
-
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
-import { activityService } from '@jenkins-cd/blueocean-core-js';
+import { activityService, RestPaths, capable } from '@jenkins-cd/blueocean-core-js';
 import { AppConfig } from '@jenkins-cd/blueocean-core-js';
-
+import { observer } from 'mobx-react';
 const { func, object, any, string } = PropTypes;
 
 const classicConfigLink = (pipeline) => {
@@ -43,7 +34,7 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-
+@observer
 class RunDetails extends Component {
 
     componentWillMount() {
@@ -61,16 +52,16 @@ class RunDetails extends Component {
     }
 
     _fetchRun(props, storePreviousRoute) {
-        if (props.isMultiBranch === null) {
-            return; // multiple redux selectors haven't completed
-        }
+        this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE)
+        console.log('ismulti', this.isMultiBranch);
         if (this.context.config && this.context.params) {
-            props.fetchRun({
+            this.href = RestPaths.run({
                 organization: props.params.organization,
                 pipeline: props.params.pipeline,
-                branch: props.isMultiBranch && props.params.branch,
+                branch: this.isMultiBranch && props.params.branch,
                 runId: props.params.runId,
             });
+            activityService.fetchActivity(this.href);
 
             if (storePreviousRoute) {
                 this.opener = props.previous;
@@ -109,17 +100,19 @@ class RunDetails extends Component {
         this.context.router.push(changesUrl);
     }
     render() {
+        const run = activityService.getActivity(this.href);
+        
+        console.log('r', this.props.pipeline);
         // early out
         if (!this.context.params
-            || !this.props.run
-            || this.props.isMultiBranch === null) {
+            || !run) {
             return null;
         }
 
         const { router, location, params } = this.context;
-        const { pipeline, run, setTitle } = this.props;
+        const { pipeline, setTitle } = this.props;
 
-        if (run.$pending || pipeline.$pending) {
+        if (!run || !pipeline) {
             return <PageLoading />;
         }
 
@@ -192,9 +185,9 @@ class RunDetails extends Component {
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {run.$success && React.cloneElement(
+                        {run && React.cloneElement(
                             this.props.children,
-                            { baseUrl, result: currentRun, ...this.props }
+                            { baseUrl, result: currentRun, isMultiBranch: this.isMultiBranch, ...this.props }
                         )}
                     </div>
                 </ModalBody>
@@ -215,16 +208,10 @@ RunDetails.propTypes = {
     params: any,
     pipeline: object,
     run: object,
-    isMultiBranch: any,
     fetchRun: func,
-    getPipeline: func,
     previous: string,
     setTitle: func,
 };
 
-const selectors = createSelector(
-    [runSelector, isMultiBranchSelector, previousSelector],
-    (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
 
-
-export default connect(selectors, actions)(RunDetails);
+export default RunDetails;

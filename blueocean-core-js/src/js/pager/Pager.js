@@ -56,7 +56,7 @@ export class Pager {
                 this.pending = false;
             })).catch(err => {
                 console.error('Error fetching page', err);
-                this.err = err;
+                action('set err', () => this.err = err);
             });
     }
 

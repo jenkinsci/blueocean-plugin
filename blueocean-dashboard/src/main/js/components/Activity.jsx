@@ -135,7 +135,6 @@ export class Activity extends Component {
                                     run,
                                     pipeline,
                                     changeset: latestRecord,
-                                   
                                 }}
                                 />
                             );
