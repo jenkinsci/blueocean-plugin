@@ -1607,8 +1607,6 @@ public class PipelineNodeTest extends PipelineBaseTest {
         List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
         Assert.assertEquals(3, nodes.size());
 
-        //XXX: kyoto adds extra step to report failure, resulting in stage reported as success,
-        // see https://issues.jenkins-ci.org/browse/JENKINS-39631
         Assert.assertEquals("FAILURE", nodes.get(0).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
 
