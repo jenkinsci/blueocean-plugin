@@ -20,14 +20,14 @@ function loginOrLogout(t) {
     if (Security.isSecurityEnabled()) {
         if (Security.isAnonymousUser()) {
             const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
-            return <a href={loginUrl} className="btn-primary inverse small">{t('login', {
+            return (<a href={loginUrl} className="btn-primary inverse small">{t('login', {
                 defaultValue: 'login',
-            })}</a>;
+            })}</a>);
         } else {
             const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
-            return <a href={logoutUrl} className="btn-secondary inverse small">{t('logout', {
+            return (<a href={logoutUrl} className="btn-secondary inverse small">{t('logout', {
                 defaultValue: 'logout',
-            })}</a>;
+            })}</a>);
         }
     }
 }
