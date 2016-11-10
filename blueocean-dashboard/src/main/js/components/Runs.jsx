@@ -27,9 +27,9 @@ export default class Runs extends Component {
         if (!this.props.run || !this.context.pipeline) {
             return null;
         }
-        const { router, location, pipeline } = this.context;
+        const { router, location } = this.context;
       
-        const { run, changeset } = this.props;
+        const { run, changeset,pipeline  } = this.props;
           
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const running = resultRun === 'RUNNING';
@@ -39,9 +39,7 @@ export default class Runs extends Component {
 
         const open = () => {
             const pipelineName = decodeURIComponent(pipeline.name);
-            console.log('pipelineName',run.id);
             location.pathname = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, pipelineName, run.id, 'pipeline');
-            
             router.push(location);
         };
 
@@ -77,14 +75,13 @@ export default class Runs extends Component {
 }
 
 Runs.propTypes = {
-    run: PropTypes.object,
-    pipeline: PropTypes.object,
+    run: object,
+    pipeline: object,
     result: any.isRequired, // FIXME: create a shape
     data: string,
     changeset: object.isRequired,
 };
 Runs.contextTypes = {
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };

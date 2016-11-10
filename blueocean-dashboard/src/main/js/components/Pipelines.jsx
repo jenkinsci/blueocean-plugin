@@ -1,6 +1,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
+import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
 
@@ -53,9 +54,6 @@ export class Pipelines extends Component {
             { label: '', className: 'actions-col' },
         ];
 
-        const baseUrl = config.getRootURL();
-        const newJobUrl = `${baseUrl}/view/All/newJob`;
-
         return (
             <Page>
                 <PageHeader>
@@ -67,9 +65,7 @@ export class Pipelines extends Component {
                             { organization && orgLink }
                         </h1>
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
-                            <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
-                                New Pipeline
-                            </a>
+                            <CreatePipelineLink />
                         </Extensions.Renderer>
                     </Title>
                 </PageHeader>
@@ -114,7 +110,6 @@ const { array, func, object } = PropTypes;
 Pipelines.contextTypes = {
     config: object,
     params: object,
-    pipelines: array,
     store: object,
     router: object,
     pipelinesService: object,
@@ -122,6 +117,7 @@ Pipelines.contextTypes = {
 
 Pipelines.propTypes = {
     setTitle: func,
+    pipelines: array,
 };
 
 export default Pipelines;

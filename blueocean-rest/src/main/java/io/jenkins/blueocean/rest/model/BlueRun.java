@@ -221,6 +221,7 @@ public abstract class BlueRun extends Resource {
     public enum BlueRunState {
         QUEUED,
         RUNNING,
+        PAUSED,
         FINISHED
     }
 

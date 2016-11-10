@@ -15,7 +15,6 @@ const { object, array, func, node, string } = PropTypes;
 
 @observer
 class OrganizationPipelines extends Component {
-    
     componentWillMount() {
         const config = this.context.config;
         if (config) {
@@ -119,7 +118,7 @@ class OrganizationPipelines extends Component {
      components and get rid of the seperate connect in each subcomponents -> see RunDetailsPipeline
      */
     render() {
-        return this.props.children;
+        return React.cloneElement(this.props.children);
     }
 }
 
@@ -145,10 +144,6 @@ OrganizationPipelines.propTypes = {
     location: object, // From react-router
     allPipelines: array,
     organizationPipelines: array,
-};
-
-OrganizationPipelines.childContextTypes = {
-    pipelines: array,
 };
 
 const selectors = createSelector([allPipelinesSelector, organizationPipelinesSelector],

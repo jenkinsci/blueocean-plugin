@@ -9,6 +9,8 @@ import {
 
 import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
+import { Icon } from 'react-material-icons-blue';
+
 import {
     actions,
     currentRun as runSelector,
@@ -22,13 +24,25 @@ import {
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
+    buildClassicConfigUrl,
 } from '../util/UrlUtils';
 
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
 import { activityService } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+
 const { func, object, any, string } = PropTypes;
+
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (AppConfig.getInitialUser() !== 'anonymous') {
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
+    }
+    return link;
+};
+
 
 class RunDetails extends Component {
 
@@ -102,15 +116,15 @@ class RunDetails extends Component {
             return null;
         }
 
-        if (this.props.run.$pending || this.context.pipeline.$pending) {
+        const { router, location, params } = this.context;
+        const { pipeline, run, setTitle } = this.props;
+
+        if (run.$pending || pipeline.$pending) {
             return <PageLoading />;
         }
 
-        const { router, location, params, pipeline = {} } = this.context;
-
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
-        const { run, setTitle } = this.props;
         const currentRun = new RunRecord(run);
         const status = currentRun.getComputedResult() || '';
 
@@ -172,6 +186,7 @@ class RunDetails extends Component {
                               latestRun={currentRun}
                               buttonType="stop-only"
                             />
+                            {classicConfigLink(pipeline)}
                         </div>
                     </div>
                 </ModalHeader>
@@ -193,7 +208,6 @@ RunDetails.contextTypes = {
     params: object,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
-    pipeline: object,
 };
 
 RunDetails.propTypes = {
@@ -211,5 +225,6 @@ RunDetails.propTypes = {
 const selectors = createSelector(
     [runSelector, isMultiBranchSelector, previousSelector],
     (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
+
 
 export default connect(selectors, actions)(RunDetails);

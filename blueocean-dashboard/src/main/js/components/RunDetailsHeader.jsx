@@ -2,7 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
-import { ReadableDate, LiveStatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
+import { ExpandablePath, ReadableDate, LiveStatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import moment from 'moment';
 
@@ -26,19 +26,11 @@ class RunDetailsHeader extends Component {
     }
 
     render() {
-        const { data: run, pipeline: { fullName = '' } } = this.props;
+        const { data: run, pipeline } = this.props;
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
-        // enable folder path
-        const nameArray = fullName.split('/');
+        const fullDisplayName = pipeline.fullDisplayName;
 
-        // we want the full path for folder based projects
-        if (nameArray[nameArray.length - 1] === displayName) {
-            // last part is same as run.pipeline so getting rid of it
-            nameArray.pop();
-        }
-        // cleanName is in case of no folder empty
-        const cleanFullName = nameArray.join(' / ');
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
         const changeSet = run.changeSet;
@@ -47,7 +39,7 @@ class RunDetailsHeader extends Component {
             moment().diff(moment(run.startTime)) : run.durationInMillis;
         const onAuthorsClick = () => this.handleAuthorsClick();
         return (
-        <div className="pipeline-result">
+        <div className="pipeline-result run-details-header">
             <section className="status inverse">
                 <LiveStatusIndicator result={status} startTime={run.startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
@@ -57,11 +49,11 @@ class RunDetailsHeader extends Component {
             <section className="table">
                 <h4>
                     <a onClick={() => this.handleOrganizationClick()}>{run.organization}</a>
-                    &nbsp;/&nbsp;
-                    { cleanFullName && `${cleanFullName} / `}
-                    <a onClick={() => this.handleNameClick()}>{displayName}</a>
-                    &nbsp;
-                    #{run.id}
+                    <span>&nbsp;/&nbsp;</span>
+                    <a className="path-link" onClick={() => this.handleNameClick()}>
+                        <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
+                    </a>
+                    <span>&nbsp;#{run.id}</span>
                 </h4>
 
                 <div className="row">

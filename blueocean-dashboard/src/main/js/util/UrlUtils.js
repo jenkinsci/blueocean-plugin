@@ -19,6 +19,15 @@ export const buildPipelineUrl = (organization, fullName, tabName) => {
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
 
+export const buildClassicConfigUrl = (pipeline) => {
+    if (pipeline && pipeline.fullName) {
+        const jenkinsUrl = require('../config').getJenkinsRootURL();
+        return `${jenkinsUrl}/job/${pipeline.fullName.split('/').join('/job/')}/configure`;
+    }
+    return null;
+};
+
+
 /**
  * Build a root-relative URL to the run details screen.
  * @param organization

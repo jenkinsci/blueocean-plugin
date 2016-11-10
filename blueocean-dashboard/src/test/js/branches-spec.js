@@ -2,7 +2,6 @@ import React from 'react';
 import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
-import Immutable from 'immutable';
 import { latestRuns as data } from './data/runs/latestRuns';
 import { RunsRecord } from '../../main/js/components/records.jsx';
 
@@ -15,9 +14,8 @@ describe("Branches should render", () => {
 
   beforeEach(() => {
     const branch = new RunsRecord(data[0]);
-    tree = sd.shallowRender(<Branches data={branch} />, {
+    tree = sd.shallowRender(<Branches data={branch} pipeline={{}} />, {
         router: {},
-        pipeline: {},
         location: {},
     });
   });

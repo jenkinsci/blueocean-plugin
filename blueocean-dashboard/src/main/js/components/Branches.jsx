@@ -16,17 +16,17 @@ export default class Branches extends Component {
         this.state = { isVisible: false };
     }
     render() {
-        const branch = this.props.data;
+        const { data: branch, pipeline} = this.props;
         console.log('branch', branch);
         // early out
         if (!branch || !this.context.pipeline) {
             return null;
         }
-        const { router, location, pipeline } = this.context;
+        const { router, location,  } = this.context;
         const latestRun = branch.latestRun || {};
     
         const cleanBranchName = decodeURIComponent(branch.name);
-        const url = buildRunDetailsUrl(branch.organization, branch.fullName, cleanBranchName, latestRun.id, 'pipeline');
+        const url = buildRunDetailsUrl(branch.organization, branch.fullName, cleanBranchName, latestRun.id, 'pipeline');;
 
         const open = () => {
             location.pathname = url;
@@ -72,11 +72,11 @@ export default class Branches extends Component {
 
 Branches.propTypes = {
     data: object.isRequired,
+    pipeline: object,
 };
 
 Branches.contextTypes = {
     store: object,
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };

@@ -9,8 +9,8 @@ const { object } = PropTypes;
 
 export default class PullRequest extends Component {
     render() {
-        const { pr } = this.props;
-        if (!pr || !pr.pullRequest || !pr.latestRun || !this.context.pipeline) {
+        const { pr, pipeline: contextPipeline } = this.props;
+        if (!pr || !pr.pullRequest || !pr.latestRun || !contextPipeline) {
             return null;
         }
         const {
@@ -31,15 +31,10 @@ export default class PullRequest extends Component {
         } = pr;
         const result = resultString === 'UNKNOWN' ? state : resultString;
         const {
-            context: {
-                router,
-                location,
-                pipeline: {
-                    fullName,
-                    organization,
-            },
-                },
-        } = this;
+            router,
+            location,
+        } = this.context;
+        const { fullName, organization } = contextPipeline;
         const open = () => {
             location.pathname = buildRunDetailsUrl(organization, fullName, decodeURIComponent(pipeline), id, 'pipeline');
             router.push(location);
@@ -75,10 +70,10 @@ export default class PullRequest extends Component {
 
 PullRequest.propTypes = {
     pr: object,
+    pipeline: object,
 };
 
 PullRequest.contextTypes = {
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };

@@ -5,12 +5,15 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.AbstractItem;
 import hudson.model.Action;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
+import hudson.plugins.favorite.Favorites;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
@@ -33,6 +36,8 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -125,8 +130,7 @@ public class AbstractPipelineImpl extends BluePipeline {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
-
-        FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
+        FavoriteUtil.toggle(favoriteAction, job);
         return FavoriteUtil.getFavorite(job, new Reachable() {
             @Override
             public Link getLink() {
@@ -139,6 +143,33 @@ public class AbstractPipelineImpl extends BluePipeline {
     @Override
     public String getFullName(){
         return job.getFullName();
+    }
+
+    @Override
+    public String getFullDisplayName() {
+        return getFullDisplayName(job.getParent(), Util.rawEncode(job.getDisplayName()));
+    }
+
+    /**
+     * Returns full display name. Each display name is separated by '/' and each display name is url encoded.
+     *
+     * @param parent parent folder
+     * @param displayName URL encoded display name. Caller must pass urlencoded name
+     *
+     * @return full display name
+     */
+    public static String getFullDisplayName(@Nonnull ItemGroup parent, @Nullable String displayName){
+        String name = parent.getDisplayName();
+        if(name.length() == 0 ) return displayName;
+
+        if(name.length() > 0  && parent instanceof AbstractItem) {
+            if(displayName == null){
+                return getFullDisplayName(((AbstractItem)parent).getParent(), String.format("%s", Util.rawEncode(name)));
+            }else {
+                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.rawEncode(name),displayName));
+            }
+        }
+        return displayName;
     }
 
     @Override
@@ -233,12 +264,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     public boolean isFavorite() {
         User user = User.current();
-        if(user != null) {
-            FavoriteUserProperty prop = user.getProperty(FavoriteUserProperty.class);
-            return prop != null && prop.isJobFavorite(job.getFullName());
-        }
-
-        return false;
+        return user != null && Favorites.isFavorite(user, job);
     }
 
 }

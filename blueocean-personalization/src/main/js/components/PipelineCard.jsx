@@ -4,7 +4,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { capable, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
-import { Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
+import { ExpandablePath, Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
 import { RunButton, ReplayButton } from '@jenkins-cd/blueocean-core-js';
 
 const stopProp = (event) => {
@@ -133,6 +133,9 @@ export class PipelineCard extends Component {
         const isBranch = capable(runnableItem, BRANCH_CAPABILITY);
         const names = extractNames(runnableItem, isBranch);
         const organization = runnableItem.organization;
+        const fullDisplayName = isBranch ?
+            runnableItem.fullDisplayName.split('/').slice(0, -1).join('/') :
+            runnableItem.fullDisplayName;
 
         let status;
         let startTime = null;
@@ -163,7 +166,7 @@ export class PipelineCard extends Component {
 
                 <span className="name">
                     <Link to={activityUrl} onClick={(event) => stopProp(event)}>
-                        {organization} / <span title={names.fullName}>{names.pipelineName}</span>
+                        <ExpandablePath path={`${organization}/${fullDisplayName}`} className="dark-theme" />
                     </Link>
                 </span>
 
