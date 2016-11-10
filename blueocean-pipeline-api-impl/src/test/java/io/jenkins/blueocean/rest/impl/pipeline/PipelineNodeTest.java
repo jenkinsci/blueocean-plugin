@@ -1609,8 +1609,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         //XXX: kyoto adds extra step to report failure, resulting in stage reported as success,
         // see https://issues.jenkins-ci.org/browse/JENKINS-39631
-        //Assert.assertEquals("FAILURE", nodes.get(0).get("result"));
-        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));//TODO: remove after JENKINS-39631 is resolved.
+        Assert.assertEquals("FAILURE", nodes.get(0).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
 
         Assert.assertNull(nodes.get(1).get("result"));
@@ -1651,7 +1650,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals(3, nodes.size());
         Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
-        Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));////TODO: remove after JENKINS-39631 is resolved.
+        Assert.assertEquals("FAILURE", nodes.get(1).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
     }
 
@@ -1687,7 +1686,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
         Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
-        Assert.assertEquals("SUCCESS", nodes.get(2).get("result"));////TODO: remove after JENKINS-39631 is resolved.
+        Assert.assertEquals("FAILURE", nodes.get(2).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(2).get("state"));
     }
 
