@@ -1,7 +1,8 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import FloatingElement, { positions, positionValues, sanitizePosition } from './FloatingElement';
+import FloatingElement from './FloatingElement';
+import Position, { positions, sanitizePosition } from './Position';
 import {ModalContainer} from '.';
 
 export class Popover extends Component {
@@ -32,14 +33,15 @@ export class Popover extends Component {
 
     render() {
         const { children, style } = this.props;
-        const position = sanitizePosition(this.props.position || positionValues.above);
+        const position = sanitizePosition(this.props.position);
         const pointClassName = 'Popover-point Popover-point--' + position;
+        const positionFunction = Position[position];
 
         return (
             <ModalContainer onScreenClick={this.modalScreenClicked}>
                 <FloatingElement
                     targetElement={this.props.targetElement}
-                    position={this.props.position}
+                    positionFunction={positionFunction}
                 >
                     <div className="Popover-wrapper" style={style}>
                         <svg className={pointClassName} viewBox="0 0 2 2" width="20" height="20">

@@ -2,13 +2,13 @@ import React, {Component, PropTypes} from 'react';
 import { storiesOf } from '@kadira/storybook';
 
 import { Popover } from '../components';
-
+import { positions, positionValues } from '../components/Position';
 
 storiesOf('Popover', module)
-    .add('Above', () => <ExampleBasic position="above"/>)
-    .add('Below', () => <ExampleBasic position="below"/>)
-    .add('Left', () => <ExampleBasic position="left"/>)
-    .add('Right', () => <ExampleBasic position="right"/>)
+    .add('Above', () => <ExampleBasic position={positionValues.above}/>)
+    .add('Below', () => <ExampleBasic position={positionValues.below}/>)
+    .add('Left', () => <ExampleBasic position={positionValues.left}/>)
+    .add('Right', () => <ExampleBasic position={positionValues.right}/>)
 ;
 
 const triggerStyle = {
@@ -102,6 +102,6 @@ class ExampleBasic extends Component {
     }
 
     static propTypes = {
-        position: PropTypes.string
+        position: PropTypes.oneOf(positions),
     }
 }
