@@ -1,5 +1,5 @@
 import { DataBunker } from '../model/DataBunker';
-import { observable, action, asMap } from 'mobx';
+import { observable, computed, action, asMap } from 'mobx';
 
 export class BunkerService {
     @observable _data = asMap();
@@ -23,22 +23,23 @@ export class BunkerService {
     @action
     setItem(item) {
         const keyItem = this.bunkerKey(item);
-        const mappedItem = this.bunkerMapper(item);    
+        const mappedItem = observable(this.bunkerMapper(item));    
         this._data.set(keyItem, mappedItem);
-        return mappedItem;
+        return this.getItem(keyItem);
     }
+
 
     setItems(items) {
         return items.map(item => this.setItem(item));
     }
 
     getItem(key) {
-        return this._data.get(key);
+        return computed(() => this._data.get(key)).get();
     }
 
     @action
     removeItem(key) {
-        this._data.delete(key);      
+        this._data.delete(key);     
     }
 
     hasItem(key) {

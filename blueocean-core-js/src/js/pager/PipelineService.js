@@ -3,7 +3,7 @@ import { AppPaths, RestPaths } from '../utils/paths';
 import { Fetch } from '../fetch';
 import utils from '../utils';
 import { BunkerService } from './BunkerService';
-import { computed, createTransformer } from 'mobx';
+import { action } from 'mobx';
 export class PipelineService extends BunkerService {
     constructor(pagerService, activityService) {
         super(pagerService);
@@ -35,19 +35,29 @@ export class PipelineService extends BunkerService {
         const ret = data;
         
         if (latestRun) {
-            ret.getLatestRun = () =>  this.activityService.getOrAddActivity(latestRun);
+            this.activityService.setLatestActivity(latestRun);
+            ret.latestRun = this.activityService.getLatestActivity(latestRun._links.parent.href);
         }
 
         return data;
     }
     getPipeline(href) {
-        return computed(() => this.getItem(href)).get();
+        return this.getItem(href);
     }
+
     fetchPipeline(href) {
         return Fetch.fetchJSON(href, { caps: true })
             .then(data => {
                 this.setItem(data);
                 return data;
             });
+    }
+
+    @action
+    updateLatestRun(run) {
+        const pipeline = this.getItem(run._links.parent.href);
+        if (pipeline) {
+            pipeline.latestRun = run;
+        }
     }
 }

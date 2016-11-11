@@ -1,15 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, activityService } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
-
+import { observer } from 'mobx-react';
 const { object } = PropTypes;
 
 const stopProp = (event) => event.stopPropagation();
 
+@observer
 export default class Branches extends Component {
     constructor(props) {
         super(props);
@@ -19,12 +20,12 @@ export default class Branches extends Component {
         const { data: branch, pipeline} = this.props;
         console.log('branch', branch);
         // early out
-        if (!branch || !this.context.pipeline) {
+        if (!branch || !this.props.pipeline) {
             return null;
         }
-        const { router, location,  } = this.context;
-        const latestRun = branch.latestRun || {};
-    
+        const { router, location  } = this.context;
+        const latestRun = branch.latestRun;//activityService.getLatestActivity(branch._links.self.href);
+        console.log('a', latestRun);
         const cleanBranchName = decodeURIComponent(branch.name);
         const url = buildRunDetailsUrl(branch.organization, branch.fullName, cleanBranchName, latestRun.id, 'pipeline');;
 

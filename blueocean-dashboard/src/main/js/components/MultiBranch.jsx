@@ -1,17 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Branches from './Branches';
-import { RunsRecord } from './records';
-import {
-    actions,
-    currentBranches as branchSelector,
-    createSelector,
-    connect,
-} from '../redux';
+
 import PageLoading from './PageLoading';
 import { pipelineBranchesUnsupported } from './PipelinePage';
-import { branchService } from '@jenkins-cd/blueocean-core-js';
+import { branchService, capable } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 
 const { object, array, func, string, any } = PropTypes;
 
@@ -61,9 +56,9 @@ export class MultiBranch extends Component {
     }
 
     render() {
-        const { branches, pipeline } = this.pager.data;
-        console.log('branches', branches);
-        if (!branches || (!this.pager.pending && pipelineBranchesUnsupported(pipeline))) {
+        const { pipeline } = this.props;
+        const branches = this.pager.data;
+        if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
             return (<NotSupported />);
         }
 
@@ -115,13 +110,8 @@ MultiBranch.contextTypes = {
 };
 
 MultiBranch.propTypes = {
-    branches: array,
-    fetchBranches: func,
-    clearBranchData: func,
     children: any,
     pipeline: object,
 };
 
-const selectors = createSelector([branchSelector], (branches) => ({ branches }));
-
-export default connect(selectors, actions)(MultiBranch);
+export default MultiBranch;

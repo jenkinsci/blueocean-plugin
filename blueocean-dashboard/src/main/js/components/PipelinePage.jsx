@@ -50,11 +50,13 @@ export class PipelinePage extends Component {
         console.log('aaaaaaaaa');
         if (this.props.params) {
             this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
+            console.log('fetchp', this.href);
             pipelineService.fetchPipeline(this.href)    
         }
     }
    
     render() {
+        console.log('fetcha', this.href);
         const pipeline = pipelineService.getPipeline(this.href);
         
         const { setTitle } = this.props;

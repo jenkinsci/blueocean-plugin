@@ -4,10 +4,14 @@ import { AppPaths, RestPaths } from '../utils/paths';
 import { DataBunker } from '../model/DataBunker';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
-import { computed } from 'mobx';
+import { computed, asMap, action } from 'mobx';
 
 export class ActivityService extends BunkerService {
-  
+    @observable latestRuns = asMap();
+
+    getLatestActivity(href) {
+        return computed(() => this.latestRuns.get(href)).get();
+    }
     pagerKey(organization, pipeline) {
         return `Activities/${organization}-${pipeline}`;
     }
@@ -18,14 +22,9 @@ export class ActivityService extends BunkerService {
         });
     }
 
-
-    getOrAddActivity(activityData) {
-        const activity = this.getItem(activityData._links.self.href);
-        if (activity) {
-            return activity;
-        }
-        
-        return this.setItem(activityData);
+    @action
+    setLatestActivity(activityData) {
+        this.latestRuns.set(activityData._links.parent.href, activityData);
     }
 
     bunkerMapper(data) {

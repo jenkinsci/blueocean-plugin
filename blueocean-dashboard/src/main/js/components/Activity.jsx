@@ -46,8 +46,7 @@ export class Activity extends Component {
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const organization = this.context.params.organization;
-            const pipeline = this.context.params.pipeline;
-           
+            const pipeline = this.context.params.pipeline; 
             this.pager = activityService.activityPager(organization, pipeline);
 
         }

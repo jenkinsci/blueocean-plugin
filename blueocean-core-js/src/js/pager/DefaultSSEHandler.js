@@ -3,9 +3,10 @@ import utils from '../utils';
 import { action } from 'mobx';
 
 export class DefaultSSEHandler {
-    constructor(pipelineService, activityService, pagerService) {
+    constructor(pipelineService, activityService, branchService, pagerService) {
         this.pipelineService = pipelineService;
         this.activityService = activityService;
+        this.branchService = branchService;
         this.pagerService = pagerService;
     }
 
@@ -57,6 +58,7 @@ export class DefaultSSEHandler {
         const queueId = event.job_run_queueId;
         const queueSelf = `${event.blueocean_job_rest_url}queue/${queueId}/`;
         const runSelf = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
+        
         const key = this.activityService.pagerKey(event.jenkins_org ,event.blueocean_job_pipeline_name);
         const pager = this.pagerService.getPager({ key });
        
@@ -69,6 +71,8 @@ export class DefaultSSEHandler {
             if (pager && !pager.has(runSelf)) {
                 pager.insert(runSelf);
             }
+            this.branchService.updateLatestRun(d);
+            this.pipelineService.updateLatestRun(d);
         });
     }
     queueCancel(event) {
