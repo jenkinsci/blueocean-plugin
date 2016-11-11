@@ -208,7 +208,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     }
 
-    @Navigable
+    @Override
     public Container<Resource> getActivities() {
         return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
     }
