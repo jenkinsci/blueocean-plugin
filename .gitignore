@@ -2,3 +2,6 @@ node/
 node_modules/
 target/
 work/
+/.classpath
+/.project
+/.settings/
