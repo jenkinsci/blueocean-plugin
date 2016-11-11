@@ -1,7 +1,6 @@
 import { Route, Redirect, IndexRoute, IndexRedirect } from 'react-router';
 import React from 'react';
 import Dashboard from './Dashboard';
-import OrganizationPipelines from './OrganizationPipelines';
 import {
     Pipelines,
     MultiBranch,
@@ -122,11 +121,10 @@ function persistBackgroundOnNavigationChange(prevState, nextState, replace, call
 
 export default (
     <Route path="/" component={Dashboard} onChange={persistBackgroundOnNavigationChange}>
-        <Route path="organizations/:organization" component={OrganizationPipelines}>
-            <IndexRedirect to="pipelines" />
-            <Route path="pipelines" component={Pipelines} />
+        <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
+            <Route path="organizations/:organization/pipelines" component={Pipelines} />
 
-            <Route component={PipelinePage}>
+            <Route path="organizations/:organization" component={PipelinePage}>
                 <Route path=":pipeline/branches" component={MultiBranch} />
                 <Route path=":pipeline/activity" component={Activity} />
                 <Route path=":pipeline/pr" component={PullRequests} />
@@ -141,12 +139,11 @@ export default (
                     <Route path="artifacts" component={RunDetailsArtifacts} />
                 </Route>
 
-                <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
-            </Route>
+                <Redirect from="organizations/:organization/:pipeline(/*)" to=":pipeline/activity" />
+       
         </Route>
-        <Route path="/pipelines" component={OrganizationPipelines}>
-            <IndexRoute component={Pipelines} />
-        </Route>
+        <Route path="/pipelines" component={Pipelines}/>
+           
         <Route path="/create-pipeline" component={CreatePipeline} />
         <IndexRedirect to="pipelines" />
     </Route>
