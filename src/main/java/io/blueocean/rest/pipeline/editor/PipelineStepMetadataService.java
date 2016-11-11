@@ -1,6 +1,5 @@
 package io.blueocean.rest.pipeline.editor;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import org.springframework.core.ParameterNameDiscoverer;
 
 import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.model.Descriptor;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.ApiRoutable;
 import jenkins.model.Jenkins;
@@ -36,7 +36,7 @@ public class PipelineStepMetadataService implements ApiRoutable {
     public String getUrlName() {
         return "pipeline-step-metadata";
     }
-    
+
     /**
      * Basic exported model for {@link PipelineStepMetadata}
      */
@@ -51,7 +51,7 @@ public class PipelineStepMetadataService implements ApiRoutable {
         private boolean isWrapper = false;
         private String snippetizerUrl;
         private List<PipelineStepPropertyMetadata> props = new ArrayList<PipelineStepPropertyMetadata>();
-        
+
         public BasicPipelineStepMetadata(String functionName, Class<?> type, String displayName) {
             super();
             this.displayName = displayName;
@@ -64,13 +64,13 @@ public class PipelineStepMetadataService implements ApiRoutable {
         public String getDisplayName() {
             return displayName;
         }
-        
+
         @Exported
         @Override
         public String getFunctionName() {
             return functionName;
         }
-        
+
         @Exported
         @Override
         public String[] getRequiredContext() {
@@ -80,7 +80,7 @@ public class PipelineStepMetadataService implements ApiRoutable {
             }
             return out.toArray(new String[out.size()]);
         }
-        
+
         @Exported
         @Override
         public String[] getProvidedContext() {
@@ -90,18 +90,18 @@ public class PipelineStepMetadataService implements ApiRoutable {
             }
             return out.toArray(new String[out.size()]);
         }
-        
+
         @Exported
         @Override
         public String getSnippetizerUrl() {
             return snippetizerUrl;
         }
-        
+
         @Exported
         public String descriptorUrl() {
             return descriptorUrl;
         }
-        
+
         @Exported
         @Override
         public boolean getIsBlockContainer() {
@@ -120,7 +120,7 @@ public class PipelineStepMetadataService implements ApiRoutable {
             return props.toArray(new PipelineStepPropertyMetadata[props.size()]);
         }
     }
-    
+
     /**
      * Basic exported model for {@link PipelineStepPropertyDescriptor)
      */
@@ -129,6 +129,7 @@ public class PipelineStepMetadataService implements ApiRoutable {
         private String name;
         private Class<?> type;
         private boolean isRequired = false;
+        private String descriptorUrl;
 
         @Exported
         @Override
@@ -147,15 +148,20 @@ public class PipelineStepMetadataService implements ApiRoutable {
         public boolean getIsRequired() {
             return isRequired;
         }
+
+        @Exported
+        public String descriptorUrl() {
+            return descriptorUrl;
+        }
     }
-    
+
     /**
      * Function to return all step descriptors present in the system when accessed through the REST API
      */
     @GET
     @WebMethod(name = "")
     @TreeResponse
-    public PipelineStepMetadata[] getPipelineStepMetadata() throws IOException {
+    public PipelineStepMetadata[] getPipelineStepMetadata() {
         Jenkins j = Jenkins.getInstance();
         Snippetizer snippetizer = ExtensionList.create(j, Snippetizer.class).get(0);
 
@@ -165,21 +171,22 @@ public class PipelineStepMetadataService implements ApiRoutable {
         String snippetizerUrl = Stapler.getCurrentRequest().getContextPath() + "/" + snippetizer.getUrlName() + "/generateSnippet";
 
         for (StepDescriptor d : StepDescriptor.all()) {
-            PipelineStepMetadata step = descriptorMetadata(d, snippetizerUrl);
+            PipelineStepMetadata step = getStepMetadata(d, snippetizerUrl);
             pd.add(step);
         }
 
         return pd.toArray(new PipelineStepMetadata[pd.size()]);
     }
 
-    private PipelineStepMetadata descriptorMetadata(StepDescriptor d, String snippetizerUrl) {
-        BasicPipelineStepMetadata meta = new BasicPipelineStepMetadata(d.getFunctionName(), d.clazz, d.getDisplayName());
-        meta.snippetizerUrl = snippetizerUrl + "?$class=" + d.clazz.getName();
-        
-        meta.isWrapper = d.takesImplicitBlockArgument();
-        meta.requiredContext.addAll(d.getRequiredContext());
-        meta.providedContext.addAll(d.getProvidedContext());
-        meta.descriptorUrl = d.getDescriptorUrl();
+    @SuppressWarnings("deprecation")
+    private PipelineStepMetadata getStepMetadata(StepDescriptor d, String snippetizerUrl) {
+        BasicPipelineStepMetadata step = new BasicPipelineStepMetadata(d.getFunctionName(), d.clazz, d.getDisplayName());
+        step.snippetizerUrl = snippetizerUrl + "?$class=" + d.clazz.getName(); // this isn't really accurate
+
+        step.isWrapper = d.takesImplicitBlockArgument();
+        step.requiredContext.addAll(d.getRequiredContext());
+        step.providedContext.addAll(d.getProvidedContext());
+        step.descriptorUrl = d.getDescriptorFullUrl();
 
         for (Method m : d.clazz.getDeclaredMethods()) {
             if (m.isAnnotationPresent(DataBoundSetter.class)) {
@@ -188,7 +195,11 @@ public class PipelineStepMetadataService implements ApiRoutable {
                 BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
                 param.name = paramName;
                 param.type = paramType;
-                meta.props.add(param);
+                Descriptor<?> pd = Descriptor.find(paramType.getName());
+                if (pd != null) {
+                    param.descriptorUrl = pd.getDescriptorFullUrl();
+                }
+                step.props.add(param);
             }
         }
 
@@ -203,12 +214,21 @@ public class PipelineStepMetadataService implements ApiRoutable {
                         BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
                         param.name = paramName;
                         param.type = paramType;
-                        meta.props.add(param);
+                        Descriptor<?> pd = Descriptor.find(paramType.getName());
+                        if (pd != null) {
+                            param.descriptorUrl = pd.getDescriptorFullUrl();
+                        }
+                        step.props.add(param);
                     }
                 }
             }
         }
 
-        return meta;
+        // Let any decorators adjust the step properties
+        for (PipelineStepPropertyDecorator decorator : ExtensionList.lookup(PipelineStepPropertyDecorator.class)) {
+            decorator.decorate(step, step.props);
+        }
+
+        return step;
     }
 }
