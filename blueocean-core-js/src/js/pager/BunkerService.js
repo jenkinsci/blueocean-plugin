@@ -38,8 +38,10 @@ export class BunkerService {
 
     @action
     removeItem(key) {
-        console.log('before', this._data);
-        console.log('successful', this._data.delete(key));
-        console.log('after', this._data);     
+        this._data.delete(key);      
+    }
+
+    hasItem(key) {
+        return this._data.has(key);
     }
 }

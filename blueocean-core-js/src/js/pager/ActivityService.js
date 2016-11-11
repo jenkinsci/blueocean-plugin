@@ -33,7 +33,7 @@ export class ActivityService extends BunkerService {
     }
     
     getActivity(href) {
-        return computed(() => this.getItem(href)).get();
+        return this.getItem(href);
     }
     fetchActivity(href) {
         return Fetch.fetchJSON(href)
@@ -61,12 +61,39 @@ export class ActivityService extends BunkerService {
                 changeSet: [],
                 _links: {
                     self: {
-                        href: run._links.self.href
-                    }
+                        href: run._links.self.href,
+                    },
+                    parent: {
+                        href: run._links.parent.href,
+                    },
                 },
                 _item: run,
             };
         }
         return run;
+    }
+
+    getExpectedBuildNumber(event) {
+        const runs = this._data.values();
+        const eventJobUrl = event.blueocean_job_rest_url;
+        let nextId = 0;
+        for (let i = 0; i < runs.length; i++) {
+            const run = runs[i];
+            if (eventJobUrl !== run._links.parent.href) {
+                // Not the same branch. Yes, run.pipeline actually contains
+                // the branch name i.e. naming seems a bit confusing.
+                continue;
+            }
+            if (run.job_run_queueId === event.job_run_queueId) {
+                // We already have a "dummy" record for this queued job
+                // run. No need to create another i.e. ignore this event.
+                return run.id;
+            }
+            if (parseInt(run.id, 10) > nextId) { // figure out the next id, expectedBuildNumber
+                nextId = parseInt(run.id, 10);
+            }
+        }
+
+        return nextId + 1;
     }
 }

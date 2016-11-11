@@ -1,19 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
-import { RunButton, activityService } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, activityService, capable } from '@jenkins-cd/blueocean-core-js';
 import Runs from './Runs';
 import { RunRecord, ChangeSetRecord } from './records';
-import {
-    actions,
-    currentRuns as currentRunsSelector,
-    createSelector,
-    connect,
-} from '../redux';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import { capabilityStore } from './Capability';
 import { observer } from 'mobx-react';
-import { paginateUrl } from '../util/UrlUtils';
-import UrlConfig from '../config';
 
 
 const { object, array, func, string, bool } = PropTypes;
@@ -69,8 +60,7 @@ export class Activity extends Component {
             return null;
         }
         
-        const { capabilities } = this.props;
-        const isMultiBranchPipeline = capabilities[pipeline._class].contains(MULTIBRANCH_PIPELINE);
+        const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
 
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
@@ -155,7 +145,6 @@ export class Activity extends Component {
 Activity.contextTypes = {
     params: object.isRequired,
     location: object.isRequired,
-    pipeline: object,
     config: object.isRequired,
     router: object.isRequired,
 };
@@ -163,10 +152,6 @@ Activity.contextTypes = {
 Activity.propTypes = {
     runs: array,
     pipeline: object,
-    capabilities: object,
-    fetchRuns: func,
 };
 
-const selectors = createSelector([currentRunsSelector], (runs) => ({ runs }));
-
-export default connect(selectors, actions)(capabilityStore(props => props.pipeline._class)(Activity));
+export default Activity;

@@ -111,11 +111,11 @@ export const FetchFunctions = {
     
 
     dedupeFetch(url, fetchOptions, { disableDedupe } = {}) {
-        if (disableDedupe) {
+        //if (disableDedupe) {
             return isoFetch(url, fetchOptions);
-        }
+        //}
 
-        return dedupe(url, () => isoFetch(url, fetchOptions));
+        //return dedupe(url, () => isoFetch(url, fetchOptions));
     },
      /**
      * Raw fetch that returns the json body.
@@ -181,7 +181,7 @@ export const Fetch = {
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
      * @returns JSON body.
      */
-    fetchJSON(url, { onSuccess, onError, fetchOptions, caps } = {}) {
+    fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites } = {}) {
         let fixedUrl = url;
         if (AppPaths.getJenkinsRootURL() !== '' && !url.startsWith(AppPaths.getJenkinsRootURL())) {
             fixedUrl = `${AppPaths.getJenkinsRootURL()}${url}`;
@@ -198,10 +198,9 @@ export const Fetch = {
                 }));
         }
 
-       // if (!!caps) {
-        //    console.log('fetching caps');
-          //  return future.then(data => capabilityAugmenter.augmentCapabilities(data))
-        //} 
+        if (!disableCapabilites) {
+            return future.then(data => capabilityAugmenter.augmentCapabilities(data));
+        }
 
         return future;
     },

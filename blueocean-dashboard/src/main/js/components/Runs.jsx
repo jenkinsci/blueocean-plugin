@@ -29,14 +29,13 @@ export default class Runs extends Component {
         }
         const { router, location } = this.context;
       
-        const { run, changeset,pipeline  } = this.props;
+        const { run, changeset, pipeline } = this.props;
           
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const running = resultRun === 'RUNNING';
         const durationMillis = !running ?
             run.durationInMillis :
             moment().diff(moment(run.startTime));
-
         const open = () => {
             const pipelineName = decodeURIComponent(run.pipeline);
             location.pathname = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, pipelineName, run.id, 'pipeline');
@@ -47,7 +46,6 @@ export default class Runs extends Component {
             location.pathname = newUrl;
             router.push(location);
         };
-
         return (<tr key={run.id} onClick={open} id={`${pipeline}-${run.id}`} >
             <td>
                 <LiveStatusIndicator result={resultRun} startTime={run.startTime}
@@ -57,7 +55,7 @@ export default class Runs extends Component {
             <td>{run.id}</td>
             <td><CommitHash commitId={run.commitId} /></td>
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
-                <td>{decodeURIComponent(run.name)}</td>
+                <td>{decodeURIComponent(run.pipeline)}</td>
             </IfCapability>
             <td>{changeset && changeset.msg || '-'}</td>
             <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>

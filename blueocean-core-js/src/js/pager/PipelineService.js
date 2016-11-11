@@ -44,7 +44,7 @@ export class PipelineService extends BunkerService {
         return computed(() => this.getItem(href)).get();
     }
     fetchPipeline(href) {
-        return Fetch.fetchJSON(href)
+        return Fetch.fetchJSON(href, { caps: true })
             .then(data => {
                 this.setItem(data);
                 return data;

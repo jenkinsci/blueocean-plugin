@@ -1,10 +1,12 @@
 import { AppPaths, RestPaths } from '../utils/paths';
 import utils from '../utils';
+import { action } from 'mobx';
+
 export class DefaultSSEHandler {
     constructor(pipelineService, activityService, pagerService) {
         this.pipelineService = pipelineService;
         this.activityService = activityService;
-        this.pagerService = pagerService
+        this.pagerService = pagerService;
     }
 
     handleEvents = (event) => {
@@ -25,8 +27,7 @@ export class DefaultSSEHandler {
             break;
         case 'job_run_queue_buildable':
         case 'job_run_queue_enter':
-            console.log('queue_event');
-            this.queueEvent(event);
+            this.queueEnter(event);
             break;
         case 'job_run_queue_left':
            // this.props.processJobLeftQueueEvent(eventCopy);
@@ -35,11 +36,13 @@ export class DefaultSSEHandler {
             break;
         }
         case 'job_run_started': {
+            this.updateJob(event);
            // this.props.updateRunState(eventCopy, this.context.config, true);
            // this.props.updateBranchState(eventCopy, this.context.config);
             break;
         }
         case 'job_run_ended': {
+            this.updateJob(event);
            // this.props.updateRunState(eventCopy, this.context.config);
            // this.props.updateBranchState(eventCopy, this.context.config);
             break;
@@ -49,15 +52,45 @@ export class DefaultSSEHandler {
         }
     }
 
-    queueEvent(event) {
+    updateJob(event) {
+        console.log('updatejob');
         const queueId = event.job_run_queueId;
-        const self = `${AppPaths.getJenkinsRootURL}${event.blueocean_job_rest_url}queue/${queueId}/`;
-        console.log('self', self);
+        const queueSelf = `${event.blueocean_job_rest_url}queue/${queueId}/`;
+        const runSelf = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
+        const key = this.activityService.pagerKey(event.jenkins_org ,event.blueocean_job_pipeline_name);
+        const pager = this.pagerService.getPager({ key });
+       
+        this.activityService.fetchActivity(runSelf).then(d => {
+            console.log('blahblah', d);
+            if (this.activityService.hasItem(queueSelf)) {
+                this.activityService.removeItem(queueSelf);
+            }
+            
+            if (pager && !pager.has(runSelf)) {
+                pager.insert(runSelf);
+            }
+        });
+    }
+    queueCancel(event) {
+        if (event.job_run_status === 'CANCELLED') {
+            const queueId = event.job_run_queueId;
+            const self = `${event.blueocean_job_rest_url}queue/${queueId}/`;
+            this.activityService.removeItem(self);
+        }
+    }
+    queueEnter(event) {
+        const queueId = event.job_run_queueId;
+        const self = `${event.blueocean_job_rest_url}queue/${queueId}/`;
+        const id = this.activityService.getExpectedBuildNumber(event);
+        console.log('self', id);
         const newRun = {
-            id: 9999,
+            id,
             _links: {
                 self: {
                     href: self,
+                },
+                parent: {
+                    href: event.blueocean_job_rest_url,
                 },
             },
             job_run_queueId: queueId,
@@ -69,14 +102,18 @@ export class DefaultSSEHandler {
                     self: {
                         href: self,
                     },
+                    parent: {
+                        href: event.blueocean_job_rest_url,
+                    },
                 },
             },
         };
 
         this.activityService.setItem(newRun);
+        console.log('newRun', newRun);
+        
         const key = this.activityService.pagerKey(event.jenkins_org ,event.blueocean_job_pipeline_name);
         const pager = this.pagerService.getPager({ key });
-        console.log('pager', pager);
         if (pager) {
             pager.insert(self);
         }

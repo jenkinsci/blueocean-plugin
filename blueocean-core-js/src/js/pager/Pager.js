@@ -81,4 +81,8 @@ export class Pager {
     insert(href, pos = 0) {
         this.hrefs.splice(pos, 0, href);
     }
+
+    has(href) {
+        return this.hrefs.indexOf(href) > 0;
+    }
 }

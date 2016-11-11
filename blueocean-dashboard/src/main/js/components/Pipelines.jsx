@@ -52,7 +52,7 @@ export class Pipelines extends Component {
             'Pull Requests',
             { label: '', className: 'actions-col' },
         ];
-
+        console.log(pipelines);
         return (
             <Page>
                 <PageHeader>

@@ -55,10 +55,7 @@ export class PipelinePage extends Component {
     }
    
     render() {
-       // const data = pipelineService._data.keys();
-        //console.log(data);
         const pipeline = pipelineService.getPipeline(this.href);
-        console.log('ppp', pipeline);
         
         const { setTitle } = this.props;
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
