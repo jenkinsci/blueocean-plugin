@@ -126,7 +126,9 @@ public abstract class BluePipeline extends Resource {
      * @return Gives paginated concatenation of {#getQueue()} and {#getRuns()}, in that order
      */
     @Navigable
-    public abstract Container<Resource> getActivities();
+    public Container<Resource> getActivities() {
+        return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+    }
 
     @PUT
     @WebMethod(name="favorite")
