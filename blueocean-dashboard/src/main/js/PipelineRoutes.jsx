@@ -1,4 +1,4 @@
-import { Route, Redirect, IndexRoute, IndexRedirect } from 'react-router';
+import { Route, Redirect, IndexRedirect } from 'react-router';
 import React from 'react';
 import Dashboard from './Dashboard';
 import {
@@ -139,10 +139,10 @@ export default (
                     <Route path="artifacts" component={RunDetailsArtifacts} />
                 </Route>
 
-                <Redirect from="organizations/:organization/:pipeline(/*)" to=":pipeline/activity" />
+                <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
        
         </Route>
-        <Route path="/pipelines" component={Pipelines}/>
+        <Route path="/pipelines" component={Pipelines} />
            
         <Route path="/create-pipeline" component={CreatePipeline} />
         <IndexRedirect to="pipelines" />

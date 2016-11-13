@@ -20,8 +20,7 @@ export AppConfig from './config';
 export Security from './security';
 export Paths from './paths/index';
 
-
-import { Pager, PagerService, PipelineService, SSEService, ActivityService, BranchService, DefaultSSEHandler } from './pager/index';
+import { Pager, PagerService, PipelineService, SSEService, ActivityService, BranchService, DefaultSSEHandler } from './services/index';
 export { Pager, PagerService, PipelineService, SSEService, ActivityService, BranchService };
 
 export { ReplayButton } from './components/ReplayButton';
