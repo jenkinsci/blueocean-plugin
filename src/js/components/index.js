@@ -34,6 +34,13 @@ export {TimeDuration} from './TimeDuration';
 export { Progress } from './Progress';
 export { Popover } from './Popover';
 export {ExpandablePath} from './ExpandablePath';
-export {ModalContainer} from './dialog';
+export {
+    BasicDialog,
+    ModalContainer,
+    DialogHeader,
+    DialogContent,
+    DialogButtonBar,
+    Dialog
+} from './dialog';
 import FloatingElement from './FloatingElement';
 export {FloatingElement};

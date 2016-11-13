@@ -4,3 +4,6 @@ declare var performance: {
     now: () => number
 };
 
+// Helpful react stuff
+
+type ReactChildren = string | Array<React$Element<any>>;
