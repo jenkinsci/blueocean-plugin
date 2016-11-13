@@ -11,7 +11,6 @@ import { SseBus } from './sse/SseBus';
 import { ToastService } from './ToastService';
 
 export { Fetch, FetchFunctions } from './fetch';
-export { AppPaths, RestPaths } from './utils/paths';
 export UrlConfig from './urlconfig';
 export JWT from './jwt';
 export TestUtils from './testutils';
@@ -19,6 +18,8 @@ export ToastUtils from './ToastUtils';
 export Utils from './utils';
 export AppConfig from './config';
 export Security from './security';
+export Paths from './paths/index';
+
 
 import { Pager, PagerService, PipelineService, SSEService, ActivityService, BranchService, DefaultSSEHandler } from './pager/index';
 export { Pager, PagerService, PipelineService, SSEService, ActivityService, BranchService };

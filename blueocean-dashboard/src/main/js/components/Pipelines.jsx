@@ -30,9 +30,9 @@ export class Pipelines extends Component {
     _initPager(props) {
         const org = props.params.organization;
         if (org) {
-            this.pager = pagerService.getPager(pipelineService.organiztionPipelinesPager(org));
+            this.pager = pipelineService.organiztionPipelinesPager(org);
         } else {
-            this.pager = pagerService.getPager(pipelineService.allPipelinesPager());
+            this.pager = pipelineService.allPipelinesPager();
         }
     }
 

@@ -13,19 +13,18 @@ export class PipelineService extends BunkerService {
 
    
 
-    allPipelinesPager() {
-        console.log('aaaaa');
-        return {
+    allPipelinesPager() { 
+        return this.pagerService.getPager({
             key: 'PipelinesAll',
             lazyPager: () => new Pager(RestPaths.allPipelines(), 25, this),
-        };
+        });
     }
 
     organiztionPipelinesPager(organization) {
-        return {
+        return this.pagerService.getPager({
             key: `Pipelines/${organization}`,
             lazyPager: () => new Pager(RestPaths.organizationPipelines(organization), 25, this),
-        };
+        });
     }
 
     bunkerMapper = (pipelineData) => {
@@ -45,7 +44,10 @@ export class PipelineService extends BunkerService {
         return this.getItem(href);
     }
 
-    fetchPipeline(href) {
+    fetchPipeline(href, { useCache }) {
+        if (useCache && this.hasItem(href)) {
+            return Promise.resolve(this.getItem(href));
+        }
         return Fetch.fetchJSON(href, { caps: true })
             .then(data => {
                 this.setItem(data);

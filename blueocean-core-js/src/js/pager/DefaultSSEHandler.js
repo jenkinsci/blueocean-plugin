@@ -1,6 +1,3 @@
-import { AppPaths, RestPaths } from '../utils/paths';
-import utils from '../utils';
-import { action } from 'mobx';
 
 export class DefaultSSEHandler {
     constructor(pipelineService, activityService, branchService, pagerService) {

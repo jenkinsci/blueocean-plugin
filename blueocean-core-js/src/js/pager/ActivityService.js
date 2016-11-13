@@ -34,7 +34,10 @@ export class ActivityService extends BunkerService {
     getActivity(href) {
         return this.getItem(href);
     }
-    fetchActivity(href) {
+    fetchActivity(href, { useCache }) {
+        if (useCache && this.hasItem(href)) {
+            return Promise.resolve(this.getItem(href));
+        }
         return Fetch.fetchJSON(href)
             .then(data => this.setItem(data));
     }

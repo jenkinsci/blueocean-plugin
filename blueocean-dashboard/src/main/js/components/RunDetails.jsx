@@ -21,10 +21,12 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
-import { activityService, RestPaths, capable } from '@jenkins-cd/blueocean-core-js';
+import { activityService, Paths, capable } from '@jenkins-cd/blueocean-core-js';
 import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 const { func, object, any, string } = PropTypes;
+
+const { rest: RestPaths } = Paths;
 
 const classicConfigLink = (pipeline) => {
     let link = null;
@@ -61,7 +63,7 @@ class RunDetails extends Component {
                 branch: this.isMultiBranch && props.params.branch,
                 runId: props.params.runId,
             });
-            activityService.fetchActivity(this.href);
+            activityService.fetchActivity(this.href, { useCache: true });
 
             if (storePreviousRoute) {
                 this.opener = props.previous;

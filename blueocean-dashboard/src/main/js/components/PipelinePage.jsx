@@ -15,8 +15,10 @@ import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
 import { Icon } from 'react-material-icons-blue';
-import { AppConfig, pipelineService, RestPaths } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, pipelineService, Paths } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
+
+const RestPaths = Paths.rest;
 /**
  * returns true if the pipeline is defined and has branchNames
  */
@@ -42,7 +44,7 @@ export class PipelinePage extends Component {
     componentWillMount() {
         if (this.props.params) {
             this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
-            pipelineService.fetchPipeline(this.href);
+            pipelineService.fetchPipeline(this.href, { useCache: true });
         }
     }
    
