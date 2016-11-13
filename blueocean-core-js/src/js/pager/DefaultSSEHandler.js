@@ -54,7 +54,6 @@ export class DefaultSSEHandler {
     }
 
     updateJob(event) {
-        console.log('updatejob');
         const queueId = event.job_run_queueId;
         const queueSelf = `${event.blueocean_job_rest_url}queue/${queueId}/`;
         const runSelf = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
@@ -63,7 +62,6 @@ export class DefaultSSEHandler {
         const pager = this.pagerService.getPager({ key });
        
         this.activityService.fetchActivity(runSelf).then(d => {
-            console.log('blahblah', d);
             if (this.activityService.hasItem(queueSelf)) {
                 this.activityService.removeItem(queueSelf);
             }

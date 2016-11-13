@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
-import { RunButton, activityService } from '@jenkins-cd/blueocean-core-js';
+import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
@@ -17,17 +17,16 @@ export default class Branches extends Component {
         this.state = { isVisible: false };
     }
     render() {
-        const { data: branch, pipeline} = this.props;
-        console.log('branch', branch);
+        const { data: branch, pipeline } = this.props;
         // early out
-        if (!branch || !this.props.pipeline) {
+        if (!branch || !pipeline) {
             return null;
         }
-        const { router, location  } = this.context;
-        const latestRun = branch.latestRun;//activityService.getLatestActivity(branch._links.self.href);
-        console.log('a', latestRun);
+        const { router, location } = this.context;
+        const latestRun = branch.latestRun;
+        
         const cleanBranchName = decodeURIComponent(branch.name);
-        const url = buildRunDetailsUrl(branch.organization, branch.fullName, cleanBranchName, latestRun.id, 'pipeline');;
+        const url = buildRunDetailsUrl(branch.organization, branch.fullName, cleanBranchName, latestRun.id, 'pipeline');
 
         const open = () => {
             location.pathname = url;
@@ -39,7 +38,7 @@ export default class Branches extends Component {
             router.push(location);
         };
 
-        const { msg } = (branch.changeSet && branch.changeSet.length > 0) ? (branch.changeSet[0] || {}) :  {};
+        const { msg } = (branch.changeSet && branch.changeSet.length > 0) ? (branch.changeSet[0] || {}) : {};
         return (
             <tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${latestRun.id}`} >
                 <td><WeatherIcon score={branch.weatherScore} /></td>

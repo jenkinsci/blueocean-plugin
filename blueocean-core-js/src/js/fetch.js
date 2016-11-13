@@ -130,17 +130,23 @@ export const FetchFunctions = {
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
      * @returns JSON body
      */
-    rawFetchJSON(url, { onSuccess, onError, fetchOptions } = {}) {
-        const request = FetchFunctions.dedupeFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
-            .then(FetchFunctions.checkRefreshHeader)
-            .then(FetchFunctions.checkStatus)
-            .then(FetchFunctions.parseJSON);
+    rawFetchJSON(url, { onSuccess, onError, fetchOptions, disableDedupe } = {}) {
+        const request = () => {
+            const future = FetchFunctions.dedupeFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+                .then(FetchFunctions.checkRefreshHeader)
+                .then(FetchFunctions.checkStatus)
+                .then(FetchFunctions.parseJSON);
+            if (onSuccess) {
+                return future.then(onSuccess).catch(FetchFunctions.onError(onError));
+            }
 
-        if (onSuccess) {
-            return request.then(onSuccess).catch(FetchFunctions.onError(onError));
+            return future;
+        };
+        if (disableDedupe) {
+            return request();
         }
-        
-        return request;
+
+        return dedupe(url, request);
     },
     /**
      * Raw fetch.
@@ -155,16 +161,23 @@ export const FetchFunctions = {
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
      * @returns fetch response
      */
-    rawFetch(url, { onSuccess, onError, fetchOptions } = {}) {
-        const request = FetchFunctions.dedupeFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
-            .then(FetchFunctions.checkRefreshHeader)
-            .then(FetchFunctions.checkStatus);
+    rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe } = {}) {
+        const request = () => {
+            const future = FetchFunctions.dedupeFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+                .then(FetchFunctions.checkRefreshHeader)
+                .then(FetchFunctions.checkStatus);            
 
-        if (onSuccess) {
-            return request.then(onSuccess).catch(FetchFunctions.onError(onError));
+            if (onSuccess) {
+                return future.then(onSuccess).catch(FetchFunctions.onError(onError));
+            }
+            return future;
+        };
+
+        if (disableDedupe) {
+            return request();
         }
-      
-        return request;
+
+        return dedupe(url, request);
     },
 };
 

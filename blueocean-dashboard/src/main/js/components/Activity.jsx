@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import { RunButton, activityService, capable } from '@jenkins-cd/blueocean-core-js';
 import Runs from './Runs';
-import { RunRecord, ChangeSetRecord } from './records';
+import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { observer } from 'mobx-react';
 
@@ -46,9 +46,8 @@ export class Activity extends Component {
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const organization = this.context.params.organization;
-            const pipeline = this.context.params.pipeline; 
+            const pipeline = this.context.params.pipeline;
             this.pager = activityService.activityPager(organization, pipeline);
-
         }
     }
 

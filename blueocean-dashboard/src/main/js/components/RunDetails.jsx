@@ -52,8 +52,8 @@ class RunDetails extends Component {
     }
 
     _fetchRun(props, storePreviousRoute) {
-        this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE)
-        console.log('ismulti', this.isMultiBranch);
+        this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE);
+       
         if (this.context.config && this.context.params) {
             this.href = RestPaths.run({
                 organization: props.params.organization,
@@ -102,7 +102,6 @@ class RunDetails extends Component {
     render() {
         const run = activityService.getActivity(this.href);
         
-        console.log('r', this.props.pipeline);
         // early out
         if (!this.context.params
             || !run) {
@@ -208,7 +207,6 @@ RunDetails.propTypes = {
     params: any,
     pipeline: object,
     run: object,
-    fetchRun: func,
     previous: string,
     setTitle: func,
 };

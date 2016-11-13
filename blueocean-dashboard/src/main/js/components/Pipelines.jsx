@@ -19,8 +19,8 @@ export class Pipelines extends Component {
 
     componentDidMount() {
         // TODO: re-enable this
-        //const { organization = 'Jenkins' } = this.context.params;
-        //this.props.setTitle(organization);
+        // const { organization = 'Jenkins' } = this.context.params;
+        // this.props.setTitle(organization);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -52,7 +52,6 @@ export class Pipelines extends Component {
             'Pull Requests',
             { label: '', className: 'actions-col' },
         ];
-        console.log(pipelines);
         return (
             <Page>
                 <PageHeader>

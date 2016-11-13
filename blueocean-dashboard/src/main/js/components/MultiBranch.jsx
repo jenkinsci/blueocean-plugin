@@ -8,7 +8,7 @@ import { branchService, capable } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 
-const { object, array, func, string, any } = PropTypes;
+const { object, string, any } = PropTypes;
 
 const EmptyState = ({ repoName }) => (
     <main>
@@ -80,17 +80,8 @@ export class MultiBranch extends Component {
             <main>
                 <article>
                     {branches.$pending && <PageLoading />}
-                    <Table className="multibranch-table fixed"
-                      headers={headers}
-                    >
-                        {branches.length > 0 && branches.map((branch, index) => {
-                            return (<Branches
-                              pipeline={pipeline}
-                              key={index}
-                              data={branch}
-                            />);
-                        })
-                        }
+                    <Table className="multibranch-table fixed" headers={headers}>
+                        {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} />)}
                     </Table>
                     {this.pager.pending &&
                         <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>

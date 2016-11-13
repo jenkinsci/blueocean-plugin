@@ -1,10 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    actions,
-    pipeline as pipelineSelector,
-    connect,
-    createSelector,
-} from '../redux';
 import { Link } from 'react-router';
 import Extensions from '@jenkins-cd/js-extensions';
 import NotFound from './NotFound';
@@ -23,7 +17,6 @@ import { documentTitle } from './DocumentTitle';
 import { Icon } from 'react-material-icons-blue';
 import { AppConfig, pipelineService, RestPaths } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
-import { observable, action } from 'mobx';
 /**
  * returns true if the pipeline is defined and has branchNames
  */
@@ -47,16 +40,13 @@ const classicConfigLink = (pipeline) => {
 export class PipelinePage extends Component {
 
     componentWillMount() {
-        console.log('aaaaaaaaa');
         if (this.props.params) {
             this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
-            console.log('fetchp', this.href);
-            pipelineService.fetchPipeline(this.href)    
+            pipelineService.fetchPipeline(this.href);
         }
     }
    
     render() {
-        console.log('fetcha', this.href);
         const pipeline = pipelineService.getPipeline(this.href);
         
         const { setTitle } = this.props;
@@ -65,9 +55,9 @@ export class PipelinePage extends Component {
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
         const isReady = !!pipeline;
 
-        //if (pipeline && pipeline.failed) {
+        // if (pipeline && pipeline.failed) {
         //    return <NotFound />;
-        //}
+        // }
 
         setTitle(`${organization} / ${name}`);
 
@@ -116,7 +106,6 @@ export class PipelinePage extends Component {
 
 PipelinePage.propTypes = {
     children: PropTypes.any,
-    fetchPipeline: PropTypes.func.isRequired,
     pipeline: PropTypes.any,
     params: PropTypes.object,
     setTitle: PropTypes.func,
@@ -126,11 +115,6 @@ PipelinePage.propTypes = {
 PipelinePage.contextTypes = {
     config: PropTypes.object.isRequired,
     location: PropTypes.object,
-    store: PropTypes.object,
 };
 
-const selectors = createSelector([pipelineSelector],
-    (pipeline) => ({ pipeline }));
-
-
-export default connect(selectors, actions)(documentTitle(PipelinePage));
+export default documentTitle(PipelinePage);
