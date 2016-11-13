@@ -16,7 +16,7 @@ useStrict(true);
 
 import DevTools from 'mobx-react-devtools';
 
-import { AppConfig, Security, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, Security, UrlConfig, Utils, sseService} from '@jenkins-cd/blueocean-core-js';
 
 let config; // Holder for various app-wide state
 
@@ -160,6 +160,8 @@ function startApp(routes, stores) {
             payload: newLocation.pathname,
         });
     });
+
+    sseService._initListeners();
 
     // Start React
     render(

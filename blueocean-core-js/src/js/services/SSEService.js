@@ -5,7 +5,6 @@ export class SSEService {
     }
 
     _initListeners() {
-        console.log('inited');
         if (!this.jobListener) {
             this.jobListener = this.connection.subscribe('job', (event) => {
                 this._handleJobEvent(event);
@@ -14,11 +13,9 @@ export class SSEService {
     }
 
     registerHandler(handlerFn) {
-        console.log('registerHandler');
         this._handlers.push(handlerFn);
     }
     _handleJobEvent(event) {
-        console.log('handlers', this._handlers);
         this._handlers.forEach(handler => handler(event));
     }
 }

@@ -54,4 +54,4 @@ export const pipelineService = new PipelineService(pagerService, activityService
 export const branchService = new BranchService(pagerService, activityService);
 const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, branchService, pagerService);
 sseService.registerHandler(defaultSSEhandler.handleEvents);
-sseService._initListeners();
+

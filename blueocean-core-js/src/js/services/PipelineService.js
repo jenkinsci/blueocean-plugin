@@ -1,5 +1,5 @@
 import { Pager } from './Pager';
-import { AppPaths, RestPaths } from '../utils/paths';
+import RestPaths from '../paths/rest';
 import { Fetch } from '../fetch';
 import utils from '../utils';
 import { BunkerService } from './BunkerService';

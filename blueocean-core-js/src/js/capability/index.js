@@ -13,4 +13,3 @@ const augmenter = new CapabilityAugmenter(store);
 export { store as capabilityStore };
 export { augmenter as capabilityAugmenter };
 export { capable } from './Capable';
-console.log('cap init');

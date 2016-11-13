@@ -1,10 +1,7 @@
-import { observable } from 'mobx';
 import { Pager } from './Pager';
-import { AppPaths, RestPaths } from '../utils/paths';
-import { DataBunker } from '../model/DataBunker';
+import RestPaths from '../paths/rest';
 import { BunkerService } from './BunkerService';
-import utils from '../utils';
-import { action, computed } from 'mobx';
+import { action } from 'mobx';
 export class BranchService extends BunkerService {
    
     constructor(pagerService, activityService) {

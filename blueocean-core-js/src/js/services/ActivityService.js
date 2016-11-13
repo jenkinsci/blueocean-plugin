@@ -1,7 +1,6 @@
 import { observable } from 'mobx';
 import { Pager } from './Pager';
-import { AppPaths, RestPaths } from '../utils/paths';
-import { DataBunker } from '../model/DataBunker';
+import RestPaths from '../paths/rest';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
 import { computed, asMap, action } from 'mobx';

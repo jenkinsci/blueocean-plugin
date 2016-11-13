@@ -1,6 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { pipelineService } from '@jenkins-cd/blueocean-core-js';
-
+import {
+    actions,
+    allPipelines as allPipelinesSelector,
+    organizationPipelines as organizationPipelinesSelector,
+    connect,
+    createSelector,
+} from './redux';
 class Dashboard extends Component {
 
     constructor(props) {
@@ -31,4 +37,7 @@ Dashboard.childContextTypes = {
     pipelineService: PropTypes.object,
 };
 
-export default Dashboard;
+const selectors = createSelector([allPipelinesSelector, organizationPipelinesSelector],
+    (allPipelines, organizationPipelines) => ({ allPipelines, organizationPipelines }));
+
+export default connect(selectors, actions)(Dashboard);

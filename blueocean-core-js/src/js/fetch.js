@@ -4,7 +4,8 @@ import isoFetch from 'isomorphic-fetch';
 import utils from './utils';
 import config from './config';
 import dedupe from './utils/dedupe-calls';
-import { AppPaths } from './utils/paths';
+import urlconfig from './urlconfig';
+
 import { capabilityAugmenter } from './capability/index';
 let refreshToken = null;
 export const FetchFunctions = {
@@ -196,8 +197,8 @@ export const Fetch = {
      */
     fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites } = {}) {
         let fixedUrl = url;
-        if (AppPaths.getJenkinsRootURL() !== '' && !url.startsWith(AppPaths.getJenkinsRootURL())) {
-            fixedUrl = `${AppPaths.getJenkinsRootURL()}${url}`;
+        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(AppPaths.getJenkinsRootURL())) {
+            fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
         }
         let future;
         if (!config.isJWTEnabled()) {
@@ -232,10 +233,10 @@ export const Fetch = {
      */
     fetch(url, { onSuccess, onError, fetchOptions } = {}) {
         let fixedUrl = url;
-        if (AppPaths.getJenkinsRootURL() !== '' && !url.startsWith(AppPaths.getJenkinsRootURL())) {
-            fixedUrl = `${AppPaths.getJenkinsRootURL()}${url}`;
+        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(AppPaths.getJenkinsRootURL())) {
+            fixedUrl = `${config.getJenkinsRootURL()}${url}`;
         }
-        if (!config.isJWTEnabled()) {
+        if (!urlconfig.isJWTEnabled()) {
             return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions });
         }
         
