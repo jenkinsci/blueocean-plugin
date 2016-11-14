@@ -88,7 +88,7 @@ export default class Dropdown extends React.Component {
     }
 
     _onDropdownKeyEvent = (event) => {
-        console.log('_onDropdownKeyEvent');
+        // console.log('_onDropdownKeyEvent');
         if (event.keyCode === KeyCodes.SPACEBAR) {
             this._toggleDropdownMenu();
             // prevent the onClick handler from being triggered automatically
@@ -97,12 +97,12 @@ export default class Dropdown extends React.Component {
     };
 
     _onDropdownMouseEvent = () => {
-        console.log('_onDropdownMouseEvent');
+        // console.log('_onDropdownMouseEvent');
         this._toggleDropdownMenu();
     };
 
     _handleKeyEvent = (event) => {
-        console.log('_handleKeyEvent', this.state.menuOpen);
+        // console.log('_handleKeyEvent', this.state.menuOpen);
         if (!this.state.menuOpen) {
             return;
         }
@@ -148,7 +148,7 @@ export default class Dropdown extends React.Component {
     };
 
     _handleMouseEvent = (event) => {
-        console.log("_handleMouseEvent");
+        // console.log("_handleMouseEvent");
         const { clientX, clientY } = event;
 
         if (this.state.menuOpen) {
@@ -265,7 +265,7 @@ export default class Dropdown extends React.Component {
     }
 
     render() {
-        console.log('render', this.state.menuOpen);
+        // console.log('render', this.state.menuOpen);
         const extraClass = this.props.className || '';
         const openClass = this.state.menuOpen ? 'Dropdown-menu-open' : 'Dropdown-menu-closed';
         const label = this.state.selectedOption || this.props.placeholder;
