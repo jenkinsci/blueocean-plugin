@@ -24,6 +24,7 @@ export default class PullRequest extends Component {
                 state,
             },
             pullRequest: {
+                id: prId,
                 title,
                 author,
             },
@@ -57,7 +58,7 @@ export default class PullRequest extends Component {
                   estimatedDuration={estimatedDurationInMillis}
                 />
             </PRCol>
-            <PRCol>{id}</PRCol>
+            <PRCol>{prId}</PRCol>
             <PRCol>{title || '-'}</PRCol>
             <PRCol>{author || '-'}</PRCol>
             <PRCol><ReadableDate date={endTime} liveUpdate /></PRCol>
