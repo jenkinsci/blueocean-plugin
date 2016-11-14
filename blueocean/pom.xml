@@ -67,11 +67,13 @@
             <version>1.2</version>
         </dependency>
 
+	<!--
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
             <version>0.1</version>
         </dependency>
+	-->
 
         <!-- Test deps -->
         <dependency>
