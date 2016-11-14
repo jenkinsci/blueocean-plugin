@@ -9,7 +9,7 @@ import { getGlyphFor } from './status/SvgStatus';
 import type { Result } from './status/StatusIndicator';
 
 type State = {
-    resultClean: ?Result,
+    resultClean: Result,
     statusGlyph: ?any, // FIXME: It seems Flow doesn't (at 20160611) have a type for PropTypes.node
     expanded: boolean
 };
@@ -31,7 +31,7 @@ export class ResultItem extends Component {
     constructor(props: Props) {
         super(props);
         this.state = {
-            resultClean: null,
+            resultClean: StatusIndicator.validResultValues.unknown,
             statusGlyph: null,
             expanded: props.expanded || false,
         };

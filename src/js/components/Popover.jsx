@@ -1,8 +1,9 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import FloatingElement from './FloatingElement';
-import Position, { positions, sanitizePosition } from './Position';
+import {FloatingElement} from './FloatingElement';
+import {PositionFunctions, positions, sanitizePosition} from './Position';
+import {ModalContainer} from '.';
 
 export class Popover extends Component {
 
@@ -10,7 +11,7 @@ export class Popover extends Component {
     //  User Interaction
     //--------------------------------------
 
-    modalScreenClicked:HTMLEventHandler = () => {
+    modalScreenClicked = () => {
         const { onDismiss } = this.props;
 
         if (onDismiss) {
@@ -18,7 +19,7 @@ export class Popover extends Component {
         }
     };
 
-    keyPressed:HTMLKeyEventHandler = (event) => {
+    keyPressed = (event: KeyboardEvent) => {
         const { onDismiss, ignoreEscapeKey } = this.props;
 
         if (!ignoreEscapeKey && onDismiss && event.keyCode === 27) {
@@ -34,11 +35,10 @@ export class Popover extends Component {
         const { children, style } = this.props;
         const position = sanitizePosition(this.props.position);
         const pointClassName = 'Popover-point Popover-point--' + position;
-        const positionFunction = Position[position];
+        const positionFunction = PositionFunctions[position];
 
         return (
-            <div className="Popover">
-                <div className="Popover-modalScreen" onClick={this.modalScreenClicked}/>
+            <ModalContainer onScreenClick={this.modalScreenClicked}>
                 <FloatingElement
                     targetElement={this.props.targetElement}
                     positionFunction={positionFunction}
@@ -52,7 +52,7 @@ export class Popover extends Component {
                         </div>
                     </div>
                 </FloatingElement>
-            </div>
+            </ModalContainer>
         );
     }
 

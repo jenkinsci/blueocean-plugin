@@ -1,5 +1,6 @@
 require('./buttons.jsx');
 require('./emptystateview.jsx');
+require('./DropdownStories');
 require('./ExpandablePathStories');
 require('./FavoriteStories.jsx');
 require('./filesize.jsx');
@@ -20,3 +21,4 @@ require('./resultItemStories.jsx');
 require('./typography.jsx');
 require('./progressBarStories');
 require('./PopoverStories');
+require('./DialogStories');

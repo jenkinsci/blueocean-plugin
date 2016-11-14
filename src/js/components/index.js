@@ -33,7 +33,15 @@ export {ResultItem} from './ResultItem';
 export {TimeDuration} from './TimeDuration';
 export { Progress } from './Progress';
 export { Popover } from './Popover';
+export { PositionFunctions } from './Position';
 export {ExpandablePath} from './ExpandablePath';
-
-import FloatingElement from './FloatingElement';
-export {FloatingElement};
+export {
+    BasicDialog,
+    ModalContainer,
+    DialogHeader,
+    DialogContent,
+    DialogButtonBar,
+    Dialog
+} from './dialog';
+export {FloatingElement} from './FloatingElement';
+export {Dropdown} from './forms/Dropdown';

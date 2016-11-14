@@ -55,7 +55,7 @@ function easeInOutCubic(t, b, c, d) {
 //
 //--------------------------------------------------------------------------
 
-export default class Popover extends Component {
+export class FloatingElement extends Component {
 
     //--------------------------------------
     //  Internal State
@@ -330,7 +330,7 @@ export default class Popover extends Component {
      Renders a frame in the process of animating from currentLeft / currentTop
      to goalLeft / goalTop
      */
-    movePopoverAnimationFrame:FrameCallback = (now) => {
+    movePopoverAnimationFrame = (now: number) => {
         const node = this.refs.wrapper;
         const {
             lifecycleState,

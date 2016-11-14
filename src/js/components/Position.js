@@ -71,7 +71,7 @@ function makePosition(position:Position) {
     };
 }
 
-export default {
+export const PositionFunctions = {
     above: makePosition(positionValues.above),
     below: makePosition(positionValues.below),
     left: makePosition(positionValues.left),
