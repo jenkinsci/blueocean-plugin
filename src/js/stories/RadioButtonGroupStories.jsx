@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import RadioGroup from '../components/forms/RadioButtonGroup';
+import { RadioButtonGroup } from '../components/forms/RadioButtonGroup';
 
 storiesOf('RadioButtonGroup', module)
     .add('vertical', () => <Vertical />)
@@ -24,7 +24,7 @@ const style = {
 function Vertical() {
     return (
         <div style={style}>
-            <RadioGroup
+            <RadioButtonGroup
                 options={['A','B','C']}
             />
         </div>
@@ -34,7 +34,7 @@ function Vertical() {
 function Horizontal() {
     return (
         <div style={style}>
-            <RadioGroup
+            <RadioButtonGroup
                 className="horizontal-layout"
                 options={['A','B','C']}
             />
@@ -45,7 +45,7 @@ function Horizontal() {
 function DefaultOption() {
     return (
         <div style={style}>
-            <RadioGroup
+            <RadioButtonGroup
                 options={['A','B','C']}
                 defaultOption="C"
             />
@@ -62,7 +62,7 @@ function LabelField() {
 
     return (
         <div style={style}>
-            <RadioGroup
+            <RadioButtonGroup
                 options={options}
                 labelField="label"
             />
@@ -79,7 +79,7 @@ function LabelFunction() {
 
     return (
         <div style={style}>
-            <RadioGroup
+            <RadioButtonGroup
                 options={options}
                 labelFunction={item => `!${item.label}!`}
             />
