@@ -290,3 +290,104 @@
     font-size:16px;
     font-family: @font-family-header;
 }
+
+//--[ Step Select Dialog ]----------------------------------------------------------------------------------------------------
+
+.placeholder(@rules) {
+    &::-webkit-input-placeholder {
+        @rules();
+    }
+
+    &:-moz-placeholder { /* Firefox 18- */
+        @rules();
+    }
+
+    &::-moz-placeholder {  /* Firefox 19+ */
+        @rules();
+    }
+
+    &:-ms-input-placeholder {  
+        @rules();
+    }
+}
+
+.editor-step-selection-dialog {
+    margin: -32px -32px -16px -32px;
+
+    .editor-step-selection-dialog-search {
+        height: 4em;
+        position: relative;
+        border-bottom: 1px solid #ddd;
+
+        > svg {
+            position: absolute;
+            top: 50%;
+            left: 65px;
+            margin-top: -16px;
+            z-index: 1;
+        }
+        input.editor-step-selection-dialog-search-input {
+            height: 100%;
+            width: 100%;
+            padding: 0 12px 0 110px;
+            z-index: 2;
+            position: relative;
+            display: block;
+            background: transparent;
+            border: 0;
+            font-size: 1.2em;
+            .placeholder({
+                color: #888;
+                font-style: italic;
+            });
+            &:focus {
+                padding: 0 11px 0 109px;
+                border: 1px solid #4a90e2;
+                border-radius: 0px;
+                outline: none;
+                margin: 0;
+            }
+        }
+    }
+    .editor-step-selection-dialog-steps {
+        height: 30em;
+        overflow-x: scroll;
+        padding: 20px 50px 0 50px;
+
+        > .step-item {
+            padding: 16px 16px 16px 57px;
+            border: 1px solid #ddd;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            font-size: 1.2em;
+            
+            &:hover, &:focus {
+                outline: none;
+                background: #eee;
+            }
+
+            &.selected {
+                background: #ddd;
+                font-weight: normal;
+                color: #000;
+            }
+
+            &:before {
+                content: '\2039\203a';
+                width: 38px;
+                color: #444;
+                display: inline-block;
+                font: 44px Sans-serif;
+                line-height: 38px;
+                position: absolute;
+                top: 50%;
+                left: 13px;
+                margin-top: -22px;
+                font-weight: 100;
+                letter-spacing: -4px;
+            }
+        }
+    }
+}

@@ -4,7 +4,8 @@ import React, { Component, PropTypes } from 'react';
 import { EditorPipelineGraph } from './EditorPipelineGraph';
 import { EditorStepList } from './EditorStepList';
 import { EditorStepDetails } from './EditorStepDetails';
-import {EmptyStateView} from '@jenkins-cd/design-language';
+import { EmptyStateView } from '@jenkins-cd/design-language';
+import { AddStepSelectionDialog } from './AddStepSelectionDialog';
 
 import type { StageInfo, StepInfo } from './common';
 
@@ -314,6 +315,10 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
             selectedStep: null
         });
     }
+    
+    openSelectStepDialog() {
+        this.setState({showSelectStep: true});
+    }
 
     createStep() {
 
@@ -527,7 +532,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                     <div className="editor-main-step-list">
                         {selectedStage ? <EditorStepList steps={steps}
                                                          selectedStep={selectedStep}
-                                                         onAddStepClick={() => this.createStep()}
+                                                         onAddStepClick={() => this.openSelectStepDialog(steps)}
                                                          onStepSelected={(step) => this.selectedStepChanged(step)}
                                                          onDeleteStepClick={(step) => this.deleteStep(step)}/>
                             : <p>Select or create a build stage</p>}
@@ -551,7 +556,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                             scripts, checkout out source code and much more.
                         </p>
 
-                        <button onClick={() => this.createStep()}>Add Step</button>
+                        <button onClick={() => this.openSelectStepDialog(selectedStage.steps)}>Add Step</button>
                     </EmptyStateView>
                 </div>
             );
@@ -596,6 +601,9 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                 <div id="soon" style={{...ss, visibility: sv}} onClick={()=>this.setState({s: false})}>&nbsp;</div>
 
                 {/* <button className="btn-warning" onClick={()=>this.dumpState()}>DUMP</button> */}
+                {this.state.showSelectStep && <AddStepSelectionDialog
+                    onClose={() => this.setState({showSelectStep: false})}
+                    onStepSelected={(step) => { this.setState({showSelectStep: false}); console.log('selected', step); }} />}
             </div>
         );
     }
