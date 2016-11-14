@@ -1,0 +1,40 @@
+.Checkbox {
+    display: inline-flex;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+
+    border-radius: 3px;
+    border: solid 1px rgba(73, 73, 73, 0.5);
+    background-color: #fff;
+
+    // hide the checkbox entirely but keep accessible
+    input[type="checkbox"] {
+        border: 0;
+        clip: rect(0, 0, 0, 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+
+    .svg-icon {
+        display: none;
+        width: 16px;
+        height: 16px;
+        fill: #fff;
+    }
+
+    &.checked {
+        background-color: @brand-primary;
+
+        .svg-icon {
+            display: inline-block;
+        }
+    }
+}
