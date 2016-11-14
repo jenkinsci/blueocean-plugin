@@ -5154,6 +5154,11 @@
       "from": "lodash.create@3.1.1",
       "resolved": "https://registry.npmjs.org/lodash.create/-/lodash.create-3.1.1.tgz"
     },
+    "lodash.debounce": {
+      "version": "4.0.8",
+      "from": "lodash.debounce@latest",
+      "resolved": "https://registry.npmjs.org/lodash.debounce/-/lodash.debounce-4.0.8.tgz"
+    },
     "lodash.deburr": {
       "version": "3.2.0",
       "from": "lodash.deburr@>=3.0.0 <4.0.0",

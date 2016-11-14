@@ -1,0 +1,56 @@
+.Dropdown {
+    .Dropdown-button {
+        min-width: 130px;
+    }
+
+    // need to nest a container in the button for Firefox to apply flex-box
+    .Dropdown-button-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .svg-icon {
+            fill: #fff;
+        }
+    }
+
+    .Dropdown-menu {
+        overflow-y: scroll;
+        min-width: 130px;
+        max-height: 200px;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        border: 1px solid @btn-primary-border;
+
+        .Dropdown-menu-item {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            padding: 5px 10px;
+            cursor: pointer;
+
+            &.Dropdown-menu-item-selected {
+                color: white;
+                background: @brand-selection;
+
+                &:hover {
+                    background: @brand-selection;
+                }
+            }
+
+            &:hover {
+                text-decoration: none;
+                background: #eee;
+            }
+        }
+    }
+
+    &.Dropdown-menu-open {
+        .Dropdown-button {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    }
+
+}
