@@ -19,6 +19,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_ST
 @Capability(BLUE_PIPELINE_STEP)
 public abstract class BluePipelineStep extends Resource{
     public static final String DISPLAY_NAME="displayName";
+    public static final String LABEL="label";
     public static final String RESULT = "result";
     public static final String START_TIME="startTime";
     public static final String ID = "id";
@@ -31,6 +32,9 @@ public abstract class BluePipelineStep extends Resource{
 
     @Exported(name = DISPLAY_NAME)
     public abstract String getDisplayName();
+    
+    @Exported(name = LABEL)
+    public abstract String getLabel();
 
     @Exported(name = RESULT)
     public abstract BlueRun.BlueRunResult getResult();

@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
+
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
@@ -124,5 +125,10 @@ public class PipelineNodeImpl extends BluePipelineNode {
         }
         return edges;
     }
+
+	@Override
+	public String getLabel() {
+		return node.getLabel();
+	}
 
 }

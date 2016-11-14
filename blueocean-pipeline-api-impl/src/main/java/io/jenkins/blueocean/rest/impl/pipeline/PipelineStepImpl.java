@@ -5,6 +5,7 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
+
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 
 import java.util.Collection;
@@ -30,7 +31,10 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public String getDisplayName() {
-        return node.getNode().getDisplayName();
+    if(node.getLabel()!=null && !node.getLabel().isEmpty())
+    	return node.getLabel();
+    else    
+    	return node.getNode().getDisplayName();
     }
 
     @Override
@@ -71,4 +75,9 @@ public class PipelineStepImpl extends BluePipelineStep {
     public Link getLink() {
         return self;
     }
+
+	@Override
+	public String getLabel() {
+		return node.getLabel();
+	}
 }

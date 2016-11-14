@@ -37,6 +37,10 @@ public class FlowNodeWrapper {
     public String getDisplayName() {
         return displayName;
     }
+    
+    public String getLabel() {
+        return node.getNodeLabel();
+    }
 
     private static NodeType getNodeType(FlowNode node){
         if(PipelineNodeUtil.isStage(node)){
