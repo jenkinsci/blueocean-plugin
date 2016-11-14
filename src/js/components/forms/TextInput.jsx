@@ -3,7 +3,7 @@
  */
 import React, { PropTypes } from 'react';
 
-export default class TextInput extends React.Component {
+export class TextInput extends React.Component {
 
     constructor(props) {
         super(props);

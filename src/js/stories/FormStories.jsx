@@ -3,8 +3,8 @@
  */
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import RadioGroup from '../components/forms/RadioButtonGroup';
-import TextInput from '../components/forms/FormTextInput';
+import {RadioButtonGroup} from '../components/forms/RadioButtonGroup';
+import {FormTextInput} from '../components/forms/FormTextInput';
 
 storiesOf('Forms', module)
     .add('example', () => <Example />)
@@ -17,13 +17,17 @@ const style = {
 function Example() {
     return (
         <div style={style}>
-            <RadioGroup
+            <RadioButtonGroup
               options={['A','B','C']}
               defaultOption={'B'}
               labelFunction={(option) => `${option}!`}
             />
 
-            <TextInput placeholder="Name" defaultValue="John Smith" />
+            <FormTextInput
+              title="Full Name"
+              placeholder="Name"
+              defaultValue="John Smith"
+            />
         </div>
     );
 }

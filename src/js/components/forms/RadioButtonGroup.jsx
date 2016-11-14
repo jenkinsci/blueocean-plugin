@@ -16,7 +16,7 @@ import React, { PropTypes } from 'react';
  *      labelFunction: a function that receives the option and returns a string for label.
  *      onChange: handler func calls when user changes selection, receiving 'option' as only arg.
  */
-export default class RadioButtonGroup extends React.Component {
+export class RadioButtonGroup extends React.Component {
 
     constructor(props) {
         super(props);
