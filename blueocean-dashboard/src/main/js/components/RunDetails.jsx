@@ -39,7 +39,7 @@ const classicConfigLink = (pipeline) => {
     if (AppConfig.getInitialUser() !== 'anonymous') {
         let url = buildClassicConfigUrl(pipeline);
         link = (
-            <a href={url} target="_blank" style={{height:'24px'}}>
+            <a href={url} target="_blank" style={{ height: '24px' }}>
                 <Icon size={24} icon="settings" style={{ fill: '#fff' }} />
             </a>
         );
