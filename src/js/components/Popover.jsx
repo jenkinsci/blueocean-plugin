@@ -3,6 +3,7 @@
 import React, { Component, PropTypes } from 'react';
 import FloatingElement from './FloatingElement';
 import Position, { positions, sanitizePosition } from './Position';
+import {ModalContainer} from '.';
 
 export class Popover extends Component {
 
@@ -10,7 +11,7 @@ export class Popover extends Component {
     //  User Interaction
     //--------------------------------------
 
-    modalScreenClicked:HTMLEventHandler = () => {
+    modalScreenClicked = () => {
         const { onDismiss } = this.props;
 
         if (onDismiss) {
@@ -18,7 +19,7 @@ export class Popover extends Component {
         }
     };
 
-    keyPressed:HTMLKeyEventHandler = (event) => {
+    keyPressed = (event: KeyboardEvent) => {
         const { onDismiss, ignoreEscapeKey } = this.props;
 
         if (!ignoreEscapeKey && onDismiss && event.keyCode === 27) {
@@ -37,8 +38,7 @@ export class Popover extends Component {
         const positionFunction = Position[position];
 
         return (
-            <div className="Popover">
-                <div className="Popover-modalScreen" onClick={this.modalScreenClicked}/>
+            <ModalContainer onScreenClick={this.modalScreenClicked}>
                 <FloatingElement
                     targetElement={this.props.targetElement}
                     positionFunction={positionFunction}
@@ -52,7 +52,7 @@ export class Popover extends Component {
                         </div>
                     </div>
                 </FloatingElement>
-            </div>
+            </ModalContainer>
         );
     }
 
