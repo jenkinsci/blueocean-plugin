@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import Dropdown from '../components/forms/Dropdown';
+import { Dropdown } from '../components';
 
 storiesOf('Dropdown', module)
     .add('default', () => <Dropdown1 />)

@@ -1,8 +1,8 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import FloatingElement from './FloatingElement';
-import Position, { positions, sanitizePosition } from './Position';
+import {FloatingElement} from './FloatingElement';
+import {Position, positions, sanitizePosition} from './Position';
 import {ModalContainer} from '.';
 
 export class Popover extends Component {

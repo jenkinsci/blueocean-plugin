@@ -5,7 +5,7 @@ import React, { PropTypes } from 'react';
 import debounce from 'lodash.debounce';
 import { Icon } from 'react-material-icons-blue';
 
-import FloatingElement from '../FloatingElement';
+import {FloatingElement} from '../FloatingElement';
 import KeyCodes from '../../KeyCodes';
 
 const POSITION = {
@@ -19,7 +19,7 @@ const POSITION = {
     }
 };
 
-export default class Dropdown extends React.Component {
+export class Dropdown extends React.Component {
 
     constructor(props) {
         super(props);

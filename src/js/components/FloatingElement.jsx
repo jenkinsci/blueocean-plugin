@@ -55,7 +55,7 @@ function easeInOutCubic(t, b, c, d) {
 //
 //--------------------------------------------------------------------------
 
-export default class Popover extends Component {
+export class FloatingElement extends Component {
 
     //--------------------------------------
     //  Internal State

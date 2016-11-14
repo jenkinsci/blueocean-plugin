@@ -1,8 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import { storiesOf } from '@kadira/storybook';
 
-import { FloatingElement } from '../components';
-import Position from '../components/Position';
+import { FloatingElement, Position } from '../components';
 
 storiesOf('FloatingElement', module)
     .add('Above', () => <ExampleBasic positionFunction={Position.above}/>)

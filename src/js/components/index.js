@@ -33,6 +33,7 @@ export {ResultItem} from './ResultItem';
 export {TimeDuration} from './TimeDuration';
 export { Progress } from './Progress';
 export { Popover } from './Popover';
+export { Position } from './Position';
 export {ExpandablePath} from './ExpandablePath';
 export {
     BasicDialog,
@@ -42,5 +43,5 @@ export {
     DialogButtonBar,
     Dialog
 } from './dialog';
-import FloatingElement from './FloatingElement';
-export {FloatingElement};
+export {FloatingElement} from './FloatingElement';
+export {Dropdown} from './forms/Dropdown';
