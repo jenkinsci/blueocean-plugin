@@ -82,8 +82,8 @@ export class PullRequests extends Component {
 
         const headers = [
             'Status',
-            { label: 'Latest Build', className: 'build' },
-            { label: 'Summary', className: 'summary' },
+            { label: 'PR', className: 'build' },
+            { label: 'Subject', className: 'summary' },
             'Author',
             { label: 'Completed', className: 'completed' },
             { label: '', className: 'run' },
