@@ -3,6 +3,7 @@
  */
 import React, { PropTypes } from 'react';
 import debounce from 'lodash.debounce';
+import { Icon } from 'react-material-icons-blue';
 
 import FloatingElement from '../FloatingElement';
 import KeyCodes from '../../KeyCodes';
@@ -273,13 +274,14 @@ export default class Dropdown extends React.Component {
             <div ref={dropdown => { this.dropdownRef = dropdown; }}
                 className={`Dropdown ${openClass} ${extraClass}`}>
                 <button ref={button => { this.buttonRef = button; }}
-                   className="Dropdown-button btn-secondary"
+                   className="Dropdown-button"
                    onClick={this._onDropdownMouseEvent}
                    onKeyUp={this._onDropdownKeyEvent}
                 >
                     <div className="Dropdown-button-container">
                         <span className="Dropdown-button-label">{label}</span>
-                        <img className="Dropdown-button-indicator" src="foo.png" />
+
+                        <Icon icon="keyboard_arrow_down" size={16} />
                     </div>
                 </button>
 
