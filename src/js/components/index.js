@@ -33,7 +33,7 @@ export {ResultItem} from './ResultItem';
 export {TimeDuration} from './TimeDuration';
 export { Progress } from './Progress';
 export { Popover } from './Popover';
-export { Position } from './Position';
+export { PositionFunctions } from './Position';
 export {ExpandablePath} from './ExpandablePath';
 export {
     BasicDialog,

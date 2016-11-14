@@ -1,13 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import { storiesOf } from '@kadira/storybook';
 
-import { FloatingElement, Position } from '../components';
+import { FloatingElement, PositionFunctions } from '../components';
 
 storiesOf('FloatingElement', module)
-    .add('Above', () => <ExampleBasic positionFunction={Position.above}/>)
-    .add('Below', () => <ExampleBasic positionFunction={Position.below}/>)
-    .add('Left', () => <ExampleBasic positionFunction={Position.left}/>)
-    .add('Right', () => <ExampleBasic positionFunction={Position.right}/>)
+    .add('Above', () => <ExampleBasic positionFunction={PositionFunctions.above}/>)
+    .add('Below', () => <ExampleBasic positionFunction={PositionFunctions.below}/>)
+    .add('Left', () => <ExampleBasic positionFunction={PositionFunctions.left}/>)
+    .add('Right', () => <ExampleBasic positionFunction={PositionFunctions.right}/>)
 ;
 
 const triggerStyle = {
