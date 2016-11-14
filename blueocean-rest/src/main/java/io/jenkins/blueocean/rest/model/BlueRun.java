@@ -222,7 +222,8 @@ public abstract class BlueRun extends Resource {
         QUEUED,
         RUNNING,
         PAUSED,
-        FINISHED
+        FINISHED,
+        SKIPPED
     }
 
     public enum BlueRunResult {
@@ -241,7 +242,7 @@ public abstract class BlueRun extends Resource {
         UNKNOWN,
 
         /** Aborted run*/
-        ABORTED;
+        ABORTED,
     }
 
     @ExportedBean(defaultVisibility = 2)
