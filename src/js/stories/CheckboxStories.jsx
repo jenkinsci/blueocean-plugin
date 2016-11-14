@@ -9,18 +9,25 @@ storiesOf('Checkbox', module)
     .add('default', () => <Default />)
 ;
 
-const style = { display: 'flex', alignItems: 'center', padding: 5 };
+const style = {padding: 5};
 
 function Default() {
     return (
         <div>
-            <div style={style}>
-                <Checkbox />
-                <span style={{marginLeft: 5}}>Unchecked</span>
+            <div className="size-small" style={style}>
+                <Checkbox label="Small" />
             </div>
             <div style={style}>
-                <Checkbox checked />
-                <span style={{marginLeft: 5}}>Checked</span>
+                <Checkbox label="Medium" />
+            </div>
+            <div className="size-large" style={style}>
+                <Checkbox label="Large" />
+            </div>
+            <div style={style}>
+                <Checkbox checked label="Checked" />
+            </div>
+            <div style={style}>
+                <Checkbox />
             </div>
         </div>
     );

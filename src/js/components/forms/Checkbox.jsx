@@ -52,18 +52,22 @@ export class Checkbox extends Component {
 
     render() {
         const extraClass = this.props.className || '';
-        const checkecClass = this.state.checked ? 'checked' : '';
 
         return (
-            <label className={`Checkbox ${extraClass} ${checkecClass}`}
-              onClick={(event) => event.stopPropagation()}
-            >
-                <input type="checkbox"
-                       onChange={this.toggle.bind(this)}
-                       checked={this.state.checked} />
+            <div className={`Checkbox ${extraClass}`}>
+                <label className="Checkbox-wrapper"
+                       onClick={(event) => event.stopPropagation()}>
+                    <input type="checkbox"
+                           onChange={this.toggle.bind(this)}
+                           checked={this.state.checked} />
 
-                <Icon icon="check" />
-            </label>
+                    <div className="Checkbox-indicator">
+                        <Icon icon="check" />
+                    </div>
+
+                    { this.props.label && <span className="Checkbox-text">{this.props.label}</span> }
+                </label>
+            </div>
         );
     }
 }
@@ -71,6 +75,7 @@ export class Checkbox extends Component {
 Checkbox.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
+    label: PropTypes.string,
     checked: PropTypes.bool,
     onToggle: PropTypes.func
 };

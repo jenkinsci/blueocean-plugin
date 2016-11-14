@@ -1,15 +1,11 @@
 .Checkbox {
-    display: inline-flex;
-    width: 20px;
-    height: 20px;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    cursor: pointer;
+    display: inline-block;
 
-    border-radius: 3px;
-    border: solid 1px rgba(73, 73, 73, 0.5);
-    background-color: #fff;
+    .Checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
 
     // hide the checkbox entirely but keep accessible
     input[type="checkbox"] {
@@ -23,18 +19,37 @@
         width: 1px;
     }
 
+    .Checkbox-indicator {
+        display: flex;
+        border-radius: 3px;
+        border: solid 1px rgba(73, 73, 73, 0.5);
+        background-color: #fff;
+    }
+
+    .Checkbox-text {
+        margin-left: 5px;
+        user-select: none;
+    }
+
+    // use opacity to show/hide the icon, driving overall Checkbox height
+    // this avoids "height wiggling"
     .svg-icon {
-        display: none;
-        width: 16px;
-        height: 16px;
+        opacity: 0;
+        width: 20px;
+        height: 20px;
         fill: #fff;
     }
 
-    &.checked {
+    input[type="checkbox"]:checked + .Checkbox-indicator {
         background-color: @brand-primary;
+        border-color: @brand-primary;
 
         .svg-icon {
-            display: inline-block;
+            opacity: 1;
         }
+    }
+
+    input[type="checkbox"]:focus + .Checkbox-indicator {
+        border-color: @brand-selection;
     }
 }
