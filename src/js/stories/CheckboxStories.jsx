@@ -14,13 +14,13 @@ const style = {padding: 5};
 function Default() {
     return (
         <div>
-            <div className="size-small" style={style}>
+            <div className="layout-small" style={style}>
                 <Checkbox label="Small" />
             </div>
             <div style={style}>
                 <Checkbox label="Medium" />
             </div>
-            <div className="size-large" style={style}>
+            <div className="layout-large" style={style}>
                 <Checkbox label="Large" />
             </div>
             <div style={style}>
