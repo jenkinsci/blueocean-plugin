@@ -153,4 +153,3 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
         );
     }
 }
-

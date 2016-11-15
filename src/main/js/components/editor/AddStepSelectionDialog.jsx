@@ -8,7 +8,7 @@ import debounce from 'lodash.debounce';
 
 type Props = {
     onClose?: () => any,
-    onStepSelected?: (step:StepInfo) => any,
+    onStepSelected: (step:StepInfo) => any,
 }
 
 type State = {

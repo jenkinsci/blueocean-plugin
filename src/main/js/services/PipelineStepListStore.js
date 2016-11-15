@@ -6,7 +6,7 @@ class PipelineStepListStore {
             handler(this.stepData);
             return;
         }
-        Fetch.fetchJSON(`${UrlConfig.getBlueOceanAppURL()}/rest/pipeline-step-metadata/`).then(data => {
+        Fetch.fetchJSON(`${UrlConfig.getBlueOceanAppURL()}/rest/pipeline-step-metadata/?depth=20`).then(data => {
             this.stepData = this.filterStepListing(data);
             handler(this.stepData);
         });

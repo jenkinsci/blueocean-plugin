@@ -320,7 +320,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         this.setState({showSelectStep: true});
     }
 
-    createStep() {
+    addStep(step) {
 
         const {selectedStage, stageSteps} = this.state;
 
@@ -332,11 +332,11 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
         let newStep:StepInfo = {
             id: --idSeq,
-            isContainer: false,
+            isContainer: step.isBlockContainer,
             children: [],
-            type: "script",
-            label: "Run Script",
-            data: ""
+            type: step.functionName,
+            label: step.displayName,
+            data: {}
         };
 
         let newStepsForStage = [...oldStepsForStage, newStep];
@@ -603,7 +603,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                 {/* <button className="btn-warning" onClick={()=>this.dumpState()}>DUMP</button> */}
                 {this.state.showSelectStep && <AddStepSelectionDialog
                     onClose={() => this.setState({showSelectStep: false})}
-                    onStepSelected={(step) => { this.setState({showSelectStep: false}); console.log('selected', step); }} />}
+                    onStepSelected={(step) => { this.setState({showSelectStep: false}); this.addStep(step); }} />}
             </div>
         );
     }
