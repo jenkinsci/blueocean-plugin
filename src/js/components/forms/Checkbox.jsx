@@ -22,6 +22,10 @@ export class Checkbox extends Component {
         checked: false,
     };
 
+    get checked() {
+        return this.state.checked;
+    }
+
     componentWillMount() {
         this._updateState(this.props);
     }
@@ -36,7 +40,7 @@ export class Checkbox extends Component {
         });
     }
 
-    toggle(e: Event) {
+    _toggle(e: Event) {
         if (e.target instanceof HTMLInputElement) {
             const checked = e.target.checked;
 
@@ -58,14 +62,21 @@ export class Checkbox extends Component {
                 <label className="Checkbox-wrapper"
                        onClick={(event) => event.stopPropagation()}>
                     <input type="checkbox"
-                           onChange={this.toggle.bind(this)}
+                           onChange={this._toggle.bind(this)}
                            checked={this.state.checked} />
 
                     <div className="Checkbox-indicator">
-                        <Icon icon="check" />
+                        { !this.props.children ?
+                            <Icon icon="check" /> :
+                            this.props.children
+                        }
                     </div>
 
-                    { this.props.label && <span className="Checkbox-text">{this.props.label}</span> }
+                    { this.props.label &&
+                        <div className="Checkbox-text-wrapper">
+                            <div className="Checkbox-text">{this.props.label}</div>
+                        </div>
+                    }
                 </label>
             </div>
         );
