@@ -3,30 +3,52 @@ import { storiesOf } from '@kadira/storybook';
 import { Favorite } from '../components';
 
 storiesOf('Favorite', module)
-    .add('default', () => {
-        const style = { display: 'flex', alignItems: 'center' };
-        const style2 = { ... style, backgroundColor: '#4A90E2', color: 'white' };
+    .add('styles', () => {
+        const style = { backgroundColor: '#4A90E2', color: 'white' };
 
         return (
             <div>
-                <div style={style}>
-                    <Favorite /> Default
+                <div>
+                    <Favorite label="Default" />
+                </div>
+                <div>
+                    <Favorite checked label="Default, Checked" />
                 </div>
                 <div style={style}>
-                    <Favorite checked /> Default, Checked
+                    <Favorite className="dark-yellow"label="Dark / Yellow" />
                 </div>
-                <div style={style2}>
-                    <Favorite className="dark-yellow" /> Dark / Yellow
+                <div style={style}>
+                    <Favorite className="dark-yellow" checked label="Dark / Yellow, Checked" />
                 </div>
-                <div style={style2}>
-                    <Favorite className="dark-yellow" checked /> Dark / Yellow, Checked
+                <div style={style}>
+                    <Favorite className="dark-white" label="Dark / White" />
                 </div>
-                <div style={style2}>
-                    <Favorite className="dark-white" /> Dark / White
-                </div>
-                <div style={style2}>
-                    <Favorite className="dark-white" checked /> Dark / White, Checked
+                <div style={style}>
+                    <Favorite className="dark-white" checked label="Dark / White, Checked" />
                 </div>
             </div>
         );
-    });
+    })
+    .add('interactions', () => <Interactions />)
+;
+
+class Interactions extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.fav = null;
+    }
+
+    render() {
+        return (
+            <div>
+                <Favorite ref={fav => { this.fav = fav; }} label="Default" />
+                <br />
+                <button onClick={() => console.log('checked?', this.fav.checked)}>Checked?</button>
+                <br />
+                <Favorite label="Toggle Me" onToggle={(val) => console.log('onToggle', val)} />
+            </div>
+        );
+    }
+}
