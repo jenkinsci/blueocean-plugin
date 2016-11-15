@@ -51,14 +51,29 @@ export const initOptions = {
 
 /**
  * Create a instance of i18next and init it
+ * in case we are in test mode and run unit test, we deliver a i18next instance that are not using any backend nor language detection
  * @param backend  {object} - the backend we want to use
  * @param lngDetector {object} - the component that detects which language we want to display
  * @param options {object} - general options for i18next
  * @see defaultOptions
  */
-export const i18n = (backend = defaultXhr, lngDetector = defaultLngDetector, options = initOptions) => i18next
-  .use(backend)
-  .use(lngDetector)
-  .init(options);
+export const i18n = (backend = defaultXhr, lngDetector = defaultLngDetector, options = initOptions) => {
+    if (typeof window === 'undefined') {  // eslint-disable-line no-undef
+        return i18next.init({
+            lng: 'en',
+            resources: {
+                en: {
+                    translation: {
+                        key: 'hello world',
+                    },
+                },
+            },
+        });
+    }
+    return i18next
+        .use(backend)
+        .use(lngDetector)
+        .init(options);
+};
 
 export default i18n(defaultXhr, defaultLngDetector, initOptions);

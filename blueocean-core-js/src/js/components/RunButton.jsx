@@ -10,7 +10,7 @@ import {
     I18n,
 } from '../';
 import Security from '../security';
-const translate = I18n ? I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.web.Messages') : function() {};
+const translate = I18n ? I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.web.Messages') : function () { };
 
 const { permit } = Security;
 
@@ -95,8 +95,8 @@ export class RunButton extends Component {
         showStopButton = showStopButton && permit(this.props.runnable).stop();
 
         const runLabel = this.props.runText || translate('toast.run', {
-              defaultValue: 'Run',
-          });
+            defaultValue: 'Run',
+        });
         const stopLabel = this.state.stopping ? translate('toast.stopping', {
             defaultValue: 'Stopping ...',
         }) : translate('toast.stop', {
