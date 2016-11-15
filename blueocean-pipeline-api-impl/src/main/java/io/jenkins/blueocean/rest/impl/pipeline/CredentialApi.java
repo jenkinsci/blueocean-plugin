@@ -49,15 +49,17 @@ public class CredentialApi extends Resource {
     @Navigable
     public Container<CredentialDomain> getDomains(){
         return new Container<CredentialDomain>() {
+            private final Link self = CredentialApi.this.getLink().rel("domains");
+
             Map<String, CredentialsStoreAction.DomainWrapper> map = credentialStoreAction.getDomains();
             @Override
             public CredentialDomain get(String name) {
-                return new CredentialDomain(map.get(name), this);
+                return new CredentialDomain(map.get(name), getLink());
             }
 
             @Override
             public Link getLink() {
-                return CredentialApi.this.getLink();
+                return self;
             }
 
             @Override
@@ -72,7 +74,7 @@ public class CredentialApi extends Resource {
 
                     @Override
                     public CredentialDomain next() {
-                        return new CredentialDomain(i.next(), CredentialApi.this);
+                        return new CredentialDomain(i.next(), getLink());
                     }
 
                     @Override
@@ -94,8 +96,8 @@ public class CredentialApi extends Resource {
         private final Link self;
         private final CredentialsStoreAction.DomainWrapper domainWrapper;
 
-        public CredentialDomain(CredentialsStoreAction.DomainWrapper domainWrapper, Reachable parent) {
-            this.self = parent.getLink().rel(domainWrapper.getUrlName());
+        public CredentialDomain(CredentialsStoreAction.DomainWrapper domainWrapper, Link parent) {
+            this.self = parent.rel(domainWrapper.getUrlName());
             this.domainWrapper = domainWrapper;
         }
 
@@ -112,9 +114,11 @@ public class CredentialApi extends Resource {
         @Navigable
         public Container<Credential> getCredentials(){
             return new Container<Credential>() {
+                private final Link self = CredentialDomain.this.getLink().rel("credentials");
+
                 @Override
                 public Credential get(String name) {
-                    return new Credential(domainWrapper.getCredential(name), this);
+                    return new Credential(domainWrapper.getCredential(name), self);
                 }
 
                 @POST
@@ -148,7 +152,7 @@ public class CredentialApi extends Resource {
 
                         @Override
                         public Credential next() {
-                            return new Credential(i.next(),CredentialDomain.this);
+                            return new Credential(i.next(),self);
                         }
 
                         @Override
@@ -166,8 +170,8 @@ public class CredentialApi extends Resource {
         private final Link self;
         private final CredentialsStoreAction.CredentialsWrapper credentialsWrapper;
 
-        public Credential(CredentialsStoreAction.CredentialsWrapper credentialsWrapper, Reachable parent) {
-            this.self = parent.getLink().rel(credentialsWrapper.getUrlName());
+        public Credential(CredentialsStoreAction.CredentialsWrapper credentialsWrapper, Link parent) {
+            this.self = parent.rel(credentialsWrapper.getUrlName());
             this.credentialsWrapper = credentialsWrapper;
         }
 
