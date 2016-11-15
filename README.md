@@ -94,26 +94,39 @@ Look in following README's for:
 
 *Maven* is used for most building. The project is configured to grab all the tools you need from the JavaScript ecosystem to get started. 
 
-If you are working on the Javascript, you will need node and gulp installed.
+If you are working on the Javascript, you will need node installed.
 
 
 __NOTE__: look in the README.md of the respective modules for more detailed dev docs. 
 
 ### NPM and shrinkwrap
 
+- Ensure your npm is 3.10.8+ as this release fixes some important bugs with shrinkwrap, notably #11735 in [notes](https://github.com/npm/npm/releases/tag/v3.10.8)
 - Don't edit package.json directly; use npm install to ensure that both package.json and npm-shrinkwrap.json are updated.
 - To add or update a dependency:
-   - `npm install packageName@3.2.1 --save -E`
+   - `npm install packageName@3.2.1 -S -E`
 - To add or update a devDependency:
-   - `npm install packageName@3.2.1 --saveDev -E`
+   - `npm install packageName@3.2.1 -D -E`
 - If you are handling a merge conflict in package.json, resolve the conflict in the file as normal. Then use
 the appropriate command to update each conflicting dependency to ensure shrinkwrap is updated.
+- To remove a dependency:
+   - `npm uninstall packageName -S`
+- To remove a devDependency:
+   - `npm uninstall packageName -D`
 - If you ever need to create a shrinkwrap for the first time, use `npm shrinkwrap --dev` to ensure devDependencies are
 included in the shrinkwrap.
 
 Full docs on [npm shrinkwrap](https://docs.npmjs.com/cli/shrinkwrap)
 Information on [building with shrinkwrap](https://docs.npmjs.com/cli/shrinkwrap#building-shrinkwrapped-packages)
 
+In case you want to update your dependencies with something like ```npm-check-updates``` make sure you follow the simple steps:
+
+```
+ncu -a
+rm -rf node_modules npm-shrinkwrap.json
+npm i
+npm shrinkwrap --dev
+```
 
 # Debug and live reload with IntelliJ
 Automatically deploys changes to an instance of blueocean that is run with hpi:run.

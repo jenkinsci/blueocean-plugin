@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 import LogConsoleView from './LogConsoleView';
-import * as sse from '@jenkins-cd/sse-gateway';
+import { sseConnection } from '@jenkins-cd/blueocean-core-js';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
 
@@ -61,7 +61,7 @@ export class RunDetailsPipeline extends Component {
             }
         }
 
-        this.listener.sse = sse.subscribe('pipeline', this._onSseEvent);
+        this.listener.sse = sseConnection.subscribe('pipeline', this._onSseEvent);
     }
 
     componentDidMount() {
@@ -105,7 +105,7 @@ export class RunDetailsPipeline extends Component {
 
     componentWillUnmount() {
         if (this.listener.sse) {
-            sse.unsubscribe(this.listener.sse);
+            sseConnection.unsubscribe(this.listener.sse);
             delete this.listener.sse;
         }
 
@@ -225,7 +225,7 @@ export class RunDetailsPipeline extends Component {
      */
     isParallel(nodeInfo) {
         // in case we have edges arrays we compare the first edge, if not we know we are not in parallel mode
-        return this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
+        return this.mergedConfig.nodeReducer.edges && this.mergedConfig.nodeReducer.edges[0] && nodeInfo.edges[0] ?
             this.mergedConfig.nodeReducer.edges[0].id === nodeInfo.edges[0].id : false;
     }
 
@@ -350,13 +350,6 @@ export class RunDetailsPipeline extends Component {
         const shouldShowLogHeader = noSteps !== null && !noSteps;
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
 
-        const logProps = {
-            scrollToBottom,
-            ...this.props,
-            ...this.state,
-            mergedConfig: this.mergedConfig,
-        };
-
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
@@ -381,7 +374,13 @@ export class RunDetailsPipeline extends Component {
                   nodeInformation={currentSteps}
                   followAlong={followAlong}
                   router={router}
-                  {...this.props}
+                  {...{
+                      scrollToBottom,
+                      ...this.props,
+                      ...this.state,
+                      url: logGeneral.url,
+                      mergedConfig: this.mergedConfig,
+                  }}
                 />
                 }
                 { isPipelineQueued && supportsNode && <QueuedState /> }
@@ -389,7 +388,17 @@ export class RunDetailsPipeline extends Component {
                     <p>There are no steps.</p>
                 </EmptyStateView>
                 }
-                { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView {...logProps} /> }
+                { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView
+                  {
+                    ...{
+                        scrollToBottom,
+                        ...this.props,
+                        ...this.state,
+                        url: logGeneral.url,
+                        mergedConfig: this.mergedConfig,
+                    }
+                  }
+                /> }
             </div>
         );
     }

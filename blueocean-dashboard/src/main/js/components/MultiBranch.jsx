@@ -51,7 +51,7 @@ EmptyState.propTypes = {
 
 export class MultiBranch extends Component {
     componentWillMount() {
-        if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
+        if (this.props.pipeline && this.context.params && !pipelineBranchesUnsupported(this.props.pipeline)) {
             this.props.fetchBranches({
                 organizationName: this.context.params.organization,
                 pipelineName: this.context.params.pipeline,
@@ -65,9 +65,9 @@ export class MultiBranch extends Component {
 
 
     render() {
-        const { branches } = this.props;
+        const { branches, pipeline } = this.props;
 
-        if (!branches || (!branches.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
+        if (!branches || (!branches.$pending && pipelineBranchesUnsupported(pipeline))) {
             return (<NotSupported />);
         }
 
@@ -99,6 +99,7 @@ export class MultiBranch extends Component {
                         {branches.length > 0 && branches.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<Branches
+                              pipeline={pipeline}
                               key={index}
                               data={result}
                             />);
@@ -120,7 +121,6 @@ export class MultiBranch extends Component {
 MultiBranch.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
-    pipeline: object,
 };
 
 MultiBranch.propTypes = {
@@ -128,6 +128,7 @@ MultiBranch.propTypes = {
     fetchBranches: func,
     clearBranchData: func,
     children: any,
+    pipeline: object,
 };
 
 const selectors = createSelector([branchSelector], (branches) => ({ branches }));

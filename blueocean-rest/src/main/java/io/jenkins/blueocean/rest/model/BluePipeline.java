@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
@@ -24,6 +26,7 @@ public abstract class BluePipeline extends Resource {
     public static final String NAME="name";
     public static final String DISPLAY_NAME="displayName";
     public static final String FULL_NAME="fullName";
+    public static final String FULL_DISPLAY_NAME="fullDisplayName";
     public static final String WEATHER_SCORE ="weatherScore";
     public static final String LATEST_RUN = "latestRun";
     public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
@@ -42,12 +45,6 @@ public abstract class BluePipeline extends Resource {
 
     /** stop pipeline run */
     public static final String STOP_PERMISSION = "stop";
-
-    /** Number of running jobs of this pipeline */
-    public static final String NUMBER_OF_RUNNING_PIPELINES = "numberOfRunningPipelines";
-
-    /** Number of queued jobs of this pipeline */
-    public static final String NUMBER_OF_QUEUED_PIPELINES = "numberOfQueuedPipelines";
 
     /**
      * @return name of the organization
@@ -68,10 +65,18 @@ public abstract class BluePipeline extends Resource {
     public abstract String getDisplayName();
 
     /**
-     * @return Includes parentLink folders if any. For example folder1/folder2/p1
+     * @return Includes parent folders names if any. For example folder1/folder2/p1
      */
     @Exported(name = FULL_NAME)
     public abstract String getFullName();
+
+
+    /**
+     * @return Includes display names of parent folders if any. For example folder1/myFolder2/p1
+     */
+    @Exported(name = FULL_DISPLAY_NAME)
+    public abstract String getFullDisplayName();
+
 
     /**
      * @return weather health score percentile
@@ -117,6 +122,14 @@ public abstract class BluePipeline extends Resource {
     @Navigable
     public abstract BlueQueueContainer getQueue();
 
+    /**
+     * @return Gives paginated concatenation of {#getQueue()} and {#getRuns()}, in that order
+     */
+    @Navigable
+    public Container<Resource> getActivities() {
+        return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+    }
+
     @PUT
     @WebMethod(name="favorite")
     @TreeResponse
@@ -155,17 +168,4 @@ public abstract class BluePipeline extends Resource {
      */
     @Exported(name = PERMISSIONS)
     public abstract Map<String, Boolean> getPermissions();
-
-    /**
-     * @return Gives number of running jobs in this pipeline
-     */
-    @Exported(name = NUMBER_OF_RUNNING_PIPELINES)
-    public abstract int getNumberOfRunningPipelines();
-
-
-    /**
-     * @return Gives number of queued jobs in this pipeline
-     */
-    @Exported(name = NUMBER_OF_QUEUED_PIPELINES)
-    public abstract int getNumberOfQueuedPipelines();
 }

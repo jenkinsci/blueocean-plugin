@@ -10,11 +10,10 @@ import utils from '../utils';
  */
 export class SseBus {
 
-    constructor(sse, fetch) {
+    constructor(connection, fetch) {
         this.id = this._random();
-        this.sse = sse;
+        this.connection = connection;
         this.fetch = fetch || defaultFetch;
-        this.sseConnected = false;
         this.externalListeners = {};
         this.sseListeners = {};
     }
@@ -35,8 +34,6 @@ export class SseBus {
      * @returns {number} unsubscribe token
      */
     subscribeToJob(callback, jobFilter) {
-        this._initialize();
-
         const id = this._random();
 
         this.externalListeners[id] = {
@@ -45,7 +42,7 @@ export class SseBus {
         };
 
         if (!this.sseListeners.job) {
-            const sseListener = this.sse.subscribe('job', (event) => {
+            const sseListener = this.connection.subscribe('job', (event) => {
                 this._handleJobEvent(event);
             });
 
@@ -59,21 +56,8 @@ export class SseBus {
         delete this.externalListeners[token];
 
         if (Object.keys(this.externalListeners).length === 0) {
-            this.sse.unsubscribe(this.sseListeners.job);
+            this.connection.unsubscribe(this.sseListeners.job);
             delete this.sseListeners.job;
-        }
-    }
-
-    _initialize() {
-        if (!this.sseConnected) {
-            // FIXME sse should not require this to end with a /
-            this.sse.connect({
-                clientId: 'jenkins-blueocean-core-js',
-                onConnect: undefined,
-                jenkinsUrl: `${config.getJenkinsRootURL()}/`,
-            });
-
-            this.sseConnected = true;
         }
     }
 

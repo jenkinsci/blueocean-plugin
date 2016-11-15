@@ -6,11 +6,12 @@ properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: 
 node {
   deleteDir()
   checkout scm
+  configFileProvider([configFile(fileId: 'blueocean-maven-settings', targetLocation: 'settings.xml')]) {
 
   docker.image('cloudbees/java-build-tools').inside {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
-        sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore"
+        sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
         sh "node ./bin/checkdeps.js"
         sh "node ./bin/checkshrinkwrap.js"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
@@ -25,13 +26,15 @@ node {
       }
     }
   }
+
+  }
 }
 
 def triggerATH() {
     // Assemble and archive the HPI plugins that the ATH should use.
     // The ATH build can copy this artifact and use it, saving the time it
     // would otherwise spend building and assembling again.
-    sh 'cd blueocean && mvn hpi:assemble-dependencies && tar -czvf target/ath-plugins.tar.gz target/plugins'
+    sh 'cd blueocean && tar -czvf target/ath-plugins.tar.gz target/plugins'
     archiveArtifacts artifacts: 'blueocean/target/ath-plugins.tar.gz'
 
     // Trigger the ATH, but don't wait for it.

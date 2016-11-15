@@ -48,7 +48,7 @@ EmptyState.propTypes = {
 
 export class PullRequests extends Component {
     componentWillMount() {
-        if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
+        if (this.props.pipeline && this.context.params && !pipelineBranchesUnsupported(this.props.pipeline)) {
             this.props.fetchPullRequests({
                 organizationName: this.context.params.organization,
                 pipelineName: this.context.params.pipeline,
@@ -61,9 +61,9 @@ export class PullRequests extends Component {
     }
 
     render() {
-        const { pullRequests } = this.props;
+        const { pullRequests, pipeline } = this.props;
 
-        if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
+        if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(pipeline))) {
             return (<NotSupported />);
         }
 
@@ -82,8 +82,8 @@ export class PullRequests extends Component {
 
         const headers = [
             'Status',
-            { label: 'Latest Build', className: 'build' },
-            { label: 'Summary', className: 'summary' },
+            { label: 'PR', className: 'build' },
+            { label: 'Subject', className: 'summary' },
             'Author',
             { label: 'Completed', className: 'completed' },
             { label: '', className: 'run' },
@@ -97,6 +97,7 @@ export class PullRequests extends Component {
                         {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
+                              pipeline={pipeline}
                               key={index}
                               pr={result}
                             />);
@@ -116,13 +117,13 @@ export class PullRequests extends Component {
 PullRequests.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
-    pipeline: object,
 };
 
 PullRequests.propTypes = {
     pullRequests: array,
     clearPRData: func,
     fetchPullRequests: func,
+    pipeline: object,
 };
 
 const selectors = createSelector([pullRequestSelector], (pullRequests) => ({ pullRequests }));

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Progress } from '@jenkins-cd/design-language';
 import { scrollHelper } from './ScrollHelper';
+import { fetchAllSuffix as suffix } from '../util/UrlUtils';
 
 const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
@@ -111,13 +112,16 @@ export class LogConsole extends Component {
             this.timeouts.scroll = this.props.scrollToAnchorTimeOut(RERENDER_DELAY + 1);
         }
     }
-
     render() {
         const { isLoading, lines } = this.state;
-        const { prefix = '', hasMore = false } = this.props; // if hasMore true then show link to full log
+        const { prefix = '', hasMore = false, url, router, location } = this.props; // if hasMore true then show link to full log
         if (!lines) {
             return null;
         }
+        // JENKINS-37925
+        // fulllog within steps are triggered by
+        // const logUrl =`?start=0#${prefix || ''}log-${0}`
+        const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
 
         return (<div>
             { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
@@ -129,27 +133,40 @@ export class LogConsole extends Component {
             >
                 { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
                     <a
+                      target="_blank"
                       className="btn-secondary inverse"
                       key={0}
-                      href={`?start=0#${prefix || ''}log-${0}`}
+                      href={logUrl}
                     >
                         Show complete log
                     </a>
                 </div>}
-                { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-                    <a
-                      key={index + 1}
-                      href={`#${prefix || ''}log-${index + 1}`}
-                      name={`${prefix}log-${index + 1}`}
-                    >{line}
-                    </a>
-                </p>)}</code>
+                <table className="highlight">
+                    <tbody>
+                        { lines.map((line, index) => <tr key={index + 1} id={`${prefix}log-${index + 1}`}>
+                            <td className="linenumber" onClick={() => {
+                                location.hash = `#${prefix || ''}log-${index + 1}`;
+                                router.push(location);
+                            }}
+                            >
+                            <a
+                              key={index + 1}
+                              href={`#${prefix || ''}log-${index + 1}`}
+                              name={`${prefix}log-${index + 1}`}
+                            >
+                                {index + 1}
+                            </a> </td>
+                            <td className="line">{line}</td>
+                        </tr>)}
+                    </tbody>
+                </table>
+                </code>
             }
         </div>);
     }
 }
 
-const { array, bool, string, func } = PropTypes;
+const { array, bool, string, func, shape } = PropTypes;
 LogConsole.propTypes = {
     scrollToBottom: bool, // in case of long logs you can scroll to the bottom
     logArray: array,
@@ -157,7 +174,9 @@ LogConsole.propTypes = {
     scrollBottom: func,
     prefix: string,
     hasMore: bool,
+    router: shape,
+    location: shape,
+    url: string,
 };
 
 export default scrollHelper(LogConsole);
-

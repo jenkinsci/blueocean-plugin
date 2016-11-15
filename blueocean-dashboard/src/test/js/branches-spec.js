@@ -2,7 +2,6 @@ import React from 'react';
 import {createRenderer} from 'react-addons-test-utils';
 import { assert} from 'chai';
 import sd from 'skin-deep';
-import Immutable from 'immutable';
 import { latestRuns as data } from './data/runs/latestRuns';
 import { RunsRecord } from '../../main/js/components/records.jsx';
 
@@ -15,17 +14,15 @@ describe("Branches should render", () => {
 
   beforeEach(() => {
     const branch = new RunsRecord(data[0]);
-    tree = sd.shallowRender(<Branches data={branch} />, {
+    tree = sd.shallowRender(<Branches data={branch} pipeline={{}} />, {
         router: {},
-        pipeline: {},
         location: {},
     });
   });
 
   it("renders the Branches", () => {
-    const
-      row = tree.everySubTree('td')
-    ;
+    const row = tree.everySubTree('BranchCol');
+    const lastCol = tree.everySubTree('td');
     const weatherIcon =row[0].getRenderOutput();
     assert.isNotNull(weatherIcon);
     assert.isNotNull(weatherIcon.props.score);
@@ -35,7 +32,8 @@ describe("Branches should render", () => {
     const hashComp = row[3].getRenderOutput().props.children;
     const hashRendered = sd.shallowRender(hashComp).getRenderOutput();
     assert.equal(hashRendered.props.children, commitHash);
-    assert.equal(row.length, 7);
+    assert.equal(row.length, 6);
+    assert.equal(lastCol.length, 1);
   });
 });
 

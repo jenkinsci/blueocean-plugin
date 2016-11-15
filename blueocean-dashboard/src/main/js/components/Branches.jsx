@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
@@ -16,35 +16,37 @@ export default class Branches extends Component {
         this.state = { isVisible: false };
     }
     render() {
-        const { data } = this.props;
+        const { data, pipeline } = this.props;
         // early out
-        if (!data || !this.context.pipeline) {
+        if (!data || !pipeline) {
             return null;
         }
         const {
-            context: {
-                router,
-                location,
-                pipeline: {
-                    fullName,
-                    organization,
-                    },
-                },
-            } = this;
+            router,
+            location,
+        } = this.context;
         const {
             latestRun: { id, result, startTime, endTime, changeSet, state, commitId, estimatedDurationInMillis },
             weatherScore,
             name: branchName,
         } = data;
+        const { fullName, organization } = pipeline;
 
         const cleanBranchName = decodeURIComponent(branchName);
         const url = buildRunDetailsUrl(organization, fullName, cleanBranchName, id, 'pipeline');
 
-        const open = () => {
+        const open = (event) => {
+            if (event) {
+                event.preventDefault();
+            }
             location.pathname = url;
             router.push(location);
         };
 
+        const BranchCol = (props) => <td className="tableRowLink">
+            <a onClick={open} href={`${UrlConfig.getJenkinsRootURL()}/blue${url}`}>{props.children}</a>
+        </td>;
+       
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
@@ -54,16 +56,16 @@ export default class Branches extends Component {
 
         return (
             <tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${id}`} >
-                <td><WeatherIcon score={weatherScore} /></td>
-                <td onClick={open}>
+                <BranchCol><WeatherIcon score={weatherScore} /></BranchCol>
+                <BranchCol onClick={open}>
                     <LiveStatusIndicator result={result === 'UNKNOWN' ? state : result}
                       startTime={startTime} estimatedDuration={estimatedDurationInMillis}
                     />
-                </td>
-                <td>{cleanBranchName}</td>
-                <td><CommitHash commitId={commitId} /></td>
-                <td>{msg || '-'}</td>
-                <td><ReadableDate date={endTime} liveUpdate /></td>
+                </BranchCol>
+                <BranchCol>{cleanBranchName}</BranchCol>
+                <BranchCol><CommitHash commitId={commitId} /></BranchCol>
+                <BranchCol>{msg || '-'}</BranchCol>
+                <BranchCol><ReadableDate date={endTime} liveUpdate /></BranchCol>
                 { /* suppress all click events from extension points */ }
                 <td className="actions" onClick={(event) => stopProp(event)}>
                     <RunButton
@@ -85,11 +87,11 @@ export default class Branches extends Component {
 
 Branches.propTypes = {
     data: object.isRequired,
+    pipeline: object,
 };
 
 Branches.contextTypes = {
     store: object,
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };

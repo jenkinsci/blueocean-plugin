@@ -14,6 +14,7 @@ public class BlueOceanUI {
 
     public BlueOceanUI(String rootPath) {
         this.urlBase = rootPath;
+        ResourceCacheControl.install();
     }
 
     /**

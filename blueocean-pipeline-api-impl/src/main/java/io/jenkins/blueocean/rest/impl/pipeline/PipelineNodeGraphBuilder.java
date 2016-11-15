@@ -1,22 +1,21 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
+import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
-import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowGraphWalker;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,14 +31,15 @@ import static io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil.isStage;
  * Filters {@link FlowGraphTable} to BlueOcean specific model representing DAG like graph objects
  *
  * @author Vivek Pandey
+ * @deprecated Use {@link PipelineNodeGraphVisitor}
  */
-public class PipelineNodeGraphBuilder {
+public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
 
     private final List<FlowNode> sortedNodes;
 
     private final WorkflowRun run;
     private final Map<FlowNode, List<FlowNode>> parentToChildrenMap = new LinkedHashMap<>();
-    private final Map<FlowNode, PipelineNodeGraphBuilder.NodeRunStatus> nodeStatusMap = new LinkedHashMap<>();
+    private final Map<FlowNode, NodeRunStatus> nodeStatusMap = new LinkedHashMap<>();
 
 
     public PipelineNodeGraphBuilder(WorkflowRun run) {
@@ -103,10 +103,10 @@ public class PipelineNodeGraphBuilder {
                         endNode = PipelineNodeUtil.getEndNode(sortedNodes,node);
                     }
                     if(endNode != null){
-                        nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));
+                        nodeStatusMap.put(node, new NodeRunStatus(endNode));
                     }
                 }else if(previousStage!=null){
-                    nodeStatusMap.put(previousStage, new PipelineNodeGraphBuilder.NodeRunStatus(sortedNodes.get(count - 1)));
+                    nodeStatusMap.put(previousStage, new NodeRunStatus(sortedNodes.get(count - 1)));
                 }
                 previousStage = node;
             } else if (isParallelBranch(node) && !nestedInParallel) { //branch but not nested ones
@@ -116,10 +116,10 @@ public class PipelineNodeGraphBuilder {
                 }
                 FlowNode endNode = PipelineNodeUtil.getStepEndNode(sortedNodes,node);
                 if (endNode != null) {
-                    nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));
+                    nodeStatusMap.put(node, new NodeRunStatus(endNode));
                 }else{
                     //It's still running, report it as state: running and result: unknown
-                    nodeStatusMap.put(node, new PipelineNodeGraphBuilder.NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING));
+                    nodeStatusMap.put(node, new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING));
                 }
                 previousBranch = node;
             }
@@ -127,7 +127,7 @@ public class PipelineNodeGraphBuilder {
         }
         int size = parentToChildrenMap.keySet().size();
         if (size > 0) {
-            PipelineNodeGraphBuilder.NodeRunStatus runStatus = PipelineNodeUtil.getStatus(run);
+            NodeRunStatus runStatus = PipelineNodeUtil.getStatus(run);
             FlowNode lastNode = getLastStageNode();
             nodeStatusMap.put(lastNode, runStatus);
         }
@@ -190,7 +190,7 @@ public class PipelineNodeGraphBuilder {
             for(int j=i+1; j < sortedNodes.size(); j++){
                 FlowNode c = sortedNodes.get(j);
                 if(c.equals(end)){
-                    nodeStatusMap.put(p, new PipelineNodeGraphBuilder.NodeRunStatus(end));
+                    nodeStatusMap.put(p, new NodeRunStatus(end));
                     break;
                 }
                 if(isParallelBranch(c)){
@@ -206,7 +206,7 @@ public class PipelineNodeGraphBuilder {
 
                     FlowNode endNode = PipelineNodeUtil.getStepEndNode(sortedNodes,c);
                     if (endNode != null) {
-                        nodeStatusMap.put(c, new PipelineNodeGraphBuilder.NodeRunStatus(endNode));
+                        nodeStatusMap.put(c, new NodeRunStatus(endNode));
                     }
                 }
             }
@@ -222,86 +222,137 @@ public class PipelineNodeGraphBuilder {
         }
         return false;
     }
+    
+    @Override
+    public List<FlowNodeWrapper> getPipelineNodes() {
+        List<FlowNodeWrapper> nodes = new ArrayList<>();
+        for (FlowNode n : parentToChildrenMap.keySet()) {
+            NodeRunStatus status = nodeStatusMap.get(n);
+
+            if (!isExecuted(n)) {
+                status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED);
+            } else if (status == null) {
+                status = getEffectiveBranchStatus(n);
+            }
+            long durationInMillis = 0;
+            long startTime = TimingAction.getStartTime(n);
+            if(status.state == BlueRun.BlueRunState.FINISHED){
+                durationInMillis = getDurationInMillis(n);
+            }else if(status.state == BlueRun.BlueRunState.RUNNING){
+                durationInMillis = System.currentTimeMillis()-TimingAction.getStartTime(n);
+            }
+            FlowNodeWrapper wrapper = new FlowNodeWrapper(n, status, new TimingInfo(durationInMillis,0,startTime));
+            for(FlowNode c: parentToChildrenMap.get(n)){
+                wrapper.addEdge(c.getId());
+            }
+            nodes.add(wrapper);
+        }
+        return nodes;
+    }
+
+    public List<BluePipelineNode> getPipelineNodes(Link parentLink) {
+        List<BluePipelineNode> nodes = new ArrayList<>();
+        for (FlowNodeWrapper n : getPipelineNodes()) {
+            nodes.add(new PipelineNodeImpl(n, parentLink, run));
+        }
+        return nodes;
+    }
+
+    @Override
+    public List<BluePipelineStep> getPipelineNodeSteps(String nodeId, Link parent) {
+        List<BluePipelineStep> steps = new ArrayList<>();
+        List<FlowNode> flowNodes = new ArrayList<>();
+        if(nodeId == null){
+            flowNodes.addAll(getAllSteps());
+        }else{
+            flowNodes.addAll(getSteps(getNodeById(nodeId)));
+        }
+        for(FlowNode node: flowNodes){
+            steps.add(new PipelineStepImpl(new FlowNodeWrapper(node,
+                new NodeRunStatus(node),
+                new TimingInfo(getDurationInMillis(node), 0, 0)), parent));
+        }
+        return steps;
+    }
+
+    @Override
+    public List<BluePipelineStep> getPipelineNodeSteps(Link parent) {
+        return getPipelineNodeSteps(null, parent);
+    }
+
+    @Override
+    public BluePipelineStep getPipelineNodeStep(String id, Link parent) {
+        for(BluePipelineStep step: getPipelineNodeSteps(parent)){
+            if(step.getId().equals(id)){
+                return step;
+            }
+        }
+        return null;
+    }
 
 
-    /**
-     * Create a union of current pipeline nodes with the one from future. Term future indicates that
-     * this list of nodes are either in the middle of processing or failed somewhere in middle and we are
-     * projecting future nodes in the pipeline.
-     * <p>
-     * Last element of this node is patched to point to the first node of given list. First node of given
-     * list is indexed at thisNodeList.size().
-     *
-     * @param other Other {@link PipelineNodeGraphBuilder} to create union with
-     * @return list of FlowNode that is union of current set of nodes and the given list of nodes. If futureNodes
-     * are not bigger than this pipeline nodes then no union is performed.
-     * @see PipelineNodeContainerImpl#PipelineNodeContainerImpl(WorkflowRun, Link)
-     */
-    public List<BluePipelineNode> union(PipelineNodeGraphBuilder other, Link parentLink) {
-        Map<FlowNode, List<FlowNode>> futureNodes = other.parentToChildrenMap;
-        if (parentToChildrenMap.size() < futureNodes.size()) {
+    @Override
+    public List<BluePipelineNode> union(List<FlowNodeWrapper> futureNodes, Link parentLink) {
 
-            // XXX: If the pipeline was modified since last successful run then
-            // the union might represent invalid future nodes.
-            List<FlowNode> nodes = ImmutableList.copyOf(parentToChildrenMap.keySet());
-            List<FlowNode> thatNodes = ImmutableList.copyOf(futureNodes.keySet());
-            int currentNodeSize = nodes.size();
-            for (int i = nodes.size(); i < futureNodes.size(); i++) {
-                InactiveFlowNodeWrapper n = new InactiveFlowNodeWrapper(thatNodes.get(i));
+        List<FlowNodeWrapper> currentNodes = getPipelineNodes();
+
+        int currentNodeSize = currentNodes.size();
+        if (currentNodeSize < futureNodes.size()) {
+            for (int i = currentNodeSize; i < futureNodes.size(); i++) {
+
+                FlowNodeWrapper futureNode = futureNodes.get(i);
 
                 // Add the last successful pipeline's first node to the edge of current node's last node
                 if (currentNodeSize> 0 && i == currentNodeSize) {
-                    FlowNode latestNode = nodes.get(currentNodeSize - 1);
-                    if (isStage(latestNode)) {
-                        addChild(latestNode, n);
-                    } else if (isParallelBranch(latestNode)) {
+                    FlowNodeWrapper latestNode = currentNodes.get(currentNodeSize - 1);
+                    if (isStage(latestNode.getNode())) {
+                        addChild(latestNode.getNode(), futureNode.getNode());
+                    } else if (isParallelBranch(latestNode.getNode())) {
                         /**
                          * If its a parallel node, find all its siblings and add the next node as
                          * edge (if not already present)
                          */
                         //parallel node has at most one paraent
-                        FlowNode parent = getParentStageOfBranch(latestNode);
+                        FlowNode parent = getParentStageOfBranch(latestNode.getNode());
                         if (parent != null) {
                             List<FlowNode> children = parentToChildrenMap.get(parent);
                             for (FlowNode c : children) {
                                 // Add next node to the parallel node's edge
                                 if (isParallelBranch(c)) {
-                                    addChild(c, n);
+                                    for(FlowNodeWrapper f: currentNodes){
+                                        if(f.getNode().equals(c)){
+                                            f.addEdge(futureNode.getId());
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                parentToChildrenMap.put(n, futureNodes.get(n.inactiveNode));
+
+                FlowNodeWrapper n = new FlowNodeWrapper(futureNode.getNode(),
+                    new NodeRunStatus(null,null),
+                    new TimingInfo());
+                n.addEdges(futureNode.edges);
+                n.addParents(futureNode.getParents());
+                currentNodes.add(n);
             }
         }
-        return getPipelineNodes(parentLink);
-    }
-
-    public List<BluePipelineNode> getPipelineNodes(Link parentLink) {
-        List<BluePipelineNode> nodes = new ArrayList<>();
-        for (FlowNode n : parentToChildrenMap.keySet()) {
-            PipelineNodeGraphBuilder.NodeRunStatus status = nodeStatusMap.get(n);
-
-            if (!isExecuted(n)) {
-                status = new PipelineNodeGraphBuilder.NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED);
-            } else if (status == null) {
-                status = getEffectiveBranchStatus(n);
-            }
-            nodes.add(new PipelineNodeImpl(run, n, status, this,parentLink));
+        List<BluePipelineNode> newNodes = new ArrayList<>();
+        for(FlowNodeWrapper n: currentNodes){
+            newNodes.add(new PipelineNodeImpl(n,parentLink,run));
         }
-        return nodes;
+        return newNodes;
     }
 
     public List<FlowNode> getChildren(FlowNode parent){
         return parentToChildrenMap.get(parent);
     }
 
-    @Nullable
-    public Long getDurationInMillis(FlowNode node){
+    public long getDurationInMillis(FlowNode node){
         long startTime = TimingAction.getStartTime(node);
         if( startTime == 0){
-            return null;
+            return 0;
         }
         /**
          * For Stage node:
@@ -340,23 +391,9 @@ public class PipelineNodeGraphBuilder {
                 return TimingAction.getStartTime(sortedNodes.get(i+1)) - startTime;
             }
         }
-        return run.getExecution().isComplete()
+        return run.getExecution()!= null && run.getExecution().isComplete()
             ? (run.getDuration() + run.getStartTimeInMillis()) - startTime
             : System.currentTimeMillis() - startTime;
-    }
-
-    private boolean isEnd(FlowNode n){
-        return n instanceof StepEndNode;
-    }
-    private FlowNode getLastNode() {
-        if (parentToChildrenMap.keySet().isEmpty()) {
-            return null;
-        }
-        FlowNode node = null;
-        for (FlowNode n : parentToChildrenMap.keySet()) {
-            node = n;
-        }
-        return node;
     }
 
     private FlowNode getParentStageOfBranch(FlowNode node) {
@@ -383,19 +420,6 @@ public class PipelineNodeGraphBuilder {
         return node;
     }
 
-    private FlowNode getLastBranchNode() {
-        if (parentToChildrenMap.keySet().isEmpty()) {
-            return null;
-        }
-        FlowNode node = null;
-        for (FlowNode n : parentToChildrenMap.keySet()) {
-            if (isParallelBranch(n)) {
-                node = n;
-            }
-        }
-        return node;
-    }
-
     private NodeRunStatus getEffectiveBranchStatus(FlowNode n) {
         List<FlowNode> children = parentToChildrenMap.get(n);
         BlueRun.BlueRunResult result = BlueRun.BlueRunResult.SUCCESS;
@@ -404,7 +428,7 @@ public class PipelineNodeGraphBuilder {
         boolean atLeastOneBranchisUnknown = false;
         for (FlowNode c : children) {
             if (isParallelBranch(c)) {
-                PipelineNodeGraphBuilder.NodeRunStatus s = nodeStatusMap.get(c);
+                NodeRunStatus s = nodeStatusMap.get(c);
                 if (s == null) {
                     continue;
                 }
@@ -429,7 +453,7 @@ public class PipelineNodeGraphBuilder {
             result = BlueRun.BlueRunResult.UNKNOWN;
         }
 
-        return new PipelineNodeGraphBuilder.NodeRunStatus(result, state);
+        return new NodeRunStatus(result, state);
     }
 
     private boolean isExecuted(FlowNode node) {
@@ -454,39 +478,6 @@ public class PipelineNodeGraphBuilder {
         }
     }
 
-    public static class NodeRunStatus {
-        private final BlueRun.BlueRunResult result;
-        private final BlueRun.BlueRunState state;
-
-        public NodeRunStatus(FlowNode endNode) {
-            if (endNode.getError() != null) {
-                this.result = BlueRun.BlueRunResult.FAILURE;
-                this.state = endNode.isRunning() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
-            }else if (endNode.isRunning()) {
-                this.result = BlueRun.BlueRunResult.UNKNOWN;
-                this.state = BlueRun.BlueRunState.RUNNING;
-            } else if (NotExecutedNodeAction.isExecuted(endNode)) {
-                this.result = PipelineNodeUtil.getStatus(endNode.getError());
-                this.state = BlueRun.BlueRunState.FINISHED;
-            } else {
-                this.result = BlueRun.BlueRunResult.NOT_BUILT;
-                this.state = BlueRun.BlueRunState.QUEUED;
-            }
-        }
-
-        public NodeRunStatus(BlueRun.BlueRunResult result, BlueRun.BlueRunState state) {
-            this.result = result;
-            this.state = state;
-        }
-
-        public BlueRun.BlueRunResult getResult() {
-            return result;
-        }
-
-        public BlueRun.BlueRunState getState() {
-            return state;
-        }
-    }
 
     public static class InactiveFlowNodeWrapper extends FlowNode {
 

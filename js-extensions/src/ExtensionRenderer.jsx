@@ -57,7 +57,6 @@ export default class ExtensionRenderer extends React.Component {
 
     componentWillUnmount() {
         this._unmountAllExtensions();
-        ExtensionRenderer.ResourceLoadTracker.onUnmount(this.props.extensionPoint);
     }
     
     _setExtensions() {

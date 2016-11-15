@@ -30,9 +30,13 @@ import hudson.model.PageDecorator;
  * Stapler page decorator for decorating classic Jenkins pages with visual
  * prompts to the user that will hopefully entice/remind them into giving
  * Blue ocean a try.
- * 
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Extension
 public class TryBlueOceanPageDecorator extends PageDecorator {
+
+    public String getBlueOceanURL() {
+        return BlueOceanWebURLBuilder.toBlueOceanURL();
+    }
 }
