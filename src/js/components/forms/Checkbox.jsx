@@ -73,9 +73,7 @@ export class Checkbox extends Component {
                     </div>
 
                     { this.props.label &&
-                        <div className="Checkbox-text-wrapper">
-                            <div className="Checkbox-text">{this.props.label}</div>
-                        </div>
+                        <div className="Checkbox-text">{this.props.label}</div>
                     }
                 </label>
             </div>
