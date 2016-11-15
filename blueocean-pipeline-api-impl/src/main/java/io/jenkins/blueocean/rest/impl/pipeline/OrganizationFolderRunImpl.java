@@ -85,7 +85,7 @@ public class OrganizationFolderRunImpl extends BlueRun {
         if(folderComputation.isBuilding()){
             return (System.currentTimeMillis() - folderComputation.getTimestamp().getTimeInMillis());
         }
-        return null; //TODO: FolderComputation doesn't expose duration as date/time value. Raise this issue.
+        return getEstimatedDurtionInMillis(); //TODO: FolderComputation doesn't expose duration as date/time value. For now we return estimatedDuration. Raise this issue.
 
     }
 

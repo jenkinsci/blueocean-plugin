@@ -27,7 +27,7 @@ public abstract class BluePipelineContainer extends Container<BluePipeline>{
     public  CreateResponse create(@JsonBody BluePipelineCreateRequest request) throws IOException{
         Map<String,String> errors = new HashMap<>();
         if(request.getName() == null || request.getName().trim().isEmpty()){
-            errors.put("name", "creatorId is required parameter");
+            errors.put("name", "name is required parameter");
 
         }
         if(request.getCreatorId() == null || request.getCreatorId().trim().isEmpty()){

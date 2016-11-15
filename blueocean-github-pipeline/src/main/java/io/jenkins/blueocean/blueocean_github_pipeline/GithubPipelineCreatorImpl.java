@@ -34,15 +34,17 @@ public class GithubPipelineCreatorImpl extends AbstractPipelineCreatorImpl {
     @Override
     public BluePipeline create(BluePipelineCreateRequest request, Reachable parent) throws IOException {
 
-        String apiUrl = request.getScmConfig().getUri();
+        String apiUrl=null;
+        if(request.getScmConfig() != null) {
+            apiUrl = request.getScmConfig().getUri();
+        }
 
-        String orgName = null; //default
+        String orgName = request.getName(); //default
         if(request.getScmConfig().getConfig().get("orgName") instanceof String){
             orgName = (String) request.getScmConfig().getConfig().get("orgName");
         }
 
         String credentialId = request.getScmConfig().getCredentialId();
-
 
         GitHubSCMNavigator gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
         StringBuilder sb = new StringBuilder();

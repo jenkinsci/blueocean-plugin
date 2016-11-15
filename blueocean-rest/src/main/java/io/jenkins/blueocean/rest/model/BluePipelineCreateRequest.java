@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -57,7 +58,7 @@ public class BluePipelineCreateRequest {
     /**
      * Gives SCM configuration {@link BlueScmConfig}
      */
-    public @Nonnull BlueScmConfig getScmConfig() {
+    public @CheckForNull BlueScmConfig getScmConfig() {
         return scmConfig;
     }
 

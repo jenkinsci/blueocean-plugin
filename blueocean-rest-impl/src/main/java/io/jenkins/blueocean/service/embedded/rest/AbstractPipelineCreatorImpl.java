@@ -6,10 +6,12 @@ import hudson.model.Items;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.security.ACL;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipelineCreator;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -17,18 +19,21 @@ import java.io.IOException;
  */
 public abstract class AbstractPipelineCreatorImpl extends BluePipelineCreator {
 
-    public TopLevelItem create(ModifiableTopLevelItemGroup parent, String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass) throws IOException {
+    public @Nonnull TopLevelItem create(ModifiableTopLevelItemGroup parent, String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass) throws IOException {
         ACL acl = Jenkins.getInstance().getACL();
         acl.checkPermission(Item.CREATE);
         TopLevelItemDescriptor descriptor = Items.all().findByName(descriptorName);
         if(descriptor == null || !(descriptorClass.isAssignableFrom(descriptorClass))){
-            return null;
+            throw new ServiceException.BadRequestExpception(String.format("Failed to create pipeline: %s, descriptor %s is not found", name, descriptorName));
         }
         ItemGroup p = Jenkins.getInstance();
         descriptor.checkApplicableIn(p);
 
         acl.checkCreatePermission(p, descriptor);
-
-        return parent.createProject(descriptor, name, true);
+        try {
+            return parent.createProject(descriptor, name, true);
+        }catch (IllegalArgumentException e){
+            throw new ServiceException.BadRequestExpception("Pipeline "+ name + " already exists");
+        }
     }
 }

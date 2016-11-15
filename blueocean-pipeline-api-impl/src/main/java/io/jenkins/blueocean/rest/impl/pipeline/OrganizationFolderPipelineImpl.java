@@ -12,6 +12,7 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 import jenkins.branch.OrganizationFolder;
+import org.kohsuke.stapler.export.Exported;
 
 /**
  * @author Vivek Pandey
@@ -37,8 +38,9 @@ public class OrganizationFolderPipelineImpl extends PipelineFolderImpl {
     }
 
     @Override
+    @Exported(inline = true)
     public BlueRun getLatestRun() {
-        return super.getLatestRun();
+        return new OrganizationFolderRunContainerImpl(this, this).get(OrganizationFolderRunImpl.RUN_ID);
     }
 
     @Extension(ordinal = 0)
