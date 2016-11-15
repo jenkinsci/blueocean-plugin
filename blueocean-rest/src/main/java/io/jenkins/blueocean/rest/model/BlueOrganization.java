@@ -1,14 +1,9 @@
 package io.jenkins.blueocean.rest.model;
 
-import hudson.ExtensionList;
 import io.jenkins.blueocean.Routable;
-import io.jenkins.blueocean.rest.ApiRoutable;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_ORGANIZATION;
 
@@ -21,16 +16,6 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_ORGANIZATIO
 public abstract class BlueOrganization extends Resource implements Routable{
     public static final String NAME="name";
     public static final String PIPELINES="pipelines";
-
-    private final Map<String, ApiRoutable> apis = new HashMap<>();
-
-    public BlueOrganization() {
-        for(ApiRoutable api: ExtensionList.lookup(ApiRoutable.class)){
-            if(api.isChildOf(this)) {
-                apis.put(api.getUrlName(), api);
-            }
-        }
-    }
 
     @Override
     public String getUrlName() {
@@ -60,8 +45,5 @@ public abstract class BlueOrganization extends Resource implements Routable{
     @Navigable
     public abstract BlueUser getUser();
 
-    public ApiRoutable getDynamic(String route){
-        return apis.get(route);
-    }
 }
 

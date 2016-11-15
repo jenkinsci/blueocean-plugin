@@ -181,6 +181,17 @@ public class CredentialApi extends Resource {
         public Link getLink() {
             return self;
         }
+
+        /**
+         * If description is empty its displayName:domain:type, otherwise just the given description name
+         */
+        @Exported
+        public String getDescription(){
+            if(credentialsWrapper.getDescription() == null || credentialsWrapper.getDescription().trim().isEmpty()){
+                return String.format("%s:%s:%s",credentialsWrapper.getDisplayName(),credentialsWrapper.getDomain().getUrlName(), credentialsWrapper.getTypeName());
+            }
+            return credentialsWrapper.getDescription();
+        }
     }
 
 }

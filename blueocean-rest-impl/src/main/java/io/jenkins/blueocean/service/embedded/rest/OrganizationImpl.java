@@ -1,10 +1,12 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.ExtensionList;
 import hudson.model.Action;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.ApiRoutable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -17,7 +19,10 @@ import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.PUT;
 
+import javax.annotation.CheckForNull;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link BlueOrganization} implementation for the embedded use.
@@ -33,7 +38,14 @@ public class OrganizationImpl extends BlueOrganization {
      */
     public static final OrganizationImpl INSTANCE = new OrganizationImpl();
 
-    private OrganizationImpl() {
+    private final Map<String, ApiRoutable> apis = new HashMap<>();
+
+    public OrganizationImpl() {
+        for(ApiRoutable api: ExtensionList.lookup(ApiRoutable.class)){
+            if(api.isChildOf(this)) {
+                apis.put(api.getUrlName(), api);
+            }
+        }
     }
 
     /**
@@ -89,22 +101,29 @@ public class OrganizationImpl extends BlueOrganization {
     }
 
     /**
-     * Have available actions handle unknwon path
-     * @param token current token in the path
-     * @return {@link Action} instance. null if none.
+     * Give plugins chance to handle this API route.
+     *
+     * @param route URL path that needs handling. e.g. for requested url /rest/organizations/:id/xyz,  route param value will be 'xyz'
+     * @return stapler object that can handle give route. Could be null
      */
-//    public Object getDynamic(String token){
-//        for(Action action:Jenkins.getInstance().getActions()){
-//            if(action.getUrlName() != null && action.getUrlName().equals(token)){
-//                if(isExportedBean(action.getClass())){
-//                    return action;
-//                }else {
-//                    return new GenericResource<>(action);
-//                }
-//            }
-//        }
-//        return null;
-//    }
+    public @CheckForNull Object getDynamic(String route){
+        Object object =  apis.get(route);
+        if(object!=null) {
+            return object;
+        }
+
+        //lookup in available actions from Jenkins instance, that is all {@link RootAction}s
+        for(Action action:Jenkins.getInstance().getActions()) {
+            if (action.getUrlName() != null && action.getUrlName().equals(route)) {
+                if (isExportedBean(action.getClass())) {
+                    return action;
+                } else {
+                    return new GenericResource<>(action);
+                }
+            }
+        }
+        return null;
+    }
 
     private boolean isExportedBean(Class clz){
         return clz.getAnnotation(ExportedBean.class) != null;
