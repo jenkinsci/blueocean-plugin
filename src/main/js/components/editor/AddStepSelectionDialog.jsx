@@ -35,7 +35,6 @@ export class AddStepSelectionDialog extends Component<DefaultProps, Props, State
     
     closeDialog() {
         this.props.onClose();
-        this.setState({selectedStep: null});
     }
     
     selectAddStep() {

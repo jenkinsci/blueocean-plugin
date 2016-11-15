@@ -312,37 +312,37 @@
 }
 
 .editor-step-selection-dialog {
-    margin: -32px -32px -16px -32px;
+    position: relative;
 
     .editor-step-selection-dialog-search {
         height: 4em;
         position: relative;
-        border-bottom: 1px solid #ddd;
+        margin: -32px -32px -16px -32px;
 
         > svg {
             position: absolute;
             top: 50%;
-            left: 65px;
+            left: 28px;
             margin-top: -16px;
             z-index: 1;
         }
         input.editor-step-selection-dialog-search-input {
             height: 100%;
             width: 100%;
-            padding: 0 12px 0 110px;
+            padding: 1px 12px 0 68px;
             z-index: 2;
             position: relative;
             display: block;
             background: transparent;
             border: 0;
+            border-bottom: 1px solid #ddd;
             font-size: 1.2em;
             .placeholder({
                 color: #888;
                 font-style: italic;
             });
             &:focus {
-                padding: 0 11px 0 109px;
-                border: 1px solid #4a90e2;
+                border-color: #4a90e2;
                 border-radius: 0px;
                 outline: none;
                 margin: 0;
@@ -352,26 +352,31 @@
     .editor-step-selection-dialog-steps {
         height: 30em;
         overflow-x: scroll;
-        padding: 20px 50px 0 50px;
+        width: 40em;
+        margin-top: 3em;
 
         > .step-item {
             padding: 16px 16px 16px 57px;
             border: 1px solid #ddd;
-            margin: 5px;
             border-radius: 4px;
             cursor: pointer;
             position: relative;
             font-size: 1.2em;
             
-            &:hover, &:focus {
-                outline: none;
-                background: #eee;
+            + .step-item {
+                margin-top: 5px;
             }
 
             &.selected {
                 background: #ddd;
                 font-weight: normal;
                 color: #000;
+                border-color: #ccc;
+            }
+
+            &:hover, &:focus {
+                outline: none;
+                background: #eee;
             }
 
             &:before {
