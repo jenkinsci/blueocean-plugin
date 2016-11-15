@@ -52,7 +52,7 @@ describe('Security', () => {
         it('returns true when anon', () => {
             config._setJenkinsConfig({
                 security: {
-                    user: 'anonymous',
+                    user: { id: 'anonymous' },
                 },
             });
             assert.isTrue(Security.isAnonymousUser());
@@ -61,7 +61,7 @@ describe('Security', () => {
         it('returns false when identified', () => {
             config._setJenkinsConfig({
                 security: {
-                    user: 'admin',
+                    user: { id: 'admin' },
                 },
             });
             assert.isFalse(Security.isAnonymousUser());

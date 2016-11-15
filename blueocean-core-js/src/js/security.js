@@ -30,7 +30,7 @@ function isSecurityEnabled() {
 }
 
 function isAnonymousUser() {
-    return config.getInitialUser() === 'anonymous';
+    return config.getInitialUser().id === 'anonymous';
 }
 
 export default {

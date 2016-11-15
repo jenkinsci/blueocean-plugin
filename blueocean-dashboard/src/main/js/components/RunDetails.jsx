@@ -36,7 +36,7 @@ const { func, object, any, string } = PropTypes;
 
 const classicConfigLink = (pipeline) => {
     let link = null;
-    if (AppConfig.getInitialUser() !== 'anonymous') {
+    if (AppConfig.getInitialUser().id !== 'anonymous') {
         let url = buildClassicConfigUrl(pipeline);
         link = (
             <a href={url} target="_blank" style={{ height: '24px' }}>
