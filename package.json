@@ -37,10 +37,11 @@
     "react-addons-test-utils": "15.0.1"
   },
   "dependencies": {
+    "@jenkins-cd/blueocean-core-js": "0.0.21",
     "@jenkins-cd/design-language": "0.0.87-unpublished",
     "@jenkins-cd/js-extensions": "0.0.25",
-    "@jenkins-cd/blueocean-core-js": "0.0.21",
     "@jenkins-cd/js-modules": "0.0.8",
+    "lodash.debounce": "4.0.8",
     "react": "15.1.0",
     "react-addons-css-transition-group": "15.1.0",
     "react-dom": "15.1.0",

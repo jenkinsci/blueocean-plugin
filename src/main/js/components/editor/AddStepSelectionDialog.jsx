@@ -4,6 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import pipelineStepListStore from '../../services/PipelineStepListStore';
 import { Dialog } from '@jenkins-cd/design-language';
 import { Icon } from "react-material-icons-blue";
+import debounce from 'lodash.debounce';
 
 type Props = {
     onClose?: () => any,
@@ -33,6 +34,10 @@ export class AddStepSelectionDialog extends Component<DefaultProps, Props, State
         });
     }
     
+    componentDidMount() {
+        this.refs.searchInput.focus();
+    }
+    
     closeDialog() {
         this.props.onClose();
     }
@@ -42,17 +47,23 @@ export class AddStepSelectionDialog extends Component<DefaultProps, Props, State
         this.closeDialog();
     }
     
-    filterSteps(e) {
-        const searchTerm = e.target.value.toLowerCase();
+    filterSteps = debounce((value) => {
+        const searchTerm = value.toLowerCase();
         this.setState({searchFilter: s => s.displayName.toLowerCase().indexOf(searchTerm) !== -1});
+    }, 300);
+    
+    selectItemByKeyPress(e, step) {
+        if (e.key == 'Enter') {
+            this.props.onStepSelected(step);
+            this.closeDialog();
+        }
+        else if (e.key == ' ') {
+            this.setState({selectedStep: step});
+        }
     }
 
     render() {
         const { steps, selectedStep } = this.state;
-        
-        if (!steps) {
-            return null;
-        }
         
         const buttons = [
             <button className="btn-secondary" onClick={() => this.closeDialog()}>Cancel</button>,
@@ -64,13 +75,13 @@ export class AddStepSelectionDialog extends Component<DefaultProps, Props, State
                 <div className="editor-step-selection-dialog">
                     <div className="editor-step-selection-dialog-search">
                         <Icon icon="search" style={{ fill: '#ddd' }} size={32} />
-                        <input type="text" className="editor-step-selection-dialog-search-input" onChange={e => this.filterSteps(e)}
+                        <input ref="searchInput" type="text" className="editor-step-selection-dialog-search-input" onChange={e => this.filterSteps(e.target.value)}
                             placeholder="Find steps by name" />
                     </div>
                     <div className="editor-step-selection-dialog-steps">
-                    {steps.filter(this.state.searchFilter).map(s =>
-                        <div tabIndex="0" onKeyPress={() => this.setState({selectedStep: s})} onClick={() => this.setState({selectedStep: s})} className={'step-item' + (this.state.selectedStep === s ? ' selected' : '')}>
-                            {s.displayName}
+                    {steps && steps.filter(this.state.searchFilter).map(step =>
+                        <div tabIndex="0" onKeyPress={e => this.selectItemByKeyPress(e, step)} onClick={() => this.setState({selectedStep: step})} className={'step-item' + (this.state.selectedStep === step ? ' selected' : '')}>
+                            {step.displayName}
                         </div>
                     )}
                     </div>
