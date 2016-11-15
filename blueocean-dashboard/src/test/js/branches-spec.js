@@ -21,9 +21,8 @@ describe("Branches should render", () => {
   });
 
   it("renders the Branches", () => {
-    const
-      row = tree.everySubTree('td')
-    ;
+    const row = tree.everySubTree('BranchCol');
+    const lastCol = tree.everySubTree('td');
     const weatherIcon =row[0].getRenderOutput();
     assert.isNotNull(weatherIcon);
     assert.isNotNull(weatherIcon.props.score);
@@ -33,7 +32,8 @@ describe("Branches should render", () => {
     const hashComp = row[3].getRenderOutput().props.children;
     const hashRendered = sd.shallowRender(hashComp).getRenderOutput();
     assert.equal(hashRendered.props.children, commitHash);
-    assert.equal(row.length, 7);
+    assert.equal(row.length, 6);
+    assert.equal(lastCol.length, 1);
   });
 });
 
