@@ -1,14 +1,19 @@
 package io.jenkins.blueocean.config;
 
 import hudson.Extension;
+import hudson.model.User;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.SecurityRealm;
 import io.jenkins.blueocean.BluePageDecorator;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
+import io.jenkins.blueocean.commons.stapler.ModelObjectSerializer;
+import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 
+import java.io.IOException;
 import java.io.StringWriter;
 
 /**
@@ -21,11 +26,11 @@ public class BlueOceanConfig extends BluePageDecorator {
         return BlueOceanConfigProperties.ROLLBAR_ENABLED;
     }
 
-    public String getBlueOceanConfig(){
+    public String getBlueOceanConfig() throws IOException {
         return createConfig();
     }
 
-    private String createConfig() {
+    private String createConfig() throws IOException {
         Jenkins jenkins = Jenkins.getInstance();
         String version = Jenkins.getVersion() != null ? Jenkins.getVersion().toString() : Jenkins.VERSION;
         StringWriter writer = new StringWriter();
@@ -46,7 +51,7 @@ public class BlueOceanConfig extends BluePageDecorator {
                     .object()
                         .key("enabled").value(jenkins.isUseSecurity())
                         .key("loginUrl").value(jenkins.getSecurityRealm() == SecurityRealm.NO_AUTHENTICATION ? null : jenkins.getSecurityRealm().getLoginUrl())
-                        .key("user").value(Jenkins.getAuthentication().getName())
+                        .key("user").value(JSONObject.fromObject(ModelObjectSerializer.toJson(new UserImpl(User.current()))))
                         .key("authorizationStrategy").object()
                             .key("allowAnonymousRead").value(allowAnonymousRead)
                             .endObject()
