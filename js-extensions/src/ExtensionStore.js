@@ -157,7 +157,7 @@ export default class ExtensionStore {
                     extensionPointMetadatas.push(extensionMetadata);
                 }
             }
-            ExtensionStore.ResourceLoadTracker.setExtensionPointMetadata(this.extensionPointList);
+            ExtensionStore.resourceLoadTracker.setExtensionPointMetadata(this.extensionPointList);
             if (oncomplete) oncomplete(this.extensionPointList);
         });
     }

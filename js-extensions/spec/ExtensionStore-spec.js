@@ -3,7 +3,7 @@ var expect = require('chai').expect;
 var ExtensionStore = require('../dist/ExtensionStore').default;
 var ClassMetadataStore = require('../dist/ClassMetadataStore').default;
 var resourceLoadTracker = new (require('../dist/ResourceLoadTracker').default)();
-ExtensionStore.ResourceLoadTracker = resourceLoadTracker;
+ExtensionStore.resourceLoadTracker = resourceLoadTracker;
 var componentType = require('../dist/ComponentTypeFilter').componentType;
 var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-01.json');
 

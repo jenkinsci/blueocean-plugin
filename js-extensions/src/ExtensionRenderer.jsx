@@ -47,7 +47,7 @@ export default class ExtensionRenderer extends React.Component {
     }
     
     componentDidMount() {
-        ExtensionRenderer.ResourceLoadTracker.onMount(this.props.extensionPoint);
+        ExtensionRenderer.resourceLoadTracker.onMount(this.props.extensionPoint);
         this._renderAllExtensions();
     }
 
@@ -60,7 +60,7 @@ export default class ExtensionRenderer extends React.Component {
     }
     
     _setExtensions() {
-        ExtensionRenderer.ExtensionStore.getExtensions(this.props.extensionPoint, this.props.filter,
+        ExtensionRenderer.extensionStore.getExtensions(this.props.extensionPoint, this.props.filter,
             extensions => this.setState({extensions: extensions})
         );
     }

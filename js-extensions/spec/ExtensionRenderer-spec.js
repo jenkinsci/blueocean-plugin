@@ -58,13 +58,13 @@ describe('ExtensionRenderer', function () {
         oldExtensionStore = ExtensionRenderer.ExtensionStore;
         oldResourceLoadTracker = ExtensionRenderer.ResourceLoadTracker;
 
-        ExtensionRenderer.ExtensionStore = mockExtensionStore;
-        ExtensionRenderer.ResourceLoadTracker = mockResourceLoadTracker;
+        ExtensionRenderer.extensionStore = mockExtensionStore;
+        ExtensionRenderer.resourceLoadTracker = mockResourceLoadTracker;
     });
 
     afterEach(function () {
-        ExtensionRenderer.ExtensionStore = oldExtensionStore;
-        ExtensionRenderer.ResourceLoadTracker = oldResourceLoadTracker;
+        ExtensionRenderer.extensionStore = oldExtensionStore;
+        ExtensionRenderer.resourceLoadTracker = oldResourceLoadTracker;
     });
 
     after(function () {

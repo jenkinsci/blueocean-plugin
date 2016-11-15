@@ -7,11 +7,11 @@ exports.Renderer = require('./dist/ExtensionRenderer.js').default;
 //in lieu of DI
 const ResourceLoadTracker = require('./dist/ResourceLoadTracker.js').default;
 const resourceLoadTracker = new ResourceLoadTracker();
-exports.store.ResourceLoadTracker = resourceLoadTracker;
+exports.store.resourceLoadTracker = resourceLoadTracker;
 
 //Put these in statics so we can mock them for testing. Ideally they would come from React scope.
-exports.Renderer.ExtensionStore = exports.store;
-exports.Renderer.ResourceLoadTracker = resourceLoadTracker;
+exports.Renderer.extensionStore = exports.store;
+exports.Renderer.resourceLoadTracker = resourceLoadTracker;
 
 const ClassMetadataStore = require('./dist/ClassMetadataStore.js');
 exports.classMetadataStore = new ClassMetadataStore();
