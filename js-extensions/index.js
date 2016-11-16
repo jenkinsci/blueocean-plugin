@@ -13,7 +13,7 @@ exports.store.resourceLoadTracker = resourceLoadTracker;
 exports.Renderer.extensionStore = exports.store;
 exports.Renderer.resourceLoadTracker = resourceLoadTracker;
 
-const ClassMetadataStore = require('./dist/ClassMetadataStore.js');
+const ClassMetadataStore = require('./dist/ClassMetadataStore.js').default;
 exports.classMetadataStore = new ClassMetadataStore();
 
 exports.dataType = function dataType(dataType) { return exports.classMetadataStore.dataType(dataType); };
