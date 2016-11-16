@@ -13,7 +13,6 @@ import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreatorImpl;
 import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
-import jenkins.scm.api.SCMSourceOwner;
 import org.jenkinsci.plugins.github_branch_source.Connector;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 
@@ -78,14 +77,16 @@ public class GithubPipelineCreatorImpl extends AbstractPipelineCreatorImpl {
     }
 
     private void validateCredentialId(String credentialId, OrganizationFolder item, GitHubSCMNavigator navigator) throws IOException {
-        StandardCredentials credentials = Connector.lookupScanCredentials((SCMSourceOwner) item, navigator.getApiUri(), credentialId);
-        if(credentials == null){
-            try {
-                item.delete();
-            } catch (InterruptedException e) {
-                throw new ServiceException.UnexpectedErrorException("Invalid credentialId: "+credentialId+". Failure during cleaing up folder: "+item.getName() + ". Error: "+e.getMessage(), e);
+        if(credentialId != null && !credentialId.trim().isEmpty()) {
+            StandardCredentials credentials = Connector.lookupScanCredentials(item, navigator.getApiUri(), credentialId);
+            if (credentials == null) {
+                try {
+                    item.delete();
+                } catch (InterruptedException e) {
+                    throw new ServiceException.UnexpectedErrorException("Invalid credentialId: " + credentialId + ". Failure during cleaing up folder: " + item.getName() + ". Error: " + e.getMessage(), e);
+                }
+                throw new ServiceException.BadRequestExpception("Invalid credentialId: " + credentialId);
             }
-            throw new ServiceException.BadRequestExpception("Invalid credentialId: "+credentialId);
         }
     }
 
