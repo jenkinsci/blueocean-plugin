@@ -30,7 +30,7 @@ function Sizes() {
     return (
         <div>
             <div style={style}>
-                <Checkbox label="With no layout" />
+                <Checkbox label="Using no layout" />
             </div>
             <div className="layout-small" style={style}>
                 <Checkbox label="Using layout-small" />
