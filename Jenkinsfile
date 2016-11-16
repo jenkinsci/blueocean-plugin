@@ -7,8 +7,8 @@ pipeline {
       }
     }
   }
-  //post {
-  //  archive '**/*.hpi'
-  //  junit '**/*.xml'
-  //}
+  post {
+    archive '**/*.hpi'
+    junit '**/*.xml'
+  }
 }
