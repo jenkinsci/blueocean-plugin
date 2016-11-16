@@ -28,10 +28,21 @@ public class BlueOceanConfig extends BluePageDecorator {
 
     public String getBlueOceanUser() throws IOException {
         try (StringWriter writer = new StringWriter()) {
+            User currentUser = User.current();
+            JSONObject currentUserJson;
+
+            if (currentUser != null) {
+                currentUserJson = JSONObject.fromObject(ModelObjectSerializer.toJson(new UserImpl(currentUser)));
+            } else {
+                currentUserJson = new JSONObject();
+                currentUserJson.put("id", "anonymous");
+            }
+
             new JSONBuilder(writer)
                 .object()
-                    .key("user").value(JSONObject.fromObject(ModelObjectSerializer.toJson(new UserImpl(User.current()))))
+                    .key("user").value(currentUserJson)
                 .endObject();
+
             return writer.toString();
         }
     }
