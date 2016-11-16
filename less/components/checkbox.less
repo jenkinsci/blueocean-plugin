@@ -1,5 +1,6 @@
 .Checkbox {
     display: inline-block;
+    .Checkbox-medium;
 
     .Checkbox-wrapper {
         display: flex;
@@ -33,8 +34,6 @@
     // this avoids "height wiggling"
     .svg-icon {
         opacity: 0;
-        width: 20px;
-        height: 20px;
         fill: #fff;
     }
 
@@ -70,5 +69,15 @@
     .svg-icon {
         width: 24px;
         height: 24px;
+    }
+}
+
+.Checkbox {
+    .layout-small & {
+        .Checkbox-small;
+    }
+
+    .layout-large & {
+        .Checkbox-large;
     }
 }

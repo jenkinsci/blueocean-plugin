@@ -7,28 +7,51 @@ import { Checkbox } from '../components/forms/Checkbox';
 
 storiesOf('Checkbox', module)
     .add('default', () => <Default />)
+    .add('sizes', () => <Sizes />)
+    .add('callbacks', () => <Callbacks />)
 ;
 
-const style = {padding: 5};
+const style = {padding: 10};
 
 function Default() {
     return (
         <div>
-            <div className="layout-small" style={style}>
-                <Checkbox label="Small" />
-            </div>
             <div style={style}>
-                <Checkbox label="Medium" />
-            </div>
-            <div className="layout-large" style={style}>
-                <Checkbox label="Large" />
+                <Checkbox label="Unchecked" />
             </div>
             <div style={style}>
                 <Checkbox checked label="Checked" />
             </div>
+        </div>
+    );
+}
+
+function Sizes() {
+    return (
+        <div>
             <div style={style}>
-                <Checkbox />
+                <Checkbox label="With no layout" />
             </div>
+            <div className="layout-small" style={style}>
+                <Checkbox label="Using layout-small" />
+            </div>
+            <div className="layout-medium" style={style}>
+                <Checkbox label="Using layout-medium" />
+            </div>
+            <div className="layout-large" style={style}>
+                <Checkbox label="Using layout-large" />
+            </div>
+        </div>
+    );
+}
+
+function Callbacks() {
+    return (
+        <div style={style}>
+            <Checkbox
+                label="Click Me"
+                onToggle={val => console.log('onToggle', val)}
+            />
         </div>
     );
 }
