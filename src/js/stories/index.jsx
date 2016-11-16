@@ -16,6 +16,7 @@ require('./statusIndicatorStories.jsx');
 require('./liveStatusIndicatorStories');
 require('./table.jsx');
 require('./TextAreaStories');
+require('./TextInputStories');
 require('./timeduration.jsx');
 require('./toast.jsx');
 require('./ToasterStories.jsx');
