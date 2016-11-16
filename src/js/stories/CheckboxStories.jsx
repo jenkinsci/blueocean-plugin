@@ -49,7 +49,7 @@ function Callbacks() {
     return (
         <div style={style}>
             <Checkbox
-                label="Click Me"
+                label="Toggle Me"
                 onToggle={val => console.log('onToggle', val)}
             />
         </div>

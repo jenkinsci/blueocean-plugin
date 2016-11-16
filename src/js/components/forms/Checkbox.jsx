@@ -22,7 +22,7 @@ export class Checkbox extends Component {
         checked: false,
     };
 
-    get checked() {
+    get checked():boolean {
         return this.state.checked;
     }
 

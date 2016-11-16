@@ -10,7 +10,9 @@ export class Favorite extends Component {
         className: ''
     };
 
-    get checked() {
+    checkbox:Checkbox;
+
+    get checked():boolean {
         return this.checkbox.checked;
     }
 
