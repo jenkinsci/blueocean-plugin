@@ -6,9 +6,9 @@ pipeline {
         sh 'mvn clean install' 
       }
     }
-    postBuild {
-      archive '**/*.hpi'
-      junit '**/*.xml'
-    }
+  }
+  postBuild {
+    archive '**/*.hpi'
+    junit '**/*.xml'
   }
 }
