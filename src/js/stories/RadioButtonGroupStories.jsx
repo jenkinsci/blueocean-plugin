@@ -1,10 +1,3 @@
-/**
- * Created by cmeyers on 11/2/16.
- */
-
-/**
- * Created by cmeyers on 11/2/16.
- */
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 import { RadioButtonGroup } from '../components/forms/RadioButtonGroup';
@@ -15,6 +8,7 @@ storiesOf('RadioButtonGroup', module)
     .add('default value', () => <DefaultOption />)
     .add('label field', () => <LabelField />)
     .add('label function', () => <LabelFunction />)
+    .add('callbacks', () => <Callbacks />)
 ;
 
 const style = {
@@ -35,7 +29,7 @@ function Horizontal() {
     return (
         <div style={style}>
             <RadioButtonGroup
-                className="horizontal-layout"
+                className="is-layout-horizontal"
                 options={['A','B','C']}
             />
         </div>
@@ -82,6 +76,17 @@ function LabelFunction() {
             <RadioButtonGroup
                 options={options}
                 labelFunction={item => `!${item.label}!`}
+            />
+        </div>
+    );
+}
+
+function Callbacks() {
+    return (
+        <div style={style}>
+            <RadioButtonGroup
+                options={['A','B','C']}
+                onChange={val => console.log('onChange', val)}
             />
         </div>
     );

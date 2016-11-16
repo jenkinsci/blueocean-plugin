@@ -1,6 +1,3 @@
-/**
- * Created by cmeyers on 11/1/16.
- */
 import React, { PropTypes } from 'react';
 
 /**
@@ -9,7 +6,7 @@ import React, { PropTypes } from 'react';
  *
  * Props:
  *      className: additional class name(s) to add to root element.
- *          Use 'horizontal-layout' to change layout direction.
+ *          Use 'is-layout-horizontal' to change layout direction.
  *      options: an array of options to map to radio buttons. Can be strings or objects.
  *      defaultOption: option to select/check by default if no selection was already made by user.
  *      labelField: if using objects for options, name of property to use for label.
@@ -57,40 +54,36 @@ export class RadioButtonGroup extends React.Component {
     }
 
     render() {
-        const extraClass = this.props.className || '';
-
         return (
-            <div className={`radio-button-group ${extraClass}`}>
-                <div className="radio-button-wrapper">
-                    { this.props.options.map((option, index) => {
-                        const checked = option === this.state.selectedOption;
+            <div className={`RadioButtonGroup ${this.props.className}`}>
+                { this.props.options.map((option, index) => {
+                    const checked = option === this.state.selectedOption;
 
-                        let labelValue = '';
+                    let labelValue = '';
 
-                        if (this.props.labelField) {
-                            labelValue = option[this.props.labelField];
-                        } else if (this.props.labelFunction) {
-                            labelValue = this.props.labelFunction(option);
-                        } else {
-                            labelValue = option.toString();
-                        }
+                    if (this.props.labelField) {
+                        labelValue = option[this.props.labelField];
+                    } else if (this.props.labelFunction) {
+                        labelValue = this.props.labelFunction(option);
+                    } else {
+                        labelValue = option.toString();
+                    }
 
-                        return (
-                            <label
-                              key={index}
-                              className="radio-item"
-                            >
-                                <input
-                                  className="radio-button"
-                                  type="radio"
-                                  checked={checked}
-                                  onChange={() => this._onChange(option)}
-                                />
-                                <span className="radio-text">{labelValue}</span>
-                            </label>
-                        );
-                    })}
-                </div>
+                    return (
+                        <label
+                          key={index}
+                          className="RadioButtonGroup-item"
+                        >
+                            <input
+                              className="RadioButtonGroup-button"
+                              type="radio"
+                              checked={checked}
+                              onChange={() => this._onChange(option)}
+                            />
+                            <span className="RadioButtonGroup-text">{labelValue}</span>
+                        </label>
+                    );
+                })}
             </div>
         );
     }
@@ -104,4 +97,8 @@ RadioButtonGroup.propTypes = {
     labelField: PropTypes.string,
     labelFunction: PropTypes.func,
     onChange: PropTypes.func,
+};
+
+RadioButtonGroup.defaultProps = {
+    className: '',
 };
