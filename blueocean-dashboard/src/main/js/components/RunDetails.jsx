@@ -68,7 +68,7 @@ class RunDetails extends Component {
                 branch: this.isMultiBranch && props.params.branch,
                 runId: props.params.runId,
             });
-            activityService.fetchActivity(this.href, { useCache: true });
+            this.activity = activityService.fetchActivity(this.href, { useCache: true });
 
             if (storePreviousRoute) {
                 this.opener = props.previous;
@@ -107,7 +107,7 @@ class RunDetails extends Component {
         this.context.router.push(changesUrl);
     }
     render() {
-        const run = activityService.getActivity(this.href);
+        const { data: run } = this.activity;
         
         // early out
         if (!this.context.params

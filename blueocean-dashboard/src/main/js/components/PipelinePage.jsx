@@ -15,8 +15,9 @@ import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
 import { Icon } from 'react-material-icons-blue';
-import { AppConfig, pipelineService, Paths } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, Paths } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
+import { observable } from 'mobx';
 
 const RestPaths = Paths.rest;
 /**
@@ -40,16 +41,16 @@ const classicConfigLink = (pipeline) => {
 
 @observer
 export class PipelinePage extends Component {
-
     componentWillMount() {
+        debugger;
         if (this.props.params) {
             this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
-            pipelineService.fetchPipeline(this.href, { useCache: true });
+            this.pipeline = this.context.pipelineService.fetchPipeline(this.href, { useCache: true });
         }
     }
    
     render() {
-        const pipeline = pipelineService.getPipeline(this.href);
+        const { data: pipeline, error } = this.pipeline;
         
         const { setTitle } = this.props;
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
@@ -57,9 +58,9 @@ export class PipelinePage extends Component {
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
         const isReady = !!pipeline;
 
-        // if (pipeline && pipeline.failed) {
-        //    return <NotFound />;
-        // }
+        if (!pipeline && error) {
+            return <NotFound />;
+        }
 
         setTitle(`${organization} / ${name}`);
 
@@ -117,6 +118,9 @@ PipelinePage.propTypes = {
 PipelinePage.contextTypes = {
     config: PropTypes.object.isRequired,
     location: PropTypes.object,
+    store: PropTypes.object,
+    pipelineService: PropTypes.object,
 };
+
 
 export default documentTitle(PipelinePage);

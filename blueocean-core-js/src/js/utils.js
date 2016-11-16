@@ -17,6 +17,7 @@ const cleanSlashes = (url: string) => {
     return url;
 };
 
+
 export default {
     cleanSlashes,
     clone(obj: Object) {

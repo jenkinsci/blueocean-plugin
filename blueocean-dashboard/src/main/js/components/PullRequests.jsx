@@ -2,16 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
-import {
-    actions,
-    pullRequests as pullRequestSelector,
-    createSelector,
-    connect,
-} from '../redux';
 import PageLoading from './PageLoading';
-import { pipelineBranchesUnsupported } from './PipelinePage';
-
-const { func, object, array, string } = PropTypes;
+import { pipelineService, capable } from '@jenkins-cd/blueocean-core-js';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { observer } from 'mobx-react';
+const { object, string } = PropTypes;
 
 const EmptyState = ({ repoName }) => (
     <main>
@@ -46,37 +41,28 @@ EmptyState.propTypes = {
     repoName: string,
 };
 
+@observer
 export class PullRequests extends Component {
     componentWillMount() {
-        if (this.props.pipeline && this.context.params && !pipelineBranchesUnsupported(this.props.pipeline)) {
-            this.props.fetchPullRequests({
-                organizationName: this.context.params.organization,
-                pipelineName: this.context.params.pipeline,
-            });
+        if (this.props.pipeline && this.props.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
+            this.pager = this.context.pipelineService.prPager(this.props.params.organization, this.props.params.pipeline);
         }
     }
 
-    componentWillUnmount() {
-        this.props.clearPRData();
-    }
 
     render() {
-        const { pullRequests, pipeline } = this.props;
-
-        if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(pipeline))) {
+        if (!capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
             return (<NotSupported />);
         }
+        const pullRequests = this.pager.data;
+        const { pipeline } = this.props;
 
-        if (pullRequests.$pending && !pullRequests.length) {
+
+        if (this.pager.pending) {
             return <PageLoading />;
         }
 
-
-        if (pullRequests.$failed) {
-            return <div>Error: {pullRequests.$failed}</div>;
-        }
-
-        if (!pullRequests.$pending && !pullRequests.length) {
+        if (!this.pager.pending && !this.pager.data.length) {
             return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
@@ -92,7 +78,7 @@ export class PullRequests extends Component {
         return (
             <main>
                 <article>
-                    {pullRequests.$pending && <PageLoading />}
+                    {this.pager.pending && <PageLoading />}
                     <Table className="pr-table fixed" headers={headers}>
                         {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
@@ -103,9 +89,9 @@ export class PullRequests extends Component {
                             />);
                         })}
                     </Table>
-                    {pullRequests.$pager &&
-                        <button disabled={pullRequests.$pending || !pullRequests.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pullRequests.$pager.fetchMore()}>
-                            {pullRequests.$pending ? 'Loading...' : 'Show More'}
+                    {this.pager &&
+                        <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
+                            {this.pager.pending ? 'Loading...' : 'Show More'}
                         </button>
                     }
                 </article>
@@ -117,15 +103,12 @@ export class PullRequests extends Component {
 PullRequests.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
+    pipelineService: object.isRequired,
 };
 
 PullRequests.propTypes = {
-    pullRequests: array,
-    clearPRData: func,
-    fetchPullRequests: func,
     pipeline: object,
+    params: object,
 };
 
-const selectors = createSelector([pullRequestSelector], (pullRequests) => ({ pullRequests }));
-
-export default connect(selectors, actions)(PullRequests);
+export default PullRequests;

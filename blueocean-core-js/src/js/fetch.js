@@ -37,7 +37,6 @@ export const FetchFunctions = {
         if (response.status >= 300 || response.status < 200) {
             const error = new Error(response.statusText);
             error.response = response;
-            console.log('error',response);
             throw error;
         }
         return response;
@@ -197,7 +196,7 @@ export const Fetch = {
      */
     fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites } = {}) {
         let fixedUrl = url;
-        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(AppPaths.getJenkinsRootURL())) {
+        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
             fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
         }
         let future;
@@ -233,10 +232,10 @@ export const Fetch = {
      */
     fetch(url, { onSuccess, onError, fetchOptions } = {}) {
         let fixedUrl = url;
-        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(AppPaths.getJenkinsRootURL())) {
+        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
             fixedUrl = `${config.getJenkinsRootURL()}${url}`;
         }
-        if (!urlconfig.isJWTEnabled()) {
+        if (!config.isJWTEnabled()) {
             return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions });
         }
         

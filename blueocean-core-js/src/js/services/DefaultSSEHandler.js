@@ -3,7 +3,6 @@ export class DefaultSSEHandler {
     constructor(pipelineService, activityService, branchService, pagerService) {
         this.pipelineService = pipelineService;
         this.activityService = activityService;
-        this.branchService = branchService;
         this.pagerService = pagerService;
     }
 
@@ -66,7 +65,6 @@ export class DefaultSSEHandler {
             if (pager && !pager.has(runSelf)) {
                 pager.insert(runSelf);
             }
-            this.branchService.updateLatestRun(d);
             this.pipelineService.updateLatestRun(d);
         });
     }
@@ -109,7 +107,6 @@ export class DefaultSSEHandler {
         };
 
         this.activityService.setItem(newRun);
-        console.log('newRun', newRun);
         
         const key = this.activityService.pagerKey(event.jenkins_org ,event.blueocean_job_pipeline_name);
         const pager = this.pagerService.getPager({ key });

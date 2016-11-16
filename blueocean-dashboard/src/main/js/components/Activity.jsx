@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
-import { RunButton, activityService, capable } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, capable } from '@jenkins-cd/blueocean-core-js';
 import Runs from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
@@ -47,7 +47,7 @@ export class Activity extends Component {
         if (this.context.config && this.context.params) {
             const organization = this.context.params.organization;
             const pipeline = this.context.params.pipeline; 
-            this.pager = activityService.activityPager(organization, pipeline);
+            this.pager = this.context.activityService.activityPager(organization, pipeline);
         }
     }
 
@@ -145,6 +145,7 @@ Activity.contextTypes = {
     location: object.isRequired,
     config: object.isRequired,
     router: object.isRequired,
+    activityService: object.isRequired
 };
 
 Activity.propTypes = {

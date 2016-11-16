@@ -4,7 +4,7 @@ import Branches from './Branches';
 
 import PageLoading from './PageLoading';
 import { pipelineBranchesUnsupported } from './PipelinePage';
-import { branchService, capable } from '@jenkins-cd/blueocean-core-js';
+import { capable } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 
@@ -51,7 +51,7 @@ export class MultiBranch extends Component {
     componentWillMount() {
         if (this.props.pipeline && this.context.params && !pipelineBranchesUnsupported(this.props.pipeline)) {
             const { organization, pipeline } = this.context.params;
-            this.pager = branchService.branchPager(organization, pipeline);
+            this.pager = this.context.pipelineService.branchPager(organization, pipeline);
         }
     }
 
@@ -98,6 +98,7 @@ export class MultiBranch extends Component {
 MultiBranch.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
+    pipelineService: object.isRequired,
 };
 
 MultiBranch.propTypes = {

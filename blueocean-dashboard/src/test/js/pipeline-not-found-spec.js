@@ -7,6 +7,28 @@ import { PipelinePage } from '../../main/js/components/PipelinePage.jsx';
 import PageLoading from '../../main/js/components/PageLoading.jsx';
 import NotFound from '../../main/js/components/NotFound.jsx';
 
+const params = {}
+const context = {
+  pipelineService: {
+    fetchPipeline() {
+      return {
+        data: null,
+        error: null,
+      }
+    }
+  }
+};
+
+const contextFailed = {
+  pipelineService: {
+    fetchPipeline() {
+      return {
+        data: null,
+        error: true,
+      }
+    }
+  }
+};
 describe("PipelinePage", () => {
   const pipeline = {
     'displayName': 'beers',
@@ -26,12 +48,13 @@ describe("PipelinePage", () => {
     }
   };
 
+  
   it("shows 404 for failure", () => {
     let wrapper;
-    wrapper = shallow(<PipelinePage  setTitle={()=>{}}/>);
+    wrapper = shallow(<PipelinePage params={params} setTitle={()=>{}}/>, { context });
     expect(wrapper.find('PageLoading')).to.have.length(1);
 
-    wrapper = shallow(<PipelinePage  setTitle={()=>{}} pipeline={{ $failed: true }} />);
+    wrapper = shallow(<PipelinePage params={params} setTitle={()=>{}} />, { context: contextFailed });
     expect(wrapper.find('PageLoading')).to.have.length(0);
     expect(wrapper.html()).to.contain('404')
   });

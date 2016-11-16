@@ -20,8 +20,9 @@ export AppConfig from './config';
 export Security from './security';
 export Paths from './paths/index';
 
-import { Pager, PagerService, PipelineService, SSEService, ActivityService, BranchService, DefaultSSEHandler } from './services/index';
-export { Pager, PagerService, PipelineService, SSEService, ActivityService, BranchService };
+import { Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler } from './services/index';
+export { Pager, PagerService, PipelineService, SSEService, ActivityService };
+
 
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton } from './components/RunButton';
@@ -51,7 +52,6 @@ export const sseService = new SSEService(sseConnection);
 export const activityService = new ActivityService(pagerService);
 export const pipelineService = new PipelineService(pagerService, activityService);
 
-export const branchService = new BranchService(pagerService, activityService);
-const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, branchService, pagerService);
+const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, pagerService);
 sseService.registerHandler(defaultSSEhandler.handleEvents);
 

@@ -9,8 +9,6 @@ import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 
-import { pagerService, pipelineService } from '@jenkins-cd/blueocean-core-js';
-
 @observer
 export class Pipelines extends Component {
     componentWillMount() {
@@ -30,9 +28,9 @@ export class Pipelines extends Component {
     _initPager(props) {
         const org = props.params.organization;
         if (org) {
-            this.pager = pipelineService.organiztionPipelinesPager(org);
+            this.pager = this.context.pipelineService.organiztionPipelinesPager(org);
         } else {
-            this.pager = pipelineService.allPipelinesPager();
+            this.pager = this.context.pipelineService.allPipelinesPager();
         }
     }
 
@@ -110,6 +108,7 @@ Pipelines.contextTypes = {
     params: object,
     store: object,
     router: object,
+    pipelineService: object,
 };
 
 Pipelines.propTypes = {

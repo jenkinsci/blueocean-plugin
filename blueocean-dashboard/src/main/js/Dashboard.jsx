@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { pipelineService } from '@jenkins-cd/blueocean-core-js';
+import { pipelineService, activityService } from '@jenkins-cd/blueocean-core-js';
 import {
     actions,
     allPipelines as allPipelinesSelector,
@@ -13,6 +13,7 @@ class Dashboard extends Component {
         super(props);
         this._context = {};
         this._context.pipelineService = pipelineService;
+        this._context.activityService = activityService;
     }
     getChildContext() {
         this._context.params = this.props.params;
@@ -35,6 +36,7 @@ Dashboard.childContextTypes = {
     params: PropTypes.object, // From react-router
     location: PropTypes.object, // From react-router
     pipelineService: PropTypes.object,
+    activityService: PropTypes.object,
 };
 
 const selectors = createSelector([allPipelinesSelector, organizationPipelinesSelector],

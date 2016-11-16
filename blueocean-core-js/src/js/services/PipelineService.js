@@ -4,6 +4,7 @@ import { Fetch } from '../fetch';
 import utils from '../utils';
 import { BunkerService } from './BunkerService';
 import { action } from 'mobx';
+import { Loader } from './Loader';
 export class PipelineService extends BunkerService {
     constructor(pagerService, activityService) {
         super(pagerService);
@@ -27,6 +28,20 @@ export class PipelineService extends BunkerService {
         });
     }
 
+    branchPager(organization: string, pipeline: string) {
+        return this.pagerService.getPager({
+            key: `Branches/${organization}-${pipeline}`,
+            lazyPager: () => new Pager(RestPaths.branches(organization, pipeline), 25, this),
+        });
+    }
+
+
+    prPager(organization: string, pipeline: string) {
+        return this.pagerService.getPager({
+            key: `PRs/${organization}-${pipeline}`,
+            lazyPager: () => new Pager(RestPaths.pullRequests(organization, pipeline), 25, this),
+        });
+    }
     bunkerMapper = (pipelineData) => {
         const data = utils.clone(pipelineData);
         const latestRun = data.latestRun;
@@ -44,15 +59,18 @@ export class PipelineService extends BunkerService {
         return this.getItem(href);
     }
 
+
     fetchPipeline(href, { useCache }) {
+        let promise;
         if (useCache && this.hasItem(href)) {
-            return Promise.resolve(this.getItem(href));
+            promise = Promise.resolve(this.getItem(href));
+        } else {
+            promise = Fetch.fetchJSON(href).then(data => this.setItem(data));
         }
-        return Fetch.fetchJSON(href, { caps: true })
-            .then(data => {
-                this.setItem(data);
-                return data;
-            });
+
+        const pipelineLader = new Loader(promise);
+
+        return pipelineLader;
     }
 
     @action
