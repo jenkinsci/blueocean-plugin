@@ -24,9 +24,3 @@ export class User extends Record(
         return new User(AppConfig.getInitialUser());
     }
 }
-
-export class AnonUser {
-    isAnonymous() {
-        return true;
-    }
-}
