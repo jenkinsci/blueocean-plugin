@@ -26,41 +26,47 @@ public class BlueOceanConfig extends BluePageDecorator {
         return BlueOceanConfigProperties.ROLLBAR_ENABLED;
     }
 
-    public String getBlueOceanConfig() throws IOException {
-        return createConfig();
+    public String getBlueOceanUser() throws IOException {
+        try (StringWriter writer = new StringWriter()) {
+            new JSONBuilder(writer)
+                .object()
+                    .key("user").value(JSONObject.fromObject(ModelObjectSerializer.toJson(new UserImpl(User.current()))))
+                .endObject();
+            return writer.toString();
+        }
     }
 
-    private String createConfig() throws IOException {
-        Jenkins jenkins = Jenkins.getInstance();
-        String version = Jenkins.getVersion() != null ? Jenkins.getVersion().toString() : Jenkins.VERSION;
-        StringWriter writer = new StringWriter();
+    public String getBlueOceanConfig() throws IOException {
+        try (StringWriter writer = new StringWriter()) {
+            Jenkins jenkins = Jenkins.getInstance();
+            String version = Jenkins.getVersion() != null ? Jenkins.getVersion().toString() : Jenkins.VERSION;
 
-        AuthorizationStrategy authorizationStrategy = jenkins.getAuthorizationStrategy();
-        boolean allowAnonymousRead = true;
-        if(authorizationStrategy instanceof FullControlOnceLoggedInAuthorizationStrategy){
-            allowAnonymousRead = ((FullControlOnceLoggedInAuthorizationStrategy) authorizationStrategy).isAllowAnonymousRead();
-        }
+            AuthorizationStrategy authorizationStrategy = jenkins.getAuthorizationStrategy();
+            boolean allowAnonymousRead = true;
+            if(authorizationStrategy instanceof FullControlOnceLoggedInAuthorizationStrategy){
+                allowAnonymousRead = ((FullControlOnceLoggedInAuthorizationStrategy) authorizationStrategy).isAllowAnonymousRead();
+            }
 
-        new JSONBuilder(writer)
-            .object()
-                .key("version").value(getBlueOceanPluginVersion())
-                .key("jenkinsConfig")
+            new JSONBuilder(writer)
                 .object()
-                    .key("version").value(version)
-                    .key("security")
+                    .key("version").value(getBlueOceanPluginVersion())
+                    .key("jenkinsConfig")
                     .object()
-                        .key("enabled").value(jenkins.isUseSecurity())
-                        .key("loginUrl").value(jenkins.getSecurityRealm() == SecurityRealm.NO_AUTHENTICATION ? null : jenkins.getSecurityRealm().getLoginUrl())
-                        .key("user").value(JSONObject.fromObject(ModelObjectSerializer.toJson(new UserImpl(User.current()))))
-                        .key("authorizationStrategy").object()
-                            .key("allowAnonymousRead").value(allowAnonymousRead)
+                        .key("version").value(version)
+                        .key("security")
+                        .object()
+                            .key("enabled").value(jenkins.isUseSecurity())
+                            .key("loginUrl").value(jenkins.getSecurityRealm() == SecurityRealm.NO_AUTHENTICATION ? null : jenkins.getSecurityRealm().getLoginUrl())
+                            .key("authorizationStrategy").object()
+                                .key("allowAnonymousRead").value(allowAnonymousRead)
+                                .endObject()
+                            .key("enableJWT").value(BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
                             .endObject()
-                        .key("enableJWT").value(BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
                         .endObject()
-                    .endObject()
-                .endObject();
+                    .endObject();
 
-        return writer.toString();
+            return writer.toString();
+        }
     }
 
     /** gives Blueocean plugin version. blueocean-web being core module is looked at to determine the version */

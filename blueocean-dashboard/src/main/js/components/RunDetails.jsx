@@ -30,13 +30,13 @@ import {
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
-import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { User } from '@jenkins-cd/blueocean-core-js';
 
 const { func, object, any, string } = PropTypes;
 
 const classicConfigLink = (pipeline) => {
     let link = null;
-    if (AppConfig.getInitialUser().id !== 'anonymous') {
+    if (User.current().isAnonymous()) {
         let url = buildClassicConfigUrl(pipeline);
         link = (
             <a href={url} target="_blank" style={{ height: '24px' }}>

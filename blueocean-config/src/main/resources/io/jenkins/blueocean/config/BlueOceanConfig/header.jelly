@@ -1,7 +1,9 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
   <script>
     (function () {
-      window.$$blueoceanConfig = ${it.blueOceanConfig};
+      window.$$blueocean = {};
+      window.$$blueocean.user = ${it.blueOceanUser}.user;
+      window.$$blueocean.config = ${it.blueOceanConfig};
     })();
   </script>
 

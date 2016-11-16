@@ -21,7 +21,7 @@ import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
 import { Icon } from 'react-material-icons-blue';
-import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { User } from '@jenkins-cd/blueocean-core-js';
 
 /**
  * returns true if the pipeline is defined and has branchNames
@@ -36,7 +36,7 @@ export function pipelineBranchesUnsupported(pipeline) {
 
 const classicConfigLink = (pipeline) => {
     let link = null;
-    if (AppConfig.getInitialUser().id !== 'anonymous') {
+    if (User.current().isAnonymous()) {
         link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
     }
     return link;
