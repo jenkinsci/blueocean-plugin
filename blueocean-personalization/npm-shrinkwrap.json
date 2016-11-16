@@ -28,9 +28,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.47.tgz"
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.29",
-      "from": "@jenkins-cd/js-extensions@0.0.29",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.29.tgz"
+      "version": "0.0.30",
+      "from": "@jenkins-cd/js-extensions@0.0.30",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.30.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",

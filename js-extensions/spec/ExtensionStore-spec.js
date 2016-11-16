@@ -3,7 +3,6 @@ var expect = require('chai').expect;
 var ExtensionStore = require('../dist/ExtensionStore').default;
 var ClassMetadataStore = require('../dist/ClassMetadataStore').default;
 var resourceLoadTracker = new (require('../dist/ResourceLoadTracker').default)();
-ExtensionStore.resourceLoadTracker = resourceLoadTracker;
 var componentType = require('../dist/ComponentTypeFilter').componentType;
 var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-01.json');
 
@@ -21,7 +20,9 @@ var makeClassMetadataStore = function(fn) {
 };
 
 var makeExtensionStore = function() {
-    return new ExtensionStore();
+    var store = new ExtensionStore();
+    store.resourceLoadTracker = resourceLoadTracker;
+    return store;
 };
 
 var mockDataLoad = function(extensionStore, out, componentMap) {
