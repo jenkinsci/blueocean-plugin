@@ -7,6 +7,7 @@ import org.jenkinsci.plugins.structs.describable.DescribableModel;
 import org.jenkinsci.plugins.structs.describable.DescribableParameter;
 import org.jenkinsci.plugins.workflow.cps.Snippetizer;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
+import org.kohsuke.stapler.NoStaplerConstructorException;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
@@ -123,10 +124,6 @@ public class PipelineStepMetadataService implements ApiRoutable {
         public PipelineStepPropertyMetadata[] getProperties() {
             return props.toArray(new PipelineStepPropertyMetadata[props.size()]);
         }
-
-        public DescribableModel getDescribableModel() {
-            return new DescribableModel<>(type);
-        }
     }
 
     /**
@@ -180,7 +177,9 @@ public class PipelineStepMetadataService implements ApiRoutable {
 
         for (StepDescriptor d : StepDescriptor.all()) {
             PipelineStepMetadata step = getStepMetadata(d, snippetizerUrl);
-            pd.add(step);
+            if (step != null) {
+                pd.add(step);
+            }
         }
 
         return pd.toArray(new PipelineStepMetadata[pd.size()]);
@@ -189,34 +188,42 @@ public class PipelineStepMetadataService implements ApiRoutable {
     private PipelineStepMetadata getStepMetadata(StepDescriptor d, String snippetizerUrl) {
         BasicPipelineStepMetadata step = new BasicPipelineStepMetadata(d.getFunctionName(), d.clazz, d.getDisplayName());
 
-        DescribableModel<?> model = step.getDescribableModel();
+        try {
+            DescribableModel<?> model = new DescribableModel<>(step.type);
 
-        step.snippetizerUrl = snippetizerUrl + "?$class=" + d.clazz.getName(); // this isn't really accurate
+            step.snippetizerUrl = snippetizerUrl + "?$class=" + d.clazz.getName(); // this isn't really accurate
 
-        step.isWrapper = d.takesImplicitBlockArgument();
-        step.requiredContext.addAll(d.getRequiredContext());
-        step.providedContext.addAll(d.getProvidedContext());
-        step.descriptorUrl = d.getDescriptorFullUrl();
-        step.hasSingleRequiredParameter = model.hasSingleRequiredParameter();
+            step.isWrapper = d.takesImplicitBlockArgument();
+            step.requiredContext.addAll(d.getRequiredContext());
+            step.providedContext.addAll(d.getProvidedContext());
+            step.descriptorUrl = d.getDescriptorFullUrl();
+            step.hasSingleRequiredParameter = model.hasSingleRequiredParameter();
 
-        for (DescribableParameter descParam : model.getParameters()) {
-            BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
+            for (DescribableParameter descParam : model.getParameters()) {
+                BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
 
-            param.type = descParam.getErasedType();
-            param.name = descParam.getName();
-            param.isRequired = descParam.isRequired();
+                param.type = descParam.getErasedType();
+                param.name = descParam.getName();
+                param.isRequired = descParam.isRequired();
 
-            Descriptor<?> pd = Descriptor.findByDescribableClassName(ExtensionList.lookup(Descriptor.class),
-                    param.type.getName());
+                Descriptor<?> pd = Descriptor.findByDescribableClassName(ExtensionList.lookup(Descriptor.class),
+                        param.type.getName());
 
-            if (pd != null) {
-                param.descriptorUrl = pd.getDescriptorFullUrl();
+                if (pd != null) {
+                    param.descriptorUrl = pd.getDescriptorFullUrl();
+                }
+                
+                step.props.add(param);
             }
-        }
 
-        // Let any decorators adjust the step properties
-        for (PipelineStepPropertyDecorator decorator : ExtensionList.lookup(PipelineStepPropertyDecorator.class)) {
-            decorator.decorate(step, step.props);
+            // Let any decorators adjust the step properties
+            for (PipelineStepPropertyDecorator decorator : ExtensionList.lookup(PipelineStepPropertyDecorator.class)) {
+                decorator.decorate(step, step.props);
+            }
+        } catch (NoStaplerConstructorException e) {
+            // not a normal step?
+            System.out.println("Excluding step: " + d.getFunctionName());
+            return step;
         }
 
         return step;

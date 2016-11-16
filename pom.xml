@@ -43,13 +43,13 @@
         <dependency>
             <groupId>io.jenkins.blueocean</groupId>
             <artifactId>blueocean</artifactId>
-            <version>1.0.0-b12</version>
+            <version>1.0.0-b13-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.jenkins.blueocean</groupId>
             <artifactId>blueocean-rest</artifactId>
-            <version>1.0.0-b12</version>
+            <version>1.0.0-b13-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
