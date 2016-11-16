@@ -12,12 +12,12 @@ export class User extends Record(
         _class: null,
         _links: null,
         email: null,
-        fullName: null,
-        id: null,
+        fullName: 'anonymous',
+        id: 'anonymous',
     }
 ) {
     isAnonymous() {
-        return false;
+        return (id === 'anonymous');
     }
 
     static current() {
