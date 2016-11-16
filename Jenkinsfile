@@ -9,7 +9,7 @@ pipeline {
   }
   postBuild {
     always {
-      archive '**/*.hpi'
+      archive '**/blueocean-pipeline-editor.hpi'
       junit '**/*.xml'
     }
   }
