@@ -80,6 +80,9 @@ export class RadioButtonGroup extends React.Component {
                               checked={checked}
                               onChange={() => this._onChange(option)}
                             />
+
+                            <div className="RadioButtonGroup-indicator"></div>
+
                             <span className="RadioButtonGroup-text">{labelValue}</span>
                         </label>
                     );

@@ -1,6 +1,6 @@
 .Checkbox {
-    display: inline-block;
     .Checkbox-medium;
+    display: inline-block;
 
     .Checkbox-wrapper {
         display: flex;
@@ -23,7 +23,7 @@
     .Checkbox-indicator {
         display: flex;
         border-radius: 3px;
-        border: solid 1px rgba(73, 73, 73, 0.5);
+        border: solid 1px @gray-light;
     }
 
     .Checkbox-text {
@@ -35,6 +35,7 @@
     .svg-icon {
         opacity: 0;
         fill: #fff;
+        transition: opacity 0.1s linear;
     }
 
     input[type="checkbox"]:checked + .Checkbox-indicator {

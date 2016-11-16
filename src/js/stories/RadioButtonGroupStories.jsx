@@ -9,17 +9,20 @@ storiesOf('RadioButtonGroup', module)
     .add('label field', () => <LabelField />)
     .add('label function', () => <LabelFunction />)
     .add('callbacks', () => <Callbacks />)
+    .add('sizes', () => <Sizes />)
 ;
 
 const style = {
-    padding: 5,
+    padding: 10,
 };
+
+const options = ['Alpha', 'Beta', 'Charlie'];
 
 function Vertical() {
     return (
         <div style={style}>
             <RadioButtonGroup
-                options={['A','B','C']}
+                options={options}
             />
         </div>
     );
@@ -30,7 +33,7 @@ function Horizontal() {
         <div style={style}>
             <RadioButtonGroup
                 className="is-layout-horizontal"
-                options={['A','B','C']}
+                options={options}
             />
         </div>
     );
@@ -40,7 +43,7 @@ function DefaultOption() {
     return (
         <div style={style}>
             <RadioButtonGroup
-                options={['A','B','C']}
+                options={options}
                 defaultOption="C"
             />
         </div>
@@ -88,6 +91,29 @@ function Callbacks() {
                 options={['A','B','C']}
                 onChange={val => console.log('onChange', val)}
             />
+        </div>
+    );
+}
+
+function Sizes() {
+    return (
+        <div>
+            <div style={style}>
+                <p>Using no layout</p>
+                <RadioButtonGroup options={options} />
+            </div>
+            <div className="layout-small" style={style}>
+                <p>Using layout-small</p>
+                <RadioButtonGroup options={options} />
+            </div>
+            <div className="layout-medium" style={style}>
+                <p>Using layout-medium</p>
+                <RadioButtonGroup options={options} />
+            </div>
+            <div className="layout-large" style={style}>
+                <p>Using layout-large</p>
+                <RadioButtonGroup options={options} />
+            </div>
         </div>
     );
 }
