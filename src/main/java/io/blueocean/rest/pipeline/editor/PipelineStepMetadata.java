@@ -46,7 +46,13 @@ public interface PipelineStepMetadata {
      */
     @Exported
     public String getSnippetizerUrl();
-    
+
+    /**
+     * Whether this step has one and only one parameter and it is required.
+     */
+    @Exported
+    public boolean getHasSingleRequiredParameter();
+
     /**
      * Properties the steps supports
      */
