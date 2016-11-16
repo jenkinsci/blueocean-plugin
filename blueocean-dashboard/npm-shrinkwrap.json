@@ -6276,9 +6276,9 @@
       "resolved": "https://registry.npmjs.org/mobx/-/mobx-2.6.0.tgz"
     },
     "mobx-react": {
-      "version": "3.5.5",
-      "from": "mobx-react@3.5.5",
-      "resolved": "https://registry.npmjs.org/mobx-react/-/mobx-react-3.5.5.tgz"
+      "version": "3.5.7",
+      "from": "mobx-react@3.5.7",
+      "resolved": "https://registry.npmjs.org/mobx-react/-/mobx-react-3.5.7.tgz"
     },
     "mocha": {
       "version": "3.1.0",
