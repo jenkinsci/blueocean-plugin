@@ -1,15 +1,12 @@
 package io.blueocean.rest.pipeline.editor;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.structs.describable.DescribableModel;
+import org.jenkinsci.plugins.structs.describable.DescribableParameter;
 import org.jenkinsci.plugins.workflow.cps.Snippetizer;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
@@ -49,6 +46,7 @@ public class PipelineStepMetadataService implements ApiRoutable {
         private List<Class<?>> requiredContext = new ArrayList<Class<?>>();
         private List<Class<?>> providedContext = new ArrayList<Class<?>>();
         private boolean isWrapper = false;
+        private boolean hasSingleRequiredParameter = false;
         private String snippetizerUrl;
         private List<PipelineStepPropertyMetadata> props = new ArrayList<PipelineStepPropertyMetadata>();
 
@@ -116,13 +114,23 @@ public class PipelineStepMetadataService implements ApiRoutable {
 
         @Exported
         @Override
+        public boolean getHasSingleRequiredParameter() {
+            return hasSingleRequiredParameter;
+        }
+
+        @Exported
+        @Override
         public PipelineStepPropertyMetadata[] getProperties() {
             return props.toArray(new PipelineStepPropertyMetadata[props.size()]);
+        }
+
+        public DescribableModel getDescribableModel() {
+            return new DescribableModel<>(type);
         }
     }
 
     /**
-     * Basic exported model for {@link PipelineStepPropertyDescriptor)
+     * Basic exported model for {@link PipelineStepPropertyMetadata)
      */
     @ExportedBean
     public static class BasicPipelineStepPropertyMetadata implements PipelineStepPropertyMetadata{
@@ -178,49 +186,31 @@ public class PipelineStepMetadataService implements ApiRoutable {
         return pd.toArray(new PipelineStepMetadata[pd.size()]);
     }
 
-    @SuppressWarnings("deprecation")
     private PipelineStepMetadata getStepMetadata(StepDescriptor d, String snippetizerUrl) {
         BasicPipelineStepMetadata step = new BasicPipelineStepMetadata(d.getFunctionName(), d.clazz, d.getDisplayName());
+
+        DescribableModel<?> model = step.getDescribableModel();
+
         step.snippetizerUrl = snippetizerUrl + "?$class=" + d.clazz.getName(); // this isn't really accurate
 
         step.isWrapper = d.takesImplicitBlockArgument();
         step.requiredContext.addAll(d.getRequiredContext());
         step.providedContext.addAll(d.getProvidedContext());
         step.descriptorUrl = d.getDescriptorFullUrl();
+        step.hasSingleRequiredParameter = model.hasSingleRequiredParameter();
 
-        for (Method m : d.clazz.getDeclaredMethods()) {
-            if (m.isAnnotationPresent(DataBoundSetter.class)) {
-                String paramName = StringUtils.uncapitalize(m.getName().substring(3));
-                Class<?> paramType = m.getParameterTypes()[0];
-                BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
-                param.name = paramName;
-                param.type = paramType;
-                Descriptor<?> pd = Descriptor.find(paramType.getName());
-                if (pd != null) {
-                    param.descriptorUrl = pd.getDescriptorFullUrl();
-                }
-                step.props.add(param);
-            }
-        }
+        for (DescribableParameter descParam : model.getParameters()) {
+            BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
 
-        for (Constructor<?> c : d.clazz.getDeclaredConstructors()) {
-            if (c.isAnnotationPresent(DataBoundConstructor.class)) {
-                Class<?>[] paramTypes = c.getParameterTypes();
-                String[] paramNames = nameFinder.getParameterNames(c);
-                if(paramNames != null) {
-                    for (int i = 0; i < paramNames.length; i++) {
-                        String paramName = paramNames[i];
-                        Class<?> paramType = paramTypes[i];
-                        BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
-                        param.name = paramName;
-                        param.type = paramType;
-                        Descriptor<?> pd = Descriptor.find(paramType.getName());
-                        if (pd != null) {
-                            param.descriptorUrl = pd.getDescriptorFullUrl();
-                        }
-                        step.props.add(param);
-                    }
-                }
+            param.type = descParam.getErasedType();
+            param.name = descParam.getName();
+            param.isRequired = descParam.isRequired();
+
+            Descriptor<?> pd = Descriptor.findByDescribableClassName(ExtensionList.lookup(Descriptor.class),
+                    param.type.getName());
+
+            if (pd != null) {
+                param.descriptorUrl = pd.getDescriptorFullUrl();
             }
         }
 
