@@ -8,7 +8,7 @@ pipeline {
     }
   }
   postBuild {
-    always {
+    success {
       archive 'target/blueocean-pipeline-editor.hpi'
       junit 'target/**/*.xml'
     }
