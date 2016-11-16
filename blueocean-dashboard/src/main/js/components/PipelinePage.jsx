@@ -17,7 +17,6 @@ import { documentTitle } from './DocumentTitle';
 import { Icon } from 'react-material-icons-blue';
 import { AppConfig, Paths } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
-import { observable } from 'mobx';
 
 const RestPaths = Paths.rest;
 /**

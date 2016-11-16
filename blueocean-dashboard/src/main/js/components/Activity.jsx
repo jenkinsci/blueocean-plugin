@@ -46,7 +46,7 @@ export class Activity extends Component {
     componentWillMount() {
         if (this.context.config && this.context.params) {
             const organization = this.context.params.organization;
-            const pipeline = this.context.params.pipeline; 
+            const pipeline = this.context.params.pipeline;
             this.pager = this.context.activityService.activityPager(organization, pipeline);
         }
     }
@@ -145,7 +145,7 @@ Activity.contextTypes = {
     location: object.isRequired,
     config: object.isRequired,
     router: object.isRequired,
-    activityService: object.isRequired
+    activityService: object.isRequired,
 };
 
 Activity.propTypes = {

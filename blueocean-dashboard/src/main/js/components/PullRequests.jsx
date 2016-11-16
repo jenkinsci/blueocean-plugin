@@ -3,7 +3,7 @@ import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
 import PageLoading from './PageLoading';
-import { pipelineService, capable } from '@jenkins-cd/blueocean-core-js';
+import { capable } from '@jenkins-cd/blueocean-core-js';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { observer } from 'mobx-react';
 const { object, string } = PropTypes;
