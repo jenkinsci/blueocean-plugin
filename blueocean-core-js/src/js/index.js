@@ -15,6 +15,7 @@ export JWT from './jwt';
 export TestUtils from './testutils';
 export ToastUtils from './ToastUtils';
 export Utils from './utils';
+export { User } from './User';
 export AppConfig from './config';
 export Security from './security';
 
