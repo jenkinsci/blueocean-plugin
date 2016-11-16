@@ -1,68 +1,30 @@
 package io.jenkins.blueocean.rest.model;
 
+import hudson.ExtensionList;
+import io.jenkins.blueocean.rest.Reachable;
+import org.apache.tools.ant.ExtensionPoint;
+
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import java.io.IOException;
 
 /**
  * Pipeline create request.
  *
  * @author Vivek Pandey
  */
-public class BluePipelineCreateRequest {
+public abstract class BluePipelineCreateRequest extends ExtensionPoint{
 
-    private String name;
-
-    private String creatorId;
-
-    private BlueScmConfig scmConfig;
+    /** Name of the pipeline */
+    public abstract @CheckForNull String getName();
 
     /**
-     * Gives name of the new plugin
-     */
-    public @Nonnull String getName() {
-        return name;
-    }
-
-    /**
-     * Set name of the pipeline
+     * Create an instance of {@link BluePipeline} from the given request.
      *
-     * @param name name of the pipeline, always non-null
+     * @return created pipeline
      */
-    public void setName(@Nonnull String name) {
-        this.name = name;
-    }
+    public abstract @CheckForNull BluePipeline create(Reachable parent) throws IOException;
 
-
-    /**
-     *
-     * Mode of the new plugin to be created. It must be the id of factory
-     * implementation that can create inctance of this pipeline
-     *
-     * @return id of pipeline creator class
-     * @see BluePipelineCreator#getId()
-     */
-    public @Nonnull String getCreatorId() {
-        return creatorId;
-    }
-
-    /**
-     * Id of the pipeline creator class
-     *
-     * @param creatorId id of pipeline creator class
-     * @see BluePipelineCreator#getId()
-     */
-    public void setCreatorId(String creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    /**
-     * Gives SCM configuration {@link BlueScmConfig}
-     */
-    public @CheckForNull BlueScmConfig getScmConfig() {
-        return scmConfig;
-    }
-
-    public void setScmConfig(@Nonnull BlueScmConfig scmConfig) {
-        this.scmConfig = scmConfig;
+    public static ExtensionList<BluePipelineCreateRequest> all(){
+        return ExtensionList.lookup(BluePipelineCreateRequest.class);
     }
 }

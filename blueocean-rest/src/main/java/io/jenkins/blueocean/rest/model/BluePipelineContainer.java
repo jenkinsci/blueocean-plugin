@@ -6,8 +6,6 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.POST;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * BluePipeline container
@@ -25,24 +23,13 @@ public abstract class BluePipelineContainer extends Container<BluePipeline>{
     @POST
     @WebMethod(name = "")
     public  CreateResponse create(@JsonBody BluePipelineCreateRequest request) throws IOException{
-        Map<String,String> errors = new HashMap<>();
-        if(request.getName() == null || request.getName().trim().isEmpty()){
-            errors.put("name", "name is required parameter");
-
+        if(request.getName() == null){
+            throw new ServiceException.BadRequestExpception("name is required element");
         }
-        if(request.getCreatorId() == null || request.getCreatorId().trim().isEmpty()){
-            errors.put("creatorId", "creatorId is required parameter");
+        BluePipeline pipeline = request.create(this);
+        if(pipeline == null){
+            throw new ServiceException.UnexpectedErrorException("Failed to create pipeline: "+request.getName());
         }
-        if(!errors.isEmpty()) {
-            ServiceException.ErrorMessage message = new ServiceException.ErrorMessage(400, "Bad Request");
-            throw new ServiceException.BadRequestExpception(message.add(errors));
-        }
-        for(BluePipelineCreator f: BluePipelineCreator.all()){
-            if(f.getId().equals(request.getCreatorId().trim())){
-
-                return new CreateResponse(f.create(request, this));
-            }
-        }
-        throw new ServiceException.BadRequestExpception("Invalid creatorId: "+request.getCreatorId());
+        return new CreateResponse(pipeline);
     }
 }

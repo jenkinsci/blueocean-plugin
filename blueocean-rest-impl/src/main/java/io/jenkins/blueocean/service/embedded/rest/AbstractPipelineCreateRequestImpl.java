@@ -7,7 +7,7 @@ import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.model.BluePipelineCreator;
+import io.jenkins.blueocean.rest.model.BluePipelineCreateRequest;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
@@ -17,7 +17,7 @@ import java.io.IOException;
 /**
  * @author Vivek Pandey
  */
-public abstract class AbstractPipelineCreatorImpl extends BluePipelineCreator {
+public abstract class AbstractPipelineCreateRequestImpl extends BluePipelineCreateRequest {
 
     public @Nonnull TopLevelItem create(ModifiableTopLevelItemGroup parent, String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass) throws IOException {
         ACL acl = Jenkins.getInstance().getACL();
