@@ -7,7 +7,7 @@ pipeline {
       }
     }
   }
-  postBuild {
+  post {
     archive '**/*.hpi'
     junit '**/*.xml'
   }
