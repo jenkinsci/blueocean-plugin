@@ -59,6 +59,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
         }
         return Pageables.wrap(findRuns(null));
     }
+
     public static Iterable<BlueRun> findRuns(Job job, final Link parent){
         final List<BlueRun> runs = new ArrayList<>();
         Iterable<Job> pipelines;
@@ -77,6 +78,40 @@ public class RunSearch extends OmniSearch<BlueRun> {
                         return parent;
                     }
                 }));
+            }
+        }
+
+        return runs;
+    }
+
+    public static Iterable<BlueRun> findRuns(Job job, final Link parent, int start, int limit){
+        final List<BlueRun> runs = new ArrayList<>();
+        Iterable<Job> pipelines;
+        if(job != null){
+            pipelines = ImmutableList.of(job);
+        }else{
+            pipelines = Jenkins.getActiveInstance().getItems(Job.class);
+        }
+
+        int skipCount=0;
+        int limitCount=0;
+        for (Job p : pipelines) {
+            RunList<? extends Run> runList = p.getBuilds();
+            for (Run r : runList) {
+                if(skipCount < start){
+                    skipCount++;
+                    continue;
+                }
+                if(limitCount > limit){
+                    return runs;
+                }
+                runs.add(AbstractRunImpl.getBlueRun(r, new Reachable() {
+                    @Override
+                    public Link getLink() {
+                        return parent;
+                    }
+                }));
+                limitCount++;
             }
         }
 
