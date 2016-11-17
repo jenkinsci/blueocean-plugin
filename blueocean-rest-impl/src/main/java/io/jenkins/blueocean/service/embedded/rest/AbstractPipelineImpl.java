@@ -3,7 +3,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.AbstractItem;
@@ -209,16 +208,15 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public Container<Resource> getActivities() {
-
         return new Container<Resource>(){
             @Override
             public Iterator<Resource> iterator() {
-                return Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())).iterator();
+                throw new ServiceException.NotImplementedException("Not implemented");
             }
 
             @Override
             public Resource get(String name) {
-                return null; //not supported
+                throw new ServiceException.NotImplementedException("Not implemented");
             }
 
             @Override
@@ -228,7 +226,6 @@ public class AbstractPipelineImpl extends BluePipeline {
 
             @Override
             public Iterator<Resource> iterator(final int start, final int limit) {
-
                 return activityIterator(getQueue(), getRuns(), start, limit);
             }
         };
@@ -258,7 +255,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
             @Override
             public void remove() {
-                //noop
+                throw new ServiceException.NotImplementedException("Not implemented");
             }
         };
     }
