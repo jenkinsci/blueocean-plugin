@@ -11,7 +11,7 @@ https://jenkins.io/blog/2016/05/26/introducing-blue-ocean/
 This is in the main Update Center for Jenkins. Install the plugin called "BlueOcean beta" (and let it install its dependencies). The instructions here are for contributors to Blue Ocean and the morbidly curious. Expect refactoring. 
 
 
-![Pirate logo, because it's ocean and stuff](logo-yarrr.png)
+![Pirate logo, because it's ocean and stuff](docu/pix/logo-yarrr.png)
 Yarr...
 
 # Modules of note
@@ -82,7 +82,6 @@ List of browsers where we know Blue Ocean is not yet runnable:
 
 * AmigaOS
 
-
 # Developing 
 
 Follow the steps above for getting it running first. 
@@ -140,6 +139,18 @@ rm -rf node_modules npm-shrinkwrap.json
 npm i
 npm shrinkwrap --dev
 ```
+
+
+# Contributing - help wanted
+
+## i18n - Sprechen Sie Deutsch?
+
+We have full i18n support in our plugins. Please read the [i18n documentation](./docu/I18N.md) on how you can provide new translations and how to work with i18n.
+
+## contributing guidelines
+
+Want to get involve with blueocean? See our [contributing guidelines](./CONTRIBUTING.md) for more informations.
+
 
 # Debug and live reload with IntelliJ
 Automatically deploys changes to an instance of blueocean that is run with hpi:run.

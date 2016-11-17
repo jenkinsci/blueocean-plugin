@@ -35,8 +35,8 @@
     "react-addons-test-utils": "15.3.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.22",
-    "@jenkins-cd/design-language": "0.0.86",
+    "@jenkins-cd/blueocean-core-js": "0.0.23-unreleased1",
+    "@jenkins-cd/design-language": "0.0.87-unpublishedThor1",
     "@jenkins-cd/js-extensions": "0.0.30",
     "@jenkins-cd/js-modules": "0.0.8",
     "immutable": "3.8.1",
@@ -46,6 +46,7 @@
     "react": "15.3.2",
     "react-addons-css-transition-group": "15.3.2",
     "react-dom": "15.3.2",
+    "react-i18next": "1.10.1",
     "react-material-icons-blue": "1.0.4",
     "react-redux": "4.4.5",
     "react-router": "2.3.0",

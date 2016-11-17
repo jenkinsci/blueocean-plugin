@@ -1,23 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, FileSize, Table } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
-
-const { object } = PropTypes;
+import Markdown from 'react-remarkable';
 
 /**
  * Displays a list of artifacts from the supplied build run property.
  */
 export default class RunDetailsArtifacts extends Component {
-    renderEmptyState() {
-        return (
-            <EmptyStateView tightSpacing>
-                <p>There are no artifacts for this pipeline run.</p>
-            </EmptyStateView>
-        );
-    }
 
     render() {
-        const { result } = this.props;
+        const { result, t } = this.props;
 
         if (!result) {
             return null;
@@ -26,12 +18,16 @@ export default class RunDetailsArtifacts extends Component {
         const { artifacts } = result;
 
         if (!artifacts || !artifacts.length) {
-            return this.renderEmptyState();
+            return (<EmptyStateView tightSpacing>
+                <Markdown>
+                    {t('EmptyState.artifacts', { defaultValue: 'There are no artifacts for this pipeline run.\n\n' })}
+                </Markdown>
+            </EmptyStateView>);
         }
 
         const headers = [
-            { label: 'Name', className: 'name' },
-            { label: 'Size', className: 'size' },
+            { label: t('rundetail.artifacts.header.name', { defaultValue: 'Name' }), className: 'name' },
+            { label: t('rundetail.artifacts.header.size', { defaultValue: 'Header' }), className: 'size' },
             { label: '', className: 'actions' },
         ];
 
@@ -46,7 +42,7 @@ export default class RunDetailsArtifacts extends Component {
                             <FileSize bytes={artifact.size} />
                         </td>
                         <td className="download">
-                            <a target="_blank" title="Download the artifact" href={artifact.url}>
+                            <a target="_blank" title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })} href={artifact.url}>
                                 <Icon style={style} icon="file_download" />
                             </a>
                         </td>
@@ -57,6 +53,9 @@ export default class RunDetailsArtifacts extends Component {
     }
 }
 
+const { func, object } = PropTypes;
+
 RunDetailsArtifacts.propTypes = {
     result: object,
+    t: func,
 };

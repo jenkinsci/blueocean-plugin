@@ -7,6 +7,8 @@ import { RunsRecord } from '../../main/js/components/records.jsx';
 
 import Branches from '../../main/js/components/Branches.jsx';
 
+const t = () => {};
+
 describe("Branches should render", () => {
   let tree;
   const
@@ -14,7 +16,7 @@ describe("Branches should render", () => {
 
   beforeEach(() => {
     const branch = new RunsRecord(data[0]);
-    tree = sd.shallowRender(<Branches data={branch} pipeline={{}} />, {
+    tree = sd.shallowRender(<Branches t={t} data={branch} pipeline={{}} />, {
         router: {},
         location: {},
     });
@@ -43,7 +45,7 @@ describe("Branches should not render", () => {
     renderer = createRenderer();
 
   beforeEach(() => {
-    tree = sd.shallowRender(<Branches />);
+    tree = sd.shallowRender(<Branches t={t}/>);
   });
 
   it("renders the Branches", () => {

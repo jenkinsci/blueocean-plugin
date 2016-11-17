@@ -5,11 +5,9 @@ import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
-const { object } = PropTypes;
-
 export default class PullRequest extends Component {
     render() {
-        const { pr, pipeline: contextPipeline } = this.props;
+        const { pr, t, locale, pipeline: contextPipeline } = this.props;
         if (!pr || !pr.pullRequest || !pr.latestRun || !contextPipeline) {
             return null;
         }
@@ -61,7 +59,13 @@ export default class PullRequest extends Component {
             <PRCol>{prId}</PRCol>
             <PRCol>{title || '-'}</PRCol>
             <PRCol>{author || '-'}</PRCol>
-            <PRCol><ReadableDate date={endTime} liveUpdate /></PRCol>
+            <PRCol><ReadableDate
+              date={endTime}
+              liveUpdate
+              locale={locale}
+              shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+              longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+            /></PRCol>
             <td>
                 <RunButton
                   className="icon-button"
@@ -69,14 +73,18 @@ export default class PullRequest extends Component {
                   latestRun={pr.latestRun}
                   onNavigation={openRunDetails}
                 />
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" />
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />
             </td>
         </tr>);
     }
 }
 
+const { func, object, string } = PropTypes;
+
 PullRequest.propTypes = {
     pr: object,
+    locale: string,
+    t: func,
     pipeline: object,
 };
 

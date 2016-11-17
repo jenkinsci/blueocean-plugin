@@ -6,8 +6,6 @@ import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
-const { object } = PropTypes;
-
 const stopProp = (event) => event.stopPropagation();
 
 export default class Branches extends Component {
@@ -16,7 +14,7 @@ export default class Branches extends Component {
         this.state = { isVisible: false };
     }
     render() {
-        const { data, pipeline } = this.props;
+        const { data, t, locale, pipeline } = this.props;
         // early out
         if (!data || !pipeline) {
             return null;
@@ -25,6 +23,7 @@ export default class Branches extends Component {
             router,
             location,
         } = this.context;
+
         const {
             latestRun: { id, result, startTime, endTime, changeSet, state, commitId, estimatedDurationInMillis },
             weatherScore,
@@ -65,7 +64,15 @@ export default class Branches extends Component {
                 <BranchCol>{cleanBranchName}</BranchCol>
                 <BranchCol><CommitHash commitId={commitId} /></BranchCol>
                 <BranchCol>{msg || '-'}</BranchCol>
-                <BranchCol><ReadableDate date={endTime} liveUpdate /></BranchCol>
+                <BranchCol>
+                    <ReadableDate
+                      date={endTime}
+                      liveUpdate
+                      locale={locale}
+                      shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                      longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                    />
+                </BranchCol>
                 { /* suppress all click events from extension points */ }
                 <td className="actions" onClick={(event) => stopProp(event)}>
                     <RunButton
@@ -78,6 +85,7 @@ export default class Branches extends Component {
                       extensionPoint="jenkins.pipeline.branches.list.action"
                       pipeline={data}
                       store={this.context.store}
+                      {...t}
                     />
                 </td>
             </tr>
@@ -85,8 +93,11 @@ export default class Branches extends Component {
     }
 }
 
+const { func, object, string } = PropTypes;
 Branches.propTypes = {
     data: object.isRequired,
+    t: func,
+    locale: string,
     pipeline: object,
 };
 

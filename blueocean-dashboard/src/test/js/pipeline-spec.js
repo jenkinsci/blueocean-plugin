@@ -1,6 +1,7 @@
 import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
+import i18next from 'i18next';
 
 import PipelineRowItem from '../../main/js/components/PipelineRowItem.jsx';
 import { PipelineRecord } from '../../main/js/components/records.jsx';
@@ -50,6 +51,29 @@ const pipelineSimple = {
     'weatherScore': 0,
 };
 /* eslint-enable quote-props */
+i18next.init({
+    lng: 'en',
+    // have a common namespace used around the full app
+    ns: ['translation'],
+    defaultNS: 'translation',
+    preload: ['en'],
+    keySeparator: false, // we do not have any nested keys in properties files
+    interpolation: {
+        prefix: '{',
+        suffix: '}',
+        escapeValue: false, // not needed for react!!
+    },
+    resources: {
+        en: {
+            translation: {
+                'home.pipelineslist.row.failing': '{0} failing',
+                'home.pipelineslist.row.passing': '{0} passing',
+            },
+    },
+  },
+});
+
+const t = i18next.getFixedT('en', 'translation');
 
 describe('PipelineRecord', () => {
     it('create without error', () => {
@@ -62,6 +86,7 @@ describe('PipelineRowItem', () => {
     it('simple pipeline', () => {
         const wrapper = shallow(
             <PipelineRowItem
+              t={t}
               hack={hack}
               pipeline={pipelineSimple}
               simple
@@ -89,6 +114,7 @@ describe('PipelineRowItem', () => {
         it('with failing items', () => {
             const wrapper = shallow(
                 <PipelineRowItem
+                  t={t}
                   hack={hack}
                   pipeline={pipelineMulti}
                 />
@@ -111,6 +137,7 @@ describe('PipelineRowItem', () => {
         it('with success', () => {
             const wrapper = shallow(
                 <PipelineRowItem
+                  t={t}
                   hack={hack}
                   pipeline={pipelineMultiSuccess}
                 />
