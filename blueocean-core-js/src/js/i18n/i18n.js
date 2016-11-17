@@ -40,7 +40,7 @@ export const initOptions = {
     defaultNS: 'jenkins.plugins.blueocean.web.Messages',
     preload: ['en'],
     keySeparator: false, // we do not have any nested keys in properties files
-    debug: true, // for dev reasons ATM
+    debug: false,
     load: 'all', // --> ['en-US', 'en', 'dev']
     interpolation: {
         prefix: '{',
@@ -75,5 +75,6 @@ export const i18n = (backend = defaultXhr, lngDetector = defaultLngDetector, opt
         .use(lngDetector)
         .init(options);
 };
+
 
 export default i18n(defaultXhr, defaultLngDetector, initOptions);

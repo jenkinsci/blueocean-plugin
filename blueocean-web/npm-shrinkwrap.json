@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.22-unreleased10",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.22-unreleased10",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.22-unreleased10.tgz"
+      "version": "0.0.22-unreleased15",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.22-unreleased15",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.22-unreleased15.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.87-unpublishedThor1",
@@ -2594,9 +2594,9 @@
       "dev": true
     },
     "i18next": {
-      "version": "3.5.0",
+      "version": "3.5.2",
       "from": "i18next@>=3.4.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/i18next/-/i18next-3.5.0.tgz"
+      "resolved": "https://registry.npmjs.org/i18next/-/i18next-3.5.2.tgz"
     },
     "i18next-browser-languagedetector": {
       "version": "1.0.1",
