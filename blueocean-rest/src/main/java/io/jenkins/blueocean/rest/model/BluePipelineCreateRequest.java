@@ -1,8 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
-import hudson.ExtensionList;
 import io.jenkins.blueocean.rest.Reachable;
-import org.apache.tools.ant.ExtensionPoint;
 
 import javax.annotation.CheckForNull;
 import java.io.IOException;
@@ -12,10 +10,18 @@ import java.io.IOException;
  *
  * @author Vivek Pandey
  */
-public abstract class BluePipelineCreateRequest extends ExtensionPoint{
+public abstract class BluePipelineCreateRequest{
+
+    private String name;
 
     /** Name of the pipeline */
-    public abstract @CheckForNull String getName();
+    public @CheckForNull String getName(){
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /**
      * Create an instance of {@link BluePipeline} from the given request.
@@ -23,8 +29,4 @@ public abstract class BluePipelineCreateRequest extends ExtensionPoint{
      * @return created pipeline
      */
     public abstract @CheckForNull BluePipeline create(Reachable parent) throws IOException;
-
-    public static ExtensionList<BluePipelineCreateRequest> all(){
-        return ExtensionList.lookup(BluePipelineCreateRequest.class);
-    }
 }

@@ -29,7 +29,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
             ImmutableMap.of("name", "demo",
-                    "creatorId", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreatorImpl",
+                    "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                     "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
                 ), 201);
 

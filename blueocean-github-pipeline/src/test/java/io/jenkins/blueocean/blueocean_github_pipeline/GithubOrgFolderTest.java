@@ -16,7 +16,7 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
     public void simpleOrgTest(){
         Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
             ImmutableMap.of("name", "jenkinsci",
-                    "creatorId", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreatorImpl",
+                    "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                     "scmConfig", ImmutableMap.of("config",
                             ImmutableMap.of("repos", ImmutableList.of("stapler")))
                 ), 201);

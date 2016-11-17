@@ -3,12 +3,10 @@ package io.jenkins.blueocean.commons;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,16 +60,6 @@ public class JsonConverter{
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        for(JsonJacksonDeserializer jsonDeserializer: JsonJacksonDeserializer.all()){
-            SimpleModule module =
-                    new SimpleModule(jsonDeserializer.getName(),
-                            new Version(1, 0, 0, null, null, null));
-            module.addDeserializer(jsonDeserializer.getType(), jsonDeserializer.getJsonDeserializer());
-
-            mapper = mapper.registerModule(module);
-        }
-
         return mapper;
     }
 }
