@@ -5759,7 +5759,7 @@
     },
     "react-i18next": {
       "version": "1.10.1",
-      "from": "react-i18next@>=1.10.1 <2.0.0",
+      "from": "react-i18next@1.10.1",
       "resolved": "https://registry.npmjs.org/react-i18next/-/react-i18next-1.10.1.tgz"
     },
     "react-inspector": {

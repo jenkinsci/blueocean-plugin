@@ -5745,6 +5745,11 @@
       "resolved": "https://registry.npmjs.org/react-fuzzy/-/react-fuzzy-0.3.3.tgz",
       "dev": true
     },
+    "react-i18next": {
+      "version": "1.10.1",
+      "from": "react-i18next@1.10.1",
+      "resolved": "https://registry.npmjs.org/react-i18next/-/react-i18next-1.10.1.tgz"
+    },
     "react-inspector": {
       "version": "1.1.1",
       "from": "react-inspector@>=1.1.0 <2.0.0",
