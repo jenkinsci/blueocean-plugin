@@ -47,20 +47,31 @@ PageTabs.propTypes = {
 
 export class TabLink extends Component {
     render() {
-        const base = this.props.base || "";
-        const to = (this.props.to).substring(1);
+        const { router = {}, location = {} } = this.context;
+        const { base = '', to: toOrg = '' } = this.props;
+        const to = (toOrg).substring(1);
         const routeUrl = base + '/' + to;
-        const linkClassName = this.context.router.isActive(routeUrl) ? "selected " + to : to;
-        return <Link to={routeUrl} className={linkClassName}>{this.props.children}</Link>;
+        const linkClassName = router.isActive(routeUrl) ? "selected " + to : to;
+        return (<Link
+          to={routeUrl}
+          query={location.query}
+          className={linkClassName}
+        >
+            {this.props.children}
+        </Link>);
     }
 }
 
 TabLink.propTypes = {
     children: PropTypes.node,
     base: PropTypes.string,
-    to: PropTypes.string.isRequired
+    to: PropTypes.oneOfType([
+        PropTypes.string.isRequired,
+        PropTypes.shape.isRequired,
+    ])
 };
 
 TabLink.contextTypes = {
-    router: React.PropTypes.object
+    router: PropTypes.object,
+    location: PropTypes.object.isRequired, // From react-router
 };

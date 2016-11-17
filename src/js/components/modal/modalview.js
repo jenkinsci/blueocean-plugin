@@ -221,8 +221,7 @@ class ModalView extends Component {
                 className="overlayStyles"
                 onClick={() => this.onOverlayClicked()}
                 style={overlayStyles}
-            >
-            </div>);
+            />);
         }
 
         return (

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 import { EmptyStateView } from '../components/EmptyStateView';

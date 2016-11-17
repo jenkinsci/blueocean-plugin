@@ -13,7 +13,7 @@ export class EmptyStateIcon extends Component {
     render() {
         const classNames = `empty-state-icon ${this.props.name}`;
         return (
-            <div className={classNames}></div>
+            <div className={classNames}/>
         );
     }
 }

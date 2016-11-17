@@ -108,8 +108,8 @@ export class FloatingElement extends Component {
      */
     checkDOMDependencies() {
         if (this.positioningValid
-            && !this.validatePositioningScheduled
-            && !this.checkDOMDependenciesScheduled) {
+          && !this.validatePositioningScheduled
+          && !this.checkDOMDependenciesScheduled) {
 
             this.checkDOMDependenciesScheduled = true;
             window.requestAnimationFrame(() => {
@@ -205,13 +205,13 @@ export class FloatingElement extends Component {
         newViewportHeight = window.innerHeight;
 
         const changed = newSelfWidth !== this.selfWidth ||
-            newSelfHeight !== this.selfHeight ||
-            newTargetWidth !== this.targetWidth ||
-            newTargetHeight !== this.targetHeight ||
-            newTargetLeft !== this.targetLeft ||
-            newTargetTop !== this.targetTop ||
-            newViewportWidth !== this.viewportWidth ||
-            newViewportHeight !== this.viewportHeight;
+          newSelfHeight !== this.selfHeight ||
+          newTargetWidth !== this.targetWidth ||
+          newTargetHeight !== this.targetHeight ||
+          newTargetLeft !== this.targetLeft ||
+          newTargetTop !== this.targetTop ||
+          newViewportWidth !== this.viewportWidth ||
+          newViewportHeight !== this.viewportHeight;
 
         if (changed) {
             this.selfWidth = newSelfWidth;
@@ -239,25 +239,25 @@ export class FloatingElement extends Component {
         this.measureDOMNodes();
 
         const {
-            selfWidth,
-            selfHeight,
-            targetWidth,
-            targetHeight,
-            targetLeft,
-            targetTop,
-            viewportWidth,
-            viewportHeight
+          selfWidth,
+          selfHeight,
+          targetWidth,
+          targetHeight,
+          targetLeft,
+          targetTop,
+          viewportWidth,
+          viewportHeight
         } = this;
 
         const newPositions = this.props.positionFunction(
-            selfWidth,
-            selfHeight,
-            targetWidth,
-            targetHeight,
-            targetLeft,
-            targetTop,
-            viewportWidth,
-            viewportHeight
+          selfWidth,
+          selfHeight,
+          targetWidth,
+          targetHeight,
+          targetLeft,
+          targetTop,
+          viewportWidth,
+          viewportHeight
         );
 
         const { newLeft, newTop } = newPositions;
@@ -315,11 +315,11 @@ export class FloatingElement extends Component {
         }
 
         this.pollingTimeout = setTimeout(
-            () => {
-                this.pollingTimeout = null;
-                this.checkDOMDependencies();
-                this.startPollTimeout();
-            }, pollingInterval);
+          () => {
+              this.pollingTimeout = null;
+              this.checkDOMDependencies();
+              this.startPollTimeout();
+          }, pollingInterval);
     }
 
     //--------------------------------------
@@ -333,13 +333,13 @@ export class FloatingElement extends Component {
     movePopoverAnimationFrame = (now: number) => {
         const node = this.refs.wrapper;
         const {
-            lifecycleState,
-            currentLeft,
-            currentTop,
-            animationStart,
-            animationDuration,
-            goalLeft,
-            goalTop
+          lifecycleState,
+          currentLeft,
+          currentTop,
+          animationStart,
+          animationDuration,
+          goalLeft,
+          goalTop
         } = this;
 
         if (!node || lifecycleState !== stateMoving) {
@@ -363,20 +363,20 @@ export class FloatingElement extends Component {
         }
 
         let newLeft = 0,
-            newTop = 0;
+          newTop = 0;
         const time = now - animationStart;
 
         newLeft = Math.round(tween(
-            time,
-            currentLeft,
-            goalLeft - currentLeft,
-            animationDuration));
+          time,
+          currentLeft,
+          goalLeft - currentLeft,
+          animationDuration));
 
         newTop = Math.round(tween(
-            time,
-            currentTop,
-            goalTop - currentTop,
-            animationDuration));
+          time,
+          currentTop,
+          goalTop - currentTop,
+          animationDuration));
 
         // Position the node, update state
         node.style.left = newLeft + 'px';
@@ -398,17 +398,17 @@ export class FloatingElement extends Component {
             top: this.currentTop + 'px'
         };
         return (
-            <div className="FloatingElement">
-                <div ref="wrapper" className="FloatingElement-wrapper" style={wrapperStyle}>
-                    {children}
-                </div>
-            </div>
+          <div className="FloatingElement">
+              <div ref="wrapper" className="FloatingElement-wrapper" style={wrapperStyle}>
+                  {children}
+              </div>
+          </div>
         );
     }
 
     componentWillReceiveProps(nextProps:Props) {
         if (nextProps.positionFunction !== this.props.positionFunction
-            || nextProps.targetElement !== this.props.targetElement) {
+          || nextProps.targetElement !== this.props.targetElement) {
             this.invalidatePositioning();
         }
     }
