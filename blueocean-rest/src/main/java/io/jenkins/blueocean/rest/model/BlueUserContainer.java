@@ -1,8 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
 import hudson.ExtensionPoint;
-import io.jenkins.blueocean.Routable;
-import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.ApiRoutable;
 
 import java.util.Iterator;
@@ -26,10 +24,5 @@ public abstract class BlueUserContainer extends Container<BlueUser> implements A
     @Override
     public Iterator<BlueUser> iterator() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isChildOf(Routable ancestor) {
-        return ancestor instanceof ApiHead;
     }
 }

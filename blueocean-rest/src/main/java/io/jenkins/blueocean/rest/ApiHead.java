@@ -121,9 +121,7 @@ public final class ApiHead implements RootRoutable, Reachable  {
                 if(apiMap == null){
                     Map<String,ApiRoutable> apiMapTmp = new HashMap<>();
                     for ( ApiRoutable api : ExtensionList.lookup(ApiRoutable.class)) {
-                        if(api.isChildOf(this)){
-                            apiMapTmp.put(api.getUrlName(), api);
-                        }
+                        apiMapTmp.put(api.getUrlName(), api);
                     }
                     apis = apiMap = apiMapTmp;
                 }

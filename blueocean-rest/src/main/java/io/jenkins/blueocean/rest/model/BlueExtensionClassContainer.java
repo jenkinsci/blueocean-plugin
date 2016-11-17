@@ -1,10 +1,8 @@
 package io.jenkins.blueocean.rest.model;
 
 import hudson.ExtensionPoint;
-import io.jenkins.blueocean.Routable;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
-import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.ApiRoutable;
 import io.jenkins.blueocean.rest.Reachable;
 import org.kohsuke.stapler.QueryParameter;
@@ -67,11 +65,6 @@ public abstract class BlueExtensionClassContainer implements ApiRoutable, Extens
     @Override
     public String getUrlName() {
         return "classes";
-    }
-
-    @Override
-    public boolean isChildOf(Routable ancestor) {
-        return ancestor instanceof ApiHead;
     }
 }
 

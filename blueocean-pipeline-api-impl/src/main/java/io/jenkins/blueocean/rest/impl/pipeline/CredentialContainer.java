@@ -4,11 +4,11 @@ import com.cloudbees.plugins.credentials.CredentialsStoreAction;
 import com.cloudbees.plugins.credentials.ViewCredentialsAction;
 import hudson.Extension;
 import hudson.ExtensionList;
-import io.jenkins.blueocean.Routable;
-import io.jenkins.blueocean.rest.ApiRoutable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationAction;
+import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,7 +22,8 @@ import java.util.List;
  * @author Vivek Pandey
  */
 @Extension
-public class CredentialContainer extends Container<CredentialApi> implements ApiRoutable {
+@ExportedBean
+public class CredentialContainer extends Container<CredentialApi> implements OrganizationAction{
     private final Link self;
 
     public CredentialContainer() {
@@ -35,14 +36,20 @@ public class CredentialContainer extends Container<CredentialApi> implements Api
     }
 
     @Override
+    public String getIconFileName() {
+        return null;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return null;
+    }
+
+    @Override
     public String getUrlName() {
         return "credentials";
     }
 
-    @Override
-    public boolean isChildOf(Routable ancestor) {
-        return ancestor instanceof BlueOrganization;
-    }
 
     @Override
     public Link getLink() {

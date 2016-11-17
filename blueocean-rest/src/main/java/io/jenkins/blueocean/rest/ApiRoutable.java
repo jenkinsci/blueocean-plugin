@@ -5,7 +5,7 @@ import hudson.model.Action;
 import io.jenkins.blueocean.Routable;
 
 /**
- * Marks the REST API endpoints.
+ * Marks the REST API endpoints that are exposed by {@link ApiHead}
  *
  * @author Kohsuke Kawaguchi
  * @author Vivek Pandey
@@ -15,9 +15,4 @@ public interface ApiRoutable extends Routable, ExtensionPoint {
      * See {@link Action#getUrlName()} for contract.
      */
     String getUrlName();
-
-    /**
-     * Tells if this {@link Routable} route is parent to this route
-     */
-    boolean isChildOf(Routable parent);
 }

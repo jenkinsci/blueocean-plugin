@@ -6,7 +6,6 @@ import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.ApiHead;
-import io.jenkins.blueocean.rest.ApiRoutable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -19,10 +18,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.PUT;
 
-import javax.annotation.CheckForNull;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * {@link BlueOrganization} implementation for the embedded use.
@@ -37,16 +33,6 @@ public class OrganizationImpl extends BlueOrganization {
      * In embedded mode, there's only one organization
      */
     public static final OrganizationImpl INSTANCE = new OrganizationImpl();
-
-    private final Map<String, ApiRoutable> apis = new HashMap<>();
-
-    public OrganizationImpl() {
-        for(ApiRoutable api: ExtensionList.lookup(ApiRoutable.class)){
-            if(api.isChildOf(this)) {
-                apis.put(api.getUrlName(), api);
-            }
-        }
-    }
 
     /**
      * In embedded mode, there's only one organization
@@ -106,23 +92,29 @@ public class OrganizationImpl extends BlueOrganization {
      * @param route URL path that needs handling. e.g. for requested url /rest/organizations/:id/xyz,  route param value will be 'xyz'
      * @return stapler object that can handle give route. Could be null
      */
-    public @CheckForNull Object getDynamic(String route){
-        Object object =  apis.get(route);
-        if(object!=null) {
-            return object;
+    public Object getDynamic(String route){
+        //First look for OrganizationActions
+        for(OrganizationAction organizationAction: ExtensionList.lookup(OrganizationAction.class)){
+            if(organizationAction.getUrlName() != null && organizationAction.getUrlName().equals(route)){
+                return wrap(organizationAction);
+            }
         }
 
-        //lookup in available actions from Jenkins instance, that is all {@link RootAction}s
+        // No OrganizationAction found, now lookup in available actions from Jenkins instance serving root
         for(Action action:Jenkins.getInstance().getActions()) {
             if (action.getUrlName() != null && action.getUrlName().equals(route)) {
-                if (isExportedBean(action.getClass())) {
-                    return action;
-                } else {
-                    return new GenericResource<>(action);
-                }
+                return wrap(action);
             }
         }
         return null;
+    }
+
+    private Object wrap(Action action){
+        if (isExportedBean(action.getClass())) {
+            return action;
+        } else {
+            return new GenericResource<>(action);
+        }
     }
 
     private boolean isExportedBean(Class clz){
