@@ -37,9 +37,9 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.22-unreleased15",
+    "@jenkins-cd/blueocean-core-js": "0.0.23-unreleased1",
     "@jenkins-cd/design-language": "0.0.87-unpublishedThor1",
-    "@jenkins-cd/js-extensions": "0.0.27",
+    "@jenkins-cd/js-extensions": "0.0.30",
     "@jenkins-cd/js-modules": "0.0.8",
     "es6-promise": "4.0.5",
     "immutable": "3.8.1",

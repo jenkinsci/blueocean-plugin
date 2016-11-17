@@ -10,7 +10,7 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { I18n, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { I18n, User } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from 'react-material-icons-blue';
 import {
     actions,
@@ -34,7 +34,7 @@ export function pipelineBranchesUnsupported(pipeline) {
 
 const classicConfigLink = (pipeline) => {
     let link = null;
-    if (AppConfig.getInitialUser() !== 'anonymous') {
+    if (User.current().isAnonymous()) {
         link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
     }
     return link;

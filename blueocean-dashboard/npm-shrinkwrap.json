@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.22-unreleased15",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.22-unreleased15",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.22-unreleased15.tgz"
+      "version": "0.0.23-unreleased1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.23-unreleased1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.23-unreleased1.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.87-unpublishedThor1",
@@ -38,9 +38,9 @@
       }
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.27",
-      "from": "@jenkins-cd/js-extensions@0.0.27",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.27.tgz"
+      "version": "0.0.30",
+      "from": "@jenkins-cd/js-extensions@0.0.30",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.30.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
@@ -211,9 +211,9 @@
       "dev": true,
       "dependencies": {
         "whatwg-fetch": {
-          "version": "1.1.0",
+          "version": "1.1.1",
           "from": "whatwg-fetch@>=1.0.0 <2.0.0",
-          "resolved": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-1.1.0.tgz",
+          "resolved": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-1.1.1.tgz",
           "dev": true
         }
       }
@@ -3382,7 +3382,7 @@
     },
     "i18next": {
       "version": "3.5.2",
-      "from": "i18next@>=3.4.3 <4.0.0",
+      "from": "i18next@3.5.2",
       "resolved": "https://registry.npmjs.org/i18next/-/i18next-3.5.2.tgz"
     },
     "i18next-browser-languagedetector": {
@@ -3391,9 +3391,9 @@
       "resolved": "https://registry.npmjs.org/i18next-browser-languagedetector/-/i18next-browser-languagedetector-1.0.1.tgz"
     },
     "i18next-xhr-backend": {
-      "version": "1.2.1",
-      "from": "i18next-xhr-backend@>=1.2.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/i18next-xhr-backend/-/i18next-xhr-backend-1.2.1.tgz"
+      "version": "1.2.0",
+      "from": "i18next-xhr-backend@1.2.0",
+      "resolved": "https://registry.npmjs.org/i18next-xhr-backend/-/i18next-xhr-backend-1.2.0.tgz"
     },
     "iconv-lite": {
       "version": "0.4.13",
@@ -7314,9 +7314,9 @@
       "dev": true
     },
     "whatwg-fetch": {
-      "version": "2.0.0",
+      "version": "2.0.1",
       "from": "whatwg-fetch@>=0.10.0",
-      "resolved": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.0.tgz"
+      "resolved": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.1.tgz"
     },
     "whatwg-url-compat": {
       "version": "0.6.5",

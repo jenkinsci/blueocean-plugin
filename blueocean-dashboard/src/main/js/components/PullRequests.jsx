@@ -85,7 +85,7 @@ export class PullRequests extends Component {
 
         const head = 'pipelinedetail.pullrequests.header';
         const status = t(`${head}.status`, { defaultValue: 'Status' });
-        const build = t(`${head}.build`, { defaultValue: 'Build' });
+        const build = t(`${head}.build`, { defaultValue: 'PR' });
         const author = t(`${head}.author`, { defaultValue: 'Author' });
         const summary = t(`${head}.summary`, { defaultValue: 'Summary' });
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
