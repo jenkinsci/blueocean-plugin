@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.23-unreleased1",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.23-unreleased1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.23-unreleased1.tgz"
+      "version": "0.0.24",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.24",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.24.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.87-unpublishedThor1",
-      "from": "@jenkins-cd/design-language@0.0.87-unpublishedThor1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.87-unpublishedThor1.tgz"
+      "version": "0.0.88",
+      "from": "@jenkins-cd/design-language@0.0.88",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.88.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -4352,6 +4352,11 @@
       "from": "lodash.create@3.1.1",
       "resolved": "https://registry.npmjs.org/lodash.create/-/lodash.create-3.1.1.tgz",
       "dev": true
+    },
+    "lodash.debounce": {
+      "version": "4.0.8",
+      "from": "lodash.debounce@4.0.8",
+      "resolved": "https://registry.npmjs.org/lodash.debounce/-/lodash.debounce-4.0.8.tgz"
     },
     "lodash.deburr": {
       "version": "3.2.0",
