@@ -12,9 +12,8 @@ import { ToastDrawer } from './components/ToastDrawer';
 import { DevelopmentFooter } from './DevelopmentFooter';
 
 let config; // Holder for various app-wide state
-function translate(key){
-    return I18n.t(key, { ns: 'jenkins.plugins.blueocean.web.Messages' });
-}
+
+const translate = I18n ? I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.web.Messages') : function () { };
 
 function loginOrLogout(t) {
     if (Security.isSecurityEnabled()) {
@@ -43,18 +42,20 @@ class App extends Component {
     render() {
         const { location } = this.context;
 
+        var adminCaption = translate('administration', {
+            defaultValue: 'Administation',
+        });
+        var pipeCaption = translate('pipelines', {
+            defaultValue: 'Pipelines',
+        });
         return (
             <div className="Site">
                 <header className="Site-header">
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link query={location.query} to="/pipelines">{translate('pipelines', {
-                                defaultValue: 'Pipelines',
-                            })}</Link>
-                            <a href="#">{translate('administration', {
-                                defaultValue: 'Administation',
-                            })}</a>
+                            <Link query={location.query} to="/pipelines">{pipeCaption}</Link>
+                            <a href="#">{adminCaption}</a>
                         </nav>
                         <div className="button-bar">
                             { loginOrLogout(translate) }
