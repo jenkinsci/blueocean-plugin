@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
@@ -119,6 +121,14 @@ public abstract class BluePipeline extends Resource {
      */
     @Navigable
     public abstract BlueQueueContainer getQueue();
+
+    /**
+     * @return Gives paginated concatenation of {#getQueue()} and {#getRuns()}, in that order
+     */
+    @Navigable
+    public Container<Resource> getActivities() {
+        return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+    }
 
     @PUT
     @WebMethod(name="favorite")

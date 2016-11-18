@@ -28,7 +28,7 @@ var transformer = function (payload) {
 var _rollbarConfig = {
     accessToken: '81f3134dedf44871b9cc0a347b1313df',
     captureUncaught: true,
-    code_version: window.$blueoceanConfig.version, // see header.jelly
+    code_version: window.$blueocean.config.version, // see header.jelly
     source_map_enabled: true,
     guess_uncaught_frames: true,
     transform: transformer

@@ -9,19 +9,23 @@ import { latestRuns as data } from './data/runs/latestRuns';
 
 const pr = data.filter((run) => run.pullRequest);
 
+const t = () => {};
+
 describe('PullRequest should render', () => {
     let tree = null;
     beforeEach(() => {
         const immData = new RunsRecord(pr[0]);
-        tree = sd.shallowRender(<PullRequest pr={immData} pipeline={{}} />,{
+        tree = sd.shallowRender(<PullRequest t={t} pr={immData} pipeline={{}} />,{
             router: {},
             location: {},
         });
     });
 
     it('does renders the PullRequest with data', () => {
-        const result = tree.everySubTree('td');
-        assert.equal(result.length, 6);
+        const PRCols = tree.everySubTree('PRCol');
+        const tds = tree.everySubTree('td');
+        assert.equal(PRCols.length, 5);
+        assert.equal(tds.length, 1);
         assert.equal(data.length, 2);
         assert.equal(pr.length, 1);
         const im = new RunsRecord(pr[0]);
@@ -32,7 +36,7 @@ describe('PullRequest should render', () => {
 describe('PullRequest should not render', () => {
     let tree = null;
     beforeEach(() => {
-        tree = sd.shallowRender(<PullRequest />);
+        tree = sd.shallowRender(<PullRequest t={t}/>);
     });
 
     it('does renders the PullRequest without data', () => {
@@ -43,7 +47,7 @@ describe('PullRequest should not render', () => {
 describe('PullRequest', () => {
     it('opens correctly', (done) => {
         const immData = new RunsRecord(pr[0]);
-        const tree = sd.shallowRender(<PullRequest pr={immData} pipeline={{
+        const tree = sd.shallowRender(<PullRequest t={t} pr={immData} pipeline={{
             fullName: 'asdf/blah',
             organization: 'jenkins',
             }} />, {

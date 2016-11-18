@@ -2,28 +2,32 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
+import { I18n, AppConfig, Security, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
-
-import Extensions from '@jenkins-cd/js-extensions';
-
 import Config from './config';
 import { ToastDrawer } from './components/ToastDrawer';
 import { DevelopmentFooter } from './DevelopmentFooter';
 
-import { AppConfig, Security, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
-
 let config; // Holder for various app-wide state
+function translate(key){
+    return I18n.t(key, { ns: 'jenkins.plugins.blueocean.web.Messages' });
+}
 
-function loginOrLogout() {
+function loginOrLogout(t) {
     if (Security.isSecurityEnabled()) {
         if (Security.isAnonymousUser()) {
             const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
-            return <a href={loginUrl} className="btn-primary inverse small">Login</a>;
+            return (<a href={loginUrl} className="btn-primary inverse small">{t('login', {
+                defaultValue: 'login',
+            })}</a>);
         } else {
             const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
-            return <a href={logoutUrl} className="btn-secondary inverse small">Logout</a>;
+            return (<a href={logoutUrl} className="btn-secondary inverse small">{t('logout', {
+                defaultValue: 'logout',
+            })}</a>);
         }
     }
 }
@@ -37,17 +41,23 @@ class App extends Component {
     }
 
     render() {
+        const { location } = this.context;
+
         return (
             <div className="Site">
                 <header className="Site-header">
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link to="/pipelines">Pipelines</Link>
-                            <a href="#">Administration</a>
+                            <Link query={location.query} to="/pipelines">{translate('pipelines', {
+                                defaultValue: 'Pipelines',
+                            })}</Link>
+                            <a href="#">{translate('administration', {
+                                defaultValue: 'Administation',
+                            })}</a>
                         </nav>
                         <div className="button-bar">
-                            { loginOrLogout() }
+                            { loginOrLogout(translate) }
                         </div>
                     </div>
                 </header>
@@ -64,11 +74,15 @@ class App extends Component {
 }
 
 App.propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
 };
 
 App.childContextTypes = {
     config: PropTypes.object
+};
+
+App.contextTypes = {
+    location: PropTypes.object.isRequired,
 };
 
 class NotFound extends Component {
@@ -77,7 +91,7 @@ class NotFound extends Component {
         return <h1>Not found</h1>;
     }
 }
-
+const closeHandler = (props) => props.onClose || {};
 function makeRoutes(routes) {
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
     const appRoutes = [
@@ -89,7 +103,7 @@ function makeRoutes(routes) {
 
     const routeProps = {
         path: "/",
-        component: App
+        component: App,
     };
 
     return React.createElement(Route, routeProps, ...appRoutes);

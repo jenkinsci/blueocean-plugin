@@ -8,29 +8,10 @@ import { ACTION_TYPES } from './FavoritesStore';
 import { cleanSlashes } from '../util/UrlUtils';
 
 const fetchFlags = {
-    [ACTION_TYPES.SET_USER]: false,
     [ACTION_TYPES.SET_FAVORITES]: false,
 };
 
 export const actions = {
-    fetchUser() {
-        return (dispatch) => {
-            const baseUrl = UrlConfig.getBlueOceanAppURL();
-            const url = cleanSlashes(`${baseUrl}/rest/organizations/jenkins/user/`);
-
-            if (fetchFlags[ACTION_TYPES.SET_USER]) {
-                return null;
-            }
-
-            fetchFlags[ACTION_TYPES.SET_USER] = true;
-
-            return dispatch(actions.generateData(
-                { url },
-                ACTION_TYPES.SET_USER
-            ));
-        };
-    },
-
     fetchFavorites(user) {
         return (dispatch) => {
             const baseUrl = UrlConfig.getBlueOceanAppURL();

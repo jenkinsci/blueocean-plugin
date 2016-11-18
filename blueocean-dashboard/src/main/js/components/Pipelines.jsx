@@ -1,12 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
+import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
+import { I18n } from '@jenkins-cd/blueocean-core-js';
+import Extensions from '@jenkins-cd/js-extensions';
 import CreatePipelineLink from './CreatePipelineLink';
+import { documentTitle } from './DocumentTitle';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
 
-import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
-import Extensions from '@jenkins-cd/js-extensions';
-import { documentTitle } from './DocumentTitle';
+const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
 
 export class Pipelines extends Component {
 
@@ -16,29 +18,37 @@ export class Pipelines extends Component {
     }
 
     render() {
+        const { params: { organization }, location: { query } } = this.context;
         const { pipelines } = this.props;
-        const { organization } = this.context.params;
-
         const orgLink = organization ?
-            <Link to={`organizations/${organization}`} className="inverse">
+            <Link
+              to={`organizations/${organization}`}
+              className="inverse"
+              query={query}
+            >
                 {organization}
             </Link> : '';
 
         const headers = [
-            { label: 'Name', className: 'name-col' },
-            'Health',
-            'Branches',
-            'Pull Requests',
+            { label: translate('home.pipelineslist.header.name', { defaultValue: 'Name' }), className: 'name-col' },
+            translate('home.pipelineslist.header.health', { defaultValue: 'Health' }),
+            translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' }),
+            translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' }),
             { label: '', className: 'actions-col' },
         ];
-
         return (
             <Page>
                 <PageHeader>
                     {!pipelines || pipelines.$pending && <PageLoading duration={2000} />}
                     <Title>
                         <h1>
-                            <Link to="/" className="inverse">Dashboard</Link>
+                            <Link
+                              to="/"
+                              query={query}
+                              className="inverse"
+                            >
+                                { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
+                            </Link>
                             { organization && ' / ' }
                             { organization && orgLink }
                         </h1>
@@ -64,6 +74,7 @@ export class Pipelines extends Component {
                                     const key = pipeline._links.self.href;
                                     return (
                                         <PipelineRowItem
+                                          t={translate}
                                           key={key} pipeline={pipeline}
                                           showOrganization={!organization}
                                         />
@@ -74,7 +85,7 @@ export class Pipelines extends Component {
 
                         { pipelines && pipelines.$pager &&
                             <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
-                                {pipelines.$pending ? 'Loading...' : 'Show More'}
+                                {pipelines.$pending ? translate('common.pager.loading', { defaultValue: 'Loading...' }) : translate('common.pager.more', { defaultValue: 'Show more' })}
                             </button>
                         }
                     </article>
@@ -90,6 +101,7 @@ Pipelines.contextTypes = {
     params: object,
     store: object,
     router: object,
+    location: object.isRequired, // From react-router
 };
 
 Pipelines.propTypes = {

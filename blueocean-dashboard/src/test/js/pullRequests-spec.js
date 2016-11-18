@@ -7,9 +7,11 @@ import {PullRequests} from '../../main/js/components/PullRequests.jsx';
 
 const pr = branches.filter((run) => run.pullRequest);
 
+const t = () => {};
+
 describe("PullRequests should render", () => {
   it("does renders the PullRequests with data", () => {
-    const wrapper =  shallow(<PullRequests pullRequests={pr} />);
+    const wrapper =  shallow(<PullRequests t={t} pullRequests={pr} />);
     // does data renders?
     assert.equal(wrapper.find('PullRequest').length, pr.length);
     const table = wrapper.find('Table').node;
@@ -21,7 +23,7 @@ describe("PullRequests should render", () => {
 
 describe("PullRequests should not render", () => {
   it("does render NotSupported the PullRequests without data", () => {
-    const wrapper =  shallow(<PullRequests />);
+    const wrapper =  shallow(<PullRequests t={t} />);
     assert.equal(wrapper.find('NotSupported').length, 1);
   });
 

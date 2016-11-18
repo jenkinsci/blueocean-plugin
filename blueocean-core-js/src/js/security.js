@@ -3,6 +3,7 @@
  */
 
 import config from './config';
+import { User } from './User';
 
 /**
  * Returns a key of permissions functions that each return boolean to indicate authorization.
@@ -30,7 +31,7 @@ function isSecurityEnabled() {
 }
 
 function isAnonymousUser() {
-    return config.getInitialUser() === 'anonymous';
+    return User.current().isAnonymous();
 }
 
 export default {
