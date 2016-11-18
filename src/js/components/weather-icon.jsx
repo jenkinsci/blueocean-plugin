@@ -20,7 +20,7 @@ export class WeatherIcon extends Component {
             classNames += " large-icon";
         }
 
-        return <svg title={status} className={classNames}></svg>;
+        return <svg title={status} className={classNames} />;
     }
 
     static defaultProps = {

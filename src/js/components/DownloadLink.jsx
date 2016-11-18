@@ -3,11 +3,11 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
 
-const { object } = PropTypes;
+const { object, string } = PropTypes;
 
 class DownloadLink extends Component {
     render() {
-        const { style, fileData } = this.props;
+        const { style, fileData, title = 'Download the log' } = this.props;
         if (!fileData) return null;
         const {
           contents,
@@ -20,7 +20,7 @@ class DownloadLink extends Component {
         return (<a {...{
             download: filename,
             href: url,
-            title: 'Download the log',
+            title: title,
         }}
         >
             <Icon {...{ style, icon: 'file_download' }} />
@@ -30,6 +30,7 @@ class DownloadLink extends Component {
 DownloadLink.propTypes = {
     fileData: object,
     style: object,
+    title: string,
 };
 export {
   DownloadLink,
