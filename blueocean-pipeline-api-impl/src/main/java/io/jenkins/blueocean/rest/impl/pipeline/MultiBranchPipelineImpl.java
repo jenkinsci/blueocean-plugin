@@ -289,6 +289,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 throw new ServiceException.NotImplementedException("Not implemented");
             }
 
+            /**
+             * XXX: This is approximation: we are going to try collect number of runs split across multiple branches.
+             */
+
+
             @Override
             public Iterator<BlueRun> iterator(int start, int limit) {
                 List<BlueRun> c = new ArrayList<>();
@@ -300,20 +305,26 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
                 int s=0;
                 if(start > 0) {
-                    s = start - l > 0 ? start - l : 0;
+                    s = start/branches.size() > 0 ? start/branches.size() : 1;
                 }
 
-                int count = 0;
-                int retry = 0;
-                while(retry < 5 && count < limit) {
-                    for (BluePipeline b : branches) {
-                        Iterator<BlueRun> it = b.getRuns().iterator(s, l);
-                        while (it.hasNext()) {
-                            count++;
-                            c.add(it.next());
-                        }
-                    }
-                    retry++;
+                int[] startIndexes = new int[branches.size()];
+                Arrays.fill(startIndexes, s); //estimated start index for each branch
+
+                int[] limits = new int[branches.size()];
+                Arrays.fill(limits, l); // estimated limit of each branch
+
+                int[] counts = new int[branches.size()]; //how much we collected from each branch
+
+                boolean[] retries = new boolean[branches.size()];
+                Arrays.fill(retries,true); // to begin with we are going to try collecting runs from each branch
+
+                int numRetries = 0; //max num of retries
+                int count=0;
+
+                while(retry(retries) && count < limit && numRetries < 5){
+                    count += collectRuns(branches, c, retries, counts, startIndexes,limits);
+                    numRetries++;
                 }
 
                 Collections.sort(c, new Comparator<BlueRun>() {
@@ -324,8 +335,41 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 });
 
                 return c.iterator();
-
             }
+
+            private boolean retry(boolean[] retries){
+                //if at least one of the branch needs retry we will retry it
+                for(boolean r: retries){
+                    if(r){
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            private int collectRuns(List<BluePipeline> branches, List<BlueRun> runs, boolean[] retries, int[] counts, int[] startIndexes, int[] limits){
+                int count = 0;
+                for (int i=0; i < branches.size(); i++) {
+                    BluePipeline b = branches.get(i);
+                    if(!retries[i]){
+                        continue;
+                    }
+                    Iterator<BlueRun> it = b.getRuns().iterator(startIndexes[i], limits[i]);
+                    int lcount = 0;
+                    while (it.hasNext()) {
+                        lcount++;
+                        count++;
+                        runs.add(it.next());
+                    }
+                    if (lcount < limits[i]) { //if its less than l
+                        retries[i] = false; //iterator already exhausted so lets not retry next time
+                    }else{
+                        startIndexes[i] = startIndexes[i]+lcount; //set the new start index for next time
+                    }
+                }
+                return count;
+            }
+
 
             @Override
             public BlueQueueItem create() {
