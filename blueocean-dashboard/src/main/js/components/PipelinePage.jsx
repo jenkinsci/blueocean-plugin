@@ -45,7 +45,6 @@ export class PipelinePage extends Component {
    
     componentWillMount() {
         if (this.props.params) {
-            debugger;
             this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
             this.context.pipelineService.fetchPipeline(this.href, { useCache: true }).catch(err => this._setError(err));
         }
@@ -60,7 +59,6 @@ export class PipelinePage extends Component {
 
    
     render() {
-        debugger;
         const pipeline = this.context.pipelineService.getPipeline(this.href);
         
         const { setTitle } = this.props;
