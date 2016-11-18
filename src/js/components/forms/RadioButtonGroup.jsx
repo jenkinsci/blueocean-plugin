@@ -81,7 +81,7 @@ export class RadioButtonGroup extends React.Component {
                               onChange={() => this._onChange(option)}
                             />
 
-                            <div className="RadioButtonGroup-indicator"></div>
+                            <div className="RadioButtonGroup-indicator" />
 
                             <span className="RadioButtonGroup-text">{labelValue}</span>
                         </label>

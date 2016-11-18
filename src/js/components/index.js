@@ -45,3 +45,8 @@ export {
 } from './dialog';
 export {FloatingElement} from './FloatingElement';
 export {Dropdown} from './forms/Dropdown';
+export {Checkbox} from './forms/Checkbox';
+export {RadioButtonGroup} from './forms/RadioButtonGroup';
+export {TextArea} from './forms/TextArea';
+export {TextInput} from './forms/TextInput';
+export {FormElement} from './forms/FormElement';
