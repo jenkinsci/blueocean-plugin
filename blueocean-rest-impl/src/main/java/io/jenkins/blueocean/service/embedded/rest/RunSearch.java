@@ -90,7 +90,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
         if(job != null){
             pipelines = ImmutableList.of(job);
         }else{
-            pipelines = Jenkins.getActiveInstance().getItems(Job.class);
+            pipelines = Jenkins.getInstance().getItems(Job.class);
         }
 
         int skipCount=0;

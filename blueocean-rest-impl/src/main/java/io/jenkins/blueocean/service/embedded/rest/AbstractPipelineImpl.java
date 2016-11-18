@@ -234,7 +234,7 @@ public class AbstractPipelineImpl extends BluePipeline {
     public static Iterator<Resource> activityIterator(final BlueQueueContainer queueContainer,
                                                       final BlueRunContainer runContainer,
                                                       final int start, final int limit){
-        final Iterator<? extends Resource> queueIterator = queueContainer.iterator();
+        final Iterator<? extends Resource> queueIterator = queueContainer.iterator(start, limit);
         int skipped = Iterators.skip(queueContainer.iterator(), start);
         final Iterator<? extends Resource> runIterator = runContainer.iterator(start-skipped, limit);
         return new Iterator<Resource>() {

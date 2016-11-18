@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Item;
@@ -24,7 +23,6 @@ import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
@@ -288,12 +286,36 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
             @Override
             public Iterator<BlueRun> iterator() {
+                throw new ServiceException.NotImplementedException("Not implemented");
+            }
+
+            @Override
+            public Iterator<BlueRun> iterator(int start, int limit) {
                 List<BlueRun> c = new ArrayList<>();
-                for(final BluePipeline b: getBranches()) {
-                    for(final BlueRun r: b.getRuns()) {
-                        c.add(r);
-                    }
+
+                List<BluePipeline> branches = Lists.newArrayList(getBranches().list());
+                sortBranchesByLatestRun(branches);
+
+                int l = limit/branches.size() > 0 ? limit/branches.size() : 1;
+
+                int s=0;
+                if(start > 0) {
+                    s = start - l > 0 ? start - l : 0;
                 }
+
+                int count = 0;
+                int retry = 0;
+                while(retry < 5 && count < limit) {
+                    for (BluePipeline b : branches) {
+                        Iterator<BlueRun> it = b.getRuns().iterator(s, l);
+                        while (it.hasNext()) {
+                            count++;
+                            c.add(it.next());
+                        }
+                    }
+                    retry++;
+                }
+
                 Collections.sort(c, new Comparator<BlueRun>() {
                     @Override
                     public int compare(BlueRun o1, BlueRun o2) {
@@ -302,6 +324,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 });
 
                 return c.iterator();
+
             }
 
             @Override
@@ -309,6 +332,18 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };
+    }
+
+    static void sortBranchesByLatestRun(List<BluePipeline> branches){
+        Collections.sort(branches, new Comparator<BluePipeline>() {
+            @Override
+            public int compare(BluePipeline o1, BluePipeline o2) {
+                Long t1 = o1.getLatestRun() != null ? o1.getLatestRun().getStartTime().getTime() : 0;
+                Long t2 = o2.getLatestRun() != null ? o2.getLatestRun().getStartTime().getTime() : 0;
+
+                return t2.compareTo(t1);
+            }
+        });
     }
 
     @Override
@@ -373,6 +408,27 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Navigable
     public Container<Resource> getActivities() {
-        return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+        return new Container<Resource>() {
+            @Override
+            public Resource get(String name) {
+                return null;
+            }
+
+            @Override
+            public Link getLink() {
+                return MultiBranchPipelineImpl.this.getLink().rel("activities");
+            }
+
+            @Override
+            public Iterator<Resource> iterator() {
+                throw new ServiceException.NotImplementedException("Not implemented");
+            }
+
+            @Override
+            public Iterator<Resource> iterator(int start, int limit) {
+                return AbstractPipelineImpl.activityIterator(getQueue(), getRuns(), start, limit);
+            }
+        };
+
     }
 }
