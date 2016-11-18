@@ -12,7 +12,7 @@ export default class LogConsoleView extends Component {
 
         // console.log('fetch the log directly')
         const logGeneral = calculateRunLogURLObject(mergedConfig);
-        console.log('XXXXXXabc', logGeneral)
+       
         // fetchAll indicates whether we want all logs (taking shortcut ...mergedConfig to pass fetchAll)
         fetchLog({ ...logGeneral, ...mergedConfig });
     }
