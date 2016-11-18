@@ -22,8 +22,8 @@ export class BunkerService {
 
     @action
     setItem(item) {
-        const keyItem = this.bunkerKey(item);
         const mappedItem = observable(this.bunkerMapper(item));    
+        const keyItem = this.bunkerKey(mappedItem);
         this._data.set(keyItem, mappedItem);
         return this.getItem(keyItem);
     }

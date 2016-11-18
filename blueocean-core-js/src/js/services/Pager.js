@@ -47,9 +47,9 @@ export class Pager {
         this.pending = true;
         return Fetch.fetchJSON(url) // Fetch data
             .then(action('set data', data => {
-                this.bunker.setItems(data);
+                const saved = this.bunker.setItems(data);
    
-                this.hrefs = this.hrefs.concat(data.slice(0, this.pageSize).map(x => x._links.self.href));
+                this.hrefs = this.hrefs.concat(saved.slice(0, this.pageSize).map(x => x._links.self.href));
                // this.data = this.data.concat(data.slice(0, this.pageSize));
                 this.hasMore = data.length > this.pageSize;
                 this.currentPage = this.currentPage + 1;

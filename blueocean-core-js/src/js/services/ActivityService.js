@@ -4,13 +4,8 @@ import RestPaths from '../paths/rest';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
 import { computed, asMap, action } from 'mobx';
-
+import utils from '../utils';
 export class ActivityService extends BunkerService {
-    @observable latestRuns = asMap();
-
-    getLatestActivity(href) {
-        return computed(() => this.latestRuns.get(href)).get();
-    }
     pagerKey(organization, pipeline) {
         return `Activities/${organization}-${pipeline}`;
     }
@@ -21,32 +16,33 @@ export class ActivityService extends BunkerService {
         });
     }
 
-    @action
-    setLatestActivity(activityData) {
-        this.latestRuns.set(activityData._links.parent.href, activityData);
+    bunkerKey(data) {
+        return data._links.self.href;
     }
 
     bunkerMapper(data) {
-        return this._mapQueueToPsuedoRun(data);
+        const ret = this._mapQueueToPsuedoRun(data);
+        return ret;
     }
     
     getActivity(href) {
         return this.getItem(href);
     }
-    
+
     fetchActivity(href, { useCache, overrideQueuedState } = {}) {
         if (useCache && this.hasItem(href)) {
             return Promise.resolve(this.getItem(href));
         }
+
+
         return Fetch.fetchJSON(href)
             .then(data => {
-                const run = data;
+                const run = utils.clone(data);
                 if (overrideQueuedState) {
                     run.state = 'RUNNING';
-                    run.result = 'UNKNOWN'
+                    run.result = 'UNKNOWN';
                 }
-                
-                return this.setItem(data);
+                return this.setItem(run);
             });
     }
     /**
@@ -71,7 +67,7 @@ export class ActivityService extends BunkerService {
                 changeSet: [],
                 _links: {
                     self: {
-                        href: run._links.self.href,
+                        href: `${run._links.parent.href}runs/${run.expectedBuildNumber}/`,
                     },
                     parent: {
                         href: run._links.parent.href,
@@ -82,6 +78,7 @@ export class ActivityService extends BunkerService {
         }
         return run;
     }
+
 
     getExpectedBuildNumber(event) {
         const runs = this._data.values();

@@ -26,7 +26,7 @@ export default class Branches extends Component {
         const latestRun = branch.latestRun;
         
         const cleanBranchName = decodeURIComponent(branch.name);
-        const url = buildRunDetailsUrl(branch.organization, branch.fullName, cleanBranchName, latestRun.id, 'pipeline');
+        const url = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
 
         const open = () => {
             location.pathname = url;

@@ -212,7 +212,7 @@ export const Fetch = {
         }
 
         if (!disableCapabilites) {
-            return future.then(data => capabilityAugmenter.augmentCapabilities(data));
+            return future.then(data => capabilityAugmenter.augmentCapabilities(utils.clone(data)));
         }
 
         return future;
@@ -232,8 +232,10 @@ export const Fetch = {
      */
     fetch(url, { onSuccess, onError, fetchOptions } = {}) {
         let fixedUrl = url;
+        
+        
         if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
-            fixedUrl = `${config.getJenkinsRootURL()}${url}`;
+            fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
         }
         if (!config.isJWTEnabled()) {
             return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions });

@@ -4,15 +4,11 @@ import { Fetch } from '../fetch';
 import utils from '../utils';
 import { BunkerService } from './BunkerService';
 import { action } from 'mobx';
-import { Loader } from './Loader';
 export class PipelineService extends BunkerService {
     constructor(pagerService, activityService) {
         super(pagerService);
         this.activityService = activityService;
     }
-
-
-   
 
     allPipelinesPager() { 
         return this.pagerService.getPager({
@@ -49,8 +45,7 @@ export class PipelineService extends BunkerService {
         const ret = data;
         
         if (latestRun) {
-            this.activityService.setLatestActivity(latestRun);
-            ret.latestRun = this.activityService.getLatestActivity(latestRun._links.parent.href);
+            ret.latestRun = this.activityService.setItem(latestRun);
         }
 
         return data;
