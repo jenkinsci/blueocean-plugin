@@ -21,7 +21,7 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
-import { activityService, Paths, capable } from '@jenkins-cd/blueocean-core-js';
+import { Paths, capable } from '@jenkins-cd/blueocean-core-js';
 import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 const { func, object, any, string } = PropTypes;
@@ -68,7 +68,8 @@ class RunDetails extends Component {
                 branch: this.isMultiBranch && props.params.branch,
                 runId: props.params.runId,
             });
-            this.activity = activityService.fetchActivity(this.href, { useCache: true });
+            
+            this.context.activityService.fetchActivity(this.href, { useCache: true });
 
             if (storePreviousRoute) {
                 this.opener = props.previous;
@@ -107,14 +108,14 @@ class RunDetails extends Component {
         this.context.router.push(changesUrl);
     }
     render() {
-        const { data: run } = this.activity;
-        
+        const run = this.context.activityService.getActivity(this.href);
         // early out
         if (!this.context.params
             || !run) {
             return null;
         }
 
+        
         const { router, location, params } = this.context;
         const { pipeline, setTitle } = this.props;
 
@@ -207,6 +208,7 @@ RunDetails.contextTypes = {
     params: object,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
+    activityService: object.isRequired,
 };
 
 RunDetails.propTypes = {

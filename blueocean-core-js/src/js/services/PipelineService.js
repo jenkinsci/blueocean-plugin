@@ -60,18 +60,14 @@ export class PipelineService extends BunkerService {
     }
 
 
-    fetchPipeline(href, { useCache }) {
-        let promise;
+    fetchPipeline(href, { useCache } = {}) {
         if (useCache && this.hasItem(href)) {
-            promise = Promise.resolve(this.getItem(href));
-        } else {
-            promise = Fetch.fetchJSON(href).then(data => this.setItem(data));
+            return Promise.resolve(this.getItem(href));
         }
 
-        const pipelineLader = new Loader(promise);
-
-        return pipelineLader;
+        return Fetch.fetchJSON(href).then(data => this.setItem(data));
     }
+
 
     @action
     updateLatestRun(run) {

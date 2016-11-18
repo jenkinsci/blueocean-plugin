@@ -17,6 +17,7 @@ import { documentTitle } from './DocumentTitle';
 import { Icon } from 'react-material-icons-blue';
 import { AppConfig, Paths } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
+import { observable, action } from 'mobx';
 
 const RestPaths = Paths.rest;
 /**
@@ -40,16 +41,27 @@ const classicConfigLink = (pipeline) => {
 
 @observer
 export class PipelinePage extends Component {
+    
+   
     componentWillMount() {
-        debugger;
         if (this.props.params) {
+            debugger;
             this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
-            this.pipeline = this.context.pipelineService.fetchPipeline(this.href, { useCache: true });
+            this.context.pipelineService.fetchPipeline(this.href, { useCache: true }).catch(err => this._setError(err));
         }
     }
+
+    @observable error;
+    
+    @action
+    _setError(error) {
+        this.error = error;
+    }
+
    
     render() {
-        const { data: pipeline, error } = this.pipeline;
+        debugger;
+        const pipeline = this.context.pipelineService.getPipeline(this.href);
         
         const { setTitle } = this.props;
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
@@ -57,7 +69,7 @@ export class PipelinePage extends Component {
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
         const isReady = !!pipeline;
 
-        if (!pipeline && error) {
+        if (!pipeline && this.error) {
             return <NotFound />;
         }
 

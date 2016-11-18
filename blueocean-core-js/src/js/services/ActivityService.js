@@ -4,7 +4,7 @@ import RestPaths from '../paths/rest';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
 import { computed, asMap, action } from 'mobx';
-import { Loader } from './Loader';
+
 export class ActivityService extends BunkerService {
     @observable latestRuns = asMap();
 
@@ -33,15 +33,21 @@ export class ActivityService extends BunkerService {
     getActivity(href) {
         return this.getItem(href);
     }
-    fetchActivity(href, { useCache }) {
-        let promise;
+    
+    fetchActivity(href, { useCache, overrideQueuedState } = {}) {
         if (useCache && this.hasItem(href)) {
-            promise = Promise.resolve(this.getItem(href));
-        } else {
-            promise = Fetch.fetchJSON(href).then(data => this.setItem(data));
+            return Promise.resolve(this.getItem(href));
         }
-
-        return new Loader(promise);     
+        return Fetch.fetchJSON(href)
+            .then(data => {
+                const run = data;
+                if (overrideQueuedState) {
+                    run.state = 'RUNNING';
+                    run.result = 'UNKNOWN'
+                }
+                
+                return this.setItem(data);
+            });
     }
     /**
      * This function maps a queue item into a run instancce.

@@ -1,17 +1,16 @@
 
 export class DefaultSSEHandler {
-    constructor(pipelineService, activityService, branchService, pagerService) {
+    constructor(pipelineService, activityService, pagerService) {
         this.pipelineService = pipelineService;
         this.activityService = activityService;
         this.pagerService = pagerService;
     }
 
     handleEvents = (event) => {
-        console.log('_sseEventHandler', event);
         switch (event.jenkins_event) {
         case 'job_crud_created':
             // Refetch pagers here. This will pull in the newly created pipeline into the bunker.
-            this.pipelineService.refresh(this.bunker);
+            this.pipelineService.refreshPagers();
             break;
         case 'job_crud_deleted':
             // Remove directly from bunker. No need to refresh bunkers as it will just show one less item.
@@ -33,15 +32,11 @@ export class DefaultSSEHandler {
             break;
         }
         case 'job_run_started': {
-            this.updateJob(event);
-           // this.props.updateRunState(eventCopy, this.context.config, true);
-           // this.props.updateBranchState(eventCopy, this.context.config);
+            this.updateJob(event, true);
             break;
         }
         case 'job_run_ended': {
             this.updateJob(event);
-           // this.props.updateRunState(eventCopy, this.context.config);
-           // this.props.updateBranchState(eventCopy, this.context.config);
             break;
         }
         default :
@@ -49,15 +44,15 @@ export class DefaultSSEHandler {
         }
     }
 
-    updateJob(event) {
+
+    updateJob(event, overrideQueuedState) {
         const queueId = event.job_run_queueId;
         const queueSelf = `${event.blueocean_job_rest_url}queue/${queueId}/`;
         const runSelf = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
         
-        const key = this.activityService.pagerKey(event.jenkins_org ,event.blueocean_job_pipeline_name);
+        const key = this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name);
         const pager = this.pagerService.getPager({ key });
-       
-        this.activityService.fetchActivity(runSelf).then(d => {
+        this.activityService.fetchActivity(runSelf, { overrideQueuedState }).then(d => {
             if (this.activityService.hasItem(queueSelf)) {
                 this.activityService.removeItem(queueSelf);
             }
@@ -79,7 +74,6 @@ export class DefaultSSEHandler {
         const queueId = event.job_run_queueId;
         const self = `${event.blueocean_job_rest_url}queue/${queueId}/`;
         const id = this.activityService.getExpectedBuildNumber(event);
-        console.log('self', id);
         const newRun = {
             id,
             _links: {
