@@ -1,6 +1,3 @@
-/**
- * Created by cmeyers on 11/2/16.
- */
 import React, { PropTypes } from 'react';
 import debounce from 'lodash.debounce';
 import { Icon } from 'react-material-icons-blue';
@@ -241,17 +238,18 @@ export class Dropdown extends React.Component {
             const allListItems = [].slice.call(this.menuRef.children);
             const focusedListItem = document.activeElement.parentNode;
             const focusedIndex = allListItems.indexOf(focusedListItem);
-
             const selectedOption = this.props.options[focusedIndex];
-            this.setState({
-                selectedOption,
-            });
-
-            this._closeDropdownMenu();
+            this._applySelection(selectedOption, focusedIndex);
         }
     }
 
     _onMenuItemClick(option, index) {
+        this._applySelection(option, index);
+
+        return false;
+    }
+
+    _applySelection(option, index) {
         this.setState({
             selectedOption: option,
             menuOpen: false,
@@ -260,8 +258,6 @@ export class Dropdown extends React.Component {
         if (this.props.onChange) {
             this.props.onChange(option, index);
         }
-
-        return false;
     }
 
     render() {
