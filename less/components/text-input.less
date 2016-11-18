@@ -1,0 +1,42 @@
+.TextInput {
+    .TextInput-medium;
+
+    .TextInput-control {
+        min-width: 240px;
+        border: solid 1px @gray-light;
+        border-radius: 3px;
+
+        &:focus {
+            outline: 0;
+            border-color: @brand-primary;
+        }
+    }
+}
+
+.TextInput-small {
+    .TextInput-control {
+        padding: 8px;
+    }
+}
+
+.TextInput-medium {
+    .TextInput-control {
+        padding: 10px;
+    }
+}
+
+.TextInput-large {
+    .TextInput-control {
+        padding: 12px;
+    }
+}
+
+.TextInput {
+    .layout-small & {
+        .TextInput-small;
+    }
+
+    .layout-large & {
+        .TextInput-large;
+    }
+}

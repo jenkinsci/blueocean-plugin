@@ -1,0 +1,45 @@
+.TextArea {
+    .TextArea-medium;
+
+    .TextArea-control {
+        min-width: 240px;
+        border: solid 1px @gray-light;
+        border-radius: 3px;
+
+        &:focus {
+            outline: 0;
+            border-color: @brand-primary;
+        }
+    }
+}
+
+.TextArea-small {
+    .TextArea-control {
+        height: 88px; // 5 lines
+        padding: 8px;
+    }
+}
+
+.TextArea-medium {
+    .TextArea-control {
+        height: 102px; // 5 lines
+        padding: 10px;
+    }
+}
+
+.TextArea-large {
+    .TextArea-control {
+        height: 131px; // 5 lines
+        padding: 12px;
+    }
+}
+
+.TextArea {
+    .layout-small & {
+        .TextArea-small;
+    }
+
+    .layout-large & {
+        .TextArea-large;
+    }
+}

@@ -23,3 +23,6 @@ src/js/declarations/browser.js.flow
 # Instance fields for this-bound listeners via arrow funs
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
+
+# allow getters
+unsafe.enable_getters_and_setters=true

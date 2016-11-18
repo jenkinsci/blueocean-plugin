@@ -1,0 +1,84 @@
+.Checkbox {
+    .Checkbox-medium;
+    display: inline-block;
+
+    .Checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    // hide the checkbox entirely but keep accessible
+    input[type="checkbox"] {
+        border: 0;
+        clip: rect(0, 0, 0, 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+
+    .Checkbox-indicator {
+        display: flex;
+        border-radius: 3px;
+        border: solid 1px @gray-light;
+    }
+
+    .Checkbox-text {
+        margin-left: 5px;
+    }
+
+    // use opacity to show/hide the icon, driving overall Checkbox height
+    // this avoids "height wiggling"
+    .svg-icon {
+        opacity: 0;
+        fill: #fff;
+        transition: opacity 0.1s linear;
+    }
+
+    input[type="checkbox"]:checked + .Checkbox-indicator {
+        background-color: @brand-primary;
+        border-color: @brand-primary;
+
+        .svg-icon {
+            opacity: 1;
+        }
+    }
+
+    input[type="checkbox"]:focus + .Checkbox-indicator {
+        border-color: @brand-selection;
+    }
+}
+
+.Checkbox-small {
+    .svg-icon {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.Checkbox-medium {
+    .svg-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.Checkbox-large {
+    .svg-icon {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.Checkbox {
+    .layout-small & {
+        .Checkbox-small;
+    }
+
+    .layout-large & {
+        .Checkbox-large;
+    }
+}

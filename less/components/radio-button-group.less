@@ -1,0 +1,109 @@
+.RadioButtonGroup {
+    .RadioButtonGroup-medium;
+    display: inline-block;
+
+    //.RadioButtonGroup-wrapper {
+        // by default, there is no layout - stack vertically
+
+        .RadioButtonGroup-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+
+            // hide the radio entirely but keep accessible
+            input[type="radio"] {
+                border: 0;
+                clip: rect(0, 0, 0, 0);
+                height: 1px;
+                margin: -1px;
+                overflow: hidden;
+                padding: 0;
+                position: absolute;
+                width: 1px;
+            }
+
+            .RadioButtonGroup-indicator {
+                border-radius: 100%;
+                border: 1px solid @gray-light;
+                transition: border 0.1s linear;
+            }
+
+            input[type="radio"]:checked + .RadioButtonGroup-indicator {
+                border-style: solid;
+                border-color: @brand-primary;
+            }
+
+            input[type="radio"]:focus + .RadioButtonGroup-indicator {
+                border-style: solid;
+                border-color: @brand-primary;
+            }
+
+            .RadioButtonGroup-text {
+                margin-left: 5px;
+            }
+        }
+    //}
+
+    &.is-layout-horizontal {
+        display: inline-flex;
+
+        .RadioButtonGroup-item {
+            margin-right: 10px;
+        }
+    }
+}
+
+.RadioButtonGroup-small {
+    .RadioButtonGroup-item {
+        margin-bottom: 4px;
+    }
+
+    .RadioButtonGroup-indicator {
+        width: 16px;
+        height: 16px;
+    }
+
+    input[type="radio"]:checked + .RadioButtonGroup-indicator {
+        border-width: 5px;
+    }
+}
+
+.RadioButtonGroup-medium {
+    .RadioButtonGroup-item {
+        margin-bottom: 6px;
+    }
+
+    .RadioButtonGroup-indicator {
+        width: 20px;
+        height: 20px;
+    }
+
+    input[type="radio"]:checked + .RadioButtonGroup-indicator {
+        border-width: 7px;
+    }
+}
+
+.RadioButtonGroup-large {
+    .RadioButtonGroup-item {
+        margin-bottom: 10px;
+    }
+
+    .RadioButtonGroup-indicator {
+        width: 24px;
+        height: 24px;
+    }
+
+    input[type="radio"]:checked + .RadioButtonGroup-indicator {
+        border-width: 9px;
+    }
+}
+
+.RadioButtonGroup {
+    .layout-small & {
+        .RadioButtonGroup-small;
+    }
+
+    .layout-large & {
+        .RadioButtonGroup-large;
+    }
+}
