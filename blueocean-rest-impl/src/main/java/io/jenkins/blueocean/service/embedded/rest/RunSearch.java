@@ -15,9 +15,11 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import jenkins.model.Jenkins;
+import jenkins.model.lazy.LazyBuildMixIn;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -84,6 +86,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
         return runs;
     }
 
+    @SuppressWarnings("unchecked")
     public static Iterable<BlueRun> findRuns(Job job, final Link parent, int start, int limit){
         final List<BlueRun> runs = new ArrayList<>();
         Iterable<Job> pipelines;
@@ -93,30 +96,46 @@ public class RunSearch extends OmniSearch<BlueRun> {
             pipelines = Jenkins.getInstance().getItems(Job.class);
         }
 
-        int skipCount=0;
-        int limitCount=0;
         for (Job p : pipelines) {
-            RunList<? extends Run> runList = p.getBuilds();
-            for (Run r : runList) {
-                if(skipCount < start){
-                    skipCount++;
-                    continue;
-                }
-                if(limitCount > limit){
-                    return runs;
-                }
-                runs.add(AbstractRunImpl.getBlueRun(r, new Reachable() {
+            Iterator<? extends Run> runIterator;
+            if (job instanceof LazyBuildMixIn.LazyLoadingJob) {
+                final LazyBuildMixIn lazyLoadMixin = ((LazyBuildMixIn.LazyLoadingJob) job).getLazyBuildMixIn();
+                runIterator = lazyLoadMixin.getRunMap().iterator();
+
+            }else{
+                runIterator = p.getBuilds().iterator();
+
+            }
+            runs.addAll(collectRuns(runIterator, parent, start, limit));
+        }
+
+        return runs;
+    }
+
+    private static List<BlueRun> collectRuns(Iterator<? extends Run> runIterator, final Link parent, int start, int limit){
+        List<BlueRun> runs = new ArrayList<>();
+        int skipCount = start; // Skip up to the start
+        while (runIterator.hasNext()) {
+            if (skipCount > 0) {
+                runIterator.next();
+                skipCount--;
+            } else {
+                runs.add(AbstractRunImpl.getBlueRun(runIterator.next(), new Reachable() {
                     @Override
                     public Link getLink() {
                         return parent;
                     }
                 }));
-                limitCount++;
+            }
+            if (runs.size() >= limit) {
+                return runs;
             }
         }
-
         return runs;
     }
+
+
+
 
     public static Iterable<BlueRun> findRuns(Job pipeline){
         return findRuns(pipeline, null);
