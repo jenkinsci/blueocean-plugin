@@ -8,6 +8,7 @@ import hudson.model.Queue;
 import hudson.model.queue.ScheduleResult;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.RunLoader;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
@@ -38,30 +39,12 @@ public class RunContainerImpl extends BlueRunContainer {
 
     @Override
     public BlueRun get(String name) {
-        RunList<? extends hudson.model.Run> runList = job.getBuilds();
-
-        hudson.model.Run run = null;
-        if (name != null) {
-            for (hudson.model.Run r : runList) {
-                if (r.getId().equals(name)) {
-                    run = r;
-                    break;
-                }
-            }
-            if (run == null) {
-                throw new ServiceException.NotFoundException(
-                    String.format("Run %s not found in organization %s and pipeline %s",
-                        name, pipeline.getOrganization(), job.getName()));
-            }
-        } else {
-            run = runList.getLastBuild();
-        }
-        return  AbstractRunImpl.getBlueRun(run, pipeline);
+        return RunLoader.get().getRun(name, job, pipeline.getLink());
     }
 
     @Override
     public Iterator<BlueRun> iterator() {
-        return RunSearch.findRuns(job, pipeline.getLink()).iterator();
+        return RunLoader.get().getRuns(job, pipeline.getLink()).iterator();
     }
 
     @Override
