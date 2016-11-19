@@ -16,5 +16,5 @@ public abstract class RunLoader implements ExtensionPoint {
 
     public abstract Iterable<BlueRun> getRuns(Job job, Link parent);
 
-    public abstract BlueRun getRun(String id, Job job, Link parent);
+    public abstract BlueRun getRun(String id, Job job, Reachable parent);
 }

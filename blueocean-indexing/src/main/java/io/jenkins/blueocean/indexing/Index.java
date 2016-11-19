@@ -39,11 +39,6 @@ import java.util.List;
 class Index<T> implements Closeable {
 
     @SuppressWarnings("unchecked")
-    public static Index<BluePipeline> openItems() throws IOException {
-        return openInternal(Jenkins.getInstance().getRootDir());
-    }
-
-    @SuppressWarnings("unchecked")
     public static Index<BlueRun> openRuns(Item item) throws IOException {
         return openInternal(item.getRootDir());
     }
@@ -84,9 +79,8 @@ class Index<T> implements Closeable {
             final TopDocs docs = searcher.search(query, limit, sort);
             final List<ScoreDoc> scoreDocs = Arrays.asList(docs.scoreDocs);
             return ImmutableList.copyOf(Iterables.transform(scoreDocs, new Function<ScoreDoc, T>() {
-                @Nullable
                 @Override
-                public T apply(@Nullable ScoreDoc input) {
+                public T apply(ScoreDoc input) {
                     int documentId = input.doc;
                     try {
                         Document document = searcher.doc(documentId);

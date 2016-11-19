@@ -12,14 +12,16 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
+
+import static io.jenkins.blueocean.indexing.Fields.sortField;
 
 final class Transformers {
 
@@ -143,7 +145,8 @@ final class Transformers {
         @Override
         public Document apply(BlueRun input) {
             Document document = new Document();
-            document.add(new IntField(BlueRun.ID, Integer.valueOf(input.getId()), Store.YES));
+            document.add(new LongField(BlueRun.ID, Integer.valueOf(input.getId()), Store.YES));
+            document.add(new NumericDocValuesField(sortField(BlueRun.ID), Integer.valueOf(input.getId())));
             document.add(new StringField(BlueRun.RESULT, input.getResult().name(), Store.YES));
             document.add(new StringField(BlueRun.ORGANIZATION, input.getOrganization(), Store.YES));
             document.add(new StringField(BlueRun.PIPELINE, input.getPipeline(), Store.YES));
@@ -154,6 +157,11 @@ final class Transformers {
             document.add(new LongField(BlueRun.ENQUEUE_TIME, input.getEnQueueTime().getTime(), Store.YES));
             document.add(new LongField(BlueRun.DURATION_IN_MILLIS, input.getDurationInMillis(), Store.YES));
             document.add(new LongField(BlueRun.ESTIMATED_DURATION_IN_MILLIS, input.getEstimatedDurtionInMillis(), Store.YES));
+            document.add(new NumericDocValuesField(sortField(BlueRun.START_TIME), input.getStartTime().getTime()));
+            document.add(new NumericDocValuesField(sortField(BlueRun.END_TIME), input.getEndTime().getTime()));
+            document.add(new NumericDocValuesField(sortField(BlueRun.ENQUEUE_TIME) + "_sort", input.getEnQueueTime().getTime()));
+            document.add(new NumericDocValuesField(sortField(BlueRun.DURATION_IN_MILLIS) + "_sort", input.getDurationInMillis()));
+            document.add(new NumericDocValuesField(sortField(BlueRun.ESTIMATED_DURATION_IN_MILLIS) + "_sort", input.getEstimatedDurtionInMillis()));
             return document;
         }
     };

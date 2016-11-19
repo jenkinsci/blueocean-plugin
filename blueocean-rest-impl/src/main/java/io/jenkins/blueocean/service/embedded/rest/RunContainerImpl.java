@@ -39,7 +39,7 @@ public class RunContainerImpl extends BlueRunContainer {
 
     @Override
     public BlueRun get(String name) {
-        return RunLoader.get().getRun(name, job, pipeline.getLink());
+        return RunLoader.get().getRun(name, job, pipeline);
     }
 
     @Override

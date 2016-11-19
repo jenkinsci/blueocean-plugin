@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Singleton;
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.listeners.RunListener;
 import io.jenkins.blueocean.rest.Reachable;
@@ -19,6 +20,9 @@ import jenkins.model.Jenkins;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -75,8 +79,7 @@ public class IndexService {
         @Override
         public void onFinalized(Run<?, ?> run) {
             Index<BlueRun> index = getRunIndex(run.getParent());
-            Reachable parent = BluePipelineFactory.resolve(run.getParent());
-            BlueRun blueRun = AbstractRunImpl.getBlueRun(run, parent);
+            BlueRun blueRun = getRun(run);
             try {
                 index.addDocuments(ImmutableList.of(blueRun), Transformers.RUN_TO_DOCUMENT);
             } catch (IOException e) {
@@ -93,6 +96,11 @@ public class IndexService {
                 LOGGER.log(Level.SEVERE, "Could not add run to index", e);
             }
         }
+    }
+
+    private static BlueRun getRun(Run<?, ?> run) {
+        Reachable parent = BluePipelineFactory.resolve(run.getParent());
+        return AbstractRunImpl.getBlueRun(run, parent);
     }
 
     static LoadingCache<Item, Index<BlueRun>> getRunCache() {
