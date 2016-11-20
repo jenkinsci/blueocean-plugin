@@ -9,6 +9,7 @@ import {
     PageTabs,
     TabLink,
     WeatherIcon,
+    NotFound,
 } from '@jenkins-cd/design-language';
 import { I18n, User } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from 'react-material-icons-blue';
@@ -18,7 +19,6 @@ import {
     connect,
     createSelector,
 } from '../redux';
-import NotFound from './NotFound';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';

@@ -19,6 +19,9 @@ export { User } from './User';
 export AppConfig from './config';
 export Security from './security';
 
+export Fullscreen from './Fullscreen';
+export NotFound from './NotFound';
+
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton } from './components/RunButton';
 
