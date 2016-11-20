@@ -42,8 +42,7 @@ export class Pager {
     @action
     fetchNextPage() {
         const url = this.pagedUrl(this.currentPage * this.pageSize, this.pageSize + 1);
-        
-       
+    
         this.pending = true;
         return Fetch.fetchJSON(url) // Fetch data
             .then(action('set data', data => {

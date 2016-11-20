@@ -2,6 +2,9 @@
  * This object defines rest paths
  */
 export default {
+    _convertSlashes(pipeline) {
+        return pipeline.replace(/\//g, '/pipelines/');
+    },
     apiRoot() {
         return '/blue/rest';
     },
@@ -27,7 +30,7 @@ export default {
     },
     
     pipeline(organization, pipeline) {
-        return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/`;
+        return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${this._convertSlashes(pipeline)}/`;
     },
     branches(organization, pipeline) {
         return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/branches/?filter=origin`;  
