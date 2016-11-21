@@ -13,7 +13,7 @@ export const defaultLngDetector = new LngDetector(null, {
     // keys or params to lookup language from
     lookupQuerystring: 'language',
 });
-const prefix = urlConfig.getJenkinsRootURL() || '/';
+const prefix = urlConfig.getJenkinsRootURL() || '';
 
 const loadPath = `${prefix}/i18n/resourceBundle?language={lng}&baseName={ns}`;
 /**
