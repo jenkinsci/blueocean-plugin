@@ -1,5 +1,7 @@
 package io.blueocean.rest.pipeline.editor;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,9 @@ import jenkins.model.Jenkins;
 
 /**
  * This provides and Blueocean REST API endpoint to obtain pipeline step metadata.
+ * 
+ * TODO: this should be provided off of the organization endpoint:
+ * e.g. /organization/:id/pipeline-step-metadata
  */
 @Extension
 public class PipelineStepMetadataService implements ApiRoutable {
@@ -130,9 +135,10 @@ public class PipelineStepMetadataService implements ApiRoutable {
      * Basic exported model for {@link PipelineStepPropertyMetadata)
      */
     @ExportedBean
-    public static class BasicPipelineStepPropertyMetadata implements PipelineStepPropertyMetadata{
+    public static class BasicPipelineStepPropertyMetadata implements PipelineStepPropertyMetadata {
         private String name;
         private Class<?> type;
+        private List<Class<?>> collectionTypes = new ArrayList<>();
         private boolean isRequired = false;
         private String descriptorUrl;
 
@@ -152,6 +158,15 @@ public class PipelineStepMetadataService implements ApiRoutable {
         @Override
         public boolean getIsRequired() {
             return isRequired;
+        }
+
+        @Exported
+        public String[] getCollectionTypes() {
+            String[] types = new String[collectionTypes.size()];
+            for (int i = 0; i < types.length; i++) {
+                types[i] = collectionTypes.get(i).getName();
+            }
+            return types;
         }
 
         @Exported
@@ -200,9 +215,19 @@ public class PipelineStepMetadataService implements ApiRoutable {
             step.hasSingleRequiredParameter = model.hasSingleRequiredParameter();
 
             for (DescribableParameter descParam : model.getParameters()) {
+                
                 BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
 
                 param.type = descParam.getErasedType();
+                Type typ = descParam.getType().getActualType();
+                if (typ instanceof ParameterizedType) {
+                    Type[] typeArgs = ((ParameterizedType)typ).getActualTypeArguments();
+                    for (Type ptyp : typeArgs) {
+                        if (ptyp instanceof Class<?>) {
+                            param.collectionTypes.add((Class<?>)ptyp);
+                        }
+                    }
+                }
                 param.name = descParam.getName();
                 param.isRequired = descParam.isRequired();
 
