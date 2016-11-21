@@ -80,7 +80,7 @@ export class MultiBranch extends Component {
         const head = 'pipelinedetail.branches.header';
 
         const status = t(`${head}.status`, { defaultValue: 'Status' });
-        const health = t(`${head}.health`, { defaultValue: 'health' });
+        const health = t(`${head}.health`, { defaultValue: 'Health' });
         const commit = t(`${head}.commit`, { defaultValue: 'Commit' });
         const branch = t(`${head}.branch`, { defaultValue: 'Branch' });
         const message = t(`${head}.message`, { defaultValue: 'Message' });
