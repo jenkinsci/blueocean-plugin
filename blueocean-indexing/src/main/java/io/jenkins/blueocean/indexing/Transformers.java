@@ -159,9 +159,9 @@ final class Transformers {
             document.add(new LongField(BlueRun.ESTIMATED_DURATION_IN_MILLIS, input.getEstimatedDurtionInMillis(), Store.YES));
             document.add(new NumericDocValuesField(sortField(BlueRun.START_TIME), input.getStartTime().getTime()));
             document.add(new NumericDocValuesField(sortField(BlueRun.END_TIME), input.getEndTime().getTime()));
-            document.add(new NumericDocValuesField(sortField(BlueRun.ENQUEUE_TIME) + "_sort", input.getEnQueueTime().getTime()));
-            document.add(new NumericDocValuesField(sortField(BlueRun.DURATION_IN_MILLIS) + "_sort", input.getDurationInMillis()));
-            document.add(new NumericDocValuesField(sortField(BlueRun.ESTIMATED_DURATION_IN_MILLIS) + "_sort", input.getEstimatedDurtionInMillis()));
+            document.add(new NumericDocValuesField(sortField(BlueRun.ENQUEUE_TIME), input.getEnQueueTime().getTime()));
+            document.add(new NumericDocValuesField(sortField(BlueRun.DURATION_IN_MILLIS), input.getDurationInMillis()));
+            document.add(new NumericDocValuesField(sortField(BlueRun.ESTIMATED_DURATION_IN_MILLIS), input.getEstimatedDurtionInMillis()));
             return document;
         }
     };
