@@ -140,25 +140,27 @@ class Pager {
             Fetch.fetchJSON(url) // Fetch data
             .then(data => augmenter.augmentCapabilities(data))
             .then(successAndFreeze)) // add success field & freeze graph
-            .then((data) => {
-                debugLog(' -- success: ', url, data);
-                // fetched an extra to test if more
-                const hasMore = data.length > limit;
-                const outData = assignObj(concatenator(this, existingData, data));
-                outData.$success = true;
-                outData.$pager = Object.assign(this, {
-                    current: first,
-                    hasMore,
-                    currentData: outData,
-                    startIndex: existingData.length > 0 ? this.startIndex : first,
-                });
-                Object.freeze(outData); // children are already frozen, only shallow freeze here
-                onData(outData);
-            })
-            .catch(err => {
-                debugLog(' -- error: ', url, err);
-                onData(assignObj(concatenator(this, existingData), { $failed: err }));
-            });
+            .then(
+                (data) => {
+                    debugLog(' -- success: ', url, data);
+                    // fetched an extra to test if more
+                    const hasMore = data.length > limit;
+                    const outData = assignObj(concatenator(this, existingData, data));
+                    outData.$success = true;
+                    outData.$pager = Object.assign(this, {
+                        current: first,
+                        hasMore,
+                        currentData: outData,
+                        startIndex: existingData.length > 0 ? this.startIndex : first,
+                    });
+                    Object.freeze(outData); // children are already frozen, only shallow freeze here
+                    onData(outData);
+                },
+                err => {
+                    debugLog(' -- error: ', url, err);
+                    onData(assignObj(concatenator(this, existingData), { $failed: err }));
+                }
+            );
     }
 }
 
