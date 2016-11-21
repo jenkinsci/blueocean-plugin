@@ -9,8 +9,7 @@ const allStepEditors = [
     require('./steps/ShellScriptStepEditor').default,
 ];
 
-const stepEditorsByName = {
-};
+const stepEditorsByName = {};
 
 for (let e of allStepEditors) {
     stepEditorsByName[e.stepType] = e;
@@ -35,12 +34,6 @@ export class EditorStepDetails extends Component {
 
     constructor(props:Props) {
         super(props);
-
-        const step = props.step;
-
-        this.state = {
-            body: step ? step.data : ""
-        };
     }
 
     componentWillMount() {
@@ -58,7 +51,7 @@ export class EditorStepDetails extends Component {
     commitValue(step) {
         const {onDataChange} = this.props;
         if (onDataChange) {
-            onDataChange(step);
+            onDataChange(step.data);
         }
     }
 
@@ -83,7 +76,6 @@ export class EditorStepDetails extends Component {
     render() {
 
         const {step} = this.props;
-        const {body} = this.state;
 
         if (!step) {
             return (

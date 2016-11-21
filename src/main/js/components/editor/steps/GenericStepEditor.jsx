@@ -2,6 +2,23 @@
 
 import React, { Component, PropTypes } from 'react';
 import pipelineStepListStore from '../../../services/PipelineStepListStore';
+import debounce from 'lodash.debounce';
+
+const allPropertyEditors = [
+    require('./properties/BooleanPropertyInput').default,
+    require('./properties/IntegerPropertyInput').default,
+    require('./properties/DecimalPropertyInput').default,
+    require('./properties/StringPropertyInput').default,
+];
+
+const propertyEditorsByName = {
+};
+
+for (let e of allPropertyEditors) {
+    for (let t of e.dataTypes) {
+        propertyEditorsByName[t] = e;
+    }
+}
 
 type Props = {
     onChange: Function,
@@ -22,12 +39,16 @@ export default class GenericStepEditorPanel extends Component<DefaultProps, Prop
         super(props);
         this.state = { stepMetadata: null };
     }
-    
+
     componentWillMount() {
         pipelineStepListStore.getStepListing(stepMetadata => {
             this.setState({stepMetadata: stepMetadata});
         });
     }
+
+    updateStepData = debounce(() => {
+        this.props.onChange(this.props.step);
+    }, 300);
 
     render() {
         const { step } = this.props;
@@ -42,11 +63,14 @@ export default class GenericStepEditorPanel extends Component<DefaultProps, Prop
         return (
             <div className="pipeline-editor-step-generic">
                 {thisMeta.properties.map(p => {
-                    const val = step.data[p.name];
+                    const propTypeEditor = propertyEditorsByName[p.dataType];
+                    if (propTypeEditor) {
+                        return React.createElement(propTypeEditor, { step: step, type: p, propName: p.name, onChange: () => this.updateStepData() });
+                    }
                     return (
-                        <div key={p.name}>
+                        <div className="" key={p.name}>
                             <label>{p.name}</label>
-                            <input defaultValue={val} onChange={e => step.data[p.name] = e.target.value} />
+                            <input defaultValue={step.data[p.name]} onChange={e => { step.data[p.name] = e.target.value; this.updateStepData(); }} />
                         </div>
                     );
                 })}

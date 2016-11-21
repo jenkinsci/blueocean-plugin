@@ -1,16 +1,17 @@
 import React, { Component, PropTypes } from 'react';
+import debounce from 'lodash.debounce';
 
 export default class ScriptStepEditor extends React.Component {
-    textChanged(event) {
-        this.props.step.script = event.target.value;
+    textChanged = debounce(script => {
+        this.props.step.data.script = script;
         this.props.onChange(this.props.step);
-    }
+    }, 300);
 
     render() {
         const { step } = this.props;
         return <textarea className="editor-step-detail-script"
                   defaultValue={step.data.script}
-                  onChange={(e) => this.textChanged(e)} />
+                  onChange={(e) => this.textChanged(e.target.value)} />
     }
 }
 
