@@ -390,9 +390,11 @@ table.highlight {
     width: 100%;
     height: 100%;
     display: block;
-    padding: 0.5em 0;
+    padding: 0.5em 0.8em 0.5em 0;
     text-decoration: none;
     color: inherit;
+    line-height: 22px; // force height to fill space to ensure clicks are "captured"
+    .text-overflow;
 }
 
 tr:first-child td.tableRowLink, // <-- Needs to override JDL "tbody tr:first-child td" rule
