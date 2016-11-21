@@ -3,11 +3,15 @@
  */
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Security, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { I18n, Security, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+
+const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
 
 const QUERY_STRING_KEY = 'blueCreate';
 
 export default function CreatePipelineLink(props, context) {
+    const caption = translate('home.header.button.createpipeline', { defaultValue: 'New Pipeline' });
+    console.log('arrr', caption);
     // if special key is not defined, create a link to classic UI
     if (!context.location || !context.location.query || !(QUERY_STRING_KEY in context.location.query)) {
         const baseUrl = UrlConfig.getJenkinsRootURL();
@@ -15,7 +19,7 @@ export default function CreatePipelineLink(props, context) {
 
         return (
             <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
-                New Pipeline
+                { caption }
             </a>
         );
     }
@@ -27,7 +31,7 @@ export default function CreatePipelineLink(props, context) {
 
     return (
         <Link to="/create-pipeline" className="btn-secondary inverse">
-            New Pipeline
+            { caption }
         </Link>
     );
 }

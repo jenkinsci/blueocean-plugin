@@ -1,6 +1,10 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
+<<<<<<< HEAD
   "version": "0.0.22-ivan-beta4",
+=======
+  "version": "0.0.25-unpublished",
+>>>>>>> master
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -29,6 +33,9 @@
     "es6-promise": "4.0.5",
     "eslint": "2.13.1",
     "eslint-plugin-react": "4.3.0",
+    "i18next": "3.5.2",
+    "i18next-browser-languagedetector": "^1.0.0",
+    "i18next-xhr-backend": "1.2.0",
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "7.1.9",
     "mobx": "2.6.0",

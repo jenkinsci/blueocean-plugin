@@ -16,13 +16,17 @@ describe('Pipelines', () => {
         getRootURL: () => '/',
     };
 
-    const params = {};
+    const context = {
+        params: {},
+        location: {},
+        config,
+    };
 
     describe('basic table rendering', () => {
         let wrapper;
-        let context;
 
         beforeEach(() => {
+
             context = {
                 params,
                 config,
@@ -67,6 +71,7 @@ describe('Pipelines', () => {
                     },
                 },
             };
+
 
             const wrapper = mount(
                 <Pipelines params={context.params} setTitle={()=>{}}/>,

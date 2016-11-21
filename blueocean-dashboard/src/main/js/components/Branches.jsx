@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import { observer } from 'mobx-react';
-const { object } = PropTypes;
+
 
 const stopProp = (event) => event.stopPropagation();
 
@@ -17,22 +17,30 @@ export default class Branches extends Component {
         this.state = { isVisible: false };
     }
     render() {
-        const { data: branch, pipeline } = this.props;
+        const { data: branch, pipeline, t, locale } = this.props;
         // early out
         if (!branch || !pipeline) {
             return null;
         }
+
         const { router, location } = this.context;
         const latestRun = branch.latestRun;
         
         const cleanBranchName = decodeURIComponent(branch.name);
         const url = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
 
-        const open = () => {
+        const open = (event) => {
+            if (event) {
+                event.preventDefault();
+            }
             location.pathname = url;
             router.push(location);
         };
 
+        const BranchCol = (props) => <td className="tableRowLink">
+            <a onClick={open} href={`${UrlConfig.getJenkinsRootURL()}/blue${url}`}>{props.children}</a>
+        </td>;
+       
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
@@ -41,16 +49,24 @@ export default class Branches extends Component {
         const { msg } = (branch.changeSet && branch.changeSet.length > 0) ? (branch.changeSet[0] || {}) : {};
         return (
             <tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${latestRun.id}`} >
-                <td><WeatherIcon score={branch.weatherScore} /></td>
-                <td onClick={open}>
+                <BranchCol><WeatherIcon score={branch.weatherScore} /></BranchCol>
+                <BranchCol onClick={open}>
                     <LiveStatusIndicator result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
                       startTime={latestRun.startTime} estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
-                </td>
-                <td>{cleanBranchName}</td>
-                <td><CommitHash commitId={latestRun.commitId} /></td>
-                <td>{msg || '-'}</td>
-                <td><ReadableDate date={latestRun.endTime} liveUpdate /></td>
+                </BranchCol>
+                <BranchCol>{cleanBranchName}</BranchCol>
+                <BranchCol><CommitHash commitId={latestRun.commitId} /></BranchCol>
+                <BranchCol>{msg || '-'}</BranchCol>
+                <BranchCol>
+                    <ReadableDate
+                      date={latestRun.endTime}
+                      liveUpdate
+                      locale={locale}
+                      shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                      longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                    />
+                </BranchCol>
                 { /* suppress all click events from extension points */ }
                 <td className="actions" onClick={(event) => stopProp(event)}>
                     <RunButton
@@ -63,6 +79,7 @@ export default class Branches extends Component {
                       extensionPoint="jenkins.pipeline.branches.list.action"
                       pipeline={branch }
                       store={this.context.store}
+                      {...t}
                     />
                 </td>
             </tr>
@@ -70,8 +87,11 @@ export default class Branches extends Component {
     }
 }
 
+const { func, object, string } = PropTypes;
 Branches.propTypes = {
     data: object.isRequired,
+    t: func,
+    locale: string,
     pipeline: object,
 };
 

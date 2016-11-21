@@ -114,7 +114,7 @@ export class LogConsole extends Component {
     }
     render() {
         const { isLoading, lines } = this.state;
-        const { prefix = '', hasMore = false, url, router, location } = this.props; // if hasMore true then show link to full log
+        const { prefix = '', hasMore = false, url, router, location, t } = this.props; // if hasMore true then show link to full log
         if (!lines) {
             return null;
         }
@@ -138,7 +138,7 @@ export class LogConsole extends Component {
                       key={0}
                       href={logUrl}
                     >
-                        Show complete log
+                        {t('Show.complete.logs')}
                     </a>
                 </div>}
                 <table className="highlight">
@@ -177,6 +177,7 @@ LogConsole.propTypes = {
     router: shape,
     location: shape,
     url: string,
+    t: func,
 };
 
 export default scrollHelper(LogConsole);

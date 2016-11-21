@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import { RunButton, capable } from '@jenkins-cd/blueocean-core-js';
+import Markdown from 'react-remarkable';
 import Runs from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
@@ -9,27 +10,23 @@ import { observer } from 'mobx-react';
 
 const { object, array, func, string, bool } = PropTypes;
 
-const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation }) => (
-    <main>
+const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation, t }) =>
+    (<main>
         <EmptyStateView iconName="shoes">
-            <h1>Ready, get set...</h1>
-
-            <p>
-                Hmm, looks like there are no runs in this pipeline’s history.
-            </p>
-
-            <p>
-                Commit to the repository <em>{repoName}</em> or run the pipeline manually.
-            </p>
-
-        { showRunButton &&
-            <RunButton
-              runnable={pipeline}
-              buttonType="run-only"
-              runLabel="Run Now"
-              onNavigation={onNavigation}
-            />
-        }
+            <Markdown>
+                {t('EmptyState.activity', {
+                    0: repoName,
+                    defaultValue: '# Ready, get set...\nHmm, looks like there are no runs in this pipeline\u2019s history.\n\nCommit to the repository _{0}_ or run the pipeline manually.',
+                })}
+            </Markdown>
+            { showRunButton &&
+                <RunButton
+                  runnable={pipeline}
+                  buttonType="run-only"
+                  runLabel={ t('pipelinedetail.activity.button.run', { defaultValue: 'Run now' }) }
+                  onNavigation={onNavigation}
+                />
+            }
         </EmptyStateView>
     </main>
 );
@@ -39,6 +36,7 @@ EmptyState.propTypes = {
     pipeline: object,
     showRunButton: bool,
     onNavigation: func,
+    t: func,
 };
 @observer
 export class Activity extends Component {
@@ -53,7 +51,7 @@ export class Activity extends Component {
     }
 
     render() {
-        const { pipeline } = this.props;
+        const { pipeline t, locale} = this.props;
         const runs = this.pager.data;
         if (!runs || !pipeline) {
             return null;
@@ -72,27 +70,35 @@ export class Activity extends Component {
         };
 
         if (!runs.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
+            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
         }
 
         const latestRun = runs[0];
+        const head = 'pipelinedetail.activity.header';
 
+        const status = t(`${head}.status`, { defaultValue: 'Status' });
+        const build = t(`${head}.build`, { defaultValue: 'Build' });
+        const commit = t(`${head}.commit`, { defaultValue: 'Commit' });
+        const message = t(`${head}.message`, { defaultValue: 'Message' });
+        const duration = t(`${head}.duration`, { defaultValue: 'Duration' });
+        const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
+        const branch = t(`${head}.branch`, { defaultValue: 'Branch' });
         const headers = isMultiBranchPipeline ? [
-            'Status',
-            'Build',
-            'Commit',
-            { label: 'Branch', className: 'branch' },
-            { label: 'Message', className: 'message' },
-            { label: 'Duration', className: 'duration' },
-            { label: 'Completed', className: 'completed' },
+            status,
+            build,
+            commit,
+            { label: branch, className: 'branch' },
+            { label: message, className: 'message' },
+            { label: duration, className: 'duration' },
+            { label: completed, className: 'completed' },
             { label: '', className: 'actions' },
         ] : [
-            'Status',
-            'Build',
-            'Commit',
-            { label: 'Message', className: 'message' },
-            { label: 'Duration', className: 'duration' },
-            { label: 'Completed', className: 'completed' },
+            status,
+            build,
+            commit,
+            { label: message, className: 'message' },
+            { label: duration, className: 'duration' },
+            { label: completed, className: 'completed' },
             { label: '', className: 'actions' },
         ];
 
@@ -120,9 +126,11 @@ export class Activity extends Component {
 
                             return (
                                 <Runs {...{
-                                    key: index,
+                                    t,
+                                    locale,
                                     run,
                                     pipeline,
+                                    key: index,
                                     changeset: latestRecord,
                                 }}
                                 />
@@ -131,9 +139,10 @@ export class Activity extends Component {
                     }
                 </Table>
                 }
+
                 {runs && runs.length > 0 &&
-                <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
-                    {this.pager.pending ? 'Loading...' : 'Show More'}
+                <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchMore()}>
+                    {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
                 </button>
                 }
             </article>
@@ -152,6 +161,8 @@ Activity.contextTypes = {
 Activity.propTypes = {
     runs: array,
     pipeline: object,
+    locale: string,
+    t: func,
 };
 
 export default Activity;

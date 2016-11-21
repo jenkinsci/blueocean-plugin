@@ -17,6 +17,7 @@ export JWT from './jwt';
 export TestUtils from './testutils';
 export ToastUtils from './ToastUtils';
 export Utils from './utils';
+export { User } from './User';
 export AppConfig from './config';
 export Security from './security';
 export Paths from './paths/index';
@@ -56,3 +57,5 @@ export const pipelineService = new PipelineService(pagerService, activityService
 const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, pagerService);
 sseService.registerHandler(defaultSSEhandler.handleEvents);
 
+// export i18n provider
+export I18n, { defaultLngDetector, defaultXhr, initOptions, i18n } from './i18n/i18n';

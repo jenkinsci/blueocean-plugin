@@ -290,7 +290,7 @@ export class RunDetailsPipeline extends Component {
     render() {
         const { location, router } = this.context;
 
-        const { isMultiBranch, nodes, result: run, params } = this.props;
+        const { isMultiBranch, nodes, result: run, params, t } = this.props;
 
         if (run.isQueued()) {
             return <QueuedState />;
@@ -310,7 +310,7 @@ export class RunDetailsPipeline extends Component {
    
         let title = this.mergedConfig.nodeReducer.displayName;
         if (this.mergedConfig.nodeReducer.id !== null && title) {
-            title = `Steps - ${title}`;
+            title = `${t('rundetail.pipeline.steps', { defaultValue: 'Steps' })} - ${title}`;
         }
         // here we decide what to do next if somebody clicks on a flowNode
         const afterClick = (id) => {
@@ -353,6 +353,8 @@ export class RunDetailsPipeline extends Component {
         const shouldShowLogHeader = noSteps !== null && !noSteps;
         const stepScrollAreaClass = `step-scroll-area ${followAlong ? 'follow-along-on' : 'follow-along-off'}`;
 
+        const shouldShowCV = (!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView;
+        const shouldShowEmptyState = !isPipelineQueued && hasResultsForSteps && noSteps;
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
@@ -364,6 +366,7 @@ export class RunDetailsPipeline extends Component {
                   branchName={isMultiBranch ? params.branch : undefined}
                   runId={run.id}
                   run={run}
+                  t={t}
                 />
                 }
                 { hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView &&
@@ -387,13 +390,14 @@ export class RunDetailsPipeline extends Component {
                 />
                 }
                 { isPipelineQueued && supportsNode && <QueuedState /> }
-                { !isPipelineQueued && hasResultsForSteps && noSteps && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
-                    <p>There are no steps.</p>
+                { shouldShowEmptyState && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
+                    <p>{t('rundetail.pipeline.nosteps', { defaultValue: 'There are no logs' })}</p>
                 </EmptyStateView>
                 }
-                { ((!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView) && <LogConsoleView
+                { shouldShowCV && <LogConsoleView
                   {
                     ...{
+                        title: t('rundetail.pipeline.logs', { defaultValue: 'Logs' }),
                         scrollToBottom,
                         ...this.props,
                         ...this.state,
@@ -424,6 +428,7 @@ RunDetailsPipeline.propTypes = {
     steps: object,
     nodes: object,
     nodeReducer: object,
+    t: func,
 };
 
 RunDetailsPipeline.contextTypes = {

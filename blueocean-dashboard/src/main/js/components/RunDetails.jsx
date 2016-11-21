@@ -6,8 +6,7 @@ import {
     PageTabs,
     TabLink,
 } from '@jenkins-cd/design-language';
-
-import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { I18n, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import { Icon } from 'react-material-icons-blue';
 
@@ -24,13 +23,15 @@ import PageLoading from './PageLoading';
 import { Paths, capable } from '@jenkins-cd/blueocean-core-js';
 import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
+import { User } from '@jenkins-cd/blueocean-core-js';
+
 const { func, object, any, string } = PropTypes;
 
 const { rest: RestPaths } = Paths;
 
 const classicConfigLink = (pipeline) => {
     let link = null;
-    if (AppConfig.getInitialUser() !== 'anonymous') {
+    if (User.current().isAnonymous()) {
         let url = buildClassicConfigUrl(pipeline);
         link = (
             <a href={url} target="_blank" style={{ height: '24px' }}>
@@ -40,6 +41,9 @@ const classicConfigLink = (pipeline) => {
     }
     return link;
 };
+
+const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+
 
 @observer
 class RunDetails extends Component {
@@ -86,16 +90,21 @@ class RunDetails extends Component {
 
     navigateToOrganization() {
         const { organization } = this.props.pipeline;
+        const { location } = this.context;
         const organizationUrl = buildOrganizationUrl(organization);
-        this.context.router.push(organizationUrl);
+        location.pathname = organizationUrl;
+        this.context.router.push(location);
     }
     navigateToPipeline() {
         const { organization, fullName } = this.props.pipeline;
+        const { location } = this.context;
         const pipelineUrl = buildPipelineUrl(organization, fullName);
-        this.context.router.push(pipelineUrl);
+        location.pathname = pipelineUrl;
+        this.context.router.push(location);
     }
     navigateToChanges() {
         const {
+            location,
             params: {
                 organization,
                 pipeline,
@@ -105,7 +114,8 @@ class RunDetails extends Component {
         } = this.context;
 
         const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
-        this.context.router.push(changesUrl);
+        location.pathname = changesUrl;
+        this.context.router.push(location);
     }
     render() {
         const run = this.context.activityService.getActivity(this.href);
@@ -117,7 +127,7 @@ class RunDetails extends Component {
 
         
         const { router, location, params } = this.context;
-        const { pipeline, setTitle } = this.props;
+        const { pipeline, setTitle, t, locale } = this.props;
 
         if (!run || !pipeline) {
             return <PageLoading />;
@@ -158,6 +168,8 @@ class RunDetails extends Component {
                 <ModalHeader>
                     <div>
                         <RunDetailsHeader
+                          t={ t }
+                          locale={locale}
                           pipeline={pipeline}
                           data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
@@ -165,10 +177,18 @@ class RunDetails extends Component {
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
                         <PageTabs base={baseUrl}>
-                            <TabLink to="/pipeline">Pipeline</TabLink>
-                            <TabLink to="/changes">Changes</TabLink>
-                            <TabLink to="/tests">Tests</TabLink>
-                            <TabLink to="/artifacts">Artifacts</TabLink>
+                            <TabLink to="/pipeline">{t('rundetail.header.tab.pipeline', {
+                                defaultValue: 'Pipeline',
+                            })}</TabLink>
+                            <TabLink to="/changes">{t('rundetail.header.tab.changes', {
+                                defaultValue: 'Changes',
+                            })}</TabLink>
+                            <TabLink to="/tests">{t('rundetail.header.tab.tests', {
+                                defaultValue: 'Tests',
+                            })}</TabLink>
+                            <TabLink to="/artifacts">{t('rundetail.header.tab.artifacts', {
+                                defaultValue: 'Artifacts',
+                            })}</TabLink>
                         </PageTabs>
 
                         <div className="button-bar">
@@ -194,7 +214,7 @@ class RunDetails extends Component {
                     <div>
                         {run && React.cloneElement(
                             this.props.children,
-                            { baseUrl, result: currentRun, isMultiBranch: this.isMultiBranch, ...this.props }
+                            { locale: I18n.language, baseUrl, t: translate, result: currentRun, isMultiBranch: this.isMultiBranch, ...this.props }
                         )}
                     </div>
                 </ModalBody>
@@ -218,7 +238,9 @@ RunDetails.propTypes = {
     run: object,
     previous: string,
     setTitle: func,
+    locale: string,
+    t: func,
 };
 
-
 export default RunDetails;
+

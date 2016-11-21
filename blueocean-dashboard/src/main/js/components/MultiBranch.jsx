@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
+import Markdown from 'react-remarkable';
 import Branches from './Branches';
 
 import PageLoading from './PageLoading';
@@ -10,40 +11,37 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 
 const { object, string, any } = PropTypes;
 
-const EmptyState = ({ repoName }) => (
+const EmptyState = ({ repoName, t }) => (
     <main>
         <EmptyStateView iconName="branch">
-            <h1>Branch out</h1>
-
-            <p>
-                Create a branch in the repository <em>{repoName}</em> and
-                Jenkins will start testing your changes.
-            </p>
-
-            <p>
-                Give it a try and become a hero to your team.
-            </p>
-
-            <button>Enable</button>
+            <Markdown>
+                {t('EmptyState.branches', {
+                    0: repoName,
+                    defaultValue: '# Branch out\nCreate a branch in the repository _{0}_ and Jenkins will start testing your changes.\n\nGive it a try and become a hero to your team.',
+                })}
+            </Markdown>
+            <button>{t('Enable', { defaultValue: 'Enable' })}</button>
         </EmptyStateView>
     </main>
 );
 
-const NotSupported = () => (
+const NotSupported = ({ t }) => (
     <main>
         <EmptyStateView>
-            <h1>Branches are unsupported</h1>
-            <p>
-            Branch builds only work with the <i>Multibranch Pipeline</i> job type.
-            This is just one of the many reasons to switch to Jenkins Pipeline.
-            </p>
-            <a href="https://jenkins.io/doc/book/pipeline-as-code/" target="_blank">Learn more</a>
+            <Markdown>
+                {t('EmptyState.branches.notSupported', { defaultValue: '# Branches are unsupported\nBranch builds only work with the _Multibranch Pipeline_ job type. This is just one of the many reasons to switch to Jenkins Pipeline.\n\n[Learn more](https://jenkins.io/doc/book/pipeline-as-code/)' })}
+            </Markdown>
         </EmptyStateView>
     </main>
 );
 
 EmptyState.propTypes = {
     repoName: string,
+    t: func,
+};
+
+NotSupported.propTypes = {
+    t: func,
 };
 
 @observer
@@ -56,7 +54,7 @@ export class MultiBranch extends Component {
     }
 
     render() {
-        const { pipeline } = this.props;
+        const { t, locale,pipeline } = this.props;
         const branches = this.pager.data;
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
             return (<NotSupported />);
@@ -66,13 +64,21 @@ export class MultiBranch extends Component {
             return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
+        const head = 'pipelinedetail.branches.header';
+
+        const statusHeader = t(`${head}.status`, { defaultValue: 'Status' });
+        const healthHeader = t(`${head}.health`, { defaultValue: 'health' });
+        const commitHeader = t(`${head}.commit`, { defaultValue: 'Commit' });
+        const branchHeader = t(`${head}.branch`, { defaultValue: 'Branch' });
+        const messageHeader = t(`${head}.message`, { defaultValue: 'Message' });
+        const completedHeader = t(`${head}.completed`, { defaultValue: 'Completed' });
         const headers = [
-            'Health',
-            'Status',
-            { label: 'Branch', className: 'branch' },
-            { label: 'Last commit', className: 'lastcommit' },
-            { label: 'Latest message', className: 'message' },
-            { label: 'Completed', className: 'completed' },
+            healthHeader,
+            statusHeader,
+            { label: branchHeader, className: 'branch' },
+            { label: commitHeader, className: 'lastcommit' },
+            { label: messageHeader, className: 'message' },
+            { label: completedHeader, className: 'completed' },
             { label: '', className: 'run' },
         ];
 
@@ -80,12 +86,13 @@ export class MultiBranch extends Component {
             <main>
                 <article>
                     {branches.$pending && <PageLoading />}
+
                     <Table className="multibranch-table fixed" headers={headers}>
-                        {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} />)}
+                        {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} t={t} locale={locale}/>)}
                     </Table>
                     {this.pager.pending &&
                         <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
-                             {this.pager.pending ? 'Loading...' : 'Show More'}
+                             {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
                         </button>
                     }
                 </article>
@@ -103,6 +110,8 @@ MultiBranch.contextTypes = {
 
 MultiBranch.propTypes = {
     children: any,
+    t: func,
+    locale: string,
     pipeline: object,
 };
 

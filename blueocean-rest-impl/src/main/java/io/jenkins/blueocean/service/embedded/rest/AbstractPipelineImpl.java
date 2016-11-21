@@ -14,7 +14,6 @@ import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
-import hudson.plugins.favorite.user.FavoriteUserProperty;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;

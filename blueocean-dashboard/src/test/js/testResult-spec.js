@@ -4,6 +4,10 @@ import { shallow } from 'enzyme';
 
 import TestResults from '../../main/js/components/testing/TestResults.jsx';
 
+import { I18n } from '@jenkins-cd/blueocean-core-js';
+
+const t = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+
 describe("TestResults", () => {
   const testResults1 = {
         "_class":"hudson.tasks.junit.TestResult",
@@ -47,7 +51,7 @@ describe("TestResults", () => {
     };
 
   it("Test fixed included", () => {
-      let wrapper = shallow(<TestResults testResults={testResults1} />);
+      let wrapper = shallow(<TestResults t={t} testResults={testResults1} />);
       
       const fixed = wrapper.find('.new-passed .count').text();
       assert.equal(fixed, 1);
@@ -73,7 +77,7 @@ describe("TestResults", () => {
                 ],
             }]};
       
-      let wrapper = shallow(<TestResults testResults={failures} />);
+      let wrapper = shallow(<TestResults t={t} testResults={failures} />);
       const newFailed = wrapper.find('.new-failure-block h4').text();
       assert.equal(newFailed, 'New failing - 2');
 
@@ -82,7 +86,7 @@ describe("TestResults", () => {
   });
 
   it("All passing shown", () => {
-      let wrapper = shallow(<TestResults testResults={testResults1} />);
+      let wrapper = shallow(<TestResults t={t} testResults={testResults1} />);
       let isDone = wrapper.html().indexOf('done_all') > 0;
       assert(!isDone, "Done all found, when shouldn't have been");
       
@@ -96,7 +100,7 @@ describe("TestResults", () => {
                 ],
             }]};
       
-      wrapper = shallow(<TestResults testResults={success} />);
+      wrapper = shallow(<TestResults t={t} testResults={success} />);
       let html = wrapper.html();
       assert(html.indexOf('done_all') > 0, "Done all not found, when should be");
       assert(html.indexOf('fixed-block') < 0, "No fixed tests!");
@@ -113,7 +117,7 @@ describe("TestResults", () => {
                 ],
             }]};
       
-      let wrapper = shallow(<TestResults testResults={successWithFixed} />);
+      let wrapper = shallow(<TestResults t={t} testResults={successWithFixed} />);
       let html = wrapper.html();
       assert(html.indexOf('done_all') > 0, "Done all not found, when should be");
       assert(html.indexOf('fixed-block') > 0, "Should have fixed tests!");
