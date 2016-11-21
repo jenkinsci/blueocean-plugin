@@ -11,7 +11,6 @@ const QUERY_STRING_KEY = 'blueCreate';
 
 export default function CreatePipelineLink(props, context) {
     const caption = translate('home.header.button.createpipeline', { defaultValue: 'New Pipeline' });
-    console.log('arrr', caption);
     // if special key is not defined, create a link to classic UI
     if (!context.location || !context.location.query || !(QUERY_STRING_KEY in context.location.query)) {
         const baseUrl = UrlConfig.getJenkinsRootURL();

@@ -21,7 +21,6 @@ import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
 import { Paths, capable } from '@jenkins-cd/blueocean-core-js';
-import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { User } from '@jenkins-cd/blueocean-core-js';
 

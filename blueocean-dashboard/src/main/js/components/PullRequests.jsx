@@ -60,8 +60,6 @@ export class PullRequests extends Component {
             return (<NotSupported t={t} />);
         }
         const pullRequests = this.pager.data;
-        
-
 
         if (this.pager.pending) {
             return <PageLoading />;

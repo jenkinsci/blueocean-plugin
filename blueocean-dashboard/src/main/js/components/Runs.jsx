@@ -34,9 +34,13 @@ export default class Runs extends Component {
         const durationMillis = !running ?
             run.durationInMillis :
             moment().diff(moment(run.startTime));
-        const open = () => {
-            const pipelineName = decodeURIComponent(run.pipeline);
-            location.pathname = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, pipelineName, run.id, 'pipeline');
+        
+        const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
+        const open = (event) => {
+            if (event) {
+                event.preventDefault();
+            }
+            location.pathname = runDetailsUrl;
             router.push(location);
         };
         const RunCol = (props) => <td className="tableRowLink">

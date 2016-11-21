@@ -295,7 +295,6 @@ export class RunDetailsPipeline extends Component {
         if (run.isQueued()) {
             return <QueuedState />;
         }
-        console.log('XXXXX', run);
         const { nodeKey, supportsNode, noSteps, currentSteps, hasResultsForSteps, isPipelineQueued } = this.mergedConfig;// supportsNodes(run);
         const resultRun = !run.isCompleted() ? run.state : run.result;
         const followAlong = this.state.followAlong;
@@ -306,7 +305,6 @@ export class RunDetailsPipeline extends Component {
             ;
 
         const logGeneral = calculateRunLogURLObject(this.mergedConfig);
-        console.log('XXXXXlog', logGeneral);
    
         let title = this.mergedConfig.nodeReducer.displayName;
         if (this.mergedConfig.nodeReducer.id !== null && title) {

@@ -66,7 +66,7 @@ export class Pipelines extends Component {
                         <h1>
                             <Link
                               to="/"
-                              query={query}
+                              query={location.query}
                               className="inverse"
                             >
                                 { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }

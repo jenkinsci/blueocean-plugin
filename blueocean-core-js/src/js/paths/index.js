@@ -1,4 +1,4 @@
-import rest from './rest'
+import rest from './rest';
 export default {
     rest,
 };
