@@ -98,6 +98,7 @@
 
   <modules>
     <module>blueocean-commons</module>
+    <module>blueocean-i18n</module>
     <module>blueocean-web</module>
     <module>blueocean-rest</module>
     <module>blueocean-rest-impl</module>
