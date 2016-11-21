@@ -7,7 +7,6 @@ import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { observer } from 'mobx-react';
 
-
 const { object, array, func, string, bool } = PropTypes;
 
 const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation, t }) =>
@@ -40,7 +39,6 @@ EmptyState.propTypes = {
 };
 @observer
 export class Activity extends Component {
-
     componentWillMount() {
         if (this.context.params) {
             const organization = this.context.params.organization;
@@ -68,7 +66,7 @@ export class Activity extends Component {
             this.context.router.push(this.context.location);
         };
 
-        if (!runs.length) {
+        if (!this.pager.pending && !runs.length) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
         }
 

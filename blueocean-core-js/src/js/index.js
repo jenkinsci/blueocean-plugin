@@ -22,7 +22,7 @@ export AppConfig from './config';
 export Security from './security';
 export Paths from './paths/index';
 
-import { Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler } from './services/index';
+import { Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler, LocationService } from './services/index';
 export { Pager, PagerService, PipelineService, SSEService, ActivityService };
 
 
@@ -53,11 +53,10 @@ export const pagerService = new PagerService();
 export const sseService = new SSEService(sseConnection);
 export const activityService = new ActivityService(pagerService);
 export const pipelineService = new PipelineService(pagerService, activityService);
+export const locationService = new LocationService();
 
 const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, pagerService);
 sseService.registerHandler(defaultSSEhandler.handleEvents);
 
 // export i18n provider
 export I18n, { defaultLngDetector, defaultXhr, initOptions, i18n } from './i18n/i18n';
-
-console.log('app init');

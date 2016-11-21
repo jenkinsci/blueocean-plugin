@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { I18n, AppConfig, Security, UrlConfig, Utils, sseService } from '@jenkins-cd/blueocean-core-js';
+import { I18n, AppConfig, Security, UrlConfig, Utils, sseService, locationService } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';
@@ -174,6 +174,8 @@ function startApp(routes, stores) {
             type: ACTION_TYPES.SET_LOCATION_CURRENT,
             payload: newLocation.pathname,
         });
+
+        locationService.setCurrent(newLocation.pathname);
     });
 
     sseService._initListeners();
