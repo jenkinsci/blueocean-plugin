@@ -1,10 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-<<<<<<< HEAD
-  "version": "0.0.22-ivan-beta4",
-=======
   "version": "0.0.25-unpublished",
->>>>>>> master
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {

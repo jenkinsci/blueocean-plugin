@@ -42,8 +42,7 @@ EmptyState.propTypes = {
 export class Activity extends Component {
 
     componentWillMount() {
-
-        if (this.context.config && this.context.params) {
+        if (this.context.params) {
             const organization = this.context.params.organization;
             const pipeline = this.context.params.pipeline;
             this.pager = this.context.activityService.activityPager(organization, pipeline);
@@ -51,7 +50,7 @@ export class Activity extends Component {
     }
 
     render() {
-        const { pipeline t, locale} = this.props;
+        const { pipeline, t, locale } = this.props;
         const runs = this.pager.data;
         if (!runs || !pipeline) {
             return null;

@@ -12,21 +12,13 @@ import {
 } from '@jenkins-cd/design-language';
 import { I18n, User } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from 'react-material-icons-blue';
-import {
-    actions,
-    pipeline as pipelineSelector,
-    connect,
-    createSelector,
-} from '../redux';
 import NotFound from './NotFound';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
-import { Icon } from 'react-material-icons-blue';
-import { AppConfig, Paths } from '@jenkins-cd/blueocean-core-js';
+import { Paths } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
-import compose from '../util/compose';
 
 const RestPaths = Paths.rest;
 /**

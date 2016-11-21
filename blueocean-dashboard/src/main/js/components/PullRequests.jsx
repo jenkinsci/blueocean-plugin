@@ -56,11 +56,11 @@ export class PullRequests extends Component {
     render() {
         const { t, locale, pipeline } = this.props;
 
-        if (!capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
-            return (<NotSupported t={t}/>);
+        if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
+            return (<NotSupported t={t} />);
         }
         const pullRequests = this.pager.data;
-        const { pipeline } = this.props;
+        
 
 
         if (this.pager.pending) {

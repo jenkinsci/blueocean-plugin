@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { I18n, AppConfig, Security, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import { I18n, AppConfig, Security, UrlConfig, Utils, sseService } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';
@@ -15,8 +15,6 @@ useStrict(true);
 
 
 import DevTools from 'mobx-react-devtools';
-
-import { AppConfig, Security, UrlConfig, Utils, sseService} from '@jenkins-cd/blueocean-core-js';
 
 let config; // Holder for various app-wide state
 function translate(key){

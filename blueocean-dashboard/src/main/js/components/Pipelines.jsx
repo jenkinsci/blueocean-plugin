@@ -5,12 +5,9 @@ import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
 import { I18n } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import CreatePipelineLink from './CreatePipelineLink';
-import { documentTitle } from './DocumentTitle';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
 
-import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
-import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 
 const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
