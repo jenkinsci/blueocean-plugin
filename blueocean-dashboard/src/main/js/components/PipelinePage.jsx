@@ -9,9 +9,8 @@ import {
     PageTabs,
     TabLink,
     WeatherIcon,
-    NotFound,
 } from '@jenkins-cd/design-language';
-import { I18n, User } from '@jenkins-cd/blueocean-core-js';
+import { I18n, NotFound, User } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from 'react-material-icons-blue';
 import {
     actions,
