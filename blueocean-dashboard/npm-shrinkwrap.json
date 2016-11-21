@@ -577,7 +577,7 @@
     },
     "babel-eslint": {
       "version": "7.0.0",
-      "from": "https://registry.npmjs.org/babel-eslint/-/babel-eslint-7.0.0.tgz",
+      "from": "babel-eslint@7.0.0",
       "resolved": "https://registry.npmjs.org/babel-eslint/-/babel-eslint-7.0.0.tgz",
       "dev": true
     },
