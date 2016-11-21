@@ -395,6 +395,8 @@ table.highlight {
     color: inherit;
 }
 
-.tableRowLink {
+tr:first-child td.tableRowLink, // <-- Needs to override JDL "tbody tr:first-child td" rule
+td.tableRowLink {
     padding: 0;
 }
+
