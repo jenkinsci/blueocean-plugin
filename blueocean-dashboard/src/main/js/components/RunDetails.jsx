@@ -73,7 +73,6 @@ class RunDetails extends Component {
             });
             
             this.context.activityService.fetchActivity(this.href, { useCache: true });
-            console.log('opener', locationService.previous);
             if (storePreviousRoute) {
                 this.opener = locationService.previous;
             }

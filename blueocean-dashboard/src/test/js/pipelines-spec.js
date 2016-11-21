@@ -16,19 +16,20 @@ describe('Pipelines', () => {
         getRootURL: () => '/',
     };
 
-    const context = {
-        params: {},
-        location: {},
-        config,
-    };
+  //  const context = {
+   //     params: {},
+   ///     location: {},
+   ///     config,
+  //  };
 
     describe('basic table rendering', () => {
         let wrapper;
 
         beforeEach(() => {
 
-            context = {
-                params,
+            const context = {
+                params: {},
+                location: {},
                 config,
                 pipelineService: {
                     allPipelinesPager() {

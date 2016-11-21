@@ -163,15 +163,12 @@ const capabilities = {
 }
 data.$success = true; // fetch flag
 
-<<<<<<< HEAD
-=======
 const t = () => {};
->>>>>>> master
 
 describe("Activity", () => {
 
-  it("render the Activity with data", () => {<<<<<<< HEAD
-    const wrapper =  shallow(<Activity runs={data} pipeline={pipeline} capabilities={capabilities}/>, { context });
+  it("render the Activity with data", () => {
+    const wrapper =  shallow(<Activity t={ ()=>{} } runs={data} pipeline={pipeline} capabilities={capabilities}/>, { context });
 
     // does data renders?
     assert.isNotNull(wrapper)
@@ -187,7 +184,7 @@ describe("Activity", () => {
 describe('Pipeline -> Activity List', () => {
     it('should not duplicate changeset messages', () => {
 
-        const wrapper =  shallow(<Activity runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
+        const wrapper =  shallow(<Activity t={ ()=>{} } runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
 
         assert.isNotNull(wrapper);
 

@@ -7,7 +7,10 @@ import { PipelinePage } from '../../main/js/components/PipelinePage.jsx';
 import PageLoading from '../../main/js/components/PageLoading.jsx';
 import NotFound from '../../main/js/components/NotFound.jsx';
 
-const params = {}
+const params = {
+      organization: 'jenkins',
+      pipeline: 'asdf',
+}
 const context = {
   pipelineService: {
     fetchPipeline() {
@@ -27,7 +30,13 @@ const contextFailed = {
     getPipeline() {
       return null;
     }
-  }
+  },
+    router: {},
+    location: {},
+    params: {
+      organization: 'jenkins',
+      pipeline: 'asdf',
+    }
 };
 describe("PipelinePage", () => {
   const pipeline = {

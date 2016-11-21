@@ -39,6 +39,7 @@ export default class Runs extends Component {
         const open = (event) => {
             if (event) {
                 event.preventDefault();
+                event.stopPropagation();
             }
             location.pathname = runDetailsUrl;
             router.push(location);
