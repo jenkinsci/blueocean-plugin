@@ -33,17 +33,19 @@ import java.net.MalformedURLException;
  */
 public class BlueoceanUrlTest {
 
-    @Test(expected = MalformedURLException.class)
-    public void test_MalformedURLException() throws MalformedURLException {
-        BlueoceanUrl.parse("/a");
+    @Test
+    public void test_MalformedURLException() {
+        Assert.assertNull(BlueoceanUrl.parse("/a"));
     }
 
     @Test
-    public void test() throws MalformedURLException {
+    public void test() {
         BlueoceanUrl blueUrl;
 
         blueUrl = BlueoceanUrl.parse("/blue/pipelines/");
         Assert.assertEquals("pipelines", blueUrl.getPart(BlueoceanUrl.UrlPart.DASHBOARD_PIPELINES));
+        Assert.assertEquals(BlueoceanUrl.UrlPart.DASHBOARD_PIPELINES, blueUrl.getLastPart());
+        Assert.assertTrue(blueUrl.lastPartIs(BlueoceanUrl.UrlPart.DASHBOARD_PIPELINES));
 
         blueUrl = BlueoceanUrl.parse("/blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/activity/");
         Assert.assertFalse(blueUrl.hasPart(BlueoceanUrl.UrlPart.DASHBOARD_PIPELINES));
@@ -51,6 +53,8 @@ public class BlueoceanUrlTest {
         Assert.assertEquals("jenkins", blueUrl.getPart(BlueoceanUrl.UrlPart.ORGANIZATION));
         Assert.assertEquals("f1/f3 with spaces/f3 pipeline", blueUrl.getPart(BlueoceanUrl.UrlPart.PIPELINE));
         Assert.assertEquals("activity", blueUrl.getPart(BlueoceanUrl.UrlPart.PIPELINE_TAB));
+        Assert.assertEquals(BlueoceanUrl.UrlPart.PIPELINE_TAB, blueUrl.getLastPart());
+        Assert.assertTrue(blueUrl.lastPartIs(BlueoceanUrl.UrlPart.PIPELINE_TAB, "activity"));
 
         blueUrl = BlueoceanUrl.parse("/blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/magic-branch-X/55/pipeline");
         Assert.assertFalse(blueUrl.hasPart(BlueoceanUrl.UrlPart.DASHBOARD_PIPELINES));
@@ -62,6 +66,8 @@ public class BlueoceanUrlTest {
         Assert.assertEquals("magic-branch-X", blueUrl.getPart(BlueoceanUrl.UrlPart.BRANCH));
         Assert.assertEquals("55", blueUrl.getPart(BlueoceanUrl.UrlPart.PIPELINE_RUN_DETAIL_ID));
         Assert.assertEquals("pipeline", blueUrl.getPart(BlueoceanUrl.UrlPart.PIPELINE_RUN_DETAIL_TAB));
+        Assert.assertEquals(BlueoceanUrl.UrlPart.PIPELINE_RUN_DETAIL_TAB, blueUrl.getLastPart());
+        Assert.assertTrue(blueUrl.lastPartIs(BlueoceanUrl.UrlPart.PIPELINE_RUN_DETAIL_TAB, "pipeline"));
     }
 
 }

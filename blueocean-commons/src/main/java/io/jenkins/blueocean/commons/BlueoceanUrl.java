@@ -26,11 +26,12 @@ package io.jenkins.blueocean.commons;
 import hudson.model.Run;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +63,7 @@ public class BlueoceanUrl {
         new LinkedHashSet<>(Arrays.asList("pipeline", "changes", "tests", "artifacts"));
 
     private Map<UrlPart, String> urlParts = new LinkedHashMap<>();
+    private UrlPart lastPart;
 
     /**
      * Enum of URL "parts".
@@ -140,7 +142,37 @@ public class BlueoceanUrl {
     private BlueoceanUrl() {
     }
 
-    public static @Nonnull BlueoceanUrl parse(@Nonnull String url) throws MalformedURLException {
+    /**
+     * Parse the {@link Stapler#getCurrentRequest() current Stapler request} and return a {@link BlueoceanUrl} instance
+     * iff the URL is a Blue Ocean UI URL.
+     *
+     * @return A {@link BlueoceanUrl} instance iff the URL is a Blue Ocean UI URL, otherwise {@code null}.
+     * @throws IllegalStateException Called outside the scope of an active {@link StaplerRequest}.
+     */
+    public static @CheckForNull BlueoceanUrl parseCurrentRequest() throws IllegalStateException {
+        StaplerRequest currentRequest = Stapler.getCurrentRequest();
+
+        if (currentRequest == null) {
+            throw new IllegalStateException("Illegal call to BlueoceanUrl.parseCurrentRequest outside the scope of an active StaplerRequest.");
+        }
+
+        String path = currentRequest.getOriginalRequestURI();
+        String contextPath = currentRequest.getContextPath();
+
+        path = path.substring(contextPath.length());
+
+        return parse(path);
+    }
+
+    /**
+     * Parse the supplied URL string and return a {@link BlueoceanUrl} instance
+     * iff the URL is a Blue Ocean UI URL.
+     *
+     * @param url The URL to be parsed. The URL must not be decoded in any way, so as to ensure
+     *            that no URL component data is lost.
+     * @return A {@link BlueoceanUrl} instance iff the URL is a Blue Ocean UI URL, otherwise {@code null}.
+     */
+    public static @CheckForNull BlueoceanUrl parse(@Nonnull String url) {
         Iterator<String> urlTokens = extractTokens(url);
 
         if (urlTokens.hasNext()) {
@@ -152,38 +184,38 @@ public class BlueoceanUrl {
 
                     if (next.equalsIgnoreCase("pipelines")) {
                         // i.e. /blue/pipelines/
-                        blueoceanUrl.urlParts.put(UrlPart.DASHBOARD_PIPELINES, next);
+                        blueoceanUrl.addPart(UrlPart.DASHBOARD_PIPELINES, next);
                     } else if (next.equalsIgnoreCase("organizations")) {
                         // i.e. /blue/organizations/...
                         if (urlTokens.hasNext()) {
                             // e.g. /blue/organizations/jenkins/...
-                            blueoceanUrl.urlParts.put(UrlPart.ORGANIZATION, urlTokens.next());
+                            blueoceanUrl.addPart(UrlPart.ORGANIZATION, urlTokens.next());
                             if (urlTokens.hasNext()) {
                                 // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/...
-                                blueoceanUrl.urlParts.put(UrlPart.PIPELINE, urlDecode(urlTokens.next()));
+                                blueoceanUrl.addPart(UrlPart.PIPELINE, urlDecode(urlTokens.next()));
                                 if (urlTokens.hasNext()) {
                                     next = urlTokens.next();
                                     if (next.equalsIgnoreCase("detail")) {
                                         // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/...
-                                        blueoceanUrl.urlParts.put(UrlPart.PIPELINE_RUN_DETAIL, next);
+                                        blueoceanUrl.addPart(UrlPart.PIPELINE_RUN_DETAIL, next);
                                         if (urlTokens.hasNext()) {
                                             // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/magic-branch-X/...
-                                            blueoceanUrl.urlParts.put(UrlPart.BRANCH, urlDecode(urlTokens.next()));
+                                            blueoceanUrl.addPart(UrlPart.BRANCH, urlDecode(urlTokens.next()));
                                             if (urlTokens.hasNext()) {
                                                 // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/magic-branch-X/55/...
-                                                blueoceanUrl.urlParts.put(UrlPart.PIPELINE_RUN_DETAIL_ID, urlDecode(urlTokens.next()));
+                                                blueoceanUrl.addPart(UrlPart.PIPELINE_RUN_DETAIL_ID, urlDecode(urlTokens.next()));
                                                 if (urlTokens.hasNext()) {
                                                     next = urlTokens.next();
                                                     if (PIPELINE_RUN_DETAIL_TABS.contains(next.toLowerCase())) {
                                                         // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/magic-branch-X/55/pipeline
-                                                        blueoceanUrl.urlParts.put(UrlPart.PIPELINE_RUN_DETAIL_TAB, next.toLowerCase());
+                                                        blueoceanUrl.addPart(UrlPart.PIPELINE_RUN_DETAIL_TAB, next.toLowerCase());
                                                     }
                                                 }
                                             }
                                         }
                                     } else if (PIPELINE_TABS.contains(next.toLowerCase())) {
                                         // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/activity/
-                                        blueoceanUrl.urlParts.put(UrlPart.PIPELINE_TAB, next.toLowerCase());
+                                        blueoceanUrl.addPart(UrlPart.PIPELINE_TAB, next.toLowerCase());
                                     }
                                 }
                             }
@@ -195,7 +227,12 @@ public class BlueoceanUrl {
             }
         }
 
-        throw new MalformedURLException(String.format("'%s' is not a valid Blue Ocean URL.", url));
+        return null;
+    }
+
+    private void addPart(@Nonnull UrlPart urlPart, @Nonnull String value) {
+        urlParts.put(urlPart, value);
+        this.lastPart = urlPart;
     }
 
     public boolean hasPart(@Nonnull UrlPart urlPart) {
@@ -204,6 +241,25 @@ public class BlueoceanUrl {
 
     public @CheckForNull String getPart(@Nonnull UrlPart urlPart) {
         return urlParts.get(urlPart);
+    }
+
+    /**
+     * Get the last {@link UrlPart} for the URL.
+     * @return The last {@link UrlPart} for the URL.
+     */
+    public @CheckForNull UrlPart getLastPart() {
+        return this.lastPart;
+    }
+
+    public boolean lastPartIs(@Nonnull UrlPart urlPart) {
+        return this.lastPart == urlPart;
+    }
+
+    public boolean lastPartIs(@Nonnull UrlPart urlPart, @Nonnull String value) {
+        if (this.lastPart == urlPart) {
+            return getPart(this.lastPart).equals(value);
+        }
+        return false;
     }
 
     private static String urlDecode(String string) {
