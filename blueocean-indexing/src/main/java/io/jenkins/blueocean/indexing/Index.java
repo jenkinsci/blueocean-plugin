@@ -104,6 +104,7 @@ class Index<T> implements Closeable {
 
             @Override
             public Supplier<T> next() {
+                // Wrap this in a Supplier so the caller can choose when to load the document within
                 return new Supplier<T>() {
                     @Override
                     public T get() {
