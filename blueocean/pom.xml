@@ -53,6 +53,19 @@
             <artifactId>blueocean-config</artifactId>
         </dependency>
 
+
+        <!-- TODO: its here only for development, to be removed -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-github-pipeline</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-git-pipeline</artifactId>
+        </dependency>
+
+
         <!-- Bundled plugins for improved out of the box experience -->
         <!-- Kyoto feature -->
         <dependency>
@@ -138,6 +151,8 @@
                         linkHPI('blueocean-rest-impl');
                         linkHPI('blueocean-pipeline-api-impl')
                         linkHPI('blueocean-config')
+                        linkHPI('blueocean-github-pipeline')
+                        linkHPI('blueocean-git-pipeline')
                     </source>
                 </configuration>
             </plugin>
