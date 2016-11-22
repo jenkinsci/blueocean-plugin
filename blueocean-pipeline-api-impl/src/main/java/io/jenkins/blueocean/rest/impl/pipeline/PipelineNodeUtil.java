@@ -3,6 +3,8 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.base.Predicate;
 import hudson.model.Action;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.jenkinsci.plugins.pipeline.StageStatus;
+import org.jenkinsci.plugins.pipeline.SyntheticStage;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
@@ -87,7 +89,7 @@ public class PipelineNodeUtil {
     public static TagsAction getSyntheticStage(@Nullable FlowNode node){
         if(node != null) {
             for (Action action : node.getActions()) {
-                if (action instanceof TagsAction && ((TagsAction) action).getTagValue("SYNTHETIC_STAGE") != null) {
+                if (action instanceof TagsAction && ((TagsAction) action).getTagValue(SyntheticStage.TAG_NAME) != null) {
                     return (TagsAction) action;
                 }
             }
@@ -100,8 +102,8 @@ public class PipelineNodeUtil {
         if(tagsAction == null){
             return false;
         }
-        String value = tagsAction.getTagValue("SYNTHETIC_STAGE");
-        return value!=null && value.equals("POST");
+        String value = tagsAction.getTagValue(SyntheticStage.TAG_NAME);
+        return value!=null && value.equals(SyntheticStage.getPost());
     }
 
     public static boolean isSkippedStage(@Nullable FlowNode node){
@@ -109,10 +111,10 @@ public class PipelineNodeUtil {
             return false;
         }
         for (Action action : node.getActions()) {
-            if (action instanceof TagsAction && ((TagsAction) action).getTagValue("STAGE_STATUS") != null) {
+            if (action instanceof TagsAction && ((TagsAction) action).getTagValue(StageStatus.TAG_NAME) != null) {
                 TagsAction tagsAction =  (TagsAction) action;
-                String value = tagsAction.getTagValue("STAGE_STATUS");
-                return value != null && value.equals("SKIPPED_FOR_CONDITIONAL");
+                String value = tagsAction.getTagValue(StageStatus.TAG_NAME);
+                return value != null && value.equals(StageStatus.getSkippedForConditional());
             }
         }
         return false;
@@ -123,8 +125,8 @@ public class PipelineNodeUtil {
         if(tagsAction == null){
             return false;
         }
-        String value = tagsAction.getTagValue("SYNTHETIC_STAGE");
-        return value!=null && value.equals("PRE");
+        String value = tagsAction.getTagValue(SyntheticStage.TAG_NAME);
+        return value!=null && value.equals(SyntheticStage.getPre());
     }
 
     public static boolean isParallelBranch(@Nullable FlowNode node){

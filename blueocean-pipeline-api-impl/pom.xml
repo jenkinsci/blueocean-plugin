@@ -81,14 +81,14 @@
             <artifactId>github-branch-source</artifactId>
             <version>1.8.1</version>
         </dependency>
-
-        <!-- Test plugins -->
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
             <version>0.7-synthetic-stage-SNAPSHOT</version>
-            <scope>test</scope>
         </dependency>
+
+
+        <!-- Test plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-stage-step</artifactId>
