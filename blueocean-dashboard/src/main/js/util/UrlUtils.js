@@ -204,7 +204,7 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
         url += `/branches/${encodeURIComponent(encodeURIComponent(branch))}`;
     }
     if (runId) {
-        url += `/runs/${encodeURIComponent(runId)}`;
+        url += `/activities/${encodeURIComponent(runId)}`;
     }
     return endSlash(url);
 }

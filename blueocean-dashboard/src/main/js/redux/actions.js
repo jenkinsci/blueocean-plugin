@@ -109,7 +109,7 @@ export const actionHandlers = {
         return state.set('currentRuns', payload.map((run) => _mapQueueToPsuedoRun(run)));
     },
     [ACTION_TYPES.SET_CURRENT_RUN](state, { payload }): State {
-        return state.set('currentRun', payload);
+        return state.set('currentRun', _mapQueueToPsuedoRun(payload));
     },
     [ACTION_TYPES.SET_NODE](state, { payload }): State {
         return state.set('node', { ...payload });
@@ -493,7 +493,7 @@ export const actions = {
             });
             if (found) {
                 debugLog('Calling dispatch for event ', event);
-                const runUrl = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}`;
+                const runUrl = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}activities/${event.jenkins_object_id}`;
                 smartFetch(runUrl)
                 .then(data => {
                     if (data.$pending) return;

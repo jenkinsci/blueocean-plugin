@@ -24,6 +24,7 @@ import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
+import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Container;
@@ -209,7 +210,26 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public Container<Resource> getActivities() {
-        return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+        return new Containers.IterableContainer<Resource>(getLink(), getQueue(), getRuns()) {
+            @Override
+            public Resource get(String activityId) {
+                long expectedBuildNumber = Long.parseLong(activityId);
+                for (BlueQueueItem item : getQueue()) {
+                    if (expectedBuildNumber == item.getExpectedBuildNumber()) {
+                        return item;
+                    }
+                }
+                for (BlueRun run : getRuns()) {
+                    if (activityId.equals(run.getId())) {
+                        return run;
+                    }
+                }
+                
+                throw new ServiceException.NotFoundException(
+                        String.format("Activity %s not found in organization %s and pipeline %s",
+                            activityId, getOrganization(), job.getName()));
+            }
+        };
     }
 
     /**

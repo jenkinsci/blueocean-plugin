@@ -170,7 +170,7 @@ describe("push events - started run tests", () => {
         };
 
         // Mock the fetch
-        mockFetch('/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12',
+        mockFetch('/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/activities/12',
         {
             "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
             "artifacts": [],
@@ -244,7 +244,7 @@ describe("push events - started run tests", () => {
             event.blueocean_is_for_current_job = false;
 
             // Mock the fetchJson
-            mockFetch('/jenkins/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/runs/12',
+            mockFetch('/jenkins/rest/organizations/jenkins/pipelines/PR-demo/branches/quicker/activities/12',
                 new Error());
 
             const dispatcher = actions.actions.updateRunState(event, CONFIG, true);
