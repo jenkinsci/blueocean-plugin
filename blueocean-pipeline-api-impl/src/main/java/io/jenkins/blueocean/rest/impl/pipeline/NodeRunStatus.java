@@ -40,6 +40,7 @@ public class NodeRunStatus {
     public BlueRun.BlueRunState getState() {
         return state;
     }
+
     public NodeRunStatus(GenericStatus status){
         if (status == null) {
             this.result = BlueRun.BlueRunResult.NOT_BUILT;
@@ -73,7 +74,7 @@ public class NodeRunStatus {
                 break;
             case NOT_EXECUTED:
                 this.result = BlueRun.BlueRunResult.NOT_BUILT;
-                this.state = BlueRun.BlueRunState.QUEUED;
+                this.state = BlueRun.BlueRunState.NOT_BUILT;
                 break;
             default:
                 // Shouldn't happen, above includes all statuses
