@@ -130,7 +130,7 @@ export class Activity extends Component {
                 />
                 }
                 {runs.length > 0 &&
-                <Table className="activity-table fixed" headers={headers}>
+                <Table className="activity-table fixed" headers={headers} disableDefaultPadding>
                     {
                         runs.map((run, index) => {
                             const changeset = run.changeSet;
