@@ -1,16 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
-const { object } = PropTypes;
-
 export default class PullRequest extends Component {
     render() {
-        const { pr } = this.props;
-        if (!pr || !pr.pullRequest || !pr.latestRun || !this.context.pipeline) {
+        const { pr, t, locale, pipeline: contextPipeline } = this.props;
+        if (!pr || !pr.pullRequest || !pr.latestRun || !contextPipeline) {
             return null;
         }
         const {
@@ -24,6 +22,7 @@ export default class PullRequest extends Component {
                 state,
             },
             pullRequest: {
+                id: prId,
                 title,
                 author,
             },
@@ -31,35 +30,42 @@ export default class PullRequest extends Component {
         } = pr;
         const result = resultString === 'UNKNOWN' ? state : resultString;
         const {
-            context: {
-                router,
-                location,
-                pipeline: {
-                    fullName,
-                    organization,
-            },
-                },
-        } = this;
-        const open = () => {
-            location.pathname = buildRunDetailsUrl(organization, fullName, decodeURIComponent(pipeline), id, 'pipeline');
+            router,
+            location,
+        } = this.context;
+        const { fullName, organization } = contextPipeline;
+        const url = buildRunDetailsUrl(organization, fullName, decodeURIComponent(pipeline), id, 'pipeline');
+          
+        const open = (event) => {
+            if (event) {
+                event.preventDefault();
+            }
+            location.pathname = url;
             router.push(location);
         };
-
+        const PRCol = (props) => <td className="tableRowLink"><a onClick={open} href={`${UrlConfig.getJenkinsRootURL()}/blue${url}`}>{props.children}</a></td>;
+      
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
 
         return (<tr key={id} onClick={open} id={`${name}-${id}`} >
-            <td>
+            <PRCol>
                 <LiveStatusIndicator result={result} startTime={startTime}
                   estimatedDuration={estimatedDurationInMillis}
                 />
-            </td>
-            <td>{id}</td>
-            <td>{title || '-'}</td>
-            <td>{author || '-'}</td>
-            <td><ReadableDate date={endTime} liveUpdate /></td>
+            </PRCol>
+            <PRCol>{prId}</PRCol>
+            <PRCol>{title || '-'}</PRCol>
+            <PRCol>{author || '-'}</PRCol>
+            <PRCol><ReadableDate
+              date={endTime}
+              liveUpdate
+              locale={locale}
+              shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+              longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+            /></PRCol>
             <td>
                 <RunButton
                   className="icon-button"
@@ -67,18 +73,22 @@ export default class PullRequest extends Component {
                   latestRun={pr.latestRun}
                   onNavigation={openRunDetails}
                 />
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" />
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />
             </td>
         </tr>);
     }
 }
 
+const { func, object, string } = PropTypes;
+
 PullRequest.propTypes = {
     pr: object,
+    locale: string,
+    t: func,
+    pipeline: object,
 };
 
 PullRequest.contextTypes = {
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };

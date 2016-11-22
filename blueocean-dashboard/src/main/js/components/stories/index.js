@@ -13,3 +13,4 @@ require('./status');
 require('./icons');
 require('./logDisplay');
 require('./changes');
+require('./moments');

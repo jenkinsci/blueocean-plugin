@@ -7,7 +7,7 @@ var importedResourceLoadTracker = require('./ResourceLoadTracker').instance;
 /**
  * Renderer for react component extensions for which other plugins can provide an implementing Component.
  */
-export class ExtensionRenderer extends React.Component {
+export default class ExtensionRenderer extends React.Component {
 
     constructor() {
         super();
@@ -20,7 +20,7 @@ export class ExtensionRenderer extends React.Component {
     }
 
     componentDidMount() {
-        ExtensionRenderer.ResourceLoadTracker.onMount(this.props.extensionPoint);
+        ExtensionRenderer.resourceLoadTracker.onMount(this.props.extensionPoint);
         this._renderAllExtensions();
     }
 
@@ -49,8 +49,8 @@ export class ExtensionRenderer extends React.Component {
         });
     }
 
-    _setExtensions(props) {
-        ExtensionRenderer.ExtensionStore.getExtensions(props.extensionPoint, props.filter,
+    _setExtensions() {
+        ExtensionRenderer.extensionStore.getExtensions(this.props.extensionPoint, this.props.filter,
             extensions => this.setState({extensions: extensions})
         );
     }
@@ -170,10 +170,6 @@ export class ExtensionRenderer extends React.Component {
         }
     }
 }
-
-// Put these in statics so we can mock them for testing. Ideally they would come from React scope.
-ExtensionRenderer.ExtensionStore = importedExtensionStore;
-ExtensionRenderer.ResourceLoadTracker = importedResourceLoadTracker;
 
 ExtensionRenderer.defaultProps = {
     wrappingElement: "div"

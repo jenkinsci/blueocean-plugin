@@ -1,51 +1,52 @@
 Blue Ocean is the next generation user experience for Jenkins.
 
-It is a multi-module maven project with a few Jenkins plugins. 
+It is a multi-module maven project made up of a few Jenkins plugins. 
+There is an aggregator plugin in the "blueocean" module.
 
-Read it: 
+CONTRIBUTIONS ALWAYS WELCOME NO MATTER HOW BIG OR SMALL.
+
+Some background reading: 
 https://jenkins.io/blog/2016/05/26/introducing-blue-ocean/
 
+This is in the main Update Center for Jenkins. Install the plugin called "BlueOcean beta" (and let it install its dependencies). The instructions here are for contributors to Blue Ocean and the morbidly curious. Expect refactoring. 
 
 
-
-![Pirate logo, because it's ocean and stuff](logo-yarrr.png)
+![Pirate logo, because it's ocean and stuff](docu/pix/logo-yarrr.png)
 Yarr...
 
 # Modules of note
+
+A quick tour of some of the modules (not all). Consult README.md in respective modules for more info.
+
 ## blueocean-dashboard
 
-Blue Ocean Dashboard plugin. Currently contains the bulk of the Blue Ocean user interface. This is mostly client side JavaScript built with ES6 and React. 
+Blue Ocean Dashboard plugin. Currently contains a lot of the core of the Blue Ocean user interface and extension points. This is mostly client side JavaScript built with ES6 and React. 
 
 ## blueocean
 
-Acts as an aggregator plugin, making it an easy place from which to run Blue Ocean via `hpi:run`. 
-
-__NOTE__: As already stated, this plugin is likely to be refactored in the near future.
-
+An aggregator plugin, making it an easy place from which to run Blue Ocean via `hpi:run`. 
 
 ## blueocean-rest
 
-Java interfaces and classes that specify the definition of the REST API. See the README within this module for more information.
+Java interfaces and classes that specify the definition of the REST API that blueocean uses. See the README.md within this module for detail on this api.
 
 ## blueocean-rest-impl
 
-Provides the default implementation of the core REST Apis defined in the `blueocean-rest` plugin. It comes with only free style job support.
+Provides the default implementation of the core REST Apis defined in the `blueocean-rest` plugin. It comes with only freestyle job support.
 
 
 ## blueocean-pipeline-api-impl
 
 Provides implementation of Pipeline apis for Jenkins pipeline and multi-branch job types support
 
-
 ## blueocean-web
 
-Core Web infrastructure that bootstraps BlueOcean UI and integrates REST API core blueocean-rest.  
+Core Web infrastructure that bootstraps BlueOcean UI and integrates REST API core blueocean-rest, and serves up the core javascript libraries. 
 
-## blueocean-analytics-tools
-
-Plugin to inject analytics tools as HTML header in blueocean UI.
     
 # Building and running
+
+At a minimum you will need JVM and Maven installed, if you are doing active JavaScript development, installing NodeJS is a good idea too. 
 
 ## Build everything (from root directory)
 Builds all maven modules (run this the first time you check things out, at least)
@@ -77,9 +78,9 @@ closer. The ultimate goal will be to have browser support in line with the [Jenk
 
 List of browsers where we know Blue Ocean is not yet runnable:
 
-* Internet Explorer (all versions) on Windows
+* Internet Explorer < 11 on Windows (the aim is to keep IE 11 working, but help is needed to maintain a Windows test environment in the pipeline)
 
-
+* AmigaOS
 
 # Developing 
 
@@ -90,12 +91,23 @@ Look in following README's for:
 * ``blueocean-rest`` for how to navigate the rest api. 
 * ``blueocean-rest-impl`` for more details on how to actively develop this plugin for backend codebases.
 
+
+## Building plugins for Blue Ocean
+
+Blue Ocean plugins use the same plugin mechanism as Jenkins for distribution and installation, but involve a lot more Javascript if they have GUI elements. 
+
+The best way to get started is to look at the tutorial and Yeoman starter project here: 
+https://www.npmjs.com/package/generator-blueocean-usain
+The usual plugin guide also applies for Jenkins: https://wiki.jenkins-ci.org/display/JENKINS/Plugin+tutorial#Plugintutorial-CreatingaNewPlugin 
+
+Ask for help in #jenkins-ci or on the mailing list if you are working on a plugin. 
+
+
 ### Tools needed
 
 *Maven* is used for most building. The project is configured to grab all the tools you need from the JavaScript ecosystem to get started. 
 
-If you are working on the Javascript, you will need node installed.
-
+If you are working on the Javascript, you will need node installed, look at the version in the pom.xml for the minimum version required.
 
 __NOTE__: look in the README.md of the respective modules for more detailed dev docs. 
 
@@ -128,6 +140,18 @@ npm i
 npm shrinkwrap --dev
 ```
 
+
+# Contributing - help wanted
+
+## i18n - Sprechen Sie Deutsch?
+
+We have full i18n support in our plugins. Please read the [i18n documentation](./docu/I18N.md) on how you can provide new translations and how to work with i18n.
+
+## contributing guidelines
+
+Want to get involve with blueocean? See our [contributing guidelines](./CONTRIBUTING.md) for more informations.
+
+
 # Debug and live reload with IntelliJ
 Automatically deploys changes to an instance of blueocean that is run with hpi:run.
 
@@ -150,3 +174,5 @@ You can chat to folks on #jenkins-ux on freenode (IRC). You can also email the j
 # Presentations
 
 Advanced front end development with react, redux and stuff by @scherler: https://docs.google.com/presentation/d/1dbaYTIGjGT9xX1JnWnaqjMumq94M9nGwljfMQaVtUFc/edit?usp=sharing
+
+Watch @i386 and @jenkinsci on Twitter for frequent updates and news. 

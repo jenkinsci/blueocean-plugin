@@ -119,7 +119,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
     //TODO: implement rest of the methods
     @Override
     public BluePipeline get(String name) {
-        Job job = pipeline.mbp.getBranch(name);
+        Job job = pipeline.mbp.getItem(name);
         if(job != null){
             return new BranchImpl(job, getLink());
         }

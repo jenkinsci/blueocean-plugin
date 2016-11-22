@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0.0-b11-SNAPSHOT</version>
+        <version>1.0.0-b13-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-rest-impl</artifactId>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.jvnet.hudson.plugins</groupId>
             <artifactId>favorite</artifactId>
-            <version>1.16</version>
+            <version>2.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -68,6 +68,11 @@
             <artifactId>junit</artifactId>
             <version>1.2</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>cloudbees-folder</artifactId>
+            <version>5.12</version>
         </dependency>
 
     </dependencies>

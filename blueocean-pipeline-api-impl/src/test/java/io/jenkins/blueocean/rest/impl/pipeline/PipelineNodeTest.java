@@ -1585,23 +1585,36 @@ public class PipelineNodeTest extends PipelineBaseTest {
             "    agent label:''\n" +
             "    stages {\n" +
             "        stage ('Build') {\n" +
+                "steps{\n" +
             "            sh 'echo1 \"Building\"'\n" +
             "        }\n" +
+                "}\n" +
             "        stage ('Test') {\n" +
+                "steps{\n" +
             "            sh 'echo \"Building\"'\n" +
             "        }\n" +
+                "}\n" +
             "        stage ('Deploy') {\n" +
+                "steps{\n" +
             "            sh 'echo \"Building\"'\n" +
             "        }\n" +
+                "}\n" +
             "    }\n" +
             "}\n"));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatus(Result.FAILURE, b1);
         List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
-        Assert.assertEquals(1, nodes.size());
+        Assert.assertEquals(3, nodes.size());
+
         Assert.assertEquals("FAILURE", nodes.get(0).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+
+        Assert.assertEquals("NOT_BUILT",nodes.get(1).get("result"));
+        Assert.assertEquals("NOT_BUILT",nodes.get(1).get("state"));
+
+        Assert.assertEquals("NOT_BUILT",nodes.get(2).get("result"));
+        Assert.assertEquals("NOT_BUILT",nodes.get(2).get("state"));
     }
 
     @Test
@@ -1611,14 +1624,20 @@ public class PipelineNodeTest extends PipelineBaseTest {
             "    agent label:''\n" +
             "    stages {\n" +
             "        stage ('Build') {\n" +
+                "steps{\n" +
             "            sh 'echo \"Building\"'\n" +
+                "}\n"+
             "        }\n" +
             "        stage ('Test') {\n" +
+                "steps{\n" +
             "            sh 'echo \"Building\"'\n" +
             "            sh 'echo2 \"Building finished\"'\n" +
+                "}\n" +
             "        }\n" +
             "        stage ('Deploy') {\n" +
+                "steps{\n" +
             "            sh 'echo \"Building\"'\n" +
+                "}\n"+
             "        }\n" +
             "    }\n" +
             "}\n"));
@@ -1626,7 +1645,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatus(Result.FAILURE, b1);
         List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
-        Assert.assertEquals(2, nodes.size());
+        Assert.assertEquals(3, nodes.size());
         Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
         Assert.assertEquals("FAILURE", nodes.get(1).get("result"));
@@ -1640,13 +1659,19 @@ public class PipelineNodeTest extends PipelineBaseTest {
             "    agent label:''\n" +
             "    stages {\n" +
             "        stage ('Build') {\n" +
+                "steps{\n"+
             "            sh 'echo \"Building\"'\n" +
+                "}\n"+
             "        }\n" +
             "        stage ('Test') {\n" +
+                "steps{\n"+
             "            sh 'echo \"Testing\"'\n" +
+                "}\n"+
             "        }\n" +
             "        stage ('Deploy') {\n" +
+                "steps{\n"+
             "            sh 'echo1 \"Deploying\"'\n" +
+                "}\n"+
             "        }\n" +
             "    }\n" +
             "}\n"));

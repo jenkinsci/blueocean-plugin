@@ -664,6 +664,7 @@ const baseRun = new RunRecord(currentRunRaw);
 const currentRun = baseRun.set('changeSet', changeSet.slice(0, 1));
 const currentRunLong = baseRun.set('changeSet', changeSet.slice(0, 5));
 const status = currentRun.getComputedResult() || '';
+const t = (key) => key;
 storiesOf('modal header', module)
     .add('some changes', () => (
         <ModalView
@@ -675,6 +676,8 @@ storiesOf('modal header', module)
             <ModalHeader>
                 <div>
                     <RunDetailsHeader
+                      locale="de"
+                      t={t}
                       pipeline={pipeline}
                       data={currentRun}
                       onOrganizationClick={ action('button-click')}
@@ -695,6 +698,8 @@ storiesOf('modal header', module)
             <ModalHeader>
                 <div>
                     <RunDetailsHeader
+                      t={t}
+                      locale="de"
                       pipeline={pipeline}
                       data={currentRunLong}
                       onOrganizationClick={ action('button-click')}

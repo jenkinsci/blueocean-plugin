@@ -3,7 +3,7 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
-import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { ReplayButton, RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 
@@ -11,8 +11,6 @@ import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
-
-const { object, string, any } = PropTypes;
 
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
@@ -24,20 +22,17 @@ export default class Runs extends Component {
     }
     render() {
         // early out
-        if (!this.props.result || !this.context.pipeline) {
+        if (!this.props.result || !this.props.pipeline) {
             return null;
         }
         const {
             context: {
                 router,
                 location,
-                pipeline: {
-                    _class: pipelineClass,
-                    fullName,
-                    organization,
-                },
             },
             props: {
+                changeset,
+                locale,
                 result: {
                     durationInMillis,
                     estimatedDurationInMillis,
@@ -49,7 +44,12 @@ export default class Runs extends Component {
                     endTime,
                     commitId,
                 },
-                changeset,
+                t,
+                pipeline: {
+                    _class: pipelineClass,
+                    fullName,
+                    organization,
+                },
             },
         } = this;
 
@@ -59,33 +59,56 @@ export default class Runs extends Component {
             durationInMillis :
             moment().diff(moment(startTime));
 
-        const open = () => {
-            const pipelineName = decodeURIComponent(pipeline);
-            location.pathname = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
+        const pipelineName = decodeURIComponent(pipeline);
+        const runDetailsUrl = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
+           
+        const open = (event) => {
+            if (event) {
+                event.preventDefault();
+            }
+            location.pathname = runDetailsUrl;
             router.push(location);
         };
-
+        const RunCol = (props) => <td className="tableRowLink">
+            <a onClick={open} href={`${UrlConfig.getJenkinsRootURL()}/blue${runDetailsUrl}`}>{props.children}</a>
+        </td>;
+        
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
-
         return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
-            <td>
+            <RunCol>
                 <LiveStatusIndicator result={resultRun} startTime={startTime}
                   estimatedDuration={estimatedDurationInMillis}
                 />
-            </td>
-            <td>{id}</td>
-            <td><CommitHash commitId={commitId} /></td>
+            </RunCol>
+            <RunCol>{id}</RunCol>
+            <RunCol><CommitHash commitId={commitId} /></RunCol>
             <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
-                <td>{decodeURIComponent(pipeline)}</td>
+                <RunCol>{decodeURIComponent(pipeline)}</RunCol>
             </IfCapability>
-            <td>{changeset && changeset.msg || '-'}</td>
-            <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
-            <td><ReadableDate date={endTime} liveUpdate /></td>
-            <td>
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
+            <RunCol>{changeset && changeset.msg || '-'}</RunCol>
+            <RunCol>
+                <TimeDuration
+                  millis={durationMillis}
+                  liveUpdate={running}
+                  locale={locale}
+                  liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+                  hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+                />
+            </RunCol>
+            <RunCol>
+                <ReadableDate
+                  date={endTime}
+                  liveUpdate
+                  locale={locale}
+                  shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                  longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                />
+            </RunCol>
+             <td>
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
                 { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
                 <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
@@ -96,15 +119,18 @@ export default class Runs extends Component {
     }
 }
 
+const { object, string, any, func } = PropTypes;
+
 Runs.propTypes = {
-    run: PropTypes.object,
-    pipeline: PropTypes.object,
+    run: object,
+    pipeline: object,
     result: any.isRequired, // FIXME: create a shape
     data: string,
+    locale: string,
     changeset: object.isRequired,
+    t: func,
 };
 Runs.contextTypes = {
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };
