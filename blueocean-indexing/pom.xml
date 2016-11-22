@@ -31,6 +31,16 @@
             <artifactId>guava</artifactId>
             <version>14.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>branch-api</artifactId>
+            <version>1.10.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jenkins.blueocean</groupId>
+            <artifactId>blueocean-pipeline-api-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

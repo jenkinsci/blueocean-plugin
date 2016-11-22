@@ -39,18 +39,19 @@ import java.util.List;
 
 class Index<T> implements Closeable {
 
-    @SuppressWarnings("unchecked")
-    public static Index<BlueRun> openRuns(Item item) throws IOException {
-        return openInternal(item.getRootDir());
-    }
-
-    private static Index openInternal(File root) throws IOException {
+    /**
+     * Opens a new index in the root directory
+     * @param root directory that contains the index
+     * @return Index
+     * @throws IOException if there was a problem creating or opening the index
+     */
+    public static <T> Index<T> open(File root) throws IOException {
         File file = new File(root, "index");
         if (!file.exists()) {
             file.mkdirs();
         }
         // On Linux we can safely use NIOFSDirectory
-        return new Index(SystemUtils.IS_OS_WINDOWS ? new SimpleFSDirectory(file.toPath()) : new NIOFSDirectory(file.toPath()));
+        return new Index<>(SystemUtils.IS_OS_WINDOWS ? new SimpleFSDirectory(file.toPath()) : new NIOFSDirectory(file.toPath()));
     }
 
     private final FSDirectory index;
