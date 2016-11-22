@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Item;
@@ -52,6 +53,8 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MULTI_BR
 @Capability({JENKINS_MULTI_BRANCH_PROJECT})
 public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     /*package*/ final MultiBranchProject mbp;
+
+    private static final int MAX_MBP_RUNS_ROWS = Integer.getInteger("MAX_MBP_RUNS_ROWS", 250);
 
     private final Link self;
     public MultiBranchPipelineImpl(MultiBranchProject mbp) {
@@ -290,43 +293,26 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             }
 
             /**
-             * XXX: This is approximation: we are going to try collect number of runs split across multiple branches.
+             * Fetches maximum up to  MAX_MBP_RUNS_ROWS rows from each branch and does pagination on that.
+             *
+             * JVM property MAX_MBP_RUNS_ROWS can be used to tune this value to optimize performance for given setup
              */
-
-
             @Override
             public Iterator<BlueRun> iterator(int start, int limit) {
-                List<BluePipeline> branches = Lists.newArrayList(getBranches().list());
-                if(branches.isEmpty()){
-                    return Collections.emptyIterator();
-                }
                 List<BlueRun> c = new ArrayList<>();
+
+                List<BluePipeline> branches = Lists.newArrayList(getBranches().list());
+
 
                 sortBranchesByLatestRun(branches);
 
-                int s=0;
-                if(start > 0) {
-                    s = start/branches.size() > 0 ? start/branches.size() : 1;
-                }
-
-                int[] startIndexes = new int[branches.size()];
-                Arrays.fill(startIndexes, s); //estimated start index for each branch
-
-                boolean[] retries = new boolean[branches.size()];
-                Arrays.fill(retries,true); // to begin with we are going to try collecting runs from each branch
-
-
-                int[] limits = new int[branches.size()];
-
-                int numRetries = 0; //max num of retries
-                int count=0;
-
-                while(retry(retries) && count < limit && numRetries < 5){
-                    int l = computeLimit(retries, limit);
-                    Arrays.fill(limits, l); // estimated limit of each branch based on how many branches we need to scan
-
-                    count += collectRuns(branches, c, retries, limit - count, startIndexes,limits);
-                    numRetries++;
+                for(final BluePipeline b: getBranches()) {
+                    Iterator<BlueRun> it = b.getRuns().iterator(0,MAX_MBP_RUNS_ROWS);
+                    int count = 0;
+                    Iterators.skip(it, start);
+                    while(it.hasNext() && count++ < limit){
+                        c.add(it.next());
+                    }
                 }
 
                 Collections.sort(c, new Comparator<BlueRun>() {
