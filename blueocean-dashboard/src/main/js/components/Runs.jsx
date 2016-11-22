@@ -53,7 +53,7 @@ export default class Runs extends Component {
             router.push(location);
         };
 
-        return (<tr key={run.id} onClick={open} id={`${pipeline}-${run.id}`} >
+        return (<tr key={run.id} onClick={open} id={`${run.pipeline}-${run.id}`} >
             <RunCol>
                 <LiveStatusIndicator result={resultRun} startTime={run.startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
