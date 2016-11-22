@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.Routable;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
@@ -12,9 +13,14 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_ORGANIZATIO
  * @author Kohsuke Kawaguchi
  */
 @Capability(BLUE_ORGANIZATION)
-public abstract class BlueOrganization extends Resource {
+public abstract class BlueOrganization extends Resource implements Routable{
     public static final String NAME="name";
     public static final String PIPELINES="pipelines";
+
+    @Override
+    public String getUrlName() {
+        return getName();
+    }
 
     @Exported(name = NAME)
     public abstract String getName();
@@ -38,5 +44,6 @@ public abstract class BlueOrganization extends Resource {
      */
     @Navigable
     public abstract BlueUser getUser();
+
 }
 
