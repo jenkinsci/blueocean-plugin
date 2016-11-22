@@ -17,7 +17,7 @@ const EmptyState = ({ repoName, t }) => (
                     0: repoName,
                     defaultValue: '# Push me, pull you\nWhen a Pull Request is opened on the repository _{0}_, Jenkins will test it and report the status of your changes back to the pull request on Github.',
                 })}
-            </Markdown>ß
+            </Markdown>
             <button>{t('Enable', { defaultValue: 'Enable' })}</button>
         </EmptyStateView>
     </main>
