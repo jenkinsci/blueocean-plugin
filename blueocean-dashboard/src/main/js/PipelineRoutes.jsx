@@ -84,24 +84,12 @@ function isLeavingRunDetails(prevState, nextState) {
     return (prevState !== null && prevState.params.runId) && !nextState.params.runId;
 }
 
-function isEnteringCreatePipeline(prevState, nextState) {
-    return nextState.location.pathname.indexOf('/create-pipeline') !== -1 &&
-        (prevState == null || prevState.location.pathname.indexOf('/create-pipeline') === -1);
-}
-
-function isLeavingCreatePipeline(prevState, nextState) {
-    return nextState.location.pathname.indexOf('/create-pipeline') === -1 &&
-        (prevState == null || prevState.location.pathname.indexOf('/create-pipeline') !== -1);
-}
-
 function isPersistBackgroundRoute(prevState, nextState) {
-    return isEnteringRunDetails(prevState, nextState) ||
-        isEnteringCreatePipeline(prevState, nextState);
+    return isEnteringRunDetails(prevState, nextState);
 }
 
 function isRemovePersistedBackgroundRoute(prevState, nextState) {
-    return isLeavingRunDetails(prevState, nextState) ||
-        isLeavingCreatePipeline(prevState, nextState);
+    return isLeavingRunDetails(prevState, nextState);
 }
 
 /**
