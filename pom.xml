@@ -136,6 +136,12 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-i18n</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-web</artifactId>
             <version>${project.version}</version>
         </dependency>
