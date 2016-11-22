@@ -72,6 +72,7 @@ export class MultiBranch extends Component {
         const branchHeader = t(`${head}.branch`, { defaultValue: 'Branch' });
         const messageHeader = t(`${head}.message`, { defaultValue: 'Message' });
         const completedHeader = t(`${head}.completed`, { defaultValue: 'Completed' });
+
         const headers = [
             healthHeader,
             statusHeader,

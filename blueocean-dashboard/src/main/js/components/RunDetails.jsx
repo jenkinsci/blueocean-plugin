@@ -30,7 +30,7 @@ const { rest: RestPaths } = Paths;
 
 const classicConfigLink = (pipeline) => {
     let link = null;
-    if (User.current().isAnonymous()) {
+    if (!User.current().isAnonymous()) {
         let url = buildClassicConfigUrl(pipeline);
         link = (
             <a href={url} target="_blank" style={{ height: '24px' }}>

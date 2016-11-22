@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.25-unpublishedmobx",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.25-unpublishedmobx",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.25-unpublishedmobx.tgz",
+      "version": "0.0.26-unpublishedmobx",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.26-unpublishedmobx",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.26-unpublishedmobx.tgz",
       "dependencies": {
         "@jenkins-cd/sse-gateway": {
           "version": "0.0.10",
