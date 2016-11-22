@@ -1,11 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import hudson.Extension;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
-import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -15,8 +13,8 @@ import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
+import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.Collection;
@@ -67,6 +65,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     @Override
     public Collection<BlueActionProxy> getActions() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public Container<Resource> getActivities() {
+        return null;
     }
 
     @Override
