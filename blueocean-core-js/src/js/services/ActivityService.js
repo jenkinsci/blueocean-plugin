@@ -1,34 +1,77 @@
-import { observable } from 'mobx';
 import { Pager } from './Pager';
 import RestPaths from '../paths/rest';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
-import { computed, asMap, action } from 'mobx';
 import utils from '../utils';
+
+/**
+ * This class provides activity related services.
+ *
+ * @export
+ * @class ActivityService
+ * @extends {BunkerService}
+ */
 export class ActivityService extends BunkerService {
+    /**
+     * Generates a pager key for [@link PagerService] to store the [@link Pager] under.
+     *
+     * @param {string} organization Jenkins organization that this pager belongs to.
+     * @param {string} pipeline Pipeline that this pager belongs to.
+     * @returns {string} key for [@link PagerService]
+     */
     pagerKey(organization, pipeline) {
         return `Activities/${organization}-${pipeline}`;
     }
+
+    /**
+     * Gets the activity pager
+     *
+     * @param {string} organization Jenkins organization that this pager belongs to.
+     * @param {string} pipeline Pipeline that this pager belongs to.
+     * @returns {Pager} Pager for this pipelne.
+     */
     activityPager(organization, pipeline) {
         return this.pagerService.getPager({
             key: this.pagerKey(organization, pipeline),
+            /**
+             * Lazily generate the pager incase its needed.
+             */
             lazyPager: () => new Pager(RestPaths.activities(organization, pipeline), 25, this),
         });
     }
 
-    bunkerKey(data) {
-        return data._links.self.href;
-    }
-
+    /**
+     * Maps queued data into a psudeorun
+     *
+     * @see _mapQueueToPsuedoRun
+     * 
+     * @param {Object} data Raw data from extenal source.
+     * @returns A run or psudeorun.
+     */
     bunkerMapper(data) {
-        const ret = this._mapQueueToPsuedoRun(data);
-        return ret;
+        return this._mapQueueToPsuedoRun(data);
     }
     
+    /**
+     * Gets an activity from the store.
+     *
+     * @param {string} href Self href for activity.
+     * @returns {object} Mobx computed value
+     */
     getActivity(href) {
         return this.getItem(href);
     }
 
+    /**
+     * Fetches an activity from rest api.
+     *
+     * Note: This only works for activities that are not in the queue.
+     *
+     * @param {string} href self href of activity.
+     * @param {boolean} useCache Use the cache to lookup data or always fetch a new one.
+     * @param {boolean} overrideQueuedState Hack to make SSE work. Not use unless you know what you are doing!!!
+     * @returns {Promise} Promise of fetched data.
+     */
     fetchActivity(href, { useCache, overrideQueuedState } = {}) {
         if (useCache && this.hasItem(href)) {
             return Promise.resolve(this.getItem(href));
@@ -37,7 +80,11 @@ export class ActivityService extends BunkerService {
 
         return Fetch.fetchJSON(href)
             .then(data => {
+                // Should really have dedupe on methods like these, but for now
+                // just clone data so that we dont modify other instances.
                 const run = utils.clone(data);
+
+                // Ugly hack to make SSE work.
                 if (overrideQueuedState) {
                     run.state = 'RUNNING';
                     run.result = 'UNKNOWN';
@@ -45,6 +92,7 @@ export class ActivityService extends BunkerService {
                 return this.setItem(run);
             });
     }
+
     /**
      * This function maps a queue item into a run instancce.
      *
@@ -52,6 +100,9 @@ export class ActivityService extends BunkerService {
      * as runs and its easier to deal with them if they are modeled
      * as the same thing. If the raw data is needed if can be fetched
      * from _item.
+     *
+     * @param {object} run Raw data from api.
+     * @returns psudeorun
      */
     _mapQueueToPsuedoRun(run) {
         if (run._class === 'io.jenkins.blueocean.service.embedded.rest.QueueItemImpl') {
@@ -80,6 +131,14 @@ export class ActivityService extends BunkerService {
     }
 
 
+    /**
+     * Calculate an expected build number for a queued item.
+     *
+     * TODO: Enhance SSE so that this is done server side.
+     *
+     * @param {any} event SSE event.
+     * @returns {number} Expected build number
+     */
     getExpectedBuildNumber(event) {
         const runs = this._data.values();
         const eventJobUrl = event.blueocean_job_rest_url;
@@ -87,8 +146,6 @@ export class ActivityService extends BunkerService {
         for (let i = 0; i < runs.length; i++) {
             const run = runs[i];
             if (eventJobUrl !== run._links.parent.href) {
-                // Not the same branch. Yes, run.pipeline actually contains
-                // the branch name i.e. naming seems a bit confusing.
                 continue;
             }
             if (run.job_run_queueId === event.job_run_queueId) {
