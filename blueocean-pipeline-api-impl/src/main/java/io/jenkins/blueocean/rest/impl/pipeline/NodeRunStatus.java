@@ -73,12 +73,8 @@ public class NodeRunStatus {
                 this.state =  BlueRun.BlueRunState.FINISHED;
                 break;
             case NOT_EXECUTED:
-                // It happens when declarative plugin strting from 0.5
-                // sends NOT_EXECUTED for nodes thats not run in case earlier node failed.
-                // we want to represent them as totally unknown in blueocean so that UI can
-                // represent them accordingly
-                this.result = null;
-                this.state = null;
+                this.result = BlueRun.BlueRunResult.NOT_BUILT;
+                this.state = BlueRun.BlueRunState.NOT_BUILT;
                 break;
             default:
                 // Shouldn't happen, above includes all statuses
