@@ -406,20 +406,39 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         }
 
         const oldStepsForStage = stageSteps[selectedStage.id] || [];
+        let newStepsForStage = oldStepsForStage;
+        let newSelectedStep;
+        
+        const parent = findParentStepByChildId(oldStepsForStage, step.id);
+        if (parent) {
+            const stepIdx = parent.children.indexOf(step);
 
-        const stepIdx = oldStepsForStage.indexOf(step);
+            if (stepIdx < 0) {
+                return;
+            }
 
-        if (stepIdx < 0) {
-            return;
+            parent.children = [
+                ...(parent.children.slice(0, stepIdx)),
+                ...(parent.children.slice(stepIdx + 1))
+            ];
+            
+            newSelectedStep = parent;
         }
+        else { // no parent
+            const stepIdx = oldStepsForStage.indexOf(step);
 
-        let newStepsForStage = [
-            ...(oldStepsForStage.slice(0, stepIdx)),
-            ...(oldStepsForStage.slice(stepIdx + 1))
-        ];
+            if (stepIdx < 0) {
+                return;
+            }
 
-        let newSelectedStepIdx = Math.min(stepIdx, newStepsForStage.length - 1);
-        let newSelectedStep = newStepsForStage[newSelectedStepIdx];
+            newStepsForStage = [
+                ...(oldStepsForStage.slice(0, stepIdx)),
+                ...(oldStepsForStage.slice(stepIdx + 1))
+            ];
+
+            let newSelectedStepIdx = Math.min(stepIdx, newStepsForStage.length - 1);
+            newSelectedStep = newStepsForStage[newSelectedStepIdx];
+        }
 
         let newStageSteps = {...stageSteps, [selectedStage.id]: newStepsForStage};
 
@@ -439,7 +458,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
         const stepsForStage = stageSteps[selectedStage.id];
         let updatedStepsForStage;
-        const parent = findParentStepByChildId(stageSteps, selectedStage.id);
+        const parent = findParentStepByChildId(stepsForStage, selectedStep.id);
         if (parent) {
             parent.children.map(c => {
                 if (c.id === selectedStage.id) {
