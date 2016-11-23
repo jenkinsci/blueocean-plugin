@@ -222,8 +222,9 @@ public abstract class BlueRun extends Resource {
         QUEUED,
         RUNNING,
         PAUSED,
-        FINISHED,
-        SKIPPED
+        SKIPPED,
+        NOT_BUILT,
+        FINISHED
     }
 
     public enum BlueRunResult {

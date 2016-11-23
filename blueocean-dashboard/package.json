@@ -29,7 +29,6 @@
     "eslint-plugin-react": "4.3.0",
     "gulp": "3.9.1",
     "gulp-mocha": "3.0.1",
-    "i18next": "3.5.2",
     "mocha": "3.1.0",
     "nock": "8.0.0",
     "react-addons-test-utils": "15.3.2",
@@ -37,7 +36,7 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.24",
+    "@jenkins-cd/blueocean-core-js": "0.0.25",
     "@jenkins-cd/design-language": "0.0.88",
     "@jenkins-cd/js-extensions": "0.0.30",
     "@jenkins-cd/js-modules": "0.0.8",

@@ -34,7 +34,7 @@ export function pipelineBranchesUnsupported(pipeline) {
 
 const classicConfigLink = (pipeline) => {
     let link = null;
-    if (User.current().isAnonymous()) {
+    if (!User.current().isAnonymous()) {
         link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
     }
     return link;
