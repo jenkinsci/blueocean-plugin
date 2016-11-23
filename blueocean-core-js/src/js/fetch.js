@@ -50,7 +50,7 @@ export const FetchFunctions = {
         newOpts.credentials = newOpts.credentials || 'same-origin';
         return newOpts;
     },
-    
+
     /**
      * Enhances the fetchOptions with the JWT bearer token. Will only be needed
      * if not using fetch or fetchJson.
