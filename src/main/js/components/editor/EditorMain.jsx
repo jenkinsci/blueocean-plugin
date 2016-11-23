@@ -105,17 +105,18 @@ const findStepById = function(steps, id) {
 
 
 const findParentStepByChildId = function(steps, id) {
-    const step = steps.filter(i => i.id === id);
-    if (step.length) {
-        return step[0];
-    }
     for (let s of steps) {
         if (s.isContainer) {
             const children = s.children;
             if (children) {
+                for (let c of children) {
+                    if (c.id === id) {
+                        return s;
+                    }
+                }
                 const childStep = findParentStepByChildId(children, id);
                 if (childStep) {
-                    return s;
+                    return childStep;
                 }
             }
         }
@@ -408,7 +409,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         const oldStepsForStage = stageSteps[selectedStage.id] || [];
         let newStepsForStage = oldStepsForStage;
         let newSelectedStep;
-        
+
         const parent = findParentStepByChildId(oldStepsForStage, step.id);
         if (parent) {
             const stepIdx = parent.children.indexOf(step);

@@ -247,8 +247,7 @@ public class PipelineStepMetadataService implements ApiRoutable {
             }
         } catch (NoStaplerConstructorException e) {
             // not a normal step?
-            System.out.println("Excluding step: " + d.getFunctionName());
-            return step;
+            return null;
         }
 
         return step;
