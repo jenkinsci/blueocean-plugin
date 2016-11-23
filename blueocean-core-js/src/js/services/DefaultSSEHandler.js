@@ -42,17 +42,17 @@ export class DefaultSSEHandler {
         default :
         // Else ignore the event.
         }
-    }
+    };
 
 
     updateJob(event, overrideQueuedState) {
-        const queueId = event.job_run_queueId;
-        const queueSelf = `${event.blueocean_job_rest_url}queue/${queueId}/`;
+        // const queueId = event.job_run_queueId;
+        // const queueSelf = `${event.blueocean_job_rest_url}queue/${queueId}/`;
         const runSelf = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
-        
+
         const key = this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name);
         const pager = this.pagerService.getPager({ key });
-        this.activityService.fetchActivity(runSelf, { overrideQueuedState }).then(d => {    
+        this.activityService.fetchActivity(runSelf, { overrideQueuedState }).then(d => {
             if (pager && !pager.has(runSelf)) {
                 pager.insert(runSelf);
             }
@@ -70,10 +70,10 @@ export class DefaultSSEHandler {
         const queueId = event.job_run_queueId;
         const self = `${event.blueocean_job_rest_url}queue/${queueId}/`;
         const id = this.activityService.getExpectedBuildNumber(event);
-       
+
         const runSelf = `${event.blueocean_job_rest_url}runs/${id}/`;
-        
-        
+
+
         const newRun = {
             id,
             _links: {
@@ -101,7 +101,7 @@ export class DefaultSSEHandler {
         };
 
         this.activityService.setItem(newRun);
-        const key = this.activityService.pagerKey(event.jenkins_org ,event.blueocean_job_pipeline_name);
+        const key = this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name);
         const pager = this.pagerService.getPager({ key });
         if (pager) {
             pager.insert(self);

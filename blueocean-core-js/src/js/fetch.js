@@ -157,7 +157,7 @@ export const FetchFunctions = {
         const request = () => {
             const future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                 .then(FetchFunctions.checkRefreshHeader)
-                .then(FetchFunctions.checkStatus);            
+                .then(FetchFunctions.checkStatus);
 
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));

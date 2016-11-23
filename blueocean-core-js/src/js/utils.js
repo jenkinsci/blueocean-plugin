@@ -1,4 +1,4 @@
-// @flow 
+// @flow
 
 /**
  * Trims duplicate forward slashes to a single slash and adds trailing slash if needed.
