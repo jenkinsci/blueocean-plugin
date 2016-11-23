@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { I18n, AppConfig, Security, UrlConfig, Utils, sseService, locationService } from '@jenkins-cd/blueocean-core-js';
+import { I18n, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';
@@ -89,12 +89,6 @@ App.contextTypes = {
     location: PropTypes.object.isRequired,
 };
 
-class NotFound extends Component {
-    // FIXME: We're going to need to polish this up at some point
-    render() {
-        return <h1>Not found</h1>;
-    }
-}
 const closeHandler = (props) => props.onClose || {};
 function makeRoutes(routes) {
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
