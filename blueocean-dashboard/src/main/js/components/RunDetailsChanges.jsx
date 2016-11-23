@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import Extensions from '@jenkins-cd/js-extensions';
 import { CommitHash, EmptyStateView, ReadableDate, Table } from '@jenkins-cd/design-language';
 import Markdown from 'react-remarkable';
 
@@ -40,24 +41,32 @@ export default class RunDetailsChanges extends Component {
         ];
 
         return (
-            <Table headers={headers} className="changeset-table fixed">
-                { changeSet.map(commit => (
-                    <tr key={commit.commitId}>
-                        <td><CommitLink {...commit} /></td>
-                        <td>{commit.author.fullName}</td>
-                        <td className="multipleLines">{commit.msg}</td>
-                        <td>
-                            <ReadableDate
-                              date={commit.timestamp}
-                              liveUpdate
-                              locale={locale}
-                              shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
-                              longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
-                            />
-                        </td>
-                    </tr>
-                ))}
-            </Table>
+            <div>
+                <Extensions.Renderer
+                  extensionPoint="jenkins.pipeline.run.changes.top"
+                  result={result}
+                  store={this.context.store}
+                  {...t}
+                />
+                <Table headers={headers} className="changeset-table fixed">
+                    { changeSet.map(commit => (
+                        <tr key={commit.commitId}>
+                            <td><CommitLink {...commit} /></td>
+                            <td>{commit.author.fullName}</td>
+                            <td className="multipleLines">{commit.msg}</td>
+                            <td>
+                                <ReadableDate
+                                  date={commit.timestamp}
+                                  liveUpdate
+                                  locale={locale}
+                                  shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                                  longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                                />
+                            </td>
+                        </tr>
+                    ))}
+                </Table>
+            </div>
         );
     }
 }
