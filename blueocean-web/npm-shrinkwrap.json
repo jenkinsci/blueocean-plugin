@@ -36,9 +36,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.47",
-      "from": "@jenkins-cd/js-builder@0.0.47",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.47.tgz",
+      "version": "0.0.49-beta6",
+      "from": "@jenkins-cd/js-builder@0.0.49-beta6",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.49-beta6.tgz",
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
@@ -1131,9 +1131,9 @@
       }
     },
     "browserify-tree": {
-      "version": "0.0.2",
-      "from": "browserify-tree@0.0.2",
-      "resolved": "https://registry.npmjs.org/browserify-tree/-/browserify-tree-0.0.2.tgz",
+      "version": "0.0.6",
+      "from": "browserify-tree@0.0.6",
+      "resolved": "https://registry.npmjs.org/browserify-tree/-/browserify-tree-0.0.6.tgz",
       "dev": true
     },
     "browserify-zlib": {

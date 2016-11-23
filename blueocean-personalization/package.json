@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.47",
+    "@jenkins-cd/js-builder": "0.0.49-beta6",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
     "babel-core": "6.17.0",
@@ -37,7 +37,6 @@
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.27-unpublished",
     "@jenkins-cd/design-language": "0.0.88",
-    "@jenkins-cd/js-builder": "0.0.49-beta6",
     "@jenkins-cd/js-extensions": "0.0.30",
     "@jenkins-cd/js-modules": "0.0.8",
     "immutable": "3.8.1",
