@@ -6,6 +6,15 @@ import { Dialog } from '@jenkins-cd/design-language';
 import { Icon } from "react-material-icons-blue";
 import debounce from 'lodash.debounce';
 
+const isStepValidForSelectionUI = (step) => {
+    switch (step.type) {
+        case 'org.jenkinsci.plugins.workflow.support.steps.StageStep':
+        case 'org.jenkinsci.plugins.docker.workflow.WithContainerStep':
+            return false;
+    }
+    return true;
+};
+
 type Props = {
     onClose?: () => any,
     onStepSelected: (step:StepInfo) => any,
@@ -79,7 +88,7 @@ export class AddStepSelectionDialog extends Component<DefaultProps, Props, State
                             placeholder="Find steps by name" />
                     </div>
                     <div className="editor-step-selection-dialog-steps">
-                    {steps && steps.filter(this.state.searchFilter).map(step =>
+                    {steps && steps.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).map(step =>
                         <div tabIndex="0" onKeyPress={e => this.selectItemByKeyPress(e, step)} onClick={() => this.setState({selectedStep: step})} className={'step-item' + (this.state.selectedStep === step ? ' selected' : '')}>
                             {step.displayName}
                         </div>
