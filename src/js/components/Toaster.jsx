@@ -96,6 +96,7 @@ export class Toaster extends Component {
                 >
                     { this.props.toasts.map((toast) => {
                         if (!toast.id) {
+                            // eslint-disable-next-line no-console
                             console.warn("toast cannot be added without 'id' property", toast);
                             return null;
                         }
@@ -128,3 +129,4 @@ Toaster.propTypes = {
 Toaster.defaultProps = {
     toasts: [],
 };
+

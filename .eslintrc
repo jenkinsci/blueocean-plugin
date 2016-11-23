@@ -24,7 +24,7 @@
     "semi": [2],
     "no-extra-semi": 2,
     "no-console": 1,
-    "prefer-template": 1,
+    "prefer-template": 0,
     "react/display-name": 0,
     "react/jsx-boolean-value": 2,
     "jsx-quotes": 2,

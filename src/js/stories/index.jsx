@@ -14,7 +14,7 @@ require('./RadioButtonGroupStories');
 require('./readabledate.jsx');
 require('./statusIndicatorStories.jsx');
 require('./liveStatusIndicatorStories');
-require('./table.jsx');
+require('./TableStories.jsx');
 require('./TextAreaStories');
 require('./TextInputStories');
 require('./timeduration.jsx');
