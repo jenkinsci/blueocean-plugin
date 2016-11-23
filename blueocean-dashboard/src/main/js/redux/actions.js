@@ -614,7 +614,7 @@ export const actions = {
                                 found.$success = true;
                             } catch (e) {
                                 // Ignore, might be a real item
-                                console.log('amoc', e)
+                                console.log('amoc', e);
                             }
                             dispatch({
                                 id: config.pipeline,
