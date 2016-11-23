@@ -13,8 +13,8 @@ import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
+import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.Collection;
@@ -68,6 +68,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     }
 
     @Override
+    public Container<Resource> getActivities() {
+        return null;
+    }
+
+    @Override
     public BluePipelineContainer getPipelines() {
         return new PipelineContainerImpl(folder, this);
     }
@@ -97,12 +102,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
-        if(favoriteAction == null) {
-            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
-        }
-
-        FavoriteUtil.favoriteJob(folder.getFullName(), favoriteAction.isFavorite());
-        return FavoriteUtil.getFavorite(folder.getFullName(), this);
+        throw new ServiceException.MethodNotAllowedException("Cannot favorite a folder");
     }
 
     @Override

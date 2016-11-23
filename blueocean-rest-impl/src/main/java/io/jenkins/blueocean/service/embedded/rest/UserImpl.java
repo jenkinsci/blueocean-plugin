@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.User;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.tasks.Mailer;
+import hudson.tasks.UserAvatarResolver;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
@@ -10,6 +11,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import jenkins.model.Jenkins;
+import org.kohsuke.stapler.Stapler;
 
 import java.util.Collections;
 
@@ -20,7 +22,7 @@ import java.util.Collections;
  * @author Vivek Pandey
  */
 public class UserImpl extends BlueUser {
-    private final User user;
+    protected final User user;
 
     private final Reachable parent;
     public UserImpl(User user, Reachable parent) {
@@ -60,14 +62,9 @@ public class UserImpl extends BlueUser {
         return p != null ? p.getAddress() : null;
     }
 
-    protected boolean isFavorite(final String name) {
-        FavoriteUserProperty prop = user.getProperty(FavoriteUserProperty.class);
-        return prop != null && prop.isJobFavorite(name);
-    }
-
-
-    protected FavoriteUserProperty getFavoriteProperty(){
-        return user.getProperty(FavoriteUserProperty.class);
+    @Override
+    public String getAvatar() {
+        return UserAvatarResolver.resolveOrNull(user, "48x48");
     }
 
     @Override

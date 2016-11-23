@@ -49,6 +49,7 @@
     - [Stop a build as blocking call](#stop-a-build-as-blocking-call)
   - [Get MultiBranch job's branch run detail](#get-multibranch-jobs-branch-run-detail)
   - [Get all runs for all branches on a multibranch pipeline (ordered by date)](#get-all-runs-for-all-branches-on-a-multibranch-pipeline-ordered-by-date)
+  - [Get latest activity of Multi-branch pipeline for all branches](#get-latest-activity-of-multi-branch-pipeline-for-all-branches)
   - [Get change set for a run](#get-change-set-for-a-run)
   - [Pipeline Node API](#pipeline-node-api)
     - [Get Pipeline run nodes](#get-pipeline-run-nodes)
@@ -1019,6 +1020,78 @@ Client should check the state and if its not FINISHED they may issue another sto
             "commitId": "84cb56b50589e720385ef2491a1ebab9d227da6e"
         }
     ]
+
+## Get latest activity of Multi-branch pipeline for all branches
+
+     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/activities/
+         
+        [
+            {
+                "changeSet": [
+    
+                ],
+                "artifacts": [
+                  {
+                      "name": "fizz",
+                      "size": 8,
+                      "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+                  }
+                ],
+                "durationInMillis": 1875,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-03-10T15:27:13.687+1300",
+                "endTime": "2016-03-10T15:27:15.567+1300",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature1",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-03-10T15:27:13.692+1300",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "52615df5828f1dddf672b86d64196294e3fbee88"
+            },
+            {
+                "changeSet": [
+    
+                ],
+                "durationInMillis": 1716,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-03-10T15:27:13.692+1300",
+                "endTime": "2016-03-10T15:27:15.409+1300",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "master",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-03-10T15:27:13.693+1300",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "bfd1f72dc63ca63a8c1b152dc9263c7c81862afa"
+            },
+            {
+                "changeSet": [
+    
+                ],
+                "durationInMillis": 1714,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-03-10T15:27:13.700+1300",
+                "endTime": "2016-03-10T15:27:15.415+1300",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature2",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-03-10T15:27:13.701+1300",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "84cb56b50589e720385ef2491a1ebab9d227da6e"
+            }
+        ]
+
+
+> This API collects runs (in descending order) for each branch in a multi-branch project( branches sorted in descending order of branch with latest activity). It fetches max up to 250 runs for each branch by default, it can be changed using JVM property MAX_MBP_RUNS_ROWS.
+
 
 ## Get change set for a run
 

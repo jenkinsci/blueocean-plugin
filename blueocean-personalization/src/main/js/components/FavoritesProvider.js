@@ -6,7 +6,8 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
-import { userSelector, favoritesSelector } from '../redux/FavoritesStore';
+import { User } from '@jenkins-cd/blueocean-core-js';
+import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 
 /**
@@ -27,22 +28,18 @@ export class FavoritesProvider extends Component {
     }
 
     _initialize(props) {
-        const { user, favorites } = props;
+        const { favorites } = props;
+        this.user = User.current();
 
-        const shouldFetchUser = !user;
-        const shouldFetchFavorites = user && !user.isAnonymous() && !favorites;
-
-        if (shouldFetchUser) {
-            this.props.fetchUser();
-        }
+        const shouldFetchFavorites = this.user && !this.user.isAnonymous() && !favorites;
 
         if (shouldFetchFavorites) {
-            this.props.fetchFavorites(user);
+            this.props.fetchFavorites(this.user);
         }
     }
 
     render() {
-        if (this.props.user && !this.props.user.isAnonymous()) {
+        if (this.user && !this.user.isAnonymous()) {
             if (this.props.children) {
                 return React.cloneElement(this.props.children, { ...this.props });
             }
@@ -54,15 +51,13 @@ export class FavoritesProvider extends Component {
 
 FavoritesProvider.propTypes = {
     children: PropTypes.node,
-    user: PropTypes.object,
     favorites: PropTypes.instanceOf(List),
-    fetchUser: PropTypes.func,
     fetchFavorites: PropTypes.func,
 };
 
 const selectors = createSelector(
-    [userSelector, favoritesSelector],
-    (user, favorites) => ({ user, favorites })
+    [favoritesSelector],
+    (favorites) => ({ favorites })
 );
 
 export default connect(selectors, actions)(FavoritesProvider);

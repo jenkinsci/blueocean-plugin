@@ -332,6 +332,10 @@ code div a.btn-secondary.inverse:hover{
             padding-top: 2px;
             padding-bottom: 2px;
         }
+
+        &>*+* {
+            margin-left:1rem;
+        }
     }
 }
 
@@ -381,3 +385,18 @@ table.highlight {
         text-decoration: none;
     }
 }
+
+.tableRowLink a {
+    width: 100%;
+    height: 100%;
+    display: block;
+    padding: 0.5em 0;
+    text-decoration: none;
+    color: inherit;
+}
+
+tr:first-child td.tableRowLink, // <-- Needs to override JDL "tbody tr:first-child td" rule
+td.tableRowLink {
+    padding: 0;
+}
+

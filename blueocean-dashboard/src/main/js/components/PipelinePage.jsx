@@ -1,13 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    actions,
-    pipeline as pipelineSelector,
-    connect,
-    createSelector,
-} from '../redux';
 import { Link } from 'react-router';
 import Extensions from '@jenkins-cd/js-extensions';
-import NotFound from './NotFound';
 import {
     ExpandablePath,
     Page,
@@ -17,27 +10,39 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
+import { I18n, User } from '@jenkins-cd/blueocean-core-js';
+import { Icon } from 'react-material-icons-blue';
+import {
+    actions,
+    pipeline as pipelineSelector,
+    connect,
+    createSelector,
+} from '../redux';
+import NotFound from './NotFound';
 import PageLoading from './PageLoading';
-import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
+import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
+import compose from '../util/compose';
 
 /**
  * returns true if the pipeline is defined and has branchNames
  */
 export function pipelineBranchesUnsupported(pipeline) {
-    if ((pipeline && !pipeline.branchNames) ||
-        (pipeline && !pipeline.branchNames.length)) {
-        return true;
-    }
-    return false;
+    return (pipeline && !pipeline.branchNames) ||
+      (pipeline && !pipeline.branchNames.length);
 }
 
-export class PipelinePage extends Component {
-    getChildContext() {
-        return {
-            pipeline: this.props.pipeline,
-        };
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (!User.current().isAnonymous()) {
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
     }
+    return link;
+};
+
+const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+
+export class PipelinePage extends Component {
 
     componentWillMount() {
         if (this.props.params) {
@@ -47,6 +52,7 @@ export class PipelinePage extends Component {
 
     render() {
         const { pipeline, setTitle } = this.props;
+        const { location = {} } = this.context;
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
@@ -59,7 +65,6 @@ export class PipelinePage extends Component {
         setTitle(`${organization} / ${name}`);
 
         const baseUrl = buildPipelineUrl(organization, fullName);
-
         return (
             <Page>
                 <PageHeader>
@@ -73,26 +78,28 @@ export class PipelinePage extends Component {
                     <Title>
                         <WeatherIcon score={pipeline.weatherScore} size="large" />
                         <h1>
-                            <Link to={orgUrl}>{organization}</Link>
+                            <Link to={orgUrl} query={location.query}>{organization}</Link>
                             <span>&nbsp;/&nbsp;</span>
-                            <Link to={activityUrl}>
+                            <Link to={activityUrl} query={location.query}>
                                 <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
                             </Link>
                         </h1>
                         <Extensions.Renderer
                           extensionPoint="jenkins.pipeline.detail.header.action"
                           store={this.context.store}
-                          pipeline={this.props.pipeline}
+                          pipeline={pipeline}
                         />
+                        {classicConfigLink(pipeline)}
                     </Title>
                     }
+
                     <PageTabs base={baseUrl}>
-                        <TabLink to="/activity">Activity</TabLink>
-                        <TabLink to="/branches">Branches</TabLink>
-                        <TabLink to="/pr">Pull Requests</TabLink>
+                        <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>
+                        <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' }) }</TabLink>
+                        <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle })}
+                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: I18n.language })}
             </Page>
         );
     }
@@ -106,17 +113,19 @@ PipelinePage.propTypes = {
     setTitle: PropTypes.func,
 };
 
+
 PipelinePage.contextTypes = {
     config: PropTypes.object.isRequired,
     location: PropTypes.object,
     store: PropTypes.object,
 };
 
-PipelinePage.childContextTypes = {
-    pipeline: PropTypes.any,
-};
-
 const selectors = createSelector([pipelineSelector],
     (pipeline) => ({ pipeline }));
 
-export default connect(selectors, actions)(documentTitle(PipelinePage));
+const composed = compose(
+  connect(selectors, actions),
+  documentTitle
+);
+
+export default composed(PipelinePage);

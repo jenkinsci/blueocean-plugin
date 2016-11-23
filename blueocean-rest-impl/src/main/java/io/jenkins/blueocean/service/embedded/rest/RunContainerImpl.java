@@ -64,6 +64,11 @@ public class RunContainerImpl extends BlueRunContainer {
         return RunSearch.findRuns(job, pipeline.getLink()).iterator();
     }
 
+    @Override
+    public Iterator<BlueRun> iterator(int start, int limit) {
+        return RunSearch.findRuns(job, pipeline.getLink(), start, limit).iterator();
+    }
+
 
     /**
      * Schedules a build. If build already exists in the queue and the pipeline does not

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import PullRequest from './PullRequest';
+import Markdown from 'react-remarkable';
 import { RunsRecord } from './records';
 import {
     actions,
@@ -13,42 +14,44 @@ import { pipelineBranchesUnsupported } from './PipelinePage';
 
 const { func, object, array, string } = PropTypes;
 
-const EmptyState = ({ repoName }) => (
+const EmptyState = ({ repoName, t }) => (
     <main>
         <EmptyStateView iconName="goat">
-            <h1>Push me, pull you</h1>
-
-            <p>
-                When a Pull Request is opened on the repository <em>{repoName}</em>,
-                Jenkins will test it and report the status of
-                your changes back to the pull request on Github.
-            </p>
-
-            <button>Enable</button>
+            <Markdown>
+                {t('EmptyState.pr', {
+                    0: repoName,
+                    defaultValue: '# Push me, pull you\nWhen a Pull Request is opened on the repository _{0}_, Jenkins will test it and report the status of your changes back to the pull request on Github.',
+                })}
+            </Markdown>
+            <button>{t('Enable', { defaultValue: 'Enable' })}</button>
         </EmptyStateView>
     </main>
 );
 
-const NotSupported = () => (
+const NotSupported = ({ t }) => (
     <main>
         <EmptyStateView>
-            <h1>Pull Requests are unsupported</h1>
-            <p>
-            Validated pull request builds only work with the <i>Multibranch Pipeline</i> job type.
-            This is just one of the many reasons to switch to Jenkins Pipeline.
-            </p>
-            <a href="https://jenkins.io/doc/book/pipeline-as-code/" target="_blank">Learn more</a>
+            <Markdown>
+                {t('EmptyState.pr.notSupported', {
+                    defaultValue: '# Pull Requests are unsupported\nValidated pull request builds only work with the _Multibranch Pipeline_ job type. This is just one of the many reasons to switch to Jenkins Pipeline.\n\n[Learn more](https://jenkins.io/doc/book/pipeline-as-code/)',
+                })}
+            </Markdown>
         </EmptyStateView>
     </main>
 );
 
 EmptyState.propTypes = {
     repoName: string,
+    t: func,
+};
+
+NotSupported.propTypes = {
+    t: func,
 };
 
 export class PullRequests extends Component {
     componentWillMount() {
-        if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
+        if (this.props.pipeline && this.context.params && !pipelineBranchesUnsupported(this.props.pipeline)) {
             this.props.fetchPullRequests({
                 organizationName: this.context.params.organization,
                 pipelineName: this.context.params.pipeline,
@@ -61,10 +64,10 @@ export class PullRequests extends Component {
     }
 
     render() {
-        const { pullRequests } = this.props;
+        const { pullRequests, t, locale, pipeline } = this.props;
 
-        if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
-            return (<NotSupported />);
+        if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(pipeline))) {
+            return (<NotSupported t={t} />);
         }
 
         if (pullRequests.$pending && !pullRequests.length) {
@@ -77,15 +80,22 @@ export class PullRequests extends Component {
         }
 
         if (!pullRequests.$pending && !pullRequests.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} />);
+            return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
         }
 
+        const head = 'pipelinedetail.pullrequests.header';
+        const status = t(`${head}.status`, { defaultValue: 'Status' });
+        const build = t(`${head}.build`, { defaultValue: 'PR' });
+        const author = t(`${head}.author`, { defaultValue: 'Author' });
+        const summary = t(`${head}.summary`, { defaultValue: 'Summary' });
+        const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
+
         const headers = [
-            'Status',
-            { label: 'Latest Build', className: 'build' },
-            { label: 'Summary', className: 'summary' },
-            'Author',
-            { label: 'Completed', className: 'completed' },
+            status,
+            { label: build, className: 'build' },
+            { label: summary, className: 'summary' },
+            author,
+            { label: completed, className: 'completed' },
             { label: '', className: 'run' },
         ];
 
@@ -97,6 +107,9 @@ export class PullRequests extends Component {
                         {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
+                              t={t}
+                              locale={locale}
+                              pipeline={pipeline}
                               key={index}
                               pr={result}
                             />);
@@ -116,13 +129,15 @@ export class PullRequests extends Component {
 PullRequests.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
-    pipeline: object,
 };
 
 PullRequests.propTypes = {
     pullRequests: array,
     clearPRData: func,
+    locale: string,
     fetchPullRequests: func,
+    t: func,
+    pipeline: object,
 };
 
 const selectors = createSelector([pullRequestSelector], (pullRequests) => ({ pullRequests }));

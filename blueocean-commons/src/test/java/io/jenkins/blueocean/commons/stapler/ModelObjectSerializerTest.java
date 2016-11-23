@@ -21,18 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean;
+package io.jenkins.blueocean.commons.stapler;
 
-import hudson.Extension;
-import hudson.model.PageDecorator;
+import net.sf.json.JSONObject;
+import org.junit.Assert;
+import org.junit.Test;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
+
+import java.io.IOException;
 
 /**
- * Stapler page decorator for decorating classic Jenkins pages with visual
- * prompts to the user that will hopefully entice/remind them into giving
- * Blue ocean a try.
- * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-@Extension
-public class TryBlueOceanPageDecorator extends PageDecorator {
+public class ModelObjectSerializerTest {
+
+    @Test
+    public void test_json() throws IOException {
+        String xJson = ModelObjectSerializer.toJson(new X());
+        JSONObject jsonObj = JSONObject.fromObject(xJson);
+
+        Assert.assertEquals(X.class.getName(), jsonObj.getString("_class"));
+        Assert.assertEquals("xVal", jsonObj.getString("val"));
+    }
+
+    @ExportedBean
+    public static class X {
+        @Exported
+        public String val() {
+            return "xVal";
+        }
+    }
 }

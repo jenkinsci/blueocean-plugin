@@ -49,7 +49,7 @@ export default class LogConsoleView extends Component {
     }
 
     render() {
-        const { logs, mergedConfig, followAlong, title = 'Logs', scrollToBottom } = this.props;
+        const { logs, mergedConfig, followAlong, title, scrollToBottom } = this.props;
         const logGeneral = calculateRunLogURLObject(mergedConfig);
         const log = logs ? logs[logGeneral.url] : null;
         const logProps = {

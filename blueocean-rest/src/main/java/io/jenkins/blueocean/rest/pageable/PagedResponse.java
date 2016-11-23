@@ -42,24 +42,19 @@ public @interface PagedResponse {
             return new HttpResponse() {
                 @Override
                 public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                    int start = (req.getParameter("start") != null) ? Integer.parseInt(req.getParameter("start")) : -1;
-                    int limit = (req.getParameter("limit") != null) ? Integer.parseInt(req.getParameter("limit")) : -1;
+                    int start = (req.getParameter("start") != null) ? Integer.parseInt(req.getParameter("start")) : 0;
+                    int limit = (req.getParameter("limit") != null) ? Integer.parseInt(req.getParameter("limit")) : 100;
 
-                    if(start == -1){
+                    if(start < 0){
                         start = 0;
                     }
 
-                    if(limit == -1){
+                    if(limit < 0){
                         limit = DEFAULT_LIMIT;
                     }
-                    Object[] page;
-                    if (start >= 0 && limit >= 0) {
-                        page = Iterators.toArray(resp.iterator(start, limit), Object.class);
+                    Object[] page = Iterators.toArray(resp.iterator(start, limit), Object.class);
                         String separator = (req.getQueryString() != null) ? "&" : "?";
                         rsp.setHeader("Link", "<" + req.getRequestURIWithQueryString() + separator + "start=" + (start + limit) + "&limit="+limit + ">; rel=\"next\"");
-                    } else {
-                        page = Iterators.toArray(resp.iterator(), Object.class);
-                    }
                     new Api(page).doJson(req, rsp);
                 }
             };

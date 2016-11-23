@@ -10,7 +10,7 @@ const babel = require('gulp-babel');
 const less = require('gulp-less');
 const rename = require('gulp-rename');
 const copy = require('gulp-copy');
-const clean = require('gulp-clean');
+const del = require('del');
 const runSequence = require('run-sequence');
 const lint = require('gulp-eslint');
 const Karma = require('karma').Server;
@@ -50,7 +50,7 @@ gulp.task("watch", ["clean-build"], () => {
 // Default to all
 
 gulp.task("default", () =>
-    runSequence("clean", "lint", "test", "build", "validate"));
+    runSequence("clean", "lint", "build", "validate"));
 
 // Clean and build only, for watching
 
@@ -60,8 +60,7 @@ gulp.task("clean-build", () =>
 // Clean
 
 gulp.task("clean", () =>
-    gulp.src(config.clean, {read: false})
-        .pipe(clean()));
+    del(config.clean));
 
 // Testing
 

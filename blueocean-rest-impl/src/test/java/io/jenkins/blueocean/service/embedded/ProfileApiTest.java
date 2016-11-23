@@ -6,11 +6,13 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.model.User;
 import hudson.tasks.Mailer;
+import hudson.tasks.UserAvatarResolver;
 import jenkins.model.Jenkins;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.TestExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +29,7 @@ public class ProfileApiTest extends BaseTest{
         Map response = get("/users/"+system.getId());
         Assert.assertEquals(system.getId(), response.get("id"));
         Assert.assertEquals(system.getFullName(), response.get("fullName"));
+        Assert.assertEquals("http://avatar.example/i/img.png", response.get("avatar"));
     }
 
     //XXX: There is no method on User API to respond to POST or PUT or PATH. Since there are other tests that
@@ -222,34 +225,19 @@ public class ProfileApiTest extends BaseTest{
         Assert.assertEquals(0, l.size());
 
 
-        map = new RequestBuilder(baseUrl)
+        new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/folder1/favorite/")
             .jwtToken(token)
             .data(ImmutableMap.of("favorite", true))
+            .status(405)
             .build(Map.class);
 
-        validateFolder(folder1, (Map) map.get("item"));
-        l = new RequestBuilder(baseUrl)
-            .get("/users/"+user.getId()+"/favorites/")
-            .jwtToken(token)
-            .build(List.class);
-
-        Assert.assertEquals(1, l.size());
-        Map folder = (Map)((Map)l.get(0)).get("item");
-
-        validateFolder(folder1, folder);
-
-        href = getHrefFromLinks((Map)l.get(0),"self");
-
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/favorite/", href);
-
-        map = new RequestBuilder(baseUrl)
-            .put(href.substring("/blue/rest".length()))
+        new RequestBuilder(baseUrl)
+            .put("/organizations/jenkins/pipelines/folder1/favorite/")
             .jwtToken(token)
             .data(ImmutableMap.of("favorite", false))
+            .status(405)
             .build(Map.class);
-
-        validateFolder(folder1, (Map) map.get("item"));
 
         l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -257,14 +245,6 @@ public class ProfileApiTest extends BaseTest{
             .build(List.class);
 
         Assert.assertEquals(0, l.size());
-
-
-
-        new RequestBuilder(baseUrl)
-            .get("/users/"+user.getId()+"/favorites/")
-            .jwtToken(getJwtToken(j.jenkins,"bob","bob"))
-            .status(403)
-            .build(String.class);
 
     }
 
@@ -370,4 +350,11 @@ public class ProfileApiTest extends BaseTest{
     }
 
 
+    @TestExtension
+    public static class TestUserAvatarResolver extends UserAvatarResolver {
+        @Override
+        public String findAvatarFor(User u, int width, int height) {
+            return "http://avatar.example/i/img.png";
+        }
+    }
 }

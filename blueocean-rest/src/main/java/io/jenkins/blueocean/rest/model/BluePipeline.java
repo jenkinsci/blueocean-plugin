@@ -124,6 +124,12 @@ public abstract class BluePipeline extends Resource {
     @Navigable
     public abstract BlueQueueContainer getQueue();
 
+    /**
+     * @return Gives paginated concatenation of {#getQueue()} and {#getRuns()}, in that order
+     */
+    @Navigable
+    public abstract Container<Resource> getActivities();
+
     @PUT
     @WebMethod(name="favorite")
     @TreeResponse

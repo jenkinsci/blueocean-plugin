@@ -139,24 +139,26 @@ const capabilities = {
 }
 data.$success = true; // fetch flag
 
+const t = () => {};
+
 describe("Activity", () => {
 
   it("render the Activity with data", () => {
-    const wrapper =  shallow(<Activity runs={data} pipeline={pipeline} capabilities={capabilities}/>);
+    const wrapper =  shallow(<Activity t={t} runs={data} pipeline={pipeline} capabilities={capabilities}/>);
     // does data renders?
     assert.isNotNull(wrapper)
     assert.equal(wrapper.find('Runs').length, data.length)
   });
 
   it("does not render without data", () => {
-    const wrapper =  shallow(<Activity pipeline={pipeline} capabilities={capabilities}/>).node;
+    const wrapper =  shallow(<Activity t={t} pipeline={pipeline} capabilities={capabilities}/>).node;
     assert.isNull(wrapper);
   });
 });
 
 describe('Pipeline -> Activity List', () => {
     it('should not duplicate changeset messages', () => {
-        const wrapper =  shallow(<Activity runs={data} pipeline={pipeline} capabilities={capabilities} />);
+        const wrapper =  shallow(<Activity t={t} runs={data} pipeline={pipeline} capabilities={capabilities} />);
         assert.isNotNull(wrapper);
 
         const runs = wrapper.find('Runs');

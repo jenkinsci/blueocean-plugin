@@ -13,17 +13,6 @@ import * as pushEventUtil from './util/push-event-util';
 const { object, array, func, node, string } = PropTypes;
 
 class OrganizationPipelines extends Component {
-    // FIXME: get rid of context use
-    getChildContext() {
-        if (this._getOrganizationName()) {
-            return {
-                pipelines: this.props.organizationPipelines,
-            };
-        }
-        return {
-            pipelines: this.props.allPipelines,
-        };
-    }
 
     componentWillMount() {
         const config = this.context.config;
@@ -132,10 +121,17 @@ class OrganizationPipelines extends Component {
      components and get rid of the seperate connect in each subcomponents -> see RunDetailsPipeline
      */
     render() {
-        if (!this.props.allPipelines && !this.props.organizationPipelines) {
+        const { allPipelines, organizationPipelines } = this.props;
+        let pipelines = null;
+        if (!allPipelines && !organizationPipelines) {
             return null;
         }
-        return this.props.children;
+        if (allPipelines && allPipelines.$success) {
+            pipelines = allPipelines;
+        } else if (organizationPipelines && organizationPipelines.$success) {
+            pipelines = organizationPipelines;
+        }
+        return React.cloneElement(this.props.children, { pipelines });
     }
 }
 
@@ -160,10 +156,6 @@ OrganizationPipelines.propTypes = {
     location: object, // From react-router
     allPipelines: array,
     organizationPipelines: array,
-};
-
-OrganizationPipelines.childContextTypes = {
-    pipelines: array,
 };
 
 const selectors = createSelector([allPipelinesSelector, organizationPipelinesSelector],
