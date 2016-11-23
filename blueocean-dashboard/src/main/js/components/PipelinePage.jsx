@@ -10,12 +10,11 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { I18n, NotFound, User } from '@jenkins-cd/blueocean-core-js';
+import { I18n, NotFound, User, Paths } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from 'react-material-icons-blue';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
-import { Paths, NotFound } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
 
