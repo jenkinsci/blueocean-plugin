@@ -108,15 +108,7 @@ export const FetchFunctions = {
             }
         };
     },
-    
 
-    dedupeFetch(url, fetchOptions, { disableDedupe } = {}) {
-        //if (disableDedupe) {
-            return isoFetch(url, fetchOptions);
-        //}
-
-        //return dedupe(url, () => isoFetch(url, fetchOptions));
-    },
      /**
      * Raw fetch that returns the json body.
      *
@@ -132,7 +124,7 @@ export const FetchFunctions = {
      */
     rawFetchJSON(url, { onSuccess, onError, fetchOptions, disableDedupe } = {}) {
         const request = () => {
-            const future = FetchFunctions.dedupeFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+            const future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                 .then(FetchFunctions.checkRefreshHeader)
                 .then(FetchFunctions.checkStatus)
                 .then(FetchFunctions.parseJSON);
@@ -163,7 +155,7 @@ export const FetchFunctions = {
      */
     rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe } = {}) {
         const request = () => {
-            const future = FetchFunctions.dedupeFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+            const future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                 .then(FetchFunctions.checkRefreshHeader)
                 .then(FetchFunctions.checkStatus);            
 
