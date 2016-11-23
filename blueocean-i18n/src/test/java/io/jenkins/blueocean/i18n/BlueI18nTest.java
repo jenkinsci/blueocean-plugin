@@ -96,4 +96,12 @@ public class BlueI18nTest {
         bundleParameters = BlueI18n.getBundleParameters("pluginx/1/pluginx.bundle"); // must be at least 3 chars long
         Assert.assertFalse(bundleParameters.isReleaseVersion());
     }
+
+    @Test
+    public void test_BundleParams_equals() {
+        Assert.assertEquals(BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle"), BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle"));
+        Assert.assertEquals(BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle/en"), BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle/en"));
+        Assert.assertNotEquals(BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle/en"), BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle/"));
+        Assert.assertNotEquals(BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle/en"), BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle/en_EN"));
+    }
 }

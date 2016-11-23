@@ -87,6 +87,29 @@ public class BlueI18nTest extends BaseTest {
         Assert.assertEquals("Unknown plugin or resource bundle: blueocean-xxxblah/1.0.0/jenkins.plugins.blueocean.dashboard.Messages/en", response1.get("message"));
     }
 
+    @Test
+    public void test_browser_cacheable() {
+        String version = BlueI18n.getPlugin("cloudbees-folder").getVersion();
+        BlueI18n.BundleParams bundleParams = BlueI18n.getBundleParameters(String.format("cloudbees-folder/%s/pluginx.bundle", version));
+
+        // Should be cacheable because the installed version matches the requested version + the
+        // version is a release version (not a SNAPSHOT version).
+        Assert.assertTrue(bundleParams.isBrowserCacheable());
+    }
+
+    @Test
+    public void test_not_browser_cacheable() {
+        BlueI18n.BundleParams bundleParams;
+
+        // Should NOT be cacheable because the installed version doesn't matches the requested version
+        bundleParams = BlueI18n.getBundleParameters("cloudbees-folder/0.1111/pluginx.bundle");
+        Assert.assertFalse(bundleParams.isBrowserCacheable());
+
+        // Should NOT be cacheable because the requested version was a SNAPSHOT
+        bundleParams = BlueI18n.getBundleParameters("cloudbees-folder/0.1-SNAPSHOT/pluginx.bundle");
+        Assert.assertFalse(bundleParams.isBrowserCacheable());
+    }
+
     @Override
     protected String getContextPath() {
         return "";

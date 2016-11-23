@@ -28,7 +28,6 @@ import hudson.PluginWrapper;
 import hudson.model.RootAction;
 import hudson.util.HttpResponses;
 import jenkins.model.Jenkins;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -37,7 +36,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -49,6 +47,8 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -58,6 +58,8 @@ import java.util.regex.Pattern;
 @Extension
 @Restricted(NoExternalUse.class)
 public class BlueI18n implements RootAction {
+
+    private static final Logger LOGGER = Logger.getLogger(BlueI18n.class.getName());
 
     /**
      * Failed lookup cache entry.
@@ -123,7 +125,7 @@ public class BlueI18n implements RootAction {
                 if (bundle == null) {
                     bundle = BUNDLE_404;
                 }
-                bundleCacheEntry = new BundleCacheEntry(bundle);
+                bundleCacheEntry = new BundleCacheEntry(bundle, bundleParams);
                 bundleCache.put(bundleParams, bundleCacheEntry);
             }
 
@@ -253,6 +255,23 @@ public class BlueI18n implements RootAction {
             return plugin;
         }
 
+        boolean isMatchingPluginVersionInstalled() {
+            PluginWrapper plugin = getPlugin();
+            return (plugin != null && plugin.getVersion().equals(pluginVersion));
+        }
+
+        boolean isBrowserCacheable() {
+            // We do NOT want to cache bundles from SNAPSHOTs etc.
+            // Also, the requested version must match the installed version.
+            // Yes, this means that we do NOT fail if the installed version
+            // of the plugin does not match the version specified on the request.
+            // In this case however, we do not set browser cache control headers
+            // on the response + we set the plugin version info on the response,
+            // allowing the browser to decide whether or not to use the response.
+            // See JSONObjectResponse.generateResponse().
+            return (isReleaseVersion() && isMatchingPluginVersionInstalled());
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) {
@@ -305,11 +324,13 @@ public class BlueI18n implements RootAction {
     }
 
     private static class BundleCacheEntry {
-        private long timestamp = System.currentTimeMillis();
-        private JSONObject bundleData;
+        private final JSONObject bundleData;
+        private final BundleParams bundleParams;
+        private final long timestamp = System.currentTimeMillis();
 
-        public BundleCacheEntry(JSONObject bundleData) {
+        public BundleCacheEntry(JSONObject bundleData, BundleParams bundleParams) {
             this.bundleData = bundleData;
+            this.bundleParams = bundleParams;
         }
     }
 
@@ -318,10 +339,12 @@ public class BlueI18n implements RootAction {
         private static final Charset UTF8 = Charset.forName("UTF-8");
 
         private final JSONObject jsonObject = new JSONObject();
+        private BundleCacheEntry bundleCacheEntry;
         private int statusCode = HttpServletResponse.SC_OK;
 
         private static JSONObjectResponse okJson(BundleCacheEntry bundleCacheEntry) {
             JSONObjectResponse response = new JSONObjectResponse();
+            response.bundleCacheEntry = bundleCacheEntry;
             response.jsonObject.put("data", bundleCacheEntry.bundleData);
             response.jsonObject.put("status", "ok");
             response.jsonObject.put("cache-timestamp", bundleCacheEntry.timestamp);
@@ -341,9 +364,29 @@ public class BlueI18n implements RootAction {
          */
         @Override
         public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-            byte[] bytes = jsonObject.toString().getBytes(UTF8);
             rsp.setStatus(statusCode);
             rsp.setContentType("application/json; charset=UTF-8");
+            if (bundleCacheEntry != null) {
+                // Set plugin version info that can be used by the browser to
+                // determine if it wants to use the resource bundle, or not.
+                // The versions may not match (in theory - should never happen),
+                // in which case the brwoser might not want to use the bundle data.
+                jsonObject.put("plugin-version-requested", bundleCacheEntry.bundleParams.pluginVersion);
+                jsonObject.put("plugin-version-actual", bundleCacheEntry.bundleParams.getPlugin().getVersion());
+
+                if (bundleCacheEntry.bundleParams.isBrowserCacheable()) {
+                    // Set the expiry to one year.
+                    rsp.setHeader("Cache-Control", "public, max-age=31536000");
+                } else if (!bundleCacheEntry.bundleParams.isMatchingPluginVersionInstalled()) {
+                    // This should never really happen if things are installed properly
+                    // and the UI is coded up properly, with proper access to the installed
+                    // plugin version.
+                    LOGGER.log(Level.WARNING, String.format("Unexpected request for Blue Ocean i18n resource bundle '%s'. Installed plugin version '%s' does not match.",
+                        bundleCacheEntry.bundleParams, bundleCacheEntry.bundleParams.getPlugin().getVersion()));
+                }
+            }
+
+            byte[] bytes = jsonObject.toString().getBytes(UTF8);
             rsp.setContentLength(bytes.length);
             rsp.getOutputStream().write(bytes);
         }
