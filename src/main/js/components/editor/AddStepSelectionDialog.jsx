@@ -27,26 +27,26 @@ export class AddStepSelectionDialog extends Component<DefaultProps, Props, State
         super(props);
         this.state = { steps: null, selectedStep: null, searchFilter: e => true };
     }
-    
+
     componentWillMount() {
         pipelineStepListStore.getStepListing(data => {
             this.setState({steps: data});
         });
     }
-    
+
     componentDidMount() {
         this.refs.searchInput.focus();
     }
-    
+
     closeDialog() {
         this.props.onClose();
     }
-    
+
     selectAddStep() {
         this.props.onStepSelected(this.state.selectedStep);
         this.closeDialog();
     }
-    
+
     filterSteps = debounce((value) => {
         const searchTerm = value.toLowerCase();
         this.setState({searchFilter: s => s.displayName.toLowerCase().indexOf(searchTerm) !== -1});

@@ -137,6 +137,7 @@ public class PipelineStepMetadataService implements ApiRoutable {
     @ExportedBean
     public static class BasicPipelineStepPropertyMetadata implements PipelineStepPropertyMetadata {
         private String name;
+        private String displayName;
         private Class<?> type;
         private List<Class<?>> collectionTypes = new ArrayList<>();
         private boolean isRequired = false;
@@ -146,6 +147,11 @@ public class PipelineStepMetadataService implements ApiRoutable {
         @Override
         public String getName() {
             return name;
+        }
+        
+        @Exported
+        public String getDisplayName() {
+            return displayName;
         }
 
         @Exported
@@ -215,7 +221,6 @@ public class PipelineStepMetadataService implements ApiRoutable {
             step.hasSingleRequiredParameter = model.hasSingleRequiredParameter();
 
             for (DescribableParameter descParam : model.getParameters()) {
-                
                 BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
 
                 param.type = descParam.getErasedType();
@@ -229,6 +234,7 @@ public class PipelineStepMetadataService implements ApiRoutable {
                     }
                 }
                 param.name = descParam.getName();
+                param.displayName = descParam.getCapitalizedName();
                 param.isRequired = descParam.isRequired();
 
                 Descriptor<?> pd = Descriptor.findByDescribableClassName(ExtensionList.lookup(Descriptor.class),

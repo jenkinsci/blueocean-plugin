@@ -3,6 +3,7 @@
 import React, { Component, PropTypes } from 'react';
 import pipelineStepListStore from '../../../services/PipelineStepListStore';
 import debounce from 'lodash.debounce';
+import { TextInput } from '@jenkins-cd/design-language';
 
 const allPropertyEditors = [
     require('./properties/BooleanPropertyInput').default,
@@ -57,20 +58,22 @@ export default class GenericStepEditorPanel extends Component<DefaultProps, Prop
         if (!step || !stepMetadata) {
             return null;
         }
-        
+
         const thisMeta = stepMetadata.filter(md => md.functionName === step.type)[0];
 
         return (
-            <div className="pipeline-editor-step-generic">
+            <div className="pipeline-editor-step-generic pipeline-editor-form">
                 {thisMeta.properties.map(p => {
                     const propTypeEditor = propertyEditorsByName[p.dataType];
                     if (propTypeEditor) {
                         return React.createElement(propTypeEditor, { step: step, type: p, propName: p.name, onChange: () => this.updateStepData() });
                     }
                     return (
-                        <div className="" key={p.name}>
-                            <label>{p.name}</label>
-                            <input defaultValue={step.data[p.name]} onChange={e => { step.data[p.name] = e.target.value; this.updateStepData(); }} />
+                        <div className="form-item" key={p.name}>
+                            <label className="form-label">{p.displayName}</label>
+                            <div className="form-input">
+                                <TextInput defaultValue={step.data[p.name]} onChange={val => { step.data[p.name] = val; this.updateStepData(); }} />
+                            </div>
                         </div>
                     );
                 })}
