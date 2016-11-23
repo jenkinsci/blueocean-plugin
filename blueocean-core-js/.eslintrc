@@ -3,6 +3,7 @@
   "rules": {
     "react/jsx-no-bind": 0,
     "no-unused-vars": [2, {"varsIgnorePattern": "^React$"}],
-    "max-len": [1, 160, 4]
+    "max-len": [1, 160, 4],
+    "experimentalDecorators": 0
   }
 }

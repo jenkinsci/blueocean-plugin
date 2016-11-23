@@ -1,5 +1,6 @@
 {
-  "extends": "@jenkins-cd/jenkins/react",
+  "parser": "babel-eslint",
+  "extends": [ "@jenkins-cd/jenkins/react"],
   "rules": {
     "react/jsx-no-bind": 0,
     "eqeqeq": ["error", "smart"],

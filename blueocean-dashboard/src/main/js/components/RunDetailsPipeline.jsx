@@ -305,6 +305,7 @@ export class RunDetailsPipeline extends Component {
             ;
 
         const logGeneral = calculateRunLogURLObject(this.mergedConfig);
+   
         let title = this.mergedConfig.nodeReducer.displayName;
         if (this.mergedConfig.nodeReducer.id !== null && title) {
             title = `${t('rundetail.pipeline.steps', { defaultValue: 'Steps' })} - ${title}`;

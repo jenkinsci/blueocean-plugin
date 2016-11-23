@@ -1,12 +1,11 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.26-unpublished",
+  "version": "0.0.26-unpublishedmobx",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
     "gulp": "gulp",
-    "test": "gulp test",
-    "prepublish": "gulp"
+    "test": "gulp test"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
   "contributors": [
@@ -56,6 +55,7 @@
     "del": "2.2.2",
     "enzyme": "2.4.1",
     "eslint-plugin-react": "6.3.0",
+    "flow-bin": "^0.34.0",
     "gulp": "3.9.1",
     "gulp-babel": "6.1.2",
     "gulp-copy": "0.0.2",
