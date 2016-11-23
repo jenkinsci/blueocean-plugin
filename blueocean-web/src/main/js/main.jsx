@@ -14,8 +14,6 @@ import { useStrict } from 'mobx';
 useStrict(true);
 
 
-import DevTools from 'mobx-react-devtools';
-
 let config; // Holder for various app-wide state
 
 const translate = I18n ? I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.web.Messages') : function () { };
@@ -74,7 +72,6 @@ class App extends Component {
                     <DevelopmentFooter />
                 </footer>
                 <ToastDrawer />
-                <DevTools />
             </div>
         );
     }
