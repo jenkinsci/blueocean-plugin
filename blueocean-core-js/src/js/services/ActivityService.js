@@ -44,14 +44,14 @@ export class ActivityService extends BunkerService {
      * Maps queued data into a psudeorun
      *
      * @see _mapQueueToPsuedoRun
-     * 
+     *
      * @param {Object} data Raw data from extenal source.
      * @returns A run or psudeorun.
      */
     bunkerMapper(data) {
         return this._mapQueueToPsuedoRun(data);
     }
-    
+
     /**
      * Gets an activity from the store.
      *
