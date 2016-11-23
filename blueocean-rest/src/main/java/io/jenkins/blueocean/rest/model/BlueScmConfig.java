@@ -35,10 +35,6 @@ public class BlueScmConfig {
         return uri;
     }
 
-//    public void setUri(@Nullable String uri) {
-//        this.uri = uri;
-//    }
-
     /**
      * Gives credential id
      */
@@ -46,9 +42,6 @@ public class BlueScmConfig {
         return credentialId;
     }
 
-//    public void setCredentialId(String credentialId) {
-//        this.credentialId = credentialId;
-//    }
 
     /**
      * Gives map of configuration item specific to this pipeline creation
@@ -57,7 +50,4 @@ public class BlueScmConfig {
         return config;
     }
 
-//    public void setConfig(@Nonnull Map<String, Object> config) {
-//        this.config.putAll(config);;
-//    }
 }

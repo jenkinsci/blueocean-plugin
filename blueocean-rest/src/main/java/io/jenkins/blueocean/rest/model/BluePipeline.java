@@ -1,13 +1,17 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.PUT;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -158,4 +162,27 @@ public abstract class BluePipeline extends Resource {
      */
     @Exported(name = PERMISSIONS)
     public abstract Map<String, Boolean> getPermissions();
+
+    /**
+     * Updates this pipeline using {@link BluePipelineUpdateRequest}
+     * @param body JSON payload for this update request
+     * @param staplerRequest stapler request
+     * @return Updated BluePipeline instance
+     * @throws IOException throws IOException in certain cases
+     */
+    @PUT
+    @WebMethod(name="")
+    @TreeResponse
+    public BluePipeline update(@JsonBody JSONObject body, StaplerRequest staplerRequest) throws IOException {
+        if(body.get("$class") == null){
+            throw new ServiceException.BadRequestExpception("$class is required element");
+        }
+        BluePipelineUpdateRequest request = staplerRequest.bindJSON(BluePipelineUpdateRequest.class, body);
+        return update(request);
+    }
+
+    public BluePipeline update(BluePipelineUpdateRequest request) throws IOException {
+        return request.update(this);
+    }
+
 }

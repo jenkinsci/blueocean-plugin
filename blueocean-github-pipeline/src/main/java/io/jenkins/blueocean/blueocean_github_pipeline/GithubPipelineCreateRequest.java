@@ -73,7 +73,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         return null;
     }
 
-    private void validateCredentialId(String credentialId, OrganizationFolder item, GitHubSCMNavigator navigator) throws IOException {
+     static void validateCredentialId(String credentialId, OrganizationFolder item, GitHubSCMNavigator navigator) throws IOException {
         if (credentialId != null && !credentialId.trim().isEmpty()) {
             StandardCredentials credentials = Connector.lookupScanCredentials(item, navigator.getApiUri(), credentialId);
             if (credentials == null) {

@@ -30,6 +30,9 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
     @DataBoundConstructor
     public GitPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
         setName(name);
+        if(scmConfig == null){
+            throw new ServiceException.BadRequestExpception("scmConfig is required");
+        }
         this.scmConfig = scmConfig;
     }
 
