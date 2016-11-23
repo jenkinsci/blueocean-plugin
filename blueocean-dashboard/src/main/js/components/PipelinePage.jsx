@@ -12,17 +12,14 @@ import {
 } from '@jenkins-cd/design-language';
 import { I18n, NotFound, User } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from 'react-material-icons-blue';
-import {
-    actions,
-    pipeline as pipelineSelector,
-    connect,
-    createSelector,
-} from '../redux';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
-import compose from '../util/compose';
+import { Paths, NotFound } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
+import { observable, action } from 'mobx';
 
+const RestPaths = Paths.rest;
 /**
  * returns true if the pipeline is defined and has branchNames
  */
@@ -41,23 +38,37 @@ const classicConfigLink = (pipeline) => {
 
 const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
 
+@observer
 export class PipelinePage extends Component {
-
+    
+   
     componentWillMount() {
         if (this.props.params) {
-            this.props.fetchPipeline(this.props.params.organization, this.props.params.pipeline);
+            this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
+            this.context.pipelineService.fetchPipeline(this.href, { useCache: true }).catch(err => this._setError(err));
         }
     }
 
+    @observable error;
+    
+    @action
+    _setError(error) {
+        this.error = error;
+    }
+
+   
     render() {
-        const { pipeline, setTitle } = this.props;
+        const pipeline = this.context.pipelineService.getPipeline(this.href);
+        
+        const { setTitle } = this.props;
         const { location = {} } = this.context;
+
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
-        const isReady = pipeline && !pipeline.$pending;
+        const isReady = !!pipeline;
 
-        if (pipeline && pipeline.$failed) {
+        if (!pipeline && this.error) {
             return <NotFound />;
         }
 
@@ -106,7 +117,6 @@ export class PipelinePage extends Component {
 
 PipelinePage.propTypes = {
     children: PropTypes.any,
-    fetchPipeline: PropTypes.func.isRequired,
     pipeline: PropTypes.any,
     params: PropTypes.object,
     setTitle: PropTypes.func,
@@ -117,14 +127,8 @@ PipelinePage.contextTypes = {
     config: PropTypes.object.isRequired,
     location: PropTypes.object,
     store: PropTypes.object,
+    pipelineService: PropTypes.object,
 };
 
-const selectors = createSelector([pipelineSelector],
-    (pipeline) => ({ pipeline }));
+export default documentTitle(PipelinePage);
 
-const composed = compose(
-  connect(selectors, actions),
-  documentTitle
-);
-
-export default composed(PipelinePage);

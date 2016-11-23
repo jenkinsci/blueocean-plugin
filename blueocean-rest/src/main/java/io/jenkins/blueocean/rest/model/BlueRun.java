@@ -222,6 +222,7 @@ public abstract class BlueRun extends Resource {
         QUEUED,
         RUNNING,
         PAUSED,
+        NOT_BUILT,
         FINISHED
     }
 

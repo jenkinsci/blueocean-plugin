@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { I18n, AppConfig, Security, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import { I18n, AppConfig, Security, UrlConfig, Utils, sseService, locationService } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';
@@ -10,11 +10,13 @@ import rootReducer, { ACTION_TYPES } from './redux/router';
 import Config from './config';
 import { ToastDrawer } from './components/ToastDrawer';
 import { DevelopmentFooter } from './DevelopmentFooter';
+import { useStrict } from 'mobx';
+useStrict(true);
+
 
 let config; // Holder for various app-wide state
-function translate(key){
-    return I18n.t(key, { ns: 'jenkins.plugins.blueocean.web.Messages' });
-}
+
+const translate = I18n ? I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.web.Messages') : function () { };
 
 function loginOrLogout(t) {
     if (Security.isSecurityEnabled()) {
@@ -43,18 +45,20 @@ class App extends Component {
     render() {
         const { location } = this.context;
 
+        var adminCaption = translate('administration', {
+            defaultValue: 'Administation',
+        });
+        var pipeCaption = translate('pipelines', {
+            defaultValue: 'Pipelines',
+        });
         return (
             <div className="Site">
                 <header className="Site-header">
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link query={location.query} to="/pipelines">{translate('pipelines', {
-                                defaultValue: 'Pipelines',
-                            })}</Link>
-                            <a href="#">{translate('administration', {
-                                defaultValue: 'Administation',
-                            })}</a>
+                            <Link query={location.query} to="/pipelines">{pipeCaption}</Link>
+                            <a href="#">{adminCaption}</a>
                         </nav>
                         <div className="button-bar">
                             { loginOrLogout(translate) }
@@ -168,7 +172,11 @@ function startApp(routes, stores) {
             type: ACTION_TYPES.SET_LOCATION_CURRENT,
             payload: newLocation.pathname,
         });
+
+        locationService.setCurrent(newLocation.pathname);
     });
+
+    sseService._initListeners();
 
     // Start React
     render(

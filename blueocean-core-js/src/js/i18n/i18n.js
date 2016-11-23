@@ -61,10 +61,21 @@ export const i18n = (backend = defaultXhr, lngDetector = defaultLngDetector, opt
     if (typeof window === 'undefined') {  // eslint-disable-line no-undef
         return i18next.init({
             lng: 'en',
+            // have a common namespace used around the full app
+            ns: ['translation'],
+            defaultNS: 'translation',
+            preload: ['en'],
+            keySeparator: false, // we do not have any nested keys in properties files
+            interpolation: {
+                prefix: '{',
+                suffix: '}',
+                escapeValue: false, // not needed for react!!
+            },
             resources: {
                 en: {
                     translation: {
-                        key: 'hello world',
+                        'home.pipelineslist.row.failing': '{0} failing',
+                        'home.pipelineslist.row.passing': '{0} passing',
                     },
                 },
             },

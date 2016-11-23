@@ -5,34 +5,29 @@ import { RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
+import { observer } from 'mobx-react';
+
 
 const stopProp = (event) => event.stopPropagation();
 
+@observer
 export default class Branches extends Component {
     constructor(props) {
         super(props);
         this.state = { isVisible: false };
     }
     render() {
-        const { data, t, locale, pipeline } = this.props;
+        const { data: branch, pipeline, t, locale } = this.props;
         // early out
-        if (!data || !pipeline) {
+        if (!branch || !pipeline) {
             return null;
         }
-        const {
-            router,
-            location,
-        } = this.context;
 
-        const {
-            latestRun: { id, result, startTime, endTime, changeSet, state, commitId, estimatedDurationInMillis },
-            weatherScore,
-            name: branchName,
-        } = data;
-        const { fullName, organization } = pipeline;
-
-        const cleanBranchName = decodeURIComponent(branchName);
-        const url = buildRunDetailsUrl(organization, fullName, cleanBranchName, id, 'pipeline');
+        const { router, location } = this.context;
+        const latestRun = branch.latestRun;
+        
+        const cleanBranchName = decodeURIComponent(branch.name);
+        const url = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
 
         const open = (event) => {
             if (event) {
@@ -51,22 +46,21 @@ export default class Branches extends Component {
             router.push(location);
         };
 
-        const { msg } = changeSet[0] || {};
-
+        const { msg } = (branch.changeSet && branch.changeSet.length > 0) ? (branch.changeSet[0] || {}) : {};
         return (
-            <tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${id}`} >
-                <BranchCol><WeatherIcon score={weatherScore} /></BranchCol>
+            <tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${latestRun.id}`} >
+                <BranchCol><WeatherIcon score={branch.weatherScore} /></BranchCol>
                 <BranchCol onClick={open}>
-                    <LiveStatusIndicator result={result === 'UNKNOWN' ? state : result}
-                      startTime={startTime} estimatedDuration={estimatedDurationInMillis}
+                    <LiveStatusIndicator result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
+                      startTime={latestRun.startTime} estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
                 </BranchCol>
                 <BranchCol>{cleanBranchName}</BranchCol>
-                <BranchCol><CommitHash commitId={commitId} /></BranchCol>
+                <BranchCol><CommitHash commitId={latestRun.commitId} /></BranchCol>
                 <BranchCol>{msg || '-'}</BranchCol>
                 <BranchCol>
                     <ReadableDate
-                      date={endTime}
+                      date={latestRun.endTime}
                       liveUpdate
                       locale={locale}
                       shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
@@ -77,13 +71,13 @@ export default class Branches extends Component {
                 <td className="actions" onClick={(event) => stopProp(event)}>
                     <RunButton
                       className="icon-button"
-                      runnable={data}
-                      latestRun={data.latestRun}
+                      runnable={branch}
+                      latestRun={branch.latestRun}
                       onNavigation={openRunDetails}
                     />
                     <Extensions.Renderer
                       extensionPoint="jenkins.pipeline.branches.list.action"
-                      pipeline={data}
+                      pipeline={branch }
                       store={this.context.store}
                       {...t}
                     />

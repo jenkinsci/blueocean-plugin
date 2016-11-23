@@ -1,11 +1,11 @@
-
+// @flow 
 
 /**
  * Trims duplicate forward slashes to a single slash and adds trailing slash if needed.
  * @param url
  * @returns {string}
  */
-const cleanSlashes = (url) => {
+const cleanSlashes = (url: string) => {
     if (url.indexOf('//') !== -1) {
         let cleanUrl = url.replace('//', '/');
         cleanUrl = cleanUrl.substr(-1) === '/' ?
@@ -17,9 +17,10 @@ const cleanSlashes = (url) => {
     return url;
 };
 
+
 export default {
     cleanSlashes,
-    clone(obj) {
+    clone(obj: Object) {
         return JSON.parse(JSON.stringify(obj));
     },
     windowOrGlobal() {

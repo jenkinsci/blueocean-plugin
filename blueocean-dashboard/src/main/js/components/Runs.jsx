@@ -22,49 +22,24 @@ export default class Runs extends Component {
     }
     render() {
         // early out
-        if (!this.props.result || !this.props.pipeline) {
+        if (!this.props.run || !this.props.pipeline) {
             return null;
         }
-        const {
-            context: {
-                router,
-                location,
-            },
-            props: {
-                changeset,
-                locale,
-                result: {
-                    durationInMillis,
-                    estimatedDurationInMillis,
-                    pipeline,
-                    id,
-                    result,
-                    state,
-                    startTime,
-                    endTime,
-                    commitId,
-                },
-                t,
-                pipeline: {
-                    _class: pipelineClass,
-                    fullName,
-                    organization,
-                },
-            },
-        } = this;
-
-        const resultRun = result === 'UNKNOWN' ? state : result;
+        const { router, location } = this.context;
+      
+        const { run, changeset, pipeline, t, locale } = this.props;
+          
+        const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const running = resultRun === 'RUNNING';
         const durationMillis = !running ?
-            durationInMillis :
-            moment().diff(moment(startTime));
-
-        const pipelineName = decodeURIComponent(pipeline);
-        const runDetailsUrl = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
-           
+            run.durationInMillis :
+            moment().diff(moment(run.startTime));
+        
+        const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
         const open = (event) => {
             if (event) {
                 event.preventDefault();
+                event.stopPropagation();
             }
             location.pathname = runDetailsUrl;
             router.push(location);
@@ -77,16 +52,17 @@ export default class Runs extends Component {
             location.pathname = newUrl;
             router.push(location);
         };
-        return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
+
+        return (<tr key={run.id} onClick={open} id={`${run.pipeline}-${run.id}`} >
             <RunCol>
-                <LiveStatusIndicator result={resultRun} startTime={startTime}
-                  estimatedDuration={estimatedDurationInMillis}
+                <LiveStatusIndicator result={resultRun} startTime={run.startTime}
+                  estimatedDuration={run.estimatedDurationInMillis}
                 />
             </RunCol>
-            <RunCol>{id}</RunCol>
-            <RunCol><CommitHash commitId={commitId} /></RunCol>
-            <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
-                <RunCol>{decodeURIComponent(pipeline)}</RunCol>
+            <RunCol>{run.id}</RunCol>
+            <RunCol><CommitHash commitId={run.commitId} /></RunCol>
+            <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
+                <RunCol>{decodeURIComponent(run.pipeline)}</RunCol>
             </IfCapability>
             <RunCol>{changeset && changeset.msg || '-'}</RunCol>
             <RunCol>
@@ -100,7 +76,7 @@ export default class Runs extends Component {
             </RunCol>
             <RunCol>
                 <ReadableDate
-                  date={endTime}
+                  date={run.endTime}
                   liveUpdate
                   locale={locale}
                   shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
@@ -111,8 +87,8 @@ export default class Runs extends Component {
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
                 { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
-                <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
-                    <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} onNavigation={openRunDetails} />
+                <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
+                    <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
                 </IfCapability>
             </td>
         </tr>);
