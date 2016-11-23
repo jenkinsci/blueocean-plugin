@@ -5,6 +5,7 @@ import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
@@ -171,7 +172,6 @@ public abstract class BluePipeline extends Resource {
 
     /**
      * Updates this pipeline using {@link BluePipelineUpdateRequest}
-     * @param body JSON payload for this update request
      * @param staplerRequest stapler request
      * @return Updated BluePipeline instance
      * @throws IOException throws IOException in certain cases
@@ -179,7 +179,8 @@ public abstract class BluePipeline extends Resource {
     @PUT
     @WebMethod(name="")
     @TreeResponse
-    public BluePipeline update(@JsonBody JSONObject body, StaplerRequest staplerRequest) throws IOException {
+    public BluePipeline update(StaplerRequest staplerRequest) throws IOException {
+        JSONObject body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));
         if(body.get("$class") == null){
             throw new ServiceException.BadRequestExpception("$class is required element");
         }
