@@ -27,7 +27,7 @@ export function paginateUrl(url) {
  */
 export class Pager {
     /**
-     * List of deisplayed items hrefs. 
+     * List of deisplayed items hrefs.
      */
     @observable hrefs = [];
     /**
@@ -96,9 +96,9 @@ export class Pager {
                 // Store item in bunker.
                 const saved = this.bunker.setItems(data);
 
-                // 1 extra item is fetched because need to know if there are more packages. So 
+                // 1 extra item is fetched because need to know if there are more packages. So
                 // slice off the last item, then map all items to just be hrefs.
-                const trimmedHrefs = saved.slice(0, this.pageSize).map(item => item._links.self.href)
+                const trimmedHrefs = saved.slice(0, this.pageSize).map(item => item._links.self.href);
                 
                 // Append the new Hrefs to the existing ones.
                 this.hrefs = this.hrefs.concat(trimmedHrefs);

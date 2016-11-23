@@ -47,7 +47,7 @@ export class PagerService {
      */
     /**
      * Gets a pager from the cache.
-     * 
+     *
      * @param {Object} options
      * @param {any} options.key - Key to store pager under.
      * @param {lazyPager} options.lazyPager - function to lazily crete the pager.

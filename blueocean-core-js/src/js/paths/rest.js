@@ -28,17 +28,17 @@ export default {
 
         return `${this.pipeline(organization, pipeline)}runs/${runId}/`;
     },
-    
+
     pipeline(organization, pipeline) {
         return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${this._convertSlashes(pipeline)}/`;
     },
     branches(organization, pipeline) {
-        return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/branches/?filter=origin`;  
+        return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/branches/?filter=origin`;
     },
 
     pullRequests(organization, pipeline) {
         return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/branches/?filter=pull-requests`;
-    },  
+    },
 
     queuedItem(organization, pipeline, queueId) {
         return `${this.pipeline(organization, pipeline)}queue/${queueId}/`;

@@ -51,7 +51,7 @@ export class PipelineService extends BunkerService {
 
     /**
      * Gets pager for /blue/organization/:organization/pipelines/:pipeline/branches
-     * 
+     *
      * @param {string} organization
      * @param {string} pipeline
      * @returns {Pager}
@@ -105,8 +105,8 @@ export class PipelineService extends BunkerService {
 
 
     /**
-     * Fetches pipeline from the backend and stores it in 
-     * 
+     * Fetches pipeline from the backend and stores it in
+     *
      * @param {string} href - Self href of the pipeline.
      * @param {Object} options
      * @param {boolean} options.useCache - If true fetch from the store if it exists.

@@ -3,20 +3,19 @@ import { observable, action, asMap } from 'mobx';
 export class DataBunker {
     @observable _data = asMap();
 
-    constructor(keyFn, mapperFn, newInstanceFn) {
+    constructor(keyFn, mapperFn) {
         this._keyFn = keyFn;
         this._mapperFn = mapperFn;
-        if(!mapperFn) {
+        if (!mapperFn) {
             // identity function.
             this._mapperFn = x => x;
         }
-    
     }
 
     @action
     setItem(item) {
         const keyItem = this._keyFn(item);
-        const mappedItem = this._mapperFn(item);    
+        const mappedItem = this._mapperFn(item);
         this._data.set(keyItem, mappedItem);
         return mappedItem;
     }
@@ -34,6 +33,5 @@ export class DataBunker {
         console.log('before', this._data);
         console.log('successful', this._data.delete(key));
         console.log('after', this._data);
-        
     }
 }

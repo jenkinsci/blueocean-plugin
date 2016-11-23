@@ -1,6 +1,5 @@
 import { observable, computed, action, asMap } from 'mobx';
 
-
 /**
  * Abstract class used by services that need to store data in a key/value store.
  *
@@ -68,7 +67,7 @@ export class BunkerService {
      */
     @action
     setItem(item) {
-        const mappedItem = observable(this.bunkerMapper(item));    
+        const mappedItem = observable(this.bunkerMapper(item));
         const keyItem = this.bunkerKey(mappedItem);
         this._data.set(keyItem, mappedItem);
         return this.getItem(keyItem);
