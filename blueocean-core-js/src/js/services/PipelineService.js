@@ -94,10 +94,10 @@ export class PipelineService extends BunkerService {
         return data;
     }
     /**
-     * 
-     * 
-     * @param {any} href
-     * @returns
+     * Gets a pipeline from the store
+     *
+     * @param {string} href - Self href of the pipeline.
+     * @returns {Object} - Mobx computed value of the pipeline.
      */
     getPipeline(href) {
         return this.getItem(href);
@@ -105,10 +105,11 @@ export class PipelineService extends BunkerService {
 
 
     /**
+     * Fetches pipeline from the backend and stores it in 
      * 
-     * 
-     * @param {any} href
-     * @param {any} [{ useCache }={}]
+     * @param {string} href - Self href of the pipeline.
+     * @param {Object} options
+     * @param {boolean} options.useCache - If true fetch from the store if it exists.
      * @returns
      */
     fetchPipeline(href, { useCache } = {}) {
@@ -121,9 +122,10 @@ export class PipelineService extends BunkerService {
 
 
     /**
-     * 
-     * 
-     * @param {any} run
+     * MobX Action to update the latest run on a pipeline. Use for SSE. This will cause a reaction
+     * and rerender anything that uses the latest run of this pipeline.
+     *
+     * @param {Object} run An activity from activityService.getItem().
      */
     @action
     updateLatestRun(run) {

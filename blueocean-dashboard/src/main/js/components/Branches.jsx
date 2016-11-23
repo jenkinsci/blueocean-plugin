@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
-import { RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { locationService, RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
@@ -17,6 +17,8 @@ export default class Branches extends Component {
         this.state = { isVisible: false };
     }
     render() {
+        const current = locationService.previous;
+        console.log(current, 'current');
         const { data: branch, pipeline, t, locale } = this.props;
         // early out
         if (!branch || !pipeline) {
