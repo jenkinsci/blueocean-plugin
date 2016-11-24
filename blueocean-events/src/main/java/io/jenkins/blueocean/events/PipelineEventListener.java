@@ -5,6 +5,7 @@ import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
 import org.jenkins.pubsub.Message;
 import org.jenkins.pubsub.MessageException;
 import org.jenkins.pubsub.PubsubBus;
@@ -66,8 +67,9 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 List<String> branch = getBranch(flowNode);
                 StageAction stageAction = flowNode.getAction(StageAction.class);
 
-                if (stageAction != null) {
-                    currentStageName = stageAction.getStageName();
+                // test whether we have a stage node
+                if (PipelineNodeUtil.isStage(flowNode)) {
+                    currentStageName = flowNode.getDisplayName();
                     currentStageId = flowNode.getId();
                 }
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
