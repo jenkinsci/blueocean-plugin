@@ -69,7 +69,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
         List<BluePipeline> branches = Lists.newArrayList(multiBranchPipeline.getBranches().list());
         sortBranchesByLatestRun(branches);
 
-        int l = limit/branches.size() > 0 ? limit/branches.size() : 1;
+        int l = branches.size() > 0 && limit/branches.size() > 0 ? limit/branches.size() : 1;
 
         int s=0;
         if(start > 0) {
