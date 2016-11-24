@@ -55,10 +55,12 @@ export class MultiBranch extends Component {
 
     render() {
         const { t, locale, pipeline } = this.props;
-        const branches = this.pager.data;
+        
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
-            return (<NotSupported />);
+            return (<NotSupported t={t} />);
         }
+       
+        const branches = this.pager.data;
 
         if (!this.pager.pending && !branches.length) {
             return (<EmptyState repoName={this.context.params.pipeline} />);
