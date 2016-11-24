@@ -50,10 +50,11 @@ export class Activity extends Component {
     render() {
         const { pipeline, t, locale } = this.props;
         const runs = this.pager.data;
-        if (!runs || !pipeline) {
+        if (!pipeline || this.pager.pending) {
             return null;
         }
-        
+
+       
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
 
         // Only show the Run button for non multi-branch pipelines.
@@ -61,14 +62,14 @@ export class Activity extends Component {
         // the Branches/PRs tab.
         const showRunButton = !isMultiBranchPipeline;
 
+        if (!this.pager.pending && (!runs || !runs.length)) {
+            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
+        }
+        
         const onNavigation = (url) => {
             this.context.location.pathname = url;
             this.context.router.push(this.context.location);
         };
-
-        if (!this.pager.pending && !runs.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
-        }
 
         const latestRun = runs[0];
         const head = 'pipelinedetail.activity.header';

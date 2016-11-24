@@ -1,35 +1,8 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-
-/**
- * An internal component that inserts things into the (separate) context of mounted extensions. We need this for our
- * configuration object, which helps resolve URLs for media, REST endpoints, etc, and we also need to bridge the
- * "router" context property in order for extensions to be able to use &lt;Link&gt; from react-router.
- */
-class ContextBridge extends React.Component {
-
-    getChildContext() {
-        return {
-            router: this.props.router,
-            config: this.props.config
-        };
-    }
-
-    render() {
-        return this.props.children;
-    }
-}
-
-ContextBridge.childContextTypes = {
-    router: React.PropTypes.object,
-    config: React.PropTypes.object
-};
-
-ContextBridge.propTypes = {
-    children: React.PropTypes.any,
-    router: React.PropTypes.object,
-    config: React.PropTypes.object
-};
+var ContextBridge = require('./ContextBridge').ContextBridge;
+var importedExtensionStore = require('./ExtensionStore.js').instance;
+var importedResourceLoadTracker = require('./ResourceLoadTracker').instance;
 
 /**
  * Renderer for react component extensions for which other plugins can provide an implementing Component.
@@ -41,14 +14,20 @@ export default class ExtensionRenderer extends React.Component {
         // Initial state is empty. See the componentDidMount and render functions.
         this.state = { extensions: null };
     }
-    
+
     componentWillMount() {
-        this._setExtensions();
+        this._setExtensions(this.props);
     }
-    
+
     componentDidMount() {
         ExtensionRenderer.resourceLoadTracker.onMount(this.props.extensionPoint);
         this._renderAllExtensions();
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        if (!nextState.extensions) {
+            this._setExtensions(nextProps);
+        }
     }
 
     componentDidUpdate() {
@@ -58,13 +37,24 @@ export default class ExtensionRenderer extends React.Component {
     componentWillUnmount() {
         this._unmountAllExtensions();
     }
-    
+
+    /**
+     * Force a reload and re-render of all extensions registered with this ExtensionPoint.
+     * Useful if the props (such as 'filter') have changed and need to be re-evaluated.
+     */
+    reloadExtensions() {
+        // triggers a reload of extensions via componentWillUpdate
+        this.setState({
+            extensions: null,
+        });
+    }
+
     _setExtensions() {
         ExtensionRenderer.extensionStore.getExtensions(this.props.extensionPoint, this.props.filter,
             extensions => this.setState({extensions: extensions})
         );
     }
-    
+
     /**
      * This method renders the "leaf node" container divs, one for each registered extension, that live in the same
      * react hierarchy as the &lt;ExtensionRenderer&gt; instance itself. As far as our react is concerned, these are
@@ -82,7 +72,7 @@ export default class ExtensionRenderer extends React.Component {
         }
 
         var newChildren = [];
-        
+
         // Add a <div> for each of the extensions. See the __renderAllExtensions function.
         for (var i = 0; i < extensions.length; i++) {
             newChildren.push(<div key={i}/>);
@@ -186,7 +176,7 @@ ExtensionRenderer.defaultProps = {
 };
 
 ExtensionRenderer.propTypes = {
-    children: React.PropTypes.any,
+    children: React.PropTypes.node,
     extensionPoint: React.PropTypes.string.isRequired,
     filter: React.PropTypes.any,
     wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element])

@@ -149,7 +149,8 @@ const contextNoData = {
       activityService: {
         activityPager() {
           return {
-            data: undefined
+            data: undefined,
+            pending: true,
           }
         }
       }

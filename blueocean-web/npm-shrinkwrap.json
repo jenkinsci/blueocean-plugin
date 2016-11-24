@@ -40,9 +40,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.49-beta6.tgz"
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.30",
-      "from": "@jenkins-cd/js-extensions@0.0.30",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.30.tgz"
+      "version": "0.0.31-sandbox1",
+      "from": "@jenkins-cd/js-extensions@0.0.31-sandbox1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.31-sandbox1.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
