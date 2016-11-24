@@ -32,7 +32,7 @@ var makeExtensionStore = function(plugins, doInit, componentMap) {
         // this info will be loaded from <jenkins>/blue/js-extensions/
         // The test can reinitialise this if these defaults are not what's required.
         store.init({
-            extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
+            extensionData: javaScriptExtensionInfo,
             classMetadataStore: makeClassMetadataStore(function(type, cb) { cb({}); })
         });
     }
@@ -99,7 +99,7 @@ describe("ExtensionStore.js", function () {
             }
 
             extensionStore.init({
-                extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
+                extensionData: javaScriptExtensionInfo,
                 classMetadataStore: makeClassMetadataStore(function(type, cb) { cb({}); })
             });
 
@@ -170,7 +170,7 @@ describe("ExtensionStore.js", function () {
         });
 
         extensionStore.init({
-            extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
+            extensionData: javaScriptExtensionInfo,
             classMetadataStore: classMetadataStore
         });
 
@@ -215,7 +215,7 @@ describe("ExtensionStore.js", function () {
         var classMetadataStore = makeClassMetadataStore(function(type, cb) { cb(typeData[type]); });
 
         extensionStore.init({
-            extensionDataProvider: function(cb) { cb(javaScriptExtensionInfo); },
+            extensionData: javaScriptExtensionInfo,
             classMetadataStore: classMetadataStore
         });
 
@@ -289,11 +289,9 @@ describe("ExtensionStore.js", function () {
     it("- getPluginVersion", function(done) {
         var extensionStore = makeExtensionStore();
 
-        extensionStore.loadExtensionData(function() {
-            expect(extensionStore.getPluginVersion('plugin-1')).to.equal('1.1');
-            expect(extensionStore.getPluginVersion('plugin-2')).to.equal('1.2');
+        expect(extensionStore.getPluginVersion('plugin-1')).to.equal('1.1');
+        expect(extensionStore.getPluginVersion('plugin-2')).to.equal('1.2');
 
-            done();
-        });
+        done();
     });
 });

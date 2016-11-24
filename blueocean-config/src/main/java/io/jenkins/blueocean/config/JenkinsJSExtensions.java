@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.jsextensions;
+package io.jenkins.blueocean.config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,9 +39,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.verb.GET;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +46,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import hudson.Extension;
 import hudson.PluginWrapper;
-import hudson.util.HttpResponses;
-import io.jenkins.blueocean.RootRoutable;
 import io.jenkins.blueocean.rest.model.BlueExtensionClass;
 import io.jenkins.blueocean.rest.model.BlueExtensionClassContainer;
 import jenkins.model.Jenkins;
@@ -62,7 +57,7 @@ import net.sf.json.JSONArray;
 @Extension
 @Restricted(NoExternalUse.class)
 @SuppressWarnings({"rawtypes","unchecked"})
-public class JenkinsJSExtensions implements RootRoutable {
+public class JenkinsJSExtensions {
 
     private static  final Logger LOGGER = LoggerFactory.getLogger(JenkinsJSExtensions.class);
 
@@ -83,29 +78,13 @@ public class JenkinsJSExtensions implements RootRoutable {
 
     private static final Map<String, Object> jsExtensionCache = new ConcurrentHashMap<>();
 
-    public JenkinsJSExtensions() {
-    }
-
-    /**
-     * For the location in the API: /blue/js-extensions
-     */
-    @Override
-    public String getUrlName() {
-        return "js-extensions";
-    }
-
     /**
      * Return the actual data, from /js-extensions
      */
-    @WebMethod(name="") @GET
-    public HttpResponse doData() {
+    public static JSONArray getExtensionsData() {
         Object jsExtensionData = getJenkinsJSExtensionData();
         JSONArray jsExtensionDataJson = JSONArray.fromObject(jsExtensionData);
-        // TODO: Put this back to how it was originally before the rewrite.
-        // i.e. return a preconstructed byte array containing the preserialized JSON Vs doing the same
-        // serialization for every single request. Regenerate the byte array on cache refresh.
-        // This is called for every page load, so it's totally worth optimizing it if we can !!
-        return HttpResponses.okJSON(jsExtensionDataJson);
+        return jsExtensionDataJson;
     }
 
     /*protected*/ static Collection<Object> getJenkinsJSExtensionData() {

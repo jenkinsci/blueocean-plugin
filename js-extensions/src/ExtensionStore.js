@@ -13,10 +13,7 @@ export default class ExtensionStore {
      *
      *  Needs:
      *  args = {
-     *      extensionDataProvider: callback => {
-     *          ... // get the data
-     *          callback(extensionData); // array of extensions
-     *      },
+     *      extensionData: [array of extensions data],
      *      classMetadataStore: {
      *          getClassMetadata(dataType, callback) => {
      *              ... // get the data based on 'dataType'
@@ -26,9 +23,9 @@ export default class ExtensionStore {
      *  }
      */
     init(args) {
-        // This data should come from <jenkins>/blue/js-extensions
-        this.extensionDataProvider = args.extensionDataProvider;
-        this.extensionPointList = undefined; // cache from extensionDataProvider...
+        this.extensionData = args.extensionData;
+        this.extensionPointList = undefined; // cache from extensionData. See _initExtensionPointList().
+
         /**
          * The registered ExtensionPoint metadata + instance refs
          */
@@ -37,6 +34,9 @@ export default class ExtensionStore {
          * Used to fetch type information
          */
         this.classMetadataStore = args.classMetadataStore;
+
+        // Now init the extension point list.
+        this._initExtensionPointList();
     }
 
     /**
@@ -149,47 +149,35 @@ export default class ExtensionStore {
     }
 
     /**
-     * Fetch all the extension data
+     * Initialize the extension point list from the configured extension data.
      */
-    loadExtensionData(oncomplete) {
-        if (!this.extensionDataProvider) {
-            throw new Error("Must call ExtensionStore.init({ extensionDataProvider: (cb) => ..., typeInfoProvider: (type, cb) => ... }) first");
+    _initExtensionPointList() {
+        if (!this.extensionData) {
+            throw new Error("Must call ExtensionStore.init({ extensionData: array, typeInfoProvider: (type, cb) => ... }) first");
         }
         if (this.extensionPointList) {
-            onconplete(this.extensionPointList);
             return;
         }
-        this.extensionDataProvider(data => {
-            // We clone the data because we add to it.
-            this.extensionPointList = JSON.parse(JSON.stringify(data));
-            for(var i1 = 0; i1 < this.extensionPointList.length; i1++) {
-                var pluginMetadata = this.extensionPointList[i1];
-                var extensions = pluginMetadata.extensions || [];
+        // We clone the data because we add to it.
+        this.extensionPointList = JSON.parse(JSON.stringify(this.extensionData));
+        for(var i1 = 0; i1 < this.extensionPointList.length; i1++) {
+            var pluginMetadata = this.extensionPointList[i1];
+            var extensions = pluginMetadata.extensions || [];
 
-                for(var i2 = 0; i2 < extensions.length; i2++) {
-                    var extensionMetadata = extensions[i2];
-                    extensionMetadata.pluginId = pluginMetadata.hpiPluginId;
-                    var extensionPointMetadatas = this.extensionPoints[extensionMetadata.extensionPoint] = this.extensionPoints[extensionMetadata.extensionPoint] || [];
-                    extensionPointMetadatas.push(extensionMetadata);
-                }
+            for(var i2 = 0; i2 < extensions.length; i2++) {
+                var extensionMetadata = extensions[i2];
+                extensionMetadata.pluginId = pluginMetadata.hpiPluginId;
+                var extensionPointMetadatas = this.extensionPoints[extensionMetadata.extensionPoint] = this.extensionPoints[extensionMetadata.extensionPoint] || [];
+                extensionPointMetadatas.push(extensionMetadata);
             }
-            this.resourceLoadTracker.setExtensionPointMetadata(this.extensionPointList);
-            if (oncomplete) oncomplete(this.extensionPointList);
-        });
+        }
+        this.resourceLoadTracker.setExtensionPointMetadata(this.extensionPointList);
     }
 
     /**
      * Load the bundles for the given type
      */
     _loadBundles(extensionPointId, onload) {
-        // Make sure this has been initialized first
-        if (!this.extensionPointList) {
-            this.loadExtensionData(() => {
-                this._loadBundles(extensionPointId, onload);
-            });
-            return;
-        }
-
         var extensionPointMetadatas = this.extensionPoints[extensionPointId];
         if (extensionPointMetadatas && extensionPointMetadatas.loaded) {
             onload(extensionPointMetadatas);

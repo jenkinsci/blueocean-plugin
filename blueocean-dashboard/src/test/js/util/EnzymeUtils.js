@@ -31,6 +31,6 @@ export const prepareMount = () => {
     // 'extensionDataProvider' function being provided
     // FIXME: there's probably a much cleaner way to do this.
     ExtensionStore.init({
-        extensionDataProvider: () => undefined,
+        extensionData: undefined,
     });
 };

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.jsextensions;
+package io.jenkins.blueocean.config;
 
 import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.junit.Assert;
