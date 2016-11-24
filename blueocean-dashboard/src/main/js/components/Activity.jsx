@@ -62,7 +62,7 @@ export class Activity extends Component {
         // the Branches/PRs tab.
         const showRunButton = !isMultiBranchPipeline;
 
-        if (!this.pager.pending && ( !runs || !runs.length)) {
+        if (!this.pager.pending && (!runs || !runs.length)) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
         }
         
