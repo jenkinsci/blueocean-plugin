@@ -151,7 +151,7 @@ export default class ExtensionStore {
     /**
      * Fetch all the extension data
      */
-    _loadExtensionData(oncomplete) {
+    loadExtensionData(oncomplete) {
         if (!this.extensionDataProvider) {
             throw new Error("Must call ExtensionStore.init({ extensionDataProvider: (cb) => ..., typeInfoProvider: (type, cb) => ... }) first");
         }
@@ -184,7 +184,7 @@ export default class ExtensionStore {
     _loadBundles(extensionPointId, onload) {
         // Make sure this has been initialized first
         if (!this.extensionPointList) {
-            this._loadExtensionData(() => {
+            this.loadExtensionData(() => {
                 this._loadBundles(extensionPointId, onload);
             });
             return;

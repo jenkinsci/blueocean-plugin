@@ -10,5 +10,5 @@ exports.initialize = function (oncomplete) {
         classMetadataProvider: (type, cb) => Fetch.fetchJSON(`${appRoot}/rest/classes/${type}/`).then(cb).catch(Fetch.consoleError)
     });
 
-    oncomplete();
+    Extensions.store.loadExtensionData(oncomplete);
 };

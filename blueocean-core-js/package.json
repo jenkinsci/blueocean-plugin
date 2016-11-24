@@ -24,6 +24,7 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
+    "@jenkins-cd/js-extensions": "0.0.31-beta2",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/sse-gateway": "0.0.10",
     "es6-promise": "4.0.5",

@@ -62,4 +62,4 @@ const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService
 sseService.registerHandler(defaultSSEhandler.handleEvents);
 
 // export i18n provider
-export I18n, { defaultLngDetector, defaultXhr, initOptions, i18n } from './i18n/i18n';
+export i18nFactory, { defaultLngDetector, initOptions, i18n } from './i18n/i18n';

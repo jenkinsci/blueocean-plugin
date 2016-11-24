@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import LngDetector from 'i18next-browser-languagedetector';
 import XHR from 'i18next-xhr-backend';
+import { store } from '@jenkins-cd/js-extensions';
 
 import urlConfig from '../urlconfig';
 
@@ -15,19 +16,26 @@ export const defaultLngDetector = new LngDetector(null, {
 });
 const prefix = urlConfig.getJenkinsRootURL() || '';
 
-const loadPath = `${prefix}/i18n/resourceBundle?language={lng}&baseName={ns}`;
-/**
- * configure the backend for our locale
- */
-export const defaultXhr = new XHR(null, {
-    loadPath,
-    allowMultiLoading: false,
-    parse: (data) => {
-        // we need to parse the response and then extract the data since the rest is garbage for us
-        const response = JSON.parse(data);
-        return response.data;
-    },
-});
+function newPluginXHR(pluginName) {
+    let pluginVersion = store.getPluginVersion(pluginName);
+
+    if (!pluginVersion) {
+        throw new Error(`Unable to create an i18n instance for plugin "${pluginName}". This plugin is not currently installed, or is disabled.`);
+    }
+
+    pluginVersion = encodeURIComponent(pluginVersion);
+
+    const loadPath = `${prefix}/blueocean-i18n/${pluginName}/${pluginVersion}/{ns}/{lng}`;
+    return new XHR(null, {
+        loadPath,
+        allowMultiLoading: false,
+        parse: (data) => {
+            // we need to parse the response and then extract the data since the rest is garbage for us
+            const response = JSON.parse(data);
+            return response.data;
+        },
+    });
+}
 
 /**
  * Our default properties for i18next
@@ -52,12 +60,15 @@ export const initOptions = {
 /**
  * Create a instance of i18next and init it
  * in case we are in test mode and run unit test, we deliver a i18next instance that are not using any backend nor language detection
- * @param backend  {object} - the backend we want to use
+ * @param backend  {object} - the backend XHR invoker we want to use
  * @param lngDetector {object} - the component that detects which language we want to display
  * @param options {object} - general options for i18next
  * @see defaultOptions
  */
-export const i18n = (backend = defaultXhr, lngDetector = defaultLngDetector, options = initOptions) => {
+export const i18n = (backend, lngDetector = defaultLngDetector, options = initOptions) => {
+    if (!backend) {
+        throw new Error('Invalid call to create a new i18next instance. No backend XHR invoker supplied.');
+    }
     if (typeof window === 'undefined') {  // eslint-disable-line no-undef
         return i18next.init({
             lng: 'en',
@@ -87,5 +98,11 @@ export const i18n = (backend = defaultXhr, lngDetector = defaultLngDetector, opt
         .init(options);
 };
 
-
-export default i18n(defaultXhr, defaultLngDetector, initOptions);
+/**
+ * Create an i18n instance for accessing i18n resource bundles in the
+ * in a named plugin.
+ * @param pluginName The name of the plugin.
+ */
+export default function i18nFactory(pluginName) {
+    return i18n(newPluginXHR(pluginName), defaultLngDetector, initOptions);
+}
