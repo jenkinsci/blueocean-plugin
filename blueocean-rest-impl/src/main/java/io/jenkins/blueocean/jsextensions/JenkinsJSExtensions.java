@@ -24,19 +24,19 @@
 package io.jenkins.blueocean.jsextensions;
 
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.commons.io.IOUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
@@ -58,14 +58,18 @@ import net.sf.json.JSONArray;
 
 /**
  * Utility class for gathering {@code jenkins-js-extension} data.
- *
- * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Extension
 @Restricted(NoExternalUse.class)
 @SuppressWarnings({"rawtypes","unchecked"})
 public class JenkinsJSExtensions implements RootRoutable {
+
     private static  final Logger LOGGER = LoggerFactory.getLogger(JenkinsJSExtensions.class);
+
+    private static final String PLUGIN_ID = "hpiPluginId";
+    private static final String PLUGIN_VER = "hpiPluginVer";
+    private static final String PLUGIN_EXT = "extensions";
+
     private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
@@ -97,6 +101,10 @@ public class JenkinsJSExtensions implements RootRoutable {
     public HttpResponse doData() {
         Object jsExtensionData = getJenkinsJSExtensionData();
         JSONArray jsExtensionDataJson = JSONArray.fromObject(jsExtensionData);
+        // TODO: Put this back to how it was originally before the rewrite.
+        // i.e. return a preconstructed byte array containing the preserialized JSON Vs doing the same
+        // serialization for every single request. Regenerate the byte array on cache refresh.
+        // This is called for every page load, so it's totally worth optimizing it if we can !!
         return HttpResponses.okJSON(jsExtensionDataJson);
     }
 
@@ -106,7 +114,7 @@ public class JenkinsJSExtensions implements RootRoutable {
     }
 
     private static String getGav(Map ext){
-        return ext.get("hpiPluginId") != null ? (String)ext.get("hpiPluginId") : null;
+        return (String) ext.get(PLUGIN_ID);
     }
 
     private static void refreshCacheIfNeeded(){
@@ -122,47 +130,74 @@ public class JenkinsJSExtensions implements RootRoutable {
             refreshCache(pluginCache);
         }
         for (PluginWrapper pluginWrapper : pluginCache) {
+            //skip if not active
+            if (!pluginWrapper.isActive()) {
+                continue;
+            }
             //skip probing plugin if already read
             if (jsExtensionCache.get(pluginWrapper.getLongName()) != null) {
                 continue;
             }
             try {
                 Enumeration<URL> dataResources = pluginWrapper.classLoader.getResources("jenkins-js-extension.json");
+                boolean hasDefinedExtensions = false;
+
                 while (dataResources.hasMoreElements()) {
                     URL dataRes = dataResources.nextElement();
-                    StringWriter fileContentBuffer = new StringWriter();
 
                     LOGGER.debug("Reading 'jenkins-js-extension.json' from '{}'.", dataRes);
 
-                    try {
-                        IOUtils.copy(dataRes.openStream(), fileContentBuffer, Charset.forName("UTF-8"));
-                        Map<?,List<Map>> extensionData = mapper.readValue(dataRes.openStream(), Map.class);
-                        List<Map> extensions = (List<Map>)extensionData.get("extensions");
+                    try (InputStream dataResStream = dataRes.openStream()) {
+                        Map<String, Object> extensionData = mapper.readValue(dataResStream, Map.class);
+
+                        String pluginId = getGav(extensionData);
+                        if (pluginId != null) {
+                            // Skip if the plugin name specified on the extension data does not match the name
+                            // on the PluginWrapper for this iteration. This can happen for e.g. aggregator
+                            // plugins, in which case you'll be seeing extension resources on it's dependencies.
+                            // We can skip these here because we will process those plugins themselves in a
+                            // future/past iteration of this loop.
+                            if (!pluginId.equals(pluginWrapper.getShortName())) {
+                                continue;
+                            }
+                        } else {
+                            LOGGER.error(String.format("Plugin %s JS extension has missing hpiPluginId", pluginWrapper.getLongName()));
+                            continue;
+                        }
+
+                        List<Map> extensions = (List<Map>) extensionData.get(PLUGIN_EXT);
                         for (Map extension : extensions) {
                             try {
-                                String type = (String)extension.get("type");
+                                String type = (String) extension.get("type");
                                 if (type != null) {
                                     BlueExtensionClassContainer extensionClassContainer
                                         = Jenkins.getInstance().getExtensionList(BlueExtensionClassContainer.class).get(0);
-                                    Map classInfo = (Map)mergeObjects(extensionClassContainer.get(type));
-                                    List classInfoClasses = (List)classInfo.get("_classes");
+                                    Map classInfo = (Map) mergeObjects(extensionClassContainer.get(type));
+                                    List classInfoClasses = (List) classInfo.get("_classes");
                                     classInfoClasses.add(0, type);
                                     extension.put("_class", type);
                                     extension.put("_classes", classInfoClasses);
                                 }
-                            } catch(Exception e) {
+                            } catch (Exception e) {
                                 LOGGER.error("An error occurred when attempting to read type information from jenkins-js-extension.json from: " + dataRes, e);
                             }
                         }
-                        String pluginId = getGav(extensionData);
-                        if (pluginId != null) {
-                            jsExtensionCache.put(pluginId, mergeObjects(extensionData));
-                        } else {
-                            LOGGER.error(String.format("Plugin %s JS extension has missing hpiPluginId", pluginWrapper.getLongName()));
-                        }
-                    } catch (Exception e) {
-                        LOGGER.error("Error reading 'jenkins-js-extension.json' from '" + dataRes + "'. Extensions defined in the host plugin will not be active.", e);
+
+                        extensionData.put(PLUGIN_VER, pluginWrapper.getVersion());
+                        jsExtensionCache.put(pluginId, mergeObjects(extensionData));
+                        hasDefinedExtensions = true;
                     }
+                }
+
+                if (!hasDefinedExtensions) {
+                    // Manufacture an entry for all plugins that do not have any defined
+                    // extensions. This adds some info about the plugin that the UI might
+                    // need access to e.g. the plugin version.
+                    Map<String, Object> extensionData = new LinkedHashMap<>();
+                    extensionData.put(PLUGIN_ID, pluginWrapper.getShortName());
+                    extensionData.put(PLUGIN_VER, pluginWrapper.getVersion());
+                    extensionData.put(PLUGIN_EXT, Collections.emptyList());
+                    jsExtensionCache.put(pluginWrapper.getShortName(), mergeObjects(extensionData));
                 }
             } catch (IOException e) {
                 LOGGER.error(String.format("Error locating jenkins-js-extension.json for plugin %s", pluginWrapper.getLongName()));
@@ -170,6 +205,11 @@ public class JenkinsJSExtensions implements RootRoutable {
         }
     }
 
+    //
+    // ***********************************************************************************************************
+    // TODO: Someone needs to write some docs on this function, explaining what it is doing and why it's needed.
+    // ***********************************************************************************************************
+    //
     private static Object mergeObjects(Object incoming) {
         if (incoming instanceof Map) {
             Map m = new HashMap();

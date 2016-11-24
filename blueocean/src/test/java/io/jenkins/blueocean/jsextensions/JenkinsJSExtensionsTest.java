@@ -43,11 +43,14 @@ public class JenkinsJSExtensionsTest extends BaseTest {
         Map response = get("/js-extensions", Map.class);
         List<Map> extensions = (List)response.get("data");
 
-        Assert.assertEquals(2, extensions.size());
+        Assert.assertTrue(extensions.size() > 2);
 
         for (Map extension : extensions) {
             List<Map> extensionPoints = (List<Map>) extension.get("extensions");
             String pluginId = (String) extension.get("hpiPluginId");
+
+            Assert.assertNotNull(extension.get("hpiPluginVer"));
+            Assert.assertNotNull(extensionPoints);
 
             if ("blueocean-dashboard".equals(pluginId)) {
                 Assert.assertEquals(7, extensionPoints.size());
