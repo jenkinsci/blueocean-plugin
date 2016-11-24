@@ -909,4 +909,18 @@ public class MultiBranchTest extends PipelineBaseTest {
         Assert.assertEquals("io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl", ((Map) l.get(2)).get("_class"));
     }
 
+    @Test
+    public void getPipelineJobActivitiesNoBranches() throws Exception {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo1.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+
+        List l = request().get("/organizations/jenkins/pipelines/p/activities").build(List.class);
+
+        Assert.assertEquals(0, l.size());
+
+        List branches = request().get("/organizations/jenkins/pipelines/p/branches").build(List.class);
+        Assert.assertEquals(0, branches.size());
+
+    }
 }
