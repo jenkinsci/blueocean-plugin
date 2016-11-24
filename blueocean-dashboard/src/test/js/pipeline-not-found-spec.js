@@ -1,11 +1,9 @@
 import React from 'react';
-import { Route } from 'react-router';
 import { expect } from 'chai';
 import { shallow } from 'enzyme';
 
 import { PipelinePage } from '../../main/js/components/PipelinePage.jsx';
 import PageLoading from '../../main/js/components/PageLoading.jsx';
-import NotFound from '../../main/js/components/NotFound.jsx';
 
 const params = {
       organization: 'jenkins',
