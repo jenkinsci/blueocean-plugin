@@ -285,4 +285,15 @@ describe("ExtensionStore.js", function () {
 
         done();
     });
+
+    it("- getPluginVersion", function(done) {
+        var extensionStore = makeExtensionStore();
+
+        extensionStore._loadExtensionData(function() {
+            expect(extensionStore.getPluginVersion('plugin-1')).to.equal('1.1');
+            expect(extensionStore.getPluginVersion('plugin-2')).to.equal('1.2');
+
+            done();
+        });
+    });
 });
