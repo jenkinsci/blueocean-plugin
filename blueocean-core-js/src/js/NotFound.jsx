@@ -1,7 +1,7 @@
 import React from 'react';
 import Fullscreen from './Fullscreen';
 import { Link } from 'react-router';
-import { i18nTransFactory } from '@jenkins-cd/blueocean-core-js';
+import i18nTransFactory from './i18n/i18n';
 
 const translate = i18nTransFactory('blueocean-dashboard', 'jenkins.plugins.blueocean.dashboard.Messages');
 
