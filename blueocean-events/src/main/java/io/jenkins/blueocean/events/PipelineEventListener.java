@@ -1,10 +1,12 @@
 package io.jenkins.blueocean.events;
 
 import com.google.common.util.concurrent.ListenableFuture;
+
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
+
 import org.jenkins.pubsub.Message;
 import org.jenkins.pubsub.MessageException;
 import org.jenkins.pubsub.PubsubBus;
@@ -20,6 +22,7 @@ import org.jenkinsci.plugins.workflow.flow.GraphListener;
 import org.jenkinsci.plugins.workflow.graph.FlowEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,8 +72,13 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 if (stageAction != null) {
                     currentStageName = stageAction.getStageName();
                     currentStageId = flowNode.getId();
+                }	
+                PipelineEventChannel.Event eventName = PipelineEventChannel.Event.pipeline_step;
+                StepDescriptor desc = ((StepAtomNode)flowNode).getDescriptor();
+                if(desc!=null && "stage".equalsIgnoreCase(desc.getFunctionName())){
+                	eventName = PipelineEventChannel.Event.pipeline_stage;
                 }
-                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
+                publishEvent(newMessage(eventName, flowNode, branch));
             } else if (flowNode instanceof StepEndNode) {
                 if (flowNode.getAction(BodyInvocationAction.class) != null) {
                     try {
@@ -164,6 +172,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
         private void publishEvent(Message message) {
             try {
                 pubSubBus.publish(message);
+                LOGGER.log(Level.INFO, "publish event: " + message);
             } catch (MessageException e) {
                 LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
             }
@@ -174,6 +183,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
 
     @Override
     public void onStarted(final Run<?,?> run, TaskListener listener) {
+        LOGGER.log(Level.INFO, "Pipeline Listener Registered " + run);
         super.onStarted(run, listener);
         if (run instanceof WorkflowRun) {
             ListenableFuture<FlowExecution> promise = ((WorkflowRun) run).getExecutionPromise();
@@ -182,6 +192,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 public void run() {
                     try {
                         FlowExecution ex = ((WorkflowRun) run).getExecutionPromise().get();
+                        LOGGER.log(Level.INFO, "before addListener " + ex);
                         ex.addListener(new StageEventPublisher(run));
                     } catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
