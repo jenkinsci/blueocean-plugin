@@ -108,7 +108,7 @@ export class PipelinePage extends Component {
                         <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: I18n.language })}
+                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: translate.lng })}
             </Page>
         );
     }

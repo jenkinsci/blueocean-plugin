@@ -63,7 +63,7 @@ class RunDetails extends Component {
 
     _fetchRun(props, storePreviousRoute) {
         this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE);
-       
+
         if (this.context.config && this.context.params) {
             this.href = RestPaths.run({
                 organization: props.params.organization,
@@ -71,7 +71,7 @@ class RunDetails extends Component {
                 branch: this.isMultiBranch && props.params.branch,
                 runId: props.params.runId,
             });
-            
+
             this.context.activityService.fetchActivity(this.href, { useCache: true });
             if (storePreviousRoute) {
                 this.opener = locationService.previous;
@@ -123,7 +123,7 @@ class RunDetails extends Component {
             return null;
         }
 
-        
+
         const { router, location, params } = this.context;
         const { pipeline, setTitle, t, locale } = this.props;
 
@@ -212,7 +212,7 @@ class RunDetails extends Component {
                     <div>
                         {run && React.cloneElement(
                             this.props.children,
-                            { locale: I18n.language, baseUrl, t: translate, result: currentRun, isMultiBranch: this.isMultiBranch, ...this.props }
+                            { locale: translate.lng, baseUrl, t: translate, result: currentRun, isMultiBranch: this.isMultiBranch, ...this.props }
                         )}
                     </div>
                 </ModalBody>
