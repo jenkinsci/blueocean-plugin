@@ -26,6 +26,9 @@ import { Pager, PagerService, PipelineService, SSEService, ActivityService, Defa
 export { Pager, PagerService, PipelineService, SSEService, ActivityService };
 
 
+export Fullscreen from './Fullscreen';
+export NotFound from './NotFound';
+
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton } from './components/RunButton';
 

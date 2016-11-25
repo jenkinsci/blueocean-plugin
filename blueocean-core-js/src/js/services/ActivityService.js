@@ -90,6 +90,9 @@ export class ActivityService extends BunkerService {
                     run.result = 'UNKNOWN';
                 }
                 return this.setItem(run);
+            })
+            .catch(err => {
+                console.log('There has been an error while trying to get the data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
             });
     }
 
