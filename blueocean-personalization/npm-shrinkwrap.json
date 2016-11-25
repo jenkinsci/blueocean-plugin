@@ -29,6 +29,11 @@
       "from": "@jenkins-cd/eslint-config-jenkins@0.0.2",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/eslint-config-jenkins/-/eslint-config-jenkins-0.0.2.tgz"
     },
+    "@jenkins-cd/js-builder": {
+      "version": "0.0.49-beta6",
+      "from": "@jenkins-cd/js-builder@0.0.49-beta6",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.49-beta6.tgz"
+    },
     "@jenkins-cd/js-extensions": {
       "version": "0.0.31-sandbox1",
       "from": "@jenkins-cd/js-extensions@0.0.31-sandbox1",
@@ -48,6 +53,105 @@
       "version": "1.4.7",
       "from": "@kadira/react-split-pane@>=1.4.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/@kadira/react-split-pane/-/react-split-pane-1.4.7.tgz"
+    },
+    "@kadira/storybook": {
+      "version": "2.20.1",
+      "from": "@kadira/storybook@2.20.1",
+      "resolved": "https://registry.npmjs.org/@kadira/storybook/-/storybook-2.20.1.tgz",
+      "dependencies": {
+        "assert-plus": {
+          "version": "0.2.0",
+          "from": "assert-plus@>=0.2.0 <0.3.0",
+          "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-0.2.0.tgz"
+        },
+        "aws-sign2": {
+          "version": "0.6.0",
+          "from": "aws-sign2@>=0.6.0 <0.7.0",
+          "resolved": "https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.6.0.tgz"
+        },
+        "boom": {
+          "version": "2.10.1",
+          "from": "boom@>=2.0.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/boom/-/boom-2.10.1.tgz"
+        },
+        "combined-stream": {
+          "version": "1.0.5",
+          "from": "combined-stream@>=1.0.5 <1.1.0",
+          "resolved": "https://registry.npmjs.org/combined-stream/-/combined-stream-1.0.5.tgz"
+        },
+        "cryptiles": {
+          "version": "2.0.5",
+          "from": "cryptiles@>=2.0.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/cryptiles/-/cryptiles-2.0.5.tgz"
+        },
+        "delayed-stream": {
+          "version": "1.0.0",
+          "from": "delayed-stream@>=1.0.0 <1.1.0",
+          "resolved": "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz"
+        },
+        "forever-agent": {
+          "version": "0.6.1",
+          "from": "forever-agent@>=0.6.1 <0.7.0",
+          "resolved": "https://registry.npmjs.org/forever-agent/-/forever-agent-0.6.1.tgz"
+        },
+        "form-data": {
+          "version": "2.1.2",
+          "from": "form-data@>=2.1.1 <2.2.0",
+          "resolved": "https://registry.npmjs.org/form-data/-/form-data-2.1.2.tgz"
+        },
+        "hawk": {
+          "version": "3.1.3",
+          "from": "hawk@>=3.1.3 <3.2.0",
+          "resolved": "https://registry.npmjs.org/hawk/-/hawk-3.1.3.tgz"
+        },
+        "http-signature": {
+          "version": "1.1.1",
+          "from": "http-signature@>=1.1.0 <1.2.0",
+          "resolved": "https://registry.npmjs.org/http-signature/-/http-signature-1.1.1.tgz"
+        },
+        "json5": {
+          "version": "0.5.0",
+          "from": "json5@>=0.5.0 <0.6.0",
+          "resolved": "https://registry.npmjs.org/json5/-/json5-0.5.0.tgz"
+        },
+        "mime-types": {
+          "version": "2.1.13",
+          "from": "mime-types@>=2.1.7 <2.2.0",
+          "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.13.tgz"
+        },
+        "oauth-sign": {
+          "version": "0.8.2",
+          "from": "oauth-sign@>=0.8.1 <0.9.0",
+          "resolved": "https://registry.npmjs.org/oauth-sign/-/oauth-sign-0.8.2.tgz"
+        },
+        "qs": {
+          "version": "6.3.0",
+          "from": "qs@>=6.1.0 <7.0.0",
+          "resolved": "https://registry.npmjs.org/qs/-/qs-6.3.0.tgz"
+        },
+        "request": {
+          "version": "2.79.0",
+          "from": "request@>=2.74.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/request/-/request-2.79.0.tgz",
+          "dependencies": {
+            "uuid": {
+              "version": "3.0.0",
+              "from": "uuid@>=3.0.0 <4.0.0",
+              "resolved": "https://registry.npmjs.org/uuid/-/uuid-3.0.0.tgz"
+            }
+          }
+        },
+        "shelljs": {
+          "version": "0.7.5",
+          "from": "shelljs@>=0.7.4 <0.8.0",
+          "resolved": "https://registry.npmjs.org/shelljs/-/shelljs-0.7.5.tgz"
+        },
+        "sntp": {
+          "version": "1.0.9",
+          "from": "sntp@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/sntp/-/sntp-1.0.9.tgz"
+        }
+      }
     },
     "@kadira/storybook-addon-actions": {
       "version": "1.1.1",
@@ -361,6 +465,11 @@
       "from": "aws4@>=1.2.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/aws4/-/aws4-1.5.0.tgz"
     },
+    "babel": {
+      "version": "6.5.2",
+      "from": "babel@6.5.2",
+      "resolved": "https://registry.npmjs.org/babel/-/babel-6.5.2.tgz"
+    },
     "babel-code-frame": {
       "version": "6.16.0",
       "from": "babel-code-frame@>=6.16.0 <7.0.0",
@@ -377,6 +486,11 @@
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.6.tgz"
         }
       }
+    },
+    "babel-eslint": {
+      "version": "7.0.0",
+      "from": "babel-eslint@7.0.0",
+      "resolved": "https://registry.npmjs.org/babel-eslint/-/babel-eslint-7.0.0.tgz"
     },
     "babel-generator": {
       "version": "6.19.0",
@@ -774,6 +888,11 @@
       "version": "6.16.0",
       "from": "babel-preset-react@6.16.0",
       "resolved": "https://registry.npmjs.org/babel-preset-react/-/babel-preset-react-6.16.0.tgz"
+    },
+    "babel-preset-stage-0": {
+      "version": "6.16.0",
+      "from": "babel-preset-stage-0@6.16.0",
+      "resolved": "https://registry.npmjs.org/babel-preset-stage-0/-/babel-preset-stage-0-6.16.0.tgz"
     },
     "babel-preset-stage-1": {
       "version": "6.16.0",
@@ -1934,6 +2053,11 @@
       "from": "envify@3.4.1",
       "resolved": "https://registry.npmjs.org/envify/-/envify-3.4.1.tgz"
     },
+    "enzyme": {
+      "version": "2.4.1",
+      "from": "enzyme@2.4.1",
+      "resolved": "https://registry.npmjs.org/enzyme/-/enzyme-2.4.1.tgz"
+    },
     "errno": {
       "version": "0.1.4",
       "from": "errno@>=0.1.3 <0.2.0",
@@ -2060,6 +2184,11 @@
       "version": "4.3.0",
       "from": "eslint-plugin-react@4.3.0",
       "resolved": "https://registry.npmjs.org/eslint-plugin-react/-/eslint-plugin-react-4.3.0.tgz"
+    },
+    "eslint-to-editorconfig": {
+      "version": "1.2.0",
+      "from": "eslint-to-editorconfig@1.2.0",
+      "resolved": "https://registry.npmjs.org/eslint-to-editorconfig/-/eslint-to-editorconfig-1.2.0.tgz"
     },
     "espree": {
       "version": "3.3.2",
@@ -2615,6 +2744,11 @@
       "version": "1.0.3",
       "from": "gulp-match@>=1.0.3 <2.0.0",
       "resolved": "https://registry.npmjs.org/gulp-match/-/gulp-match-1.0.3.tgz"
+    },
+    "gulp-mocha": {
+      "version": "3.0.1",
+      "from": "gulp-mocha@3.0.1",
+      "resolved": "https://registry.npmjs.org/gulp-mocha/-/gulp-mocha-3.0.1.tgz"
     },
     "gulp-runner": {
       "version": "0.1.4",
@@ -4019,6 +4153,18 @@
       "from": "negotiator@0.6.1",
       "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-0.6.1.tgz"
     },
+    "nock": {
+      "version": "8.0.0",
+      "from": "nock@8.0.0",
+      "resolved": "https://registry.npmjs.org/nock/-/nock-8.0.0.tgz",
+      "dependencies": {
+        "qs": {
+          "version": "6.3.0",
+          "from": "qs@>=6.0.2 <7.0.0",
+          "resolved": "https://registry.npmjs.org/qs/-/qs-6.3.0.tgz"
+        }
+      }
+    },
     "node-emoji": {
       "version": "1.4.1",
       "from": "node-emoji@>=1.4.1 <2.0.0",
@@ -4783,6 +4929,11 @@
       "version": "15.3.2",
       "from": "react-addons-css-transition-group@15.3.2",
       "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.3.2.tgz"
+    },
+    "react-addons-test-utils": {
+      "version": "15.3.2",
+      "from": "react-addons-test-utils@15.3.2",
+      "resolved": "https://registry.npmjs.org/react-addons-test-utils/-/react-addons-test-utils-15.3.2.tgz"
     },
     "react-dom": {
       "version": "15.3.2",
