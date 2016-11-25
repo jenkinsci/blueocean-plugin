@@ -38,26 +38,6 @@ function newPluginXHR(pluginName) {
 }
 
 /**
- * Our default properties for i18next
- * @type {{fallbackLng: string, ns: string[], defaultNS: string, preload: string[], keySeparator: boolean, debug: boolean, load: string, interpolation: {prefix: string, suffix: string, escapeValue: boolean}}}
- */
-export const initOptions = {
-    fallbackLng: 'en',
-    // have a common namespace used around the full app
-    ns: ['jenkins.plugins.blueocean.web.Messages', 'jenkins.plugins.blueocean.dashboard.Messages'],
-    defaultNS: 'jenkins.plugins.blueocean.web.Messages',
-    preload: ['en'],
-    keySeparator: false, // we do not have any nested keys in properties files
-    debug: false,
-    load: 'all', // --> ['en-US', 'en', 'dev']
-    interpolation: {
-        prefix: '{',
-        suffix: '}',
-        escapeValue: false, // not needed for react!!
-    },
-};
-
-/**
  * Create a instance of i18next and init it
  * in case we are in test mode and run unit test, we deliver a i18next instance that are not using any backend nor language detection
  * @param backend  {object} - the backend XHR invoker we want to use
@@ -65,9 +45,15 @@ export const initOptions = {
  * @param options {object} - general options for i18next
  * @see defaultOptions
  */
-export const i18n = (backend, lngDetector = defaultLngDetector, options = initOptions) => {
+export const i18n = (backend, lngDetector = defaultLngDetector, options) => {
+    // TODO: Decide if we really want to export this i18n instance. Is there a use case for it?
+    // If there's no use case for exporting it, then general rule is not to do that. "Good fences make for good neighbours" etc
+
     if (!backend) {
         throw new Error('Invalid call to create a new i18next instance. No backend XHR invoker supplied.');
+    }
+    if (!options) {
+        throw new Error('Invalid call to create a new i18next instance. No i18next options supplied.');
     }
     if (typeof window === 'undefined') {  // eslint-disable-line no-undef
         return i18next.init({
@@ -92,17 +78,49 @@ export const i18n = (backend, lngDetector = defaultLngDetector, options = initOp
             },
         });
     }
-    return i18next
+    return i18next.createInstance()
         .use(backend)
         .use(lngDetector)
         .init(options);
 };
 
+const translatorCache = {};
+
 /**
- * Create an i18n instance for accessing i18n resource bundles in the
- * in a named plugin.
+ * Create an i18n Translator instance for accessing i18n resource bundles
+ * in the named plugin namespace.
  * @param pluginName The name of the plugin.
+ * @param namespace The resource bundle namespace.
+ * @return An i18n Translator instance.
  */
-export default function i18nFactory(pluginName) {
-    return i18n(newPluginXHR(pluginName), defaultLngDetector, initOptions);
+export default function i18nTransFactory(pluginName, namespace) {
+    const translatorCacheKey = `${pluginName}:${namespace}`;
+    let translator = translatorCache[translatorCacheKey];
+
+    if (translator) {
+        return translator;
+    }
+
+    const initOptions = {
+        fallbackLng: 'en',
+        ns: [namespace],
+        defaultNS: namespace,
+        preload: ['en'],
+        keySeparator: false, // we do not have any nested keys in properties files
+        debug: false,
+        load: 'all', // --> ['en-US', 'en', 'dev']
+        interpolation: {
+            prefix: '{',
+            suffix: '}',
+            escapeValue: false, // not needed for react!!
+        },
+    };
+
+    const I18n = i18n(newPluginXHR(pluginName), defaultLngDetector, initOptions);
+
+    // Create and cache the translator instance.
+    translator = I18n.getFixedT(I18n.language, namespace);
+    translatorCache[translatorCacheKey] = translator;
+
+    return translator;
 }

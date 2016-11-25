@@ -2,7 +2,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
-import { i18nFactory } from '@jenkins-cd/blueocean-core-js';
+import { i18nTransFactory } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
@@ -10,8 +10,7 @@ import PageLoading from './PageLoading';
 
 import { observer } from 'mobx-react';
 
-const I18n = i18nFactory('blueocean-dashboard');
-const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+const translate = i18nTransFactory('blueocean-dashboard', 'jenkins.plugins.blueocean.dashboard.Messages');
 
 
 @observer

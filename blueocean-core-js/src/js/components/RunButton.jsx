@@ -9,10 +9,9 @@ import {
     ToastUtils,
 } from '../';
 import Security from '../security';
-import i18nFactory from '../i18n/i18n';
+import i18nTransFactory from '../i18n/i18n';
 
-const I18n = i18nFactory('blueocean-web');
-const translate = I18n ? I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.web.Messages') : function () { };
+const translate = i18nTransFactory('blueocean-web', 'jenkins.plugins.blueocean.web.Messages');
 
 const { permit } = Security;
 

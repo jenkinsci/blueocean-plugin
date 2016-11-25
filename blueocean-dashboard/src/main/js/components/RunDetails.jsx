@@ -6,7 +6,7 @@ import {
     PageTabs,
     TabLink,
 } from '@jenkins-cd/design-language';
-import { i18nFactory, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { i18nTransFactory, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import { Icon } from 'react-material-icons-blue';
 
@@ -41,8 +41,7 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const I18n = i18nFactory('blueocean-dashboard');
-const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+const translate = i18nTransFactory('blueocean-dashboard', 'jenkins.plugins.blueocean.dashboard.Messages');
 
 
 @observer

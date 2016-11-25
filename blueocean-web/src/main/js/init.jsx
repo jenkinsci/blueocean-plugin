@@ -11,4 +11,6 @@ exports.initialize = function (oncomplete) {
             fetch.Fetch.fetchJSON(`${appRoot}/rest/classes/${type}/`).then(cb).catch(fetch.Fetch.consoleError);
         }
     });
+
+    oncomplete();
 };
