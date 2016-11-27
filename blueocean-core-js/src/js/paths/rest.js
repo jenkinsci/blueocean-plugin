@@ -5,9 +5,6 @@ export default {
     _convertSlashes(pipeline) {
         return pipeline.replace(/\//g, '/pipelines/');
     },
-    encodeSlashes(url) {
-        return url.replace(/\//g, '%252F');
-    },
 
     apiRoot() {
         return '/blue/rest';
@@ -22,12 +19,12 @@ export default {
     },
 
     activities(organization, pipeline) {
-        return `${this.apiRoot()}/organizations/${organization}/pipelines/${pipeline}/activities/`;
+        return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/activities/`;
     },
 
     run({ organization, pipeline, branch, runId }) {
         if (branch) {
-            return `${this.pipeline(organization, pipeline)}branches/${this.encodeSlashes(branch)}/runs/${runId}/`;
+            return `${this.pipeline(organization, pipeline)}branches/${encodeURIComponent(encodeURIComponent(branch))}/runs/${runId}/`;
         }
 
         return `${this.pipeline(organization, pipeline)}runs/${runId}/`;
