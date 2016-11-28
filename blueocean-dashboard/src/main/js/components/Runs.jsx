@@ -36,8 +36,7 @@ export default class Runs extends Component {
             run.durationInMillis :
             moment().diff(moment(run.startTime));
 
-        const pipelineName = decodeURIComponent(pipeline);
-        const runDetailsUrl = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
+        const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
 
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
@@ -52,7 +51,7 @@ export default class Runs extends Component {
                   estimatedDuration={run.estimatedDurationInMillis}
                 />
             </CellLink>
-            <CellLink>{id}</CellLink>
+            <CellLink>{run.id}</CellLink>
             <CellLink><CommitHash commitId={run.commitId} /></CellLink>
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
                 <CellLink>{decodeURIComponent(run.pipeline)}</CellLink>
