@@ -1,14 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
-import { RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
+import { CellRow, CellLink } from './CellLink';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import { observer } from 'mobx-react';
-
-
-const stopProp = (event) => event.stopPropagation();
 
 @observer
 export default class Branches extends Component {
@@ -25,22 +23,10 @@ export default class Branches extends Component {
 
         const { router, location } = this.context;
         const latestRun = branch.latestRun;
-        
+
         const cleanBranchName = decodeURIComponent(branch.name);
-        const url = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
+        const runDetailsUrl = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
 
-        const open = (event) => {
-            if (event) {
-                event.preventDefault();
-            }
-            location.pathname = url;
-            router.push(location);
-        };
-
-        const BranchCol = (props) => <td className="tableRowLink">
-            <a onClick={open} href={`${UrlConfig.getJenkinsRootURL()}/blue${url}`}>{props.children}</a>
-        </td>;
-       
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
@@ -48,17 +34,19 @@ export default class Branches extends Component {
 
         const { msg } = (branch.changeSet && branch.changeSet.length > 0) ? (branch.changeSet[0] || {}) : {};
         return (
-            <tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${latestRun.id}`} >
-                <BranchCol><WeatherIcon score={branch.weatherScore} /></BranchCol>
-                <BranchCol onClick={open}>
+            <CellRow linkUrl={runDetailsUrl}>
+                <CellLink disableDefaultPadding>
+                    <WeatherIcon score={branch.weatherScore} />
+                </CellLink>
+                <CellLink>
                     <LiveStatusIndicator result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
                       startTime={latestRun.startTime} estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
-                </BranchCol>
-                <BranchCol>{cleanBranchName}</BranchCol>
-                <BranchCol><CommitHash commitId={latestRun.commitId} /></BranchCol>
-                <BranchCol>{msg || '-'}</BranchCol>
-                <BranchCol>
+                </CellLink>
+                <CellLink>{cleanBranchName}</CellLink>
+                <CellLink><CommitHash commitId={latestRun.commitId} /></CellLink>
+                <CellLink>{msg || '-'}</CellLink>
+                <CellLink>
                     <ReadableDate
                       date={latestRun.endTime}
                       liveUpdate
@@ -66,9 +54,8 @@ export default class Branches extends Component {
                       shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
                       longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                     />
-                </BranchCol>
-                { /* suppress all click events from extension points */ }
-                <td className="actions" onClick={(event) => stopProp(event)}>
+                </CellLink>
+                <td className="actions">
                     <RunButton
                       className="icon-button"
                       runnable={branch}
@@ -82,7 +69,7 @@ export default class Branches extends Component {
                       {...t}
                     />
                 </td>
-            </tr>
+            </CellRow>
         );
     }
 }

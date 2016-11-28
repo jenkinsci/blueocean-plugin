@@ -28,9 +28,10 @@ CellRow.propTypes = {
  */
 export function CellLink(props) {
     const url = props.linkUrl || '';
+    const extraClass = !props.disableDefaultPadding ? 'u-link-padding' : '';
 
     return (
-        <td className="tableRowLink">
+        <td className={`cell-link ${extraClass}`}>
             <Link to={url}>{props.children}</Link>
         </td>
     );
@@ -39,4 +40,5 @@ export function CellLink(props) {
 CellLink.propTypes = {
     children: PropTypes.node,
     linkUrl: PropTypes.string,
+    disableDefaultPadding: PropTypes.bool,
 };

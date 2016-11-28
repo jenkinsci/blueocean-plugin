@@ -110,6 +110,8 @@
 }
 
 .multibranch-table {
+    margin-top: 10px;
+
     th {
         width: 75px;
     }
@@ -388,15 +390,18 @@ table.highlight {
     }
 }
 
-.tableRowLink {
+.cell-link {
     a {
         width: 100%;
         height: 100%;
         display: block;
-        padding: 0.5em 0.8em 0.5em 0;
         text-decoration: none;
         color: inherit;
         .text-overflow;
+    }
+
+    &.u-link-padding a {
+        padding: 0.5em 0.8em 0.5em 0;
     }
 }
 
