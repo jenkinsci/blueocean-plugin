@@ -23,42 +23,18 @@ export default class Runs extends Component {
     }
     render() {
         // early out
-        if (!this.props.result || !this.props.pipeline) {
+        if (!this.props.run || !this.props.pipeline) {
             return null;
         }
-        const {
-            context: {
-                router,
-                location,
-            },
-            props: {
-                changeset,
-                locale,
-                result: {
-                    durationInMillis,
-                    estimatedDurationInMillis,
-                    pipeline,
-                    id,
-                    result,
-                    state,
-                    startTime,
-                    endTime,
-                    commitId,
-                },
-                t,
-                pipeline: {
-                    _class: pipelineClass,
-                    fullName,
-                    organization,
-                },
-            },
-        } = this;
+        const { router, location } = this.context;
 
-        const resultRun = result === 'UNKNOWN' ? state : result;
+        const { run, changeset, pipeline, t, locale } = this.props;
+
+        const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const running = resultRun === 'RUNNING';
         const durationMillis = !running ?
-            durationInMillis :
-            moment().diff(moment(startTime));
+            run.durationInMillis :
+            moment().diff(moment(run.startTime));
 
         const pipelineName = decodeURIComponent(pipeline);
         const runDetailsUrl = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
@@ -68,17 +44,18 @@ export default class Runs extends Component {
             router.push(location);
         };
 
+
         return (
         <CellRow linkUrl={runDetailsUrl}>
             <CellLink>
-                <LiveStatusIndicator result={resultRun} startTime={startTime}
-                  estimatedDuration={estimatedDurationInMillis}
+                <LiveStatusIndicator result={resultRun} startTime={run.startTime}
+                  estimatedDuration={run.estimatedDurationInMillis}
                 />
             </CellLink>
             <CellLink>{id}</CellLink>
-            <CellLink><CommitHash commitId={commitId} /></CellLink>
-            <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
-                <CellLink>{decodeURIComponent(pipeline)}</CellLink>
+            <CellLink><CommitHash commitId={run.commitId} /></CellLink>
+            <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
+                <CellLink>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
             <CellLink>{changeset && changeset.msg || '-'}</CellLink>
             <CellLink>
@@ -92,7 +69,7 @@ export default class Runs extends Component {
             </CellLink>
             <CellLink>
                 <ReadableDate
-                  date={endTime}
+                  date={run.endTime}
                   liveUpdate
                   locale={locale}
                   shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
@@ -103,8 +80,8 @@ export default class Runs extends Component {
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
                 { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
-                <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
-                    <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} onNavigation={openRunDetails} />
+                <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
+                    <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
                 </IfCapability>
             </td>
         </CellRow>

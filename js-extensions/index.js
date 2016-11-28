@@ -16,6 +16,10 @@ exports.Renderer.resourceLoadTracker = resourceLoadTracker;
 const ClassMetadataStore = require('./dist/ClassMetadataStore.js').default;
 exports.classMetadataStore = new ClassMetadataStore();
 
+exports.SandboxedComponent = require('./dist/SandboxedComponent.js').SandboxedComponent;
+
+exports.ErrorUtils = require('./dist/ErrorUtils.js').default;
+
 exports.dataType = function dataType(dataType) { return exports.classMetadataStore.dataType(dataType); };
 
 exports.untyped = function untyped() { return exports.classMetadataStore.untyped(); };

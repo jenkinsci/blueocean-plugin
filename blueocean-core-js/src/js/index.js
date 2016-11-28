@@ -1,3 +1,4 @@
+
 /**
  * Created by cmeyers on 8/18/16.
  */
@@ -5,6 +6,7 @@
 import { Fetch } from './fetch';
 import * as sse from '@jenkins-cd/sse-gateway';
 import { RunApi } from './rest/RunApi';
+
 import { SseBus } from './sse/SseBus';
 import { ToastService } from './ToastService';
 
@@ -18,6 +20,14 @@ export Utils from './utils';
 export { User } from './User';
 export AppConfig from './config';
 export Security from './security';
+export Paths from './paths/index';
+
+import { Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler, LocationService } from './services/index';
+export { Pager, PagerService, PipelineService, SSEService, ActivityService };
+
+
+export Fullscreen from './Fullscreen';
+export NotFound from './NotFound';
 
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton } from './components/RunButton';
@@ -41,6 +51,15 @@ export { toastService as ToastService };
 
 const runApi = new RunApi();
 export { runApi as RunApi };
+
+export const pagerService = new PagerService();
+export const sseService = new SSEService(sseConnection);
+export const activityService = new ActivityService(pagerService);
+export const pipelineService = new PipelineService(pagerService, activityService);
+export const locationService = new LocationService();
+
+const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, pagerService);
+sseService.registerHandler(defaultSSEhandler.handleEvents);
 
 // export i18n provider
 export I18n, { defaultLngDetector, defaultXhr, initOptions, i18n } from './i18n/i18n';

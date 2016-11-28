@@ -65,6 +65,11 @@ public class RunContainerImpl extends BlueRunContainer {
     }
 
     @Override
+    public Iterator<BlueRun> iterator(int start, int limit) {
+        return RunSearch.findRuns(job, pipeline.getLink(), start, limit).iterator();
+    }
+
+    @Override
     public BluePipeline getPipeline(String name) {
         return pipeline;
     }

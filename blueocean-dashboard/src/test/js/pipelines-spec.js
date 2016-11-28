@@ -16,20 +16,35 @@ describe('Pipelines', () => {
         getRootURL: () => '/',
     };
 
-    const context = {
-        params: {},
-        location: {},
-        config,
-    };
+  //  const context = {
+   //     params: {},
+   ///     location: {},
+   ///     config,
+  //  };
 
     describe('basic table rendering', () => {
         let wrapper;
 
         beforeEach(() => {
 
+            const context = {
+                params: {},
+                location: {},
+                config,
+                pipelineService: {
+                    allPipelinesPager() {
+                        return {
+                            data: pipelines,
+                        };
+                    },
+                },
+            };
+
             wrapper = shallow(
-                <Pipelines pipelines={pipelines} setTitle={()=>{}}/>,
-                { context }
+                <Pipelines params={context.params} setTitle={()=>{}}/>,
+                {
+                    context,
+                }
             );
         });
 
@@ -44,9 +59,23 @@ describe('Pipelines', () => {
 
     describe('duplicate job names', () => {
         it('should render two rows when job names are duplicated across folders', () => {
+            const context = {
+                config,
+                params: {
+                    organization:'jenkins',
+                },
+                pipelineService: {
+                    organiztionPipelinesPager() {
+                        return {
+                            data: pipelinesDupName,
+                        };
+                    },
+                },
+            };
+
 
             const wrapper = mount(
-                <Pipelines pipelines={pipelinesDupName} setTitle={()=>{}}/>,
+                <Pipelines params={context.params} setTitle={()=>{}}/>,
                 { context },
             );
 

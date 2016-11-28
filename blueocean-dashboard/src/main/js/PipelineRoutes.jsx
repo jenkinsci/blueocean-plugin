@@ -1,7 +1,6 @@
-import { Route, Redirect, IndexRoute, IndexRedirect } from 'react-router';
+import { Route, Redirect, IndexRedirect } from 'react-router';
 import React from 'react';
 import Dashboard from './Dashboard';
-import OrganizationPipelines from './OrganizationPipelines';
 import {
     Pipelines,
     MultiBranch,
@@ -84,24 +83,12 @@ function isLeavingRunDetails(prevState, nextState) {
     return (prevState !== null && prevState.params.runId) && !nextState.params.runId;
 }
 
-function isEnteringCreatePipeline(prevState, nextState) {
-    return nextState.location.pathname.indexOf('/create-pipeline') !== -1 &&
-        (prevState == null || prevState.location.pathname.indexOf('/create-pipeline') === -1);
-}
-
-function isLeavingCreatePipeline(prevState, nextState) {
-    return nextState.location.pathname.indexOf('/create-pipeline') === -1 &&
-        (prevState == null || prevState.location.pathname.indexOf('/create-pipeline') !== -1);
-}
-
 function isPersistBackgroundRoute(prevState, nextState) {
-    return isEnteringRunDetails(prevState, nextState) ||
-        isEnteringCreatePipeline(prevState, nextState);
+    return isEnteringRunDetails(prevState, nextState);
 }
 
 function isRemovePersistedBackgroundRoute(prevState, nextState) {
-    return isLeavingRunDetails(prevState, nextState) ||
-        isLeavingCreatePipeline(prevState, nextState);
+    return isLeavingRunDetails(prevState, nextState);
 }
 
 /**
@@ -122,11 +109,10 @@ function persistBackgroundOnNavigationChange(prevState, nextState, replace, call
 
 export default (
     <Route path="/" component={Dashboard} onChange={persistBackgroundOnNavigationChange}>
-        <Route path="organizations/:organization" component={OrganizationPipelines}>
-            <IndexRedirect to="pipelines" />
-            <Route path="pipelines" component={Pipelines} />
+        <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
+            <Route path="organizations/:organization/pipelines" component={Pipelines} />
 
-            <Route component={PipelinePage}>
+            <Route path="organizations/:organization" component={PipelinePage}>
                 <Route path=":pipeline/branches" component={MultiBranch} />
                 <Route path=":pipeline/activity" component={Activity} />
                 <Route path=":pipeline/pr" component={PullRequests} />
@@ -142,11 +128,10 @@ export default (
                 </Route>
 
                 <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
-            </Route>
+       
         </Route>
-        <Route path="/pipelines" component={OrganizationPipelines}>
-            <IndexRoute component={Pipelines} />
-        </Route>
+        <Route path="/pipelines" component={Pipelines} />
+           
         <Route path="/create-pipeline" component={CreatePipeline} />
         <IndexRedirect to="pipelines" />
     </Route>

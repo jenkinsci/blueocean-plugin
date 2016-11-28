@@ -2,17 +2,14 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Markdown from 'react-remarkable';
 import Branches from './Branches';
-import { RunsRecord } from './records';
-import {
-    actions,
-    currentBranches as branchSelector,
-    createSelector,
-    connect,
-} from '../redux';
+
 import PageLoading from './PageLoading';
 import { pipelineBranchesUnsupported } from './PipelinePage';
+import { capable } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 
-const { object, array, func, string, any } = PropTypes;
+const { object, string, any, func } = PropTypes;
 
 const EmptyState = ({ repoName, t }) => (
     <main>
@@ -47,51 +44,44 @@ NotSupported.propTypes = {
     t: func,
 };
 
+@observer
 export class MultiBranch extends Component {
     componentWillMount() {
         if (this.props.pipeline && this.context.params && !pipelineBranchesUnsupported(this.props.pipeline)) {
-            this.props.fetchBranches({
-                organizationName: this.context.params.organization,
-                pipelineName: this.context.params.pipeline,
-            });
+            const { organization, pipeline } = this.context.params;
+            this.pager = this.context.pipelineService.branchPager(organization, pipeline);
         }
     }
-
-    componentWillUnmount() {
-        this.props.clearBranchData();
-    }
-
 
     render() {
-        const { branches, t, locale, pipeline } = this.props;
-
-        if (!branches || (!branches.$pending && pipelineBranchesUnsupported(pipeline))) {
+        const { t, locale, pipeline } = this.props;
+        
+        if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
             return (<NotSupported t={t} />);
         }
+       
+        const branches = this.pager.data;
 
-        if (branches.$failed) {
-            return <div>ERROR: {branches.$failed}</div>;
-        }
-
-        if (!branches.$pending && !branches.length) {
-            return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
+        if (!this.pager.pending && !branches.length) {
+            return (<EmptyState repoName={this.context.params.pipeline} />);
         }
 
         const head = 'pipelinedetail.branches.header';
 
-        const status = t(`${head}.status`, { defaultValue: 'Status' });
-        const health = t(`${head}.health`, { defaultValue: 'Health' });
-        const commit = t(`${head}.commit`, { defaultValue: 'Commit' });
-        const branch = t(`${head}.branch`, { defaultValue: 'Branch' });
-        const message = t(`${head}.message`, { defaultValue: 'Message' });
-        const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
+        const statusHeader = t(`${head}.status`, { defaultValue: 'Status' });
+        const healthHeader = t(`${head}.health`, { defaultValue: 'health' });
+        const commitHeader = t(`${head}.commit`, { defaultValue: 'Commit' });
+        const branchHeader = t(`${head}.branch`, { defaultValue: 'Branch' });
+        const messageHeader = t(`${head}.message`, { defaultValue: 'Message' });
+        const completedHeader = t(`${head}.completed`, { defaultValue: 'Completed' });
+
         const headers = [
-            health,
-            status,
-            { label: branch, className: 'branch' },
-            { label: commit, className: 'lastcommit' },
-            { label: message, className: 'message' },
-            { label: completed, className: 'completed' },
+            healthHeader,
+            statusHeader,
+            { label: branchHeader, className: 'branch' },
+            { label: commitHeader, className: 'lastcommit' },
+            { label: messageHeader, className: 'message' },
+            { label: completedHeader, className: 'completed' },
             { label: '', className: 'run' },
         ];
 
@@ -99,24 +89,13 @@ export class MultiBranch extends Component {
             <main>
                 <article>
                     {branches.$pending && <PageLoading />}
-                    <Table className="multibranch-table fixed"
-                      headers={headers}
-                    >
-                        {branches.length > 0 && branches.map((run, index) => {
-                            const result = new RunsRecord(run);
-                            return (<Branches
-                              pipeline={pipeline}
-                              key={index}
-                              data={result}
-                              t={t}
-                              locale={locale}
-                            />);
-                        })
-                        }
+
+                    <Table className="multibranch-table fixed" headers={headers}>
+                        {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} t={t} locale={locale} />)}
                     </Table>
-                    {branches.$pager &&
-                        <button disabled={branches.$pending || !branches.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => branches.$pager.fetchMore()}>
-                             {branches.$pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
+                    {this.pager.pending &&
+                        <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
+                             {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
                         </button>
                     }
                 </article>
@@ -129,18 +108,14 @@ export class MultiBranch extends Component {
 MultiBranch.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
+    pipelineService: object.isRequired,
 };
 
 MultiBranch.propTypes = {
-    branches: array,
-    fetchBranches: func,
-    clearBranchData: func,
     children: any,
     t: func,
     locale: string,
     pipeline: object,
 };
 
-const selectors = createSelector([branchSelector], (branches) => ({ branches }));
-
-export default connect(selectors, actions)(MultiBranch);
+export default MultiBranch;
