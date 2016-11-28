@@ -42,9 +42,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.31-sandbox1",
-      "from": "@jenkins-cd/js-extensions@0.0.31-sandbox1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.31-sandbox1.tgz"
+      "version": "0.0.31",
+      "from": "@jenkins-cd/js-extensions@0.0.31",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.31.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
@@ -4311,9 +4311,9 @@
       "resolved": "https://registry.npmjs.org/recast/-/recast-0.11.17.tgz",
       "dependencies": {
         "esprima": {
-          "version": "3.1.1",
+          "version": "3.1.2",
           "from": "esprima@>=3.1.0 <3.2.0",
-          "resolved": "https://registry.npmjs.org/esprima/-/esprima-3.1.1.tgz"
+          "resolved": "https://registry.npmjs.org/esprima/-/esprima-3.1.2.tgz"
         },
         "source-map": {
           "version": "0.5.6",
