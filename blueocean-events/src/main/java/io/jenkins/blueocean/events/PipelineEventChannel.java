@@ -39,7 +39,8 @@ public interface PipelineEventChannel {
         pipeline_end,
         pipeline_block_start,
         pipeline_block_end,
-        pipeline_step,
+        pipeline_step, 
+        pipeline_stage,
     }
 
     /**
@@ -50,6 +51,7 @@ public interface PipelineEventChannel {
         pipeline_run_id,
         pipeline_context,
         pipeline_step_name,
+        pipeline_step_label,
         pipeline_step_flownode_id,
         pipeline_step_stage_name,
         pipeline_step_stage_id,
