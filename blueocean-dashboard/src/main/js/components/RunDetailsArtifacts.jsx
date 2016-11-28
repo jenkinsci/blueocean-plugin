@@ -34,7 +34,7 @@ export default class RunDetailsArtifacts extends Component {
         const style = { fill: '#4a4a4a' };
 
         return (
-            <Table headers={headers} className="artifacts-table fixed">
+            <Table headers={headers} className="artifacts-table">
                 { artifacts.map(artifact => (
                     <tr key={artifact.url}>
                         <td>{artifact.name}</td>
