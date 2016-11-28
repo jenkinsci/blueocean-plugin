@@ -73,7 +73,6 @@ export class DefaultSSEHandler {
 
         const runSelf = `${event.blueocean_job_rest_url}runs/${id}/`;
 
-
         const newRun = {
             id,
             _links: {
