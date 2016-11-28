@@ -6,6 +6,8 @@ import React from 'react';
 
 import MultiStepFlow from '../MultiStepFlow';
 
+import { credentialsManager } from '../credentials';
+
 import GitStatus from './GitCreationStatus';
 import GitCreationApi from './GitCreationApi';
 import GitCreationManager from './GitCreationManager';
@@ -28,6 +30,8 @@ export default class GitCreationFlow extends React.Component {
             (status) => this._onStatusChanged(status),
         );
 
+        this.credsManager = credentialsManager;
+
         this.state = {
             flowStatus: GitStatus.NOT_STARTED,
         };
@@ -42,7 +46,7 @@ export default class GitCreationFlow extends React.Component {
     render() {
         return (
             <MultiStepFlow {...this.props}>
-                <ConnectStep manager={this._manager} />
+                <ConnectStep manager={this._manager} credentialsManager={this.credsManager} />
                 <CompletedStep flowStatus={this.state.flowStatus} />
             </MultiStepFlow>
         );

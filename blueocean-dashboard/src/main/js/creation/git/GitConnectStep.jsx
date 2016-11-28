@@ -2,6 +2,8 @@
  * Created by cmeyers on 10/19/16.
  */
 import React, { PropTypes } from 'react';
+import { Dropdown } from '@jenkins-cd/design-language';
+
 import FlowStep from '../FlowStep';
 
 const CREDENTIAL_CHOICE = {
@@ -21,6 +23,8 @@ export default class GitConnectStep extends React.Component {
 
         this.state = {
             repositoryUrl: null,
+            existingCredentials: null,
+            selectedCredential: null,
             credentialsSelection: null,
             sshKeyValue: null,
             usernameValue: null,
@@ -30,13 +34,31 @@ export default class GitConnectStep extends React.Component {
         };
     }
 
+    componentDidMount() {
+        this.props.credentialsManager
+            .listAllCredentials()
+            .then(data => this._setExistingCredentials(data));
+    }
+
     componentDidUpdate() {
         this._updateCreateButton();
+    }
+
+    _setExistingCredentials(creds) {
+        this.setState({
+            existingCredentials: creds,
+        });
     }
 
     _repositoryUrlChange(value) {
         this.setState({
             repositoryUrl: value,
+        });
+    }
+
+    _selectExistingCredential(cred) {
+        this.setState({
+            selectedCredential: cred,
         });
     }
 
@@ -122,38 +144,50 @@ export default class GitConnectStep extends React.Component {
 
                 <h2>Credentials</h2>
 
-                <ul>
-                    <li>
-                        <label>
-                            <input type="radio"
-                              value={CREDENTIAL_CHOICE.SSH}
-                              checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH}
-                              onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.SSH)}
-                            />
-                            <span>SSH</span>
-                        </label>
-                    </li>
-                    <li>
-                        <label>
-                            <input type="radio"
-                              value={CREDENTIAL_CHOICE.USER_PASS}
-                              checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS}
-                              onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.USER_PASS)}
-                            />
-                            <span>Username &amp; Password</span>
-                        </label>
-                    </li>
-                    <li>
-                        <label>
-                            <input type="radio"
-                              value={CREDENTIAL_CHOICE.SYSTEM_SSH}
-                              checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH}
-                              onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.SYSTEM_SSH)}
-                            />
-                            <span>Use System SSH</span>
-                        </label>
-                    </li>
-                </ul>
+                <div className="credentials-container">
+                    <ul className="credentials-type-picker">
+                        <li>
+                            <label>
+                                <input type="radio"
+                                  value={CREDENTIAL_CHOICE.SSH}
+                                  checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH}
+                                  onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.SSH)}
+                                />
+                                <span>SSH</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio"
+                                  value={CREDENTIAL_CHOICE.USER_PASS}
+                                  checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS}
+                                  onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.USER_PASS)}
+                                />
+                                <span>Username &amp; Password</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio"
+                                  value={CREDENTIAL_CHOICE.SYSTEM_SSH}
+                                  checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH}
+                                  onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.SYSTEM_SSH)}
+                                />
+                                <span>Use System SSH</span>
+                            </label>
+                        </li>
+                    </ul>
+
+                    <div className="credentials-separator">OR</div>
+                    <div className="credentials-picker">
+                        <Dropdown
+                          placeholder="Choose credentials"
+                          options={this.state.existingCredentials}
+                          labelField="displayName"
+                          onChange={opt => this._selectExistingCredential(opt)}
+                        />
+                    </div>
+                </div>
 
                 { this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH &&
                 <div>
@@ -186,5 +220,6 @@ export default class GitConnectStep extends React.Component {
 
 GitConnectStep.propTypes = {
     manager: PropTypes.object,
+    credentialsManager: PropTypes.object,
     onCompleteStep: PropTypes.func,
 };
