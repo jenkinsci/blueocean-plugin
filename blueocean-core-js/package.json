@@ -6,8 +6,7 @@
   "scripts": {
     "gulp": "gulp",
     "test": "gulp test",
-    "prepublish": "gulp",
-    "preinstall": "gulp test"
+    "prepublish": "gulp"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
   "contributors": [
