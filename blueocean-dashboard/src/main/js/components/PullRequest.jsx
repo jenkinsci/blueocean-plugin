@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
 import { RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
+import { CellRow, CellLink } from './CellLink';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
@@ -26,7 +27,6 @@ export default class PullRequest extends Component {
                 title,
                 author,
             },
-            name,
         } = pr;
         const result = resultString === 'UNKNOWN' ? state : resultString;
         const {
@@ -34,48 +34,43 @@ export default class PullRequest extends Component {
             location,
         } = this.context;
         const { fullName, organization } = contextPipeline;
-        const url = buildRunDetailsUrl(organization, fullName, decodeURIComponent(pipeline), id, 'pipeline');
-          
-        const open = (event) => {
-            if (event) {
-                event.preventDefault();
-            }
-            location.pathname = url;
-            router.push(location);
-        };
-        const PRCol = (props) => <td className="tableRowLink"><a onClick={open} href={`${UrlConfig.getJenkinsRootURL()}/blue${url}`}>{props.children}</a></td>;
-      
+        const runDetailsUrl = buildRunDetailsUrl(organization, fullName, decodeURIComponent(pipeline), id, 'pipeline');
+
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
 
-        return (<tr key={id} onClick={open} id={`${name}-${id}`} >
-            <PRCol>
-                <LiveStatusIndicator result={result} startTime={startTime}
-                  estimatedDuration={estimatedDurationInMillis}
-                />
-            </PRCol>
-            <PRCol>{prId}</PRCol>
-            <PRCol>{title || '-'}</PRCol>
-            <PRCol>{author || '-'}</PRCol>
-            <PRCol><ReadableDate
-              date={endTime}
-              liveUpdate
-              locale={locale}
-              shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
-              longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
-            /></PRCol>
-            <td>
-                <RunButton
-                  className="icon-button"
-                  runnable={pr}
-                  latestRun={pr.latestRun}
-                  onNavigation={openRunDetails}
-                />
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />
-            </td>
-        </tr>);
+        return (
+            <CellRow linkUrl={runDetailsUrl}>
+                <CellLink>
+                    <LiveStatusIndicator result={result} startTime={startTime}
+                      estimatedDuration={estimatedDurationInMillis}
+                    />
+                </CellLink>
+                <CellLink>{prId}</CellLink>
+                <CellLink>{title || '-'}</CellLink>
+                <CellLink>{author || '-'}</CellLink>
+                <CellLink>
+                    <ReadableDate
+                      date={endTime}
+                      liveUpdate
+                      locale={locale}
+                      shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                      longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                    />
+                </CellLink>
+                <td className="actions">
+                    <RunButton
+                      className="icon-button"
+                      runnable={pr}
+                      latestRun={pr.latestRun}
+                      onNavigation={openRunDetails}
+                    />
+                    <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />
+                </td>
+            </CellRow>
+        );
     }
 }
 
