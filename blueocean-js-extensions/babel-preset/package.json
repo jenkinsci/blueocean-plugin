@@ -1,0 +1,29 @@
+{
+  "name": "babel-preset-blueocean-js-extension-support",
+  "version": "0.0.1",
+  "description": "Blueocean Babel Plugin to support decorator-based extension points",
+  "main": "./target/index.js",
+  "scripts": {
+    "prepublish": "tsc"
+  },
+  "files": [
+    "target"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "repository": "git@github.com:jekninsci/blueocean-js-extensions",
+  "dependencies": {
+    "babel-plugin-syntax-flow": "^6.13.0",
+    "babel-plugin-transform-class-properties": "^6.16.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "blueocean-js-extensions-typescript-support": "0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^6.0.46",
+    "babel-eslint": "^7.1.0",
+    "eslint": "^3.9.0",
+    "eslint-plugin-react": "^6.4.1",
+    "typescript": "^2.0.3"
+  }
+}

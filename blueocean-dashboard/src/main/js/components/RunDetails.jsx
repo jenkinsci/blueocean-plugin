@@ -17,6 +17,10 @@ import {
     buildClassicConfigUrl,
 } from '../util/UrlUtils';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import Extensions from '@jenkins-cd/js-extensions';
+
+import { ExtensionPoint, InjectExtensions } from 'blueocean-js-extensions';
+
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
@@ -43,11 +47,18 @@ const classicConfigLink = (pipeline) => {
 
 const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
 
+@ExtensionPoint
+class RunDetailsLink {
+    name() {}
+    url() {}
+}
 
 @observer
 class RunDetails extends Component {
-
+    @InjectExtensions(RunDetailsLink) runDetailsLinks;
+    
     componentWillMount() {
+        
         this._fetchRun(this.props, true);
     }
 
@@ -181,14 +192,18 @@ class RunDetails extends Component {
                             <TabLink to="/changes">{t('rundetail.header.tab.changes', {
                                 defaultValue: 'Changes',
                             })}</TabLink>
-                            <TabLink to="/tests">{t('rundetail.header.tab.tests', {
-                                defaultValue: 'Tests',
-                            })}</TabLink>
+                            {/* Instead of doing this, we should decorate data coming back
+                                to emulate the way actions work. By using classes as extension
+                                points, we can define whichever methods we need to obtain different
+                                views as react components */}
+                            {this.runDetailsLinks.filter(d => d.isApplicable(currentRun)).map(d =>
+                                <TabLink to={d.url()}>{d.name()}</TabLink>
+                            )}
                             <TabLink to="/artifacts">{t('rundetail.header.tab.artifacts', {
                                 defaultValue: 'Artifacts',
                             })}</TabLink>
                         </PageTabs>
-
+                        
                         <div className="button-bar">
                             <ReplayButton
                               className="dark"

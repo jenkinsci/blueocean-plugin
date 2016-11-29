@@ -1,0 +1,32 @@
+{
+  "name": "blueocean-js-extensions-typescript-support",
+  "version": "0.0.1",
+  "description": "TypeScript Extension Points",
+  "main": "./target/index.js",
+  "bin": {
+    "tse": "./tse.js"
+  },
+  "files": [
+    "target",
+    "tse.js"
+  ],
+  "typings": "./target/index.d.ts",
+  "scripts": {
+    "prepublish": "tsc"
+  },
+  "author": "kzantow@gmail.com",
+  "license": "MIT",
+  "repository": "git@github.com:jekninsci/blueocean-js-extensions",
+  "devDependencies": {
+    "@types/node": "^6.0.46",
+    "@types/yamljs": "^0.2.30",
+    "assert": "^1.4.1",
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2",
+    "ts-node": "^1.6.0"
+  },
+  "dependencies": {
+    "typescript": "^2.0.6",
+    "yamljs": "^0.2.8"
+  }
+}

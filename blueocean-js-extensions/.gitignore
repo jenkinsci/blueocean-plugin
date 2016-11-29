@@ -1,0 +1,8 @@
+# Node generated files
+node_modules
+target
+npm-debug.log
+# OS generated files
+Thumbs.db
+.DS_Store
+.vscode
