@@ -4,18 +4,15 @@ import { Link } from 'react-router';
 /**
  * A convenience wrapper to pass down 'linkUrl' to child CellLink components.
  */
-export class CellRow extends React.Component {
-
-    render() {
-        return (
-            <tr>
-                {React.Children.map(
-                    this.props.children,
-                    child => React.cloneElement(child, { linkUrl: this.props.linkUrl })
-                )}
-            </tr>
-        );
-    }
+export function CellRow(props) {
+    return (
+        <tr>
+            {React.Children.map(
+                props.children,
+                child => React.cloneElement(child, { linkUrl: props.linkUrl })
+            )}
+        </tr>
+    );
 }
 
 CellRow.propTypes = {
