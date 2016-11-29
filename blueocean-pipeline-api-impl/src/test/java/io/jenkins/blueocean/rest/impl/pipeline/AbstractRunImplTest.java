@@ -66,7 +66,8 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         assertEquals(r.get("commitId"), new PipelineRunImpl(b2,null).getCommitId());
     }
 
-    @Test
+    // Disabled, see JENKINS-40084
+    // @Test
     public void replayRunTestMB() throws Exception {
         j.createOnlineSlave(Label.get("remote"));
 
