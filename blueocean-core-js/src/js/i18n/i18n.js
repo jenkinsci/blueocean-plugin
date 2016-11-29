@@ -25,7 +25,7 @@ function newPluginXHR(pluginName) {
 
     pluginVersion = encodeURIComponent(pluginVersion);
 
-    const loadPath = `${prefix}/blueocean-i18n/${pluginName}/${pluginVersion}/{ns}/{lng}`;
+    const loadPath = `${prefix}/blueocean-i18n/${pluginName}/${pluginVersion}/{ns}`;
     return new XHR(null, {
         loadPath,
         allowMultiLoading: false,
