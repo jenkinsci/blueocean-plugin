@@ -41,7 +41,7 @@ export class Pipelines extends Component {
     render() {
         const pipelines = this.pager.data;
         const { organization, location = {} } = this.context.params;
-       
+
         const orgLink = organization ?
             <Link
               to={`organizations/${organization}`}
@@ -88,7 +88,7 @@ export class Pipelines extends Component {
                           router={this.context.router}
                         />
                         <Table
-                          className="pipelines-table fixed"
+                          className="pipelines-table"
                           headers={headers}
                         >
                             { pipelines &&

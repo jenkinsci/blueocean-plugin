@@ -54,7 +54,7 @@ export class Activity extends Component {
             return null;
         }
 
-       
+
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
 
         // Only show the Run button for non multi-branch pipelines.
@@ -65,7 +65,7 @@ export class Activity extends Component {
         if (!this.pager.pending && (!runs || !runs.length)) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
         }
-        
+
         const onNavigation = (url) => {
             this.context.location.pathname = url;
             this.context.router.push(this.context.location);
@@ -111,7 +111,7 @@ export class Activity extends Component {
                 />
                 }
                 {runs.length > 0 &&
-                <Table className="activity-table fixed" headers={headers}>
+                <Table className="activity-table u-highlight-rows" headers={headers} disableDefaultPadding>
                     {
                         runs.map((run, index) => {
                             const changeset = run.changeSet;
