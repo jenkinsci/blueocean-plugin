@@ -25,7 +25,7 @@ function newPluginXHR(pluginName) {
 
     pluginVersion = encodeURIComponent(pluginVersion);
 
-    const loadPath = `${prefix}/blueocean-i18n/${pluginName}/${pluginVersion}/{ns}`;
+    const loadPath = `${prefix}/blueocean-i18n/${pluginName}/${pluginVersion}/{ns}/{lng}`;
     return new XHR(null, {
         loadPath,
         allowMultiLoading: false,
@@ -86,13 +86,10 @@ const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) =
     assertPluginNameDefined(pluginName);
 
     const initOptions = {
-        fallbackLng: 'en',
         ns: [namespace],
         defaultNS: namespace,
-        preload: ['en'],
         keySeparator: false, // we do not have any nested keys in properties files
         debug: false,
-        load: 'all', // --> ['en-US', 'en', 'dev']
         interpolation: {
             prefix: '{',
             suffix: '}',
