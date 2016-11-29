@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.31",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.31",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.31.tgz",
+      "version": "0.0.32-tfbeta1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.32-tfbeta1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.32-tfbeta1.tgz",
       "dependencies": {
         "react-router": {
           "version": "3.0.0",
@@ -37,9 +37,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.31",
-      "from": "@jenkins-cd/js-extensions@0.0.31",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.31.tgz"
+      "version": "0.0.32-tfbeta1",
+      "from": "@jenkins-cd/js-extensions@0.0.32-tfbeta1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.32-tfbeta1.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
@@ -6702,9 +6702,9 @@
       "resolved": "https://registry.npmjs.org/readline2/-/readline2-1.0.1.tgz"
     },
     "recast": {
-      "version": "0.11.17",
+      "version": "0.11.18",
       "from": "recast@>=0.11.17 <0.12.0",
-      "resolved": "https://registry.npmjs.org/recast/-/recast-0.11.17.tgz",
+      "resolved": "https://registry.npmjs.org/recast/-/recast-0.11.18.tgz",
       "dependencies": {
         "esprima": {
           "version": "3.1.2",
