@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.27-beta10",
+  "version": "0.0.32-unpublished",
   "dependencies": {
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -14,9 +14,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.31-beta5",
-      "from": "@jenkins-cd/js-extensions@0.0.31-beta5",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.31-beta5.tgz"
+      "version": "0.0.32-tfbeta1",
+      "from": "@jenkins-cd/js-extensions@0.0.32-tfbeta1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.32-tfbeta1.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
@@ -5409,9 +5409,9 @@
       "resolved": "https://registry.npmjs.org/readline2/-/readline2-1.0.1.tgz"
     },
     "recast": {
-      "version": "0.11.17",
+      "version": "0.11.18",
       "from": "recast@>=0.11.17 <0.12.0",
-      "resolved": "https://registry.npmjs.org/recast/-/recast-0.11.17.tgz",
+      "resolved": "https://registry.npmjs.org/recast/-/recast-0.11.18.tgz",
       "dependencies": {
         "esprima": {
           "version": "3.1.2",
