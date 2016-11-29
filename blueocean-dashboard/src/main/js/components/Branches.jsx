@@ -34,7 +34,7 @@ export default class Branches extends Component {
 
         const { msg } = (branch.changeSet && branch.changeSet.length > 0) ? (branch.changeSet[0] || {}) : {};
         return (
-            <CellRow linkUrl={runDetailsUrl}>
+            <CellRow linkUrl={runDetailsUrl} id={`${cleanBranchName}-${latestRun.id}`}>
                 <CellLink disableDefaultPadding>
                     <WeatherIcon score={branch.weatherScore} />
                 </CellLink>

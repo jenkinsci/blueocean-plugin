@@ -6,7 +6,7 @@ import { Link } from 'react-router';
  */
 export function CellRow(props) {
     return (
-        <tr>
+        <tr id={props.id}>
             {React.Children.map(
                 props.children,
                 child => React.cloneElement(child, { linkUrl: props.linkUrl })
@@ -16,6 +16,7 @@ export function CellRow(props) {
 }
 
 CellRow.propTypes = {
+    id: PropTypes.string,
     children: PropTypes.node,
     linkUrl: PropTypes.string,
 };

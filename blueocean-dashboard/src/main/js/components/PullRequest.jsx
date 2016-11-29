@@ -27,6 +27,7 @@ export default class PullRequest extends Component {
                 title,
                 author,
             },
+            name,
         } = pr;
         const result = resultString === 'UNKNOWN' ? state : resultString;
         const {
@@ -42,7 +43,7 @@ export default class PullRequest extends Component {
         };
 
         return (
-            <CellRow linkUrl={runDetailsUrl}>
+            <CellRow linkUrl={runDetailsUrl} id={`${name}-${id}`}>
                 <CellLink>
                     <LiveStatusIndicator result={result} startTime={startTime}
                       estimatedDuration={estimatedDurationInMillis}
