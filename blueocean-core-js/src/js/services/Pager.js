@@ -155,6 +155,6 @@ export class Pager {
      * @returns {boolean} - True if this pager does have this href
      */
     has(href) {
-        return this.hrefs.indexOf(href) > 0;
+        return this.hrefs.indexOf(href) > -1;
     }
 }
