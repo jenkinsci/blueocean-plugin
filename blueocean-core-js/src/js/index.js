@@ -11,7 +11,7 @@ import { SseBus } from './sse/SseBus';
 import { ToastService } from './ToastService';
 
 // export i18n provider
-export i18nTransFactory, { defaultLngDetector, i18n } from './i18n/i18n';
+export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
 
 export { Fetch, FetchFunctions } from './fetch';
 export UrlBuilder from './UrlBuilder';

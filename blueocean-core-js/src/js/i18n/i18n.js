@@ -45,38 +45,12 @@ function newPluginXHR(pluginName) {
  * @param options {object} - general options for i18next
  * @see defaultOptions
  */
-export const i18n = (backend, lngDetector = defaultLngDetector, options) => {
-    // TODO: Decide if we really want to export this i18n instance. Is there a use case for it?
-    // If there's no use case for exporting it, then general rule is not to do that. "Good fences make for good neighbours" etc
-
+const i18nextInstance = (backend, lngDetector = defaultLngDetector, options) => {
     if (!backend) {
         throw new Error('Invalid call to create a new i18next instance. No backend XHR invoker supplied.');
     }
     if (!options) {
         throw new Error('Invalid call to create a new i18next instance. No i18next options supplied.');
-    }
-    if (typeof window === 'undefined') {  // eslint-disable-line no-undef
-        return i18next.init({
-            lng: 'en',
-            // have a common namespace used around the full app
-            ns: ['translation'],
-            defaultNS: 'translation',
-            preload: ['en'],
-            keySeparator: false, // we do not have any nested keys in properties files
-            interpolation: {
-                prefix: '{',
-                suffix: '}',
-                escapeValue: false, // not needed for react!!
-            },
-            resources: {
-                en: {
-                    translation: {
-                        'home.pipelineslist.row.failing': '{0} failing',
-                        'home.pipelineslist.row.passing': '{0} passing',
-                    },
-                },
-            },
-        });
     }
     return i18next.createInstance()
         .use(backend)
@@ -86,20 +60,30 @@ export const i18n = (backend, lngDetector = defaultLngDetector, options) => {
 
 const translatorCache = {};
 
+const assertPluginNameDefined = (pluginName) => {
+    if (!pluginName) {
+        throw new Error('"pluginName" arg cannot be null/blank');
+    }
+};
+
+const toDefaultNamespace = (pluginName) => {
+    assertPluginNameDefined(pluginName);
+    // Replace all hyphen chars with a dot.
+    return `jenkins.plugins.${pluginName.replace(/-/g, '.')}.Messages`;
+};
+
 /**
- * Create an i18n Translator instance for accessing i18n resource bundles
+ * Create an i18next instance for accessing i18n resource bundles
  * in the named plugin namespace.
  * @param pluginName The name of the plugin.
- * @param namespace The resource bundle namespace.
- * @return An i18n Translator instance.
+ * @param namespace The resource bundle namespace. Optional, defaulting to
+ * the plugin's default resource bundle e.g. "jenkins.plugins.blueocean.web.Messages"
+ * for the "blueocean-web" plugin and "jenkins.plugins.blueocean.dashboard.Messages"
+ * for the "blueocean-dashboard" plugin.
+ * @return An i18n instance.
  */
-export default function i18nTransFactory(pluginName, namespace) {
-    const translatorCacheKey = `${pluginName}:${namespace}`;
-    let translator = translatorCache[translatorCacheKey];
-
-    if (translator) {
-        return translator;
-    }
+const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) => {
+    assertPluginNameDefined(pluginName);
 
     const initOptions = {
         fallbackLng: 'en',
@@ -116,7 +100,30 @@ export default function i18nTransFactory(pluginName, namespace) {
         },
     };
 
-    const I18n = i18n(newPluginXHR(pluginName), defaultLngDetector, initOptions);
+    return i18nextInstance(newPluginXHR(pluginName), defaultLngDetector, initOptions);
+};
+
+/**
+ * Create an i18n Translator instance for accessing i18n resource bundles
+ * in the named plugin namespace.
+ * @param pluginName The name of the plugin.
+ * @param namespace The resource bundle namespace. Optional, defaulting to
+ * the plugin's default resource bundle e.g. "jenkins.plugins.blueocean.web.Messages"
+ * for the "blueocean-web" plugin and "jenkins.plugins.blueocean.dashboard.Messages"
+ * for the "blueocean-dashboard" plugin.
+ * @return An i18n Translator instance.
+ */
+export default function i18nTranslator(pluginName, namespace = toDefaultNamespace(pluginName)) {
+    assertPluginNameDefined(pluginName);
+
+    const translatorCacheKey = `${pluginName}:${namespace}`;
+    let translator = translatorCache[translatorCacheKey];
+
+    if (translator) {
+        return translator;
+    }
+
+    const I18n = pluginI18next(pluginName, namespace);
 
     // Create and cache the translator instance.
     translator = I18n.getFixedT(I18n.language, namespace);

@@ -10,7 +10,7 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { i18nTransFactory, NotFound, User, Paths } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, NotFound, User, Paths } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from 'react-material-icons-blue';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
@@ -35,7 +35,7 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const translate = i18nTransFactory('blueocean-dashboard', 'jenkins.plugins.blueocean.dashboard.Messages');
+const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class PipelinePage extends Component {

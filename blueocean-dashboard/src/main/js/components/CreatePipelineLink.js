@@ -3,9 +3,9 @@
  */
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
-import { i18nTransFactory, Security, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, Security, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
-const translate = i18nTransFactory('blueocean-dashboard', 'jenkins.plugins.blueocean.dashboard.Messages');
+const translate = i18nTranslator('blueocean-dashboard');
 
 const QUERY_STRING_KEY = 'blueCreate';
 

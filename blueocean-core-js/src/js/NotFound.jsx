@@ -1,9 +1,9 @@
 import React from 'react';
 import Fullscreen from './Fullscreen';
 import { Link } from 'react-router';
-import i18nTransFactory from './i18n/i18n';
+§import i18nTranslator from './i18n/i18n';
 
-const translate = i18nTransFactory('blueocean-dashboard', 'jenkins.plugins.blueocean.web.Messages');
+const translate = i18nTranslator('blueocean-web');
 
 /**
  * Simple component to render a fullscreen 404 page
