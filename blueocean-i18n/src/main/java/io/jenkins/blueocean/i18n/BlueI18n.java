@@ -36,9 +36,12 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +107,12 @@ public class BlueI18n implements RootAction {
      * @return The JSON response.
      */
     public HttpResponse doDynamic(StaplerRequest request) {
-        BundleParams bundleParams = getBundleParameters(request.getRestOfPath());
+        String path = request.getOriginalRequestURI();
+        String contextPath = request.getContextPath();
+        BundleParams bundleParams;
+
+        path = path.substring(contextPath.length());
+        bundleParams = getBundleParameters(path);
 
         if (bundleParams == null) {
             return HttpResponses.errorJSON("All mandatory bundle identification parameters not specified: '$PLUGIN_NAME/$PLUGIN_VERSION/$BUNDLE_NAME' (and optional $LOCALE).");
@@ -172,7 +180,11 @@ public class BlueI18n implements RootAction {
 
         for (String pathToken : pathTokens) {
             if (pathToken.length() > 0) {
-                bundleParameters.add(pathToken);
+                if (bundleParameters.isEmpty() && pathToken.equals("blueocean-i18n")) {
+                    // The first token might be the name of the plugin. Ignore that.
+                } else {
+                    bundleParameters.add(urlDecode(pathToken));
+                }
             }
         }
 
@@ -389,6 +401,14 @@ public class BlueI18n implements RootAction {
             byte[] bytes = jsonObject.toString().getBytes(UTF8);
             rsp.setContentLength(bytes.length);
             rsp.getOutputStream().write(bytes);
+        }
+    }
+
+    private static @Nonnull String urlDecode(@Nonnull String pathToken) {
+        try {
+            return URLDecoder.decode(pathToken, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Unexpected URL decode exception. UTF-8 not supported on this system.", e);
         }
     }
 }

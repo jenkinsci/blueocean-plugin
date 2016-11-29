@@ -98,6 +98,15 @@ public class BlueI18nTest {
     }
 
     @Test
+    public void test_getBundleParameters_version_with_slashes() {
+        BlueI18n.BundleParams bundleParameters;
+
+        bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0.0-SNAPSHOT%20(something%2Felse)/pluginx.bundle");
+        Assert.assertFalse(bundleParameters.isReleaseVersion());
+        Assert.assertEquals("1.0.0-SNAPSHOT (something/else)", bundleParameters.pluginVersion);
+    }
+
+    @Test
     public void test_BundleParams_equals() {
         Assert.assertEquals(BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle"), BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle"));
         Assert.assertEquals(BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle/en"), BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle/en"));
