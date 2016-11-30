@@ -3,7 +3,7 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
-import { ReplayButton, RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 
@@ -11,6 +11,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
+import { CellRow, CellLink } from './CellLink';
 
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
@@ -22,74 +23,41 @@ export default class Runs extends Component {
     }
     render() {
         // early out
-        if (!this.props.result || !this.props.pipeline) {
+        if (!this.props.run || !this.props.pipeline) {
             return null;
         }
-        const {
-            context: {
-                router,
-                location,
-            },
-            props: {
-                changeset,
-                locale,
-                result: {
-                    durationInMillis,
-                    estimatedDurationInMillis,
-                    pipeline,
-                    id,
-                    result,
-                    state,
-                    startTime,
-                    endTime,
-                    commitId,
-                },
-                t,
-                pipeline: {
-                    _class: pipelineClass,
-                    fullName,
-                    organization,
-                },
-            },
-        } = this;
+        const { router, location } = this.context;
 
-        const resultRun = result === 'UNKNOWN' ? state : result;
+        const { run, changeset, pipeline, t, locale } = this.props;
+
+        const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const running = resultRun === 'RUNNING';
         const durationMillis = !running ?
-            durationInMillis :
-            moment().diff(moment(startTime));
+            run.durationInMillis :
+            moment().diff(moment(run.startTime));
 
-        const pipelineName = decodeURIComponent(pipeline);
-        const runDetailsUrl = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
-           
-        const open = (event) => {
-            if (event) {
-                event.preventDefault();
-            }
-            location.pathname = runDetailsUrl;
-            router.push(location);
-        };
-        const RunCol = (props) => <td className="tableRowLink">
-            <a onClick={open} href={`${UrlConfig.getJenkinsRootURL()}/blue${runDetailsUrl}`}>{props.children}</a>
-        </td>;
-        
+        const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
+
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
-        return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
-            <RunCol>
-                <LiveStatusIndicator result={resultRun} startTime={startTime}
-                  estimatedDuration={estimatedDurationInMillis}
+
+
+        return (
+        <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
+            <CellLink>
+                <LiveStatusIndicator result={resultRun} startTime={run.startTime}
+                  estimatedDuration={run.estimatedDurationInMillis}
                 />
-            </RunCol>
-            <RunCol>{id}</RunCol>
-            <RunCol><CommitHash commitId={commitId} /></RunCol>
-            <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
-                <RunCol>{decodeURIComponent(pipeline)}</RunCol>
+            </CellLink>
+            <CellLink>{run.id}</CellLink>
+            <CellLink><CommitHash commitId={run.commitId} /></CellLink>
+            <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
+                <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
-            <RunCol>{changeset && changeset.msg || '-'}</RunCol>
-            <RunCol>
+            <CellLink>{changeset && changeset.msg || '-'}</CellLink>
+            <CellLink>
                 <TimeDuration
                   millis={durationMillis}
                   liveUpdate={running}
@@ -97,25 +65,26 @@ export default class Runs extends Component {
                   liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
                   hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
                 />
-            </RunCol>
-            <RunCol>
+            </CellLink>
+            <CellLink>
                 <ReadableDate
-                  date={endTime}
+                  date={run.endTime}
                   liveUpdate
                   locale={locale}
                   shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
                   longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                 />
-            </RunCol>
-             <td>
+            </CellLink>
+            <td>
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
                 { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
-                <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
-                    <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} onNavigation={openRunDetails} />
+                <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
+                    <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
                 </IfCapability>
             </td>
-        </tr>);
+        </CellRow>
+        );
     }
 }
 

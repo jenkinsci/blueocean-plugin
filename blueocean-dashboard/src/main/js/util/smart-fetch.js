@@ -7,7 +7,7 @@ import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js'
 /**
  * How many records to fetch by default
  */
-export const defaultPageSize = 25;
+export const defaultPageSize = 5;
 
 /**
  * Freezes an object and all child properties
@@ -173,7 +173,7 @@ function defaultArrayConcatenator(pager, existing, incoming) {
         return [];
     }
     if (!incoming) {
-        return [].concat(existing);
+        return existing.slice();
     }
     return existing.concat(incoming.length > pager.pageSize ? incoming.slice(0, -1) : incoming);
 }
