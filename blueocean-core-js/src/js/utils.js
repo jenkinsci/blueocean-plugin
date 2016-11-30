@@ -3,18 +3,21 @@
 /**
  * Trims duplicate forward slashes to a single slash and adds trailing slash if needed.
  * @param url
+ * @param trailingSlash
  * @returns {string}
  */
-const cleanSlashes = (url) => {
-    if (url.indexOf('//') !== -1) {
-        let cleanUrl = url.replace('//', '/');
-        cleanUrl = cleanUrl.substr(-1) === '/' ?
-            cleanUrl : `${cleanUrl}/`;
+const cleanSlashes = (url, trailingSlash = true) => {
+    let cleanUrl = url;
 
-        return cleanSlashes(cleanUrl);
+    while (cleanUrl.indexOf('//') !== -1) {
+        cleanUrl = cleanUrl.replace('//', '/');
     }
 
-    return url;
+    if (trailingSlash && cleanUrl.substr(-1) !== '/') {
+        return `${cleanUrl}/`;
+    }
+
+    return cleanUrl;
 };
 
 export default {
