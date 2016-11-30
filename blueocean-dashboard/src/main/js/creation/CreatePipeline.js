@@ -25,15 +25,17 @@ export default class CreatePipeline extends React.Component {
         });
     }
 
-    _onCompleteFlow() {
-        this._onExit();
+    _onCompleteFlow(path) {
+        this._onExit(path);
     }
 
-    _onExit() {
-        if (history && history.length > 2) {
-            this.context.router.goBack();
+    _onExit(path) {
+        if (path) {
+            this.context.router.replace(path);
+        } else if (history && history.length <= 2) {
+            this.context.router.replace('/pipelines');
         } else {
-            this.context.router.push('/pipelines');
+            this.context.router.goBack();
         }
     }
 
@@ -59,7 +61,7 @@ export default class CreatePipeline extends React.Component {
 
                     <CreatePipelineStepsRenderer
                       selectedProvider={this.state.selectedProvider}
-                      onCompleteFlow={() => this._onCompleteFlow()}
+                      onCompleteFlow={(data) => this._onCompleteFlow(data)}
                     />
                 </DialogContent>
             </BasicDialog>

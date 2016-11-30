@@ -11,7 +11,7 @@ export class CredentialsApi {
 
     listAllCredentials() {
         const path = UrlConfig.getJenkinsRootURL();
-        const searchUrl = Utils.cleanSlashes(`${path}/blue/rest/search?q=type:credential`);
+        const searchUrl = Utils.cleanSlashes(`${path}/blue/rest/search?q=type:credential`, false);
 
         return this._fetch(searchUrl)
             .then(data => capabilityAugmenter.augmentCapabilities(data));

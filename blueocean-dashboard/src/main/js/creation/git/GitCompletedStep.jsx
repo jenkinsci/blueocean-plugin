@@ -2,6 +2,7 @@
  * Created by cmeyers on 10/19/16.
  */
 import React, { PropTypes } from 'react';
+import { buildPipelineUrl } from '../../util/UrlUtils';
 
 import FlowStep from '../FlowStep';
 import StepStatus from '../FlowStepStatus';
@@ -12,6 +13,13 @@ import FlowStatus from './GitCreationStatus';
  * Shows the current progress after creation was initiated.
  */
 export default class GitCompletedStep extends React.Component {
+
+    finish() {
+        const pipeline = this.props.manager.pipeline;
+        const activityUrl = buildPipelineUrl(pipeline.organization, pipeline.fullName, 'activity');
+        this.props.onCompleteFlow(activityUrl);
+    }
+
     render() {
         let status = this.props.status;
         let percentage = -1;
@@ -34,7 +42,9 @@ export default class GitCompletedStep extends React.Component {
         case FlowStatus.COMPLETE:
             percentage = 100;
             title = `${title}!`;
-            content = <button onClick={() => this.props.onCompleteFlow()}>Close</button>;
+            content = (
+                <button onClick={() => this.finish()}>Open</button>
+            );
             status = StepStatus.COMPLETE;
             break;
         default:
@@ -52,5 +62,6 @@ export default class GitCompletedStep extends React.Component {
 GitCompletedStep.propTypes = {
     status: PropTypes.string,
     flowStatus: PropTypes.string,
+    manager: PropTypes.object,
     onCompleteFlow: PropTypes.func,
 };

@@ -24,8 +24,8 @@ export default class MultiStepFlow extends React.Component {
         });
     }
 
-    _onCompleteFlow() {
-        this.props.onCompleteFlow();
+    _onCompleteFlow(data) {
+        this.props.onCompleteFlow(data);
     }
 
     render() {
@@ -46,7 +46,7 @@ export default class MultiStepFlow extends React.Component {
                     const extraProps = {
                         status, isLastStep,
                         onCompleteStep: (step) => this._onCompleteStep(index, step),
-                        onCompleteFlow: () => this._onCompleteFlow(),
+                        onCompleteFlow: (data) => this._onCompleteFlow(data),
                     };
 
                     return React.cloneElement(child, extraProps);

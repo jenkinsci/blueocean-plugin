@@ -91,19 +91,7 @@ export default class GitConnectStep extends React.Component {
      * @private
      */
     _updateCreateButton() {
-        let disabled = false;
-
-        if (!this.state.repositoryUrl) {
-            disabled = true;
-        }
-
-        if (!this.state.credentialsSelection) {
-            disabled = disabled || true;
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
-            disabled = disabled || !this.state.sshKeyValue;
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
-            disabled = disabled || (!this.state.usernameValue || !this.state.passwordValue);
-        }
+        let disabled = !this._isInputValid();
 
         if (this.state.createInProgress) {
             disabled = true;
@@ -117,13 +105,35 @@ export default class GitConnectStep extends React.Component {
         }
     }
 
+    _isInputValid() {
+        if (!this.state.repositoryUrl) {
+            return false;
+        }
+
+        if (this.state.selectedCredential) {
+            return true;
+        }
+
+        if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
+            return !this.state.sshKeyValue;
+        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
+            return (!this.state.usernameValue || !this.state.passwordValue);
+        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH) {
+            return true;
+        }
+
+        return false;
+    }
+
     _completeStep() {
         this.setState({
             createInProgress: true,
             createButtonDisabled: true,
         });
 
-        if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
+        if (this.state.selectedCredential) {
+            this.props.manager.createPipeline(this.state.repositoryUrl, this.state.selectedCredential.id);
+        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
             this.props.manager.createWithSshKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
             this.props.manager.createWithUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);

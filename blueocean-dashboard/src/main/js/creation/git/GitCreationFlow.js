@@ -47,7 +47,7 @@ export default class GitCreationFlow extends React.Component {
         return (
             <MultiStepFlow {...this.props}>
                 <ConnectStep manager={this._manager} credentialsManager={this.credsManager} />
-                <CompletedStep flowStatus={this.state.flowStatus} />
+                <CompletedStep manager={this._manager} flowStatus={this.state.flowStatus} />
             </MultiStepFlow>
         );
     }

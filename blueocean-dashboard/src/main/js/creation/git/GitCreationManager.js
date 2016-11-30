@@ -8,6 +8,8 @@ import status from './GitCreationStatus';
  */
 export default class GitCreationManager {
 
+    pipeline: null;
+
     constructor(creationApi, onStatusChanged) {
         this._creationApi = creationApi;
         this._onStatusChanged = onStatusChanged;
@@ -18,7 +20,7 @@ export default class GitCreationManager {
 
         return this._creationApi.saveSshKeyCredential(sshKey)
             .then(credentialId => (
-                this._createPipeline(repositoryUrl, credentialId)
+                this.createPipeline(repositoryUrl, credentialId)
             )
         );
     }
@@ -33,15 +35,13 @@ export default class GitCreationManager {
         return this.createWithSshKeyCredential();
     }
 
-    _createPipeline(repositoryUrl, credentialId) {
+    createPipeline(repositoryUrl, credentialId) {
         this._onStatusChanged(status.CREATE_PIPELINE);
 
-        return this._creationApi.createPipeline(repositoryUrl, credentialId)
-            .then(() => {
-                this._onStatusChanged(status.RUN_PIPELINE);
-                setTimeout(() => {
-                    this._onStatusChanged(status.COMPLETE);
-                }, 2000);
+        this._creationApi.createPipeline(repositoryUrl, credentialId)
+            .then(pipeline => {
+                this.pipeline = pipeline;
+                this._onStatusChanged(status.COMPLETE);
             });
     }
 
