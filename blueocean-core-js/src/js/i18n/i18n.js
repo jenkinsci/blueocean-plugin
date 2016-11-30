@@ -125,7 +125,7 @@ export default function i18nTranslator(pluginName, namespace = toDefaultNamespac
     const I18n = pluginI18next(pluginName, namespace);
 
     // Create and cache the translator instance.
-    translator = I18n.getFixedT(I18n.language, namespace);
+    translator = I18n.getFixedT(defaultLngDetector.detect(), namespace);
     translatorCache[translatorCacheKey] = translator;
 
     return translator;
