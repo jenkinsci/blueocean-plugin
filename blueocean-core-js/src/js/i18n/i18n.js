@@ -90,6 +90,8 @@ const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) =
         defaultNS: namespace,
         keySeparator: false, // we do not have any nested keys in properties files
         debug: false,
+        fallbackLng: '',
+        load: 'currentOnly',
         interpolation: {
             prefix: '{',
             suffix: '}',
