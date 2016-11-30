@@ -1,7 +1,6 @@
 import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
-import { testI18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import PipelineRowItem from '../../main/js/components/PipelineRowItem.jsx';
 import { PipelineRecord } from '../../main/js/components/records.jsx';
 import i18next from 'i18next';
