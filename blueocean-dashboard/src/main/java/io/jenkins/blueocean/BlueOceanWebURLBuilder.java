@@ -124,7 +124,7 @@ public class BlueOceanWebURLBuilder {
     }
 
     private static String getOrgPrefix() {
-        return getBlueHome() + "/organizations/" + encodeURIComponent(OrganizationImpl.INSTANCE.getName());
+        return getBlueHome() + "/organizations/" + OrganizationImpl.INSTANCE.getName();
     }
 
     private static String getBlueHome() {
