@@ -57,7 +57,14 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
 
         @Override
         public void onNewHead(FlowNode flowNode) {
-            if (flowNode instanceof StepStartNode) {
+            // test whether we have a stage node
+            if (PipelineNodeUtil.isStage(flowNode)) {
+                System.out.println("isStage");
+                List<String> branch = getBranch(flowNode);
+                currentStageName = flowNode.getDisplayName();
+                currentStageId = flowNode.getId();
+                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_stage, flowNode, branch));
+            } else if (flowNode instanceof StepStartNode) {
                 if (flowNode.getAction(BodyInvocationAction.class) != null) {
                     List<String> branch = getBranch(flowNode);
                     branch.add(flowNode.getId());
@@ -66,12 +73,6 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
             } else if (flowNode instanceof StepAtomNode) {
                 List<String> branch = getBranch(flowNode);
                 StageAction stageAction = flowNode.getAction(StageAction.class);
-
-                // test whether we have a stage node
-                if (PipelineNodeUtil.isStage(flowNode)) {
-                    currentStageName = flowNode.getDisplayName();
-                    currentStageId = flowNode.getId();
-                }
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
             } else if (flowNode instanceof StepEndNode) {
                 if (flowNode.getAction(BodyInvocationAction.class) != null) {
