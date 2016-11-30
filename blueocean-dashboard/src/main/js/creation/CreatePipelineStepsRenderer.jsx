@@ -3,7 +3,8 @@
  */
 import React, { PropTypes } from 'react';
 import Extensions from '@jenkins-cd/js-extensions';
-import VerticalStep from './VerticalStep';
+import VerticalStep from './flow2/VerticalStep';
+import MultiStepFlow from './flow2/MultiStepFlow';
 
 const Sandbox = Extensions.SandboxedComponent;
 
@@ -12,12 +13,43 @@ const Sandbox = Extensions.SandboxedComponent;
  */
 export class CreatePipelineStepsRenderer extends React.Component {
 
+    flowManager: null;
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            steps: [],
+        };
+    }
+
     shouldComponentUpdate(nextProps) {
-        return this.props.selectedProvider !== nextProps.selectedProvider;
+        const providerChanged = this.props.selectedProvider !== nextProps.selectedProvider;
+
+        if (providerChanged) {
+            console.log('providerChanged?', providerChanged);
+            try {
+                this.flowManager = nextProps.selectedProvider.getFlowManager();
+                this.flowManager.initialize(this);
+            } catch (error) {
+                console.warn('Error rendering:', this.props.selectedProvider, error);
+            }
+        }
+
+        return providerChanged;
+    }
+
+    stepsChanged() {
+        console.log('stepsChanged');
+        this.forceUpdate();
+    }
+
+    hasSteps() {
+        return this.flowManager && this.flowManager.activeSteps && this.flowManager.activeSteps.length;
     }
 
     render() {
-        if (!this.props.selectedProvider) {
+        if (!this.hasSteps()) {
             return (
                 <VerticalStep className="last-step">
                     <h1>Completed</h1>
@@ -26,21 +58,17 @@ export class CreatePipelineStepsRenderer extends React.Component {
         }
 
         const props = {
-            onCompleteFlow: this.props.onCompleteFlow,
+            flowManager: this.flowManager,
         };
 
-        let creationFlow;
-
-        try {
-            creationFlow = this.props.selectedProvider.getCreationFlow();
-        } catch (error) {
-            console.warn('Error rendering:', this.props.selectedProvider, error);
-            return Extensions.ErrorUtils.errorToElement(error);
-        }
 
         return (
             <Sandbox>
-                {React.cloneElement(creationFlow, props)}
+                <MultiStepFlow>
+                    {React.Children.map(this.flowManager.activeSteps, child => {
+                        return React.cloneElement(child, props);
+                    })}
+                </MultiStepFlow>
             </Sandbox>
         );
     }
