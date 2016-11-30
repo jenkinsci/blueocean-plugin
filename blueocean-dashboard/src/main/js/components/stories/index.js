@@ -1,8 +1,6 @@
 const ext = require('@jenkins-cd/js-extensions');
 ext.store.init({
-    extensionDataProvider: (cb) => {
-        cb([]);
-    },
+    extensionData: [],
     typeInfoProvider: (type, cb) => {
         cb(null);
     },

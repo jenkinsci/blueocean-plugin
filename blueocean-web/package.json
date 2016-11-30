@@ -13,7 +13,7 @@
     "mvntest": "gulp test lint"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.49-beta6",
+    "@jenkins-cd/js-builder": "0.0.50",
     "babel-eslint": "7.0.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
     "babel-polyfill": "6.16.0",
@@ -29,9 +29,9 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.31",
+    "@jenkins-cd/blueocean-core-js": "0.0.32-tfbeta9",
     "@jenkins-cd/design-language": "0.0.90",
-    "@jenkins-cd/js-extensions": "0.0.31",
+    "@jenkins-cd/js-extensions": "0.0.32-tfbeta1",
     "@jenkins-cd/js-modules": "0.0.8",
     "history": "2.0.2",
     "immutable": "3.8.1",

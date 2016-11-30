@@ -4,7 +4,7 @@
 
 import { ToastService as toastService } from './index';
 import { buildRunDetailsUrlFromQueue } from './UrlBuilder';
-import I18n from './i18n/i18n';
+import i18nTranslator from './i18n/i18n';
 
 const CAPABILITY_MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
 const CAPABILITY_MULTIBRANCH_BRANCH = 'io.jenkins.blueocean.rest.model.BlueBranch';
@@ -17,7 +17,7 @@ export default {
      * @param toastAction
      */
     createRunStartedToast: (runnable, runInfo, toastAction) => {
-        const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.web.Messages');
+        const translate = i18nTranslator('blueocean-web');
         const isMultiBranch = runnable._capabilities.some(capability => (
             [CAPABILITY_MULTIBRANCH_PIPELINE, CAPABILITY_MULTIBRANCH_BRANCH].indexOf(capability) !== -1
         ));

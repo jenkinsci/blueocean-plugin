@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.49-beta6",
+    "@jenkins-cd/js-builder": "0.0.50",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
     "babel-core": "6.17.0",
@@ -37,9 +37,9 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.31",
+    "@jenkins-cd/blueocean-core-js": "0.0.32-tfbeta9",
     "@jenkins-cd/design-language": "0.0.90",
-    "@jenkins-cd/js-extensions": "0.0.31",
+    "@jenkins-cd/js-extensions": "0.0.32-tfbeta1",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/sse-gateway": "0.0.9",
     "babel-plugin-transform-decorators-legacy": "1.3.4",

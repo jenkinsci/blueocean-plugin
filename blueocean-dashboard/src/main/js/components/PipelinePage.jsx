@@ -10,7 +10,7 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { I18n, NotFound, User, Paths } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, NotFound, User, Paths } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from 'react-material-icons-blue';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
@@ -35,12 +35,12 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class PipelinePage extends Component {
-    
-   
+
+
     componentWillMount() {
         if (this.props.params) {
             this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
@@ -49,16 +49,16 @@ export class PipelinePage extends Component {
     }
 
     @observable error;
-    
+
     @action
     _setError(error) {
         this.error = error;
     }
 
-   
+
     render() {
         const pipeline = this.context.pipelineService.getPipeline(this.href);
-        
+
         const { setTitle } = this.props;
         const { location = {} } = this.context;
 
@@ -108,7 +108,7 @@ export class PipelinePage extends Component {
                         <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: I18n.language })}
+                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: translate.lng })}
             </Page>
         );
     }

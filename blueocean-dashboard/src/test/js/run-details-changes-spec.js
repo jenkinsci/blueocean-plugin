@@ -1,12 +1,12 @@
 import { assert } from 'chai';
 import React from 'react';
 import sd from 'skin-deep';
-import { I18n } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import { latestRuns } from './data/runs/latestRuns';
 import RunDetailsChanges from '../../main/js/components/RunDetailsChanges';
 
-const t = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+const t = i18nTranslator('blueocean-dashboard');
 
 describe('RunDetailsChanges', () => {
     let component;

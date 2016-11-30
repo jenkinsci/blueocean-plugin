@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.31",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.31",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.31.tgz",
+      "version": "0.0.32-tfbeta9",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.32-tfbeta9",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.32-tfbeta9.tgz",
       "dependencies": {
         "@jenkins-cd/sse-gateway": {
           "version": "0.0.10",
@@ -36,9 +36,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.49-beta6",
-      "from": "@jenkins-cd/js-builder@0.0.49-beta6",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.49-beta6.tgz",
+      "version": "0.0.50",
+      "from": "@jenkins-cd/js-builder@0.0.50",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.50.tgz",
       "dev": true,
       "dependencies": {
         "underscore.string": {
@@ -50,9 +50,9 @@
       }
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.31",
-      "from": "@jenkins-cd/js-extensions@0.0.31",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.31.tgz"
+      "version": "0.0.32-tfbeta1",
+      "from": "@jenkins-cd/js-extensions@0.0.32-tfbeta1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.32-tfbeta1.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
@@ -5471,9 +5471,9 @@
       "dev": true
     },
     "merge-stream": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "from": "merge-stream@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/merge-stream/-/merge-stream-1.0.0.tgz",
+      "resolved": "https://registry.npmjs.org/merge-stream/-/merge-stream-1.0.1.tgz",
       "dev": true
     },
     "methods": {
@@ -8264,9 +8264,9 @@
       "dev": true
     },
     "xmldom": {
-      "version": "0.1.22",
+      "version": "0.1.27",
       "from": "xmldom@>=0.1.22 <0.2.0",
-      "resolved": "https://registry.npmjs.org/xmldom/-/xmldom-0.1.22.tgz",
+      "resolved": "https://registry.npmjs.org/xmldom/-/xmldom-0.1.27.tgz",
       "dev": true
     },
     "xmlhttprequest": {
