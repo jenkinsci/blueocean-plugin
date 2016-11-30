@@ -80,6 +80,10 @@ public class BlueOceanConfig extends BluePageDecorator {
         }
     }
 
+    public String getJsExtensions() {
+        return JenkinsJSExtensions.getExtensionsData().toString();
+    }
+
     /** gives Blueocean plugin version. blueocean-web being core module is looked at to determine the version */
     private String getBlueOceanPluginVersion(){
         return Jenkins.getInstance().getPlugin("blueocean-web").getWrapper().getVersion();

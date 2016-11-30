@@ -6,6 +6,7 @@ import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
@@ -258,5 +259,10 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     private boolean isCompletedOrAborted(){
         return run.getResult()!= null && (run.getResult() == Result.ABORTED || run.getResult().isCompleteBuild());
+    }
+
+    @Override
+    public Links getLinks() {
+        return super.getLinks().add("parent", parent);
     }
 }

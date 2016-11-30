@@ -1,17 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, capable } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
 import Runs from './Runs';
-import { RunRecord, ChangeSetRecord } from './records';
-import {
-    actions,
-    currentRuns as currentRunsSelector,
-    createSelector,
-    connect,
-} from '../redux';
+import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import { capabilityStore } from './Capability';
+import { observer } from 'mobx-react';
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -43,52 +37,39 @@ EmptyState.propTypes = {
     onNavigation: func,
     t: func,
 };
-
+@observer
 export class Activity extends Component {
     componentWillMount() {
-        if (this.context.config && this.context.params) {
-            const {
-                params: {
-                    pipeline,
-                    organization,
-                },
-                config = {},
-            } = this.context;
-
-            config.pipeline = pipeline;
-            config.organization = organization;
-            this.props.fetchRuns(config);
+        if (this.context.params) {
+            const organization = this.context.params.organization;
+            const pipeline = this.context.params.pipeline;
+            this.pager = this.context.activityService.activityPager(organization, pipeline);
         }
     }
 
     render() {
-        const { runs, pipeline, t, locale } = this.props;
-
-        if (!runs || !pipeline || pipeline.$pending) {
+        const { pipeline, t, locale } = this.props;
+        const runs = this.pager.data;
+        if (!pipeline || this.pager.pending) {
             return null;
         }
 
-        const { capabilities } = this.props;
-        const isMultiBranchPipeline = capabilities[pipeline._class].contains(MULTIBRANCH_PIPELINE);
+
+        const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
 
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
         // the Branches/PRs tab.
         const showRunButton = !isMultiBranchPipeline;
 
+        if (!this.pager.pending && (!runs || !runs.length)) {
+            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
+        }
+
         const onNavigation = (url) => {
             this.context.location.pathname = url;
             this.context.router.push(this.context.location);
         };
-
-        if (runs.$success && !runs.length) {
-            return (<EmptyState
-              repoName={this.context.params.pipeline}
-              showRunButton={showRunButton}
-              pipeline={pipeline}
-              t={t}
-            />);
-        }
 
         const latestRun = runs[0];
         const head = 'pipelinedetail.activity.header';
@@ -130,7 +111,7 @@ export class Activity extends Component {
                 />
                 }
                 {runs.length > 0 &&
-                <Table className="activity-table fixed" headers={headers}>
+                <Table className="activity-table u-highlight-rows" headers={headers} disableDefaultPadding>
                     {
                         runs.map((run, index) => {
                             const changeset = run.changeSet;
@@ -149,7 +130,6 @@ export class Activity extends Component {
                                     pipeline,
                                     key: index,
                                     changeset: latestRecord,
-                                    result: new RunRecord(run),
                                 }}
                                 />
                             );
@@ -157,9 +137,10 @@ export class Activity extends Component {
                     }
                 </Table>
                 }
-                {runs.$pager && runs.length > 0 &&
-                <button disabled={runs.$pending || !runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
-                    {runs.$pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
+
+                {runs && runs.length > 0 &&
+                <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchMore()}>
+                    {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
                 </button>
                 }
             </article>
@@ -170,20 +151,16 @@ export class Activity extends Component {
 Activity.contextTypes = {
     params: object.isRequired,
     location: object.isRequired,
-    pipeline: object,
     config: object.isRequired,
     router: object.isRequired,
+    activityService: object.isRequired,
 };
 
 Activity.propTypes = {
     runs: array,
     pipeline: object,
-    capabilities: object,
-    fetchRuns: func,
     locale: string,
     t: func,
 };
 
-const selectors = createSelector([currentRunsSelector], (runs) => ({ runs }));
-
-export default connect(selectors, actions)(capabilityStore(props => props.pipeline._class)(Activity));
+export default Activity;
