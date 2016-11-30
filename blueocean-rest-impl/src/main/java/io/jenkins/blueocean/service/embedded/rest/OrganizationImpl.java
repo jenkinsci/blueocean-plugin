@@ -40,7 +40,7 @@ public class OrganizationImpl extends BlueOrganization {
      * In embedded mode, there's only one organization
      */
     public String getName() {
-        return Util.rawEncode(Jenkins.getInstance().getDisplayName());
+        return Util.rawEncode(Jenkins.getInstance().getDisplayName().toLowerCase());
     }
 
     @Override
