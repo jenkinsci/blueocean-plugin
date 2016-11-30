@@ -44,6 +44,11 @@ public class OrganizationImpl extends BlueOrganization {
     }
 
     @Override
+    public String getDisplayName() {
+        return Jenkins.getInstance().getDisplayName();
+    }
+
+    @Override
     public BluePipelineContainer getPipelines() {
         return new PipelineContainerImpl(Jenkins.getInstance());
     }
