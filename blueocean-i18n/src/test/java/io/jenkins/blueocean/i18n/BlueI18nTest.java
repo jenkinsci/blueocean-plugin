@@ -39,7 +39,7 @@ public class BlueI18nTest {
 
     @Test
     public void test_getBundleParameters_valid_url() {
-        BlueI18n.BundleParams bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0.0/pluginx.bundle");
+        BlueI18n.BundleParams bundleParameters = BlueI18n.getBundleParameters("/blue/rest/i18n/pluginx/1.0.0/pluginx.bundle");
         Assert.assertNotNull(bundleParameters);
         Assert.assertEquals("pluginx", bundleParameters.pluginName);
         Assert.assertEquals("1.0.0", bundleParameters.pluginVersion);
@@ -49,7 +49,7 @@ public class BlueI18nTest {
         Assert.assertNull(bundleParameters.variant);
         Assert.assertNull(bundleParameters.getLocale());
 
-        bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0.0/pluginx.bundle/en");
+        bundleParameters = BlueI18n.getBundleParameters("/blue/rest/i18n/pluginx/1.0.0/pluginx.bundle/en");
         Assert.assertNotNull(bundleParameters);
         Assert.assertEquals("pluginx", bundleParameters.pluginName);
         Assert.assertEquals("1.0.0", bundleParameters.pluginVersion);
@@ -65,19 +65,19 @@ public class BlueI18nTest {
     public void test_getBundleParameters_locale() {
         BlueI18n.BundleParams bundleParameters;
 
-        bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0.0/pluginx.bundle/ja_JP_JP");
+        bundleParameters = BlueI18n.getBundleParameters("/blue/rest/i18n/pluginx/1.0.0/pluginx.bundle/ja_JP_JP");
         Assert.assertEquals("ja_JP_JP_#u-ca-japanese", bundleParameters.getLocale().toString());
         bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0.0/pluginx.bundle/ja-JP-JP");
         Assert.assertEquals("ja_JP_JP_#u-ca-japanese", bundleParameters.getLocale().toString());
 
-        bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0.0/pluginx.bundle/ja_JP");
+        bundleParameters = BlueI18n.getBundleParameters("/blue/rest/i18n/pluginx/1.0.0/pluginx.bundle/ja_JP");
         Assert.assertEquals("ja_JP", bundleParameters.getLocale().toString());
-        bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0.0/pluginx.bundle/ja-JP");
+        bundleParameters = BlueI18n.getBundleParameters("/blue/rest/i18n/pluginx/1.0.0/pluginx.bundle/ja-JP");
         Assert.assertEquals("ja_JP", bundleParameters.getLocale().toString());
 
-        bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0.0/pluginx.bundle/ja");
+        bundleParameters = BlueI18n.getBundleParameters("/blue/rest/i18n/pluginx/1.0.0/pluginx.bundle/ja");
         Assert.assertEquals("ja", bundleParameters.getLocale().toString());
-        bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0.0/pluginx.bundle/ja");
+        bundleParameters = BlueI18n.getBundleParameters("/blue/rest/i18n/pluginx/1.0.0/pluginx.bundle/ja");
         Assert.assertEquals("ja", bundleParameters.getLocale().toString());
     }
 
@@ -85,7 +85,7 @@ public class BlueI18nTest {
     public void test_getBundleParameters_isReleaseVersion() {
         BlueI18n.BundleParams bundleParameters;
 
-        bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0/pluginx.bundle");
+        bundleParameters = BlueI18n.getBundleParameters("/blue/rest/i18n/pluginx/1.0/pluginx.bundle");
         Assert.assertTrue(bundleParameters.isReleaseVersion());
         bundleParameters = BlueI18n.getBundleParameters("pluginx/1.0.0/pluginx.bundle");
         Assert.assertTrue(bundleParameters.isReleaseVersion());
