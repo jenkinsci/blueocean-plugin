@@ -3,8 +3,9 @@
  */
 import React, { PropTypes } from 'react';
 import FlowStep from '../../flow2/FlowStep';
-// import { observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 
+@observer
 export default class GithubInitialStep extends React.Component {
 
     componentDidMount() {
@@ -13,8 +14,7 @@ export default class GithubInitialStep extends React.Component {
 
     render() {
         return (
-            <FlowStep {...this.props} title="Hello">
-
+            <FlowStep {...this.props} title="Loading...">
             </FlowStep>
         );
     }
