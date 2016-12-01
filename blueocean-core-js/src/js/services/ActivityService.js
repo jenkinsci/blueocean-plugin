@@ -3,7 +3,7 @@ import RestPaths from '../paths/rest';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
 import utils from '../utils';
-
+import { RestResource } from './RestResource';
 /**
  * This class provides activity related services.
  *
@@ -95,6 +95,11 @@ export class ActivityService extends BunkerService {
                 console.log('There has been an error while trying to get the data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
             });
     }
+
+    fetchArtifacts(runHref) {
+        return RestResource.fetch(`${runHref}artifacts`);
+    }
+
 
     /**
      * This function maps a queue item into a run instancce.

@@ -8,6 +8,8 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
+import io.jenkins.blueocean.rest.model.BlueArtifacts;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
@@ -136,39 +138,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public Container<BlueArtifact> getArtifacts() {
-        Map<String, BlueArtifact> m = new HashMap<>();
-        List<Run.Artifact> artifacts = run.getArtifacts();
-        for (final Run.Artifact artifact: artifacts) {
-            m.put(artifact.getFileName(), new BlueArtifact() {
-                @Override
-                public String getName() {
-                    return artifact.getFileName();
-                }
-
-                @Override
-                public String getUrl() {
-                    return Stapler.getCurrentRequest().getContextPath() +
-                        "/" + run.getUrl()+"artifact/"+ artifact.getHref();
-                }
-
-                @Override
-                public long getSize() {
-                    try {
-                        return artifact.getFileSize();
-                    } catch (NumberFormatException e) {
-                        return 0;
-                    }
-                }
-
-                @Override
-                public Link getLink() {
-                    return new Link(getUrl());
-                }
-
-            });
-        }
-        return Containers.fromResourceMap(getLink(),m);
+    public BlueArtifacts getArtifacts() {
+       return new ArtifactsImpl(run, this);
     }
 
     @Override

@@ -2,20 +2,40 @@ import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, FileSize, Table } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
 import Markdown from 'react-remarkable';
-
+import { observer } from 'mobx-react';
+import { observable, action} from 'mobx';
 /**
  * Displays a list of artifacts from the supplied build run property.
  */
+@observer
 export default class RunDetailsArtifacts extends Component {
+    componentWillMount() {
+        const { result } = this.props;
+        if (result) {
+            this.artifacts = this.context.activityService.fetchArtifacts(result._links.self.href);
+        }
+    }
+
+    componentWillUnmount() {
+        this.artifacts = null;
+    }
 
     render() {
         const { result, t } = this.props;
 
-        if (!result) {
+        if (!result || !this.artifacts) {
+            return null;
+        }
+        if (this.artifacts.error) {
+            // 404?
             return null;
         }
 
-        const { artifacts } = result;
+        if (!this.artifacts.isLoaded()) {
+            // page loading
+            return null;
+        }
+        const { data: artifacts } = this.artifacts.data;
 
         if (!artifacts || !artifacts.length) {
             return (<EmptyStateView tightSpacing>
@@ -54,6 +74,10 @@ export default class RunDetailsArtifacts extends Component {
 }
 
 const { func, object } = PropTypes;
+
+RunDetailsArtifacts.contextTypes = {
+    activityService: object.isRequired,
+};
 
 RunDetailsArtifacts.propTypes = {
     result: object,

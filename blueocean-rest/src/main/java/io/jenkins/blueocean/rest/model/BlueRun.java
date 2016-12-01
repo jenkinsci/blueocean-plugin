@@ -9,6 +9,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
+import org.omg.PortableInterceptor.DISCARDING;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -172,8 +173,8 @@ public abstract class BlueRun extends Resource {
      *
      * @return Run artifacts
      */
-    @Exported(name=ARTIFACTS)
-    public abstract Container<BlueArtifact> getArtifacts();
+    @Navigable
+    public abstract BlueArtifacts getArtifacts();
 
     /**
      * @return Serves .../runs/{rundId}/nodes/ and provides pipeline execution nodes
@@ -243,22 +244,5 @@ public abstract class BlueRun extends Resource {
 
         /** Aborted run*/
         ABORTED;
-    }
-
-    @ExportedBean(defaultVisibility = 2)
-    public static abstract class BlueArtifact extends Resource{
-        public static final String NAME = "name";
-        public static final String URL = "url";
-        public static final String SIZE = "size";
-
-
-        @Exported(name=NAME)
-        public abstract String getName();
-
-        @Exported(name=URL)
-        public abstract String getUrl();
-
-        @Exported(name=SIZE)
-        public abstract long getSize();
     }
 }
