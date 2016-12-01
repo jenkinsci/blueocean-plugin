@@ -206,7 +206,8 @@ public class PipelineStepMetadataService implements ApiRoutable {
         String snippetizerUrl = Stapler.getCurrentRequest().getContextPath() + "/" + snippetizer.getUrlName() + "/generateSnippet";
 
         for (StepDescriptor d : StepDescriptor.all()) {
-            if (!ModelASTStep.getBlockedSteps().containsKey(d.getFunctionName())) {
+            if (!ModelASTStep.getBlockedSteps().containsKey(d.getFunctionName())
+                    && !d.isAdvanced()) {
                 PipelineStepMetadata step = getStepMetadata(d, snippetizerUrl);
                 if (step != null) {
                     pd.add(step);
