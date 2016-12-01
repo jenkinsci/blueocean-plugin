@@ -25,6 +25,7 @@ package io.jenkins.blueocean.i18n;
 
 import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +36,20 @@ import java.util.Map;
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class BlueI18nTest extends BaseTest {
+
+    @Before
+    public void waitForPluginLoaded() throws InterruptedException {
+        // We've seen situations on the CI server where the plugin
+        // was not yet installed, causing the tests to fail. This piece of
+        // code basically blocks the test running untill everything is there.
+        long start = System.currentTimeMillis();
+        while (BlueI18n.getPlugin("blueocean-dashboard") == null) {
+            if (System.currentTimeMillis() > start + 10000) {
+                break;
+            }
+            Thread.sleep(100);
+        }
+    }
 
     @Test
     public void test_200_response_locale_match() {
