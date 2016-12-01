@@ -1688,6 +1688,32 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", nodes.get(2).get("state"));
     }
 
+
+    @Test
+    public void waitForInputTest() throws Exception {
+        String script = "node {\n" +
+                "    stage(\"parallelStage\"){\n" +
+                "      parallel left : {\n" +
+                "            echo \"running\"\n" +
+                "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
+                "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+                "        }, \n" +
+                "        right : {\n" +
+                "            sh 'sleep 100000'\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        job1.scheduleBuild2(0).waitForStart();
+        Thread.sleep(6000);
+        //j.assertBuildStatusSuccess(b1);
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+    }
+
     private String getActionLink(Map resp, String capability){
         List<Map> actions = (List<Map>) resp.get("actions");
         assertNotNull(actions);

@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,9 +62,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     private final Stack<FlowNode> nestedStages = new Stack<>();
     private final Stack<FlowNode> nestedbranches = new Stack<>();
 
-    private final Map<FlowNode, FlowNode> nestedBranchesEndNodeMap = new HashMap<>();
+    private final ArrayDeque<FlowNode> pendingInputSteps = new ArrayDeque<>();
 
-
+    private final Stack<FlowNode> parallelBranchEndNodes = new Stack<>();
 
     public PipelineNodeGraphVisitor(WorkflowRun run) {
         this.run = run;
@@ -120,11 +119,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     branchNode.getDisplayName(), branchNode.getDisplayFunctionName()));
         }
 
+        assert nestedbranches.size() == parallelBranchEndNodes.size();
 
-        while(!nestedbranches.empty()){
+        while(!nestedbranches.empty() && !parallelBranchEndNodes.empty()){
             FlowNode branchStartNode = nestedbranches.pop();
 
-            FlowNode endNode = nestedBranchesEndNodeMap.get(branchStartNode);
+            FlowNode endNode = parallelBranchEndNodes.pop();
 
             TimingInfo times;
             NodeRunStatus status;
@@ -205,9 +205,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             }
 
         }
-        if(branchEndNode instanceof StepEndNode){
-            nestedBranchesEndNodeMap.put(((StepEndNode) branchEndNode).getStartNode(), branchEndNode);
-        }
+        parallelBranchEndNodes.add(branchEndNode);
     }
 
     // This gets triggered on encountering a new chunk (stage or branch)
@@ -234,12 +232,18 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             times = new TimingInfo();
         }
 
-        GenericStatus status = (firstExecuted == null) ? GenericStatus.NOT_EXECUTED :StatusAndTiming
+        GenericStatus genericStatus = (firstExecuted == null) ? GenericStatus.NOT_EXECUTED :StatusAndTiming
                 .computeChunkStatus(run, chunk.getNodeBefore(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
 
+        NodeRunStatus status;
+        if(pendingInputSteps.isEmpty()) {
+            status = new NodeRunStatus(genericStatus);
+        }else{
+            status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
+        }
 
         FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
-                new NodeRunStatus(status), times);
+                status, times);
 
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);
@@ -264,6 +268,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     protected void resetChunk(@Nonnull MemoryFlowChunk chunk) {
         super.resetChunk(chunk);
         firstExecuted = null;
+        pendingInputSteps.clear();
     }
 
     @Override
@@ -277,10 +282,15 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
         long pause = PauseAction.getPauseDuration(atomNode);
         chunk.setPauseTimeMillis(chunk.getPauseTimeMillis()+pause);
+
+        PauseAction pauseAction = atomNode.getAction(PauseAction.class);
+        if(pauseAction != null && pauseAction.isPaused() && pauseAction.getCause().equals("input")){
+            pendingInputSteps.add(atomNode);
+        }
     }
 
     private void dump(String str){
-        logger.debug(str);
+        System.out.println(str);
     }
 
     @Override

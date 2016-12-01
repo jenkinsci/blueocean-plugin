@@ -57,6 +57,12 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         }
         return Containers.fromResourceMap(getLink(),m);
     }
+
+    @Override
+    public BlueRunState getStateObj() {
+        return super.getStateObj();
+    }
+
     @Override
     public BlueQueueItem replay() {
         ReplayAction replayAction = run.getAction(ReplayAction.class);
