@@ -137,7 +137,7 @@ export function writeJenkinsExtensionsYaml(dir: string, metadata: ExtensionPoint
     });
 
     const yamlFileName = dir + '/jenkins-js-extension.yaml';
-    const extensionMeta: {[key: string]: any[]} = {};
+    let extensionMeta: {[key: string]: any[]} = {};
     try {
         extensionMeta = YAML.load(yamlFileName);
     } catch(e) {

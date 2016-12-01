@@ -19,7 +19,7 @@ import {
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import Extensions from '@jenkins-cd/js-extensions';
 
-import { ExtensionPoint, InjectExtensions } from 'blueocean-js-extensions';
+import { ExtensionPoint, ExtensionList } from 'blueocean-js-extensions';
 
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
@@ -48,14 +48,14 @@ const classicConfigLink = (pipeline) => {
 const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
 
 @ExtensionPoint
-class RunDetailsLink {
+export class RunDetailsLink {
     name() {}
     url() {}
 }
 
 @observer
 class RunDetails extends Component {
-    @InjectExtensions(RunDetailsLink) runDetailsLinks;
+    @ExtensionList(RunDetailsLink) runDetailsLinks;
     
     componentWillMount() {
         

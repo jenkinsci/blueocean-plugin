@@ -83,16 +83,16 @@ const {
     UrlScanner,
 } = extensionPoints;
 
-@Extension(UrlScanner)
-@Priority(0)
+@Extension
+@Ordinal(0)
 class BlackListScanner extends UrlScanner {
     isAllowed(url) {
         return blacklist.contains(url);
     }
 }
 
-@Extension(UrlScanner)
-@Priority(1) // let blacklist happen first
+@Extension
+@Ordinal(1) // let blacklist happen first
 class WhitelistJenkinsDotIo extends UrlScanner {
     isAllowed(url) {
         return /https?[:]\/\/jenkins[.]io\/.*/.test(url);
@@ -101,6 +101,7 @@ class WhitelistJenkinsDotIo extends UrlScanner {
 
 class LoginForm extends React.Component {
     @Inject(LocalUserDatabase) localUserDatabase;
+
     render() {
         return <div>...
     }
@@ -109,9 +110,10 @@ class LoginForm extends React.Component {
     }
 }
 
-@Extension(SecurityAuthenticator)
+@Extension
 class LocalSecurityAuthenticator extends SecurityAuthenticator {
     @Inject(LocalUserDatabase) localUserDatabase;
+
     getAuthenticationType() {
         return localUserDatabase;
     }

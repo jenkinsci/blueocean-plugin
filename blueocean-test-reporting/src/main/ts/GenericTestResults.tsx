@@ -2,8 +2,6 @@ import * as React from 'react';
 const jdl = require('@jenkins-cd/design-language');
 const { ResultItem, StatusIndicator, EmptyStateView } = jdl;
 import * as moment from 'moment';
-const sp = require('blueocean-plugins/some-plugin');
-import * as smp from 'blueocean-plugins/some-plugin';
 
 import {
     Extension,

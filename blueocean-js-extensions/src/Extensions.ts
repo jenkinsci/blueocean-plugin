@@ -5,7 +5,7 @@
 import { Provider, Logger, Map, Constructor, NestedConstructor, getIdentifier } from './Utilities';
 
 export interface ExtensionDescriptor {
-    priority: number;
+    ordinal: number;
     provider: Provider;
     extension: any;
     extensionName: string;
@@ -134,20 +134,20 @@ export class ExtensionRegistry {
     /**
      * Called to directly register an extension based on the extensionPointId
      */
-    registerTypedExtension(extensionPoint: Constructor, extension: Constructor, provider: Provider, priority?: number) {
+    registerTypedExtension(extensionPoint: Constructor, extension: Constructor, provider: Provider, ordinal?: number) {
         const extensionPointId: string = getIdentifier(extensionPoint);
         const identifier: string = getIdentifier(extension);
-        this.registerExtension(extensionPointId, identifier, extension, provider, priority);
+        this.registerExtension(extensionPointId, identifier, extension, provider, ordinal);
     }
 
     /**
      * Called to directly register an extension based on the extensionPointId
      */
-    registerExtension(extensionPointId: string, identifier: string, extension: any, provider: Provider, priority?: number) {
+    registerExtension(extensionPointId: string, identifier: string, extension: any, provider: Provider, ordinal?: number) {
         const types = this.extensionProviders[extensionPointId] || (this.extensionProviders[extensionPointId] = []);
 
         const descriptor: ExtensionDescriptor = {
-            priority: priority,
+            ordinal: ordinal,
             extensionName: identifier,
             insertionOrder: types.length,
             extension: extension,
@@ -158,20 +158,20 @@ export class ExtensionRegistry {
         // the constructor
         types.push(descriptor);
 
-        // Sort based on priority, insertion order?
+        // Sort based on ordinal, insertion order?
         types.sort((a, b) => {
-            // no priority is last
-            if (a.priority !== undefined || b.priority !== undefined) {
-                if (b.priority === undefined) {
+            // no ordinal is last
+            if (a.ordinal !== undefined || b.ordinal !== undefined) {
+                if (b.ordinal === undefined) {
                     return -1;
                 }
-                if (a.priority === undefined) {
+                if (a.ordinal === undefined) {
                     return 1;
                 }
-                if (a.priority < b.priority) {
+                if (a.ordinal < b.ordinal) {
                     return -1;
                 }
-                if (a.priority > b.priority) {
+                if (a.ordinal > b.ordinal) {
                     return 1;
                 }
             }
@@ -209,12 +209,12 @@ export class ExtensionRegistry {
         if (this.debugLog) this.debugLog('@Service:', extensionName, 'With constructor: ', constructor);
         // is the argument an extension point?
         let superType = constructor;
-        const priority = constructor.priority;
+        const ordinal = constructor.ordinal;
         try {
             while (superType && superType !== Function && superType !== Object) {
                 const supertypeName = getIdentifier(superType);
                 if (this.debugLog) this.debugLog('extensionClassDecorator registering', extensionName, ' with superclass:', supertypeName);
-                this.registerTypedExtension(superType, constructor, () => new (constructor)(), priority);
+                this.registerTypedExtension(superType, constructor, () => new (constructor)(), ordinal);
                 superType = Object.getPrototypeOf(superType.prototype).constructor;
             }
         } catch(e) {
@@ -237,12 +237,12 @@ export class ExtensionRegistry {
             if (this.debugLog) this.debugLog('Extension:', extensionName, 'With args: ', args);
             // is the argument an extension point?
             let superType = args[0] !== constructor ? args[0] : constructor;
-            const priority = constructor.priority;
+            const ordinal = constructor.ordinal;
             try {
                 while (superType && superType !== Function && superType !== Object) { //typeof(superType) !== 'object') {
                     const supertypeName = getIdentifier(superType);
                     if (this.debugLog) this.debugLog('extensionClassDecorator registering', extensionName, ' with superclass:', supertypeName);
-                    this.registerTypedExtension(superType, constructor, () => new (constructor)(), priority);
+                    this.registerTypedExtension(superType, constructor, () => new (constructor)(), ordinal);
                     superType = Object.getPrototypeOf(superType.prototype).constructor;
                 }
             } catch(e) {
@@ -265,8 +265,8 @@ export class ExtensionRegistry {
         return extensionDecorator;
     }
 
-    extensionListPropertyDecorator(...args: any[]): any {
-        if (this.debugLog) this.debugLog('extensionListPropertyDecorator with args', args);
+    extensionTypesPropertyDecorator(...args: any[]): any {
+        if (this.debugLog) this.debugLog('extensionTypesPropertyDecorator with args', args);
 
         if(args.length === 1) {
             // Handle @ExtensionList(ExtensionPointName) propName...
@@ -300,8 +300,8 @@ export class ExtensionRegistry {
         throw new Error('Unsupported ExtensionList call, must use the form: @ExtensionList(<extensionPoint>)');
     }
 
-    injectExtensionPropertyDecorator(...args: any[]): any {
-        if (this.debugLog) this.debugLog('injectExtensionPropertyDecorator with args', args);
+    injectSingleExtensionPropertyDecorator(...args: any[]): any {
+        if (this.debugLog) this.debugLog('injectSingleExtensionPropertyDecorator with args', args);
 
         if(args.length === 1) {
             // Handle @ExtensionList(ExtensionPointName) propName...
@@ -393,12 +393,12 @@ export class ExtensionRegistry {
 }
 
 /**
- * Defines a priority on a type
+ * Defines a ordinal on a type
  */
-export function Priority(priority: number): any {
+export function Ordinal(ordinal: number): any {
     return function(constructor: any): any {
-        if (this.traceLog) this.traceLog('defining priority', priority, 'on', getIdentifier(constructor));
-        constructor.priority = priority;
+        if (this.traceLog) this.traceLog('defining ordinal', ordinal, 'on', getIdentifier(constructor));
+        constructor.ordinal = ordinal;
         return constructor;
     }
 }
@@ -429,19 +429,19 @@ export const ExtensionPoint = extensionRegistry.extensionPointClassDecorator.bin
 export const Extension = extensionRegistry.extensionClassDecorator.bind(extensionRegistry);
 
 /**
- * Property decorator to get all extensions
+ * Property decorator to get all instances of extensions
  */
-export const ExtensionList = extensionRegistry.extensionListPropertyDecorator.bind(extensionRegistry);
+export const ExtensionList = extensionRegistry.injectExtensionsPropertyDecorator.bind(extensionRegistry);
 
 /**
  * Property decorator to get all instances of extensions
  */
-export const InjectExtensions = extensionRegistry.injectExtensionsPropertyDecorator.bind(extensionRegistry);
+export const ExtensionTypes = extensionRegistry.extensionTypesPropertyDecorator.bind(extensionRegistry);
 
 /**
  * Property decorator to get the first instance of the given extension
  */
-export const InjectExtension = extensionRegistry.injectExtensionPropertyDecorator.bind(extensionRegistry);
+export const Inject = extensionRegistry.injectSingleExtensionPropertyDecorator.bind(extensionRegistry);
 
 /**
  * Class decorator to register this class as an extension of itself

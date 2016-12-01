@@ -7,11 +7,11 @@ import { actions as selectorActions, testResults as testResultsSelector,
 import PageLoading from './PageLoading';
 
 import {
-    Extension,
     ExtensionPoint,
-    InjectExtensions,
+    Extension,
+    ExtensionList,
     ExtensionRenderer,
-    Priority,
+    Ordinal,
     extensionPoints,
 } from 'blueocean-js-extensions';
 
@@ -29,9 +29,9 @@ class TestReportHandler {
     }
 }
 
-@Extension(RunDetailsLink)
-class TestReportLink {
-    @InjectExtensions(TestReportHandler) testReportHandlers;
+@Extension
+export class TestReportLink extends RunDetailsLink {
+    @ExtensionList(TestReportHandler) testReportHandlers;
     
     isApplicable(runDetails) {
         for (let h of this.testReportHandlers) {
@@ -62,7 +62,7 @@ class TestReportLink {
  * Displays a list of tests from the supplied build run property.
  */
 export class RunDetailsTests extends Component {
-    @InjectExtensions(TestReportHandler) testReportHandlers;
+    @ExtensionList(TestReportHandler) testReportHandlers;
     
     componentWillMount() {
         this.props.fetchTestResults(
@@ -119,7 +119,7 @@ export class RunDetailsTests extends Component {
                 to emulate the way actions work. By using classes as extension
                 points, we can define whichever methods we need to obtain different
                 views as react components */}
-            {this.testReportHandlers.filter(h => h.isApplicable(testResults)).map(h => {
+            {this.testReportHandlers.map(h => {
                 let component = h.getComponent();
                 return <ExtensionRenderer extension={component} testResults={testResults} />;
             })}

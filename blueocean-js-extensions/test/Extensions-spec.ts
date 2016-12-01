@@ -6,12 +6,12 @@ import { assert } from 'chai';
 
 import extensionRegistry, {
     ExtensionPoint,
-    ExtensionList,
     extensionPoints,
     Extension,
-    InjectExtensions,
-    InjectExtension,
-    Priority,
+    ExtensionList,
+    ExtensionTypes,
+    Inject,
+    Ordinal,
     ExtensionListChangeListener,
     ExtensionPointChangeListener
 } from '../src/Extensions';
@@ -36,7 +36,7 @@ class SampleExtensionNotSubclass {
 }
 
 @Extension
-@Priority(1)
+@Ordinal(1)
 class SampleExtensionIsSubclass extends SampleExtensionPoint {
     activate(context: any): void {
         context.activated = true;
@@ -49,7 +49,7 @@ class ExtensionConsumer {
 }
 
 @Extension
-@Priority(2)
+@Ordinal(2)
 class SampleExtensionIsSubclass2 extends SampleExtensionPoint {
     activate(context: any): void {
         context.activated = true;
@@ -58,7 +58,7 @@ class SampleExtensionIsSubclass2 extends SampleExtensionPoint {
 }
 
 @Extension
-@Priority(0)
+@Ordinal(0)
 class SampleExtensionIsSubclass0 extends SampleExtensionPoint {
     activate(context: any): void {
         context.activated = true;
@@ -130,33 +130,33 @@ describe('ExtensionPoints', function() {
         assert(!wasCalled, 'ExtensionList should not call listeners once removed');
     });
 
-    it('should provide classes when @ExtensionList is used', function() {
+    it('should provide classes when @ExtensionTypes is used', function() {
+        class c {
+            @ExtensionTypes(SampleExtensionPoint) injected: any[];
+        }
+        let instance = new c();
+        assert(instance.injected
+            && instance.injected.length
+            && instance.injected[0].constructor === Function
+            && instance.injected[0] === SampleExtensionIsSubclass0, 'Classes should be provided with @ExtensionTypes');
+    });
+
+    it('should provide instances when @ExtensionList is used', function() {
         class c {
             @ExtensionList(SampleExtensionPoint) injected: any[];
         }
         let instance = new c();
         assert(instance.injected
             && instance.injected.length
-            && instance.injected[0].constructor === Function
-            && instance.injected[0] === SampleExtensionIsSubclass0, 'Classes should be provided with @ExtensionList');
+            && instance.injected[0] instanceof SampleExtensionIsSubclass0, 'Instances should be provided with @ExtensionList');
     });
 
-    it('should provide instances when @InjectExtensions is used', function() {
+    it('should provide a single instance when @Inject is used', function() {
         class c {
-            @InjectExtensions(SampleExtensionPoint) injected: any[];
+            @Inject(SampleExtensionPoint) injected: any;
         }
         let instance = new c();
-        assert(instance.injected
-            && instance.injected.length
-            && instance.injected[0] instanceof SampleExtensionIsSubclass0, 'Instances should be provided with @InjectExtensions');
-    });
-
-    it('should provide a single instance when @InjectExtension is used', function() {
-        class c {
-            @InjectExtension(SampleExtensionPoint) injected: any;
-        }
-        let instance = new c();
-        assert(instance.injected.constructor === SampleExtensionIsSubclass0, 'Instances should be provided with @InjectExtension');
+        assert(instance.injected.constructor === SampleExtensionIsSubclass0, 'Instances should be provided with @Inject');
     });
   });
 });
