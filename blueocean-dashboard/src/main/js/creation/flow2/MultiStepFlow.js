@@ -1,6 +1,3 @@
-/**
- * Created by cmeyers on 10/18/16.
- */
 import React, { PropTypes } from 'react';
 import StepStatus from './FlowStepStatus';
 
@@ -16,16 +13,6 @@ export default class MultiStepFlow extends React.Component {
         this.state = {
             currentIndex: 0,
         };
-    }
-
-    _onCompleteStep(currentIndex) {
-        this.setState({
-            currentIndex: currentIndex + 1,
-        });
-    }
-
-    _onCompleteFlow(data) {
-        this.props.onCompleteFlow(data);
     }
 
     render() {
@@ -44,9 +31,8 @@ export default class MultiStepFlow extends React.Component {
                     const isLastStep = index === this.props.children.length - 1;
 
                     const extraProps = {
-                        status, isLastStep,
-                        onCompleteStep: (step) => this._onCompleteStep(index, step),
-                        onCompleteFlow: (data) => this._onCompleteFlow(data),
+                        status,
+                        isLastStep,
                     };
 
                     return React.cloneElement(child, extraProps);

@@ -8,7 +8,6 @@ import Extensions from '@jenkins-cd/js-extensions';
 
 import FlowStep from './flow2/FlowStep';
 import MultiStepFlow from './flow2/MultiStepFlow';
-import VerticalStep from './flow2/VerticalStep';
 
 const Sandbox = Extensions.SandboxedComponent;
 
@@ -28,7 +27,6 @@ export class CreatePipelineStepsRenderer extends React.Component {
         const providerChanged = this.props.selectedProvider !== nextProps.selectedProvider;
 
         if (providerChanged) {
-            console.log('providerChanged?', providerChanged);
             try {
                 this.flowManager = nextProps.selectedProvider.getFlowManager();
                 this.flowManager.initialize(this);
@@ -38,11 +36,6 @@ export class CreatePipelineStepsRenderer extends React.Component {
         }
 
         return providerChanged;
-    }
-
-    stepsChanged() {
-        console.log('stepsChanged');
-        // this.forceUpdate();
     }
 
     hasSteps() {
@@ -60,11 +53,9 @@ export class CreatePipelineStepsRenderer extends React.Component {
 
         // create Step elements for each "pending" text and
         // then combine with the actual rendered steps
-        const pendingSteps = this.flowManager.pendingSteps.map(text => {
-            return (
-                <FlowStep title={text} />
-            );
-        });
+        const pendingSteps = this.flowManager.pendingSteps.map(text => (
+            <FlowStep title={text} />
+        ));
 
         const allSteps = [].concat(
             this.flowManager.activeSteps.slice(),
@@ -74,9 +65,9 @@ export class CreatePipelineStepsRenderer extends React.Component {
         return (
             <Sandbox>
                 <MultiStepFlow>
-                    {React.Children.map(allSteps, child => {
-                        return React.cloneElement(child, props);
-                    })}
+                    {React.Children.map(allSteps, child => (
+                        React.cloneElement(child, props)
+                    ))}
                 </MultiStepFlow>
             </Sandbox>
         );

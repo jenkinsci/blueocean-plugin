@@ -10,9 +10,9 @@ export default class GithubOrgListStep extends React.Component {
     render() {
         return (
             <FlowStep {...this.props} title="In which Github organization are your repositories located?">
-                {this.props.flowManager.organizations.map(org => {
-                    return <div>{org.name}</div>;
-                })}
+                {this.props.flowManager.organizations.map(org => (
+                    <div>{org.name}</div>
+                ))}
             </FlowStep>
         );
     }

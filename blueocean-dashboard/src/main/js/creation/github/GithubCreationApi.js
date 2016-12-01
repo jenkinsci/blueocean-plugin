@@ -1,7 +1,12 @@
-/**
- * Created by cmeyers on 11/30/16.
- */
-import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import { Fetch } from '@jenkins-cd/blueocean-core-js';
+
+function delayedPromise(value, delay = 2000) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(value);
+        }, delay);
+    });
+}
 
 export default class GithubCreationApi {
 
@@ -17,6 +22,7 @@ export default class GithubCreationApi {
         ]);
     }
 
+    // eslint-disable-next-line
     listRepositories(organization) {
         return delayedPromise([
             { name: 'blueocean-plugin' },
@@ -33,6 +39,7 @@ export default class GithubCreationApi {
         return this._createItem(organization);
     }
 
+    // eslint-disable-next-line
     _createItem(org, repo) {
         return delayedPromise({}, 10000);
 
@@ -67,12 +74,4 @@ export default class GithubCreationApi {
         */
     }
 
-}
-
-function delayedPromise(value, delay = 2000) {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve(value);
-        }, delay);
-    });
 }

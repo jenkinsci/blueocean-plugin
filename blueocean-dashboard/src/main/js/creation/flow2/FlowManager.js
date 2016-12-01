@@ -1,8 +1,9 @@
-/**
- * Created by cmeyers on 11/30/16.
- */
 import { action, asFlat, observable } from 'mobx';
 
+/**
+ * Base class for managing the flow of multiple steps.
+ * Must provide an initial step, and has methods for pushing or replacing steps on stack.
+ */
 export default class FlowManager {
 
     // TODO: observable activeSteps blows up React; figure out why
@@ -29,8 +30,6 @@ export default class FlowManager {
     }
 
     initialize(listener) {
-        console.log('FlowManager.initialize');
-
         if (listener && listener.stepsChanged) {
             this.listener = listener;
         }

@@ -14,8 +14,7 @@ export default class GithubInitialStep extends React.Component {
 
     render() {
         return (
-            <FlowStep {...this.props} title="Loading...">
-            </FlowStep>
+            <FlowStep {...this.props} title="Loading..." />
         );
     }
 
