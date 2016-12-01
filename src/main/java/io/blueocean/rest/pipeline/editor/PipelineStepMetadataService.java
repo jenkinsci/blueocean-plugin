@@ -10,6 +10,7 @@ import hudson.model.Describable;
 import hudson.tasks.Builder;
 import hudson.tasks.Publisher;
 import jenkins.tasks.SimpleBuildStep;
+import org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep;
 import org.jenkinsci.plugins.structs.SymbolLookup;
 import org.jenkinsci.plugins.structs.describable.DescribableModel;
 import org.jenkinsci.plugins.structs.describable.DescribableParameter;
@@ -205,9 +206,11 @@ public class PipelineStepMetadataService implements ApiRoutable {
         String snippetizerUrl = Stapler.getCurrentRequest().getContextPath() + "/" + snippetizer.getUrlName() + "/generateSnippet";
 
         for (StepDescriptor d : StepDescriptor.all()) {
-            PipelineStepMetadata step = getStepMetadata(d, snippetizerUrl);
-            if (step != null) {
-                pd.add(step);
+            if (!ModelASTStep.getBlockedSteps().containsKey(d.getFunctionName())) {
+                PipelineStepMetadata step = getStepMetadata(d, snippetizerUrl);
+                if (step != null) {
+                    pd.add(step);
+                }
             }
         }
 
