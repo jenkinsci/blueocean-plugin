@@ -59,7 +59,6 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
         public void onNewHead(FlowNode flowNode) {
             // test whether we have a stage node
             if (PipelineNodeUtil.isStage(flowNode)) {
-                System.out.println("isStage");
                 List<String> branch = getBranch(flowNode);
                 currentStageName = flowNode.getDisplayName();
                 currentStageId = flowNode.getId();
