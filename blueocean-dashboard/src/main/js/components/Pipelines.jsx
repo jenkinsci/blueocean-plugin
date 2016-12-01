@@ -61,7 +61,7 @@ export class Pipelines extends Component {
         return (
             <Page>
                 <PageHeader>
-                    {!pipelines || pipelines.$pending && <PageLoading duration={2000} />}
+                    {!pipelines || this.pager.pending && <PageLoading duration={2000} />}
                     <Title>
                         <h1>
                             <Link
