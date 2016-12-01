@@ -3,8 +3,8 @@ import RestPaths from '../paths/rest';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
 import utils from '../utils';
-import { RestResource } from './RestResource';
-/**
+
+/*
  * This class provides activity related services.
  *
  * @export
@@ -97,7 +97,7 @@ export class ActivityService extends BunkerService {
     }
 
     fetchArtifacts(runHref) {
-        return RestResource.fetch(`${runHref}artifacts`);
+        return Fetch.fetchJSON(`${runHref}artifacts`);
     }
 
 

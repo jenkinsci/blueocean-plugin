@@ -4,6 +4,7 @@ import { Icon } from 'react-material-icons-blue';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 import { observable, action} from 'mobx';
+import mobxUtils from 'mobx-utils';
 /**
  * Displays a list of artifacts from the supplied build run property.
  */
@@ -12,7 +13,7 @@ export default class RunDetailsArtifacts extends Component {
     componentWillMount() {
         const { result } = this.props;
         if (result) {
-            this.artifacts = this.context.activityService.fetchArtifacts(result._links.self.href);
+            this.artifacts = mobxUtils.fromPromise(this.context.activityService.fetchArtifacts(result._links.self.href));
         }
     }
 
@@ -26,17 +27,14 @@ export default class RunDetailsArtifacts extends Component {
         if (!result || !this.artifacts) {
             return null;
         }
-        if (this.artifacts.error) {
-            // 404?
-            return null;
+        switch (this.artifacts.state) {
+        case mobxUtils.PENDING: return <div>Loading</div>;
+        case mobxUtils.REJECTED: return <div>Not found</div>;
+        default:
         }
 
-        if (!this.artifacts.isLoaded()) {
-            // page loading
-            return null;
-        }
-        const { data: artifacts } = this.artifacts.data;
-
+        const artifacts = this.artifacts.value.artifacts;
+       
         if (!artifacts || !artifacts.length) {
             return (<EmptyStateView tightSpacing>
                 <Markdown>
@@ -46,7 +44,7 @@ export default class RunDetailsArtifacts extends Component {
         }
 
         const headers = [
-            { label: t('rundetail.artifacts.header.name', { defaultValue: 'Name' }), className: 'name' },
+            { label: t('rundetail.artifacts.header.path', { defaultValue: 'Path' }), className: 'name' },
             { label: t('rundetail.artifacts.header.size', { defaultValue: 'Header' }), className: 'size' },
             { label: '', className: 'actions' },
         ];
@@ -57,7 +55,7 @@ export default class RunDetailsArtifacts extends Component {
             <Table headers={headers} className="artifacts-table fixed">
                 { artifacts.map(artifact => (
                     <tr key={artifact.url}>
-                        <td>{artifact.name}</td>
+                        <td>{artifact.path}</td>
                         <td>
                             <FileSize bytes={artifact.size} />
                         </td>
