@@ -3,8 +3,17 @@ package io.blueocean.rest.pipeline.editor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import hudson.model.Describable;
+import hudson.tasks.Builder;
+import hudson.tasks.Publisher;
+import jenkins.tasks.SimpleBuildStep;
+import org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep;
+import org.jenkinsci.plugins.structs.SymbolLookup;
 import org.jenkinsci.plugins.structs.describable.DescribableModel;
 import org.jenkinsci.plugins.structs.describable.DescribableParameter;
 import org.jenkinsci.plugins.workflow.cps.Snippetizer;
@@ -25,6 +34,8 @@ import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.ApiRoutable;
 import jenkins.model.Jenkins;
 
+import javax.annotation.CheckForNull;
+
 /**
  * This provides and Blueocean REST API endpoint to obtain pipeline step metadata.
  * 
@@ -33,6 +44,9 @@ import jenkins.model.Jenkins;
  */
 @Extension
 public class PipelineStepMetadataService implements ApiRoutable {
+
+    final static List<String> INCLUDED_ADVANCED_STEPS = Collections.unmodifiableList(Arrays.asList("catchError"));
+
     ParameterNameDiscoverer nameFinder = new LocalVariableTableParameterNameDiscoverer();
 
     @Override
@@ -194,57 +208,132 @@ public class PipelineStepMetadataService implements ApiRoutable {
         List<PipelineStepMetadata> pd = new ArrayList<PipelineStepMetadata>();
         // POST to this with parameter names
         // e.g. json:{"time": "1", "unit": "NANOSECONDS", "stapler-class": "org.jenkinsci.plugins.workflow.steps.TimeoutStep", "$class": "org.jenkinsci.plugins.workflow.steps.TimeoutStep"}
-        String snippetizerUrl = Stapler.getCurrentRequest().getContextPath() + "/" + snippetizer.getUrlName() + "/generateSnippet";
+        String snippetizerUrl = null;
+        if (Stapler.getCurrentRequest() != null) {
+            snippetizerUrl = Stapler.getCurrentRequest().getContextPath() + "/" + snippetizer.getUrlName() + "/generateSnippet";
+        }
 
         for (StepDescriptor d : StepDescriptor.all()) {
-            PipelineStepMetadata step = getStepMetadata(d, snippetizerUrl);
-            if (step != null) {
-                pd.add(step);
+            if (includeStep(d)) {
+                PipelineStepMetadata step = getStepMetadata(d, snippetizerUrl);
+                if (step != null) {
+                    pd.add(step);
+                }
+            }
+        }
+
+        List<Descriptor<?>> metaStepDescriptors = new ArrayList<Descriptor<?>>();
+        populateMetaSteps(metaStepDescriptors, Builder.class);
+        populateMetaSteps(metaStepDescriptors, Publisher.class);
+
+        for (Descriptor<?> d : metaStepDescriptors) {
+            PipelineStepMetadata metaStep = getStepMetadata(d);
+            if (metaStep != null) {
+                pd.add(metaStep);
             }
         }
 
         return pd.toArray(new PipelineStepMetadata[pd.size()]);
     }
 
-    private PipelineStepMetadata getStepMetadata(StepDescriptor d, String snippetizerUrl) {
+    private boolean includeStep(StepDescriptor d) {
+        boolean include = true;
+        if (ModelASTStep.getBlockedSteps().containsKey(d.getFunctionName())) {
+            include = false;
+        } else if (d.isAdvanced()
+                && !INCLUDED_ADVANCED_STEPS.contains(d.getFunctionName())) {
+            include = false;
+        }
+
+        return include;
+    }
+
+    private <T extends Describable<T>,D extends Descriptor<T>> void populateMetaSteps(List<Descriptor<?>> r, Class<T> c) {
+        Jenkins j = Jenkins.getInstance();
+        for (Descriptor<?> d : j.getDescriptorList(c)) {
+            if (SimpleBuildStep.class.isAssignableFrom(d.clazz) && symbolForDescriptor(d) != null) {
+                r.add(d);
+            }
+        }
+    }
+
+    private BasicPipelineStepPropertyMetadata paramFromDescribable(DescribableParameter descParam) {
+        BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
+
+        param.type = descParam.getErasedType();
+        Type typ = descParam.getType().getActualType();
+        if (typ instanceof ParameterizedType) {
+            Type[] typeArgs = ((ParameterizedType) typ).getActualTypeArguments();
+            for (Type ptyp : typeArgs) {
+                if (ptyp instanceof Class<?>) {
+                    param.collectionTypes.add((Class<?>) ptyp);
+                }
+            }
+        }
+        param.name = descParam.getName();
+        param.displayName = descParam.getCapitalizedName();
+        param.isRequired = descParam.isRequired();
+
+        Descriptor<?> pd = Descriptor.findByDescribableClassName(ExtensionList.lookup(Descriptor.class),
+                param.type.getName());
+
+        if (pd != null) {
+            param.descriptorUrl = pd.getDescriptorFullUrl();
+        }
+
+        return param;
+    }
+
+    private @CheckForNull String symbolForDescriptor(Descriptor<?> d) {
+        Set<String> symbols = SymbolLookup.getSymbolValue(d);
+        if (!symbols.isEmpty()) {
+            return symbols.iterator().next();
+        } else {
+            return null;
+        }
+    }
+
+    private @CheckForNull PipelineStepMetadata getStepMetadata(Descriptor<?> d) {
+        String symbol = symbolForDescriptor(d);
+
+        if (symbol != null) {
+            BasicPipelineStepMetadata step = new BasicPipelineStepMetadata(symbol, d.clazz, d.getDisplayName());
+            DescribableModel<?> m = new DescribableModel<>(d.clazz);
+            step.descriptorUrl = d.getDescriptorUrl();
+            step.hasSingleRequiredParameter = m.hasSingleRequiredParameter();
+
+            for (DescribableParameter descParam : m.getParameters()) {
+                step.props.add(paramFromDescribable(descParam));
+            }
+
+            return step;
+        } else {
+            return null;
+        }
+    }
+
+    private @CheckForNull PipelineStepMetadata getStepMetadata(StepDescriptor d, @CheckForNull String snippetizerUrl) {
         BasicPipelineStepMetadata step = new BasicPipelineStepMetadata(d.getFunctionName(), d.clazz, d.getDisplayName());
 
         try {
             DescribableModel<?> model = new DescribableModel<>(step.type);
 
-            step.snippetizerUrl = snippetizerUrl + "?$class=" + d.clazz.getName(); // this isn't really accurate
+            if (snippetizerUrl != null) {
+                step.snippetizerUrl = snippetizerUrl + "?$class=" + d.clazz.getName(); // this isn't really accurate
+            }
 
             step.isWrapper = d.takesImplicitBlockArgument();
             step.requiredContext.addAll(d.getRequiredContext());
             step.providedContext.addAll(d.getProvidedContext());
-            step.descriptorUrl = d.getDescriptorFullUrl();
+            if (Stapler.getCurrentRequest() != null) {
+                step.descriptorUrl = d.getDescriptorFullUrl();
+            } else {
+                step.descriptorUrl = d.getDescriptorUrl();
+            }
             step.hasSingleRequiredParameter = model.hasSingleRequiredParameter();
 
             for (DescribableParameter descParam : model.getParameters()) {
-                BasicPipelineStepPropertyMetadata param = new BasicPipelineStepPropertyMetadata();
-
-                param.type = descParam.getErasedType();
-                Type typ = descParam.getType().getActualType();
-                if (typ instanceof ParameterizedType) {
-                    Type[] typeArgs = ((ParameterizedType)typ).getActualTypeArguments();
-                    for (Type ptyp : typeArgs) {
-                        if (ptyp instanceof Class<?>) {
-                            param.collectionTypes.add((Class<?>)ptyp);
-                        }
-                    }
-                }
-                param.name = descParam.getName();
-                param.displayName = descParam.getCapitalizedName();
-                param.isRequired = descParam.isRequired();
-
-                Descriptor<?> pd = Descriptor.findByDescribableClassName(ExtensionList.lookup(Descriptor.class),
-                        param.type.getName());
-
-                if (pd != null) {
-                    param.descriptorUrl = pd.getDescriptorFullUrl();
-                }
-                
-                step.props.add(param);
+                step.props.add(paramFromDescribable(descParam));
             }
 
             // Let any decorators adjust the step properties
