@@ -2,8 +2,8 @@ import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
 import { buildPipelineUrl } from '../../util/UrlUtils';
-import FlowStep from '../FlowStep';
-import StepStatus from '../FlowStepStatus';
+import FlowStep from '../flow2/FlowStep';
+import StepStatus from '../flow2/FlowStepStatus';
 import FlowStatus from './GitCreationStatus';
 
 /**

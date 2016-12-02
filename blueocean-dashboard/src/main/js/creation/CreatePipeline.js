@@ -7,7 +7,7 @@ import { Icon } from 'react-material-icons-blue';
 
 import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
-import VerticalStep from './VerticalStep';
+import VerticalStep from './flow2/VerticalStep';
 
 import Extensions from '@jenkins-cd/js-extensions';
 const Sandbox = Extensions.SandboxedComponent;

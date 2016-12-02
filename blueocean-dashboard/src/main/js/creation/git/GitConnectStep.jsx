@@ -4,7 +4,7 @@
 import React, { PropTypes } from 'react';
 import { Dropdown } from '@jenkins-cd/design-language';
 
-import FlowStep from '../FlowStep';
+import FlowStep from '../flow2/FlowStep';
 
 const CREDENTIAL_CHOICE = {
     SSH: 'SSH',
