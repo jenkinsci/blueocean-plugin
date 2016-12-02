@@ -7,6 +7,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -20,6 +21,7 @@ import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StatusAndTiming;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +68,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     private final Stack<FlowNode> parallelBranchEndNodes = new Stack<>();
 
+    private final InputAction inputAction;
+
     public PipelineNodeGraphVisitor(WorkflowRun run) {
         this.run = run;
+        this.inputAction = run.getAction(InputAction.class);
         if(run.getExecution()!=null) {
             ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), this, new StageChunkFinder());
         }
@@ -132,9 +137,17 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             if(endNode != null) {
                 times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), branchStartNode, endNode,
                         chunk.getNodeAfter());
-                GenericStatus genericStatus = StatusAndTiming.computeChunkStatus(run,
-                        parallelStartNode, branchStartNode, endNode, parallelEnd);
-                status = new NodeRunStatus(genericStatus);
+                if(endNode instanceof StepAtomNode){
+                    if(PipelineNodeUtil.isPausedForInputStep((StepAtomNode) endNode, inputAction)) {
+                        status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
+                    }else{
+                        status = new NodeRunStatus(endNode);
+                    }
+                }else {
+                    GenericStatus genericStatus = StatusAndTiming.computeChunkStatus(run,
+                            parallelStartNode, branchStartNode, endNode, parallelEnd);
+                    status = new NodeRunStatus(genericStatus);
+                }
             }else{
                 times = new TimingInfo(TimingAction.getStartTime(branchStartNode)+System.currentTimeMillis(),
                         chunk.getPauseTimeMillis(),
@@ -272,7 +285,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     }
 
     @Override
-    public void atomNode(@CheckForNull FlowNode before, @Nonnull FlowNode atomNode, @CheckForNull FlowNode after, @Nonnull ForkScanner scan) {
+    public void atomNode(@CheckForNull FlowNode before, @Nonnull FlowNode atomNode,
+                         @CheckForNull FlowNode after, @Nonnull ForkScanner scan) {
         if(isNodeVisitorDumpEnabled)
             dump(String.format("atomNode=> id: %s, name: %s, function: %s, type: %s", atomNode.getId(),
                     atomNode.getDisplayName(), atomNode.getDisplayFunctionName(), atomNode.getClass()));
@@ -283,8 +297,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         long pause = PauseAction.getPauseDuration(atomNode);
         chunk.setPauseTimeMillis(chunk.getPauseTimeMillis()+pause);
 
-        PauseAction pauseAction = atomNode.getAction(PauseAction.class);
-        if(pauseAction != null && pauseAction.isPaused() && pauseAction.getCause().equals("input")){
+        if(atomNode instanceof StepAtomNode
+                && PipelineNodeUtil.isPausedForInputStep((StepAtomNode) atomNode, inputAction)){
             pendingInputSteps.add(atomNode);
         }
     }

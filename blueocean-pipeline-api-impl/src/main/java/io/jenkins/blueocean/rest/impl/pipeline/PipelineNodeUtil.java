@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
+import com.sun.istack.internal.NotNull;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
@@ -13,6 +14,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
+import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -103,6 +106,23 @@ public class PipelineNodeUtil {
             return getClosestEnclosingParallelBranch(sortedNodes, node, n.getParents());
         }
         return null;
+    }
+
+    public static boolean isPausedForInputStep(@NotNull StepAtomNode step, @NotNull WorkflowRun run){
+        InputAction inputAction = run.getAction(InputAction.class);
+        if(inputAction == null){
+            return false;
+        }
+        PauseAction pauseAction = step.getAction(PauseAction.class);
+        return (pauseAction != null && pauseAction.isPaused() && pauseAction.getCause().equalsIgnoreCase(inputAction.getUrlName()));
+    }
+
+    public static boolean isPausedForInputStep(@NotNull StepAtomNode step, @Nullable InputAction inputAction){
+        if(inputAction == null){
+            return false;
+        }
+        PauseAction pauseAction = step.getAction(PauseAction.class);
+        return (pauseAction != null && pauseAction.isPaused() && pauseAction.getCause().equalsIgnoreCase(inputAction.getUrlName()));
     }
 
     public static FlowNode getStepEndNode(List<FlowNode> sortedNodes, FlowNode startNode){

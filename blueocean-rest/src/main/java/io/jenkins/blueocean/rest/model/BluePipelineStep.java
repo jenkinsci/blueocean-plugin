@@ -64,5 +64,7 @@ public abstract class BluePipelineStep extends Resource{
     @Exported(name = ACTIONS, inline = true)
     public abstract Collection<BlueActionProxy> getActions();
 
+    @Exported(name="input", inline = true)
+    public abstract BlueInputStep getInputStep();
 
 }
