@@ -1,15 +1,25 @@
 package io.blueocean.rest.pipeline.editor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.JSONWebResponse;
-import org.jvnet.hudson.test.recipes.WithPlugin;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 
 /**
@@ -34,5 +44,32 @@ public class PipelineStepMetadataServiceTest {
             }
         }
         assert(node != null) : "PipelineStepMetadata node not found";
+    }
+
+    @Test
+    public void verifyFunctionNames() throws Exception {
+        PipelineStepMetadataService svc = new PipelineStepMetadataService();
+
+        List<PipelineStepMetadata> steps = new ArrayList<>();
+
+        steps.addAll(Arrays.asList(svc.getPipelineStepMetadata()));
+
+        assertFalse(steps.isEmpty());
+        
+        // Verify we have a Symbol-provided Builder or Publisher
+        assertThat(steps, hasItem(stepWithName("archiveArtifacts")));
+
+        // Verify that we don't have steps blacklisted by Declarative
+        assertThat(steps, not(hasItem(stepWithName("properties"))));
+
+        // Verify that we don't have advanced steps
+        assertThat(steps, not(hasItem(stepWithName("archive"))));
+
+        // Verify that we *do* have advanced steps that are explicitly whitelisted in.
+        assertThat(steps, hasItem(stepWithName("catchError")));
+    }
+
+    private Matcher<? super PipelineStepMetadata> stepWithName(String stepName) {
+        return hasProperty("functionName", is(stepName));
     }
 }
