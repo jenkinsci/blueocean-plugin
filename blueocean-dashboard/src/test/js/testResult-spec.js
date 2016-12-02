@@ -4,9 +4,9 @@ import { shallow } from 'enzyme';
 
 import TestResults from '../../main/js/components/testing/TestResults.jsx';
 
-import { I18n } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
-const t = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+const t = i18nTranslator('blueocean-dashboard');
 
 describe("TestResults", () => {
   const testResults1 = {
@@ -52,7 +52,7 @@ describe("TestResults", () => {
 
   it("Test fixed included", () => {
       let wrapper = shallow(<TestResults t={t} testResults={testResults1} />);
-      
+
       const fixed = wrapper.find('.new-passed .count').text();
       assert.equal(fixed, 1);
 
@@ -76,7 +76,7 @@ describe("TestResults", () => {
                 {"age":1,"className":"failure.TestThisWontFail","duration":0,"errorDetails":null,"errorStackTrace":null,"failedSince":0,"name":"aPassingTest4","skipped":false,"skippedMessage":null,"status":"FAILED","stderr":null,"stdout":null},
                 ],
             }]};
-      
+
       let wrapper = shallow(<TestResults t={t} testResults={failures} />);
       const newFailed = wrapper.find('.new-failure-block h4').text();
       assert.equal(newFailed, 'New failing - 2');
@@ -89,7 +89,7 @@ describe("TestResults", () => {
       let wrapper = shallow(<TestResults t={t} testResults={testResults1} />);
       let isDone = wrapper.html().indexOf('done_all') > 0;
       assert(!isDone, "Done all found, when shouldn't have been");
-      
+
       var success = {
               "_class":"hudson.tasks.junit.TestResult",
               "duration":0.008, "empty":false, "failCount":0, "passCount":3, "skipCount":0, "suites":[
@@ -99,7 +99,7 @@ describe("TestResults", () => {
                 {"age":0,"className":"failure.TestThisWontFail","duration":0,"errorDetails":null,"errorStackTrace":null,"failedSince":0,"name":"aPassingTest4","skipped":false,"skippedMessage":null,"status":"PASSED","stderr":null,"stdout":null},
                 ],
             }]};
-      
+
       wrapper = shallow(<TestResults t={t} testResults={success} />);
       let html = wrapper.html();
       assert(html.indexOf('done_all') > 0, "Done all not found, when should be");
@@ -116,7 +116,7 @@ describe("TestResults", () => {
                 {"age":0,"className":"failure.TestThisWontFail","duration":0,"errorDetails":null,"errorStackTrace":null,"failedSince":0,"name":"aPassingTest4","skipped":false,"skippedMessage":null,"status":"PASSED","stderr":null,"stdout":null},
                 ],
             }]};
-      
+
       let wrapper = shallow(<TestResults t={t} testResults={successWithFixed} />);
       let html = wrapper.html();
       assert(html.indexOf('done_all') > 0, "Done all not found, when should be");

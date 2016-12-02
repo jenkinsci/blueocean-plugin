@@ -86,6 +86,8 @@
 }
 
 .activity-table {
+    margin-top: 10px;
+
     th {
         width: 75px;
     }
@@ -108,6 +110,8 @@
 }
 
 .multibranch-table {
+    margin-top: 10px;
+
     th {
         width: 75px;
     }
@@ -126,6 +130,8 @@
 }
 
 .pr-table {
+    margin-top: 10px;
+
     th {
         width: 75px;
     }
@@ -144,6 +150,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
+        height: 38px;
 
         & > * {
             margin-left: 5px;
@@ -386,17 +393,32 @@ table.highlight {
     }
 }
 
-.tableRowLink a {
-    width: 100%;
-    height: 100%;
-    display: block;
-    padding: 0.5em 0;
-    text-decoration: none;
-    color: inherit;
+.cell-link {
+    a {
+        width: 100%;
+        height: 100%;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        .text-overflow;
+    }
+
+    &.u-link-padding a {
+        padding: 0.5em 0.8em 0.5em 0;
+    }
 }
 
-tr:first-child td.tableRowLink, // <-- Needs to override JDL "tbody tr:first-child td" rule
-td.tableRowLink {
-    padding: 0;
+// FIXME This is probably still not ideal. Belongs in JDL, also.
+.u-table-lr-indents {
+    .cell-link, // TODO: Do we need this?
+    td, th {
+        &:first-child {
+            padding-left: 1rem;
+        }
+
+        &:last-child {
+            padding-right: 1rem;
+        }
+    }
 }
 

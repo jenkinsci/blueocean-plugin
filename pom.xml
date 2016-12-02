@@ -98,6 +98,7 @@
 
   <modules>
     <module>blueocean-commons</module>
+    <module>blueocean-i18n</module>
     <module>blueocean-web</module>
     <module>blueocean-rest</module>
     <module>blueocean-rest-impl</module>
@@ -130,6 +131,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-i18n</artifactId>
             <version>${project.version}</version>
         </dependency>
 

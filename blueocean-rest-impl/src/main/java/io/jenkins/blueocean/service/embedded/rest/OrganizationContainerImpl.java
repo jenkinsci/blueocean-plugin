@@ -32,7 +32,7 @@ public class OrganizationContainerImpl extends BlueOrganizationContainer {
     }
 
     protected void validateOrganization(String organization){
-        if (!organization.equals(Jenkins.getActiveInstance().getDisplayName().toLowerCase())) {
+        if (!organization.equals(OrganizationImpl.INSTANCE.getName())) {
             throw new ServiceException.UnprocessableEntityException(String.format("Organization %s not found",
                 organization));
         }

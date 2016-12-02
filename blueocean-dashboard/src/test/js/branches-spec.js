@@ -23,7 +23,7 @@ describe("Branches should render", () => {
   });
 
   it("renders the Branches", () => {
-    const row = tree.everySubTree('BranchCol');
+    const row = tree.everySubTree('CellLink');
     const lastCol = tree.everySubTree('td');
     const weatherIcon =row[0].getRenderOutput();
     assert.isNotNull(weatherIcon);
