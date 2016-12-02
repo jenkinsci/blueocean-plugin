@@ -6,55 +6,73 @@ import { action, asFlat, observable } from 'mobx';
  */
 export default class FlowManager {
 
-    // TODO: observable activeSteps blows up React; figure out why
-    /*
-    @observable
-    activeSteps = [];
 
-    @observable
-    pendingSteps = [];
-    */
+    /**
+     * Sets up the initial state of the flow. Do not override.
+     * @param listener
+     */
+    initialize(listener) {
+        this._reset();
 
-    constructor() {
-        this.activeSteps = observable(asFlat([]));
-        this.pendingSteps = observable(asFlat([]));
-        this.listener = null;
+        this.listener = listener;
+
+        this._setInitialSteps();
+        this.onInitialized();
     }
 
+    /**
+     * Return a React component (enclosed by FlowStep) that starts the flow
+     */
     getInitialStep() {
         throw new Error('need initial step');
     }
 
-    onInitialize() {
-        return null;
-    }
-
-    initialize(listener) {
-        if (listener && listener.stepsChanged) {
-            this.listener = listener;
-        }
-
-        this.onInitialize();
-
-        const initial = this.getInitialStep();
-        this.pushStep(initial);
-    }
+    /**
+     * Callback invoked after initial step is set up
+     */
+    onInitialized() {}
 
     @action
     pushStep(step) {
         this.activeSteps.push(step);
-        this.listener.stepsChanged();
+        this._stepsChanged();
     }
 
     @action
     replaceCurrentStep(step) {
         this.activeSteps.splice(-1, 1, step);
-        this.listener.stepsChanged();
+        this._stepsChanged();
     }
 
     @action
     setPendingSteps(steps) {
         this.pendingSteps.replace(steps);
+    }
+
+    completeFlow(payload) {
+        if (this.listener && this.listener.onComplete) {
+            this.listener.onComplete(payload);
+        }
+    }
+
+    @action
+    _setInitialSteps() {
+        const initial = this.getInitialStep();
+        this.activeSteps.replace([initial]);
+    }
+
+    _reset() {
+        // these collections should be observable but we don't want elements themselves to be observable
+        // (some of them are React elements and making them observable leads to strange runtime errors)
+        this.activeSteps = observable(asFlat([]));
+        this.pendingSteps = observable(asFlat([]));
+        this.listener = null;
+    }
+
+    _stepsChanged() {
+        if (this.listener && this.listener.onStepsChanged) {
+            this.listener.onStepsChanged();
+        }
     }
 
 }

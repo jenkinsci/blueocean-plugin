@@ -1,32 +1,30 @@
-/**
- * Created by cmeyers on 10/19/16.
- */
 import React, { PropTypes } from 'react';
-import { buildPipelineUrl } from '../../util/UrlUtils';
+import { observer } from 'mobx-react';
 
+import { buildPipelineUrl } from '../../util/UrlUtils';
 import FlowStep from '../FlowStep';
 import StepStatus from '../FlowStepStatus';
-
 import FlowStatus from './GitCreationStatus';
 
 /**
  * Shows the current progress after creation was initiated.
  */
+@observer
 export default class GitCompletedStep extends React.Component {
 
     finish() {
-        const pipeline = this.props.manager.pipeline;
-        const activityUrl = buildPipelineUrl(pipeline.organization, pipeline.fullName, 'activity');
-        this.props.onCompleteFlow(activityUrl);
+        const pipeline = this.props.flowManager.pipeline;
+        const url = buildPipelineUrl(pipeline.organization, pipeline.fullName, 'activity');
+        this.props.flowManager.completeFlow({ url });
     }
 
     render() {
-        let status = this.props.status;
+        let status;
         let percentage = -1;
         let title = 'Completed';
         let content = null;
 
-        switch (this.props.flowStatus) {
+        switch (this.props.flowManager.creationStatus) {
         case FlowStatus.CREATE_CREDS:
             percentage = 25;
             title = `${title} - Creating Credentials...`;
@@ -60,8 +58,5 @@ export default class GitCompletedStep extends React.Component {
 }
 
 GitCompletedStep.propTypes = {
-    status: PropTypes.string,
-    flowStatus: PropTypes.string,
-    manager: PropTypes.object,
-    onCompleteFlow: PropTypes.func,
+    flowManager: PropTypes.string,
 };

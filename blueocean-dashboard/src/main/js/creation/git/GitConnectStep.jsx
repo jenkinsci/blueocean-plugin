@@ -35,7 +35,7 @@ export default class GitConnectStep extends React.Component {
     }
 
     componentDidMount() {
-        this.props.credentialsManager
+        this.props.flowManager
             .listAllCredentials()
             .then(data => this._setExistingCredentials(data));
     }
@@ -115,9 +115,9 @@ export default class GitConnectStep extends React.Component {
         }
 
         if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
-            return !this.state.sshKeyValue;
+            return !!this.state.sshKeyValue;
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
-            return (!this.state.usernameValue || !this.state.passwordValue);
+            return !(!this.state.usernameValue || !this.state.passwordValue);
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH) {
             return true;
         }
@@ -125,23 +125,21 @@ export default class GitConnectStep extends React.Component {
         return false;
     }
 
-    _completeStep() {
+    _beginCreation() {
         this.setState({
             createInProgress: true,
             createButtonDisabled: true,
         });
 
         if (this.state.selectedCredential) {
-            this.props.manager.createPipeline(this.state.repositoryUrl, this.state.selectedCredential.id);
+            this.props.flowManager.createPipeline(this.state.repositoryUrl, this.state.selectedCredential.id);
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
-            this.props.manager.createWithSshKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
+            this.props.flowManager.createWithSshKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
-            this.props.manager.createWithUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);
+            this.props.flowManager.createWithUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH) {
-            this.props.manager.createWithSystemSshCredential(this.state.repositoryUrl);
+            this.props.flowManager.createWithSystemSshCredential(this.state.repositoryUrl);
         }
-
-        this.props.onCompleteStep();
     }
 
     render() {
@@ -217,7 +215,7 @@ export default class GitConnectStep extends React.Component {
                 }
 
                 <button
-                  onClick={() => this._completeStep()}
+                  onClick={() => this._beginCreation()}
                   disabled={this.state.createButtonDisabled}
                 >
                     {this.state.createInProgress ? 'Creating Pipeline...' : 'Create Pipeline'}
@@ -229,7 +227,5 @@ export default class GitConnectStep extends React.Component {
 }
 
 GitConnectStep.propTypes = {
-    manager: PropTypes.object,
-    credentialsManager: PropTypes.object,
-    onCompleteStep: PropTypes.func,
+    flowManager: PropTypes.object,
 };

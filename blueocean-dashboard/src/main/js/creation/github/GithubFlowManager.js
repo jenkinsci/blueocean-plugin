@@ -23,6 +23,10 @@ export default class GithubFlowManager extends FlowManager {
         this._api = api;
     }
 
+    getInitialStep() {
+        return <GithubInitialStep />;
+    }
+
     @action
     listOrganizations() {
         return this._api.listOrganizations()
@@ -45,14 +49,6 @@ export default class GithubFlowManager extends FlowManager {
         } else {
             this.replaceCurrentStep(<GithubCredentialsStep />);
         }
-    }
-
-    onInitialize() {
-        console.log('ghfm onInit');
-    }
-
-    getInitialStep() {
-        return <GithubInitialStep />;
     }
 
 }

@@ -1,9 +1,6 @@
-/**
- * Created by cmeyers on 10/19/16.
- */
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
-
+import TempUtils from '../TempUtils';
 
 /**
  * Proxy to the backend REST API.
@@ -16,32 +13,9 @@ export default class GitCreationApi {
     }
 
     // eslint-disable-next-line no-unused-vars
-    saveSshKeyCredential(key) {
-        const credentialId = Math.random() * Number.MAX_SAFE_INTEGER;
-        const promise = new Promise(resolve => {
-            setTimeout(() => {
-                resolve({
-                    credentialId,
-                });
-            }, 2000);
-        });
-
-        return promise;
-    }
-
-    // eslint-disable-next-line no-unused-vars
-    saveUsernamePasswordCredential(username, password) {
-        return this.saveSshKeyCredential();
-    }
-
-    useSystemSshCredential() {
-        return this.saveSshKeyCredential();
-    }
-
-    // eslint-disable-next-line no-unused-vars
     createPipeline(repositoryUrl, credentialId) {
         const path = UrlConfig.getJenkinsRootURL();
-        const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines`);
+        const createUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines`);
         const projectName = repositoryUrl.split('/').slice(-1).join('');
 
         const requestBody = {

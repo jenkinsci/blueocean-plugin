@@ -4,12 +4,8 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
-import Extensions from '@jenkins-cd/js-extensions';
-
 import FlowStep from './flow2/FlowStep';
 import MultiStepFlow from './flow2/MultiStepFlow';
-
-const Sandbox = Extensions.SandboxedComponent;
 
 /**
  * Displays the current steps based on the selection in the SCM provider list.
@@ -21,21 +17,29 @@ export class CreatePipelineStepsRenderer extends React.Component {
         super(props);
 
         this.flowManager = null;
+
+        this._initializeFlow(props.selectedProvider);
     }
 
-    shouldComponentUpdate(nextProps) {
-        const providerChanged = this.props.selectedProvider !== nextProps.selectedProvider;
+    componentWillReceiveProps(nextProps) {
+        this._initializeFlow(nextProps.selectedProvider);
+    }
 
-        if (providerChanged) {
-            try {
-                this.flowManager = nextProps.selectedProvider.getFlowManager();
-                this.flowManager.initialize(this);
-            } catch (error) {
-                console.warn('Error rendering:', this.props.selectedProvider, error);
-            }
+    _initializeFlow(provider) {
+        if (!provider) return;
+
+        try {
+            this.flowManager = provider.getFlowManager();
+            this.flowManager.initialize(this);
+        } catch (error) {
+            console.warn('Error rendering:', provider, error);
         }
+    }
 
-        return providerChanged;
+    onComplete(payload) {
+        if (this.props.onCompleteFlow) {
+            this.props.onCompleteFlow(payload);
+        }
     }
 
     hasSteps() {
@@ -63,13 +67,11 @@ export class CreatePipelineStepsRenderer extends React.Component {
         );
 
         return (
-            <Sandbox>
-                <MultiStepFlow>
-                    {React.Children.map(allSteps, child => (
-                        React.cloneElement(child, props)
-                    ))}
-                </MultiStepFlow>
-            </Sandbox>
+            <MultiStepFlow>
+                {React.Children.map(allSteps, child => (
+                    React.cloneElement(child, props)
+                ))}
+            </MultiStepFlow>
         );
     }
 }

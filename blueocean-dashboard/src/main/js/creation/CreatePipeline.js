@@ -9,6 +9,9 @@ import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
 import VerticalStep from './VerticalStep';
 
+import Extensions from '@jenkins-cd/js-extensions';
+const Sandbox = Extensions.SandboxedComponent;
+
 export default class CreatePipeline extends React.Component {
 
     constructor(props) {
@@ -29,9 +32,9 @@ export default class CreatePipeline extends React.Component {
         this._onExit(path);
     }
 
-    _onExit(path) {
-        if (path) {
-            this.context.router.replace(path);
+    _onExit({ url }) {
+        if (url) {
+            this.context.router.replace(url);
         } else if (history && history.length <= 2) {
             this.context.router.replace('/pipelines');
         } else {
@@ -59,10 +62,12 @@ export default class CreatePipeline extends React.Component {
                         />
                     </VerticalStep>
 
-                    <CreatePipelineStepsRenderer
-                      selectedProvider={this.state.selectedProvider}
-                      onCompleteFlow={(data) => this._onCompleteFlow(data)}
-                    />
+                    <Sandbox>
+                        <CreatePipelineStepsRenderer
+                          selectedProvider={this.state.selectedProvider}
+                          onCompleteFlow={(data) => this._onCompleteFlow(data)}
+                        />
+                    </Sandbox>
                 </DialogContent>
             </BasicDialog>
         );
