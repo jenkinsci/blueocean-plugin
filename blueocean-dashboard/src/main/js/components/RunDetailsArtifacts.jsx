@@ -28,7 +28,7 @@ ZipFileDownload.propTypes = {
 const ArtifactListingLimited = (props) => {
     const { artifacts, t } = props;
 
-    if (!artifacts || artifacts.length < 1) {
+    if (!artifacts || artifacts.length < 100) {
         return null;
     }
 
