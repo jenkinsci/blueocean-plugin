@@ -7,7 +7,7 @@ pipeline {
       }
     }
   }
-  postBuild {
+  post {
     success {
       archive 'target/blueocean-pipeline-editor.hpi'
     }
