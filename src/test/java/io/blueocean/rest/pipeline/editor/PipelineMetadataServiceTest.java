@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.hamcrest.Matcher;
+import org.jenkinsci.plugins.pipeline.modeldefinition.agent.impl.DockerPipeline;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -18,21 +19,23 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 
 /**
- * Basic tests for {@link PipelineStepMetadataService}
+ * Basic tests for {@link PipelineMetadataService}
  */
-public class PipelineStepMetadataServiceTest {
+public class PipelineMetadataServiceTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
-    // FIXME: this isn't actually registering extensions properly, unclear why, but returning 404
-    //@Test
+    @Test
     public void testBasicStepsReturned() throws IOException {
-        JSONWebResponse rsp = j.getJSON("blue/rest/pipeline-step-metadata/");
+        JSONWebResponse rsp = j.getJSON("blue/rest/pipeline-metadata/pipelineStepMetadata");
         
         assert(rsp != null) : "Should have results";
         JSONObject node = null;
@@ -47,12 +50,36 @@ public class PipelineStepMetadataServiceTest {
     }
 
     @Test
+    public void declarativeAgents() throws Exception {
+        PipelineMetadataService svc = new PipelineMetadataService();
+
+        List<ExportedDescribableModel> agents = new ArrayList<>();
+        agents.addAll(Arrays.asList(svc.doAgentMetadata()));
+
+        assertFalse(agents.isEmpty());
+
+        ExportedDescribableModel m = null;
+
+        for (ExportedDescribableModel a : agents) {
+            if (a.getType().equals(DockerPipeline.class.getName())) {
+                m = a;
+            }
+        }
+
+        assertNotNull(m);
+
+        assertTrue(m.getHasSingleRequiredParameter());
+
+        assertEquals(3, m.getParameters().size());
+    }
+
+    @Test
     public void verifyFunctionNames() throws Exception {
-        PipelineStepMetadataService svc = new PipelineStepMetadataService();
+        PipelineMetadataService svc = new PipelineMetadataService();
 
-        List<PipelineStepMetadata> steps = new ArrayList<>();
+        List<ExportedDescribableModel> steps = new ArrayList<>();
 
-        steps.addAll(Arrays.asList(svc.getPipelineStepMetadata()));
+        steps.addAll(Arrays.asList(svc.doPipelineStepMetadata()));
 
         assertFalse(steps.isEmpty());
         
@@ -69,7 +96,7 @@ public class PipelineStepMetadataServiceTest {
         assertThat(steps, hasItem(stepWithName("catchError")));
     }
 
-    private Matcher<? super PipelineStepMetadata> stepWithName(String stepName) {
+    private Matcher<? super ExportedPipelineStep> stepWithName(String stepName) {
         return hasProperty("functionName", is(stepName));
     }
 }

@@ -49,7 +49,7 @@
         </dependency>
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-model-api</artifactId>
+            <artifactId>pipeline-model-definition</artifactId>
             <version>${declarative.version}</version>
         </dependency>
         <dependency>
@@ -67,12 +67,6 @@
             <groupId>io.jenkins.blueocean</groupId>
             <artifactId>blueocean</artifactId>
             <version>${blueocean.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-model-definition</artifactId>
-            <version>${declarative.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

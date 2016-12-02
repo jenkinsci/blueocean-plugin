@@ -7,9 +7,9 @@ import hudson.ExtensionPoint;
 /**
  * Allows plugins to modify property metadata, e.g. providing additional form fields and such
  */
-public interface PipelineStepPropertyDecorator extends ExtensionPoint {
+public interface ExportedDescribableParameterDecorator extends ExtensionPoint {
     /**
      * Adjust the PipelineStepPropertyMetadata for the pipeline step
      */
-    public PipelineStepPropertyMetadata decorate(PipelineStepMetadata step, List<PipelineStepPropertyMetadata> property);
+    public ExportedDescribableParameter decorate(ExportedDescribableModel model, List<ExportedDescribableParameter> parameters);
 }
