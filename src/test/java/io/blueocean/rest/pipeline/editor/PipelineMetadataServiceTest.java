@@ -23,9 +23,9 @@ import static org.junit.Assert.assertThat;
 
 
 /**
- * Basic tests for {@link PipelineStepMetadataService}
+ * Basic tests for {@link PipelineMetadataService}
  */
-public class PipelineStepMetadataServiceTest {
+public class PipelineMetadataServiceTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
@@ -48,9 +48,9 @@ public class PipelineStepMetadataServiceTest {
 
     @Test
     public void verifyFunctionNames() throws Exception {
-        PipelineStepMetadataService svc = new PipelineStepMetadataService();
+        PipelineMetadataService svc = new PipelineMetadataService();
 
-        List<PipelineStepMetadata> steps = new ArrayList<>();
+        List<ExportedDescribableModel> steps = new ArrayList<>();
 
         steps.addAll(Arrays.asList(svc.getPipelineStepMetadata()));
 
@@ -69,7 +69,7 @@ public class PipelineStepMetadataServiceTest {
         assertThat(steps, hasItem(stepWithName("catchError")));
     }
 
-    private Matcher<? super PipelineStepMetadata> stepWithName(String stepName) {
+    private Matcher<? super ExportedPipelineStep> stepWithName(String stepName) {
         return hasProperty("functionName", is(stepName));
     }
 }
