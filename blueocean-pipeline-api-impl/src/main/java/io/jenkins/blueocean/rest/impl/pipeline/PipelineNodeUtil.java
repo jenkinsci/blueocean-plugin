@@ -109,12 +109,7 @@ public class PipelineNodeUtil {
     }
 
     public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nonnull WorkflowRun run){
-        InputAction inputAction = run.getAction(InputAction.class);
-        if(inputAction == null){
-            return false;
-        }
-        PauseAction pauseAction = step.getAction(PauseAction.class);
-        return (pauseAction != null && pauseAction.isPaused() && pauseAction.getCause().equalsIgnoreCase(inputAction.getUrlName()));
+        return isPausedForInputStep(step, run.getAction(InputAction.class));
     }
 
     public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nullable InputAction inputAction){
@@ -122,7 +117,8 @@ public class PipelineNodeUtil {
             return false;
         }
         PauseAction pauseAction = step.getAction(PauseAction.class);
-        return (pauseAction != null && pauseAction.isPaused() && pauseAction.getCause().equalsIgnoreCase(inputAction.getUrlName()));
+        return (pauseAction != null && pauseAction.isPaused()
+                && pauseAction.getCause().equals("Input"));
     }
 
     public static FlowNode getStepEndNode(List<FlowNode> sortedNodes, FlowNode startNode){
