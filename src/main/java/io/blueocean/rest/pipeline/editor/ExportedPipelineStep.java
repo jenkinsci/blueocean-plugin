@@ -23,24 +23,24 @@ public class ExportedPipelineStep extends ExportedPipelineFunction {
      * The Java class names that this pipeline step exports into context
      */
     @Exported
-    public String[] getProvidedContext() {
+    public List<String> getProvidedContext() {
         List<String> out = new ArrayList<String>();
         for (Class<?> c : descriptor.getProvidedContext()) {
             out.add(c.getName());
         }
-        return out.toArray(new String[out.size()]);
+        return out;
     }
     
     /**
      * The Java class names that this pipeline requires to be in context
      */
     @Exported
-    public String[] getRequiredContext() {
+    public List<String> getRequiredContext() {
         List<String> out = new ArrayList<String>();
         for (Class<?> c : descriptor.getRequiredContext()) {
             out.add(c.getName());
         }
-        return out.toArray(new String[out.size()]);
+        return out;
     }
     
     /**

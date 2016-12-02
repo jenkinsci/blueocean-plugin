@@ -82,13 +82,12 @@ public class ExportedDescribableModel {
      * See {@link DescribableModel#getParameters()}
      */
     @Exported
-    public ExportedDescribableParameter[] getParameters() {
+    public List<ExportedDescribableParameter> getParameters() {
         List<ExportedDescribableParameter> params = new ArrayList<>();
 
         for (DescribableParameter p : model.getParameters()) {
             params.add(new ExportedDescribableParameter(p));
         }
-
-        return params.toArray(new ExportedDescribableParameter[params.size()]);
+        return params;
     }
 }

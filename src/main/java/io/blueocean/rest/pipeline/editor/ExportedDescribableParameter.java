@@ -57,24 +57,19 @@ public class ExportedDescribableParameter {
      * See {@link DescribableParameter#getType()} and {@link ParameterType#getActualType()}
      */
     @Exported
-    public String[] getCollectionTypes() {
-        List<Class<?>> collectionTypes = new ArrayList<>();
+    public List<String> getCollectionTypes() {
+        List<String> collectionTypes = new ArrayList<>();
 
         Type typ = param.getType().getActualType();
         if (typ instanceof ParameterizedType) {
             Type[] typeArgs = ((ParameterizedType) typ).getActualTypeArguments();
             for (Type ptyp : typeArgs) {
                 if (ptyp instanceof Class<?>) {
-                    collectionTypes.add((Class<?>) ptyp);
+                    collectionTypes.add(((Class<?>) ptyp).getName());
                 }
             }
         }
-
-        String[] types = new String[collectionTypes.size()];
-        for (int i = 0; i < types.length; i++) {
-            types[i] = collectionTypes.get(i).getName();
-        }
-        return types;
+        return collectionTypes;
     }
 
     /**

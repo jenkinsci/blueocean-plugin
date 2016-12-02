@@ -1,7 +1,5 @@
 package io.blueocean.rest.pipeline.editor;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,18 +10,15 @@ import hudson.model.Describable;
 import hudson.tasks.Builder;
 import hudson.tasks.Publisher;
 import jenkins.tasks.SimpleBuildStep;
+import org.jenkinsci.plugins.pipeline.modeldefinition.agent.DeclarativeAgent;
+import org.jenkinsci.plugins.pipeline.modeldefinition.agent.DeclarativeAgentDescriptor;
 import org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep;
+import org.jenkinsci.plugins.pipeline.modeldefinition.model.BuildCondition;
 import org.jenkinsci.plugins.structs.SymbolLookup;
 import org.jenkinsci.plugins.structs.describable.DescribableModel;
-import org.jenkinsci.plugins.structs.describable.DescribableParameter;
-import org.jenkinsci.plugins.workflow.cps.Snippetizer;
 import org.jenkinsci.plugins.workflow.steps.Step;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.kohsuke.stapler.NoStaplerConstructorException;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.GET;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -41,7 +36,7 @@ import javax.annotation.CheckForNull;
  * This provides and Blueocean REST API endpoint to obtain pipeline step metadata.
  * 
  * TODO: this should be provided off of the organization endpoint:
- * e.g. /organization/:id/pipeline-step-metadata
+ * e.g. /organization/:id/pipeline-metadata
  */
 @Extension
 public class PipelineMetadataService implements ApiRoutable {
@@ -52,18 +47,46 @@ public class PipelineMetadataService implements ApiRoutable {
 
     @Override
     public String getUrlName() {
-        return "pipeline-step-metadata";
+        return "pipeline-metadata";
     }
+
+    /**
+     * Function to return all {@link DeclarativeAgent}s present in the system when accessed through the REST API
+     */
+    @GET
+    @TreeResponse
+    public ExportedDescribableModel[] doAgentMetadata() {
+        List<ExportedDescribableModel> models = new ArrayList<>();
+
+        for (DeclarativeAgentDescriptor d : DeclarativeAgentDescriptor.all()) {
+            try {
+                DescribableModel<? extends DeclarativeAgent> model = new DescribableModel<>(d.clazz);
+
+                models.add(new ExportedDescribableModel(model));
+            } catch (NoStaplerConstructorException e) {
+                // Ignore!
+            }
+        }
+        return models.toArray(new ExportedDescribableModel[models.size()]);
+    }
+
+    /**
+     * Function to return the names of all build conditions present in the system when accessed through the REST API
+     */
+    @GET
+    @TreeResponse
+    public String[] doBuildConditions() {
+        List<String> conditions = BuildCondition.getOrderedConditionNames();
+        return conditions.toArray(new String[conditions.size()]);
+    }
+
 
     /**
      * Function to return all step descriptors present in the system when accessed through the REST API
      */
     @GET
-    @WebMethod(name = "")
     @TreeResponse
-    public ExportedPipelineFunction[] getPipelineStepMetadata() {
-        Jenkins j = Jenkins.getInstance();
-
+    public ExportedPipelineFunction[] doPipelineStepMetadata() {
         List<ExportedPipelineFunction> pd = new ArrayList<>();
         // POST to this with parameter names
         // e.g. json:{"time": "1", "unit": "NANOSECONDS", "stapler-class": "org.jenkinsci.plugins.workflow.steps.TimeoutStep", "$class": "org.jenkinsci.plugins.workflow.steps.TimeoutStep"}
@@ -128,7 +151,7 @@ public class PipelineMetadataService implements ApiRoutable {
             ExportedPipelineFunction f = new ExportedPipelineFunction(new DescribableModel<>(d.clazz), symbol);
             // Let any decorators adjust the step properties
             for (ExportedDescribableParameterDecorator decorator : ExtensionList.lookup(ExportedDescribableParameterDecorator.class)) {
-                decorator.decorate(f, Arrays.asList(f.getParameters()));
+                decorator.decorate(f, f.getParameters());
             }
 
             return f;
@@ -145,7 +168,7 @@ public class PipelineMetadataService implements ApiRoutable {
 
             // Let any decorators adjust the step properties
             for (ExportedDescribableParameterDecorator decorator : ExtensionList.lookup(ExportedDescribableParameterDecorator.class)) {
-                decorator.decorate(step, Arrays.asList(step.getParameters()));
+                decorator.decorate(step, step.getParameters());
             }
 
             return step;
