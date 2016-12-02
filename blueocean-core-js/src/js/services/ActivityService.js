@@ -97,7 +97,7 @@ export class ActivityService extends BunkerService {
     }
 
     fetchArtifacts(runHref) {
-        return Fetch.fetchJSON(`${runHref}artifacts`);
+        return Fetch.fetchJSON(`${runHref}artifacts/`);
     }
 
 

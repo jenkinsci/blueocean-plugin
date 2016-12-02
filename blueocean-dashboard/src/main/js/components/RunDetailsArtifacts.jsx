@@ -3,8 +3,46 @@ import { EmptyStateView, FileSize, Table } from '@jenkins-cd/design-language';
 import { Icon } from 'react-material-icons-blue';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
-import { observable, action} from 'mobx';
 import mobxUtils from 'mobx-utils';
+
+const { func, object, string } = PropTypes;
+
+const ZipFileDownload = (props) => {
+    const { zipFile, t } = props;
+    if (!zipFile) {
+        return null;
+    }
+
+    return (<div className="downloadAllArtifactsButton"><a className="btn-secondary" target="_blank" title={t('rundetail.artifacts.button.downloadAll', { defaultValue: 'Download all artifact as zip' })} href={zipFile}>
+                Download All
+            </a></div>
+    );
+};
+
+ZipFileDownload.propTypes = {
+    zipFile: string,
+    t: func,
+};
+
+
+const ArtifactListingLimited = (props) => {
+    const { artifacts, t } = props;
+
+    if (!artifacts || artifacts.length < 1) {
+        return null;
+    }
+
+    return (<div className="artifactListingLimited">
+        <EmptyStateView tightSpacing><Markdown>Only showing the first 100 artifacts</Markdown></EmptyStateView>
+        </div>);
+};
+
+
+
+ArtifactListingLimited.propTypes = {
+    artifacts: object,
+    t: func,
+}
 /**
  * Displays a list of artifacts from the supplied build run property.
  */
@@ -33,7 +71,7 @@ export default class RunDetailsArtifacts extends Component {
         default:
         }
 
-        const artifacts = this.artifacts.value.artifacts;
+        const { zipFile, artifacts } = this.artifacts.value;
        
         if (!artifacts || !artifacts.length) {
             return (<EmptyStateView tightSpacing>
@@ -44,14 +82,17 @@ export default class RunDetailsArtifacts extends Component {
         }
 
         const headers = [
-            { label: t('rundetail.artifacts.header.path', { defaultValue: 'Path' }), className: 'name' },
-            { label: t('rundetail.artifacts.header.size', { defaultValue: 'Header' }), className: 'size' },
+            { label: t('rundetail.artifacts.header.name', { defaultValue: 'Name' }), className: 'name' },
+            { label: t('rundetail.artifacts.header.size', { defaultValue: 'Size' }), className: 'size' },
             { label: '', className: 'actions' },
         ];
 
         const style = { fill: '#4a4a4a' };
 
         return (
+            <div>
+              
+                <ArtifactListingLimited artifacts={artifacts} t={t} />
             <Table headers={headers} className="artifacts-table fixed">
                 { artifacts.map(artifact => (
                     <tr key={artifact.url}>
@@ -66,12 +107,15 @@ export default class RunDetailsArtifacts extends Component {
                         </td>
                     </tr>
                 ))}
+                <td colSpan="3"></td>
             </Table>
+               <ZipFileDownload zipFile={zipFile} t={t} />
+           
+            </div>
         );
     }
 }
 
-const { func, object } = PropTypes;
 
 RunDetailsArtifacts.contextTypes = {
     activityService: object.isRequired,
