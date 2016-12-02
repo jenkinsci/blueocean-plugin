@@ -3,6 +3,8 @@ package io.blueocean.rest.pipeline.editor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +44,9 @@ import javax.annotation.CheckForNull;
  */
 @Extension
 public class PipelineStepMetadataService implements ApiRoutable {
+
+    final static List<String> INCLUDED_ADVANCED_STEPS = Collections.unmodifiableList(Arrays.asList("catchError"));
+
     ParameterNameDiscoverer nameFinder = new LocalVariableTableParameterNameDiscoverer();
 
     @Override
@@ -203,11 +208,13 @@ public class PipelineStepMetadataService implements ApiRoutable {
         List<PipelineStepMetadata> pd = new ArrayList<PipelineStepMetadata>();
         // POST to this with parameter names
         // e.g. json:{"time": "1", "unit": "NANOSECONDS", "stapler-class": "org.jenkinsci.plugins.workflow.steps.TimeoutStep", "$class": "org.jenkinsci.plugins.workflow.steps.TimeoutStep"}
-        String snippetizerUrl = Stapler.getCurrentRequest().getContextPath() + "/" + snippetizer.getUrlName() + "/generateSnippet";
+        String snippetizerUrl = null;
+        if (Stapler.getCurrentRequest() != null) {
+            snippetizerUrl = Stapler.getCurrentRequest().getContextPath() + "/" + snippetizer.getUrlName() + "/generateSnippet";
+        }
 
         for (StepDescriptor d : StepDescriptor.all()) {
-            if (!ModelASTStep.getBlockedSteps().containsKey(d.getFunctionName())
-                    && !d.isAdvanced()) {
+            if (includeStep(d)) {
                 PipelineStepMetadata step = getStepMetadata(d, snippetizerUrl);
                 if (step != null) {
                     pd.add(step);
@@ -227,6 +234,18 @@ public class PipelineStepMetadataService implements ApiRoutable {
         }
 
         return pd.toArray(new PipelineStepMetadata[pd.size()]);
+    }
+
+    private boolean includeStep(StepDescriptor d) {
+        boolean include = true;
+        if (ModelASTStep.getBlockedSteps().containsKey(d.getFunctionName())) {
+            include = false;
+        } else if (d.isAdvanced()
+                && !INCLUDED_ADVANCED_STEPS.contains(d.getFunctionName())) {
+            include = false;
+        }
+
+        return include;
     }
 
     private <T extends Describable<T>,D extends Descriptor<T>> void populateMetaSteps(List<Descriptor<?>> r, Class<T> c) {
@@ -276,11 +295,11 @@ public class PipelineStepMetadataService implements ApiRoutable {
 
     private @CheckForNull PipelineStepMetadata getStepMetadata(Descriptor<?> d) {
         String symbol = symbolForDescriptor(d);
+
         if (symbol != null) {
             BasicPipelineStepMetadata step = new BasicPipelineStepMetadata(symbol, d.clazz, d.getDisplayName());
             DescribableModel<?> m = new DescribableModel<>(d.clazz);
-            step.descriptorUrl = d.getDescriptorFullUrl();
-
+            step.descriptorUrl = d.getDescriptorUrl();
             step.hasSingleRequiredParameter = m.hasSingleRequiredParameter();
 
             for (DescribableParameter descParam : m.getParameters()) {
@@ -293,18 +312,24 @@ public class PipelineStepMetadataService implements ApiRoutable {
         }
     }
 
-    private @CheckForNull PipelineStepMetadata getStepMetadata(StepDescriptor d, String snippetizerUrl) {
+    private @CheckForNull PipelineStepMetadata getStepMetadata(StepDescriptor d, @CheckForNull String snippetizerUrl) {
         BasicPipelineStepMetadata step = new BasicPipelineStepMetadata(d.getFunctionName(), d.clazz, d.getDisplayName());
 
         try {
             DescribableModel<?> model = new DescribableModel<>(step.type);
 
-            step.snippetizerUrl = snippetizerUrl + "?$class=" + d.clazz.getName(); // this isn't really accurate
+            if (snippetizerUrl != null) {
+                step.snippetizerUrl = snippetizerUrl + "?$class=" + d.clazz.getName(); // this isn't really accurate
+            }
 
             step.isWrapper = d.takesImplicitBlockArgument();
             step.requiredContext.addAll(d.getRequiredContext());
             step.providedContext.addAll(d.getProvidedContext());
-            step.descriptorUrl = d.getDescriptorFullUrl();
+            if (Stapler.getCurrentRequest() != null) {
+                step.descriptorUrl = d.getDescriptorFullUrl();
+            } else {
+                step.descriptorUrl = d.getDescriptorUrl();
+            }
             step.hasSingleRequiredParameter = model.hasSingleRequiredParameter();
 
             for (DescribableParameter descParam : model.getParameters()) {
