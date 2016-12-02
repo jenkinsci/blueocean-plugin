@@ -241,9 +241,6 @@ public abstract class BlueRun extends Resource {
         /** Unknown status */
         UNKNOWN,
 
-        /** Run is waiting for user input */
-        WAITING_FOR_INPUT,
-
         /** Aborted run*/
         ABORTED;
     }
