@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
-import com.sun.istack.internal.NotNull;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
@@ -17,6 +16,7 @@ import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -108,7 +108,7 @@ public class PipelineNodeUtil {
         return null;
     }
 
-    public static boolean isPausedForInputStep(@NotNull StepAtomNode step, @NotNull WorkflowRun run){
+    public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nonnull WorkflowRun run){
         InputAction inputAction = run.getAction(InputAction.class);
         if(inputAction == null){
             return false;
@@ -117,7 +117,7 @@ public class PipelineNodeUtil {
         return (pauseAction != null && pauseAction.isPaused() && pauseAction.getCause().equalsIgnoreCase(inputAction.getUrlName()));
     }
 
-    public static boolean isPausedForInputStep(@NotNull StepAtomNode step, @Nullable InputAction inputAction){
+    public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nullable InputAction inputAction){
         if(inputAction == null){
             return false;
         }
