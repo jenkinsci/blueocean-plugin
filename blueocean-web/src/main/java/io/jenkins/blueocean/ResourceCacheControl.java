@@ -134,8 +134,11 @@ public final class ResourceCacheControl implements Filter {
         chain.doFilter(request, response);
     }
 
-    private boolean isCacheableResourceRequest(HttpServletRequest request) {
+    boolean isCacheableResourceRequest(HttpServletRequest request) {
         String requestPath = request.getPathInfo();
+        if (requestPath == null) {
+            return false;
+        }
         for (String resourcePrefix : resourcePrefixes) {
             if (requestPath.startsWith(resourcePrefix)) {
                 return true;
