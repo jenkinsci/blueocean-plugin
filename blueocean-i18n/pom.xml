@@ -14,4 +14,11 @@
   <name>Module :: BlueOcean :: i18n API</name>
 
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.jenkins.blueocean</groupId>
+            <artifactId>blueocean-rest</artifactId>
+        </dependency>
+    </dependencies>
 </project>

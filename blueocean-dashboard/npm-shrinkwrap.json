@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.32-tfbeta9",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.32-tfbeta9",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.32-tfbeta9.tgz",
+      "version": "0.0.32",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.32",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.32.tgz",
       "dependencies": {
         "@jenkins-cd/sse-gateway": {
           "version": "0.0.10",
@@ -50,9 +50,9 @@
       }
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.32-tfbeta1",
-      "from": "@jenkins-cd/js-extensions@0.0.32-tfbeta1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.32-tfbeta1.tgz"
+      "version": "0.0.32",
+      "from": "@jenkins-cd/js-extensions@0.0.32",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.32.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",

@@ -23,6 +23,7 @@
  */
 package io.jenkins.blueocean.i18n;
 
+import hudson.PluginWrapper;
 import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,9 +54,14 @@ public class BlueI18nTest extends BaseTest {
 
     @Test
     public void test_200_response_locale_match() {
-        String dashboardVersion = BlueI18n.getPlugin("blueocean-dashboard").getVersion();
+        PluginWrapper plugin = BlueI18n.getPlugin("blueocean-dashboard");
+        if (plugin == null) {
+            // Skip. See waitForPluginLoaded() above.
+            return;
+        }
+        String dashboardVersion = plugin.getVersion();
 
-        Map<String, Object> response1 = get("/blueocean-i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/de", HttpServletResponse.SC_OK, Map.class);
+        Map<String, Object> response1 = get("/blue/rest/i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/de", HttpServletResponse.SC_OK, Map.class);
 
         Assert.assertEquals("ok", response1.get("status"));
         Assert.assertTrue(((Map<String, Object>)response1.get("data")).containsKey("common.date.duration.format"));
@@ -63,21 +69,31 @@ public class BlueI18nTest extends BaseTest {
 
     @Test
     public void test_200_response_locale_fallback() {
-        String dashboardVersion = BlueI18n.getPlugin("blueocean-dashboard").getVersion();
+        PluginWrapper plugin = BlueI18n.getPlugin("blueocean-dashboard");
+        if (plugin == null) {
+            // Skip. See waitForPluginLoaded() above.
+            return;
+        }
+        String dashboardVersion = plugin.getVersion();
 
         // Make sure we fallback to the base resource bundle def if an unknown locale is requested.
         // Of course, we will need to modify this test if translations for the test languages are added.
-        get("/blueocean-i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/en", HttpServletResponse.SC_OK, Map.class);
-        get("/blueocean-i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/en_US", HttpServletResponse.SC_OK, Map.class);
-        get("/blueocean-i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/jp", HttpServletResponse.SC_OK, Map.class);
+        get("/blue/rest/i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/en", HttpServletResponse.SC_OK, Map.class);
+        get("/blue/rest/i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/en_US", HttpServletResponse.SC_OK, Map.class);
+        get("/blue/rest/i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/jp", HttpServletResponse.SC_OK, Map.class);
     }
 
     @Test
     public void test_200_response_caching() {
-        String dashboardVersion = BlueI18n.getPlugin("blueocean-dashboard").getVersion();
+        PluginWrapper plugin = BlueI18n.getPlugin("blueocean-dashboard");
+        if (plugin == null) {
+            // Skip. See waitForPluginLoaded() above.
+            return;
+        }
+        String dashboardVersion = plugin.getVersion();
 
-        Map<String, Object> response1 = get("/blueocean-i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/de", HttpServletResponse.SC_OK, Map.class);
-        Map<String, Object> response2 = get("/blueocean-i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/de", HttpServletResponse.SC_OK, Map.class);
+        Map<String, Object> response1 = get("/blue/rest/i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/de", HttpServletResponse.SC_OK, Map.class);
+        Map<String, Object> response2 = get("/blue/rest/i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.Messages/de", HttpServletResponse.SC_OK, Map.class);
 
         // Make sure the second comes from the cache. The "cache-timestamp" field
         // will be different if it didn't, resulting in an assert failure.
@@ -86,9 +102,14 @@ public class BlueI18nTest extends BaseTest {
 
     @Test
     public void test_404_response_unknown_bundle() {
-        String dashboardVersion = BlueI18n.getPlugin("blueocean-dashboard").getVersion();
+        PluginWrapper plugin = BlueI18n.getPlugin("blueocean-dashboard");
+        if (plugin == null) {
+            // Skip. See waitForPluginLoaded() above.
+            return;
+        }
+        String dashboardVersion = plugin.getVersion();
 
-        Map<String, Object> response1 = get("/blueocean-i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.XXXUnknown/en", HttpServletResponse.SC_NOT_FOUND, Map.class);
+        Map<String, Object> response1 = get("/blue/rest/i18n/blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.XXXUnknown/en", HttpServletResponse.SC_NOT_FOUND, Map.class);
 
         Assert.assertEquals("error", response1.get("status"));
         Assert.assertEquals("Unknown plugin or resource bundle: blueocean-dashboard/" + dashboardVersion + "/jenkins.plugins.blueocean.dashboard.XXXUnknown/en", response1.get("message"));
@@ -96,7 +117,7 @@ public class BlueI18nTest extends BaseTest {
 
     @Test
     public void test_404_response_unknown_plugin() {
-        Map<String, Object> response1 = get("/blueocean-i18n/blueocean-xxxblah/1.0.0/jenkins.plugins.blueocean.dashboard.Messages/en", HttpServletResponse.SC_NOT_FOUND, Map.class);
+        Map<String, Object> response1 = get("/blue/rest/i18n/blueocean-xxxblah/1.0.0/jenkins.plugins.blueocean.dashboard.Messages/en", HttpServletResponse.SC_NOT_FOUND, Map.class);
 
         Assert.assertEquals("error", response1.get("status"));
         Assert.assertEquals("Unknown plugin or resource bundle: blueocean-xxxblah/1.0.0/jenkins.plugins.blueocean.dashboard.Messages/en", response1.get("message"));
@@ -104,7 +125,12 @@ public class BlueI18nTest extends BaseTest {
 
     @Test
     public void test_browser_cacheable() {
-        String version = BlueI18n.getPlugin("cloudbees-folder").getVersion();
+        PluginWrapper plugin = BlueI18n.getPlugin("cloudbees-folder");
+        if (plugin == null) {
+            // Skip. See waitForPluginLoaded() above.
+            return;
+        }
+        String version = plugin.getVersion();
         BlueI18n.BundleParams bundleParams = BlueI18n.getBundleParameters(String.format("cloudbees-folder/%s/pluginx.bundle", version));
 
         // Should be cacheable because the installed version matches the requested version + the
