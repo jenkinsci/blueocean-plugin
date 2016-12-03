@@ -43,8 +43,6 @@ public class PipelineMetadataService implements ApiRoutable {
 
     final static List<String> INCLUDED_ADVANCED_STEPS = Collections.unmodifiableList(Arrays.asList("catchError"));
 
-    ParameterNameDiscoverer nameFinder = new LocalVariableTableParameterNameDiscoverer();
-
     @Override
     public String getUrlName() {
         return "pipeline-metadata";
