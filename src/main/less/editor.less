@@ -290,3 +290,122 @@
     font-size:16px;
     font-family: @font-family-header;
 }
+
+//--[ Step Select Dialog ]----------------------------------------------------------------------------------------------------
+
+.placeholder(@rules) {
+    &::-webkit-input-placeholder {
+        @rules();
+    }
+
+    &:-moz-placeholder { /* Firefox 18- */
+        @rules();
+    }
+
+    &::-moz-placeholder {  /* Firefox 19+ */
+        @rules();
+    }
+
+    &:-ms-input-placeholder {  
+        @rules();
+    }
+}
+
+.editor-step-selection-dialog {
+    position: relative;
+
+    .editor-step-selection-dialog-search {
+        height: 4em;
+        position: relative;
+        margin: -32px -32px -16px -32px;
+
+        > svg {
+            position: absolute;
+            top: 50%;
+            left: 28px;
+            margin-top: -16px;
+            z-index: 1;
+        }
+        input.editor-step-selection-dialog-search-input {
+            height: 100%;
+            width: 100%;
+            padding: 1px 12px 0 68px;
+            z-index: 2;
+            position: relative;
+            display: block;
+            background: transparent;
+            border: 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 1.2em;
+            .placeholder({
+                color: #888;
+                font-style: italic;
+            });
+            &:focus {
+                border-color: #4a90e2;
+                border-radius: 0px;
+                outline: none;
+                margin: 0;
+            }
+        }
+    }
+    .editor-step-selection-dialog-steps {
+        height: 30em;
+        overflow-x: scroll;
+        width: 40em;
+        margin-top: 3em;
+
+        > .step-item {
+            padding: 16px 16px 16px 57px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            font-size: 1.2em;
+            
+            + .step-item {
+                margin-top: 5px;
+            }
+
+            &.selected {
+                background: #ddd;
+                font-weight: normal;
+                color: #000;
+                border-color: #ccc;
+            }
+
+            &:hover, &:focus {
+                outline: none;
+                background: #eee;
+            }
+
+            &:before {
+                content: '\2039\203a';
+                width: 38px;
+                color: #444;
+                display: inline-block;
+                font: 44px Sans-serif;
+                line-height: 38px;
+                position: absolute;
+                top: 50%;
+                left: 13px;
+                margin-top: -22px;
+                font-weight: 100;
+                letter-spacing: -4px;
+            }
+        }
+    }
+}
+
+.pipeline-editor-form {
+    .form-item {
+        .form-label {
+            display: block;
+            font-size: 1.1em;
+            margin: 1em 0 .3em 0;
+        }
+        .form-input {
+            display: block;
+        }
+    }
+}

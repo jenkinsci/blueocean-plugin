@@ -4,7 +4,8 @@ import React, { Component, PropTypes } from 'react';
 import { EditorPipelineGraph } from './EditorPipelineGraph';
 import { EditorStepList } from './EditorStepList';
 import { EditorStepDetails } from './EditorStepDetails';
-import {EmptyStateView} from '@jenkins-cd/design-language';
+import { EmptyStateView } from '@jenkins-cd/design-language';
+import { AddStepSelectionDialog } from './AddStepSelectionDialog';
 
 import type { StageInfo, StepInfo } from './common';
 
@@ -84,6 +85,43 @@ function findParentStage(candidates:Array<StageInfo>, childId:number, safetyValv
     return null;
 }
 
+const findStepById = function (steps, id) {
+    const step = steps.filter(i => i.id === id);
+    if (step.length) {
+        return step[0];
+    }
+    for (let s of steps) {
+        if (s.isContainer) {
+            const children = s.children;
+            if (children) {
+                const childStep = findStepById(children, id);
+                if (childStep) {
+                    return childStep;
+                }
+            }
+        }
+    }
+};
+
+
+const findParentStepByChildId = function (steps, id) {
+    for (let s of steps) {
+        if (s.isContainer) {
+            const children = s.children;
+            if (children) {
+                for (let c of children) {
+                    if (c.id === id) {
+                        return s;
+                    }
+                }
+                const childStep = findParentStepByChildId(children, id);
+                if (childStep) {
+                    return childStep;
+                }
+            }
+        }
+    }
+};
 type DefaultProps = typeof EditorMain.defaultProps;
 export class EditorMain extends Component<DefaultProps, Props, State> {
 
@@ -314,29 +352,46 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
             selectedStep: null
         });
     }
+    
+    openSelectStepDialog(parentStep) {
+        this.setState({showSelectStep: true, parentStep: parentStep});
+    }
 
-    createStep() {
+    addStep(step) {
 
-        const {selectedStage, stageSteps} = this.state;
+        const {selectedStage, stageSteps, parentStep} = this.state;
 
         if (!selectedStage) {
             return;
         }
 
         const oldStepsForStage = stageSteps[selectedStage.id] || [];
+        let newStepsForStage = oldStepsForStage;
 
         let newStep:StepInfo = {
             id: --idSeq,
-            isContainer: false,
+            isContainer: step.isBlockContainer,
             children: [],
-            type: "script",
-            label: "Run Script",
-            data: ""
+            type: step.functionName,
+            label: step.displayName,
+            data: {}
         };
 
-        let newStepsForStage = [...oldStepsForStage, newStep];
-        let newStageSteps = {...stageSteps, [selectedStage.id]: newStepsForStage};
+        if (parentStep != null) {
+            const parent = findStepById(oldStepsForStage, parentStep.id);
+            if (parent) {
+                parent.children = parent.children || [];
+                parent.children.push(newStep);
+            }
+            else {
+                throw new Error('unable to find step: ' + id);
+            }
+        }
+        else {
+            newStepsForStage = [...oldStepsForStage, newStep];
+        }
 
+        let newStageSteps = {...stageSteps, [selectedStage.id]: newStepsForStage};
         this.setState({stageSteps: newStageSteps, selectedStep: newStep});
     }
 
@@ -352,20 +407,39 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         }
 
         const oldStepsForStage = stageSteps[selectedStage.id] || [];
+        let newStepsForStage = oldStepsForStage;
+        let newSelectedStep;
 
-        const stepIdx = oldStepsForStage.indexOf(step);
+        const parent = findParentStepByChildId(oldStepsForStage, step.id);
+        if (parent) {
+            const stepIdx = parent.children.indexOf(step);
 
-        if (stepIdx < 0) {
-            return;
+            if (stepIdx < 0) {
+                return;
+            }
+
+            parent.children = [
+                ...(parent.children.slice(0, stepIdx)),
+                ...(parent.children.slice(stepIdx + 1))
+            ];
+            
+            newSelectedStep = parent;
         }
+        else { // no parent
+            const stepIdx = oldStepsForStage.indexOf(step);
 
-        let newStepsForStage = [
-            ...(oldStepsForStage.slice(0, stepIdx)),
-            ...(oldStepsForStage.slice(stepIdx + 1))
-        ];
+            if (stepIdx < 0) {
+                return;
+            }
 
-        let newSelectedStepIdx = Math.min(stepIdx, newStepsForStage.length - 1);
-        let newSelectedStep = newStepsForStage[newSelectedStepIdx];
+            newStepsForStage = [
+                ...(oldStepsForStage.slice(0, stepIdx)),
+                ...(oldStepsForStage.slice(stepIdx + 1))
+            ];
+
+            let newSelectedStepIdx = Math.min(stepIdx, newStepsForStage.length - 1);
+            newSelectedStep = newStepsForStage[newSelectedStepIdx];
+        }
 
         let newStageSteps = {...stageSteps, [selectedStage.id]: newStepsForStage};
 
@@ -384,16 +458,28 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         }
 
         const stepsForStage = stageSteps[selectedStage.id];
-        const stepIndex = stepsForStage.indexOf(selectedStep);
+        let updatedStepsForStage;
+        const parent = findParentStepByChildId(stepsForStage, selectedStep.id);
+        if (parent) {
+            parent.children.map(c => {
+                if (c.id === selectedStage.id) {
+                    c.data = newValue;
+                }
+            });
+            updatedStepsForStage = stepsForStage;
+        }
+        else { // no parent
+            const stepIndex = stepsForStage.indexOf(selectedStep);
+    
+            let updatedStep = {...selectedStep, data: newValue};
+            updatedStepsForStage = [
+                ...(stepsForStage.slice(0, stepIndex)),
+                updatedStep,
+                ...(stepsForStage.slice(stepIndex + 1))
+            ];
+        }
 
-        let updatedStep = {...selectedStep, data: newValue};
-        let updatedStepsForStage = [
-            ...(stepsForStage.slice(0, stepIndex)),
-            updatedStep,
-            ...(stepsForStage.slice(stepIndex + 1))
-        ];
         let updatedStageSteps = {...stageSteps, [selectedStage.id]: updatedStepsForStage};
-
         this.setState({
             stageSteps: updatedStageSteps,
             selectedStep: updatedStep
@@ -527,7 +613,8 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                     <div className="editor-main-step-list">
                         {selectedStage ? <EditorStepList steps={steps}
                                                          selectedStep={selectedStep}
-                                                         onAddStepClick={() => this.createStep()}
+                                                         onAddStepClick={() => this.openSelectStepDialog()}
+                                                         onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
                                                          onStepSelected={(step) => this.selectedStepChanged(step)}
                                                          onDeleteStepClick={(step) => this.deleteStep(step)}/>
                             : <p>Select or create a build stage</p>}
@@ -551,7 +638,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                             scripts, checkout out source code and much more.
                         </p>
 
-                        <button onClick={() => this.createStep()}>Add Step</button>
+                        <button onClick={() => this.openSelectStepDialog()}>Add Step</button>
                     </EmptyStateView>
                 </div>
             );
@@ -596,6 +683,9 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                 <div id="soon" style={{...ss, visibility: sv}} onClick={()=>this.setState({s: false})}>&nbsp;</div>
 
                 {/* <button className="btn-warning" onClick={()=>this.dumpState()}>DUMP</button> */}
+                {this.state.showSelectStep && <AddStepSelectionDialog
+                    onClose={() => this.setState({showSelectStep: false})}
+                    onStepSelected={(step) => { this.setState({showSelectStep: false}); this.addStep(step); }} />}
             </div>
         );
     }

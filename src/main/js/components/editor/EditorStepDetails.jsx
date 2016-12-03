@@ -1,8 +1,19 @@
 // @flow
 
 import React, {Component, PropTypes} from 'react';
-
+import pipelineStepListStore from '../../services/PipelineStepListStore';
 import type {StepInfo} from './common';
+import GenericEditor from './steps/GenericStepEditor';
+
+const allStepEditors = [
+    require('./steps/ShellScriptStepEditor').default,
+];
+
+const stepEditorsByName = {};
+
+for (let e of allStepEditors) {
+    stepEditorsByName[e.stepType] = e;
+}
 
 type Props = {
     step?: ?StepInfo,
@@ -15,37 +26,32 @@ export class EditorStepDetails extends Component {
     props:Props;
 
     state:{
-        body: string
+        step: string,
+        stepMetadata: any,
     };
 
     static defaultProps = {};
 
     constructor(props:Props) {
         super(props);
+    }
 
-        const step = props.step;
-
-        this.state = {
-            body: step ? step.data : ""
-        };
+    componentWillMount() {
+        pipelineStepListStore.getStepListing(stepMetadata => {
+            this.setState({stepMetadata: stepMetadata});
+        });
     }
 
     componentWillReceiveProps(nextProps:Props) {
         if (nextProps.step !== this.props.step) {
-            const body = nextProps.step ? nextProps.step.data : "";
-            this.setState({body});
+            this.setState({step: nextProps.step});
         }
     }
 
-    textChanged(event: *) {
-        // TODO: Look up the correct type for event in this case
-        this.setState({body: event.target.value});
-    }
-
-    commitValue() {
+    commitValue(step) {
         const {onDataChange} = this.props;
         if (onDataChange) {
-            onDataChange(this.state.body);
+            onDataChange(step.data);
         }
     }
 
@@ -58,11 +64,18 @@ export class EditorStepDetails extends Component {
             onDeleteStepClick(step);
         }
     }
+    
+    getStepEditor(step) {
+        const editor = stepEditorsByName[step.type];
+        if (editor) {
+            return editor;
+        }
+        return GenericEditor;
+    }
 
     render() {
 
         const {step} = this.props;
-        const {body} = this.state;
 
         if (!step) {
             return (
@@ -71,14 +84,13 @@ export class EditorStepDetails extends Component {
                 </div>
             );
         }
+        
+        const StepEditor = this.getStepEditor(step);
 
         return (
             <div className="editor-step-detail">
                 <h4 className="editor-step-detail-label">{step.label}</h4>
-                <textarea className="editor-step-detail-script"
-                          value={body || ""}
-                          onChange={(e) => this.textChanged(e)}
-                          onBlur={(e) => this.commitValue()}/>
+                <StepEditor onChange={step => this.commitValue(step)} step={step} />
                 <div className="editor-button-bar">
                     <button className="btn-secondary editor-delete-btn" onClick={(e) => this.deleteStepClicked(e)}>Delete step</button>
                 </div>

@@ -25,7 +25,7 @@ function makeStep(type:string, label:string, nestedSteps?:Array<StepInfo>):StepI
     const id = __id++;
     const children = nestedSteps || [];
     const isContainer = !!children.length;
-    const data = null; // TODO: Put stuff here at some point
+    const data = {}; // TODO: Put stuff here at some point
     return {
         id,
         type,
@@ -58,10 +58,10 @@ export class EditorDemo extends Component {
 
         let stageSteps = {};
 
-        stageSteps[stages[0].id] = [makeStep("script", "Run Script")];
+        stageSteps[stages[0].id] = [makeStep("sh", "Run Script")];
         stageSteps[bt[3].id] = [
-            makeStep("script", "Run Script"),
-            makeStep("script", "Run Script")
+            makeStep("sh", "Run Script"),
+            makeStep("sh", "Run Script")
         ];
 
         return (

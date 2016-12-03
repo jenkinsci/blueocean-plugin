@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
@@ -24,6 +23,8 @@
         <jenkins.version>2.7.1</jenkins.version>
         <node.version>5.8.0</node.version>
         <npm.version>3.7.3</npm.version>
+        <blueocean.version>1.0.0-b13-SNAPSHOT</blueocean.version>
+        <declarative.version>0.7-SNAPSHOT</declarative.version>
     </properties>
 
     <repositories>
@@ -43,8 +44,29 @@
     <dependencies>
         <dependency>
             <groupId>io.jenkins.blueocean</groupId>
+            <artifactId>blueocean-rest</artifactId>
+            <version>${blueocean.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-definition</artifactId>
+            <version>${declarative.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-api</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-cps</artifactId>
+            <version>2.23</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jenkins.blueocean</groupId>
             <artifactId>blueocean</artifactId>
-            <version>1.0.0-b07</version>
+            <version>${blueocean.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
