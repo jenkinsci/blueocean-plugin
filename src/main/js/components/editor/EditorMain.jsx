@@ -85,7 +85,7 @@ function findParentStage(candidates:Array<StageInfo>, childId:number, safetyValv
     return null;
 }
 
-const findStepById = function(steps, id) {
+const findStepById = function (steps, id) {
     const step = steps.filter(i => i.id === id);
     if (step.length) {
         return step[0];
@@ -104,7 +104,7 @@ const findStepById = function(steps, id) {
 };
 
 
-const findParentStepByChildId = function(steps, id) {
+const findParentStepByChildId = function (steps, id) {
     for (let s of steps) {
         if (s.isContainer) {
             const children = s.children;

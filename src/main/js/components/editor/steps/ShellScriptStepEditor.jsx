@@ -9,9 +9,9 @@ export default class ScriptStepEditor extends React.Component {
 
     render() {
         const { step } = this.props;
-        return <textarea className="editor-step-detail-script"
+        return (<textarea className="editor-step-detail-script"
                   defaultValue={step.data.script}
-                  onChange={(e) => this.textChanged(e.target.value)} />
+                  onChange={(e) => this.textChanged(e.target.value)} />);
     }
 }
 
