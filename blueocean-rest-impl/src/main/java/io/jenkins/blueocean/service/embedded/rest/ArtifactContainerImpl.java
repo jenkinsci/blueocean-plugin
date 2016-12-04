@@ -76,7 +76,7 @@ public class ArtifactContainerImpl extends BlueArtifactContainer {
 
     @Override
     public Iterator<BlueArtifact> iterator() {
-            List<Run.Artifact> artifacts = run.getArtifactsUpTo(100);
+        List<Run.Artifact> artifacts = run.getArtifactsUpTo(100);
         return Iterators.transform(artifacts.iterator(), new Function<Run.Artifact, BlueArtifact>() {
             @Override
             public BlueArtifact apply(@Nullable Run.Artifact artifact) {
