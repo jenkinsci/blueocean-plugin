@@ -33,7 +33,7 @@ const ArtifactListingLimited = (props) => {
     }
 
     return (<div className="artifactListingLimited">
-        <EmptyStateView tightSpacing><Markdown>Only showing the first 100 artifacts</Markdown></EmptyStateView>
+        <EmptyStateView tightSpacing><Markdown>{t('rundetail.artifacts.limit', { defaultValue: 'Only showing the first 100 artifacts' })}</Markdown></EmptyStateView>
         </div>);
 };
 
@@ -91,26 +91,24 @@ export default class RunDetailsArtifacts extends Component {
 
         return (
             <div>
-              
                 <ArtifactListingLimited artifacts={artifacts} t={t} />
-            <Table headers={headers} className="artifacts-table fixed">
-                { artifacts.map(artifact => (
-                    <tr key={artifact.url}>
-                        <td>{artifact.path}</td>
-                        <td>
-                            <FileSize bytes={artifact.size} />
-                        </td>
-                        <td className="download">
-                            <a target="_blank" title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })} href={artifact.url}>
-                                <Icon style={style} icon="file_download" />
-                            </a>
-                        </td>
-                    </tr>
-                ))}
-                <td colSpan="3"></td>
-            </Table>
+                <Table headers={headers} className="artifacts-table">
+                    { artifacts.map(artifact => (
+                        <tr key={artifact.url}>
+                            <td>{artifact.path}</td>
+                            <td>
+                                <FileSize bytes={artifact.size} />
+                            </td>
+                            <td className="download">
+                                <a target="_blank" title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })} href={artifact.url}>
+                                    <Icon style={style} icon="file_download" />
+                                </a>
+                            </td>
+                        </tr>
+                    ))}
+                    <td colSpan="3"></td>
+                </Table>
                <ZipFileDownload zipFile={zipFile} t={t} />
-           
             </div>
         );
     }

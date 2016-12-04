@@ -37,6 +37,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-i18n</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jwt</artifactId>
         </dependency>
         <dependency>
@@ -134,6 +138,7 @@
                         linkHPI('blueocean-personalization');
                         linkHPI('blueocean-rest');
                         linkHPI('blueocean-commons');
+                        linkHPI('blueocean-i18n');
                         linkHPI('blueocean-jwt');
                         linkHPI('blueocean-rest-impl');
                         linkHPI('blueocean-pipeline-api-impl')

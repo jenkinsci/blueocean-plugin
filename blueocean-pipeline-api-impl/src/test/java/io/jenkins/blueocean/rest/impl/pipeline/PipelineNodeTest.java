@@ -1688,6 +1688,25 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", nodes.get(2).get("state"));
     }
 
+    @Test
+    public void stageTestJENKINS_40135() throws Exception {
+        String script = "node {\n" +
+                "    stage 'Stage 1'\n" +
+                "    stage 'Stage 2'\n" +
+                "       echo 'hello'\n"+
+                "}";
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(2, nodes.size());
+        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+    }
+
     private String getActionLink(Map resp, String capability){
         List<Map> actions = (List<Map>) resp.get("actions");
         assertNotNull(actions);

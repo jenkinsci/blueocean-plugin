@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { I18n, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';
@@ -16,7 +16,7 @@ useStrict(true);
 
 let config; // Holder for various app-wide state
 
-const translate = I18n ? I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.web.Messages') : function () { };
+const translate = i18nTranslator('blueocean-web');
 
 function loginOrLogout(t) {
     if (Security.isSecurityEnabled()) {

@@ -21,14 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.jsextensions;
+package io.jenkins.blueocean.config;
 
 import io.jenkins.blueocean.service.embedded.BaseTest;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Iterator;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -38,35 +39,37 @@ public class JenkinsJSExtensionsTest extends BaseTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void test() {
-        // Simple test of the rest endpoint. It should find the "blueocean-dashboard"
+        // Simple test of JenkinsJSExtensions. It should find the "blueocean-dashboard"
         // and "blueocean-personalization" plugin ExtensionPoint contributions.
-        Map response = get("/js-extensions", Map.class);
-        List<Map> extensions = (List)response.get("data");
+        JSONArray extensionData = JenkinsJSExtensions.getExtensionsData();
 
-        Assert.assertEquals(2, extensions.size());
+        Assert.assertTrue(extensionData.size() > 2);
 
-        for (Map extension : extensions) {
-            List<Map> extensionPoints = (List<Map>) extension.get("extensions");
-            String pluginId = (String) extension.get("hpiPluginId");
+        Iterator pluginIterator = extensionData.iterator();
+        while (pluginIterator.hasNext()) {
+            JSONObject plugin = (JSONObject) pluginIterator.next();
+            JSONArray extensionPoints = (JSONArray) plugin.get("extensions");
+            String pluginId = plugin.getString("hpiPluginId");
+
+            Assert.assertNotNull(plugin.get("hpiPluginVer"));
+            Assert.assertNotNull(extensionPoints);
 
             if ("blueocean-dashboard".equals(pluginId)) {
                 Assert.assertEquals(7, extensionPoints.size());
-                Assert.assertEquals("AdminNavLink", extensionPoints.get(0).get("component"));
-                Assert.assertEquals("jenkins.logo.top", extensionPoints.get(0).get("extensionPoint"));
+                Assert.assertEquals("AdminNavLink", extensionPoints.getJSONObject(0).get("component"));
+                Assert.assertEquals("jenkins.logo.top", extensionPoints.getJSONObject(0).get("extensionPoint"));
             } else if ("blueocean-personalization".equals(pluginId)) {
                 Assert.assertEquals(5, extensionPoints.size());
-                Assert.assertEquals("redux/FavoritesStore", extensionPoints.get(0).get("component"));
-                Assert.assertEquals("jenkins.main.stores", extensionPoints.get(0).get("extensionPoint"));
-                Assert.assertEquals("components/DashboardCards", extensionPoints.get(1).get("component"));
-                Assert.assertEquals("jenkins.pipeline.list.top", extensionPoints.get(1).get("extensionPoint"));
-                Assert.assertEquals("components/FavoritePipeline", extensionPoints.get(2).get("component"));
-                Assert.assertEquals("jenkins.pipeline.list.action", extensionPoints.get(2).get("extensionPoint"));
-                Assert.assertEquals("components/FavoritePipelineHeader", extensionPoints.get(3).get("component"));
-                Assert.assertEquals("jenkins.pipeline.detail.header.action", extensionPoints.get(3).get("extensionPoint"));
-                Assert.assertEquals("components/FavoritePipeline", extensionPoints.get(4).get("component"));
-                Assert.assertEquals("jenkins.pipeline.branches.list.action", extensionPoints.get(4).get("extensionPoint"));
-            } else {
-                Assert.fail("Found extensions from unknown pluginId: " + pluginId);
+                Assert.assertEquals("redux/FavoritesStore", extensionPoints.getJSONObject(0).get("component"));
+                Assert.assertEquals("jenkins.main.stores", extensionPoints.getJSONObject(0).get("extensionPoint"));
+                Assert.assertEquals("components/DashboardCards", extensionPoints.getJSONObject(1).get("component"));
+                Assert.assertEquals("jenkins.pipeline.list.top", extensionPoints.getJSONObject(1).get("extensionPoint"));
+                Assert.assertEquals("components/FavoritePipeline", extensionPoints.getJSONObject(2).get("component"));
+                Assert.assertEquals("jenkins.pipeline.list.action", extensionPoints.getJSONObject(2).get("extensionPoint"));
+                Assert.assertEquals("components/FavoritePipelineHeader", extensionPoints.getJSONObject(3).get("component"));
+                Assert.assertEquals("jenkins.pipeline.detail.header.action", extensionPoints.getJSONObject(3).get("extensionPoint"));
+                Assert.assertEquals("components/FavoritePipeline", extensionPoints.getJSONObject(4).get("component"));
+                Assert.assertEquals("jenkins.pipeline.branches.list.action", extensionPoints.getJSONObject(4).get("extensionPoint"));
             }
         }
 

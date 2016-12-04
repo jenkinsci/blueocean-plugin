@@ -55,11 +55,11 @@ export class MultiBranch extends Component {
 
     render() {
         const { t, locale, pipeline } = this.props;
-        
+
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
             return (<NotSupported t={t} />);
         }
-       
+
         const branches = this.pager.data;
 
         if (!this.pager.pending && !branches.length) {
@@ -69,7 +69,7 @@ export class MultiBranch extends Component {
         const head = 'pipelinedetail.branches.header';
 
         const statusHeader = t(`${head}.status`, { defaultValue: 'Status' });
-        const healthHeader = t(`${head}.health`, { defaultValue: 'health' });
+        const healthHeader = t(`${head}.health`, { defaultValue: 'Health' });
         const commitHeader = t(`${head}.commit`, { defaultValue: 'Commit' });
         const branchHeader = t(`${head}.branch`, { defaultValue: 'Branch' });
         const messageHeader = t(`${head}.message`, { defaultValue: 'Message' });
@@ -88,9 +88,9 @@ export class MultiBranch extends Component {
         return (
             <main>
                 <article>
-                    {branches.$pending && <PageLoading />}
+                    {this.pager.pending && <PageLoading />}
 
-                    <Table className="multibranch-table fixed" headers={headers}>
+                    <Table className="multibranch-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
                         {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} t={t} locale={locale} />)}
                     </Table>
                     {this.pager.pending &&
