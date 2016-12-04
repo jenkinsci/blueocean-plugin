@@ -96,6 +96,12 @@ export class ActivityService extends BunkerService {
             });
     }
 
+    /**
+     * Fetches artifacts for a given run.
+     *
+     * @param {string} runHref The href of the run to fetcfh artifacts for.
+     * @returns {Object} Object containing zipFile link and list of artifacts.
+     */
     fetchArtifacts(runHref) {
         return Fetch.fetchJSON(`${runHref}artifacts/`);
     }
