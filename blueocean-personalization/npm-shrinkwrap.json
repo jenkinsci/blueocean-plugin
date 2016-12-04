@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.32",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.32",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.32.tgz",
+      "version": "0.0.33-bluerun-perf-beta1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.33-bluerun-perf-beta1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.33-bluerun-perf-beta1.tgz",
       "dependencies": {
         "react-router": {
           "version": "3.0.0",
@@ -15,9 +15,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.90",
-      "from": "@jenkins-cd/design-language@0.0.90",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.90.tgz"
+      "version": "0.0.91-bluerun-perfomance-beta1",
+      "from": "@jenkins-cd/design-language@0.0.91-bluerun-perfomance-beta1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.91-bluerun-perfomance-beta1.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -5563,6 +5563,11 @@
       "version": "2.6.0",
       "from": "mobx@2.6.0",
       "resolved": "https://registry.npmjs.org/mobx/-/mobx-2.6.0.tgz"
+    },
+    "mobx-utils": {
+      "version": "1.1.2",
+      "from": "mobx-utils@1.1.2",
+      "resolved": "https://registry.npmjs.org/mobx-utils/-/mobx-utils-1.1.2.tgz"
     },
     "mocha": {
       "version": "3.1.0",

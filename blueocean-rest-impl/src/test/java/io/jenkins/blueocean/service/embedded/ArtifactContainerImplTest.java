@@ -32,5 +32,6 @@ public class ArtifactContainerImplTest extends BaseTest {
         List artifacts = (List) m.get("artifacts");
 
         Assert.assertEquals(100, artifacts.size());
+        Assert.assertEquals(0, ((Map) artifacts.get(0)).get("size"));
     }
 }
