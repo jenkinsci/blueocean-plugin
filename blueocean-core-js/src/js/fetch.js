@@ -29,6 +29,7 @@ export const FetchFunctions = {
         }
         return response;
     },
+
     /**
      * This method checks for for 2XX http codes. Throws error it it is not.
      * This should only be used if not using fetch or fetchJson.
@@ -81,6 +82,23 @@ export const FetchFunctions = {
         });
     },
 
+    /* eslint-disable no-param-reassign */
+    /**
+     * Parses the response body for the error generated in checkStatus.
+     */
+    parseErrorJson(error) {
+        return error.response.json().then(
+            body => {
+                error.responseBody = body;
+                throw error;
+            },
+            () => {
+                error.responseBody = null;
+                throw error;
+            });
+    },
+    /* eslint-enable no-param-reassign */
+
      /**
      * Error function helper to log errors to console.
      *
@@ -127,7 +145,7 @@ export const FetchFunctions = {
             const future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                 .then(FetchFunctions.checkRefreshHeader)
                 .then(FetchFunctions.checkStatus)
-                .then(FetchFunctions.parseJSON);
+                .then(FetchFunctions.parseJSON, FetchFunctions.parseErrorJson);
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
             }
@@ -224,15 +242,14 @@ export const Fetch = {
      */
     fetch(url, { onSuccess, onError, fetchOptions } = {}) {
         let fixedUrl = url;
-        
-        
+
         if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
             fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
         }
         if (!config.isJWTEnabled()) {
             return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions });
         }
-        
+
         return jwt.getToken()
             .then(token => FetchFunctions.rawFetch(fixedUrl, {
                 onSuccess,
