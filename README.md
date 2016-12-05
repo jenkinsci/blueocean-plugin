@@ -3,7 +3,7 @@ Blue Ocean is the next generation user experience for Jenkins. You can learn mor
 
 Join the community and [![Gitter](https://badges.gitter.im/jenkinsci/blueocean-plugin.svg)](https://gitter.im/jenkinsci/blueocean-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-We would also like to thank [![Rollbar](https://d26gfdfi90p7cf.cloudfront.net/rollbar-badge.144534.o.png)](http://rollbar.com)] for providing us error reporting.
+We would also like to thank [![Rollbar](https://d26gfdfi90p7cf.cloudfront.net/rollbar-badge.144534.o.png)](http://rollbar.com) for providing us error reporting.
 
 # Get Blue Ocean
 
