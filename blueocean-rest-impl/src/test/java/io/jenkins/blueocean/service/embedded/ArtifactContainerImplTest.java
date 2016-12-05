@@ -18,20 +18,32 @@ public class ArtifactContainerImplTest extends BaseTest {
     @Test
     public void testArtifactsListing() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject(JOB_NAME);
-        p.getBuildersList().add(new Shell("touch {{a..z},{A..Z},{0..99}}.txt"));
-        p.getPublishersList().add(new ArtifactArchiver("*"));
+        p.getBuildersList().add(new Shell("mkdir -p test/me/out; touch test/me/out/{{a..z},{A..Z},{0..99}}.txt"));
+        p.getPublishersList().add(new ArtifactArchiver("**/*"));
         Run r = p.scheduleBuild2(0).waitForStart();
-
 
         r = j.waitForCompletion(r);
 
-        Map m = request().get("/organizations/jenkins/pipelines/"+JOB_NAME+"/runs/"+r.getId()+"/artifacts").build(Map.class);
-
-        Assert.assertEquals(m.get("zipFile"), "/jenkins/job/artifactTest/1/artifact/*zip*/archive.zip");
-
-        List artifacts = (List) m.get("artifacts");
+        List artifacts = request().get("/organizations/jenkins/pipelines/"+JOB_NAME+"/runs/"+r.getId()+"/artifacts").build(List.class);
 
         Assert.assertEquals(100, artifacts.size());
         Assert.assertEquals(0, ((Map) artifacts.get(0)).get("size"));
+        Assert.assertEquals("test/me/out/0.txt", ((Map) artifacts.get(0)).get("path"));
+        Assert.assertEquals("/job/artifactTest/1/artifact/test/me/out/0.txt", ((Map) artifacts.get(0)).get("url"));
+        Assert.assertEquals("/job/artifactTest/1/artifact/test/me/out/0.txt", ((Map) artifacts.get(0)).get("_"));
     }
+
+    @Test
+    public void testArtifact() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject(JOB_NAME);
+        p.getBuildersList().add(new Shell("mkdir -p test/me/out; touch test/me/out/{{a..z},{A..Z},{0..99}}.txt"));
+        p.getPublishersList().add(new ArtifactArchiver("**/*"));
+        Run r = p.scheduleBuild2(0).waitForStart();
+
+        r = j.waitForCompletion(r);
+
+        Map artifact = request().get("/organizations/jenkins/pipelines/"+JOB_NAME+"/runs/"+r.getId()+"/artifacts/test%252Fme%252Fout%252F0.txt").build(Map.class);
+
+        Assert.assertEquals(100, artifact.size());
+      }
 }

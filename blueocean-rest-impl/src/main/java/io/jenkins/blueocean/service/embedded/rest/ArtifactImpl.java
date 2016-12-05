@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Run;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueArtifact;
 import org.kohsuke.stapler.Stapler;
@@ -8,9 +9,12 @@ import org.kohsuke.stapler.Stapler;
 public class ArtifactImpl extends BlueArtifact {
     final private Run run;
     final private Run.Artifact artifact;
-    public ArtifactImpl(Run run, Run.Artifact artifact) {
+    final private Link self;
+    public ArtifactImpl(Run run, Run.Artifact artifact, Reachable parent) {
         this.run = run;
         this.artifact = artifact;
+        this.self = parent.getLink().rel(this.getPath());
+
     }
     @Override
     public String getName() {
@@ -24,8 +28,7 @@ public class ArtifactImpl extends BlueArtifact {
 
     @Override
     public String getUrl() {
-        return Stapler.getCurrentRequest().getContextPath() +
-            "/" + run.getUrl()+"artifact/"+ artifact.getHref();
+        return "/" + run.getUrl()+"artifact/"+ artifact.getHref();
     }
 
     @Override
@@ -39,6 +42,6 @@ public class ArtifactImpl extends BlueArtifact {
 
     @Override
     public Link getLink() {
-        return new Link(getUrl());
+        return self;
     }
 }

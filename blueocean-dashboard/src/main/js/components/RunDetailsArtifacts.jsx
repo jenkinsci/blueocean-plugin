@@ -4,6 +4,7 @@ import { Icon } from 'react-material-icons-blue';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
+import { UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 const { func, object, string } = PropTypes;
 
@@ -13,7 +14,7 @@ const ZipFileDownload = (props) => {
         return null;
     }
 
-    return (<div className="downloadAllArtifactsButton"><a className="btn-secondary" target="_blank" title={t('rundetail.artifacts.button.downloadAll', { defaultValue: 'Download all artifact as zip' })} href={zipFile}>
+    return (<div className="downloadAllArtifactsButton"><a className="btn-secondary" target="_blank" title={t('rundetail.artifacts.button.downloadAll', { defaultValue: 'Download all artifact as zip' })} href={`${UrlConfig.getJenkinsRootURL()}${zipFile}`}>
                 Download All
             </a></div>
     );
@@ -38,11 +39,10 @@ const ArtifactListingLimited = (props) => {
 };
 
 
-
 ArtifactListingLimited.propTypes = {
     artifacts: object,
     t: func,
-}
+};
 /**
  * Displays a list of artifacts from the supplied build run property.
  */
@@ -70,8 +70,8 @@ export default class RunDetailsArtifacts extends Component {
         case mobxUtils.REJECTED: return <div>Not found</div>;
         default:
         }
-
-        const { zipFile, artifacts } = this.artifacts.value;
+        const { artifactsZipFile: zipFile } = result;
+        const artifacts = this.artifacts.value;
        
         if (!artifacts || !artifacts.length) {
             return (<EmptyStateView tightSpacing>
@@ -100,7 +100,7 @@ export default class RunDetailsArtifacts extends Component {
                                 <FileSize bytes={artifact.size} />
                             </td>
                             <td className="download">
-                                <a target="_blank" title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })} href={artifact.url}>
+                                <a target="_blank" title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })} href={`${UrlConfig.getJenkinsRootURL()}${artifact.url}`}>
                                     <Icon style={style} icon="file_download" />
                                 </a>
                             </td>

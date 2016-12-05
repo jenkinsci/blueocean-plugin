@@ -9,6 +9,7 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueArtifact;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
+import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.util.VirtualFile;
 import org.kohsuke.stapler.Stapler;
 
@@ -75,8 +76,22 @@ public class ArtifactContainerImpl extends BlueArtifactContainer {
     }
 
     @Override
-    public Iterator<BlueArtifact> iterator() {
-        List<Run.Artifact> artifacts = run.getArtifactsUpTo(100);
+    public Iterator<BlueArtifact> iterator(int start, int limit) {
+        List<Run.Artifact> artifactsUpTo = run.getArtifactsUpTo(limit);
+
+        // If start exceeds number of artifacts return an emtpy one.
+        if(start >= artifactsUpTo.size()) {
+            return Iterators.emptyIterator();
+        }
+
+        int calculatedLimit = limit;
+
+        if(calculatedLimit > artifactsUpTo.size()) {
+            calculatedLimit = artifactsUpTo.size();
+        }
+
+        List<Run.Artifact> artifacts = artifactsUpTo.subList(start, calculatedLimit);
+
         return Iterators.transform(artifacts.iterator(), new Function<Run.Artifact, BlueArtifact>() {
             @Override
             public BlueArtifact apply(@Nullable Run.Artifact artifact) {
@@ -84,8 +99,13 @@ public class ArtifactContainerImpl extends BlueArtifactContainer {
                     return null;
                 }
 
-                return new ArtifactImpl(run, artifact);
+                return new ArtifactImpl(run, artifact, ArtifactContainerImpl.this);
             }
         });
+    }
+
+    @Override
+    public Iterator<BlueArtifact> iterator() {
+        throw new ServiceException.NotImplementedException("Not implemented");
     }
 }

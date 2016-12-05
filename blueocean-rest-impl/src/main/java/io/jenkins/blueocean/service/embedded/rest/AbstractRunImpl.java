@@ -138,8 +138,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public BlueArtifacts getArtifacts() {
-       return new ArtifactsImpl(run, this);
+    public BlueArtifactContainer getArtifacts() {
+       return new ArtifactContainerImpl(run, this);
     }
 
     @Override
@@ -169,6 +169,15 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs){
         throw new ServiceException.NotImplementedException("Stop should be implemented on a subclass");
+    }
+
+    @Override
+    public String getArtifactsZipFile() {
+        if(run.getHasArtifacts()) {
+            return "/" + run.getUrl()+"artifact/*zip*/archive.zip";
+        }
+
+        return null;
     }
 
     protected BlueRun stop(Boolean blocking, Integer timeOutInSecs, StoppableRun stoppableRun){

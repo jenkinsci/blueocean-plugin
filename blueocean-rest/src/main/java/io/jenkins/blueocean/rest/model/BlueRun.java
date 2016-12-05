@@ -170,11 +170,16 @@ public abstract class BlueRun extends Resource {
     public abstract BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs);
 
     /**
+     * @return Uri of artifacts zip file.
+     */
+    @Exported
+    public abstract String getArtifactsZipFile();
+    /**
      *
      * @return Run artifacts
      */
     @Navigable
-    public abstract BlueArtifacts getArtifacts();
+    public abstract BlueArtifactContainer getArtifacts();
 
     /**
      * @return Serves .../runs/{rundId}/nodes/ and provides pipeline execution nodes
