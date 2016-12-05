@@ -8,7 +8,7 @@ import 'moment/min/locales.min';
 
 const ConsoleLog = ({ text, className, key = 'console' }) =>
     <div className={`${className} console-log insert-line-numbers`}>
-        {text.trim().split('\n').map((line, idx) =>
+        {text && text.trim().split('\n').map((line, idx) =>
             <div className="line" id={`#${key}-L${idx}`} key={`#${key}-L${idx}`}>{line}</div>
         )}
     </div>;
@@ -26,7 +26,7 @@ const TestCaseResultRow = (props) => {
 
     let testDetails = null;
 
-    if (t.errorStackTrace) {
+    if (t.errorStackTrace || t.errorDetails) {
         testDetails = (<div>
             <div className="test-details">
                 <div className="test-detail-text" style={{ display: 'none' }}>
