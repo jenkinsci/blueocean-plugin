@@ -1,4 +1,4 @@
-import { action, asFlat, observable } from 'mobx';
+import { action, asFlat, computed, observable } from 'mobx';
 
 /**
  * Base class for managing the flow of multiple steps.
@@ -6,6 +6,11 @@ import { action, asFlat, observable } from 'mobx';
  */
 export default class FlowManager {
 
+    @computed
+    get activeIndex() {
+        return this.activeSteps.length > 0 ?
+            this.activeSteps.length - 1 : 0;
+    }
 
     /**
      * Sets up the initial state of the flow. Do not override.
@@ -46,7 +51,7 @@ export default class FlowManager {
 
     @action
     setPendingSteps(steps) {
-        this.pendingSteps.replace(steps);
+        this.pendingSteps.replace(steps || []);
     }
 
     completeFlow(payload) {

@@ -67,7 +67,7 @@ export class CreatePipelineStepsRenderer extends React.Component {
         );
 
         return (
-            <MultiStepFlow>
+            <MultiStepFlow activeIndex={this.flowManager.activeIndex}>
                 {React.Children.map(allSteps, child => (
                     React.cloneElement(child, props)
                 ))}

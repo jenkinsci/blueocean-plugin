@@ -7,24 +7,16 @@ import StepStatus from './FlowStepStatus';
  */
 export default class MultiStepFlow extends React.Component {
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            currentIndex: 0,
-        };
-    }
-
     render() {
         return (
             <div className="multi-step-flow-component">
                 { React.Children.map(this.props.children, (child, index) => {
-                    const { currentIndex } = this.state;
+                    const { activeIndex } = this.props;
                     let status = StepStatus.INCOMPLETE;
 
-                    if (index < currentIndex) {
+                    if (index < activeIndex) {
                         status = StepStatus.COMPLETE;
-                    } else if (index === currentIndex) {
+                    } else if (index === activeIndex) {
                         status = StepStatus.ACTIVE;
                     }
 
@@ -44,5 +36,10 @@ export default class MultiStepFlow extends React.Component {
 
 MultiStepFlow.propTypes = {
     children: PropTypes.node,
+    activeIndex: PropTypes.number,
     onCompleteFlow: PropTypes.func,
+};
+
+MultiStepFlow.defaultProps = {
+    activeIndex: 0,
 };
