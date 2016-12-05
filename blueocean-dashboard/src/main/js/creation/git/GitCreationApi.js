@@ -1,5 +1,5 @@
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
-import { capabilityAugmenter, Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import TempUtils from '../TempUtils';
 
 /**
@@ -13,13 +13,13 @@ export default class GitCreationApi {
     }
 
     // eslint-disable-next-line no-unused-vars
-    createPipeline(repositoryUrl, credentialId) {
+    createPipeline(repositoryUrl, credentialId, pipelineName = null) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines`);
-        const projectName = repositoryUrl.split('/').slice(-1).join('');
+        const name = !pipelineName ? repositoryUrl.split('/').slice(-1).join('') : pipelineName;
 
         const requestBody = {
-            name: projectName,
+            name,
             $class: 'io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest',
             scmConfig: {
                 uri: repositoryUrl,
@@ -35,8 +35,7 @@ export default class GitCreationApi {
             body: JSON.stringify(requestBody),
         };
 
-        return this._fetch(createUrl, { fetchOptions })
-            .then(data => capabilityAugmenter.augmentCapabilities(data));
+        return this._fetch(createUrl, { fetchOptions });
     }
 
 }

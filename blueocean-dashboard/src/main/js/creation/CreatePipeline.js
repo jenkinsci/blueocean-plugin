@@ -47,7 +47,7 @@ export default class CreatePipeline extends React.Component {
 
         return (
             <BasicDialog
-              className="creation-dialog"
+              className="creation-dialog layout-medium"
               onDismiss={() => this._onExit()}
               ignoreEscapeKey
             >

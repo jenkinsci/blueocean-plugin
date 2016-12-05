@@ -4,6 +4,7 @@ import { action, observable } from 'mobx';
 import FlowManager from '../flow2/FlowManager';
 import GitConnectStep from './GitConnectStep';
 import GitCompletedStep from './GitCompletedStep';
+import GitRenameStep from './steps/GitRenameStep';
 import FlowStatus from './GitCreationStatus';
 
 export default class GitFlowManger extends FlowManager {
@@ -55,11 +56,23 @@ export default class GitFlowManger extends FlowManager {
     }
 
     createPipeline(repositoryUrl, credentialId) {
-        this.pushStep(<GitCompletedStep />);
-        this.setPendingSteps([]);
+        this.repositoryUrl = repositoryUrl;
+        this.credentialId = credentialId;
+        return this._initiateCreatePipeline();
+    }
 
-        this._createApi.createPipeline(repositoryUrl, credentialId)
-            .then(pipeline => this._setPipeline(pipeline));
+    saveRenamedPipeline(pipelineName) {
+        this.pipelineName = pipelineName;
+        return this._initiateCreatePipeline();
+    }
+
+    _initiateCreatePipeline() {
+        this._setStatus(FlowStatus.CREATE_PIPELINE);
+        this.pushStep(<GitCompletedStep />);
+        this.setPendingSteps();
+
+        return this._createApi.createPipeline(this.repositoryUrl, this.credentialId, this.pipelineName)
+            .then(pipeline => this._setPipeline(pipeline), error => this._pipelineError(error));
     }
 
     @action
@@ -71,6 +84,13 @@ export default class GitFlowManger extends FlowManager {
     _setPipeline(pipeline) {
         this._setStatus(FlowStatus.COMPLETE);
         this.pipeline = pipeline;
+    }
+
+    @action
+    _pipelineError() {
+        this._setStatus(FlowStatus.NAME_CONFLICT);
+        this.replaceCurrentStep(<GitRenameStep />);
+        this.setPendingSteps(['Completed']);
     }
 
 }
