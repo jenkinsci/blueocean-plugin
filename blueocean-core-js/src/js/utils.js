@@ -21,6 +21,7 @@ const cleanSlashes = (url: string) => {
 export default {
     cleanSlashes,
     clone(obj: Object) {
+        if (!obj) return obj;
         return JSON.parse(JSON.stringify(obj));
     },
     windowOrGlobal() {
