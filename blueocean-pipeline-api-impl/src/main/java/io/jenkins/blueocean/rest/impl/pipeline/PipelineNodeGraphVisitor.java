@@ -226,7 +226,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
         TimingInfo times = null;
-        if (firstExecuted != null) {
+
+        //TODO: remove chunk.getLastNode() != null check based on how JENKINS-40200 gets resolved
+        if (firstExecuted != null && chunk.getLastNode() != null) {
             times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
         }
 
@@ -234,12 +236,19 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             times = new TimingInfo();
         }
 
-        GenericStatus status = (firstExecuted == null) ? GenericStatus.NOT_EXECUTED :StatusAndTiming
-                .computeChunkStatus(run, chunk.getNodeBefore(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
-
+        NodeRunStatus status;
+        if(firstExecuted == null){
+            status = new NodeRunStatus(GenericStatus.NOT_EXECUTED);
+        }else if(chunk.getLastNode() != null){
+            status = new NodeRunStatus(StatusAndTiming
+                    .computeChunkStatus(run, chunk.getNodeBefore(),
+                            firstExecuted, chunk.getLastNode(), chunk.getNodeAfter()));
+        }else{
+            status = new NodeRunStatus(firstExecuted);
+        }
 
         FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
-                new NodeRunStatus(status), times);
+                status, times);
 
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);

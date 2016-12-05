@@ -111,7 +111,7 @@ export class Activity extends Component {
                 />
                 }
                 {runs.length > 0 &&
-                <Table className="activity-table u-highlight-rows" headers={headers} disableDefaultPadding>
+                <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
                     {
                         runs.map((run, index) => {
                             const changeset = run.changeSet;

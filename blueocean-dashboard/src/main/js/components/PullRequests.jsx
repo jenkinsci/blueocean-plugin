@@ -89,7 +89,7 @@ export class PullRequests extends Component {
             <main>
                 <article>
                     {this.pager.pending && <PageLoading />}
-                    <Table className="pr-table u-highlight-rows" headers={headers} disableDefaultPadding>
+                    <Table className="pr-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
                         {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest

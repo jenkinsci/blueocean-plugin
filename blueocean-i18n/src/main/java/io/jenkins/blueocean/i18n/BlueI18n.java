@@ -27,6 +27,7 @@ import hudson.Extension;
 import hudson.PluginWrapper;
 import hudson.model.RootAction;
 import hudson.util.HttpResponses;
+import io.jenkins.blueocean.rest.ApiRoutable;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.accmod.Restricted;
@@ -60,7 +61,7 @@ import java.util.regex.Pattern;
  */
 @Extension
 @Restricted(NoExternalUse.class)
-public class BlueI18n implements RootAction {
+public class BlueI18n implements ApiRoutable {
 
     private static final Logger LOGGER = Logger.getLogger(BlueI18n.class.getName());
 
@@ -78,24 +79,8 @@ public class BlueI18n implements RootAction {
      * {@inheritDoc}
      */
     @Override
-    public String getIconFileName() {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getDisplayName() {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getUrlName() {
-        return "blueocean-i18n";
+        return "i18n";
     }
 
     /**
@@ -180,12 +165,20 @@ public class BlueI18n implements RootAction {
 
         for (String pathToken : pathTokens) {
             if (pathToken.length() > 0) {
-                if (bundleParameters.isEmpty() && pathToken.equals("blueocean-i18n")) {
-                    // The first token might be the name of the plugin. Ignore that.
-                } else {
-                    bundleParameters.add(urlDecode(pathToken));
-                }
+                bundleParameters.add(urlDecode(pathToken));
             }
+        }
+
+        // Path should be prefixed with /blue/rest/i18n.
+        // Let's remove those.
+        if (bundleParameters.get(0).equals("blue")) {
+            bundleParameters.remove(0);
+        }
+        if (bundleParameters.get(0).equals("rest")) {
+            bundleParameters.remove(0);
+        }
+        if (bundleParameters.get(0).equals("i18n")) {
+            bundleParameters.remove(0);
         }
 
         if (bundleParameters.size() != 3 && bundleParameters.size() != 4) {

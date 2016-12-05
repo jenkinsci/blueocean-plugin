@@ -408,3 +408,17 @@ table.highlight {
     }
 }
 
+// FIXME This is probably still not ideal. Belongs in JDL, also.
+.u-table-lr-indents {
+    .cell-link, // TODO: Do we need this?
+    td, th {
+        &:first-child {
+            padding-left: 1rem;
+        }
+
+        &:last-child {
+            padding-right: 1rem;
+        }
+    }
+}
+
