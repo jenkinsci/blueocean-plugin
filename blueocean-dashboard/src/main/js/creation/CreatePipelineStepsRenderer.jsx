@@ -25,6 +25,12 @@ export class CreatePipelineStepsRenderer extends React.Component {
         this._initializeFlow(nextProps.selectedProvider);
     }
 
+    onComplete(payload) {
+        if (this.props.onCompleteFlow) {
+            this.props.onCompleteFlow(payload);
+        }
+    }
+
     _initializeFlow(provider) {
         if (!provider) return;
 
@@ -33,12 +39,6 @@ export class CreatePipelineStepsRenderer extends React.Component {
             this.flowManager.initialize(this);
         } catch (error) {
             console.warn('Error rendering:', provider, error);
-        }
-    }
-
-    onComplete(payload) {
-        if (this.props.onCompleteFlow) {
-            this.props.onCompleteFlow(payload);
         }
     }
 

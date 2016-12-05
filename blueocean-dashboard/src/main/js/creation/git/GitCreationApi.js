@@ -1,5 +1,5 @@
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
-import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import TempUtils from '../TempUtils';
 
 /**
