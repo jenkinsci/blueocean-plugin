@@ -6,10 +6,8 @@ import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
-import org.omg.PortableInterceptor.DISCARDING;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
