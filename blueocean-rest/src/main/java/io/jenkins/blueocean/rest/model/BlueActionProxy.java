@@ -2,6 +2,8 @@ package io.jenkins.blueocean.rest.model;
 
 import org.kohsuke.stapler.export.Exported;
 
+import java.util.Collection;
+
 /**
  * Proxy of Jenkins action
  *
@@ -34,4 +36,10 @@ public abstract class BlueActionProxy extends Resource {
      */
     @Exported(name = "_class")
     public abstract String get_Class();
+
+    /**
+     * @return capabilities supported by this action
+     */
+    @Exported(name = "_capabilities", skipNull = true)
+    public abstract Collection<String> getCapabilities();
 }

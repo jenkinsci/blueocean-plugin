@@ -65,6 +65,7 @@ export class RunRecord extends Record({
     state: null,
     type: null,
     commitId: null,
+    actions: null,
 }) {
     isQueued() {
         return this.state === 'QUEUED';
@@ -81,6 +82,17 @@ export class RunRecord extends Record({
 
     getComputedResult() {
         return this.isCompleted() ? this.result : this.state;
+    }
+
+    /** Get action by class or capability */
+    getActions(class) {
+        return run.actions.filter(action => {
+            if (action._class == class) {
+                return true;
+            }
+            var testCapability = action._capabilities.filter(capability => capability == class);
+            return testCapability.length > 0;
+        });
     }
 }
 

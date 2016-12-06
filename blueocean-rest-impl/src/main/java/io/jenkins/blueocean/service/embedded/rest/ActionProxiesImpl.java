@@ -1,12 +1,16 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Action;
+import io.jenkins.blueocean.rest.Capabilities;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Vivek Pandey
@@ -45,6 +49,12 @@ public class ActionProxiesImpl extends BlueActionProxy {
     @Override
     public String get_Class() {
         return action.getClass().getName();
+    }
+
+    @Override
+    public Collection<String> getCapabilities() {
+        Set<String> capabilities = Capabilities.allCapabilities(action.getClass());
+        return capabilities.isEmpty() ? null : capabilities;
     }
 
     @Override
