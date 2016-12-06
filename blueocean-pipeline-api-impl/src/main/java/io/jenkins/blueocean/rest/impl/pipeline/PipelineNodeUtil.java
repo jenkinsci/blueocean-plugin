@@ -13,7 +13,10 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
+import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -103,6 +106,19 @@ public class PipelineNodeUtil {
             return getClosestEnclosingParallelBranch(sortedNodes, node, n.getParents());
         }
         return null;
+    }
+
+    public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nonnull WorkflowRun run){
+        return isPausedForInputStep(step, run.getAction(InputAction.class));
+    }
+
+    public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nullable InputAction inputAction){
+        if(inputAction == null){
+            return false;
+        }
+        PauseAction pauseAction = step.getAction(PauseAction.class);
+        return (pauseAction != null && pauseAction.isPaused()
+                && pauseAction.getCause().equals("Input"));
     }
 
     public static FlowNode getStepEndNode(List<FlowNode> sortedNodes, FlowNode startNode){
