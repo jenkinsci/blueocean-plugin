@@ -771,11 +771,12 @@ export const actions = {
      Get a specific log for a node, fetch it only if needed.
      key for cache: logUrl = calculateLogUrl
      */
-    fetchLog(config) {
+    fetchLog(cfg) {
         return (dispatch, getState) => {
             const data = getState().adminStore.logs;
+            let config = cfg;
             if (!config.nodesBaseUrl) {
-                config.nodesBaseUrl = calculateNodeBaseUrl(config);
+                config = { ...config, nodesBaseUrl: calculateNodeBaseUrl(config) };
             }
             const logUrl = calculateLogUrl(config);
             if (
