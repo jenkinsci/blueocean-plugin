@@ -3,6 +3,7 @@ import { storiesOf } from '@kadira/storybook';
 import { FileSize } from '../components/FileSize';
 
 storiesOf('FileSize', module)
+    .add('0 bytes', scenario0)
     .add('5 bytes', scenario1)
     .add('1 kilobyte', scenario2)
     .add('5.5 kilobyte', scenario3)
@@ -11,6 +12,12 @@ storiesOf('FileSize', module)
     .add('bogus', scenario6)
     .add('large', scenario7)
     .add('negative', scenario8);
+
+function scenario0() {
+    return (
+        <FileSize bytes={0} />
+    );
+}
 
 function scenario1() {
     return (

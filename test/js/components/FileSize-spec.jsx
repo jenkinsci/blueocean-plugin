@@ -22,6 +22,13 @@ describe("FileSize", () => {
         ));
     });
 
+    it("renders 0 bytes", () => {
+        const wrapper = shallow(<FileSize bytes={0} />);
+
+        assert.isTrue(wrapper.is('span'));
+        assert.equal(wrapper.text(), '0 bytes');
+    });
+
     it("renders 4 bytes", () => {
         const wrapper = shallow(<FileSize bytes={4} />);
 

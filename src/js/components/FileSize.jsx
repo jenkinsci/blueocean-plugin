@@ -20,7 +20,9 @@ export class FileSize extends Component {
             bytes = parseInt(bytes);
         }
 
-        if (!isNaN(bytes)) {
+        if (bytes === 0) {
+             output = `0 ${units[0]}`;
+        } else if (!isNaN(bytes)) {
             // calculate the unit (e.g. 'MB') to display
             // but ensure it doesn't go over the max we support
             let power = Math.floor(log10(Math.abs(bytes)) / log10(1024));
