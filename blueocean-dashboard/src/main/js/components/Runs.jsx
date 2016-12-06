@@ -3,7 +3,7 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
-import { ReplayButton, RunButton, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 
@@ -11,6 +11,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
+import { CellRow, CellLink } from './CellLink';
 
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
@@ -26,46 +27,37 @@ export default class Runs extends Component {
             return null;
         }
         const { router, location } = this.context;
-      
+
         const { run, changeset, pipeline, t, locale } = this.props;
-          
+
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const running = resultRun === 'RUNNING';
         const durationMillis = !running ?
             run.durationInMillis :
             moment().diff(moment(run.startTime));
-        
+
         const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
-        const open = (event) => {
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            location.pathname = runDetailsUrl;
-            router.push(location);
-        };
-        const RunCol = (props) => <td className="tableRowLink">
-            <a onClick={open} href={`${UrlConfig.getJenkinsRootURL()}/blue${runDetailsUrl}`}>{props.children}</a>
-        </td>;
-        
+
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
 
-        return (<tr key={run.id} onClick={open} id={`${run.pipeline}-${run.id}`} >
-            <RunCol>
+
+        return (
+        <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
+            <CellLink>
                 <LiveStatusIndicator result={resultRun} startTime={run.startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
                 />
-            </RunCol>
-            <RunCol>{run.id}</RunCol>
-            <RunCol><CommitHash commitId={run.commitId} /></RunCol>
+            </CellLink>
+            <CellLink>{run.id}</CellLink>
+            <CellLink><CommitHash commitId={run.commitId} /></CellLink>
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
-                <RunCol>{decodeURIComponent(run.pipeline)}</RunCol>
+                <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
-            <RunCol>{changeset && changeset.msg || '-'}</RunCol>
-            <RunCol>
+            <CellLink>{changeset && changeset.msg || '-'}</CellLink>
+            <CellLink>
                 <TimeDuration
                   millis={durationMillis}
                   liveUpdate={running}
@@ -73,8 +65,8 @@ export default class Runs extends Component {
                   liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
                   hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
                 />
-            </RunCol>
-            <RunCol>
+            </CellLink>
+            <CellLink>
                 <ReadableDate
                   date={run.endTime}
                   liveUpdate
@@ -82,8 +74,8 @@ export default class Runs extends Component {
                   shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
                   longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                 />
-            </RunCol>
-             <td>
+            </CellLink>
+            <td>
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
                 { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
@@ -91,7 +83,8 @@ export default class Runs extends Component {
                     <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
                 </IfCapability>
             </td>
-        </tr>);
+        </CellRow>
+        );
     }
 }
 

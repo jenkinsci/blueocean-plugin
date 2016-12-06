@@ -6,7 +6,7 @@ import {
     PageTabs,
     TabLink,
 } from '@jenkins-cd/design-language';
-import { I18n, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import { Icon } from 'react-material-icons-blue';
 
@@ -45,7 +45,7 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+const translate = i18nTranslator('blueocean-dashboard');
 
 @ExtensionPoint
 export class RunDetailsLink {
@@ -74,7 +74,7 @@ class RunDetails extends Component {
 
     _fetchRun(props, storePreviousRoute) {
         this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE);
-       
+
         if (this.context.config && this.context.params) {
             this.href = RestPaths.run({
                 organization: props.params.organization,
@@ -82,7 +82,7 @@ class RunDetails extends Component {
                 branch: this.isMultiBranch && props.params.branch,
                 runId: props.params.runId,
             });
-            
+
             this.context.activityService.fetchActivity(this.href, { useCache: true });
             if (storePreviousRoute) {
                 this.opener = locationService.previous;
@@ -134,7 +134,7 @@ class RunDetails extends Component {
             return null;
         }
 
-        
+
         const { router, location, params } = this.context;
         const { pipeline, setTitle, t, locale } = this.props;
 
@@ -227,7 +227,7 @@ class RunDetails extends Component {
                     <div>
                         {run && React.cloneElement(
                             this.props.children,
-                            { locale: I18n.language, baseUrl, t: translate, result: currentRun, isMultiBranch: this.isMultiBranch, ...this.props }
+                            { locale: translate.lng, baseUrl, t: translate, result: currentRun, isMultiBranch: this.isMultiBranch, ...this.props }
                         )}
                     </div>
                 </ModalBody>

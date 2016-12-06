@@ -46,14 +46,13 @@
     "react-addons-test-utils": "15.3.2",
     "react-dom": "15.3.2",
     "react-router": "^3.0.0",
-    "typescript": "^2.0.6",
-    "blueocean-plugins": "0.0.1"
+    "typescript": "^2.0.6"
   },
   "dependencies": {
     "@jenkins-cd/js-extensions": "0.0.27",
     "@jenkins-cd/js-modules": "0.0.8",
     "blueocean-js-extensions": "0.0.1",
-    "react": "^15.3.2"
+    "react": "15.3.2"
   },
   "jenkinscd": {
     "import": [

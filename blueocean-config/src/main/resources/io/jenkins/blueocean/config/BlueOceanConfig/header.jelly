@@ -4,6 +4,7 @@
       window.$$blueocean = {};
       window.$$blueocean.user = ${it.blueOceanUser}.user;
       window.$$blueocean.config = ${it.blueOceanConfig};
+      window.$$blueocean.jsExtensions = ${it.jsExtensions};
     })();
   </script>
 

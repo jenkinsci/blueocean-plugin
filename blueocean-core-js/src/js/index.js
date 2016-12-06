@@ -10,6 +10,9 @@ import { RunApi } from './rest/RunApi';
 import { SseBus } from './sse/SseBus';
 import { ToastService } from './ToastService';
 
+// export i18n provider
+export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
+
 export { Fetch, FetchFunctions } from './fetch';
 export UrlBuilder from './UrlBuilder';
 export UrlConfig from './urlconfig';
@@ -60,6 +63,3 @@ export const locationService = new LocationService();
 
 const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, pagerService);
 sseService.registerHandler(defaultSSEhandler.handleEvents);
-
-// export i18n provider
-export I18n, { defaultLngDetector, defaultXhr, initOptions, i18n } from './i18n/i18n';
