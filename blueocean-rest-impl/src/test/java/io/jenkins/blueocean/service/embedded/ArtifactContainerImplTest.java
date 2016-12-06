@@ -18,7 +18,7 @@ public class ArtifactContainerImplTest extends BaseTest {
     @Test
     public void testArtifactsListing() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject(JOB_NAME);
-        p.getBuildersList().add(new Shell("mkdir -p test/me/out; touch test/me/out/{{a..z},{A..Z},{0..99}}.txt"));
+        p.getBuildersList().add(new Shell("mkdir -p test/me/out; cd test/me/out; touch {0..105}.txt"));
         p.getPublishersList().add(new ArtifactArchiver("**/*"));
         Run r = p.scheduleBuild2(0).waitForStart();
 
