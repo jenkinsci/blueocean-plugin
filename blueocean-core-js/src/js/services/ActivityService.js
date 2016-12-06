@@ -3,6 +3,7 @@ import RestPaths from '../paths/rest';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
 import utils from '../utils';
+import mobxUtils from 'mobx-utils';
 
 /*
  * This class provides activity related services.
@@ -103,7 +104,7 @@ export class ActivityService extends BunkerService {
      * @returns {Object} Object containing zipFile link and list of artifacts.
      */
     fetchArtifacts(runHref) {
-        return Fetch.fetchJSON(`${runHref}artifacts/`);
+        return mobxUtils.fromPromise(Fetch.fetchJSON(`${runHref}artifacts/`));
     }
 
 

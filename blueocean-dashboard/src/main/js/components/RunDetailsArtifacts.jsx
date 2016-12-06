@@ -51,7 +51,7 @@ export default class RunDetailsArtifacts extends Component {
     componentWillMount() {
         const { result } = this.props;
         if (result) {
-            this.artifacts = mobxUtils.fromPromise(this.context.activityService.fetchArtifacts(result._links.self.href));
+            this.artifacts = this.context.activityService.fetchArtifacts(result._links.self.href);
         }
     }
 
@@ -66,8 +66,8 @@ export default class RunDetailsArtifacts extends Component {
             return null;
         }
         switch (this.artifacts.state) {
-        case mobxUtils.PENDING: return <div>Loading</div>;
-        case mobxUtils.REJECTED: return <div>Not found</div>;
+        case mobxUtils.PENDING: return null; // <div>Loading</div>;
+        case mobxUtils.REJECTED: return null; // <div>Not found</div>;
         default:
         }
         const { artifactsZipFile: zipFile } = result;
