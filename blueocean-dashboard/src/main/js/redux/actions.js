@@ -774,6 +774,9 @@ export const actions = {
     fetchLog(config) {
         return (dispatch, getState) => {
             const data = getState().adminStore.logs;
+            if (!config.nodesBaseUrl) {
+                config.nodesBaseUrl = calculateNodeBaseUrl(config);
+            }
             const logUrl = calculateLogUrl(config);
             if (
                 config.fetchAll ||
