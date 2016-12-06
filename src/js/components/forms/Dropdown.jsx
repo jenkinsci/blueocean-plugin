@@ -84,17 +84,11 @@ export class Dropdown extends React.Component {
         });
     }
 
-    _onDropdownKeyEvent = (event) => {
-        // console.log('_onDropdownKeyEvent');
-        if (event.keyCode === KeyCodes.SPACEBAR) {
-            this._toggleDropdownMenu();
-            // prevent the onClick handler from being triggered automatically
-            event.preventDefault();
-        }
-    };
-
-    _onDropdownMouseEvent = () => {
+    // (note: also triggered via spacebar press when button has focus)
+    _onDropdownMouseEvent = (event) => {
         // console.log('_onDropdownMouseEvent');
+        // prevent navigation if anchor was clicked
+        event.preventDefault();
         this._toggleDropdownMenu();
     };
 
@@ -177,6 +171,7 @@ export class Dropdown extends React.Component {
     }, 200);
 
     _setInitialFocus() {
+        // console.log('_setInitialFocus');
         if (this.state.selectedOption) {
             const selectedIndex = this.props.options.indexOf(this.state.selectedOption);
             const selectedListItem = this.menuRef.children[selectedIndex];
@@ -214,18 +209,22 @@ export class Dropdown extends React.Component {
     }
 
     _focusListItem(listItemNode) {
+        // console.log('_focusListItem', listItemNode);
         if (this.menuRef.contains(listItemNode)) {
-            listItemNode.children[0].focus();
+            // need to delay ~1 frame for the focus and scroll to be reliable
+            setTimeout(() => {
+                listItemNode.children[0].focus();
 
-            const listItemRect = listItemNode.getBoundingClientRect();
-            const menuRect = this.menuRef.getBoundingClientRect();
+                const listItemRect = listItemNode.getBoundingClientRect();
+                const menuRect = this.menuRef.getBoundingClientRect();
 
-            // make the focused item "stick" to top or bottom edge
-            if (listItemRect.top < menuRect.top) {
-                this.menuRef.scrollTop = listItemNode.offsetTop;
-            } else if (listItemRect.bottom > menuRect.bottom) {
-                this.menuRef.scrollTop += listItemRect.bottom - menuRect.bottom;
-            }
+                // make the focused item "stick" to top or bottom edge
+                if (listItemRect.top < menuRect.top) {
+                    this.menuRef.scrollTop = listItemNode.offsetTop;
+                } else if (listItemRect.bottom > menuRect.bottom) {
+                    this.menuRef.scrollTop += listItemRect.bottom - menuRect.bottom;
+                }
+            }, 1000/60);
         }
     }
 
@@ -243,10 +242,10 @@ export class Dropdown extends React.Component {
         }
     }
 
-    _onMenuItemClick(option, index) {
+    _onMenuItemClick(event, option, index) {
+        // prevent any navigation resulting from click
+        event.preventDefault();
         this._applySelection(option, index);
-
-        return false;
     }
 
     _applySelection(option, index) {
@@ -260,26 +259,41 @@ export class Dropdown extends React.Component {
         }
     }
 
+    _optionToLabel(option) {
+        if (!option) {
+            return '';
+        }
+
+        if (this.props.labelField) {
+            return option[this.props.labelField];
+        } else if (this.props.labelFunction) {
+            return this.props.labelFunction(option);
+        } else {
+            return option.toString();
+        }
+    }
+
     render() {
         // console.log('render', this.state.menuOpen);
         const extraClass = this.props.className || '';
         const openClass = this.state.menuOpen ? 'Dropdown-menu-open' : 'Dropdown-menu-closed';
-        const label = this.state.selectedOption || this.props.placeholder;
+        const promptClass = !this.state.selectedOption ? 'Dropdown-placeholder' : '';
+        const buttonLabel = this._optionToLabel(this.state.selectedOption) || this.props.placeholder;
 
         return (
             <div ref={dropdown => { this.dropdownRef = dropdown; }}
                 className={`Dropdown ${openClass} ${extraClass}`}>
                 <button ref={button => { this.buttonRef = button; }}
-                   className="Dropdown-button"
-                   onClick={this._onDropdownMouseEvent}
-                   onKeyUp={this._onDropdownKeyEvent}
+                    className={`Dropdown-button ${promptClass}`}
+                    onClick={this._onDropdownMouseEvent}
+                    title={buttonLabel}
                 >
-                    <div className="Dropdown-button-container">
-                        <span className="Dropdown-button-label">{label}</span>
-
-                        <Icon icon="keyboard_arrow_down" size={16} />
-                    </div>
+                    {buttonLabel}
                 </button>
+
+                <a className="Dropdown-thumb" onClick={this._onDropdownMouseEvent}>
+                    <Icon icon="keyboard_arrow_down" size={16} />
+                </a>
 
                 { this.state.menuOpen &&
                 <FloatingElement targetElement={this.buttonRef} positionFunction={positionMenu}>
@@ -290,23 +304,15 @@ export class Dropdown extends React.Component {
                     >
                         { this.props.options.map((option, index) => {
                             const selectedClass = this.state.selectedOption === option ? 'Dropdown-menu-item-selected' : '';
-                            let labelValue = '';
-
-                            if (this.props.labelField) {
-                                labelValue = option[this.props.labelField];
-                            } else if (this.props.labelFunction) {
-                                labelValue = this.props.labelFunction(option);
-                            } else {
-                                labelValue = option.toString();
-                            }
+                            const optionLabel = this._optionToLabel(option);
 
                             return (
                                 <li key={index} data-position={index}>
                                     <a className={`Dropdown-menu-item ${selectedClass}`}
                                        href="#"
-                                       onClick={() => this._onMenuItemClick(option, index)}
+                                       onClick={event => this._onMenuItemClick(event, option, index)}
                                     >
-                                        {labelValue}
+                                        {optionLabel}
                                     </a>
                                 </li>
                             );
