@@ -8,17 +8,15 @@ import com.google.common.base.Predicate;
 
 import hudson.Extension;
 import hudson.model.Item;
-import hudson.model.ItemGroup;
-import hudson.model.Job;
 import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.actions.ChangeRequestAction;
+import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 
 public class PipelineJobFilters {
     private static boolean isPullRequest(Item item) {
-        SCMHead head = SCMHead.HeadByItem.findHead(item);
-        return head != null && head.getAction(ChangeRequestAction.class) != null;
+        // TODO probably want to be using SCMHeadCategory instances to categorize them instead of hard-coding for PRs
+        return SCMHead.HeadByItem.findHead(item) instanceof ChangeRequestSCMHead;
     }
 
     @Extension
