@@ -57,14 +57,22 @@ ArtifactListingLimited.propTypes = {
 @observer
 export default class RunDetailsArtifacts extends Component {
     componentWillMount() {
-        const { result } = this.props;
-        if (result) {
-            this.artifacts = this.context.activityService.fetchArtifacts(result._links.self.href);
-        }
+        this._fetchArtifacts(this.props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this._fetchArtifacts(nextProps);
     }
 
     componentWillUnmount() {
         this.artifacts = null;
+    }
+
+    _fetchArtifacts(props) {
+        const { result } = props;
+        if (result && result.state === 'FINISHED') {
+            this.artifacts = this.context.activityService.fetchArtifacts(result._links.self.href);
+        }
     }
 
     render() {
