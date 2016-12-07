@@ -104,7 +104,7 @@ export class ActivityService extends BunkerService {
      * @returns {Object} Object containing zipFile link and list of artifacts.
      */
     fetchArtifacts(runHref) {
-        return mobxUtils.fromPromise(Fetch.fetchJSON(`${runHref}artifacts/`));
+        return mobxUtils.fromPromise(Fetch.fetchJSON(`${runHref}artifacts/?start=0&limit=101`));
     }
 
 
