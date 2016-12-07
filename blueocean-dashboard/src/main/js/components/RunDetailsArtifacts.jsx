@@ -14,10 +14,14 @@ const ZipFileDownload = (props) => {
         return null;
     }
 
-    return (<div className="downloadAllArtifactsButton"><a className="btn-secondary" target="_blank" title={t('rundetail.artifacts.button.downloadAll', { defaultValue: 'Download all artifact as zip' })} href={`${UrlConfig.getJenkinsRootURL()}${zipFile}`}>
-                Download All
-            </a></div>
-    );
+    const title = t('rundetail.artifacts.button.downloadAll.title', { defaultValue: 'Download all artifact as zip' });
+    const href = `${UrlConfig.getJenkinsRootURL()}${zipFile}`;
+
+    return (<div className="downloadAllArtifactsButton">
+        <a className="btn-secondary" target="_blank" title={title} href={href}>
+            {t('rundetail.artifacts.button.downloadAll.text', { defaultValue: 'Download All' })}
+        </a>
+    </div>);
 };
 
 ZipFileDownload.propTypes = {
@@ -34,8 +38,12 @@ const ArtifactListingLimited = (props) => {
     }
 
     return (<div className="artifactListingLimited">
-        <EmptyStateView tightSpacing><Markdown>{t('rundetail.artifacts.limit', { defaultValue: 'Only showing the first 100 artifacts' })}</Markdown></EmptyStateView>
-        </div>);
+        <EmptyStateView tightSpacing>
+            <Markdown>
+                {t('rundetail.artifacts.limit', { defaultValue: 'Only showing the first 100 artifacts' })}
+            </Markdown>
+        </EmptyStateView>
+    </div>);
 };
 
 
