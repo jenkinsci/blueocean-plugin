@@ -35,7 +35,7 @@ describe('RunDetailsArtifacts', () => {
 
     describe('empty artifacts', () => {
         it('renders EmptyStateView', () => {
-            const wrapper = shallow(<RunDetailsArtifacts t={t} result={{_links: { self: { href: 'aa' } } }} />, { context: contextNoData });
+            const wrapper = shallow(<RunDetailsArtifacts t={t} result={{ _links: { self: { href: 'aa' } }, state: 'FINISHED' }} />, { context: contextNoData });
             assert.equal(wrapper.find('EmptyStateView').length, 1);
         });
     });
