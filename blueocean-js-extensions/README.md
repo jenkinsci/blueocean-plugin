@@ -1,5 +1,4 @@
-Extension Points in JS
-----
+# Extension Points in JS
 
 Extension Points are placeholders where a system comprised of plugins or
 modules may contribute implementations to provide additional functionality
@@ -22,7 +21,7 @@ extension point. Note, while it's generally a good idea to extend the extension
 point, it is not required due to the dynamic nature of javascript. As long
 as the same contract is met by the extension, it will function properly.
 
-`@Priority` is a class decorator to set priority between extensions. _Note: this must
+`@Ordinal` is a class decorator to set priority between extensions. _Note: this must
 be defined *after* the `@Extension` declaration.
 
 `@ExtensionList` is the property decorator to inject an extension list of a
@@ -31,8 +30,8 @@ particular type. It's also possible to programmatically invoke `lookupExtensions
 `@Singleton` is the class decorator to use to make an object available externally to the
 module, automatically. This dramatically reduces the dependency on publishing
 npm modules, and allows various modules within the system to share services
-automatically. It is also possible to call `registerExport` and provide a
-provider method.
+automatically. It is also possible to call `registerExport` with a
+provider method to achieve a similar function.
 
 `@Inject` is the property decorator to use to get all implementations of an
 Extension Point or any other Exported object.
@@ -41,9 +40,9 @@ Note: all of these can be accomplished with plain ES 5, if you choose to use it,
 there are just a singificant amount more lines of code to write for it all and
 you must create your own.
 
-== Examples
+## Examples
 
-==== Define and use an ExtensionPoint:
+### Define and use an ExtensionPoint:
 
 ```
 import { ExtensionPoint, ExtensionList } from 'blueocean-js-extensions';
@@ -67,7 +66,7 @@ class PersonDetailLinkRenderer extends React.Component {
 }
 ```
 
-==== Define an extension:
+### Define an extension:
 
 ```
 import { ExtensionPoint, extensionPoints, Extension, ExtensionList, injector } from 'blueocean-js-extensions';

@@ -1,3 +1,8 @@
+/**
+ * FIXME: implement this in a way compatible with watch()
+ * https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API#incremental-build-support-using-the-language-services
+ */
+
 import * as ts from 'typescript';
 import { ExtensionPointMetadata, writeJenkinsExtensionsYaml , ExtensionPointMetadataType } from './ExtensionPointMetadata';
 import * as fs from 'fs';
