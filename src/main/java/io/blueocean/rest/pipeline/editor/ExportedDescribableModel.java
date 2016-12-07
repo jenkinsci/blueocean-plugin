@@ -42,7 +42,7 @@ public class ExportedDescribableModel {
     }
 
     /**
-     * The Java class name for this describable (since we can't seem to export a Class<?>...)
+     * The Java class name for this describable (since we can't seem to export a Class&lt;?&gt; ...)
      * See {@link DescribableModel#getType()}
      */
     @Exported
