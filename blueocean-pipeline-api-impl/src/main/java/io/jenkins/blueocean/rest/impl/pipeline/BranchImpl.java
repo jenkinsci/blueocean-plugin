@@ -12,7 +12,9 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.actions.ChangeRequestAction;
+import jenkins.scm.api.metadata.ContributorMetadataAction;
+import jenkins.scm.api.metadata.ObjectMetadataAction;
+import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 
@@ -39,12 +41,18 @@ public class BranchImpl extends PipelineImpl {
 
     @Exported(name = PULL_REQUEST, inline = true)
     public PullRequest getPullRequest() {
+        // TODO probably want to be using SCMHeadCategory instances to categorize them instead of hard-coding for PRs
         SCMHead head = SCMHead.HeadByItem.findHead(job);
-        if(head != null) {
-            ChangeRequestAction action = head.getAction(ChangeRequestAction.class);
-            if(action != null){
-                return new PullRequest(action.getId(), action.getURL().toExternalForm(), action.getTitle(), action.getAuthor());
-            }
+        if(head instanceof ChangeRequestSCMHead) {
+            ChangeRequestSCMHead cr = (ChangeRequestSCMHead)head;
+            ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
+            ContributorMetadataAction cm = job.getAction(ContributorMetadataAction.class);
+            return new PullRequest(
+                cr.getId(),
+                om != null ? om.getObjectUrl() : null,
+                om != null ? om.getObjectDisplayName() : null,
+                cm != null ? cm.getContributor() : null
+            );
         }
         return null;
     }
