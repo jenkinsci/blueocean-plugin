@@ -11,7 +11,7 @@
   <artifactId>blueocean-i18n</artifactId>
   <packaging>hpi</packaging>
 
-  <name>Module :: BlueOcean :: i18n API</name>
+  <name>Blue Ocean: Internationalization</name>
 
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
