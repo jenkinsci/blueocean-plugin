@@ -32,7 +32,8 @@ export default class Branches extends Component {
             router.push(location);
         };
 
-        const { msg } = (branch.changeSet && branch.changeSet.length > 0) ? (branch.changeSet[0] || {}) : {};
+        const { msg } = (latestRun.changeSet && latestRun.changeSet.length > 0) ? (latestRun.changeSet[latestRun.changeSet.length - 1] || {}) : {};
+        
         return (
             <CellRow linkUrl={runDetailsUrl} id={`${cleanBranchName}-${latestRun.id}`}>
                 <CellLink disableDefaultPadding>
