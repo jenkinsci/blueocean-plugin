@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Blue Ocean: Personalization</name>
+    <name>Personalization for Blue Ocean</name>
     <artifactId>blueocean-personalization</artifactId>
     <packaging>hpi</packaging>
 
