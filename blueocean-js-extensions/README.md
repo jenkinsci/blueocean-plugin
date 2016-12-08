@@ -69,13 +69,32 @@ class PersonDetailLinkRenderer extends React.Component {
 ### Define an extension:
 
 ```
-import { ExtensionPoint, extensionPoints, Extension, ExtensionList, injector } from 'blueocean-js-extensions';
+import { extensionPoints, Extension } from 'blueocean-js-extensions';
+
+const {
+    PersonDetailsLink,
+} = extensionPoints;
+
+@Extension
+class AddressDetailsLink extends PersonDetailsLink {
+    name() {
+        return 'Address';
+    }
+    url() {
+        return '/address';
+    }
+}
+```
+
+### Ordered extensions:
+
+```
+import { extensions, extensionPoints, Extension, Ordinal } from 'blueocean-js-extensions';
 
 const {
     React,
-    Jenkins,
     LocalUserDatabase,
-} = injector;
+} = extensions;
 
 const {
     SecurityAuthenticator,
@@ -97,15 +116,23 @@ class WhitelistJenkinsDotIo extends UrlScanner {
         return /https?[:]\/\/jenkins[.]io\/.*/.test(url);
     }
 }
+```
+
+### Extensions in lieu of DI
+
+```
+import { extensions, extensionPoints, Extension, Inject } from 'blueocean-js-extensions';
+
+const {
+    React,
+    LocalUserDatabase,
+} = extensions;
 
 class LoginForm extends React.Component {
     @Inject(LocalUserDatabase) localUserDatabase;
 
     render() {
         return <div>...
-    }
-    authenticate() {
-        localUserDatabase.login(...)
     }
 }
 
