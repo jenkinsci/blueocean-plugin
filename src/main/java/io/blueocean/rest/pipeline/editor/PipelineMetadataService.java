@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import hudson.FilePath;
+import hudson.Launcher;
 import hudson.model.Describable;
 import hudson.tasks.Builder;
 import hudson.tasks.Publisher;
@@ -80,6 +82,26 @@ public class PipelineMetadataService implements ApiRoutable {
 
 
     /**
+     * Function to return all applicable step descriptors for the "wrappers" section.
+     */
+    @GET
+    @TreeResponse
+    public ExportedPipelineStep[] doWrapperMetadata() {
+        List<ExportedPipelineStep> wrappers = new ArrayList<>();
+
+        for (StepDescriptor d : StepDescriptor.all()) {
+            if (isWrapper(d)) {
+                ExportedPipelineStep step = getStepMetadata(d);
+                if (step != null) {
+                    wrappers.add(step);
+                }
+            }
+        }
+
+        return wrappers.toArray(new ExportedPipelineStep[wrappers.size()]);
+    }
+
+    /**
      * Function to return all step descriptors present in the system when accessed through the REST API
      */
     @GET
@@ -110,6 +132,13 @@ public class PipelineMetadataService implements ApiRoutable {
         }
 
         return pd.toArray(new ExportedPipelineFunction[pd.size()]);
+    }
+
+    private boolean isWrapper(StepDescriptor d) {
+        return includeStep(d)
+                && d.takesImplicitBlockArgument()
+                && !d.getRequiredContext().contains(FilePath.class)
+                && !d.getRequiredContext().contains(Launcher.class);
     }
 
     private boolean includeStep(StepDescriptor d) {
