@@ -1,11 +1,11 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.33-bluerun-perf-beta1",
+  "version": "0.0.33-bluerun-perf-beta2",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.91-bluerun-perfomance-beta1",
-      "from": "@jenkins-cd/design-language@0.0.91-bluerun-perfomance-beta1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.91-bluerun-perfomance-beta1.tgz",
+      "version": "0.0.91",
+      "from": "@jenkins-cd/design-language@0.0.91",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.91.tgz",
       "dependencies": {
         "moment": {
           "version": "2.15.1",
@@ -4728,7 +4728,7 @@
     },
     "mobx-utils": {
       "version": "1.1.2",
-      "from": "mobx-utils@latest",
+      "from": "mobx-utils@1.1.2",
       "resolved": "https://registry.npmjs.org/mobx-utils/-/mobx-utils-1.1.2.tgz"
     },
     "mocha": {
