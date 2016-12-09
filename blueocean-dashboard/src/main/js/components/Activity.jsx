@@ -116,12 +116,11 @@ export class Activity extends Component {
                         runs.map((run, index) => {
                             const changeset = run.changeSet;
                             let latestRecord = {};
+                  
                             if (changeset && changeset.length > 0) {
-                                latestRecord = new ChangeSetRecord(changeset[
-                                    Object.keys(changeset)[changeset.length - 1]
-                                ]);
+                                latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
                             }
-
+                            
                             return (
                                 <Runs {...{
                                     t,
