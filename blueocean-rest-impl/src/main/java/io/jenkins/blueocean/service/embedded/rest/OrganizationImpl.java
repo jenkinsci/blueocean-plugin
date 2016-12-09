@@ -26,6 +26,8 @@ import java.io.IOException;
  * @author Kohsuke Kawaguchi
  */
 public class OrganizationImpl extends BlueOrganization {
+    public final static String DEFAULT_ORG_NAME = "jenkins";
+
     private final UserContainerImpl users = new UserContainerImpl(this);
 
     /**
@@ -40,12 +42,12 @@ public class OrganizationImpl extends BlueOrganization {
      * In embedded mode, there's only one organization
      */
     public String getName() {
-        return Util.rawEncode(Jenkins.getInstance().getDisplayName().toLowerCase());
+        return DEFAULT_ORG_NAME;
     }
 
     @Override
     public String getDisplayName() {
-        return Jenkins.getInstance().getDisplayName();
+        return "Jenkins";
     }
 
     @Override
