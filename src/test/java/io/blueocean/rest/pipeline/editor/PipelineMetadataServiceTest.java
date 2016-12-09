@@ -74,6 +74,26 @@ public class PipelineMetadataServiceTest {
     }
 
     @Test
+    public void wrappers() throws Exception {
+        PipelineMetadataService svc = new PipelineMetadataService();
+
+        List<ExportedPipelineStep> wrappers = new ArrayList<>();
+        wrappers.addAll(Arrays.asList(svc.doWrapperMetadata()));
+
+        assertFalse(wrappers.isEmpty());
+
+        ExportedPipelineStep w = null;
+
+        for (ExportedPipelineStep s : wrappers) {
+            if (s.getFunctionName().equals("timeout")) {
+                w = s;
+            }
+        }
+
+        assertNotNull(w);
+    }
+
+    @Test
     public void verifyFunctionNames() throws Exception {
         PipelineMetadataService svc = new PipelineMetadataService();
 
