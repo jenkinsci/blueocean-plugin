@@ -26,7 +26,7 @@ package io.jenkins.blueocean.preload;
 import hudson.Extension;
 import hudson.model.Item;
 import io.jenkins.blueocean.commons.BlueoceanUrl;
-import io.jenkins.blueocean.commons.PageStatePreloader;
+import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.ModelObjectSerializer;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -48,28 +48,20 @@ import java.util.logging.Logger;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Extension
-public class PipelineStatePreloader extends PageStatePreloader {
+public class PipelineStatePreloader extends RESTFetchPreloader {
 
     private static final Logger LOGGER = Logger.getLogger(PipelineStatePreloader.class.getName());
 
     private static final int DEFAULT_LIMIT = 26;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getStatePropertyPath() {
-        return "storedata.runs";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getStateJson() {
-        BluePipeline pipeline = getPipeline();
+    protected FetchData getFetchData(@Nonnull BlueoceanUrl blueUrl) {
+        BluePipeline pipeline = getPipeline(blueUrl);
 
         if (pipeline != null) {
+            // It's a pipeline page. Let's prefetch the pipeline runs and add them to the page,
+            // saving the frontend the overhead of requesting them.
+
             BlueRunContainer runsContainer = pipeline.getRuns();
             Iterator<BlueRun> runsIterator = runsContainer.iterator(0, DEFAULT_LIMIT);
             JSONArray runs = new JSONArray();
@@ -84,24 +76,16 @@ public class PipelineStatePreloader extends PageStatePreloader {
                 }
             }
 
-            JSONObject runsStoreSetInstruction = new JSONObject();
-            runsStoreSetInstruction.put("redux_action", "SET_RUNS"); // TODO: match up with what the client store expects
-            runsStoreSetInstruction.put("data", runs);
-
-            return runsStoreSetInstruction.toString();
+            return new FetchData(
+                pipeline.getActivities().getLink().getHref() + "?start=0&limit=" + DEFAULT_LIMIT,
+                runs.toString());
         }
 
+        // Don't preload any data on the page.
         return null;
     }
 
-    private BluePipeline getPipeline() {
-        BlueoceanUrl blueUrl = BlueoceanUrl.parseCurrentRequest();
-
-        if (blueUrl == null) {
-            // Not a Blue Ocean page, so nothing to be added.
-            return null;
-        }
-
+    private BluePipeline getPipeline(BlueoceanUrl blueUrl) {
         if (addPipelineRuns(blueUrl)) {
             Jenkins jenkins = Jenkins.getInstance();
             String pipelineFullName = blueUrl.getPart(BlueoceanUrl.UrlPart.PIPELINE);
