@@ -13,7 +13,7 @@
   <version>1.0.0-b14-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Blue Ocean UI Parent</name>
+  <name>Blue Ocean Parent</name>
 
   <properties>
     <java.level>7</java.level>
