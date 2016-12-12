@@ -1,0 +1,15 @@
+#!groovy
+
+/* Only keep the 10 most recent builds. */
+properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', numToKeepStr: '10']]])
+
+node('docker') {
+  stage('Checkout') {
+    deleteDir()
+    checkout scm
+  }
+
+  stage('Build and publish container') {
+      sh 'docker/official/build.sh'
+  }
+}
