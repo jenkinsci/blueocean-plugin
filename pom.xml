@@ -200,6 +200,11 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-definition</artifactId>
+            <version>0.7.1</version>
+        </dependency>
 
         <!-- 3rd party dependencies -->
 
