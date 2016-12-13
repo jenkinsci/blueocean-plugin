@@ -23,16 +23,38 @@
  */
 package io.jenkins.blueocean.preload;
 
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
+import io.jenkins.blueocean.BlueOceanWebURLBuilder;
+import io.jenkins.blueocean.service.embedded.BaseTest;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Assert;
 import org.junit.Test;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class PipelineStatePreloaderTest {
+public class PipelineStatePreloaderTest extends BaseTest {
 
     @Test
-    public void test() {
-        // TODO
+    public void test() throws IOException, ExecutionException, InterruptedException, SAXException {
+        // Create a project and run a build on it.
+        FreeStyleProject freestyleProject = j.createProject(FreeStyleProject.class, "freestyle");
+        FreeStyleBuild run = freestyleProject.scheduleBuild2(0).get();
+        j.waitForCompletion(run);
+
+        // Lets request the activity page for that project. The page should
+        // contain some prefetched javascript for the runs on the page
+        String projectBlueUrl = BlueOceanWebURLBuilder.toBlueOceanURL(freestyleProject);
+        Document doc = Jsoup.connect(projectBlueUrl + "/activity/").get();
+        String script = doc.select("head script").toString();
+
+        Assert.assertTrue(script.contains(String.format("setState('prefetchdata.%s',", PipelineStatePreloader.class.getSimpleName())));
+        Assert.assertTrue(script.contains("\"restUrl\":\"/blue/rest/organizations/jenkins/pipelines/freestyle/activities/?start=0&limit=26\""));
     }
 }
