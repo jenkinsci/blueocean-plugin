@@ -1,3 +1,6 @@
+import { prepareMount } from './util/EnzymeUtils';
+prepareMount();
+
 import React from 'react';
 import { assert } from 'chai';
 import { shallow, mount } from 'enzyme';
@@ -131,21 +134,23 @@ describe("TestResults", () => {
         assert(html.indexOf('fixed-block') > 0, "Should have fixed tests!");
     });
 
-    it("failed renders rightn", () => {
-        var successWithFixed = {
+    it("unstable renders with no error message", () => {
+        var unstableWithNoMsg = {
             "_class": "hudson.tasks.junit.TestResult",
             "duration": 0.008, "empty": false, "failCount": 1, "passCount": 3, "skipCount": 0, "suites": [
                 {
                     "duration": 0, "id": null, "name": "failure.TestThisWontFail", "stderr": null, "stdout": null, "timestamp": null, "cases": [
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": 'null', "errorStackTrace": 'aa', "failedSince": 0, "name": "aPassingTest2", "skipped": false, "skippedMessage": null, "status": "FAILED", "stderr": null, "stdout": null },
+                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": 'aa', "failedSince": 0, "name": "aPassingTest2", "skipped": false, "skippedMessage": null, "status": "FAILED", "stderr": null, "stdout": null },
                     ],
                 }]
         };
+        // Lets mount it to that it renders children.
+        let wrapper = mount(<TestResults t={t} testResults={unstableWithNoMsg} />);
 
-        let wrapper =mount(<TestResults t={t} testResults={successWithFixed} />);
-        const clickable = wrapper.find('.new-failure-block');
-        let html = wrapper.html();
-        console.log(html)
-        assert.equal(clickable, 2);
+        // Expend the test result
+        wrapper.find('.result-item-head').simulate('click');
+
+        // Assert that it expanded and just shows the stacktrace.
+        assert.equal(wrapper.find('.test-console h4').length, 1);
     });
 });
