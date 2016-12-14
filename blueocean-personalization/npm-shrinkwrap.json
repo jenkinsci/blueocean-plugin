@@ -7,6 +7,11 @@
       "from": "@jenkins-cd/blueocean-core-js@0.0.34",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.34.tgz",
       "dependencies": {
+        "@jenkins-cd/design-language": {
+          "version": "0.0.91",
+          "from": "@jenkins-cd/design-language@0.0.91",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.91.tgz"
+        },
         "react-router": {
           "version": "3.0.0",
           "from": "react-router@3.0.0",
@@ -15,9 +20,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.91",
-      "from": "@jenkins-cd/design-language@0.0.91",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.91.tgz"
+      "version": "0.0.92-unpublishedPaused",
+      "from": "@jenkins-cd/design-language@0.0.92-unpublishedPaused",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.92-unpublishedPaused.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
