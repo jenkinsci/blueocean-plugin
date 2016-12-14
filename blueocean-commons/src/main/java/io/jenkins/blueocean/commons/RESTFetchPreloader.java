@@ -54,7 +54,7 @@ public abstract class RESTFetchPreloader extends PageStatePreloader {
      */
     @Override
     public final String getStateJson() {
-        BlueoceanUrl blueUrl = BlueoceanUrl.parseCurrentRequest();
+        BlueOceanUrl blueUrl = BlueOceanUrl.parseCurrentRequest();
 
         if (blueUrl == null) {
             // Not a Blue Ocean page, so nothing to be added.
@@ -68,7 +68,7 @@ public abstract class RESTFetchPreloader extends PageStatePreloader {
         return null;
     }
 
-    protected abstract FetchData getFetchData(@Nonnull BlueoceanUrl blueUrl);
+    protected abstract FetchData getFetchData(@Nonnull BlueOceanUrl blueUrl);
 
     public static final class FetchData {
 

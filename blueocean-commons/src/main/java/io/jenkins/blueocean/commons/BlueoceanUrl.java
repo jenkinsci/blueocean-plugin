@@ -54,7 +54,7 @@ import java.util.Set;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Restricted(NoExternalUse.class) // Internal use only for now because there's a fair chance we'll change how it works. See TBD comment on UrlPart.
-public class BlueoceanUrl {
+public class BlueOceanUrl {
 
     private static final Set<String> PIPELINE_TABS =
         new LinkedHashSet<>(Arrays.asList("activity", "branches", "pr"));
@@ -71,7 +71,7 @@ public class BlueoceanUrl {
      * Use {@link #getPart(UrlPart)} to get a specific URL "part",
      * or call {@link #hasPart(UrlPart)} to check for it's existence.
      * <p>
-     * *** TBD: decide whether to stick with this model, or to switch to more of a straight getters/setters style on the {@link BlueoceanUrl} instance.
+     * *** TBD: decide whether to stick with this model, or to switch to more of a straight getters/setters style on the {@link BlueOceanUrl} instance.
      * Reason for trying this approach ("parts" enum) is that I (TF) think the straight properties style with getters/setters
      * would get messy as we add support for parsing more URL paths/parts i.e. a getters/setters API explosion.
      * That said ... not sure I love this approach either, hence marked BlueoceanUrl as @Restricted(NoExternalUse.class). Let's suck it
@@ -139,17 +139,18 @@ public class BlueoceanUrl {
         PIPELINE_RUN_DETAIL_TAB,
     }
 
-    private BlueoceanUrl() {
+    private BlueOceanUrl() {
     }
 
     /**
-     * Parse the {@link Stapler#getCurrentRequest() current Stapler request} and return a {@link BlueoceanUrl} instance
+     * Parse the {@link Stapler#getCurrentRequest() current Stapler request} and return a {@link BlueOceanUrl} instance
      * iff the URL is a Blue Ocean UI URL.
      *
-     * @return A {@link BlueoceanUrl} instance iff the URL is a Blue Ocean UI URL, otherwise {@code null}.
+     * @return A {@link BlueOceanUrl} instance iff the URL is a Blue Ocean UI URL, otherwise {@code null}.
      * @throws IllegalStateException Called outside the scope of an active {@link StaplerRequest}.
      */
-    public static @CheckForNull BlueoceanUrl parseCurrentRequest() throws IllegalStateException {
+    public static @CheckForNull
+    BlueOceanUrl parseCurrentRequest() throws IllegalStateException {
         StaplerRequest currentRequest = Stapler.getCurrentRequest();
 
         if (currentRequest == null) {
@@ -165,57 +166,58 @@ public class BlueoceanUrl {
     }
 
     /**
-     * Parse the supplied URL string and return a {@link BlueoceanUrl} instance
+     * Parse the supplied URL string and return a {@link BlueOceanUrl} instance
      * iff the URL is a Blue Ocean UI URL.
      *
      * @param url The URL to be parsed. The URL must not be decoded in any way, so as to ensure
      *            that no URL component data is lost.
-     * @return A {@link BlueoceanUrl} instance iff the URL is a Blue Ocean UI URL, otherwise {@code null}.
+     * @return A {@link BlueOceanUrl} instance iff the URL is a Blue Ocean UI URL, otherwise {@code null}.
      */
-    public static @CheckForNull BlueoceanUrl parse(@Nonnull String url) {
+    public static @CheckForNull
+    BlueOceanUrl parse(@Nonnull String url) {
         Iterator<String> urlTokens = extractTokens(url);
 
         if (urlTokens.hasNext()) {
             if (urlTokens.next().equalsIgnoreCase("blue")) {
-                BlueoceanUrl blueoceanUrl = new BlueoceanUrl();
+                BlueOceanUrl blueOceanUrl = new BlueOceanUrl();
 
                 if (urlTokens.hasNext()) {
                     String next = urlTokens.next();
 
                     if (next.equalsIgnoreCase("pipelines")) {
                         // i.e. /blue/pipelines/
-                        blueoceanUrl.addPart(UrlPart.DASHBOARD_PIPELINES, next);
+                        blueOceanUrl.addPart(UrlPart.DASHBOARD_PIPELINES, next);
                     } else if (next.equalsIgnoreCase("organizations")) {
                         // i.e. /blue/organizations/...
                         if (urlTokens.hasNext()) {
                             // e.g. /blue/organizations/jenkins/...
-                            blueoceanUrl.addPart(UrlPart.ORGANIZATION, urlTokens.next());
+                            blueOceanUrl.addPart(UrlPart.ORGANIZATION, urlTokens.next());
                             if (urlTokens.hasNext()) {
                                 // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/...
-                                blueoceanUrl.addPart(UrlPart.PIPELINE, urlDecode(urlTokens.next()));
+                                blueOceanUrl.addPart(UrlPart.PIPELINE, urlDecode(urlTokens.next()));
                                 if (urlTokens.hasNext()) {
                                     next = urlTokens.next();
                                     if (next.equalsIgnoreCase("detail")) {
                                         // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/...
-                                        blueoceanUrl.addPart(UrlPart.PIPELINE_RUN_DETAIL, next);
+                                        blueOceanUrl.addPart(UrlPart.PIPELINE_RUN_DETAIL, next);
                                         if (urlTokens.hasNext()) {
                                             // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/magic-branch-X/...
-                                            blueoceanUrl.addPart(UrlPart.BRANCH, urlDecode(urlTokens.next()));
+                                            blueOceanUrl.addPart(UrlPart.BRANCH, urlDecode(urlTokens.next()));
                                             if (urlTokens.hasNext()) {
                                                 // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/magic-branch-X/55/...
-                                                blueoceanUrl.addPart(UrlPart.PIPELINE_RUN_DETAIL_ID, urlDecode(urlTokens.next()));
+                                                blueOceanUrl.addPart(UrlPart.PIPELINE_RUN_DETAIL_ID, urlDecode(urlTokens.next()));
                                                 if (urlTokens.hasNext()) {
                                                     next = urlTokens.next();
                                                     if (PIPELINE_RUN_DETAIL_TABS.contains(next.toLowerCase())) {
                                                         // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/magic-branch-X/55/pipeline
-                                                        blueoceanUrl.addPart(UrlPart.PIPELINE_RUN_DETAIL_TAB, next.toLowerCase());
+                                                        blueOceanUrl.addPart(UrlPart.PIPELINE_RUN_DETAIL_TAB, next.toLowerCase());
                                                     }
                                                 }
                                             }
                                         }
                                     } else if (PIPELINE_TABS.contains(next.toLowerCase())) {
                                         // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/activity/
-                                        blueoceanUrl.addPart(UrlPart.PIPELINE_TAB, next.toLowerCase());
+                                        blueOceanUrl.addPart(UrlPart.PIPELINE_TAB, next.toLowerCase());
                                     }
                                 }
                             }
@@ -223,7 +225,7 @@ public class BlueoceanUrl {
                     }
                 }
 
-                return blueoceanUrl;
+                return blueOceanUrl;
             }
         }
 

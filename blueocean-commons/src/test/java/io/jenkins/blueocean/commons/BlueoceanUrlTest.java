@@ -26,48 +26,46 @@ package io.jenkins.blueocean.commons;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.net.MalformedURLException;
-
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class BlueoceanUrlTest {
+public class BlueOceanUrlTest {
 
     @Test
     public void test_MalformedURLException() {
-        Assert.assertNull(BlueoceanUrl.parse("/a"));
+        Assert.assertNull(BlueOceanUrl.parse("/a"));
     }
 
     @Test
     public void test() {
-        BlueoceanUrl blueUrl;
+        BlueOceanUrl blueUrl;
 
-        blueUrl = BlueoceanUrl.parse("/blue/pipelines/");
-        Assert.assertEquals("pipelines", blueUrl.getPart(BlueoceanUrl.UrlPart.DASHBOARD_PIPELINES));
-        Assert.assertEquals(BlueoceanUrl.UrlPart.DASHBOARD_PIPELINES, blueUrl.getLastPart());
-        Assert.assertTrue(blueUrl.lastPartIs(BlueoceanUrl.UrlPart.DASHBOARD_PIPELINES));
+        blueUrl = BlueOceanUrl.parse("/blue/pipelines/");
+        Assert.assertEquals("pipelines", blueUrl.getPart(BlueOceanUrl.UrlPart.DASHBOARD_PIPELINES));
+        Assert.assertEquals(BlueOceanUrl.UrlPart.DASHBOARD_PIPELINES, blueUrl.getLastPart());
+        Assert.assertTrue(blueUrl.lastPartIs(BlueOceanUrl.UrlPart.DASHBOARD_PIPELINES));
 
-        blueUrl = BlueoceanUrl.parse("/blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/activity/");
-        Assert.assertFalse(blueUrl.hasPart(BlueoceanUrl.UrlPart.DASHBOARD_PIPELINES));
-        Assert.assertTrue(blueUrl.hasPart(BlueoceanUrl.UrlPart.ORGANIZATION));
-        Assert.assertEquals("jenkins", blueUrl.getPart(BlueoceanUrl.UrlPart.ORGANIZATION));
-        Assert.assertEquals("f1/f3 with spaces/f3 pipeline", blueUrl.getPart(BlueoceanUrl.UrlPart.PIPELINE));
-        Assert.assertEquals("activity", blueUrl.getPart(BlueoceanUrl.UrlPart.PIPELINE_TAB));
-        Assert.assertEquals(BlueoceanUrl.UrlPart.PIPELINE_TAB, blueUrl.getLastPart());
-        Assert.assertTrue(blueUrl.lastPartIs(BlueoceanUrl.UrlPart.PIPELINE_TAB, "activity"));
+        blueUrl = BlueOceanUrl.parse("/blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/activity/");
+        Assert.assertFalse(blueUrl.hasPart(BlueOceanUrl.UrlPart.DASHBOARD_PIPELINES));
+        Assert.assertTrue(blueUrl.hasPart(BlueOceanUrl.UrlPart.ORGANIZATION));
+        Assert.assertEquals("jenkins", blueUrl.getPart(BlueOceanUrl.UrlPart.ORGANIZATION));
+        Assert.assertEquals("f1/f3 with spaces/f3 pipeline", blueUrl.getPart(BlueOceanUrl.UrlPart.PIPELINE));
+        Assert.assertEquals("activity", blueUrl.getPart(BlueOceanUrl.UrlPart.PIPELINE_TAB));
+        Assert.assertEquals(BlueOceanUrl.UrlPart.PIPELINE_TAB, blueUrl.getLastPart());
+        Assert.assertTrue(blueUrl.lastPartIs(BlueOceanUrl.UrlPart.PIPELINE_TAB, "activity"));
 
-        blueUrl = BlueoceanUrl.parse("/blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/magic-branch-X/55/pipeline");
-        Assert.assertFalse(blueUrl.hasPart(BlueoceanUrl.UrlPart.DASHBOARD_PIPELINES));
-        Assert.assertTrue(blueUrl.hasPart(BlueoceanUrl.UrlPart.ORGANIZATION));
-        Assert.assertEquals("jenkins", blueUrl.getPart(BlueoceanUrl.UrlPart.ORGANIZATION));
-        Assert.assertEquals("f1/f3 with spaces/f3 pipeline", blueUrl.getPart(BlueoceanUrl.UrlPart.PIPELINE));
-        Assert.assertFalse(blueUrl.hasPart(BlueoceanUrl.UrlPart.PIPELINE_TAB));
-        Assert.assertTrue(blueUrl.hasPart(BlueoceanUrl.UrlPart.PIPELINE_RUN_DETAIL));
-        Assert.assertEquals("magic-branch-X", blueUrl.getPart(BlueoceanUrl.UrlPart.BRANCH));
-        Assert.assertEquals("55", blueUrl.getPart(BlueoceanUrl.UrlPart.PIPELINE_RUN_DETAIL_ID));
-        Assert.assertEquals("pipeline", blueUrl.getPart(BlueoceanUrl.UrlPart.PIPELINE_RUN_DETAIL_TAB));
-        Assert.assertEquals(BlueoceanUrl.UrlPart.PIPELINE_RUN_DETAIL_TAB, blueUrl.getLastPart());
-        Assert.assertTrue(blueUrl.lastPartIs(BlueoceanUrl.UrlPart.PIPELINE_RUN_DETAIL_TAB, "pipeline"));
+        blueUrl = BlueOceanUrl.parse("/blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/detail/magic-branch-X/55/pipeline");
+        Assert.assertFalse(blueUrl.hasPart(BlueOceanUrl.UrlPart.DASHBOARD_PIPELINES));
+        Assert.assertTrue(blueUrl.hasPart(BlueOceanUrl.UrlPart.ORGANIZATION));
+        Assert.assertEquals("jenkins", blueUrl.getPart(BlueOceanUrl.UrlPart.ORGANIZATION));
+        Assert.assertEquals("f1/f3 with spaces/f3 pipeline", blueUrl.getPart(BlueOceanUrl.UrlPart.PIPELINE));
+        Assert.assertFalse(blueUrl.hasPart(BlueOceanUrl.UrlPart.PIPELINE_TAB));
+        Assert.assertTrue(blueUrl.hasPart(BlueOceanUrl.UrlPart.PIPELINE_RUN_DETAIL));
+        Assert.assertEquals("magic-branch-X", blueUrl.getPart(BlueOceanUrl.UrlPart.BRANCH));
+        Assert.assertEquals("55", blueUrl.getPart(BlueOceanUrl.UrlPart.PIPELINE_RUN_DETAIL_ID));
+        Assert.assertEquals("pipeline", blueUrl.getPart(BlueOceanUrl.UrlPart.PIPELINE_RUN_DETAIL_TAB));
+        Assert.assertEquals(BlueOceanUrl.UrlPart.PIPELINE_RUN_DETAIL_TAB, blueUrl.getLastPart());
+        Assert.assertTrue(blueUrl.lastPartIs(BlueOceanUrl.UrlPart.PIPELINE_RUN_DETAIL_TAB, "pipeline"));
     }
 
 }
