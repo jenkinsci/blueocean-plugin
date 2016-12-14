@@ -7,7 +7,7 @@ import 'moment/min/locales.min';
 /* eslint-disable max-len */
 
 const ConsoleLog = ({ text, className, key = 'console' }) =>
-    <div className={`${className} console-log insert-line-numbers`}>
+     <div className={`${className} console-log insert-line-numbers`}>
         {text.trim().split('\n').map((line, idx) =>
             <div className="line" id={`#${key}-L${idx}`} key={`#${key}-L${idx}`}>{line}</div>
         )}
@@ -26,7 +26,7 @@ const TestCaseResultRow = (props) => {
 
     let testDetails = null;
 
-    if (t.errorStackTrace) {
+    if (t.errorStackTrace || t.errorDetails) {
         testDetails = (<div>
             <div className="test-details">
                 <div className="test-detail-text" style={{ display: 'none' }}>
@@ -34,10 +34,10 @@ const TestCaseResultRow = (props) => {
                 </div>
             </div>
             <div className="test-console">
-                <h4>{translation('rundetail.tests.results.error.message', { defaultValue: 'Error' })}</h4>
-                <ConsoleLog className="error-message" text={t.errorDetails} key={`${t}-message`} />
-                <h4>{translation('rundetail.tests.results.error.output', { defaultValue: 'Stacktrace' })}</h4>
-                <ConsoleLog className="stack-trace" text={t.errorStackTrace} key={`${t}-stack-trace`} />
+                {t.errorDetails && <h4>{translation('rundetail.tests.results.error.message', { defaultValue: 'Error' })}</h4>}
+                {t.errorDetails && <ConsoleLog className="error-message" text={t.errorDetails} key={`${t}-message`} />}
+                {t.errorStackTrace && <h4>{translation('rundetail.tests.results.error.output', { defaultValue: 'Stacktrace' })}</h4>}
+                {t.errorStackTrace && <ConsoleLog className="stack-trace" text={t.errorStackTrace} key={`${t}-stack-trace`} />}
             </div>
         </div>);
     }
