@@ -29,11 +29,11 @@ import javax.annotation.Nonnull;
 
 /**
  * REST prefetch data preloader.
- * <p/>
+ * <p>
  * Pre-populates the page with REST data, allowing the client side {@code Fetch}
  * module (see {@code Fetch} module in the {@code @jenkins-cd/blueocean-core-js NPM packages})
  * to avoid the REST API call overhead.
- * <p/>
+ * <p>
  * Create implementations of this class (and annotate with {@code @Extension}) for data that
  * we know is going to be needed by the page.
  *
