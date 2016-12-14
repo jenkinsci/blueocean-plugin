@@ -177,6 +177,13 @@ public class BlueUrlTokenizer {
     BlueUrlTokenizer parse(@Nonnull String url) {
         Iterator<String> urlTokens = extractTokens(url);
 
+        //
+        // Yes, the following code is quite ugly, but it's easy enough to understand atm.
+        // Unless this gets a lot more detailed, please don't get super clever ideas about using
+        // some fancy-pants abstractions/patterns/3rd-party-libs for parsing the URL that, while
+        // might make the code look neater structurally, also makes the code logic a lot harder
+        // to follow (without using a debugger).
+        //
         if (urlTokens.hasNext()) {
             if (urlTokens.next().equalsIgnoreCase("blue")) {
                 BlueUrlTokenizer blueUrlTokenizer = new BlueUrlTokenizer();
