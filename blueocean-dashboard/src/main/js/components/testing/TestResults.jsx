@@ -6,13 +6,12 @@ import 'moment/min/locales.min';
 
 /* eslint-disable max-len */
 
-const ConsoleLog = ({ text, className, key = 'console' }) =>{
-    return (<div className={`${className} console-log insert-line-numbers`}>
+const ConsoleLog = ({ text, className, key = 'console' }) =>
+     <div className={`${className} console-log insert-line-numbers`}>
         {text.trim().split('\n').map((line, idx) =>
             <div className="line" id={`#${key}-L${idx}`} key={`#${key}-L${idx}`}>{line}</div>
         )}
-    </div>);
-};
+    </div>;
 
 ConsoleLog.propTypes = {
     text: PropTypes.string,
