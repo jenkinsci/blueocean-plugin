@@ -25,7 +25,7 @@ package io.jenkins.blueocean.preload;
 
 import hudson.Extension;
 import hudson.model.Item;
-import io.jenkins.blueocean.commons.BlueOceanUrl;
+import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.ModelObjectSerializer;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -55,7 +55,7 @@ public class PipelineStatePreloader extends RESTFetchPreloader {
     private static final int DEFAULT_LIMIT = 26;
 
     @Override
-    protected FetchData getFetchData(@Nonnull BlueOceanUrl blueUrl) {
+    protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
         BluePipeline pipeline = getPipeline(blueUrl);
 
         if (pipeline != null) {
@@ -85,10 +85,10 @@ public class PipelineStatePreloader extends RESTFetchPreloader {
         return null;
     }
 
-    private BluePipeline getPipeline(BlueOceanUrl blueUrl) {
+    private BluePipeline getPipeline(BlueUrlTokenizer blueUrl) {
         if (addPipelineRuns(blueUrl)) {
             Jenkins jenkins = Jenkins.getInstance();
-            String pipelineFullName = blueUrl.getPart(BlueOceanUrl.UrlPart.PIPELINE);
+            String pipelineFullName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE);
 
             try {
                 Item pipelineJob = jenkins.getItemByFullName(pipelineFullName);
@@ -102,11 +102,11 @@ public class PipelineStatePreloader extends RESTFetchPreloader {
         return null;
     }
 
-    private boolean addPipelineRuns(@Nonnull BlueOceanUrl blueUrl) {
-        if (blueUrl.lastPartIs(BlueOceanUrl.UrlPart.PIPELINE)) {
+    private boolean addPipelineRuns(@Nonnull BlueUrlTokenizer blueUrl) {
+        if (blueUrl.lastPartIs(BlueUrlTokenizer.UrlPart.PIPELINE)) {
             // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/
             return true;
-        } else if (blueUrl.lastPartIs(BlueOceanUrl.UrlPart.PIPELINE_TAB, "activity")) {
+        } else if (blueUrl.lastPartIs(BlueUrlTokenizer.UrlPart.PIPELINE_TAB, "activity")) {
             // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/activity/
             return true;
         }
