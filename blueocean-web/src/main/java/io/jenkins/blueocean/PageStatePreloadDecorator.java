@@ -21,14 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.jenkins.blueocean;
 
-export const root = (typeof self === 'object' && self.self === self && self) ||
-    (typeof global === 'object' && global.global === global && global) || this;
+import hudson.Extension;
+import io.jenkins.blueocean.commons.PageStatePreloader;
 
-//
-// See blueocean-config/src/main/java/io/jenkins/blueocean/config/BlueOceanConfig.java
-// and blueocean-config/src/main/resources/io/jenkins/blueocean/config/BlueOceanConfig/header.jelly
-//
-export const blueocean = (root.$blueocean || {});
+import java.util.List;
 
-export const prefetchdata = (blueocean.prefetchdata || {});
+/**
+ * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ */
+@Extension
+public class PageStatePreloadDecorator extends BluePageDecorator {
+
+    public List<PageStatePreloader> getPageStatePreloaders(){
+        return PageStatePreloader.all();
+    }
+
+}
