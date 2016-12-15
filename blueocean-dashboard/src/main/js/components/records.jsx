@@ -84,7 +84,7 @@ export class RunRecord extends Record({
         if (this.isCompleted()) {
             return this.result;
         } else if (this.state === 'PAUSED') { // TODO: remove this after JDL is defined for paused state
-            return 'RUNNING';
+            return 'PAUSED';
         }
         return this.state;
     }
