@@ -39,6 +39,14 @@ export function getGlyphFor(result:Result) {
                     <polygon points="-5 -1 5 -1 5 1 -5 1"/>
                 </g>
             );
+        case "paused":
+            // "!"
+            return (
+                <g className="result-status-glyph" transform="scale(1.4)">
+                    <polygon points="-3,-4 -3,3 -3,3 -1,3 -1,-4"/>
+                    <polygon points="3,-4 1,-4 1,-4 1,3 3,3"/>
+                </g>
+            );
         case "unstable":
             // "!"
             return (

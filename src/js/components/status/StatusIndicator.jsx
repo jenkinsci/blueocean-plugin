@@ -9,6 +9,7 @@ const validResultValues = {
     failure: 'failure',
     running: 'running',
     queued: 'queued',
+    paused: 'paused',
     unstable: 'unstable',
     aborted: 'aborted',
     not_built: 'not_built',

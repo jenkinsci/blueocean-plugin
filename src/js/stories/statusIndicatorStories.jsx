@@ -19,6 +19,7 @@ const resultValues = [
     ['Aborted', 'aborted'],
     ['Not Built', 'not_built', 77],
     ['Unknown', 'unknown'],
+    ['Paused', 'paused'],
     ['(invalid)', 'invalid_state'],
     ['(with space)', 'blah blah'],
     ['(null)', null],

@@ -33,6 +33,11 @@
     fill: @brand-grey-lite;
 }
 
+.svgResultStatus circle.paused {
+    stroke: none;
+    fill: @brand-paused;
+}
+
 .svgResultStatus circle.unknown {
     stroke: none;
     fill: @brand-unknown-lite;
@@ -176,11 +181,15 @@
     border-bottom: 1px solid fade(darken(@brand-warning-lite, 10%), 50%);
 }
 
+.result-bg.paused {
+    background:@brand-paused;
+    border-bottom: 1px solid fade(darken(@brand-paused, 10%), 50%);
+}
+
 .result-bg.unknown {
     background:@brand-unknown-lite;
     border-bottom: 1px solid fade(darken(@brand-unknown-lite, 10%), 50%);
 }
-
 //--[ ResultItem ]---------------------------------------------------------------
 
 .result-item + .result-item {
