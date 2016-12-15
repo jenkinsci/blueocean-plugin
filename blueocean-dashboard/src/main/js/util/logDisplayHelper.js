@@ -8,6 +8,7 @@ export const RESULTS = keymirror({
 
 export const STATES = keymirror({
     RUNNING: null,
+    PAUSED: null,
     FINISHED: null,
 });
 
@@ -15,7 +16,7 @@ export const getNodesInformation = (nodes) => {
   // calculation of information about stages
   // nodes in Runing state
     const runningNodes = nodes
-    .filter((item) => item.state === STATES.RUNNING && (!item.edges || item.edges.length < 2))
+    .filter((item) => (item.state === STATES.RUNNING || item.state === STATES.PAUSED) && (!item.edges || item.edges.length < 2))
     .map((item) => item.id);
   // nodes with error result
     const errorNodes = nodes
