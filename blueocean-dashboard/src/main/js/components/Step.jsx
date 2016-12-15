@@ -3,6 +3,7 @@ import { ResultItem } from '@jenkins-cd/design-language';
 import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
+import InputStep from './InputStep';
 
 export default class Node extends Component {
     constructor(props) {
@@ -152,7 +153,7 @@ export default class Node extends Component {
         if (log && !isInputStep) {
             children = <LogConsole {...logProps} />;
         } else if (isInputStep) {
-            children = <span>FIXME: generate Form from input</span>;
+            children = <InputStep node={node}/>;
         } else if (!log && hasLogs) {
             children = <span>&nbsp;</span>;
         }
