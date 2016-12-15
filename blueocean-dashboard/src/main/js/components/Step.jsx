@@ -18,7 +18,9 @@ export default class Node extends Component {
         if (node && node.isFocused) {
             const fetchAll = node.fetchAll;
             const mergedConfig = { ...config, node, nodesBaseUrl, fetchAll };
-            fetchLog(mergedConfig);
+            if (!node.isInputStep) {
+                fetchLog(mergedConfig);
+            }
         }
     }
 
@@ -41,7 +43,7 @@ export default class Node extends Component {
                 // we may have a streaming log
                 const number = Number(log.newStart);
                 // in case we doing karaoke we want to see more logs
-                if ((number > 0 || !log.logArray) && followAlong) {
+                if ((number > 0 || !log.logArray) && followAlong && !node.isInputStep) {
                     mergedConfig.newStart = log.newStart;
                     // kill current  timeout if any
                     this.clearThisTimeout();
@@ -71,7 +73,8 @@ export default class Node extends Component {
         const { node, location: { hash: anchorName } } = props;
         const isFocused = this.state ? this.state.isFocused : node.isFocused;
         const fetchAll = calculateFetchAll(props);
-        const general = { ...node, fetchAll };
+        const isInputStep = node.input && node.input !== null;
+        const general = { ...node, fetchAll, isInputStep };
         // e.g. #step-10-log-1 or #step-10
         if (anchorName) {
             const stepReg = /step-([0-9]{1,})?($|-log-([0-9]{1,})$)/;
@@ -99,6 +102,7 @@ export default class Node extends Component {
           result,
           id,
           state,
+          isInputStep = false,
           isFocused = false,
         } = node;
 
@@ -145,8 +149,10 @@ export default class Node extends Component {
 
         const logConsoleClass = `logConsole step-${id}`;
         let children = null;
-        if (log) {
+        if (log && !isInputStep) {
             children = <LogConsole {...logProps} />;
+        } else if (isInputStep) {
+            children = <span>FIXME: generate Form from input</span>;
         } else if (!log && hasLogs) {
             children = <span>&nbsp;</span>;
         }

@@ -85,6 +85,9 @@ export const getNodesInformation = (nodes) => {
             wasFocused = true;
             modelItem.isFocused = true;
         }
+        if (item.input) {
+	     modelItem.input = item.input;
+        }
         return modelItem;
     });
 
