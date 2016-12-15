@@ -20,9 +20,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.92-unpublishedPaused",
-      "from": "@jenkins-cd/design-language@0.0.92-unpublishedPaused",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.92-unpublishedPaused.tgz"
+      "version": "0.0.92",
+      "from": "@jenkins-cd/design-language@0.0.92",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.92.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
