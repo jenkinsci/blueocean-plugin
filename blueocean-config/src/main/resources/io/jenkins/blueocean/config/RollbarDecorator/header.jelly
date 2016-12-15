@@ -1,13 +1,4 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
-  <script>
-    (function () {
-      window.$$blueocean = {};
-      window.$$blueocean.user = ${it.blueOceanUser}.user;
-      window.$$blueocean.config = ${it.blueOceanConfig};
-      window.$$blueocean.jsExtensions = ${it.jsExtensions};
-    })();
-  </script>
-
   <j:if test="${it.rollBarEnabled}">
     <!--
      Running the plugin build (or just "gulp" from the command line) will
