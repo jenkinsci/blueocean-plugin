@@ -218,7 +218,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.72</version>
+            <version>1.80</version>
         </dependency>
 
         <dependency>
