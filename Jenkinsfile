@@ -13,7 +13,7 @@ node {
       try {
         stage('core-js') {
             sh 'npm -v'
-            sh 'npm --prefix ./blueocean-core-js install ./blueocean-core-js --no-optional';
+            sh 'npm --no-optional --prefix ./blueocean-core-js install ./blueocean-core-js';
             sh "npm --prefix ./blueocean-core-js install gulp-cli && ./blueocean-core-js/node_modules/.bin/gulp"
         }
         sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
