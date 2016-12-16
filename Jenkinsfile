@@ -12,7 +12,7 @@ node {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
         stage('core-js') {
-            sh 'npm --prefix ./blueocean-core-js install ./blueocean-core-js';
+            sh 'npm --prefix ./blueocean-core-js install ./blueocean-core-js --no-optional';
             sh "npm --prefix ./blueocean-core-js install gulp-cli && ./blueocean-core-js/node_modules/.bin/gulp"
         }
         sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
