@@ -12,7 +12,6 @@ node {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
         stage('core-js') {
-            sh 'npm install -g npm@3.10.9'
             sh 'npm -v'
             sh 'npm --prefix ./blueocean-core-js install ./blueocean-core-js --no-optional';
             sh "npm --prefix ./blueocean-core-js install gulp-cli && ./blueocean-core-js/node_modules/.bin/gulp"
