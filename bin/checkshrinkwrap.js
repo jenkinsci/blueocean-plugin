@@ -27,6 +27,7 @@ checkProject('../blueocean-dashboard');
 checkProject('../blueocean-personalization');
 checkProject('../blueocean-web');
 checkProject('../blueocean-config');
+checkProject('../blueocean-core-js');
 
 const ellapsed = new Date().getTime() - start;
 console.log(`dependencies look good! took ${ellapsed}ms`);
