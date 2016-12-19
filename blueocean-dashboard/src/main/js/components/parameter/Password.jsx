@@ -11,7 +11,7 @@ export class Password extends Component {
         const { defaultParameterValue: { value }, description, name } = this.props;
         return (<FormElement title={ name }>
             <div>
-                <PasswordInput {...{defaultValue: value, name}} />
+                <PasswordInput {...{ defaultValue: value, name }} />
                 { description && <div>{description}</div> }
             </div>
             {/* { debugging }*/}
