@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { supportedInputTypesMapping } from './parameter/index';
 
 export default class InputStep extends Component {
 
@@ -8,12 +9,20 @@ export default class InputStep extends Component {
         if (!node) {
             return null;
         }
-        const { input } = node;
-        console.log(node, input);
+        const { input: { message, parameters } } = node;
 
         return (<div className="inputStep">
-            <span>FIXME: generate Form from input</span>
-            <h1>{node.displayName}</h1>
+            <h1>{message}</h1>
+            { parameters.map((parameter) => {
+                const { type } = parameter;
+                const returnValue = supportedInputTypesMapping[type];
+                if (returnValue) {
+                    return React.createElement(returnValue, parameter);
+                }
+                return <div>No component found for type {type}.</div>;
+            }
+            )}
+
         </div>);
     }
 }
