@@ -58,11 +58,9 @@
         </dependency>
 
         <!-- Bundled plugins for improved out of the box experience -->
-        <!-- Kyoto feature -->
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>0.6</version>
         </dependency>
 
         <dependency>
