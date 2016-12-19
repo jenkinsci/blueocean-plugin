@@ -18,7 +18,7 @@ export default class InputStep extends Component {
                     const { type } = parameter;
                     const returnValue = supportedInputTypesMapping[type];
                     if (returnValue) {
-                        return React.createElement(returnValue, {...parameter, key: index});
+                        return React.createElement(returnValue, { ...parameter, key: index });
                     }
                     return <div>No component found for type {type}.</div>;
                 })
