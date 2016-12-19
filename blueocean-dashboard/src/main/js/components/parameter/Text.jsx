@@ -6,8 +6,10 @@ export class Text extends Component {
     render() {
         const { defaultParameterValue: { value }, description, name } = this.props;
         return (<FormElement title={ name }>
-            <TextArea defaultValue={value} />
-            { description && <div>{description}</div> }
+            <div>
+                <TextArea defaultValue={value} />
+                { description && <div>{description}</div> }
+            </div>
         </FormElement>);
     }
 }

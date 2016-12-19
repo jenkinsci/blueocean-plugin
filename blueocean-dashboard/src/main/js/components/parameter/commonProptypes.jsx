@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import { supportedInputTypes } from './index';
 
 const { oneOf, shape, string } = PropTypes;
 
@@ -11,6 +10,12 @@ export const propTypes = {
         }),
         description: string,
         name: string,
-        type: oneOf(supportedInputTypes),
+        type: oneOf([
+            'BooleanParameterDefinition',
+            'ChoiceParameterDefinition',
+            'TextParameterDefinition',
+            'StringParameterDefinition',
+            'PasswordParameterDefinition',
+        ]),
     }),
 };

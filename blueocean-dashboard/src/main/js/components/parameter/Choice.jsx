@@ -7,8 +7,10 @@ export class Choice extends Component {
     render() {
         const { defaultParameterValue: { value }, description, name, choices } = this.props;
         return (<FormElement title={ name }>
-            <Dropdown defaultOption={value} options={choices} />
-            { description && <div>{description}</div> }
+            <div>
+                <Dropdown defaultOption={value} options={choices} />
+                { description && <div>{description}</div> }
+            </div>
         </FormElement>); }
 }
 

@@ -14,11 +14,11 @@ export default class InputStep extends Component {
         return (<div className="inputStep">
             <h1>{message}</h1>
             {
-                parameters.map((parameter) => {
+                parameters.map((parameter, index) => {
                     const { type } = parameter;
                     const returnValue = supportedInputTypesMapping[type];
                     if (returnValue) {
-                        return React.createElement(returnValue, parameter);
+                        return React.createElement(returnValue, {...parameter, key: index});
                     }
                     return <div>No component found for type {type}.</div>;
                 })
