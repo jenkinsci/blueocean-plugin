@@ -81,7 +81,7 @@ export class RunRecord extends Record({
     }
 
     getComputedResult() {
-        if (this.isCompleted()) {
+        if (this.isCompletedInp()) {
             return this.result;
         }
         return this.state;

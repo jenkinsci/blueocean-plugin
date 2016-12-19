@@ -13,19 +13,19 @@ export const STATES = keymirror({
 });
 
 export const getNodesInformation = (nodes) => {
-  // calculation of information about stages
-  // nodes in Runing state
+    // calculation of information about stages
+    // nodes in Runing state
     const runningNodes = nodes
-    .filter((item) => (item.state === STATES.RUNNING || item.state === STATES.PAUSED) && (!item.edges || item.edges.length < 2))
-    .map((item) => item.id);
-  // nodes with error result
+        .filter((item) => (item.state === STATES.RUNNING || item.state === STATES.PAUSED) && (!item.edges || item.edges.length < 2))
+        .map((item) => item.id);
+    // nodes with error result
     const errorNodes = nodes
-    .filter((item) => item.result === RESULTS.FAILURE)
-    .map((item) => item.id);
-  // nodes without information
+        .filter((item) => item.result === RESULTS.FAILURE)
+        .map((item) => item.id);
+    // nodes without information
     const hasResultsForSteps = nodes
-        .filter((item) => item.state === null && item.result === null).length !== nodes.length;
-  // principal model mapper
+            .filter((item) => item.state === null && item.result === null).length !== nodes.length;
+    // principal model mapper
     let wasFocused = false; // we only want one node to be focused if any
     let parallelNodes = [];
     let parent;
@@ -35,7 +35,7 @@ export const getNodesInformation = (nodes) => {
     const error = !(errorNodes.length === 0);
     const model = nodes.map((item, index) => {
         const hasFailingNode = item.edges ? item.edges
-          .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
+            .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
         const isFailingNode = errorNodes.indexOf(item.id) > -1;
         const isRunningNode = runningNodes.indexOf(item.id) > -1;
 
@@ -57,7 +57,7 @@ export const getNodesInformation = (nodes) => {
         // the problem I see ATM is that we would need to ask the c-API everytime for each action, whether this
         // action has the capability for logging
         const hasLogs = item.actions ? item.actions
-                .filter(action => action._class === 'org.jenkinsci.plugins.workflow.support.actions.LogActionImpl').length > 0
+            .filter(action => action._class === 'org.jenkinsci.plugins.workflow.support.actions.LogActionImpl').length > 0
             : false;
         const modelItem = {
             key: index,
@@ -86,18 +86,18 @@ export const getNodesInformation = (nodes) => {
             modelItem.isFocused = true;
         }
         if (item.input) {
-	     modelItem.input = item.input;
+            modelItem.input = item.input;
         }
         return modelItem;
     });
 
-  // creating the response object
+    // creating the response object
     const information = {
         isFinished: finished,
         hasResultsForSteps,
         model,
     };
-  // on not finished we return null and not a bool since we do not know the result yet
+    // on not finished we return null and not a bool since we do not know the result yet
     if (!finished) {
         information.isError = null;
     } else {

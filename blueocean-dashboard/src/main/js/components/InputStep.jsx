@@ -9,16 +9,17 @@ export default class InputStep extends Component {
             return null;
         }
         const { input } = node;
-	            console.log(node, input)
+        console.log(node, input);
 
         return (<div className="inputStep">
             <span>FIXME: generate Form from input</span>
             <h1>{node.displayName}</h1>
-      </div>);
+        </div>);
     }
 }
 
 const { shape } = PropTypes;
-Node.propTypes = {
+
+InputStep.propTypes = {
     node: shape.isRequired,
 };

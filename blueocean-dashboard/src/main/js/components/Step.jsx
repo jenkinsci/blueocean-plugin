@@ -153,7 +153,7 @@ export default class Node extends Component {
         if (log && !isInputStep) {
             children = <LogConsole {...logProps} />;
         } else if (isInputStep) {
-            children = <InputStep node={node}/>;
+            children = <InputStep node={node} />;
         } else if (!log && hasLogs) {
             children = <span>&nbsp;</span>;
         }
