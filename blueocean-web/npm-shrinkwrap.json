@@ -3,10 +3,15 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.35",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.35",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.35.tgz",
+      "version": "0.0.35-unpublishedPause",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.35-unpublishedPause",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.35-unpublishedPause.tgz",
       "dependencies": {
+        "@jenkins-cd/design-language": {
+          "version": "0.0.91",
+          "from": "@jenkins-cd/design-language@0.0.91",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.91.tgz"
+        },
         "history": {
           "version": "3.2.1",
           "from": "history@>=3.0.0 <4.0.0",
@@ -20,9 +25,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.91",
-      "from": "@jenkins-cd/design-language@0.0.91",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.91.tgz"
+      "version": "0.0.93-unpublishedPaused1",
+      "from": "@jenkins-cd/design-language@0.0.93-unpublishedPaused1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.93-unpublishedPaused1.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
