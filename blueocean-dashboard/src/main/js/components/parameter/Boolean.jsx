@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { propTypes } from './commonProptypes';
-import { DebugRender } from './DebugRender';
-
+import { Checkbox, FormElement } from '@jenkins-cd/design-language';
 
 export class Boolean extends Component {
-
     render() {
-        return React.createElement(DebugRender, this.props);
+        const { defaultParameterValue: { value }, description, name } = this.props;
+        return (<FormElement title={ name }>
+            <Checkbox label={description} checked={value} />
+        </FormElement>);
     }
 }
 

@@ -13,16 +13,16 @@ export default class InputStep extends Component {
 
         return (<div className="inputStep">
             <h1>{message}</h1>
-            { parameters.map((parameter) => {
-                const { type } = parameter;
-                const returnValue = supportedInputTypesMapping[type];
-                if (returnValue) {
-                    return React.createElement(returnValue, parameter);
-                }
-                return <div>No component found for type {type}.</div>;
+            {
+                parameters.map((parameter) => {
+                    const { type } = parameter;
+                    const returnValue = supportedInputTypesMapping[type];
+                    if (returnValue) {
+                        return React.createElement(returnValue, parameter);
+                    }
+                    return <div>No component found for type {type}.</div>;
+                })
             }
-            )}
-
         </div>);
     }
 }
@@ -30,5 +30,5 @@ export default class InputStep extends Component {
 const { shape } = PropTypes;
 
 InputStep.propTypes = {
-    node: shape.isRequired,
+    node: shape().isRequired,
 };

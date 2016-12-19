@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import { propTypes } from './commonProptypes';
-import { DebugRender } from './DebugRender';
+import { TextArea, FormElement } from '@jenkins-cd/design-language';
 
 export class Text extends Component {
     render() {
-        return React.createElement(DebugRender, this.props);
+        const { defaultParameterValue: { value }, description, name } = this.props;
+        return (<FormElement title={ name }>
+            <TextArea defaultValue={value} />
+            { description && <div>{description}</div> }
+        </FormElement>);
     }
 }
 

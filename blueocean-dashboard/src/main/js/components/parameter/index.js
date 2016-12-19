@@ -11,8 +11,8 @@ export const supportedInputTypesMapping =
     {
         BooleanParameterDefinition: Boolean,
         ChoiceParameterDefinition: Choice,
-        TextParameterDefinition: String,
-        StringParameterDefinition: Text,
+        TextParameterDefinition: Text,
+        StringParameterDefinition: String,
         PasswordParameterDefinition: Password,
     };
 /**

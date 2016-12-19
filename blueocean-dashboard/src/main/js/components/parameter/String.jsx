@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
+import { TextInput, FormElement } from '@jenkins-cd/design-language';
 import { propTypes } from './commonProptypes';
-import { DebugRender } from './DebugRender';
 
 export class String extends Component {
 
     render() {
-        return React.createElement(DebugRender, this.props);
+        const { defaultParameterValue: { value }, description, name } = this.props;
+        return (<FormElement title={ name }>
+            <TextInput defaultValue={value} />
+            { description && <div>{description}</div> }
+        </FormElement>);
     }
 }
 
