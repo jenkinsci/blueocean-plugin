@@ -123,6 +123,7 @@ main {
 .status-color(unstable, @brand-warning, @brand-warning-lite);
 .status-color(not_built, @brand-grey, @brand-grey-lite);
 .status-color(queued, @brand-grey, @brand-grey-lite);
+.status-color(paused, @brand-paused, @brand-paused-lite);
 .status-color(unknown, @brand-unknown, @brand-unknown-lite);
 
 .label-danger {
@@ -888,6 +889,10 @@ footer {
 
     &.queued {
         background-color: @brand-grey-lite;
+    }
+
+    &.paused {
+        background-color: @brand-paused;
     }
 
     &.unknown {
