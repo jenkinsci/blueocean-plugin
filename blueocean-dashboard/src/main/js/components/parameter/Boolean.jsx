@@ -6,7 +6,7 @@ export class Boolean extends Component {
     render() {
         const { defaultParameterValue: { value }, description, name } = this.props;
         return (<FormElement title={ name }>
-            <Checkbox label={description} checked={value} />
+            <Checkbox {...{checked: value, label: description, name}} />
         </FormElement>);
     }
 }

@@ -8,7 +8,7 @@ export class String extends Component {
         const { defaultParameterValue: { value }, description, name } = this.props;
         return (<FormElement title={ name }>
             <div>
-                <TextInput defaultValue={value} />
+                <TextInput {...{defaultValue: value, name}} />
                 { description && <div>{description}</div> }
             </div>
         </FormElement>);
