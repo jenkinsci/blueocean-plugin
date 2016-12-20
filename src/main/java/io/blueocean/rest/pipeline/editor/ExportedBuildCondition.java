@@ -28,7 +28,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean
-public class ExportedBuildCondition implements Comparable<ExportedBuildCondition> {
+public class ExportedBuildCondition {
     private final String name;
     private final String description;
 
@@ -45,9 +45,5 @@ public class ExportedBuildCondition implements Comparable<ExportedBuildCondition
     @Exported
     public String getDescription() {
         return description;
-    }
-
-    public int compareTo(ExportedBuildCondition other) {
-        return this.name.compareTo(other.getName());
     }
 }

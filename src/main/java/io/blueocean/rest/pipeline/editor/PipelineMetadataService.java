@@ -3,6 +3,7 @@ package io.blueocean.rest.pipeline.editor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -79,7 +80,12 @@ public class PipelineMetadataService implements ApiRoutable {
             exported.add(new ExportedBuildCondition(symbolForObject(c), c.getDescription()));
         }
 
-        Collections.sort(exported);
+        Collections.sort(exported, new Comparator<ExportedBuildCondition>() {
+            @Override
+            public int compare(ExportedBuildCondition o1, ExportedBuildCondition o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         return exported.toArray(new ExportedBuildCondition[exported.size()]);
     }
 
