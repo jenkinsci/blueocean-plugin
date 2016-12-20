@@ -5,6 +5,7 @@ import SvgSpinner from './SvgSpinner';
 import SvgStatus from './SvgStatus';
 
 const validResultValues = {
+    // Mostly from io/jenkins/blueocean/rest/model/BlueRun.java
     success: 'success',
     failure: 'failure',
     running: 'running',

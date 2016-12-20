@@ -9,7 +9,7 @@ export {
 export { WeatherIcon } from './weather-icon';
 export { Page } from './page';
 export { GlobalHeader, GlobalNav } from './global-header';
-export { PageHeader, Title, PageTabs, TabLink } from './page-header';
+export { PageHeader, Title, PageTabsOld, TabLink } from './page-header';
 export { Table, TableDivider } from './Table';
 export {
     StatusIndicator,
@@ -50,3 +50,9 @@ export { RadioButtonGroup } from './forms/RadioButtonGroup';
 export { TextArea } from './forms/TextArea';
 export { TextInput } from './forms/TextInput';
 export { FormElement } from './forms/FormElement';
+export {
+    BasicHeader,
+    TopNav,
+    HeaderDetails,
+    PageTabs
+} from './header';

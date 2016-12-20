@@ -3,6 +3,7 @@
 import React, { Component, PropTypes } from 'react';
 import {Link} from 'react-router';
 
+// FIXME: Deprecated, and should be removed once usages have been purged in blueocean
 export class PageHeader extends Component {
     render() {
         return <header className="sub-header">{this.props.children}</header>;
@@ -29,7 +30,8 @@ Title.propTypes = {
     children: PropTypes.node,
 };
 
-export class PageTabs extends Component {
+// FIXME: Deprecated, and should be removed once usages have been purged in blueocean
+export class PageTabsOld extends Component {
     render() {
         const base = this.props.base;
         return (
@@ -40,7 +42,7 @@ export class PageTabs extends Component {
     }
 }
 
-PageTabs.propTypes = {
+PageTabsOld.propTypes = {
     children: PropTypes.node,
     base: PropTypes.string
 };
