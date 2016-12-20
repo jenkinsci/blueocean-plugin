@@ -61,7 +61,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
                 items2.add(0, new QueueItemImpl(
                     items.get(i),
                     job.getName(),
-                    (items.size() == 1 ? job.getNextBuildNumber() : job.getNextBuildNumber() + i), self));
+                    (items.size() == 1 ? job.getNextBuildNumber() : job.getNextBuildNumber() + i), self, pipelineLink));
             }
 
             return items2;

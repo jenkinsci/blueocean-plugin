@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Objects;
+import hudson.Util;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
@@ -10,6 +12,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.PUT;
@@ -23,6 +26,8 @@ import java.io.IOException;
  * @author Kohsuke Kawaguchi
  */
 public class OrganizationImpl extends BlueOrganization {
+    public final static String DEFAULT_ORG_NAME = "jenkins";
+
     private final UserContainerImpl users = new UserContainerImpl(this);
 
     /**
@@ -37,7 +42,12 @@ public class OrganizationImpl extends BlueOrganization {
      * In embedded mode, there's only one organization
      */
     public String getName() {
-        return Jenkins.getInstance().getDisplayName().toLowerCase();
+        return DEFAULT_ORG_NAME;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Jenkins";
     }
 
     @Override

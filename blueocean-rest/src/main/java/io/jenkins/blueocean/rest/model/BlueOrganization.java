@@ -14,10 +14,14 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_ORGANIZATIO
 @Capability(BLUE_ORGANIZATION)
 public abstract class BlueOrganization extends Resource {
     public static final String NAME="name";
+    public static final String DISPLAY_NAME="name";
     public static final String PIPELINES="pipelines";
 
     @Exported(name = NAME)
     public abstract String getName();
+
+    @Exported(name = DISPLAY_NAME)
+    public abstract String getDisplayName();
 
     @Navigable
     //   /organizations/jenkins/piplelines/f1
