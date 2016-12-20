@@ -1,30 +1,52 @@
+
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
-import { I18n } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import CreatePipelineLink from './CreatePipelineLink';
-import { documentTitle } from './DocumentTitle';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
 
-const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+import { observer } from 'mobx-react';
 
+const translate = i18nTranslator('blueocean-dashboard');
+
+
+@observer
 export class Pipelines extends Component {
+    componentWillMount() {
+        this._initPager(this.props);
+    }
 
     componentDidMount() {
-        const { organization = 'Jenkins' } = this.context.params;
-        this.props.setTitle(organization);
+        // TODO: re-enable this
+        // const { organization = 'Jenkins' } = this.context.params;
+        // this.props.setTitle(organization);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this._initPager(nextProps);
+    }
+
+    _initPager(props) {
+        const org = props.params.organization;
+        if (org) {
+            this.pager = this.context.pipelineService.organiztionPipelinesPager(org);
+        } else {
+            this.pager = this.context.pipelineService.allPipelinesPager();
+        }
     }
 
     render() {
-        const { params: { organization }, location: { query } } = this.context;
-        const { pipelines } = this.props;
+        const pipelines = this.pager.data;
+        const { organization, location = {} } = this.context.params;
+
         const orgLink = organization ?
             <Link
               to={`organizations/${organization}`}
               className="inverse"
-              query={query}
+              query={location.query}
             >
                 {organization}
             </Link> : '';
@@ -39,12 +61,12 @@ export class Pipelines extends Component {
         return (
             <Page>
                 <PageHeader>
-                    {!pipelines || pipelines.$pending && <PageLoading duration={2000} />}
+                    {!pipelines || this.pager.pending && <PageLoading duration={2000} />}
                     <Title>
                         <h1>
                             <Link
                               to="/"
-                              query={query}
+                              query={location.query}
                               className="inverse"
                             >
                                 { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
@@ -66,7 +88,7 @@ export class Pipelines extends Component {
                           router={this.context.router}
                         />
                         <Table
-                          className="pipelines-table fixed"
+                          className="pipelines-table"
                           headers={headers}
                         >
                             { pipelines &&
@@ -83,9 +105,9 @@ export class Pipelines extends Component {
                             }
                         </Table>
 
-                        { pipelines && pipelines.$pager &&
-                            <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
-                                {pipelines.$pending ? translate('common.pager.loading', { defaultValue: 'Loading...' }) : translate('common.pager.more', { defaultValue: 'Show more' })}
+                        { pipelines &&
+                            <button disabled={!this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
+                                {this.pager.pending ? translate('common.pager.loading', { defaultValue: 'Loading...' }) : translate('common.pager.more', { defaultValue: 'Show more' })}
                             </button>
                         }
                     </article>
@@ -94,19 +116,19 @@ export class Pipelines extends Component {
     }
 }
 
-const { array, func, object } = PropTypes;
+const { func, object } = PropTypes;
 
 Pipelines.contextTypes = {
     config: object,
     params: object,
     store: object,
     router: object,
+    pipelineService: object,
     location: object.isRequired, // From react-router
 };
 
 Pipelines.propTypes = {
     setTitle: func,
-    pipelines: array,
 };
 
-export default documentTitle(Pipelines);
+export default Pipelines;

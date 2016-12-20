@@ -5,11 +5,14 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
 import jenkins.branch.BranchSource;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
+import hudson.model.queue.QueueTaskFuture;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -1854,6 +1857,81 @@ public class PipelineNodeTest extends PipelineBaseTest {
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(2).getId()+"/steps/", List.class);
         Assert.assertEquals(4, resp.size());
     }
+    @Test
+    public void waitForInputTest() throws Exception {
+        String script = "node {\n" +
+                "    stage(\"parallelStage\"){\n" +
+                "      parallel left : {\n" +
+                "            echo \"running\"\n" +
+                "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
+                "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+                "        }, \n" +
+                "        right : {\n" +
+                "            sh 'sleep 100000'\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        QueueTaskFuture<WorkflowRun> buildTask = job1.scheduleBuild2(0);
+        WorkflowRun run = buildTask.getStartCondition().get();
+        CpsFlowExecution e = (CpsFlowExecution) run.getExecutionPromise().get();
+
+        while (run.getAction(InputAction.class) == null) {
+            e.waitForSuspension();
+        }
+
+        Map runResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/");
+
+        Assert.assertEquals("PAUSED", runResp.get("state"));
+
+        List<FlowNodeWrapper> nodes = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run).getPipelineNodes();
+
+        List<Map> nodesResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+        Assert.assertEquals("PAUSED", nodesResp.get(0).get("state"));
+        Assert.assertEquals("UNKNOWN", nodesResp.get(0).get("result"));
+        Assert.assertEquals("parallelStage", nodesResp.get(0).get("displayName"));
+
+        Assert.assertEquals("PAUSED", nodesResp.get(1).get("state"));
+        Assert.assertEquals("UNKNOWN", nodesResp.get(1).get("result"));
+        Assert.assertEquals("left", nodesResp.get(1).get("displayName"));
+
+        Assert.assertEquals("RUNNING", nodesResp.get(2).get("state"));
+        Assert.assertEquals("UNKNOWN", nodesResp.get(2).get("result"));
+        Assert.assertEquals("right", nodesResp.get(2).get("displayName"));
+
+        List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+
+        Assert.assertEquals("RUNNING", stepsResp.get(0).get("state"));
+        Assert.assertEquals("UNKNOWN", stepsResp.get(0).get("result"));
+        Assert.assertEquals("13", stepsResp.get(0).get("id"));
+
+        Assert.assertEquals("PAUSED", stepsResp.get(2).get("state"));
+        Assert.assertEquals("UNKNOWN", stepsResp.get(2).get("result"));
+        Assert.assertEquals("12", stepsResp.get(2).get("id"));
+    }
+
+    @Test
+    public void stageTestJENKINS_40135() throws Exception {
+        String script = "node {\n" +
+                "    stage 'Stage 1'\n" +
+                "    stage 'Stage 2'\n" +
+                "       echo 'hello'\n" +
+                "}";
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(2, nodes.size());
+        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));
+        Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+    }
+
     private void setupScm(String script) throws Exception {
         // create git repo
         sampleRepo.init();

@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
@@ -62,9 +63,18 @@ public class PipelineStepImpl extends BluePipelineStep {
         return null;
     }
 
+
     @Override
     public Collection<BlueActionProxy> getActions() {
         return PipelineImpl.getActionProxies(node.getNode().getActions(), this);
+    }
+
+    @Override
+    public BlueInputStep getInputStep() {
+        if(node.getInputStep() != null){
+            return new InputStepImpl(node.getInputStep(), this);
+        }
+        return null;
     }
 
     @Override

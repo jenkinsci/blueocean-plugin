@@ -40,7 +40,7 @@ export default class RunDetailsChanges extends Component {
         ];
 
         return (
-            <Table headers={headers} className="changeset-table fixed">
+            <Table headers={headers} className="changeset-table">
                 { changeSet.map(commit => (
                     <tr key={commit.commitId}>
                         <td><CommitLink {...commit} /></td>

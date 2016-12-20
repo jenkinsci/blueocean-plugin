@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
@@ -11,10 +12,16 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StatusAndTiming;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,10 +54,14 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     private FlowNode currentStage;
 
     private ArrayDeque<String> stages = new ArrayDeque<>();
+    private InputAction inputAction;
+
+    private static final Logger logger = LoggerFactory.getLogger(PipelineStepVisitor.class);
 
     public PipelineStepVisitor(WorkflowRun run, @Nullable final FlowNode node) {
         this.node = node;
         this.run = run;
+        this.inputAction = run.getAction(InputAction.class);
     }
 
     @Override
@@ -130,7 +141,26 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
                 times = new TimingInfo();
             }
 
-            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, new NodeRunStatus(atomNode), times);
+            NodeRunStatus status;
+            InputStep inputStep=null;
+            if(PipelineNodeUtil.isPausedForInputStep((StepAtomNode) atomNode, inputAction)){
+                status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
+                for(InputStepExecution execution: inputAction.getExecutions()){
+                    try {
+                        FlowNode node = execution.getContext().get(FlowNode.class);
+                        if(node != null && node.equals(atomNode)){
+                            inputStep = execution.getInput();
+                            break;
+                        }
+                    } catch (IOException | InterruptedException e) {
+                        logger.error("Error getting FlowNode from execution context: "+e.getMessage(), e);
+                    }
+                }
+            }else{
+                 status = new NodeRunStatus(atomNode);
+            }
+
+            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, status, times, inputStep);
             if(PipelineNodeUtil.isPreSyntheticStage(currentStage)){
                 preSteps.add(node);
             }else if(PipelineNodeUtil.isPostSyntheticStage(currentStage)){

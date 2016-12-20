@@ -405,12 +405,10 @@ public class PipelineApiTest extends BaseTest {
         FreeStyleBuild b = j.assertBuildStatusSuccess(p.scheduleBuild2(0));
 
 
-        Map run = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b.getId());
+        List artifacts = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b.getId()+"/artifacts", List.class);
 
-        validateRun(b, run);
-        List<Map> artifacts = (List<Map>) run.get("artifacts");
         Assert.assertEquals(1, artifacts.size());
-        Assert.assertEquals("fizz", artifacts.get(0).get("name"));
+        Assert.assertEquals("fizz", ((Map) artifacts.get(0)).get("name"));
     }
 
     @Test
