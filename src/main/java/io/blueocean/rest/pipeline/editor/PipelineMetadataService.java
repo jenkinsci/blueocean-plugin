@@ -22,8 +22,6 @@ import org.jenkinsci.plugins.workflow.steps.Step;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.kohsuke.stapler.NoStaplerConstructorException;
 import org.kohsuke.stapler.verb.GET;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.core.ParameterNameDiscoverer;
 
 import hudson.Extension;
 import hudson.ExtensionList;
@@ -75,9 +73,14 @@ public class PipelineMetadataService implements ApiRoutable {
      */
     @GET
     @TreeResponse
-    public String[] doBuildConditions() {
-        List<String> conditions = BuildCondition.getOrderedConditionNames();
-        return conditions.toArray(new String[conditions.size()]);
+    public ExportedBuildCondition[] doBuildConditions() {
+        List<ExportedBuildCondition> exported = new ArrayList<>();
+        for (BuildCondition c : BuildCondition.all()) {
+            exported.add(new ExportedBuildCondition(symbolForObject(c), c.getDescription()));
+        }
+
+        Collections.sort(exported);
+        return exported.toArray(new ExportedBuildCondition[exported.size()]);
     }
 
 
@@ -156,13 +159,13 @@ public class PipelineMetadataService implements ApiRoutable {
     private <T extends Describable<T>,D extends Descriptor<T>> void populateMetaSteps(List<Descriptor<?>> r, Class<T> c) {
         Jenkins j = Jenkins.getInstance();
         for (Descriptor<?> d : j.getDescriptorList(c)) {
-            if (SimpleBuildStep.class.isAssignableFrom(d.clazz) && symbolForDescriptor(d) != null) {
+            if (SimpleBuildStep.class.isAssignableFrom(d.clazz) && symbolForObject(d) != null) {
                 r.add(d);
             }
         }
     }
 
-    private @CheckForNull String symbolForDescriptor(Descriptor<?> d) {
+    private @CheckForNull String symbolForObject(Object d) {
         Set<String> symbols = SymbolLookup.getSymbolValue(d);
         if (!symbols.isEmpty()) {
             return symbols.iterator().next();
@@ -172,7 +175,7 @@ public class PipelineMetadataService implements ApiRoutable {
     }
 
     private @CheckForNull ExportedPipelineFunction getStepMetadata(Descriptor<?> d) {
-        String symbol = symbolForDescriptor(d);
+        String symbol = symbolForObject(d);
 
         if (symbol != null) {
             ExportedPipelineFunction f = new ExportedPipelineFunction(new DescribableModel<>(d.clazz), symbol);
