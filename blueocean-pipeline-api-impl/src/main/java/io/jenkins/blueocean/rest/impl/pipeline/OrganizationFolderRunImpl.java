@@ -6,6 +6,7 @@ import hudson.model.CauseAction;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
@@ -123,7 +124,12 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
-    public Container<BlueArtifact> getArtifacts() {
+    public String getArtifactsZipFile() {
+        return null;
+    }
+
+    @Override
+    public BlueArtifactContainer getArtifacts() {
         return null;
     }
 
