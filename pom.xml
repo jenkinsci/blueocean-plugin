@@ -24,7 +24,7 @@
         <node.version>5.8.0</node.version>
         <npm.version>3.7.3</npm.version>
         <blueocean.version>1.0.0-b13-SNAPSHOT</blueocean.version>
-        <declarative.version>0.7.1</declarative.version>
+        <declarative.version>0.8-SNAPSHOT</declarative.version>
     </properties>
 
     <repositories>
