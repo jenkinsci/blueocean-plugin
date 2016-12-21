@@ -9,7 +9,7 @@
     <version>1.0.0-b15-SNAPSHOT</version>
   </parent>
 
-  <name>Module :: BlueOcean :: GitHub Pipeline plugin</name>
+  <name>GitHub Pipeline for Blue Ocean</name>
   <artifactId>blueocean-github-pipeline</artifactId>
   <packaging>hpi</packaging>
 
