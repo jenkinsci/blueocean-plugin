@@ -60,6 +60,7 @@ export const getNodesInformation = (nodes) => {
             .filter(action => action._class === 'org.jenkinsci.plugins.workflow.support.actions.LogActionImpl').length > 0
             : false;
         const modelItem = {
+            _links: item._links,
             key: index,
             id: item.id,
             edges: item.edges,
