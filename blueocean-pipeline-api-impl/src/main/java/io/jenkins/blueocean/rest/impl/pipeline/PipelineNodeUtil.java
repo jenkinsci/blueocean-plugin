@@ -1,11 +1,15 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
+import hudson.model.Action;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.jenkinsci.plugins.pipeline.StageStatus;
+import org.jenkinsci.plugins.pipeline.SyntheticStage;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
+import org.jenkinsci.plugins.workflow.actions.TagsAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
@@ -16,6 +20,7 @@ import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -25,7 +30,8 @@ import java.util.List;
  */
 public class PipelineNodeUtil {
 
-    public static BlueRun.BlueRunResult getStatus(ErrorAction errorAction){
+    @Nonnull
+    public static BlueRun.BlueRunResult getStatus(@Nullable ErrorAction errorAction){
         if(errorAction == null){
             return BlueRun.BlueRunResult.SUCCESS;
         }else{
@@ -33,7 +39,8 @@ public class PipelineNodeUtil {
         }
     }
 
-    public static BlueRun.BlueRunResult getStatus(Throwable error){
+    @Nonnull
+    public static BlueRun.BlueRunResult getStatus(@Nonnull Throwable error){
         if(error instanceof FlowInterruptedException){
             return BlueRun.BlueRunResult.ABORTED;
         }else{
@@ -41,7 +48,8 @@ public class PipelineNodeUtil {
         }
     }
 
-    public static NodeRunStatus getStatus(WorkflowRun run){
+    @Nonnull
+    public static NodeRunStatus getStatus(@Nonnull WorkflowRun run){
         FlowExecution execution = run.getExecution();
         BlueRun.BlueRunResult result;
         BlueRun.BlueRunState state;
@@ -62,19 +70,68 @@ public class PipelineNodeUtil {
     }
 
 
-    public static String getDisplayName(FlowNode node) {
+    @Nonnull
+    public static String getDisplayName(@Nonnull FlowNode node) {
         return node.getAction(ThreadNameAction.class) != null
             ? node.getAction(ThreadNameAction.class).getThreadName()
             : node.getDisplayName();
     }
 
     public static boolean isStage(FlowNode node){
-        return node !=null && (node.getAction(StageAction.class) != null
+        return node !=null && ((node.getAction(StageAction.class) != null && !isSyntheticStage(node))
             || (node.getAction(LabelAction.class) != null && node.getAction(ThreadNameAction.class) == null));
 
     }
 
-    public static boolean isParallelBranch(FlowNode node){
+    public static boolean isSyntheticStage(@Nullable FlowNode node){
+        return node!= null && getSyntheticStage(node) != null;
+    }
+
+    @CheckForNull
+    public static TagsAction getSyntheticStage(@Nullable FlowNode node){
+        if(node != null) {
+            for (Action action : node.getActions()) {
+                if (action instanceof TagsAction && ((TagsAction) action).getTagValue(SyntheticStage.TAG_NAME) != null) {
+                    return (TagsAction) action;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static boolean isPostSyntheticStage(@Nonnull FlowNode node){
+        TagsAction tagsAction = getSyntheticStage(node);
+        if(tagsAction == null){
+            return false;
+        }
+        String value = tagsAction.getTagValue(SyntheticStage.TAG_NAME);
+        return value!=null && value.equals(SyntheticStage.getPost());
+    }
+
+    public static boolean isSkippedStage(@Nullable FlowNode node){
+        if(node == null){
+            return false;
+        }
+        for (Action action : node.getActions()) {
+            if (action instanceof TagsAction && ((TagsAction) action).getTagValue(StageStatus.TAG_NAME) != null) {
+                TagsAction tagsAction =  (TagsAction) action;
+                String value = tagsAction.getTagValue(StageStatus.TAG_NAME);
+                return value != null && value.equals(StageStatus.getSkippedForConditional());
+            }
+        }
+        return false;
+    }
+
+    public static boolean isPreSyntheticStage(@Nonnull FlowNode node){
+        TagsAction tagsAction = getSyntheticStage(node);
+        if(tagsAction == null){
+            return false;
+        }
+        String value = tagsAction.getTagValue(SyntheticStage.TAG_NAME);
+        return value!=null && value.equals(SyntheticStage.getPre());
+    }
+
+    public static boolean isParallelBranch(@Nullable FlowNode node){
         return node !=null && node.getAction(LabelAction.class) != null &&
             node.getAction(ThreadNameAction.class) != null;
     }
@@ -89,7 +146,7 @@ public class PipelineNodeUtil {
     };
 
 
-    public static boolean isNestedInParallel(List<FlowNode> sortedNodes, FlowNode node){
+    public static boolean isNestedInParallel(@Nonnull List<FlowNode> sortedNodes, @Nonnull FlowNode node){
         FlowNode p = getClosestEnclosingParallelBranch(sortedNodes,node, node.getParents());
         return isInBlock(p, getStepEndNode(sortedNodes, p), node);
     }

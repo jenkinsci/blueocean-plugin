@@ -1,15 +1,36 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import hudson.FilePath;
+import hudson.model.FileParameterValue;
+import hudson.model.ParameterDefinition;
+import hudson.model.ParameterValue;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
+import jenkins.model.Jenkins;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.GrantedAuthority;
+import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -75,6 +96,125 @@ public class PipelineStepImpl extends BluePipelineStep {
             return new InputStepImpl(node.getInputStep(), this);
         }
         return null;
+    }
+
+    @Override
+    public HttpResponse submitInputStep(StaplerRequest request) {
+        JSONObject body;
+        try {
+            body = JSONObject.fromObject(IOUtils.toString(request.getReader()));
+        } catch (IOException e) {
+            throw new ServiceException.UnexpectedErrorException(e.getMessage());
+        }
+        String id = body.getString("id");
+        if(id == null){
+            throw new ServiceException.BadRequestExpception("id is required");
+        }
+
+        if(body.get("parameter") == null && body.get("abort") == null){
+            throw new ServiceException.BadRequestExpception("parameter is required");
+        }
+
+        WorkflowRun run = node.getRun();
+        InputAction inputAction = run.getAction(InputAction.class);
+        if (inputAction == null) {
+            throw new ServiceException.BadRequestExpception("Error processing Input Submit request. This Run instance does not" +
+                    " have an InputAction.");
+        }
+
+        InputStepExecution execution = inputAction.getExecution(id);
+        if (execution == null) {
+            throw new ServiceException.BadRequestExpception(
+                    String.format("Error processing Input Submit request. This Run instance does not" +
+                    " have an Input with an id of '%s'.", id));
+        }
+        try {
+            //if abort, abort and return
+            if(body.get("abort") != null && body.getBoolean("abort")){
+                return execution.doAbort();
+            }
+
+            //XXX: execution.doProceed(request) expects submitted form, otherwise we could have simply used it
+            preSubmissionCheck(execution);
+
+            Object o = parseValue(execution, JSONArray.fromObject(body.get("parameter")), request);
+
+            return execution.proceed(o);
+        } catch (IOException | InterruptedException | ServletException e) {
+            throw new ServiceException.UnexpectedErrorException("Error processing Input Submit request."+e.getMessage());
+        }
+    }
+
+    //TODO: InputStepException.preSubmissionCheck() is private, remove it after its made public
+    private void preSubmissionCheck(InputStepExecution execution){
+        if (execution.isSettled()) {
+            throw new ServiceException.BadRequestExpception("This input has been already given");
+        }
+
+        if(!canSubmit(execution.getInput())){
+            throw new ServiceException.BadRequestExpception("You need to be "+ execution.getInput().getSubmitter() +" to submit this");
+        }
+    }
+
+    private Object parseValue(InputStepExecution execution, JSONArray parameters, StaplerRequest request) throws IOException, InterruptedException {
+        Map<String, Object> mapResult = new HashMap<String, Object>();
+
+        for(Object o: parameters){
+            JSONObject p = (JSONObject) o;
+            String name = (String) p.get("name");
+
+            if(name == null){
+                throw new ServiceException.BadRequestExpception("name is required parameter element");
+            }
+
+            ParameterDefinition d=null;
+            for (ParameterDefinition def : execution.getInput().getParameters()) {
+                if (def.getName().equals(name))
+                    d = def;
+            }
+            if (d == null)
+                throw new ServiceException.BadRequestExpception("No such parameter definition: " + name);
+
+            ParameterValue v = d.createValue(request, p);
+            if (v == null) {
+                continue;
+            }
+            mapResult.put(name, convert(name, v));
+        }
+        switch (mapResult.size()) {
+            case 0:
+                return null;    // no value if there's no parameter
+            case 1:
+                return mapResult.values().iterator().next();
+            default:
+                return mapResult;
+        }
+    }
+
+
+    private Object convert(String name, ParameterValue v) throws IOException, InterruptedException {
+        if (v instanceof FileParameterValue) {
+            FileParameterValue fv = (FileParameterValue) v;
+            FilePath fp = new FilePath(node.getRun().getRootDir()).child(name);
+            fp.copyFrom(fv.getFile());
+            return fp;
+        } else {
+            return v.getValue();
+        }
+    }
+    private boolean canSubmit(InputStep inputStep){
+
+        Authentication a = Jenkins.getAuthentication();
+        String submitter = inputStep.getSubmitter();
+        if (submitter==null || a.getName().equals(submitter)) {
+            return true;
+        }
+        for (GrantedAuthority ga : a.getAuthorities()) {
+            if (ga.getAuthority().equals(submitter)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

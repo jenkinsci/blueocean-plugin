@@ -226,6 +226,7 @@ public abstract class BlueRun extends Resource {
         QUEUED,
         RUNNING,
         PAUSED,
+        SKIPPED,
         NOT_BUILT,
         FINISHED
     }
@@ -246,6 +247,6 @@ public abstract class BlueRun extends Resource {
         UNKNOWN,
 
         /** Aborted run*/
-        ABORTED;
+        ABORTED,
     }
 }
