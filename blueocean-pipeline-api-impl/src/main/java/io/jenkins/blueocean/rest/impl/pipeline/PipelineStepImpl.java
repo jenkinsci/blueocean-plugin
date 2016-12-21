@@ -39,6 +39,11 @@ public class PipelineStepImpl extends BluePipelineStep {
     private final FlowNodeWrapper node;
     private final Link self;
 
+    public static final String PARAMETERS_ELEMENT="parameters";
+    public static final String ID_ELEMENT="id";
+    public static final String ABORT_ELEMENT="abort";
+    public static final String NAME_ELEMENT="name";
+
     public PipelineStepImpl(FlowNodeWrapper node, Link parent) {
         assert node != null;
         this.self = parent.rel(node.getId());
@@ -106,13 +111,13 @@ public class PipelineStepImpl extends BluePipelineStep {
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(e.getMessage());
         }
-        String id = body.getString("id");
+        String id = body.getString(ID_ELEMENT);
         if(id == null){
             throw new ServiceException.BadRequestExpception("id is required");
         }
 
-        if(body.get("parameter") == null && body.get("abort") == null){
-            throw new ServiceException.BadRequestExpception("parameter is required");
+        if(body.get(PARAMETERS_ELEMENT) == null && body.get(ABORT_ELEMENT) == null){
+            throw new ServiceException.BadRequestExpception("parameters is required");
         }
 
         WorkflowRun run = node.getRun();
@@ -130,14 +135,14 @@ public class PipelineStepImpl extends BluePipelineStep {
         }
         try {
             //if abort, abort and return
-            if(body.get("abort") != null && body.getBoolean("abort")){
+            if(body.get(ABORT_ELEMENT) != null && body.getBoolean(ABORT_ELEMENT)){
                 return execution.doAbort();
             }
 
             //XXX: execution.doProceed(request) expects submitted form, otherwise we could have simply used it
             preSubmissionCheck(execution);
 
-            Object o = parseValue(execution, JSONArray.fromObject(body.get("parameter")), request);
+            Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
 
             return execution.proceed(o);
         } catch (IOException | InterruptedException | ServletException e) {
@@ -161,7 +166,7 @@ public class PipelineStepImpl extends BluePipelineStep {
 
         for(Object o: parameters){
             JSONObject p = (JSONObject) o;
-            String name = (String) p.get("name");
+            String name = (String) p.get(NAME_ELEMENT);
 
             if(name == null){
                 throw new ServiceException.BadRequestExpception("name is required parameter element");

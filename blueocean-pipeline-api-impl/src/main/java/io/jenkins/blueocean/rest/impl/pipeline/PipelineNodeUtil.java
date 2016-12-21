@@ -99,7 +99,10 @@ public class PipelineNodeUtil {
         return null;
     }
 
-    public static boolean isPostSyntheticStage(@Nonnull FlowNode node){
+    public static boolean isPostSyntheticStage(@Nullable FlowNode node){
+        if(node == null){
+            return false;
+        }
         TagsAction tagsAction = getSyntheticStage(node);
         if(tagsAction == null){
             return false;
@@ -122,7 +125,10 @@ public class PipelineNodeUtil {
         return false;
     }
 
-    public static boolean isPreSyntheticStage(@Nonnull FlowNode node){
+    public static boolean isPreSyntheticStage(@Nullable FlowNode node){
+        if(node == null){
+            return false;
+        }
         TagsAction tagsAction = getSyntheticStage(node);
         if(tagsAction == null){
             return false;
