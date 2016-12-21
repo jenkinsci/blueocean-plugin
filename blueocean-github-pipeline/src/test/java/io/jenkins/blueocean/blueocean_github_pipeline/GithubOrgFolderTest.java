@@ -22,5 +22,6 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 ), 201);
 
         Assert.assertEquals("jenkinsci", resp.get("name"));
+        Assert.assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
     }
 }

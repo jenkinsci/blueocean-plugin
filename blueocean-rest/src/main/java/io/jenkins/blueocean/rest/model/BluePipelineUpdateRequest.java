@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.CheckForNull;
@@ -10,7 +9,7 @@ import java.io.IOException;
  * BluePipeline update request
  *
  * @author Vivek Pandey
- * @see BluePipeline#update(JSONObject, StaplerRequest)
+ * @see BluePipeline#update(StaplerRequest)
  */
 public abstract class BluePipelineUpdateRequest {
     /**
