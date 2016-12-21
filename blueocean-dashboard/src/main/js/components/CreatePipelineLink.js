@@ -17,7 +17,7 @@ export default function CreatePipelineLink(props, context) {
         const newJobUrl = `${baseUrl}/view/All/newJob`;
 
         return (
-            <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
+            <a target="_blank" className="btn-link inverse" href={newJobUrl}>
                 { caption }
             </a>
         );
@@ -29,7 +29,7 @@ export default function CreatePipelineLink(props, context) {
     }
 
     return (
-        <Link to="/create-pipeline" className="btn-secondary inverse">
+        <Link to="/create-pipeline" className="btn-link inverse">
             { caption }
         </Link>
     );
