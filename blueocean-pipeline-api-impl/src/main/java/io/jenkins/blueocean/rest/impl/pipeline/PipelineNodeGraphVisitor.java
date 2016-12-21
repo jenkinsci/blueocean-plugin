@@ -85,6 +85,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             dump(String.format("chunkStart=> id: %s, name: %s, function: %s", startNode.getId(),
                     startNode.getDisplayName(), startNode.getDisplayFunctionName()));
 
+        if(PipelineNodeUtil.isSyntheticStage(startNode)){
+            return;
+        }
         if (NotExecutedNodeAction.isExecuted(startNode)) {
             firstExecuted = startNode;
         }
@@ -104,7 +107,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
         //if block stage node push it to stack as it may have nested stages
-        if(endNode instanceof StepEndNode && PipelineNodeUtil.isStage(((StepEndNode) endNode).getStartNode())) {
+        if(endNode instanceof StepEndNode
+                && !PipelineNodeUtil.isSyntheticStage(((StepEndNode) endNode).getStartNode()) //skip synthetic stages
+                && PipelineNodeUtil.isStage(((StepEndNode) endNode).getStartNode())) {
             nestedStages.push(endNode);
         }
         firstExecuted = null;
@@ -228,6 +233,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             dump(String.format("handleChunkDone=> id: %s, name: %s, function: %s", chunk.getFirstNode().getId(),
                     chunk.getFirstNode().getDisplayName(), chunk.getFirstNode().getDisplayFunctionName()));
 
+        if(PipelineNodeUtil.isSyntheticStage(chunk.getFirstNode())){
+            return;
+        }
 
         if(!nestedStages.empty()){
             nestedStages.pop(); //we throw away nested stages
@@ -248,7 +256,10 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
         NodeRunStatus status;
-        if (firstExecuted == null) {
+        boolean skippedStage = PipelineNodeUtil.isSkippedStage(chunk.getFirstNode());
+        if(skippedStage){
+            status = new NodeRunStatus(BlueRun.BlueRunResult.NOT_BUILT, BlueRun.BlueRunState.SKIPPED);
+        }else if (firstExecuted == null) {
             status = new NodeRunStatus(GenericStatus.NOT_EXECUTED);
         }else if(chunk.getLastNode() != null){
             status = new NodeRunStatus(StatusAndTiming
@@ -266,20 +277,20 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);
-        if(!parallelBranches.isEmpty()){
+        if(!skippedStage && !parallelBranches.isEmpty()){
             Iterator<FlowNodeWrapper> branches = parallelBranches.descendingIterator();
             while(branches.hasNext()){
                 FlowNodeWrapper p = branches.next();
                 p.addParent(stage);
                 stage.addEdge(p.getId());
             }
-            parallelBranches.clear();
         }else{
             if(nextStage != null) {
                 nextStage.addParent(stage);
                 stage.addEdge(nextStage.getId());
             }
         }
+        parallelBranches.clear();
         this.nextStage = stage;
     }
 
