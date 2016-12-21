@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import static io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl.PARAMETERS_ELEMENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -1962,7 +1963,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         JSONObject req = new JSONObject();
         req.put("id", id);
-        req.put("parameter", param);
+        req.put(PARAMETERS_ELEMENT, param);
 
         post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/",req, 200);
 
