@@ -75,7 +75,7 @@ export default class InputStep extends Component {
      */
     submitForm() {
         const { href, id } = this.state;
-        const body = { id, parameter: this.stateParametersToArray() };
+        const body = { id, parameters: this.stateParametersToArray() };
         const fetchOptions = {
             credentials: 'include',
             method: 'POST',
