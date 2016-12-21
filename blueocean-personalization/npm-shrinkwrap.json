@@ -46,6 +46,11 @@
       "from": "@jenkins-cd/js-modules@0.0.8",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.8.tgz"
     },
+    "@jenkins-cd/react-material-icons": {
+      "version": "1.0.0",
+      "from": "@jenkins-cd/react-material-icons@1.0.0",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
+    },
     "@jenkins-cd/sse-gateway": {
       "version": "0.0.10",
       "from": "@jenkins-cd/sse-gateway@0.0.10",
@@ -6608,11 +6613,6 @@
       "from": "react-komposer@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/react-komposer/-/react-komposer-2.0.0.tgz",
       "dev": true
-    },
-    "react-material-icons-blue": {
-      "version": "1.0.4",
-      "from": "react-material-icons-blue@1.0.4",
-      "resolved": "https://registry.npmjs.org/react-material-icons-blue/-/react-material-icons-blue-1.0.4.tgz"
     },
     "react-modal": {
       "version": "1.5.2",
