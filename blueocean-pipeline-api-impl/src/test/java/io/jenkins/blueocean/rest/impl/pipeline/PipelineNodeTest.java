@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Result;
 import hudson.model.queue.QueueTaskFuture;
+import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -1747,6 +1748,119 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("UNKNOWN", stepsResp.get(2).get("result"));
         Assert.assertEquals("12", stepsResp.get(2).get("id"));
     }
+
+    @Test
+    public void submitInput() throws Exception {
+        String script = "node {\n" +
+                "    stage(\"parallelStage\"){\n" +
+                "      parallel left : {\n" +
+                "            echo \"running\"\n" +
+                "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
+                "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+                "        }, \n" +
+                "        right : {\n" +
+                "            sh 'echo 'right done''\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        QueueTaskFuture<WorkflowRun> buildTask = job1.scheduleBuild2(0);
+        WorkflowRun run = buildTask.getStartCondition().get();
+        CpsFlowExecution e = (CpsFlowExecution) run.getExecutionPromise().get();
+
+        while (run.getAction(InputAction.class) == null) {
+            e.waitForSuspension();
+        }
+
+
+        List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+
+        Assert.assertEquals("RUNNING", stepsResp.get(0).get("state"));
+        Assert.assertEquals("UNKNOWN", stepsResp.get(0).get("result"));
+        Assert.assertEquals("13", stepsResp.get(0).get("id"));
+
+        Assert.assertEquals("PAUSED", stepsResp.get(2).get("state"));
+        Assert.assertEquals("UNKNOWN", stepsResp.get(2).get("result"));
+        Assert.assertEquals("12", stepsResp.get(2).get("id"));
+
+        Map<String,Object> input = (Map<String, Object>) stepsResp.get(2).get("input");
+        Assert.assertNotNull(input);
+        String id = (String) input.get("id");
+        Assert.assertNotNull(id);
+
+        JSONObject param = new JSONObject();
+        List<Map<String,Object>> params = (List<Map<String, Object>>) input.get("parameters");
+        param.put("name", params.get(0).get("name"));
+        param.put("value", "master");
+
+        JSONObject req = new JSONObject();
+        req.put("id", id);
+        req.put("parameter", param);
+
+        post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/",req, 200);
+
+        Thread.sleep(1000);
+        Map<String,Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/");
+        Assert.assertEquals("FINISHED", resp.get("state"));
+        Assert.assertEquals("SUCCESS", resp.get("result"));
+        Assert.assertEquals("12", resp.get("id"));
+    }
+
+    @Test
+    public void abortInput() throws Exception {
+        String script = "node {\n" +
+                "    stage(\"parallelStage\"){\n" +
+                "      parallel left : {\n" +
+                "            echo \"running\"\n" +
+                "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
+                "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+                "        }, \n" +
+                "        right : {\n" +
+                "            sh 'echo 'right done''\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        QueueTaskFuture<WorkflowRun> buildTask = job1.scheduleBuild2(0);
+        WorkflowRun run = buildTask.getStartCondition().get();
+        CpsFlowExecution e = (CpsFlowExecution) run.getExecutionPromise().get();
+
+        while (run.getAction(InputAction.class) == null) {
+            e.waitForSuspension();
+        }
+
+        List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+
+        Assert.assertEquals("RUNNING", stepsResp.get(0).get("state"));
+        Assert.assertEquals("UNKNOWN", stepsResp.get(0).get("result"));
+        Assert.assertEquals("13", stepsResp.get(0).get("id"));
+
+        Assert.assertEquals("PAUSED", stepsResp.get(2).get("state"));
+        Assert.assertEquals("UNKNOWN", stepsResp.get(2).get("result"));
+        Assert.assertEquals("12", stepsResp.get(2).get("id"));
+
+        Map<String,Object> input = (Map<String, Object>) stepsResp.get(2).get("input");
+        Assert.assertNotNull(input);
+        String id = (String) input.get("id");
+        Assert.assertNotNull(id);
+
+        JSONObject req = new JSONObject();
+        req.put("id", id);
+        req.put("abort", true);
+
+        post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/",req, 200);
+
+        Thread.sleep(1000);
+        Map<String,Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/");
+        Assert.assertEquals("FINISHED", resp.get("state"));
+        Assert.assertEquals("FAILURE", resp.get("result"));
+        Assert.assertEquals("12", resp.get("id"));
+    }
+
 
     @Test
     public void stageTestJENKINS_40135() throws Exception {

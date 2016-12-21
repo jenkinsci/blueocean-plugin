@@ -144,7 +144,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
                  status = new NodeRunStatus(atomNode);
             }
 
-            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, status, times, inputStep);
+            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, status, times, inputStep, run);
             steps.push(node);
             stepMap.put(node.getId(), node);
         }
