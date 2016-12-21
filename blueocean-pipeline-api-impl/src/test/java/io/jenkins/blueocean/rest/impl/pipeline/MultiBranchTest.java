@@ -5,7 +5,6 @@ import hudson.Util;
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
 import hudson.plugins.favorite.Favorites;
-import hudson.plugins.favorite.user.FavoriteUserProperty;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import hudson.security.HudsonPrivateSecurityRealm;
@@ -43,7 +42,8 @@ import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.BlueRun.DATE_FORMAT_STRING;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Vivek Pandey
@@ -839,23 +839,6 @@ public class MultiBranchTest extends PipelineBaseTest {
         sampleRepo.git("commit", "--all", "--message=tweaked2");
     }
 
-    private WorkflowJob scheduleAndFindBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
-        mp.scheduleBuild2(0).getFuture().get();
-        return findBranchProject(mp, name);
-    }
-
-    private void scheduleAndFindBranchProject(WorkflowMultiBranchProject mp) throws Exception {
-        mp.scheduleBuild2(0).getFuture().get();
-    }
-
-    private WorkflowJob findBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
-        WorkflowJob p = mp.getItem(name);
-        if (p == null) {
-            mp.getIndexing().writeWholeLogTo(System.out);
-            fail(name + " project not found");
-        }
-        return p;
-    }
 
     //Disabled test for now as I can't get it to work. Tested manually.
     //@Test

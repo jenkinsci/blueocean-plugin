@@ -108,7 +108,7 @@ public class FlowNodeWrapper {
         if(!(obj instanceof FlowNodeWrapper)){
             return false;
         }
-        return node.equals(obj);
+        return node.equals(((FlowNodeWrapper)obj).node);
     }
 
     public @CheckForNull InputStep getInputStep() {
