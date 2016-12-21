@@ -1496,10 +1496,10 @@ Get steps of 'test' stage node:
     curl -v -u 'xxx:yyy'  -H 'Content-Type: application/json' -X POST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/12/ -d 
     '{
        "id" : "C51b52435b43a326d5d4f92c290a64d5",
-       "parameters" : {
+       "parameters" : [{
          "name" : "branch",
          "value" : "master"
-       }
+       }]
      }'
      
 Above, "id" is the input.id received in GET /steps/ call:
