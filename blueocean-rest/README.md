@@ -58,6 +58,9 @@
     - [Get steps for a Pipeline node](#get-steps-for-a-pipeline-node)
     - [Get a Pipeline step details](#get-a-pipeline-step-details)
     - [Get Pipeline Steps](#get-pipeline-steps)
+    - [Get Pipeline Steps with Input](#get-pipeline-steps-with-input)
+    - [Submit step input to proceed](#submit-step-input-to-proceed)
+    - [Submit step input to abort](#submit-step-input-to-abort)
   - [Replay a pipeline build](#replay-a-pipeline-build)
 - [Favorite API](#favorite-api)
   - [Favorite a pipeline](#favorite-a-pipeline)
@@ -1439,6 +1442,123 @@ Get steps of 'test' stage node:
     } ]
 
 
+### Get Pipeline Steps with Input 
+
+    curl -v -X GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/
+
+    [ {
+      "_class" : "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/"
+        },
+        "actions" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/actions/"
+        }
+      },
+      "actions" : [...],
+      "displayName" : "Wait for interactive input",
+      "durationInMillis" : 81,
+      "id" : "12",
+      "input" : {
+        "_class" : "io.jenkins.blueocean.rest.impl.pipeline.InputStepImpl",
+        "_links" : {
+          "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/input/"
+          }
+        },
+        "id" : "C51b52435b43a326d5d4f92c290a64d5",
+        "message" : "Please input branch to test against",
+        "ok" : "Proceed",
+        "parameters" : [ {
+          "_class" : "hudson.model.StringParameterDefinition",
+          "defaultParameterValue" : {
+            "_class" : "hudson.model.StringParameterValue",
+            "name" : "branch",
+            "value" : "master"
+          },
+          "description" : "",
+          "name" : "branch",
+          "type" : "StringParameterDefinition"
+        } ],
+        "submitter" : null
+      },
+      "result" : "UNKNOWN",
+      "startTime" : "2016-12-21T17:41:58.488+0530",
+      "state" : "PAUSED"
+    } ]
+
+### Submit step input to proceed
+
+    curl -v -u 'xxx:yyy'  -H 'Content-Type: application/json' -X POST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/12/ -d 
+    '{
+       "id" : "C51b52435b43a326d5d4f92c290a64d5",
+       "parameters" : [{
+         "name" : "branch",
+         "value" : "master"
+       }]
+     }'
+     
+Above, "id" is the input.id received in GET /steps/ call:
+
+     curl -v -X GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/
+     [ {
+           "_class" : "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+           "_links" : {
+             "self" : {
+               "_class" : "io.jenkins.blueocean.rest.hal.Link",
+               "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/"
+             },
+             "actions" : {
+               "_class" : "io.jenkins.blueocean.rest.hal.Link",
+               "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/actions/"
+             }
+           },
+           "actions" : [...],
+           "displayName" : "Wait for interactive input",
+           "durationInMillis" : 81,
+           "id" : "12",
+           "input" : {
+             "_class" : "io.jenkins.blueocean.rest.impl.pipeline.InputStepImpl",
+             "_links" : {
+               "self" : {
+                 "_class" : "io.jenkins.blueocean.rest.hal.Link",
+                 "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/input/"
+               }
+             },
+             "id" : "C51b52435b43a326d5d4f92c290a64d5",
+             "message" : "Please input branch to test against",
+             "ok" : "Proceed",
+             "parameters" : [ {
+               "_class" : "hudson.model.StringParameterDefinition",
+               "defaultParameterValue" : {
+                 "_class" : "hudson.model.StringParameterValue",
+                 "name" : "branch",
+                 "value" : "master"
+               },
+               "description" : "",
+               "name" : "branch",
+               "type" : "StringParameterDefinition"
+             } ],
+             "submitter" : null
+           },
+           "result" : "UNKNOWN",
+           "startTime" : "2016-12-21T17:41:58.488+0530",
+           "state" : "PAUSED"
+         } ]
+
+Here input.id is 'C51b52435b43a326d5d4f92c290a64d5' and this must be sent as 'id' element in POST call to submit input action.    
+     
+### Submit step input to abort     
+
+    curl -v -u 'xxx:yyy'  -H 'Content-Type: application/json' -X POST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/12/ -d 
+    '{
+       "id" : "C51b52435b43a326d5d4f92c290a64d5",
+       "abort" : true
+     }'
 
 ## Replay a pipeline build
 

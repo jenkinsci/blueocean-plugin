@@ -7,6 +7,7 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Vivek Pandey
@@ -18,6 +19,7 @@ public class InputStepImpl extends BlueInputStep {
 
     public InputStepImpl(InputStep inputStep, Reachable parent) {
         this.inputStep = inputStep;
+        this.inputStep.setId(UUID.randomUUID().toString().replaceAll("-", ""));
         this.self = parent.getLink().rel("input");
     }
 
