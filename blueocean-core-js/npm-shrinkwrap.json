@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.33-bluerun-perf-beta2",
+  "version": "0.0.37-unpublished",
   "dependencies": {
     "@jenkins-cd/design-language": {
       "version": "0.0.91",
@@ -1979,7 +1979,8 @@
     "eslint-plugin-react": {
       "version": "4.3.0",
       "from": "eslint-plugin-react@4.3.0",
-      "resolved": "https://registry.npmjs.org/eslint-plugin-react/-/eslint-plugin-react-4.3.0.tgz"
+      "resolved": "https://registry.npmjs.org/eslint-plugin-react/-/eslint-plugin-react-4.3.0.tgz",
+      "dev": true
     },
     "espree": {
       "version": "3.3.2",
@@ -2254,7 +2255,7 @@
     },
     "flow-bin": {
       "version": "0.34.0",
-      "from": "flow-bin@>=0.34.0 <0.35.0",
+      "from": "flow-bin@0.34.0",
       "resolved": "https://registry.npmjs.org/flow-bin/-/flow-bin-0.34.0.tgz",
       "dev": true
     },
@@ -3717,9 +3718,9 @@
       "resolved": "https://registry.npmjs.org/i18next/-/i18next-3.5.2.tgz"
     },
     "i18next-browser-languagedetector": {
-      "version": "1.0.1",
-      "from": "i18next-browser-languagedetector@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/i18next-browser-languagedetector/-/i18next-browser-languagedetector-1.0.1.tgz"
+      "version": "1.0.0",
+      "from": "i18next-browser-languagedetector@1.0.0",
+      "resolved": "https://registry.npmjs.org/i18next-browser-languagedetector/-/i18next-browser-languagedetector-1.0.0.tgz"
     },
     "i18next-xhr-backend": {
       "version": "1.2.0",
