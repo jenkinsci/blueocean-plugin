@@ -6,5 +6,7 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN apt-get install -y nodejs
 RUN apt-get install -y libelf1
+RUN apt-get install -y maven
+RUN aot-get install -y git
 RUN useradd jenkins --shell /bin/bash --create-home
 USER jenkins
