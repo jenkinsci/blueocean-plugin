@@ -8,41 +8,40 @@ const stopProp = (event) => {
 
 export default class InputStep extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
+    // we start with an empty state
+    state = {};
 
     /**
-     * life cycle mapper to invoke the creation of the form state
+     * react life cycle mapper to invoke the creation of the form state
      */
     componentWillMount() {
         this.createFormState(this.props);
     }
 
     /**
-     * life cycle mapper to invoke the creation of the form state
+     * react life cycle mapper to invoke the creation of the form state
      */
     componentWillReceiveProps(nextProps) {
         this.createFormState(nextProps);
     }
 
     /**
-     * Create a replica of the input parameters in state.
+     * Create a replica of the input parameters in state. Basically we just dump the whole item.
      * @param props
      */
     createFormState(props) {
         const { node } = props;
-        console.log({node});
+        console.log({ node });
         if (node) {
             const { config = {} } = this.context;
             const {
-                input: { id, parameters: inputParameters, message, ok },
-                _links: { self: { href } }
+                input: { id, parameters: inputParameters },
+                _links: { self: { href } },
             } = node;
             const parameters = {};
             inputParameters.map((parameter, index) => {
                 parameters[index] = parameter;
+                return parameter;
             });
             this.setState({ parameters, id, href: `${config._rootURL}${href}` });
         }
@@ -54,7 +53,8 @@ export default class InputStep extends Component {
      */
     stateParametersToArray() {
         return Object.values(this.state.parameters).map(item => {
-            return { name: item.name, value: item.defaultParameterValue.value }
+            const returnArray = { name: item.name, value: item.defaultParameterValue.value };
+            return returnArray;
         });
     }
 
@@ -71,11 +71,21 @@ export default class InputStep extends Component {
     }
 
     /**
-     * Submit the form out of the state data
+     * Submit the form as "ok" out of the state data parameters and id.
      */
-    submitForm() {
-        const { href, id } = this.state;
+    okForm() {
+        const { id } = this.state;
         const body = { id, parameters: this.stateParametersToArray() };
+        this.submitForm(body);
+    }
+
+    /**
+     * Generic submit function. The calculations for the url has been done in
+     * @see createFormState Here we simply POST the data to the server.
+     * @param body - could be ok or cancel body
+     */
+    submitForm(body) {
+        const { href } = this.state;
         const fetchOptions = {
             credentials: 'include',
             method: 'POST',
@@ -84,7 +94,17 @@ export default class InputStep extends Component {
             },
             body: JSON.stringify(body),
         };
-        isoFetch(href, fetchOptions).then(response => console.log(response));
+        isoFetch(href, fetchOptions)
+            .then(response => console.log(response));
+    }
+
+    /**
+     * Submit the form as "cancel" out of the state data id.
+     */
+    cancelForm() {
+        const { id } = this.state;
+        const body = { id, abort: true };
+        this.submitForm(body);
     }
 
     render() {
@@ -99,26 +119,31 @@ export default class InputStep extends Component {
         console.log('stateToFormSubmit', this.stateParametersToArray());
 
         return (<div className="inputStep">
-            <h1>{message}</h1>
+            <h3>{message}</h3>
+            <div className="inputBody">
+                {
+                    Object.values(parameters).map((parameter, index) => {
+                        const { type } = parameter;
+                        const returnValue = supportedInputTypesMapping[type];
+                        if (returnValue) {
+                            return React.createElement(returnValue, {
+                                ...parameter,
+                                key: index,
+                                onChange: (event) => this.changeParameter(index, event),
+                            });
+                        }
+                        return <div>No component found for type {type}.</div>;
+                    })
+                }
+            </div>
             <div onClick={(event => stopProp(event))}>
-                <a title={ok} onClick={() => this.submitForm()}>
+                <a title="FIXME: TRANSLATE" onClick={() => this.cancelForm()} className="btn inverse" >
+                    <span className="button-label">FIXME</span>
+                </a>
+                <a title={ok} onClick={() => this.okForm()} className="btn" >
                     <span className="button-label">{ok}</span>
                 </a>
             </div>
-            {
-                Object.values(parameters).map((parameter, index) => {
-                    const { type } = parameter;
-                    const returnValue = supportedInputTypesMapping[type];
-                    if (returnValue) {
-                        return React.createElement(returnValue, {
-                            ...parameter,
-                            key: index,
-                            onChange: (event) => this.changeParameter(index, event)
-                        });
-                    }
-                    return <div>No component found for type {type}.</div>;
-                })
-            }
         </div>);
     }
 }
