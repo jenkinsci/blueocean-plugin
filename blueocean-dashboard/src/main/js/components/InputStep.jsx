@@ -167,10 +167,10 @@ export default class InputStep extends Component {
                 }
             </div>
             <div onClick={(event => stopProp(event))} className="inputControl">
-                <a title={cancelCaption} onClick={() => this.cancelForm()} className="btn inverse" >
+                <a title={cancelCaption} onClick={() => this.cancelForm()} className="btn inverse inputStepCancel" >
                     <span className="button-label">{cancelCaption}</span>
                 </a>
-                <a title={ok} onClick={() => this.okForm()} className="btn" >
+                <a title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
                     <span className="button-label">{ok}</span>
                 </a>
             </div>
