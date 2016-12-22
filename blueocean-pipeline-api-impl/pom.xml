@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0.0-b14-SNAPSHOT</version>
+        <version>1.0.0-b15-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-pipeline-api-impl</artifactId>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.4</version>
+            <version>2.7</version>
         </dependency>
 
         <dependency>
@@ -81,14 +81,14 @@
             <artifactId>github-branch-source</artifactId>
             <version>1.8.1</version>
         </dependency>
-
-        <!-- Test plugins -->
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>0.6</version>
-            <scope>test</scope>
+            <version>0.7.1</version>
         </dependency>
+
+
+        <!-- Test plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-stage-step</artifactId>

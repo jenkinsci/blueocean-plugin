@@ -1,15 +1,21 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Result;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
+import jenkins.branch.BranchSource;
+import jenkins.plugins.git.GitSCMSource;
+import jenkins.scm.api.SCMSource;
 import hudson.model.queue.QueueTaskFuture;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -24,6 +30,10 @@ import static org.junit.Assert.assertNotNull;
  * @author Vivek Pandey
  */
 public class PipelineNodeTest extends PipelineBaseTest {
+
+    @Rule
+    public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
+
 
     //TODO: Enable this test if there is way to determine when test starts running and not waiting till launched
 //    @Test
@@ -1691,7 +1701,162 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", nodes.get(2).get("state"));
     }
 
+    @Test
+    public void declarativeSyntheticSteps() throws Exception {
+        setupScm("pipeline {\n" +
+                "    agent label:''\n" +
+                "    stages {\n" +
+                "        stage(\"build\") {\n" +
+                "            steps{\n" +
+                "              sh 'echo \"Start Build\"'\n" +
+                "              echo 'End Build'\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage(\"deploy\") {\n" +
+                "            steps{\n" +
+                "              sh 'echo \"Start Deploy\"'\n" +
+                "              sh 'echo \"Deploying...\"'\n" +
+                "              sh 'echo \"End Deploy\"'\n" +
+                "            }           \n" +
+                "        }\n" +
+                "    }\n" +
+                "    post {\n" +
+                "        failure {\n" +
+                "            echo \"failed\"\n" +
+                "        }\n" +
+                "        success {\n" +
+                "            echo \"success\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}");
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false)));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
 
+        mp.scheduleBuild2(0).getFuture().get();
+
+        j.waitUntilNoActivity();
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+        WorkflowRun b1 = p.getLastBuild();
+        Assert.assertEquals(Result.SUCCESS, b1.getResult());
+
+        List<FlowNode> stages = getStages(NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1));
+
+        Assert.assertEquals(2, stages.size());
+
+        Assert.assertEquals("build", stages.get(0).getDisplayName());
+        Assert.assertEquals("deploy", stages.get(1).getDisplayName());
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/", List.class);
+        Assert.assertEquals(2, resp.size());
+        Assert.assertEquals("build", resp.get(0).get("displayName"));
+        Assert.assertEquals("deploy", resp.get(1).get("displayName"));
+
+        resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/steps/", List.class);
+        Assert.assertEquals(7, resp.size());
+
+        resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(0).getId()+"/steps/", List.class);
+        Assert.assertEquals(3, resp.size());
+
+        resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(1).getId()+"/steps/", List.class);
+        Assert.assertEquals(4, resp.size());
+
+    }
+
+    @Test
+    public void declarativeSyntheticSkippedStage() throws Exception {
+
+        setupScm("pipeline {\n" +
+                "    agent label:''\n" +
+                "    stages {\n" +
+                "        stage(\"build\") {\n" +
+                "            steps{\n" +
+                "              sh 'echo \"Start Build\"'\n" +
+                "              echo 'End Build'\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage(\"SkippedStage\") {\n" +
+                "            when {\n" +
+                "                echo \"Should I run?\"\n" +
+                "                return false\n" +
+                "            }\n" +
+                "            steps {\n" +
+                "                script {\n" +
+                "                    echo \"World\"\n" +
+                "                    echo \"Heal it\"\n" +
+                "                }\n" +
+                "\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage(\"deploy\") {\n" +
+                "            steps{\n" +
+                "              sh 'echo \"Start Deploy\"'\n" +
+                "              sh 'echo \"Deploying...\"'\n" +
+                "              sh 'echo \"End Deploy\"'\n" +
+                "            }           \n" +
+                "        }\n" +
+                "    }\n" +
+                "    post {\n" +
+                "        failure {\n" +
+                "            echo \"failed\"\n" +
+                "        }\n" +
+                "        success {\n" +
+                "            echo \"success\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}");
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false)));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+        j.waitUntilNoActivity();
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+        WorkflowRun b1 = p.getLastBuild();
+        Assert.assertEquals(Result.SUCCESS, b1.getResult());
+
+        List<FlowNode> stages = getStages(NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1));
+
+        Assert.assertEquals(3, stages.size());
+
+        Assert.assertEquals("build", stages.get(0).getDisplayName());
+        Assert.assertEquals("SkippedStage", stages.get(1).getDisplayName());
+        Assert.assertEquals("deploy", stages.get(2).getDisplayName());
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/", List.class);
+        Assert.assertEquals(3, resp.size());
+        Assert.assertEquals("build", resp.get(0).get("displayName"));
+        Assert.assertEquals("SkippedStage", resp.get(1).get("displayName"));
+        Assert.assertEquals("deploy", resp.get(2).get("displayName"));
+        //check status
+        Assert.assertEquals("SUCCESS", resp.get(0).get("result"));
+        Assert.assertEquals("FINISHED", resp.get(0).get("state"));
+        Assert.assertEquals("NOT_BUILT", resp.get(1).get("result"));
+        Assert.assertEquals("SKIPPED", resp.get(1).get("state"));
+        Assert.assertEquals("SUCCESS", resp.get(2).get("result"));
+        Assert.assertEquals("FINISHED", resp.get(2).get("state"));
+
+        resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/steps/", List.class);
+        Assert.assertEquals(7, resp.size());
+
+        resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(0).getId()+"/steps/", List.class);
+        Assert.assertEquals(3, resp.size());
+
+        resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(1).getId()+"/steps/", List.class);
+        Assert.assertEquals(0, resp.size());
+
+        resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(2).getId()+"/steps/", List.class);
+        Assert.assertEquals(4, resp.size());
+    }
     @Test
     public void waitForInputTest() throws Exception {
         String script = "node {\n" +
@@ -1753,7 +1918,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         String script = "node {\n" +
                 "    stage 'Stage 1'\n" +
                 "    stage 'Stage 2'\n" +
-                "       echo 'hello'\n"+
+                "       echo 'hello'\n" +
                 "}";
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition(script));
@@ -1765,6 +1930,15 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
         Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+    }
+
+    private void setupScm(String script) throws Exception {
+        // create git repo
+        sampleRepo.init();
+        sampleRepo.write("Jenkinsfile", script);
+        sampleRepo.write("file", "initial content");
+        sampleRepo.git("add", "Jenkinsfile");
+        sampleRepo.git("commit", "--all", "--message=flow");
     }
 
     private String getActionLink(Map resp, String capability){
