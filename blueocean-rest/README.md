@@ -28,6 +28,7 @@
   - [Get Pipelines across organization](#get-pipelines-across-organization)
     - [Exclude flattening of certain job types](#exclude-flattening-of-certain-job-types)
     - [Get pipelines for specific organization](#get-pipelines-for-specific-organization)
+  - [Parameterized Pipeline](#parameterized-pipeline)
   - [Get a Folder](#get-a-folder)
   - [Get Nested Pipeline Inside A Folder](#get-nested-pipeline-inside-a-folder)
   - [Get nested Folder and Pipeline](#get-nested-folder-and-pipeline)
@@ -45,6 +46,7 @@
   - [Find latest run of a pipeline](#find-latest-run-of-a-pipeline)
   - [Find latest run on all pipelines](#find-latest-run-on-all-pipelines)
   - [Start a build](#start-a-build)
+  - [Start a parameterized build](#start-a-parameterized-build)
   - [Stop a build](#stop-a-build)
     - [Stop a build as blocking call](#stop-a-build-as-blocking-call)
   - [Get MultiBranch job's branch run detail](#get-multibranch-jobs-branch-run-detail)
@@ -905,7 +907,7 @@ For example for anonymous user with security enabled and only read permission, t
 
 ## Start a build
 
-    ć
+    curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/
     {
       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
       "_links" : {
