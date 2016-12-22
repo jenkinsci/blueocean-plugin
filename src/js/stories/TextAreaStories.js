@@ -3,35 +3,39 @@ import { storiesOf } from '@kadira/storybook';
 import { TextArea } from '../components/forms/TextArea';
 
 storiesOf('TextArea', module)
-    .add('default', () => <Default />)
-    .add('placeholder', () => <Placeholder />)
-    .add('default value', () => <DefaultValue />)
+    .add('general', () => <General />)
     .add('callbacks', () => <Callbacks />)
     .add('sizes', () => <Sizes />)
 ;
 
 const style = {padding: 10};
 
-function Default() {
+function General() {
     return (
-        <div style={style}>
-            <TextArea />
-        </div>
-    );
-}
+        <div>
+            <div style={style}>
+                <p>Default</p>
 
-function Placeholder() {
-    return (
-        <div style={style}>
-            <TextArea placeholder="This is a placeholder." />
-        </div>
-    );
-}
+                <TextArea />
+            </div>
 
-function DefaultValue() {
-    return (
-        <div style={style}>
-            <TextArea defaultValue="I have a default value." />
+            <div style={style}>
+                <p>Disabled</p>
+
+                <TextArea disabled />
+            </div>
+
+            <div style={style}>
+                <p>Placeholder</p>
+
+                <TextArea placeholder="This is a placeholder." />
+            </div>
+
+            <div style={style}>
+                <p>Placeholder</p>
+
+                <TextArea defaultValue="I have a default value." />
+            </div>
         </div>
     );
 }
@@ -54,7 +58,7 @@ function Sizes() {
                 <TextArea placeholder="Using no layout" />
             </div>
             <div className="layout-small" style={style}>
-                <TextArea placeholder="Using layout-small" />
+                <TextArea placeholder="Using layout-small" value="five\ntotal\nlines" />
             </div>
             <div className="layout-medium" style={style}>
                 <TextArea placeholder="Using layout-medium" />

@@ -2,7 +2,7 @@
 
 import React, {Component, PropTypes} from 'react';
 import {EmptyStateIcon} from './EmptyStateIcon';
-import {Icon} from 'react-material-icons-blue';
+import {Icon} from '@jenkins-cd/react-material-icons';
 
 /**
  * Displays an "empty state" dialog with arbitrary child content and an optional icon.

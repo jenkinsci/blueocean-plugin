@@ -1,3 +1,5 @@
+@import "../mixins/browsers";
+
 .Checkbox {
     .Checkbox-medium;
     display: inline-block;
@@ -5,7 +7,6 @@
     .Checkbox-wrapper {
         display: flex;
         align-items: center;
-        cursor: pointer;
     }
 
     // hide the checkbox entirely but keep accessible
@@ -22,12 +23,13 @@
 
     .Checkbox-indicator {
         display: flex;
-        border-radius: 3px;
-        border: solid 1px @gray-light;
+        .control-border;
+        cursor: pointer;
     }
 
     .Checkbox-text {
         margin-left: 5px;
+        cursor: pointer;
     }
 
     // use opacity to show/hide the icon, driving overall Checkbox height
@@ -47,10 +49,25 @@
         }
     }
 
-    input[type="checkbox"]:focus + .Checkbox-indicator {
-        border-color: @brand-selection;
+    input[type="checkbox"]:focus + .Checkbox-indicator,
+    &.focus .Checkbox-indicator {
+        .focus-styles;
+    }
+
+    input[disabled] {
+        & + .Checkbox-indicator, & ~ .Checkbox-text {
+            .u-disabled;
+        }
     }
 }
+
+.browser-ie11up({
+    .Checkbox input[type="checkbox"]:focus + .Checkbox-indicator,
+    .Checkbox.focus .Checkbox-indicator {
+        .ie11-focus-rect;
+    }
+});
+
 
 .Checkbox-small {
     .svg-icon {

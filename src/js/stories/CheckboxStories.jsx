@@ -6,14 +6,14 @@ import { storiesOf } from '@kadira/storybook';
 import { Checkbox } from '../components/forms/Checkbox';
 
 storiesOf('Checkbox', module)
-    .add('default', () => <Default />)
+    .add('general', () => <General />)
     .add('sizes', () => <Sizes />)
     .add('callbacks', () => <Callbacks />)
 ;
 
 const style = {padding: 10};
 
-function Default() {
+function General() {
     return (
         <div>
             <div style={style}>
@@ -21,6 +21,18 @@ function Default() {
             </div>
             <div style={style}>
                 <Checkbox checked label="Checked" />
+            </div>
+            <div style={style}>
+                <Checkbox disabled label="Disabled" />
+            </div>
+            <div style={style}>
+                <Checkbox checked disabled label="Disabled, Checked" />
+            </div>
+            <div style={style}>
+                <Checkbox className="focus" label="Focused" />
+            </div>
+            <div style={style}>
+                <Checkbox checked className="focus" label="Focused, Checked" />
             </div>
         </div>
     );

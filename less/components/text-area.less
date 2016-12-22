@@ -1,35 +1,44 @@
 .TextArea {
     .TextArea-medium;
+    width: 240px;
 
     .TextArea-control {
-        min-width: 240px;
-        border: solid 1px @gray-light;
-        border-radius: 3px;
+        width: 100%;
+        height: 100%;
+        color: @text-color;
+        .control-border;
 
         &:focus {
-            outline: 0;
             border-color: @brand-primary;
+            outline: 0;
+        }
+
+        &[disabled] {
+            .u-disabled;
         }
     }
 }
 
 .TextArea-small {
+    height: 83px; // 5 lines
+
     .TextArea-control {
-        height: 88px; // 5 lines
         padding: 8px;
     }
 }
 
 .TextArea-medium {
+    height: 102px; // 5 lines
+
     .TextArea-control {
-        height: 102px; // 5 lines
         padding: 10px;
     }
 }
 
 .TextArea-large {
+    height: 126px; // 5 lines
+
     .TextArea-control {
-        height: 131px; // 5 lines
         padding: 12px;
     }
 }

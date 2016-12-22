@@ -1,33 +1,38 @@
 .TextInput {
     .TextInput-medium;
+    width: 240px;
 
     .TextInput-control {
-        min-width: 240px;
-        border: solid 1px @gray-light;
-        border-radius: 3px;
+        width: 100%;
+        color: @text-color;
+        .control-border;
 
         &:focus {
-            outline: 0;
             border-color: @brand-primary;
+            outline: 0;
+        }
+
+        &[disabled] {
+            .u-disabled;
         }
     }
 }
 
 .TextInput-small {
     .TextInput-control {
-        padding: 8px;
+        padding: 5px 8px;
     }
 }
 
 .TextInput-medium {
     .TextInput-control {
-        padding: 10px;
+        padding: 6px 10px;
     }
 }
 
 .TextInput-large {
     .TextInput-control {
-        padding: 12px;
+        padding: 8px 12px;
     }
 }
 

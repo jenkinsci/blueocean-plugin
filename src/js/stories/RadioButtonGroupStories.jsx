@@ -3,11 +3,8 @@ import { storiesOf } from '@kadira/storybook';
 import { RadioButtonGroup } from '../components/forms/RadioButtonGroup';
 
 storiesOf('RadioButtonGroup', module)
-    .add('vertical', () => <Vertical />)
-    .add('horizontal', () => <Horizontal />)
-    .add('default value', () => <DefaultOption />)
-    .add('label field', () => <LabelField />)
-    .add('label function', () => <LabelFunction />)
+    .add('general', () => <General />)
+    .add('labeling', () => <Labeling />)
     .add('callbacks', () => <Callbacks />)
     .add('sizes', () => <Sizes />)
 ;
@@ -18,39 +15,48 @@ const style = {
 
 const options = ['Alpha', 'Beta', 'Charlie'];
 
-function Vertical() {
+function General() {
     return (
-        <div style={style}>
-            <RadioButtonGroup
-                options={options}
-            />
+        <div>
+            <div style={style}>
+                <p>Vertical</p>
+
+                <RadioButtonGroup
+                    options={options}
+                />
+            </div>
+            <div style={style}>
+                <p>Horizontal</p>
+
+                <RadioButtonGroup
+                    className="u-layout-horizontal"
+                    options={options}
+                />
+            </div>
+            <div style={style}>
+                <p>Disabled</p>
+
+                <RadioButtonGroup
+                    options={options}
+                    className="u-layout-horizontal"
+                    defaultOption="Alpha"
+                    disabled
+                />
+            </div>
+            <div style={style}>
+                <p>Default Value</p>
+
+                <RadioButtonGroup
+                    options={options}
+                    className="u-layout-horizontal"
+                    defaultOption="Charlie"
+                />
+            </div>
         </div>
     );
 }
 
-function Horizontal() {
-    return (
-        <div style={style}>
-            <RadioButtonGroup
-                className="is-layout-horizontal"
-                options={options}
-            />
-        </div>
-    );
-}
-
-function DefaultOption() {
-    return (
-        <div style={style}>
-            <RadioButtonGroup
-                options={options}
-                defaultOption="C"
-            />
-        </div>
-    );
-}
-
-function LabelField() {
+function Labeling() {
     const options = [
         { label: 'Foo' },
         { label: 'Bar' },
@@ -58,28 +64,23 @@ function LabelField() {
     ];
 
     return (
-        <div style={style}>
-            <RadioButtonGroup
-                options={options}
-                labelField="label"
-            />
-        </div>
-    );
-}
+        <div>
+            <div style={style}>
+                <p>Using labelField='label'</p>
 
-function LabelFunction() {
-    const options = [
-        { label: 'Foo' },
-        { label: 'Bar' },
-        { label: 'Baz' },
-    ];
+                <RadioButtonGroup
+                    options={options}
+                    labelField="label"
+                />
+            </div>
+            <div style={style}>
+                <p>Using labelFunction</p>
 
-    return (
-        <div style={style}>
-            <RadioButtonGroup
-                options={options}
-                labelFunction={item => `!${item.label}!`}
-            />
+                <RadioButtonGroup
+                    options={options}
+                    labelFunction={item => `!${item.label}!`}
+                />
+            </div>
         </div>
     );
 }

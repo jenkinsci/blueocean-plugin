@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import debounce from 'lodash.debounce';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 import {FloatingElement} from '../FloatingElement';
 import KeyCodes from '../../KeyCodes';
@@ -21,8 +21,8 @@ export class Dropdown extends React.Component {
     constructor(props) {
         super(props);
 
-        this.dropdownRef = null;
         this.buttonRef = null;
+        this.thumbRef = null;
         this.menuRef = null;
         this.lastScrollTop = 0;
 
@@ -145,7 +145,14 @@ export class Dropdown extends React.Component {
         if (this.state.menuOpen) {
             const element = document.elementFromPoint(clientX, clientY);
 
-            if (!this.dropdownRef.contains(element)) {
+            // close the dropdown only if the user clicked "outside" of it
+            // (only if the button, thumb and menu was not clicked)
+            // clicking those elements will actually close the it via different means
+            const clickedOutsideDropdown = !this.buttonRef.contains(element) &&
+                !this.thumbRef.contains(element) &&
+                !this.menuRef.contains(element);
+
+            if (clickedOutsideDropdown) {
                 this._closeDropdownMenu();
             }
         }
@@ -281,17 +288,20 @@ export class Dropdown extends React.Component {
         const buttonLabel = this._optionToLabel(this.state.selectedOption) || this.props.placeholder;
 
         return (
-            <div ref={dropdown => { this.dropdownRef = dropdown; }}
-                className={`Dropdown ${openClass} ${extraClass}`}>
+            <div className={`Dropdown ${openClass} ${extraClass}`}>
                 <button ref={button => { this.buttonRef = button; }}
                     className={`Dropdown-button ${promptClass}`}
-                    onClick={this._onDropdownMouseEvent}
+                    disabled={this.props.disabled}
                     title={buttonLabel}
+                    onClick={this._onDropdownMouseEvent}
                 >
                     {buttonLabel}
                 </button>
 
-                <a className="Dropdown-thumb" onClick={this._onDropdownMouseEvent}>
+                <a ref={thumb => { this.thumbRef = thumb; }}
+                    className="Dropdown-thumb"
+                    onClick={this._onDropdownMouseEvent}
+                >
                     <Icon icon="keyboard_arrow_down" size={16} />
                 </a>
 
@@ -326,13 +336,13 @@ export class Dropdown extends React.Component {
 
 }
 
-const BORDER_OFFSET:number = 1;
+const BORDER_OFFSET:number = 2;
 
 // eslint-disable-next-line max-len, no-unused-vars
 function positionMenu(selfWidth:number, selfHeight:number, targetWidth:number, targetHeight:number, targetLeft:number, targetTop:number, viewportWidth:number, viewportHeight:number) {
     return {
         newLeft: targetLeft,
-        newTop: targetTop + targetHeight - BORDER_OFFSET,
+        newTop: targetTop + targetHeight + BORDER_OFFSET,
     };
 }
 
@@ -343,9 +353,10 @@ Dropdown.propTypes = {
     defaultOption: PropTypes.string,
     labelField: PropTypes.string,
     labelFunction: PropTypes.func,
+    disabled: PropTypes.bool,
     onChange: PropTypes.func,
 };
 
 Dropdown.defaultProps = {
-    placeholder: '-Select-',
+    placeholder: 'Select an option',
 };

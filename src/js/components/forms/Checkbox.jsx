@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 type Props = {
     children: ReactChildren,
@@ -60,10 +60,13 @@ export class Checkbox extends Component {
         return (
             <div className={`Checkbox ${extraClass}`}>
                 <label className="Checkbox-wrapper"
-                       onClick={(event) => event.stopPropagation()}>
+                       onClick={(event) => event.stopPropagation()}
+                >
                     <input type="checkbox"
                            onChange={this._toggle.bind(this)}
-                           checked={this.state.checked} />
+                           checked={this.state.checked}
+                           disabled={this.props.disabled}
+                    />
 
                     <div className="Checkbox-indicator">
                         { !this.props.children ?
@@ -86,5 +89,6 @@ Checkbox.propTypes = {
     className: PropTypes.string,
     label: PropTypes.string,
     checked: PropTypes.bool,
+    disabled: PropTypes.bool,
     onToggle: PropTypes.func
 };

@@ -1,5 +1,9 @@
 import React, { PropTypes } from 'react';
 
+/**
+ * Contains common logic for text-based controls.
+ * Not intended to be used directly.
+ */
 export class TextControl extends React.Component {
 
     constructor(props) {
@@ -53,6 +57,7 @@ export class TextControl extends React.Component {
                     this.props.children,
                     {
                         placeholder: this.props.placeholder,
+                        disabled: this.props.disabled,
                         value: this.state.value,
                         onChange: e => this._onChange(e),
                         onBlur: e => this._onBlur(e),
@@ -69,6 +74,7 @@ TextControl.propTypes = {
     className: PropTypes.string,
     placeholder: PropTypes.string,
     defaultValue: PropTypes.string,
+    disabled: PropTypes.bool,
     onChange: PropTypes.func,
     onBlur: PropTypes.func,
 };

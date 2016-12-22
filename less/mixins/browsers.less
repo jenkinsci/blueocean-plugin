@@ -1,0 +1,18 @@
+// MSIE 11
+.browser-ie11(@rules) {
+    @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+        @rules();
+    }
+}
+
+// MS Edge
+.browser-edge(@rules) {
+    @supports (-ms-ime-align:auto) {
+        @rules();
+    }
+}
+
+.browser-ie11up(@rules) {
+    .browser-ie11(@rules);
+    .browser-edge(@rules);
+};

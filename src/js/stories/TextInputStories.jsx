@@ -3,35 +3,39 @@ import { storiesOf } from '@kadira/storybook';
 import { TextInput } from '../components/forms/TextInput';
 
 storiesOf('TextInput', module)
-    .add('default', () => <Default />)
-    .add('placeholder', () => <Placeholder />)
-    .add('default value', () => <DefaultValue />)
+    .add('general', () => <General />)
     .add('callbacks', () => <Callbacks />)
     .add('sizes', () => <Sizes />)
 ;
 
 const style = {padding: 10};
 
-function Default() {
+function General() {
     return (
-        <div style={style}>
-            <TextInput />
-        </div>
-    );
-}
+        <div>
+            <div style={style}>
+                <p>Default</p>
 
-function Placeholder() {
-    return (
-        <div style={style}>
-            <TextInput placeholder="This is a placeholder." />
-        </div>
-    );
-}
+                <TextInput />
+            </div>
 
-function DefaultValue() {
-    return (
-        <div style={style}>
-            <TextInput defaultValue="I have a default value." />
+            <div style={style}>
+                <p>Disabled</p>
+
+                <TextInput disabled />
+            </div>
+
+            <div style={style}>
+                <p>Placeholder</p>
+
+                <TextInput placeholder="This is a placeholder." />
+            </div>
+
+            <div style={style}>
+                <p>Placeholder</p>
+
+                <TextInput defaultValue="I have a default value." />
+            </div>
         </div>
     );
 }

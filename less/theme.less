@@ -145,10 +145,6 @@ main {
     background-color: @brand-primary;
 }
 
-.btn-link {
-    color: @link-color;
-}
-
 a {
     text-decoration: none;
 }
@@ -196,96 +192,15 @@ body {
     background-color: @body-bg;
 }
 
+.browser-ie11({
+    // fix egregious vertical centering issue with Lato in IE11 by falling back to sans-serif
+    body {
+        font-family: sans-serif !important;
+    }
+});
+
 code, pre, kbd {
     font-family: @font-family-monospace;
-}
-
-//
-// Buttons
-// --------------------------------------------------
-
-// Mixin for generating btn styles
-.btn-styles(@btn-color; @btn-border; @btn-text) {
-
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    font-family: @font-family-btn;
-
-    border: solid 1px @btn-border;
-    border-radius: 3px;
-
-    text-align: center;
-    text-decoration: none;
-
-    background-color: @btn-color;
-    color: @btn-text;
-    cursor: pointer;
-    min-width: 130px;
-
-    &:hover,
-    &:focus,
-    &:active,
-    &.active {
-        background-color: @btn-color;
-        border-color: darken(@btn-border, 12%);
-        color: @btn-text;
-        text-decoration: none;
-    }
-
-    &.disabled,
-    &[disabled],
-    fieldset[disabled] & {
-        &,
-        &:hover,
-        &:focus,
-        &.focus,
-        &:active,
-        &.active {
-            opacity: 0.4;
-        }
-    }
-}
-
-// Apply the mixin to the buttons
-.btn-default, .btn, button, .btn-primary {
-    .btn-styles(@btn-primary-bg, @btn-primary-border, @btn-primary-color);
-
-    &.inverse {
-        .btn-styles(white, @brand-primary, @brand-primary);
-    }
-}
-
-.btn-secondary {
-    .btn-styles(transparent, @btn-primary-border, @btn-primary-border);
-
-    &.inverse {
-        .btn-styles(transparent, white, white)
-    }
-}
-
-.btn-success {
-    .btn-styles(@btn-success-bg, @btn-success-border, @btn-success-color);
-}
-
-.btn-info {
-    .btn-styles(@btn-info-bg, @btn-info-border, @btn-info-color);
-}
-
-.btn-warning {
-    .btn-styles(@btn-warning-bg, @btn-warning-border, @btn-warning-color);
-}
-
-.btn-danger {
-    .btn-styles(@btn-danger-bg, @btn-danger-border, @btn-danger-color);
-}
-
-a, button, .btn, .btn-default, .btn-primary, .btn-secondary, .btn-success, .btn-info, .btn-warning, .btn-danger {
-    &.small {
-        font-size: 12px;
-        height: 24px;
-        min-width: 75px;
-        padding: 3px 10px;
-    }
 }
 
 //

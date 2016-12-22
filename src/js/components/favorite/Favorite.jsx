@@ -44,7 +44,9 @@ Favorite.propTypes = {
 /* eslint-disable max-len */
 function FavoriteStarSvg() {
     return (
-        <svg className="star-icon" width="288" height="24" viewBox="0 0 288 24" xmlns="http://www.w3.org/2000/svg">
+        <svg className="star-icon" width="288" height="24" viewBox="0 0 288 24" xmlns="http://www.w3.org/2000/svg"
+            focusable="false"
+        >
             <title>stars for light background</title>
             <g fill="none" fillRule="evenodd">
                 { /* this star is used for the default 'unchecked' state */ }

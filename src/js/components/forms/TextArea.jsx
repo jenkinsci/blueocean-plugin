@@ -17,6 +17,7 @@ TextArea.propTypes = {
     className: PropTypes.string,
     placeholder: PropTypes.string,
     defaultValue: PropTypes.string,
+    disabled: PropTypes.bool,
     onChange: PropTypes.func,
     onBlur: PropTypes.func,
 };

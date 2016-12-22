@@ -4,14 +4,14 @@ import { Favorite } from '../components';
 
 storiesOf('Favorite', module)
     .add('styles', () => {
-        const style = { backgroundColor: '#4A90E2', color: 'white' };
+        const style = { padding: 10, backgroundColor: '#4A90E2', color: 'white' };
 
         return (
             <div>
-                <div>
+                <div style={{padding: 10}}>
                     <Favorite label="Default" />
                 </div>
-                <div>
+                <div style={{padding: 10}}>
                     <Favorite checked label="Default, Checked" />
                 </div>
                 <div style={style}>
