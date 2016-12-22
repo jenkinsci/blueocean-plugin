@@ -1,0 +1,10 @@
+FROM ubuntu:16.04
+
+RUN apt-get update -y && apt-get install -y default-jdk
+RUN apt-get install -y curl build-essential
+RUN curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
+RUN bash nodesource_setup.sh
+RUN apt-get install -y nodejs
+RUN apt-get install -y libelf1
+RUN useradd jenkins --shell /bin/bash --create-home
+USER jenkins
