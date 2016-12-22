@@ -84,9 +84,10 @@ export default class InputStep extends Component {
      * @returns array - of values
      */
     stateParametersToArray() {
-        return Object.values(this.state.parameters).map(item => {
-            const returnArray = { name: item.name, value: item.defaultParameterValue.value };
-            return returnArray;
+        const { parameters } = this.state;
+        return Object.keys(parameters).map(key => {
+            const item =  parameters[key];
+            return { name: item.name, value: item.defaultParameterValue.value };
         });
     }
 
@@ -143,6 +144,7 @@ export default class InputStep extends Component {
             return null;
         }
         const { input: { message, ok } } = this.props.node;
+        const parametersArray = Object.keys(parameters).map(key => parameters[key]);
 
         // console.log('state', this.state);
         // console.log('stateToFormSubmit', this.stateParametersToArray());
@@ -152,7 +154,7 @@ export default class InputStep extends Component {
             <h3>{message}</h3>
             <div className="inputBody">
                 {
-                    Object.values(parameters).map((parameter, index) => {
+                    parametersArray.map((parameter, index) => {
                         const { type } = parameter;
                         const returnValue = supportedInputTypesMapping[type];
                         if (returnValue) {
