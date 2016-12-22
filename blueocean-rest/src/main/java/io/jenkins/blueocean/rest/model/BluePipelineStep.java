@@ -2,7 +2,11 @@ package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.verb.POST;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -66,5 +70,9 @@ public abstract class BluePipelineStep extends Resource{
 
     @Exported(name="input", inline = true)
     public abstract BlueInputStep getInputStep();
+
+    @POST
+    @WebMethod(name = "")
+    public abstract HttpResponse submitInputStep(StaplerRequest request);
 
 }
