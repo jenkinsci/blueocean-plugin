@@ -60,8 +60,7 @@ public @interface TreeResponse {
                 Class<? extends Annotation> t = a.annotationType();
                 InterceptorAnnotation ia = t.getAnnotation(InterceptorAnnotation.class);
                 if (ia !=null && ia.value()==HttpVerbInterceptor.class) {
-                    if (t.getName().endsWith(method))
-                        return true;
+                    return t.getName().endsWith(method);
                 }
             }
 
