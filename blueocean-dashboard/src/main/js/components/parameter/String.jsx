@@ -7,9 +7,9 @@ export class String extends Component {
     render() {
         const { defaultParameterValue: { value }, description, name, onChange } = this.props;
         return (<FormElement title={ name }>
-            <div>
+            <div className="String">
                 <TextInput {...{ defaultValue: value, name, onChange }} />
-                { description && <div>{description}</div> }
+                { description && <div className="inputDescription">{description}</div> }
             </div>
         </FormElement>);
     }

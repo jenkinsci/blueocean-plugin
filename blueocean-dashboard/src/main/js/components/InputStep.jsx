@@ -1,11 +1,31 @@
 import React, { Component, PropTypes } from 'react';
 import isoFetch from 'isomorphic-fetch';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import { supportedInputTypesMapping } from './parameter/index';
 
+/**
+ * Simple helper to stop stopPropagation
+ * @param event the event we want to cancel
+ */
 const stopProp = (event) => {
     event.stopPropagation();
 };
 
+/**
+ * Translate function
+ */
+const translate = i18nTranslator('blueocean-dashboard');
+
+/**
+ * Creating a "<form/>"less form to submit the input parameters requested by the user in pipeline.
+ *
+ * We keep all form data in state and change them onChange and onToggle (depending of the parameter
+ * type). We match the different supported inputTypes with a mapping functions
+ * @see supportedInputTypesMapping
+ * That mapping delegates to the specific implementation where we further delegate to JDL components.
+ * In case you want to register a new mapping you need to edit './parameter/index' to add a new mapping
+ * and further in './parameter/commonProptypes' you need to include the new type in the oneOf array.
+ */
 export default class InputStep extends Component {
 
     // we start with an empty state
@@ -31,7 +51,7 @@ export default class InputStep extends Component {
      */
     createFormState(props) {
         const { node } = props;
-        console.log({ node });
+        // console.log({ node });
         if (node) {
             const { config = {} } = this.context;
             const {
@@ -48,6 +68,18 @@ export default class InputStep extends Component {
     }
 
     /**
+     * change a specific parameter value and update the state.
+     * @param index - which parameter we need to change
+     * @param event - the event leading to the change
+     */
+    changeParameter(index, event) {
+        // console.log('onChange', index, event);
+        const originalParameters = this.state.parameters;
+        originalParameters[index].defaultParameterValue.value = event;
+        this.setState({ parameters: originalParameters });
+    }
+
+    /**
      * Creates an array from the parameter object which is in the current state
      * @returns array - of values
      */
@@ -56,27 +88,6 @@ export default class InputStep extends Component {
             const returnArray = { name: item.name, value: item.defaultParameterValue.value };
             return returnArray;
         });
-    }
-
-    /**
-     * change a specific parameter value and update the state.
-     * @param index - which parameter we need to change
-     * @param event - the event leading to the change
-     */
-    changeParameter(index, event) {
-        console.log('onChange', index, event);
-        const originalParameters = this.state.parameters;
-        originalParameters[index].defaultParameterValue.value = event;
-        this.setState({ parameters: originalParameters });
-    }
-
-    /**
-     * Submit the form as "ok" out of the state data parameters and id.
-     */
-    okForm() {
-        const { id } = this.state;
-        const body = { id, parameters: this.stateParametersToArray() };
-        this.submitForm(body);
     }
 
     /**
@@ -95,7 +106,9 @@ export default class InputStep extends Component {
             body: JSON.stringify(body),
         };
         isoFetch(href, fetchOptions)
-            .then(response => console.log(response));
+            .then(
+                response => console.log(response)
+            );
     }
 
     /**
@@ -107,6 +120,15 @@ export default class InputStep extends Component {
         this.submitForm(body);
     }
 
+    /**
+     * Submit the form as "ok" out of the state data parameters and id.
+     */
+    okForm() {
+        const { id } = this.state;
+        const body = { id, parameters: this.stateParametersToArray() };
+        this.submitForm(body);
+    }
+
     render() {
         const { parameters } = this.state;
         // Early out
@@ -115,9 +137,10 @@ export default class InputStep extends Component {
         }
         const { input: { message, ok } } = this.props.node;
 
-        console.log('state', this.state);
-        console.log('stateToFormSubmit', this.stateParametersToArray());
+        // console.log('state', this.state);
+        // console.log('stateToFormSubmit', this.stateParametersToArray());
 
+        const cancelCaption = translate('rundetail.input.cancel');
         return (<div className="inputStep">
             <h3>{message}</h3>
             <div className="inputBody">
@@ -136,9 +159,9 @@ export default class InputStep extends Component {
                     })
                 }
             </div>
-            <div onClick={(event => stopProp(event))}>
-                <a title="FIXME: TRANSLATE" onClick={() => this.cancelForm()} className="btn inverse" >
-                    <span className="button-label">FIXME</span>
+            <div onClick={(event => stopProp(event))} className="inputControl">
+                <a title={cancelCaption} onClick={() => this.cancelForm()} className="btn inverse" >
+                    <span className="button-label">{cancelCaption}</span>
                 </a>
                 <a title={ok} onClick={() => this.okForm()} className="btn" >
                     <span className="button-label">{ok}</span>

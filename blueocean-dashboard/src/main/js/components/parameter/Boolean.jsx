@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { propTypes } from './commonProptypes';
 import { Checkbox, FormElement } from '@jenkins-cd/design-language';
+import { propTypes } from './commonProptypes';
 
 export class Boolean extends Component {
     render() {

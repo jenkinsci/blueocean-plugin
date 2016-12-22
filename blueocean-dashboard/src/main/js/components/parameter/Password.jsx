@@ -10,9 +10,9 @@ export class Password extends Component {
         // FIXME: defaultValue does not contain the value we wait for
         const { defaultParameterValue: { value }, description, name, onChange } = this.props;
         return (<FormElement title={ name }>
-            <div>
+            <div className="Password">
                 <PasswordInput {...{ defaultValue: value, name, onChange }} />
-                { description && <div>{description}</div> }
+                { description && <div className="inputDescription">{description}</div> }
             </div>
             {/* { debugging }*/}
         </FormElement>);
