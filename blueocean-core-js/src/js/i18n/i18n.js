@@ -59,6 +59,7 @@ const i18nextInstance = (backend, lngDetector = defaultLngDetector, options) => 
 };
 
 const translatorCache = {};
+let useMockFallback = false;
 
 const assertPluginNameDefined = (pluginName) => {
     if (!pluginName) {
@@ -126,6 +127,12 @@ export default function i18nTranslator(pluginName, namespace) {
         return translator;
     }
 
+    if (useMockFallback) {
+        return function mockTranslate(key) {
+            return key;
+        };
+    }
+
     const I18n = pluginI18next(pluginName, namespace);
 
     // Create and cache the translator instance.
@@ -135,15 +142,10 @@ export default function i18nTranslator(pluginName, namespace) {
     return translator;
 }
 
-/**
- * Create i18n resources bound to a plugin name.
- * @param pluginName
- * @param i18nKeys
- */
-export function mockTranslator(pluginName, i18nKeys = {}) {
-    const cacheKey = buildCacheKey(pluginName);
-    translatorCache[cacheKey] = function mockTranslate(key, opts = {}) {
-        const resolved = i18nKeys[key];
-        return resolved || opts.defaultValue;
-    };
+export function enableMocks() {
+    useMockFallback = true;
+}
+
+export function disableMocks() {
+    useMockFallback = false;
 }
