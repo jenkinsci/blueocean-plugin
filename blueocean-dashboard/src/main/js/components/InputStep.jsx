@@ -86,7 +86,7 @@ export default class InputStep extends Component {
     stateParametersToArray() {
         const { parameters } = this.state;
         return Object.keys(parameters).map(key => {
-            const item =  parameters[key];
+            const item = parameters[key];
             return { name: item.name, value: item.defaultParameterValue.value };
         });
     }
