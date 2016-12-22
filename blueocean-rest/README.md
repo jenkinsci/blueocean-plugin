@@ -905,7 +905,7 @@ For example for anonymous user with security enabled and only read permission, t
 
 ## Start a build
 
-    curl -XPOST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline3/runs/
+    ć
     {
       "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
       "_links" : {
@@ -919,6 +919,40 @@ For example for anonymous user with security enabled and only read permission, t
       "pipeline" : "pipeline3",
       "qeueudTime" : "2016-06-22T11:05:41.309+1200"
     }
+    
+## Start a parameterized build
+
+Parameterized build can be triggered on a free-style, pipeline and a branch of multi-branch pipeline jobs.
+
+    curl -XPOST -H 'Content-Type: application/json' http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/
+    {
+      "parameters" : [{
+        "name" : "param1",
+        "value" : "def"
+      }]
+    }
+    
+Response:
+
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+      "_links" : {
+        "parent" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/"
+        },
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/queue/3/"
+        }
+      },
+      "expectedBuildNumber" : 2,
+      "id" : "3",
+      "organization" : "jenkins",
+      "pipeline" : "pipeline1",
+      "queuedTime" : "2016-12-22T15:43:52.866+0530"
+    }
+
 
 ## Stop a build
 

@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
@@ -823,6 +824,17 @@ public class MultiBranchTest extends PipelineBaseTest {
         Assert.assertEquals("StringParameterDefinition", parameters.get(0).get("type"));
         Assert.assertEquals("string param", parameters.get(0).get("description"));
         Assert.assertEquals("xyz", ((Map)parameters.get(0).get("defaultParameterValue")).get("value"));
+
+        resp = post("/organizations/jenkins/pipelines/p/branches/"+Util.rawEncode(branches[1])+"/runs/",
+                ImmutableMap.of("parameters",
+                        ImmutableList.of(ImmutableMap.of("name", "param1", "value", "abc"))
+                ), 200);
+        Assert.assertEquals(branches[1], resp.get("pipeline"));
+        Thread.sleep(1000);
+        resp = get("/organizations/jenkins/pipelines/p/branches/"+Util.rawEncode(branches[1])+"/runs/2/");
+        Assert.assertEquals("SUCCESS", resp.get("result"));
+        Assert.assertEquals("FINISHED", resp.get("state"));
+
     }
 
     private void setupParameterizedScm() throws Exception {
