@@ -29,7 +29,6 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.36",
     "@jenkins-cd/design-language": "0.0.95-unpublishedPause2",
     "@jenkins-cd/js-extensions": "0.0.32",
     "@jenkins-cd/js-modules": "0.0.8",

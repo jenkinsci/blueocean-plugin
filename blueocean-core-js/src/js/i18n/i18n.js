@@ -59,6 +59,7 @@ const i18nextInstance = (backend, lngDetector = defaultLngDetector, options) => 
 };
 
 const translatorCache = {};
+let useMockFallback = false;
 
 const assertPluginNameDefined = (pluginName) => {
     if (!pluginName) {
@@ -102,6 +103,10 @@ const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) =
     return i18nextInstance(newPluginXHR(pluginName), defaultLngDetector, initOptions);
 };
 
+function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
+    return `${pluginName}:${namespace}`;
+}
+
 /**
  * Create an i18n Translator instance for accessing i18n resource bundles
  * in the named plugin namespace.
@@ -112,14 +117,20 @@ const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) =
  * for the "blueocean-dashboard" plugin.
  * @return An i18n Translator instance.
  */
-export default function i18nTranslator(pluginName, namespace = toDefaultNamespace(pluginName)) {
+export default function i18nTranslator(pluginName, namespace) {
     assertPluginNameDefined(pluginName);
 
-    const translatorCacheKey = `${pluginName}:${namespace}`;
+    const translatorCacheKey = buildCacheKey(pluginName, namespace);
     let translator = translatorCache[translatorCacheKey];
 
     if (translator) {
         return translator;
+    }
+
+    if (useMockFallback) {
+        return function mockTranslate(key) {
+            return key;
+        };
     }
 
     const I18n = pluginI18next(pluginName, namespace);
@@ -129,4 +140,12 @@ export default function i18nTranslator(pluginName, namespace = toDefaultNamespac
     translatorCache[translatorCacheKey] = translator;
 
     return translator;
+}
+
+export function enableMocks() {
+    useMockFallback = true;
+}
+
+export function disableMocks() {
+    useMockFallback = false;
 }
