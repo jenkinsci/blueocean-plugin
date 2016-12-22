@@ -474,4 +474,9 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         };
 
     }
+
+    @Override
+    public List<Object> getParameters() {
+        return null;
+    }
 }

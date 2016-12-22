@@ -447,6 +447,56 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
             "branchNames" : []
          }
       ]  
+      
+      
+## Parameterized Pipeline
+
+A pipeline can define list of parameters pipeline job expects. For example:
+      
+      properties([parameters([string(defaultValue: 'xyz', description: 'string param', name: 'param1')]), pipelineTriggers([])])
+      
+      node(){
+          stage('build'){
+              echo "building"
+          }
+      }
+
+Once this pipeline script is executed, subsequent REST call to get pipeline details (on a branch in multi-branch pipeline or just a pipeline job) will have 'parameters' element with all parameter definitions.
+
+    curl -X GET http://localhost:59702/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/
+    
+    {
+      "_class" : "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
+      "_links" : {...},
+      "actions" : [...],
+      "displayName" : "feature/ux-1",
+      "estimatedDurationInMillis" : 1689,
+      "fullDisplayName" : "p/master",
+      "fullName" : "p/master",
+      "lastSuccessfulRun" : "http://localhost:59702/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/runs/1/",
+      "latestRun" : {...},
+      "name" : "feature%2Fux-1",
+      "organization" : "jenkins",
+      "parameters" : [ {
+        "_class" : "hudson.model.StringParameterDefinition",
+        "defaultParameterValue" : {
+          "_class" : "hudson.model.StringParameterValue",
+          "name" : "param1",
+          "value" : "xyz"
+        },
+        "description" : "string param",
+        "name" : "param1",
+        "type" : "StringParameterDefinition"
+      } ],
+      "permissions" : {
+        "create" : true,
+        "read" : true,
+        "start" : true,
+        "stop" : true
+      },
+      "weatherScore" : 100,
+      "pullRequest" : null
+    }
 
 ## Get a Folder
 

@@ -60,6 +60,10 @@ public class MultiBranchTest extends PipelineBaseTest {
     public GitSampleRepoRule sampleRepo1 = new GitSampleRepoRule();
 
 
+    @Rule
+    public GitSampleRepoRule sampleRepo2 = new GitSampleRepoRule();
+
+
     private final String[] branches={"master", "feature%2Fux-1", "feature2"};
 
     @Before
@@ -798,6 +802,53 @@ public class MultiBranchTest extends PipelineBaseTest {
             && classes.contains(PULL_REQUEST));
     }
 
+    @Test
+    public void parameterizedBranchTest() throws Exception{
+        setupParameterizedScm();
+
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo2.toString(), "", "*", "", false),
+                new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, branches[1]);
+        j.waitUntilNoActivity();
+
+        Map resp = get("/organizations/jenkins/pipelines/p/branches/"+Util.rawEncode(branches[1])+"/", Map.class);
+        List<Map<String,Object>> parameters = (List<Map<String, Object>>) resp.get("parameters");
+        Assert.assertEquals(1, parameters.size());
+        Assert.assertEquals("param1", parameters.get(0).get("name"));
+        Assert.assertEquals("StringParameterDefinition", parameters.get(0).get("type"));
+        Assert.assertEquals("string param", parameters.get(0).get("description"));
+        Assert.assertEquals("xyz", ((Map)parameters.get(0).get("defaultParameterValue")).get("value"));
+    }
+
+    private void setupParameterizedScm() throws Exception {
+        // create git repo
+        sampleRepo2.init();
+        sampleRepo2.write("Jenkinsfile", "stage 'build'\n "+"node {echo 'Building'}\n"+
+                "stage 'test'\nnode { echo 'Testing'}\n"+
+                "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        );
+        sampleRepo2.write("file", "initial content");
+        sampleRepo2.git("add", "Jenkinsfile");
+        sampleRepo2.git("commit", "--all", "--message=flow");
+
+        //create feature branch
+        sampleRepo2.git("checkout", "-b", "feature/ux-1");
+        sampleRepo2.write("Jenkinsfile", "properties([parameters([string(defaultValue: 'xyz', description: 'string param', name: 'param1')]), pipelineTriggers([])])\n" +
+                "\n" +
+                "node(){\n" +
+                "    stage('build'){\n" +
+                "        echo \"building\"\n" +
+                "    }\n" +
+                "}");
+        ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
+        sampleRepo2.write("file", "subsequent content1");
+        sampleRepo2.git("commit", "--all", "--message=tweaked1");
+    }
 
     private void setupScm() throws Exception {
         // create git repo
