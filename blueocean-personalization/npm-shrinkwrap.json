@@ -15,9 +15,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.93-controls2",
-      "from": "@jenkins-cd/design-language@0.0.93-controls2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.93-controls2.tgz"
+      "version": "0.0.96",
+      "from": "@jenkins-cd/design-language@0.0.96",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.96.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -4176,7 +4176,7 @@
     },
     "hoist-non-react-statics": {
       "version": "1.2.0",
-      "from": "hoist-non-react-statics@>=1.0.3 <2.0.0",
+      "from": "hoist-non-react-statics@>=1.2.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz"
     },
     "home-or-tmp": {
@@ -4371,7 +4371,7 @@
     },
     "invariant": {
       "version": "2.2.2",
-      "from": "invariant@>=2.0.0 <3.0.0",
+      "from": "invariant@>=2.2.1 <3.0.0",
       "resolved": "https://registry.npmjs.org/invariant/-/invariant-2.2.2.tgz"
     },
     "ipaddr.js": {
@@ -5414,7 +5414,7 @@
     },
     "loose-envify": {
       "version": "1.3.0",
-      "from": "loose-envify@>=1.1.0 <2.0.0",
+      "from": "loose-envify@>=1.2.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/loose-envify/-/loose-envify-1.3.0.tgz"
     },
     "loud-rejection": {
