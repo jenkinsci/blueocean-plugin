@@ -160,7 +160,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
                  status = new NodeRunStatus(atomNode);
             }
 
-            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, status, times, inputStep);
+            FlowNodeWrapper node = new FlowNodeWrapper(atomNode, status, times, inputStep, run);
             if(PipelineNodeUtil.isPreSyntheticStage(currentStage)){
                 preSteps.add(node);
             }else if(PipelineNodeUtil.isPostSyntheticStage(currentStage)){
@@ -173,8 +173,6 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             stepMap.put(node.getId(), node);
         }
     }
-
-
 
     public List<FlowNodeWrapper> getSteps(){
         List<FlowNodeWrapper> s = new ArrayList<>();
