@@ -89,7 +89,7 @@ export class AddStepSelectionDialog extends Component<DefaultProps, Props, State
                     </div>
                     <div className="editor-step-selection-dialog-steps">
                     {steps && steps.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).map(step =>
-                        <div tabIndex="0" onKeyPress={e => this.selectItemByKeyPress(e, step)} onClick={() => this.setState({selectedStep: step})} className={'step-item' + (this.state.selectedStep === step ? ' selected' : '')}>
+                        <div tabIndex="0" onKeyPress={e => this.selectItemByKeyPress(e, step)} onClick={() => this.setState({selectedStep: step})} onDoubleClick={() => this.selectAddStep()} className={'step-item' + (this.state.selectedStep === step ? ' selected' : '')}>
                             {step.displayName}
                         </div>
                     )}

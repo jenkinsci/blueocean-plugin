@@ -1,0 +1,1663 @@
+[
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Allocate node",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Allocates an executor on a node (typically a slave) and runs further code in the context of a workspace on that slave.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Label",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Computer name, label name, or any other label expression like <code>linux && 64bit</code> to restrict where this step builds.\n    May be left blank, in which case any available executor is taken.\n    <!-- TODO figure out how to inline or otherwise share AbstractProject/help-label.html -->\n    <h3>Valid Operators</h3>\n    <p>\n    The following operators are supported, in the order of precedence.\n    <dl>\n        <dt>(expr)</dt>\n        <dd>parenthesis</dd>\n\n        <dt>!expr</dt>\n        <dd>negation</dd>\n\n        <dt>expr&amp;&amp;expr</dt>\n        <dd>\n            and\n        </dd>\n\n        <dt>expr||expr</dt>\n        <dd>\n            or\n        </dd>\n\n        <dt>a -> b</dt>\n        <dd>\n            \"implies\" operator. Equivalent to <tt>!a|b</tt>.\n            For example, <tt>windows->x64</tt> could be thought of as \"if run on a Windows slave,\n            that slave must be 64bit.\" It still allows Jenkins to run this build on linux.\n        </dd>\n\n        <dt>a &lt;-> b</dt>\n        <dd>\n            \"if and only if\" operator. Equivalent to <tt>a&amp;&amp;b || !a&amp;&amp;!b</tt>.\n            For example, <tt>windows&lt;->sfbay</tt> could be thought of as \"if run on a Windows slave,\n            that slave must be in the SF bay area, but if not on Windows, it must not be in the bay area.\"\n        </dd>\n    </dl>\n    <p>\n    All operators are left-associative (i.e., a->b->c &lt;-> (a->b)->c )\n    An expression can contain whitespace for better readability, and it'll be ignored.\n\n    <p>\n    Label names or slave names can be quoted if they contain unsafe characters. For example,\n    <tt>\"jenkins-solaris (Solaris)\" || \"Windows 2008\"</tt>\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "label",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.support.steps.ExecutorStep",
+        "functionName": "node",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.support.steps.ExecutorStep",
+        "isBlockContainer": true,
+        "providedContext": [
+            "hudson.model.Executor",
+            "hudson.model.Computer",
+            "hudson.FilePath",
+            "hudson.EnvVars",
+            "hudson.model.Node",
+            "hudson.Launcher"
+        ],
+        "requiredContext": [
+            "org.jenkinsci.plugins.workflow.flow.FlowExecution",
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "org.jenkinsci.plugins.workflow.graph.FlowNode"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Allocate workspace",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Allocates a workspace.\n    Note that a workspace is automatically allocated for you with the <code>node</code> step.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Dir",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<p>\n    A workspace is automatically allocated for you with the <code>node</code> step,\n    or you can get an alternate workspace with this <code>ws</code> step,\n    but by default the location is chosen automatically.\n    (Something like <code>SLAVE_ROOT/workspace/JOB_NAME@2</code>.)\n</p>\n<p>\n    You can instead specify a path here and that workspace will be locked instead.\n    (The path may be relative to the slave root, or absolute.)\n</p>\n<p>\n    If concurrent builds ask for the same workspace, a directory with a suffix such as <code>@2</code> may be locked instead.\n    Currently there is no option to wait to lock the exact directory requested;\n    if you need to enforce that behavior, you can either fail (<code>error</code>) when <code>pwd</code> indicates that you got a different directory,\n    or you may enforce serial execution of this part of the build by some other means such as <code>stage name: '…', concurrency: 1</code>.\n</p>\n<p>\n    If you do not care about locking, just use the <code>dir</code> step to change current directory.\n</p>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "dir",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.support.steps.WorkspaceStep",
+        "functionName": "ws",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.support.steps.WorkspaceStep",
+        "isBlockContainer": true,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.Computer",
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "org.jenkinsci.plugins.workflow.graph.FlowNode"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Bind credentials to variables",
+        "hasSingleRequiredParameter": true,
+        "help": "<p>\n    Allows various kinds of credentials (secrets) to be used in idiosyncratic ways.\n    Each binding will define an environment variable active within the scope of the step.\n    You can then use them directly from any other steps that expect environment variables to be set:\n</p>\n<pre><code>node {\n  withCredentials([usernameColonPassword(credentialsId: 'mylogin', variable: 'USERPASS')]) {\n    sh '''\n      set +x\n      curl -u $USERPASS https://private.server/ > output\n    '''\n  }\n}</code></pre>\n<p>\n    As another example (use <i>Snippet Generator</i> to see all options):\n</p>\n<pre><code>node {\n  withCredentials([string(credentialsId: 'mytoken', variable: 'TOKEN')]) {\n    sh '''\n      set +x\n      curl -H \"Token: $TOKEN\" https://some.api/\n    '''\n  }\n}</code></pre>\n<p>\n    or retrieve values from Groovy code via the <code>env</code> magic variable:\n</p>\n<pre><code>def password = env.PASSWORD</code></pre>\n<p>\n    Note that some steps explicitly ask for credentials of a particular kind,\n    usually as a <code>credentialsId</code> parameter,\n    in which case this step is unnecessary.\n</p>\n<p>\n    For bindings which store a secret file, beware that\n</p>\n<pre><code>node {\n  dir('subdir') {\n    withCredentials([file(credentialsId: 'secret', variable: 'FILE')]) {\n      sh 'use $FILE'\n    }\n  }\n}</code></pre>\n<p>\n    is not safe, as <code>$FILE</code> might be inside the workspace (in <code>subdir@tmp/secretFiles/</code>),\n    and thus visible to anyone able to browse the job’s workspace.\n    If you need to run steps in a different directory than the usual workspace, you should instead use\n</p>\n<pre><code>node {\n  withCredentials([file(credentialsId: 'secret', variable: 'FILE')]) {\n    dir('subdir') {\n      sh 'use $FILE'\n    }\n  }\n}</code></pre>\n<p>\n    to ensure that the secrets are outside the workspace; or choose a different workspace entirely:\n</p>\n<pre><code>node {\n  ws {\n    withCredentials([file(credentialsId: 'secret', variable: 'FILE')]) {\n      sh 'use $FILE'\n    }\n  }\n}</code></pre>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Bindings",
+                "collectionTypes": [
+                    "org.jenkinsci.plugins.credentialsbinding.MultiBinding"
+                ],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "bindings",
+                "type": "java.util.List"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.credentialsbinding.impl.BindingStep",
+        "functionName": "withCredentials",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.credentialsbinding.impl.BindingStep",
+        "isBlockContainer": true,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.Launcher",
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Build a job",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Triggers a new build for a given job.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Job",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Name of a downstream job to build.\n    May be another Pipeline job, but more commonly a freestyle or other project.\n    Use a simple name if the job is in the same folder as this upstream Pipeline job;\n    otherwise can use relative paths like <code>../sister-folder/downstream</code>\n    or absolute paths like <code>/top-level-folder/nested-folder/downstream</code>.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "job",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Parameters",
+                "collectionTypes": [
+                    "hudson.model.ParameterValue"
+                ],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "parameters",
+                "type": "java.util.List"
+            },
+            {
+                "capitalizedName": "Propagate",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<p>\n    If set, then if the downstream build is anything but successful (blue ball), this step fails.\n    If disabled, then this step succeeds even if the downstream build is unstable, failed, etc.;\n    use the <code>result</code> property of the return value as needed.\n</p>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "propagate",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "QuietPeriod",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Optional alternate quiet period (in seconds) before building.\n    If unset, defaults to the quiet period defined by the downstream project\n    (or finally to the system-wide default quiet period).\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "quietPeriod",
+                "type": "java.lang.Integer"
+            },
+            {
+                "capitalizedName": "Wait",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "wait",
+                "type": "boolean"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.support.steps.build.BuildTriggerStep",
+        "functionName": "build",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.support.steps.build.BuildTriggerStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "org.jenkinsci.plugins.workflow.graph.FlowNode"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Catch error and set build result",
+        "hasSingleRequiredParameter": false,
+        "help": "<div>\n    If the body throws an exception, mark the build as a failure, but nonetheless\n    continue to execute the Pipeline from the statement following the <code>catchError</code> step.\n    This is <em>only</em> necessary when using certain post-build actions (notifiers)\n    originally defined for freestyle projects which pay attention to the result of the ongoing build.\n<p><pre>\nnode {\n    catchError {\n        sh 'might fail'\n    }\n    step([$class: 'Mailer', recipients: 'admin@somewhere'])\n}\n</pre>\n    <p>If the shell step fails, the Pipeline build’s status will be set to failed, so that the subsequent mail step will see that this build is failed.\n    In the case of the mail sender, this means that it will send mail.\n    (It may also send mail if this build <em>succeeded</em> but previous ones failed, and so on.)\n    Even in that case, this step can be replaced by the following idiom:\n<p><pre>\nnode {\n    try {\n        sh 'might fail'\n    } catch (err) {\n        echo \"Caught: ${err}\"\n        currentBuild.result = 'FAILURE'\n    }\n    step([$class: 'Mailer', recipients: 'admin@somewhere'])\n}\n</pre>\n    <p>For all other cases, use plain <code>try</code>-<code>catch</code>(-<code>finally</code>) blocks:\n<p><pre>\nnode {\n    sh './set-up.sh'\n    try {\n        sh 'might fail'\n        echo 'Succeeded!'\n    } catch (err) {\n        echo \"Failed: ${err}\"\n    } finally {\n        sh './tear-down.sh'\n    }\n    echo 'Printed whether above succeeded or failed.'\n}\n// …and the pipeline as a whole succeeds\n</pre>\n    <p>See <a href=\"https://github.com/jenkinsci/workflow-basic-steps-plugin/blob/master/CORE-STEPS.md#interacting-with-build-status\" target=\"_blank\">this document</a> for background.\n</div>\n",
+        "parameters": [],
+        "type": "org.jenkinsci.plugins.workflow.steps.CatchErrorStep",
+        "functionName": "catchError",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.CatchErrorStep",
+        "isBlockContainer": true,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener",
+            "hudson.model.Run"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Change current directory",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Change current directory. Any step inside the <code>dir</code> block will \n    use this directory as current and any relative path will use it as base path.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Path",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "path",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.PushdStep",
+        "functionName": "dir",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.PushdStep",
+        "isBlockContainer": true,
+        "providedContext": [
+            "hudson.FilePath"
+        ],
+        "requiredContext": [
+            "hudson.model.TaskListener",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Checks if running on a Unix-like node",
+        "hasSingleRequiredParameter": false,
+        "help": "<div>\n    Returns true if enclosing <code>node</code> is running on a Unix-like system (such as Linux or Mac OS X), false if Windows.\n</div>\n",
+        "parameters": [],
+        "type": "org.jenkinsci.plugins.workflow.steps.IsUnixStep",
+        "functionName": "isUnix",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.IsUnixStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.Launcher"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Determine current directory",
+        "hasSingleRequiredParameter": false,
+        "help": "<div>\n    Returns the current directory path as a string.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Tmp",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    If selected, return a temporary directory associated with the workspace rather than the workspace itself.\n    This is an appropriate place to put temporary files which should not clutter a source checkout;\n    local repositories or caches; etc.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "tmp",
+                "type": "boolean"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.PwdStep",
+        "functionName": "pwd",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.PwdStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Enforce time limit",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Executes the code inside the block with a determined time out limit.\n    If the time limit is reached, an exception is thrown, which leads in aborting \n    the build (unless it is caught and processed somehow).\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Time",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "time",
+                "type": "int"
+            },
+            {
+                "capitalizedName": "Unit",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "unit",
+                "type": "java.util.concurrent.TimeUnit"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.TimeoutStep",
+        "functionName": "timeout",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.TimeoutStep",
+        "isBlockContainer": true,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Error signal",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Signals an error.\n    Useful if you want to conditionally abort some part of your program.\n    You can also just <code>throw new Exception()</code>,\n    but this step will avoid printing a stack trace.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Message",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "message",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.ErrorStep",
+        "functionName": "error",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.ErrorStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": []
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Evaluate a Groovy source file into the Pipeline script",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Takes a filename in the workspace and runs it as Groovy source text.\n    <p>\n        The loaded file can contain statements at top level or just load and run a closure. For example:\n    </p>\n    <pre>\n    def pipeline\n    node('slave') {\n        pipeline = load 'pipeline.groovy'\n        pipeline.functionA()\n    }\n    pipeline.functionB()\n    </pre>\n    <p>\n    Where <code>pipeline.groovy</code> defines functionA and functionB functions (among others) before ending with <code>return this;</code>\n    <p>\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Path",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<p>\n    Current directory (<code>pwd()</code>) relative path to the Groovy file to load.\n</p>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "path",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.cps.steps.LoadStep",
+        "functionName": "load",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.cps.steps.LoadStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Extended Email",
+        "hasSingleRequiredParameter": false,
+        "help": "<div>\r\n    Step for sending email via the email-ext plugin.\r\n</div>",
+        "parameters": [
+            {
+                "capitalizedName": "Subject",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "subject",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Body",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "body",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "AttachLog",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "attachLog",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "AttachmentsPattern",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "attachmentsPattern",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "CompressLog",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "compressLog",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "MimeType",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "mimeType",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "RecipientProviders",
+                "collectionTypes": [
+                    "hudson.plugins.emailext.plugins.RecipientProvider"
+                ],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "recipientProviders",
+                "type": "java.util.List"
+            },
+            {
+                "capitalizedName": "ReplyTo",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "replyTo",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "To",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "to",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "hudson.plugins.emailext.EmailExtStep",
+        "functionName": "emailext",
+        "descriptorUrl": "descriptorByName/hudson.plugins.emailext.EmailExtStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.Launcher",
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Extended Email Recipients",
+        "hasSingleRequiredParameter": true,
+        "help": null,
+        "parameters": [
+            {
+                "capitalizedName": "RecipientProviders",
+                "collectionTypes": [
+                    "hudson.plugins.emailext.plugins.RecipientProvider"
+                ],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "recipientProviders",
+                "type": "java.util.List"
+            }
+        ],
+        "type": "hudson.plugins.emailext.EmailExtRecipientStep",
+        "functionName": "emailextrecipients",
+        "descriptorUrl": "descriptorByName/hudson.plugins.emailext.EmailExtRecipientStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.EnvVars",
+            "hudson.model.TaskListener",
+            "hudson.model.Run"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "General Build Step",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    <p>\n    This is a special step that allows to call builders or post-build actions (as in freestyle or similar projects), in general \"build steps\".\n    Just select the build step to call from the dropdown list and configure it as needed.\n    </p>\n    <p>\n    Note that only Pipeline-compatible steps will be shown in the list.\n    </p>\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Delegate",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "delegate",
+                "type": "jenkins.tasks.SimpleBuildStep"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.CoreStep",
+        "functionName": "step",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.CoreStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.Launcher",
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "General Build Wrapper",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    <p>\n    This is a special step that allows to call build wrappers (also called \"Environment Configuration\" in freestyle or similar projects).\n    Just select the wrapper to use from the dropdown list and configure it as needed. Everything inside the wrapper block is under its effect.\n    </p>\n    <p>\n    Note that only Pipeline-compatible wrappers will be shown in the list.\n    </p>\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Delegate",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "delegate",
+                "type": "jenkins.tasks.SimpleBuildWrapper"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.CoreWrapperStep",
+        "functionName": "wrap",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.CoreWrapperStep",
+        "isBlockContainer": true,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.Launcher",
+            "hudson.EnvVars",
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "General SCM",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    <p>\n    This is a special step that allows to run checkouts using any configuration\n    options offered by any Pipeline-compatible SCM plugin.\n    To use a concrete SCM implementations, just install the corresponding plugin \n    and check if it is shown in the list below.\n    Then select the SCM to use from the dropdown list and configure it as needed.\n    </p>\n    <p>\n    Any other specific step to run checkouts (like <code>svn</code> or <code>git</code>)\n    are simplistic options of this step.\n    </p>\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Scm",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "scm",
+                "type": "hudson.scm.SCM"
+            },
+            {
+                "capitalizedName": "Changelog",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "changelog",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "Poll",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "poll",
+                "type": "boolean"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.scm.GenericSCMStep",
+        "functionName": "checkout",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.scm.GenericSCMStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.Launcher",
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Git",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    <p>\n    Git step. It performs a clone from the specified repository.\n    </p>\n    <p>\n    Note that this step is shorthand for the generic SCM step:<pre>\ncheckout([$class: 'GitSCM', branches: [[name: '*/master']], \n     userRemoteConfigs: [[url: 'http://git-server/user/repository.git']]])\n    </pre>\n    </p>\n</div>",
+        "parameters": [
+            {
+                "capitalizedName": "Url",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "url",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Branch",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "branch",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Changelog",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "changelog",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "CredentialsId",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "credentialsId",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Poll",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "poll",
+                "type": "boolean"
+            }
+        ],
+        "type": "jenkins.plugins.git.GitStep",
+        "functionName": "git",
+        "descriptorUrl": "descriptorByName/jenkins.plugins.git.GitStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.Launcher",
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Load a resource file from a shared library",
+        "hasSingleRequiredParameter": true,
+        "help": null,
+        "parameters": [
+            {
+                "capitalizedName": "Resource",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "resource",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.libs.ResourceStep",
+        "functionName": "libraryResource",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.libs.ResourceStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": []
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Mail",
+        "hasSingleRequiredParameter": false,
+        "help": "<div>\n    Simple step for sending email.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Subject",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Email subject line.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "subject",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Body",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Email body.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "body",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Bcc",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    BCC email address list. Comma separated list of email addresses.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "bcc",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Cc",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    CC email address list. Comma separated list of email addresses.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "cc",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Charset",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Email body character encoding. Defaults to <code>UTF-8</code>\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "charset",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "From",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    From email address. Defaults to the admin address globally configured for the Jenkins instance.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "from",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "MimeType",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Email body MIME type. Defaults to <code>text/plain</code>.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "mimeType",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "ReplyTo",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Reploy-To email address. Defaults to the admin address globally configured for the Jenkins instance.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "replyTo",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "To",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    To email address list. Comma separated list of email addresses.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "to",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.MailStep",
+        "functionName": "mail",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.MailStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Print Message",
+        "hasSingleRequiredParameter": true,
+        "help": null,
+        "parameters": [
+            {
+                "capitalizedName": "Message",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "message",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.EchoStep",
+        "functionName": "echo",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.EchoStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Read file from workspace",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Reads a file from a relative path (with root in current directory, usually workspace) and returns its content as a plain string.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "File",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Relative (<code>/</code>-separated) path to file within a workspace to read.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "file",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Encoding",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "encoding",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.ReadFileStep",
+        "functionName": "readFile",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.ReadFileStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Read trusted file from SCM",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    From a multibranch Pipeline project, reads a file from the associated SCM and returns its contents.\n    Unlike the <code>readFile</code> step, no workspace is required.\n    If the associated branch is not trusted, yet the file has been modified from its trusted version, an error is thrown.\n    Thus this step is useful for loading scripts or other files which might otherwise be used to run malicious commands.\n    Like <code>checkout scm</code>, as a convenience it may also be used from a standalone project configured with <i>Pipeline script from SCM</i>,\n    in which case there is no security aspect.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Path",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Relative (slash-separated) path to the file from the SCM root.\n    Thus <code>readTrusted 'subdir/file'</code> is similar to <code>node {checkout scm; readFile 'subdir/file'}</code>.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "path",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.multibranch.ReadTrustedStep",
+        "functionName": "readTrusted",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.multibranch.ReadTrustedStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener",
+            "hudson.model.Run"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Recursively delete the current directory from the workspace",
+        "hasSingleRequiredParameter": false,
+        "help": "<div>\n    Recursively deletes the current directory and its contents.\n    Symbolic links and junctions will not be followed but will be removed.\n    To delete a specific directory of a workspace wrap the <code>deleteDir</code>\n    step in a <code>dir</code> step.\n</div>\n",
+        "parameters": [],
+        "type": "org.jenkinsci.plugins.workflow.steps.DeleteDirStep",
+        "functionName": "deleteDir",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.DeleteDirStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Restore files previously stashed",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Restores a set of files previously <code>stash</code>ed into the current workspace.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Name",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Name of a previously saved stash.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "name",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.support.steps.stash.UnstashStep",
+        "functionName": "unstash",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.support.steps.stash.UnstashStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Retry the body up to N times",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Retry the block (up to N times) if any exception happens during its body execution.\n    If an exception happens on the final attempt then it will lead to aborting the build (unless it is caught and processed somehow).\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Count",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "count",
+                "type": "int"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.RetryStep",
+        "functionName": "retry",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.RetryStep",
+        "isBlockContainer": true,
+        "providedContext": [],
+        "requiredContext": []
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Run arbitrary Pipeline script",
+        "hasSingleRequiredParameter": false,
+        "help": null,
+        "parameters": [],
+        "type": "org.jenkinsci.plugins.pipeline.modeldefinition.steps.ScriptStep",
+        "functionName": "script",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.pipeline.modeldefinition.steps.ScriptStep",
+        "isBlockContainer": true,
+        "providedContext": [],
+        "requiredContext": []
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Set environment variables",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\nSets one or more environment variables within a block.\nThese are available to any external processes spawned within that scope.\nFor example:\n<p><pre>\nnode {\n  withEnv(['MYTOOL_HOME=/usr/local/mytool']) {\n    sh '$MYTOOL_HOME/bin/start'\n  }\n}\n</pre>\n<p>(Note that here we are using single quotes in Groovy, so the variable expansion is being done by the Bourne shell, not Jenkins.)\n<p>See the documentation for the <code>env</code> singleton for more information on environment variables.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Overrides",
+                "collectionTypes": [
+                    "java.lang.String"
+                ],
+                "descriptorUrl": null,
+                "help": "<div>\n    A list of environment variables to set, each in the form <code>VARIABLE=value</code>\n    or <code>VARIABLE=</code> to unset variables otherwise defined.\n    You may also use the syntax <code>PATH+WHATEVER=/something</code>\n    to prepend <code>/something</code> to <code>$PATH</code>.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "overrides",
+                "type": "java.util.List"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.EnvStep",
+        "functionName": "withEnv",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.EnvStep",
+        "isBlockContainer": true,
+        "providedContext": [],
+        "requiredContext": []
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Shell Script",
+        "hasSingleRequiredParameter": true,
+        "help": null,
+        "parameters": [
+            {
+                "capitalizedName": "Script",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    <p>\n    Runs a Bourne shell script, typically on a Unix node. Multiple lines are accepted.\n    </p>\n    <p>\n    An interpreter selector may be used, for example: <code>#!/usr/bin/perl</code>\n    </p>\n    <p>\n    Otherwise the system default shell will be run, using the <code>-xe</code> flags\n    (you can specify <code>set +e</code> and/or <code>set +x</code> to disable those).\n    </p>\n</div>",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "script",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Encoding",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Encoding of standard output, if it is being captured.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "encoding",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "ReturnStatus",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Normally, a script which exits with a nonzero status code will cause the step to fail with an exception.\n    If this option is checked, the return value of the step will instead be the status code.\n    You may then compare it to zero, for example.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "returnStatus",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "ReturnStdout",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    If checked, standard output from the task is returned as the step value as a <code>String</code>,\n    rather than being printed to the build log.\n    (Standard error, if any, will still be printed to the log.)\n    You will often want to call <code>.trim()</code> on the result to strip off a trailing newline.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "returnStdout",
+                "type": "boolean"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.durable_task.ShellStep",
+        "functionName": "sh",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.durable_task.ShellStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.Launcher",
+            "hudson.EnvVars",
+            "hudson.model.TaskListener",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Sleep",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Simply pauses the Pipeline build until the given amount of time has expired.\n    Equivalent to (on Unix) <code>sh 'sleep …'</code>.\n    May be used to pause one branch of <code>parallel</code> while another proceeds.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Time",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "time",
+                "type": "int"
+            },
+            {
+                "capitalizedName": "Unit",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "unit",
+                "type": "java.util.concurrent.TimeUnit"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.SleepStep",
+        "functionName": "sleep",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.SleepStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Stash some files to be used later in the build",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Saves a set of files for use later in the same build, generally on another node/workspace.\n    Stashed files are not otherwise available and are generally discarded at the end of the build.\n    <strong>Note</strong> that the <code>stash</code> and <code>unstash</code> steps are designed for use with small files.\n    For large data transfers, use the External Workspace Manager plugin,\n    or use an external repository manager such as Nexus or Artifactory.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Name",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Name of a stash.\n    Should be a simple identifier akin to a job name.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "name",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Excludes",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Optional set of <a href=\"https://ant.apache.org/manual/dirtasks.html#patterns\">\"Ant-style exclude patterns</a>.<br/>\n    Use a comma separated list to add more than one expression.<br/>\n    If blank, no file will be excluded.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "excludes",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Includes",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Optional set of <a href=\"https://ant.apache.org/manual/dirtasks.html#patterns\">\"Ant-style include patterns</a>.<br/>\n    Use a comma separated list to add more than one expression.<br/>\n    If blank, treated like <code>**</code>: all files.<br/>\n    The current working directory is the base directory for the saved files,\n    which will later be restored in the same relative locations,\n    so if you want to use a subdirectory wrap this in <code>dir</code>.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "includes",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "UseDefaultExcludes",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    If selected, use the default excludes from Ant - see\n    <a href=\"http://ant.apache.org/manual/dirtasks.html#defaultexcludes\" target=\"_blank\">here</a> for the list.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "useDefaultExcludes",
+                "type": "boolean"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.support.steps.stash.StashStep",
+        "functionName": "stash",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.support.steps.stash.StashStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Subversion",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    <p>\n    SVN step. It performs a checkout from the specified repository.\n    </p>\n    <p>\n    Note that this step is shorthand for the generic SCM step:<pre>\ncheckout([$class: 'SubversionSCM', remote: 'http://sv-server/repository/trunk']]])\n    </pre>\n    </p>\n</div>",
+        "parameters": [
+            {
+                "capitalizedName": "Url",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "url",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Changelog",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "changelog",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "Poll",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "poll",
+                "type": "boolean"
+            }
+        ],
+        "type": "jenkins.scm.impl.subversion.SubversionStep",
+        "functionName": "svn",
+        "descriptorUrl": "descriptorByName/jenkins.scm.impl.subversion.SubversionStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.Launcher",
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "The milestone step forces all builds to go through in order",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    <p>By default, Pipeline builds can run concurrently.</p>\n    <p>\n        The milestone step forces all builds to go through in order, so an older build will never be allowed pass\n        a milestone (it is aborted) if a newer build already passed it.\n    </p>\n    <p>\n        In general this step grants:\n        <ul>\n            <li>Builds pass milestones in order (taking the build number as sorter field).</li>\n            <li>Older builds will not proceed (they are aborted) if a newer one already passed the milestone.</li>\n            <li>When a build passes a milestone, any older build that passed the previous milestone but not this one is aborted.</li>\n            <li>Once a build passes the milestone, it will never be aborted by a newer build that didn't pass the milestone yet.</li>\n        </ul>\n    </p>\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Ordinal",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<p>\n    An optional ordinal for the milestone. It is autogenerated if not explicitly set.\n</p>\n<p>\n    Setting explicit milestone ordinals grants that each milestone can be univocally identified across builds\n    even when script changes are made during a previous build. If you plan to add or remove milestone steps while there are\n    running builds and trigger new builds before the previous ones finished, then you should set explicit milestone ordinals.\n    Otherwise, let the step autogenerate them as it runs.\n</p>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "ordinal",
+                "type": "java.lang.Integer"
+            },
+            {
+                "capitalizedName": "Label",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<p>\n    A label for the milestone. It's shown in the build log metadata.\n</p>",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "label",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.pipeline.milestone.MilestoneStep",
+        "functionName": "milestone",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.pipeline.milestone.MilestoneStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "org.jenkinsci.plugins.workflow.graph.FlowNode"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Timestamps",
+        "hasSingleRequiredParameter": false,
+        "help": null,
+        "parameters": [],
+        "type": "hudson.plugins.timestamper.pipeline.TimestamperStep",
+        "functionName": "timestamps",
+        "descriptorUrl": "descriptorByName/hudson.plugins.timestamper.pipeline.TimestamperStep",
+        "isBlockContainer": true,
+        "providedContext": [],
+        "requiredContext": []
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Use a tool from a predefined Tool Installation",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Binds a tool installation to a variable (the tool home directory is returned).\n    Only tools already configured in <code>Configure System</code> are available here. If the original tool installer\n    has the auto-provision feature, then the tool will be installed as required.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Name",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "name",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Type",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "type",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.ToolStep",
+        "functionName": "tool",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.ToolStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.Node",
+            "hudson.EnvVars",
+            "hudson.model.TaskListener"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Verify if file exists in workspace",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    Checks if the given file (as relative path to current directory) exists.\n    Returns <code>true | false</code>.\n</div>",
+        "parameters": [
+            {
+                "capitalizedName": "File",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Relative (<code>/</code>-separated) path to file within a workspace to verify its existence.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "file",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.FileExistsStep",
+        "functionName": "fileExists",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.FileExistsStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Wait for condition",
+        "hasSingleRequiredParameter": false,
+        "help": "<div>\n    Runs its body repeatedly until it returns <code>true</code>.\n    If it returns <code>false</code>, waits a while and tries again.\n    (Subsequent failures will slow down the delay between attempts.)\n    There is no limit to the number of retries,\n    but if the body throws an error that is thrown up immediately.\n</div>\n",
+        "parameters": [],
+        "type": "org.jenkinsci.plugins.workflow.steps.WaitForConditionStep",
+        "functionName": "waitUntil",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.WaitForConditionStep",
+        "isBlockContainer": true,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Wait for interactive input",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n    <p>\n    This step pauses Pipeline execution and allows the user to interact and control the flow of the build.\n    Only a basic \"process\" or \"abort\" option is provided in the stage view.\n    </p>\n    <p>\n    You can optionally request information back, hence the name of the step. \n    The parameter entry screen can be accessed via a link at the bottom of the build console log or\n    via link in the sidebar for a build.\n    </p>\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Message",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<p>\n    This parameter gives a prompt which will be shown to a human:\n    <pre>    Ready to go?\n    Proceed or Abort\n    </pre>\n</p>\n<p>\nIf you click \"Proceed\" the build will proceed to the next step, if you click \"Abort\" the build will be aborted.\n</p>",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "message",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Id",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<p>\n    Every <code>input</code> step has an unique ID. It is used in the generated URL to proceed or abort.\n</p>\n<p>\n    A specific ID could be used, for example, to mechanically respond to the input from some external process/tool.\n</p>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "id",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Ok",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "ok",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Parameters",
+                "collectionTypes": [
+                    "hudson.model.ParameterDefinition"
+                ],
+                "descriptorUrl": null,
+                "help": "<p>\n    Request that the submitter specify one or more parameter values when approving.\n    If just one parameter is listed, its value will become the value of the <code>input</code> step.\n    If multiple parameters are listed, the return value will be a map keyed by the parameter names.\n    If parameters are not requested, the step returns nothing if approved.\n</p>\n<p>\n    On the parameter entry screen you are able to enter values for parameters that are defined in this field.\n</p>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "parameters",
+                "type": "java.util.List"
+            },
+            {
+                "capitalizedName": "Submitter",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    User IDs and/or <em>external</em> group names of person or people permitted to respond to the input, separated by ','.\n    If you configure \"alice, bob\", will match with \"alice\" but not with \"bob\". You need to remove all the white spaces.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "submitter",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "SubmitterParameter",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    If specified, this is the name of the return value that will contain the ID of the user that approves this\n    input.\n\n    The return value will be handled in a fashion similar to the <code>parameters</code> value.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "submitterParameter",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.support.steps.input.InputStep",
+        "functionName": "input",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.support.steps.input.InputStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.model.TaskListener",
+            "hudson.model.Run",
+            "org.jenkinsci.plugins.workflow.graph.FlowNode"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Windows Batch Script",
+        "hasSingleRequiredParameter": true,
+        "help": null,
+        "parameters": [
+            {
+                "capitalizedName": "Script",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Executes a Batch script. Multiple lines allowed.\n    When using the <code>returnStdout</code> flag, you probably wish to prefix this with <code>@</code>,\n    lest the command itself be included in the output.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "script",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Encoding",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Encoding of standard output, if it is being captured.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "encoding",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "ReturnStatus",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Normally, a script which exits with a nonzero status code will cause the step to fail with an exception.\n    If this option is checked, the return value of the step will instead be the status code.\n    You may then compare it to zero, for example.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "returnStatus",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "ReturnStdout",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    If checked, standard output from the task is returned as the step value as a <code>String</code>,\n    rather than being printed to the build log.\n    (Standard error, if any, will still be printed to the log.)\n    You will often want to call <code>.trim()</code> on the result to strip off a trailing newline.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "returnStdout",
+                "type": "boolean"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.durable_task.BatchScriptStep",
+        "functionName": "bat",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.durable_task.BatchScriptStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.Launcher",
+            "hudson.EnvVars",
+            "hudson.model.TaskListener",
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineStep",
+        "displayName": "Write file to workspace",
+        "hasSingleRequiredParameter": false,
+        "help": "<div>\n    Write the given content to a named file in the current directory.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "File",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "file",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Text",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "text",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Encoding",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "encoding",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "org.jenkinsci.plugins.workflow.steps.WriteFileStep",
+        "functionName": "writeFile",
+        "descriptorUrl": "descriptorByName/org.jenkinsci.plugins.workflow.steps.WriteFileStep",
+        "isBlockContainer": false,
+        "providedContext": [],
+        "requiredContext": [
+            "hudson.FilePath"
+        ]
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineFunction",
+        "displayName": "Archive the artifacts",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n  Archives the build artifacts (for example, distribution zip files or jar files)\n  so that they can be downloaded later.\n  Archived files will be accessible from the Jenkins webpage.\n  <br />\n  Normally, Jenkins keeps artifacts for a build as long as a build log itself is kept,\n  but if you don't need old artifacts and would rather save disk space, you can do so.\n</div>\n<br/>\n<div>\nNote that the Maven job type automatically archives any produced Maven artifacts.\nAny artifacts configured here will be archived on top of that.\nAutomatic artifact archiving can be disabled under the advanced Maven options.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Artifacts",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n   You can use wildcards like 'module/dist/**/*.zip'.\n   See <a href='http://ant.apache.org/manual/Types/fileset.html'>\n   the includes attribute of Ant fileset</a> for the exact format.\n   The base directory is <a href='ws/'>the workspace</a>.\n   You can only archive files that are located in your workspace.\n</div>",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "artifacts",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "AllowEmptyArchive",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Normally, a build fails if archiving returns zero artifacts.\n    This option allows the archiving process to return nothing without failing the build.\n    Instead, the build will simply throw a warning.\n</div>",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "allowEmptyArchive",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "CaseSensitive",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Artifact archiver uses Ant <code>org.apache.tools.ant.DirectoryScanner</code> which by default is case sensitive.\n    For instance, if the job produces *.hpi files, pattern \"**/*.HPI\" will fail to find them.<BR/><BR/>\n    This option can be used to disable case sensitivity. When it's unchecked, pattern \"**/*.HPI\" will match any *.hpi files, or pattern \"**/cAsEsEnSiTiVe.jar\" will match a file called caseSensitive.jar.\n</div>",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "caseSensitive",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "DefaultExcludes",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "defaultExcludes",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "Excludes",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n  Optionally specify <a href='http://ant.apache.org/manual/Types/fileset.html'>the 'excludes' pattern</a>,\n  such as \"foo/bar/**/*\". A file that matches this mask will not be archived even if it matches the\n  mask specified in 'files to archive' section.\n</div>",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "excludes",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Fingerprint",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "fingerprint",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "OnlyIfSuccessful",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "onlyIfSuccessful",
+                "type": "boolean"
+            }
+        ],
+        "type": "hudson.tasks.ArtifactArchiver",
+        "functionName": "archiveArtifacts"
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineFunction",
+        "displayName": "Publish JUnit test result report",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n  Jenkins understands the JUnit test report XML format (which is also used by TestNG).\n  When this option is configured, Jenkins can provide useful information about test results,\n  such as historical test result trends, a web UI for viewing test reports, tracking failures,\n  and so on.\n\n  <p>\n  To use this feature, first set up your build to run tests, then\n  specify the path to JUnit XML files in the\n  <a href=\"http://ant.apache.org/manual/Types/fileset.html\">Ant glob syntax</a>,\n  such as <tt>**/build/test-reports/*.xml</tt>. Be sure not to include any non-report\n  files into this pattern. You can specify multiple patterns of files separated by commas.\n\n  <p>\n  Once there are a few builds running with test results, you should start seeing\n  something like <a href=\"https://wiki.jenkins-ci.org/display/JENKINS/JUnit+graph\">this</a>.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "TestResults",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "testResults",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "AllowEmptyResults",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    If checked, the default behavior of failing a build on missing test result files\n    or empty test results is changed to not affect the status of the build.\n    Please note that this setting make it harder to spot misconfigured jobs or\n    build failures where the test tool does not exit with an error code when\n    not producing test report files.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "allowEmptyResults",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "HealthScaleFactor",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    The amplification factor to apply to test failures when computing the test result contribution to the build health\n    score.\n    <br />\n    The default factor is <code>1.0</code>\n    <ul>\n        <li>A factor of <code>0.0</code> will disable the test result contribution to build health score.</li>\n        <li>A factor of <code>0.1</code> means that 10% of tests failing will score 99% health</li>\n        <li>A factor of <code>0.5</code> means that 10% of tests failing will score 95% health</li>\n        <li>A factor of <code>1.0</code> means that 10% of tests failing will score 90% health</li>\n        <li>A factor of <code>2.0</code> means that 10% of tests failing will score 80% health</li>\n        <li>A factor of <code>2.5</code> means that 10% of tests failing will score 75% health</li>\n        <li>A factor of <code>5.0</code> means that 10% of tests failing will score 50% health</li>\n        <li>A factor of <code>10.0</code> means that 10% of tests failing will score 0% health</li>\n    </ul>\n    The factor is persisted with the build results, so changes will only be reflected in new builds.\n</div>",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "healthScaleFactor",
+                "type": "double"
+            },
+            {
+                "capitalizedName": "KeepLongStdio",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    If checked, any standard output or error from a test suite will be retained\n    in the test results after the build completes. (This refers only to additional\n    messages printed to console, not to a failure stack trace.) Such output is\n    always kept if the test failed, but by default lengthy output from passing\n    tests is truncated to save space. Check this option if you need to see every\n    log message from even passing tests, but beware that Jenkins's memory consumption\n    can substantially increase as a result, even if you never look at the test results!\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "keepLongStdio",
+                "type": "boolean"
+            },
+            {
+                "capitalizedName": "TestDataPublishers",
+                "collectionTypes": [
+                    "hudson.tasks.junit.TestDataPublisher"
+                ],
+                "descriptorUrl": null,
+                "help": null,
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "testDataPublishers",
+                "type": "java.util.List"
+            }
+        ],
+        "type": "hudson.tasks.junit.JUnitResultArchiver",
+        "functionName": "junit"
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineFunction",
+        "displayName": "Record fingerprints of files to track usage",
+        "hasSingleRequiredParameter": true,
+        "help": "<div>\n  Jenkins can record the 'fingerprint' of files (most often jar files) to keep track\n  of where/when those files are produced and used. When you have inter-dependent\n  projects on Jenkins, this allows you to quickly find out answers to questions like:\n\n  <ul>\n    <li>\n      I have <tt>foo.jar</tt> on my HDD but which build number of FOO did it come from?\n    </li>\n    <li>\n      My BAR project depends on <tt>foo.jar</tt> from the FOO project.\n    </li>\n    <li><ul>\n      <li>\n        Which build of <tt>foo.jar</tt> is used in BAR #51?\n      </li>\n      <li>\n        Which build of BAR contains my bug fix to <tt>foo.jar</tt> #32?\n      </li>\n    </ul></li>\n  </ul>\n\n  <p>\n  To use this feature, all of the involved projects (not just the project\n  in which a file is produced, but also the projects in which the file\n  is used) need to use this and record fingerprints.\n\n  <p>\n  See <a href=\"http://wiki.jenkins-ci.org/display/JENKINS/Fingerprint\">this document</a>\n  for more details.\n</div>\n",
+        "parameters": [
+            {
+                "capitalizedName": "Targets",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<div>\n    Can use wildcards like <code>module/dist/**/*.zip</code>\n    (see the <a href=\"http://ant.apache.org/manual/Types/fileset.html\">@includes of Ant fileset</a> for the exact format).\n    The base directory is <a href=\"ws/\">the workspace</a>.\n</div>\n",
+                "isDeprecated": false,
+                "isRequired": true,
+                "name": "targets",
+                "type": "java.lang.String"
+            }
+        ],
+        "type": "hudson.tasks.Fingerprinter",
+        "functionName": "fingerprint"
+    }
+]

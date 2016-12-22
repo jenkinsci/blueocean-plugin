@@ -1,10 +1,9 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import Extensions from '@jenkins-cd/js-extensions';
 
 import {getAddIconGroup} from './common';
-import type { StageInfo } from './common';
+import type { StageInfo } from '../../services/PipelineStore';
 
 // Dimensions used for layout, px
 export const defaultLayout = {
@@ -137,7 +136,7 @@ export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
         if (nextProps.stages !== oldProps.stages) {
             needsLayout = true;
         }
-
+needsLayout = true;
         if (nextProps.selectedStage !== oldProps.selectedStage) {
 
             this.selectedStage = nextProps.selectedStage;
@@ -158,7 +157,7 @@ export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
         }
 
         const doLayoutIfNeeded = () => {
-            if (needsLayout) {
+            if (needsLayout && nextProps.stages) {
                 this.stagesUpdated(nextProps.stages);
             }
         };
@@ -648,7 +647,6 @@ export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
 
         return (
             <div style={outerDivStyle}>
-                <Extensions.Renderer extensionPoint="pipeline.editor.css"/>
                 <svg className="editor-graph-svg"
                     width={measuredWidth} height={measuredHeight}>
                     {this.renderSelectionHighlight()}

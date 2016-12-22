@@ -52,24 +52,3 @@ export function getDeleteIconGroup(nodeRadius:number) {
         </g>
     );
 }
-
-/**
- * A stage in a pipeline
- */
-export type StageInfo = {
-    name: string,
-    id: number,
-    children: Array<StageInfo>
-};
-
-/**
- * An individual step within a single pipeline stage
- */
-export type StepInfo = {
-    id: number,
-    type: string,
-    label: string,
-    isContainer: bool,
-    children: Array<StepInfo>,
-    data: any
-};

@@ -1,10 +1,13 @@
 import React from 'react';
+import { Checkbox } from '@jenkins-cd/design-language';
 
 export default class BooleanPropertyInput extends React.Component {
     render() {
         return (
             <div>
-                <input onChange={e => this.props.step[this.props.propName] = e.target.value}/>
+                <Checkbox checked={this.props.step.data[this.props.propName]}
+                    onToggle={checked => { this.props.step.data[this.props.propName] = checked; this.props.onChange(this.props.step); }}
+                    label={this.props.type.capitalizedName} />
             </div>
         );
     }

@@ -4,7 +4,11 @@ export default class IntegerPropertyInput extends React.Component {
     render() {
         return (
             <div>
-                <input type="number" onChange={e => this.props.step[this.props.propName] = e.target.value}/>
+                <label className="form-label">{this.props.type.capitalizedName}</label>
+                <div className="TextInput">
+                    <input type="number" className="TextInput-control" defaultValue={this.props.step.data[this.props.propName]}
+                        onChange={e => { this.props.step.data[this.props.propName] = e.target.value; this.props.onChange(this.props.step); }}/>
+                </div>
             </div>
         );
     }
