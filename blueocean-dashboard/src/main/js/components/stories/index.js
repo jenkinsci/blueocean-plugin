@@ -12,3 +12,4 @@ require('./icons');
 require('./logDisplay');
 require('./changes');
 require('./moments');
+require('./headers');
