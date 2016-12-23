@@ -608,4 +608,31 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertTrue(permissions.get("read"));
     }
 
+    @Test
+    public void parameterizedFreestyleTest() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pp");
+        p.addProperty(new ParametersDefinitionProperty(new StringParameterDefinition("version", "1.0", "version number")));
+        p.getBuildersList().add(new Shell("echo hello!"));
+
+        Map resp = get("/organizations/jenkins/pipelines/pp/");
+
+        List<Map<String,Object>> parameters = (List<Map<String, Object>>) resp.get("parameters");
+        Assert.assertEquals(1, parameters.size());
+        Assert.assertEquals("version", parameters.get(0).get("name"));
+        Assert.assertEquals("StringParameterDefinition", parameters.get(0).get("type"));
+        Assert.assertEquals("version number", parameters.get(0).get("description"));
+        Assert.assertEquals("1.0", ((Map)parameters.get(0).get("defaultParameterValue")).get("value"));
+        validatePipeline(p, resp);
+
+        resp = post("/organizations/jenkins/pipelines/pp/runs/",
+                ImmutableMap.of("parameters",
+                        ImmutableList.of(ImmutableMap.of("name", "version", "value", "2.0"))
+                ), 200);
+        Assert.assertEquals("pp", resp.get("pipeline"));
+        Thread.sleep(1000);
+        resp = get("/organizations/jenkins/pipelines/pp/runs/1/");
+        Assert.assertEquals("SUCCESS", resp.get("result"));
+        Assert.assertEquals("FINISHED", resp.get("state"));
+    }
+
 }
