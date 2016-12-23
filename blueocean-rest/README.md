@@ -28,6 +28,7 @@
   - [Get Pipelines across organization](#get-pipelines-across-organization)
     - [Exclude flattening of certain job types](#exclude-flattening-of-certain-job-types)
     - [Get pipelines for specific organization](#get-pipelines-for-specific-organization)
+  - [Parameterized Pipeline](#parameterized-pipeline)
   - [Get a Folder](#get-a-folder)
   - [Get Nested Pipeline Inside A Folder](#get-nested-pipeline-inside-a-folder)
   - [Get nested Folder and Pipeline](#get-nested-folder-and-pipeline)
@@ -45,6 +46,7 @@
   - [Find latest run of a pipeline](#find-latest-run-of-a-pipeline)
   - [Find latest run on all pipelines](#find-latest-run-on-all-pipelines)
   - [Start a build](#start-a-build)
+  - [Start a parameterized build](#start-a-parameterized-build)
   - [Stop a build](#stop-a-build)
     - [Stop a build as blocking call](#stop-a-build-as-blocking-call)
   - [Get MultiBranch job's branch run detail](#get-multibranch-jobs-branch-run-detail)
@@ -450,6 +452,56 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
             "branchNames" : []
          }
       ]  
+      
+      
+## Parameterized Pipeline
+
+A pipeline can define list of parameters pipeline job expects. For example:
+      
+      properties([parameters([string(defaultValue: 'xyz', description: 'string param', name: 'param1')]), pipelineTriggers([])])
+      
+      node(){
+          stage('build'){
+              echo "building"
+          }
+      }
+
+Once this pipeline script is executed, subsequent REST call to get pipeline details (on a branch in multi-branch pipeline or just a pipeline job) will have 'parameters' element with all parameter definitions.
+
+    curl -X GET http://localhost:59702/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/
+    
+    {
+      "_class" : "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
+      "_links" : {...},
+      "actions" : [...],
+      "displayName" : "feature/ux-1",
+      "estimatedDurationInMillis" : 1689,
+      "fullDisplayName" : "p/master",
+      "fullName" : "p/master",
+      "lastSuccessfulRun" : "http://localhost:59702/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/runs/1/",
+      "latestRun" : {...},
+      "name" : "feature%2Fux-1",
+      "organization" : "jenkins",
+      "parameters" : [ {
+        "_class" : "hudson.model.StringParameterDefinition",
+        "defaultParameterValue" : {
+          "_class" : "hudson.model.StringParameterValue",
+          "name" : "param1",
+          "value" : "xyz"
+        },
+        "description" : "string param",
+        "name" : "param1",
+        "type" : "StringParameterDefinition"
+      } ],
+      "permissions" : {
+        "create" : true,
+        "read" : true,
+        "start" : true,
+        "stop" : true
+      },
+      "weatherScore" : 100,
+      "pullRequest" : null
+    }
 
 ## Get a Folder
 
@@ -869,6 +921,40 @@ For example for anonymous user with security enabled and only read permission, t
       "pipeline" : "pipeline3",
       "qeueudTime" : "2016-06-22T11:05:41.309+1200"
     }
+    
+## Start a parameterized build
+
+Parameterized build can be triggered on a free-style, pipeline and a branch of multi-branch pipeline jobs.
+
+    curl -XPOST -H 'Content-Type: application/json' http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/
+    {
+      "parameters" : [{
+        "name" : "param1",
+        "value" : "def"
+      }]
+    }
+    
+Response:
+
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+      "_links" : {
+        "parent" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/"
+        },
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/queue/3/"
+        }
+      },
+      "expectedBuildNumber" : 2,
+      "id" : "3",
+      "organization" : "jenkins",
+      "pipeline" : "pipeline1",
+      "queuedTime" : "2016-12-22T15:43:52.866+0530"
+    }
+
 
 ## Stop a build
 

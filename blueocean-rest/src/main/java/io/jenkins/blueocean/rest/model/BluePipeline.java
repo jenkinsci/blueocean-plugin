@@ -14,6 +14,7 @@ import org.kohsuke.stapler.verb.PUT;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
@@ -48,6 +49,9 @@ public abstract class BluePipeline extends Resource {
 
     /** stop pipeline run */
     public static final String STOP_PERMISSION = "stop";
+
+    /** build parameters */
+    private static final String PARAMETERS = "parameters";
 
     /**
      * @return name of the organization
@@ -130,6 +134,12 @@ public abstract class BluePipeline extends Resource {
      */
     @Navigable
     public abstract Container<Resource> getActivities();
+
+    /**
+     * List of build parameters
+     */
+    @Exported(name = PARAMETERS, inline = true)
+    public abstract List<Object> getParameters();
 
     @PUT
     @WebMethod(name="favorite")

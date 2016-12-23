@@ -1,11 +1,13 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import hudson.model.Result;
+import hudson.model.queue.QueueTaskFuture;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
 import jenkins.branch.BranchSource;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
-import hudson.model.queue.QueueTaskFuture;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution;
@@ -1956,16 +1958,14 @@ public class PipelineNodeTest extends PipelineBaseTest {
         String id = (String) input.get("id");
         Assert.assertNotNull(id);
 
-        JSONObject param = new JSONObject();
         List<Map<String,Object>> params = (List<Map<String, Object>>) input.get("parameters");
-        param.put("name", params.get(0).get("name"));
-        param.put("value", "master");
 
-        JSONObject req = new JSONObject();
-        req.put("id", id);
-        req.put(PARAMETERS_ELEMENT, param);
-
-        post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/",req, 200);
+        post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/",
+                ImmutableMap.of("id",id,
+                        PARAMETERS_ELEMENT,
+                        ImmutableList.of(ImmutableMap.of("name", params.get(0).get("name"), "value", "master"))
+                )
+                , 200);
 
         Thread.sleep(1000);
         Map<String,Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/");
@@ -2045,6 +2045,45 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
         Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
+    }
+
+    @Test
+    public void parameterizedPipeline() throws Exception {
+        String script = "properties([parameters([string(defaultValue: 'xyz', description: 'string param', name: 'param1'), string(description: 'string param', name: 'param2')]), pipelineTriggers([])])\n" +
+                "\n" +
+                "node(){\n" +
+                "    stage('build'){\n" +
+                "        echo \"building\"\n" +
+                "    }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        Map resp = get("/organizations/jenkins/pipelines/pipeline1/");
+
+        List<Map<String,Object>> parameters = (List<Map<String, Object>>) resp.get("parameters");
+        Assert.assertEquals(2, parameters.size());
+        Assert.assertEquals("param1", parameters.get(0).get("name"));
+        Assert.assertEquals("StringParameterDefinition", parameters.get(0).get("type"));
+        Assert.assertEquals("string param", parameters.get(0).get("description"));
+        Assert.assertEquals("xyz", ((Map)parameters.get(0).get("defaultParameterValue")).get("value"));
+
+        Assert.assertEquals("param2", parameters.get(1).get("name"));
+        Assert.assertEquals("StringParameterDefinition", parameters.get(1).get("type"));
+        Assert.assertEquals("string param", parameters.get(1).get("description"));
+        Assert.assertNull(((Map)parameters.get(1).get("defaultParameterValue")).get("value"));
+
+        resp = post("/organizations/jenkins/pipelines/pipeline1/runs/", ImmutableMap.of("parameters",
+                ImmutableList.of(ImmutableMap.of("name", "param1", "value", "abc"),ImmutableMap.of("name", "param2", "value", "def"))
+        ), 200);
+        Assert.assertEquals("pipeline1", resp.get("pipeline"));
+        Thread.sleep(1000);
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/2/");
+        Assert.assertEquals("SUCCESS", resp.get("result"));
+        Assert.assertEquals("FINISHED", resp.get("state"));
     }
 
     private void setupScm(String script) throws Exception {

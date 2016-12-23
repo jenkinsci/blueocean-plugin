@@ -19,6 +19,7 @@ import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,6 +70,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public Container<Resource> getActivities() {
+        return null;
+    }
+
+    @Override
+    public List<Object> getParameters() {
         return null;
     }
 
