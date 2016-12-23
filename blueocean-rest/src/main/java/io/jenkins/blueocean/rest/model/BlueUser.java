@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
@@ -36,6 +37,9 @@ public abstract class BlueUser extends Resource {
     @Exported(name = EMAIL)
     // restricted to authorized users only
     public abstract String getEmail();
+
+    @Exported
+    public abstract String getAvatar();
 
     public abstract BlueFavoriteContainer getFavorites();
 }

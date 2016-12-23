@@ -26,10 +26,9 @@ class RunDetailsHeader extends Component {
     }
 
     render() {
-        const { data: run, pipeline } = this.props;
+        const { data: run, pipeline: { fullDisplayName }, t, locale } = this.props;
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
-        const fullDisplayName = pipeline.fullDisplayName;
 
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
@@ -59,18 +58,18 @@ class RunDetailsHeader extends Component {
                 <div className="row">
                     <div className="commons">
                         <div>
-                            <label>Branch</label>
+                            <label>{ t('rundetail.header.branch', { defaultValue: 'Branch' }) }</label>
                             <span>{displayName}</span>
                         </div>
                         { run.commitId ?
                         <div>
-                            <label>Commit</label>
+                            <label>{t('rundetail.header.commit', { defaultValue: 'Commit' })}</label>
                             <span className="commit">
                                 {run.commitId.substring(0, 7)}
                             </span>
                         </div>
                         : null }
-                        <ChangeSetToAuthors {...{ changeSet, onAuthorsClick }} />
+                        <ChangeSetToAuthors {...{ changeSet, onAuthorsClick, t }} />
                     </div>
                     <div className="times">
                         <div>
@@ -84,6 +83,9 @@ class RunDetailsHeader extends Component {
                               millis={durationMillis}
                               liveUpdate={run.isRunning()}
                               updatePeriod={1000}
+                              locale={locale}
+                              liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+                              hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
                             />
                         </div>
                         <div>
@@ -93,7 +95,13 @@ class RunDetailsHeader extends Component {
                                 style: { fill: '#fff' },
                             }}
                             />
-                            <ReadableDate date={run.endTime} liveUpdate />
+                            <ReadableDate
+                              date={run.endTime}
+                              liveUpdate
+                              locale={locale}
+                              shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                              longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                            />
                         </div>
                     </div>
                 </div>
@@ -102,7 +110,7 @@ class RunDetailsHeader extends Component {
     }
 }
 
-const { object, func } = PropTypes;
+const { object, func, string } = PropTypes;
 
 RunDetailsHeader.propTypes = {
     data: object.isRequired,
@@ -111,6 +119,8 @@ RunDetailsHeader.propTypes = {
     onOrganizationClick: func,
     onNameClick: func,
     onAuthorsClick: func,
+    t: func,
+    locale: string,
 };
 
 export { RunDetailsHeader };

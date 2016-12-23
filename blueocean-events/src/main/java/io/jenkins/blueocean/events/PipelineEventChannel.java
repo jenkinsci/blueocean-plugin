@@ -40,6 +40,7 @@ public interface PipelineEventChannel {
         pipeline_block_start,
         pipeline_block_end,
         pipeline_step,
+        pipeline_stage,
     }
 
     /**

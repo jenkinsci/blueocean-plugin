@@ -28,6 +28,7 @@
   - [Get Pipelines across organization](#get-pipelines-across-organization)
     - [Exclude flattening of certain job types](#exclude-flattening-of-certain-job-types)
     - [Get pipelines for specific organization](#get-pipelines-for-specific-organization)
+  - [Parameterized Pipeline](#parameterized-pipeline)
   - [Get a Folder](#get-a-folder)
   - [Get Nested Pipeline Inside A Folder](#get-nested-pipeline-inside-a-folder)
   - [Get nested Folder and Pipeline](#get-nested-folder-and-pipeline)
@@ -45,10 +46,12 @@
   - [Find latest run of a pipeline](#find-latest-run-of-a-pipeline)
   - [Find latest run on all pipelines](#find-latest-run-on-all-pipelines)
   - [Start a build](#start-a-build)
+  - [Start a parameterized build](#start-a-parameterized-build)
   - [Stop a build](#stop-a-build)
     - [Stop a build as blocking call](#stop-a-build-as-blocking-call)
   - [Get MultiBranch job's branch run detail](#get-multibranch-jobs-branch-run-detail)
   - [Get all runs for all branches on a multibranch pipeline (ordered by date)](#get-all-runs-for-all-branches-on-a-multibranch-pipeline-ordered-by-date)
+  - [Get latest activity of Multi-branch pipeline for all branches](#get-latest-activity-of-multi-branch-pipeline-for-all-branches)
   - [Get change set for a run](#get-change-set-for-a-run)
   - [Pipeline Node API](#pipeline-node-api)
     - [Get Pipeline run nodes](#get-pipeline-run-nodes)
@@ -57,6 +60,9 @@
     - [Get steps for a Pipeline node](#get-steps-for-a-pipeline-node)
     - [Get a Pipeline step details](#get-a-pipeline-step-details)
     - [Get Pipeline Steps](#get-pipeline-steps)
+    - [Get Pipeline Steps with Input](#get-pipeline-steps-with-input)
+    - [Submit step input to proceed](#submit-step-input-to-proceed)
+    - [Submit step input to abort](#submit-step-input-to-abort)
   - [Replay a pipeline build](#replay-a-pipeline-build)
 - [Favorite API](#favorite-api)
   - [Favorite a pipeline](#favorite-a-pipeline)
@@ -446,6 +452,56 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
             "branchNames" : []
          }
       ]  
+      
+      
+## Parameterized Pipeline
+
+A pipeline can define list of parameters pipeline job expects. For example:
+      
+      properties([parameters([string(defaultValue: 'xyz', description: 'string param', name: 'param1')]), pipelineTriggers([])])
+      
+      node(){
+          stage('build'){
+              echo "building"
+          }
+      }
+
+Once this pipeline script is executed, subsequent REST call to get pipeline details (on a branch in multi-branch pipeline or just a pipeline job) will have 'parameters' element with all parameter definitions.
+
+    curl -X GET http://localhost:59702/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/
+    
+    {
+      "_class" : "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
+      "_links" : {...},
+      "actions" : [...],
+      "displayName" : "feature/ux-1",
+      "estimatedDurationInMillis" : 1689,
+      "fullDisplayName" : "p/master",
+      "fullName" : "p/master",
+      "lastSuccessfulRun" : "http://localhost:59702/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/runs/1/",
+      "latestRun" : {...},
+      "name" : "feature%2Fux-1",
+      "organization" : "jenkins",
+      "parameters" : [ {
+        "_class" : "hudson.model.StringParameterDefinition",
+        "defaultParameterValue" : {
+          "_class" : "hudson.model.StringParameterValue",
+          "name" : "param1",
+          "value" : "xyz"
+        },
+        "description" : "string param",
+        "name" : "param1",
+        "type" : "StringParameterDefinition"
+      } ],
+      "permissions" : {
+        "create" : true,
+        "read" : true,
+        "start" : true,
+        "stop" : true
+      },
+      "weatherScore" : 100,
+      "pullRequest" : null
+    }
 
 ## Get a Folder
 
@@ -865,6 +921,40 @@ For example for anonymous user with security enabled and only read permission, t
       "pipeline" : "pipeline3",
       "qeueudTime" : "2016-06-22T11:05:41.309+1200"
     }
+    
+## Start a parameterized build
+
+Parameterized build can be triggered on a free-style, pipeline and a branch of multi-branch pipeline jobs.
+
+    curl -XPOST -H 'Content-Type: application/json' http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/
+    {
+      "parameters" : [{
+        "name" : "param1",
+        "value" : "def"
+      }]
+    }
+    
+Response:
+
+    {
+      "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
+      "_links" : {
+        "parent" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/"
+        },
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/queue/3/"
+        }
+      },
+      "expectedBuildNumber" : 2,
+      "id" : "3",
+      "organization" : "jenkins",
+      "pipeline" : "pipeline1",
+      "queuedTime" : "2016-12-22T15:43:52.866+0530"
+    }
+
 
 ## Stop a build
 
@@ -1019,6 +1109,78 @@ Client should check the state and if its not FINISHED they may issue another sto
             "commitId": "84cb56b50589e720385ef2491a1ebab9d227da6e"
         }
     ]
+
+## Get latest activity of Multi-branch pipeline for all branches
+
+     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/activities/
+         
+        [
+            {
+                "changeSet": [
+    
+                ],
+                "artifacts": [
+                  {
+                      "name": "fizz",
+                      "size": 8,
+                      "url": "/jenkins/job/pipeline1/1/artifact/dir/fizz"
+                  }
+                ],
+                "durationInMillis": 1875,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-03-10T15:27:13.687+1300",
+                "endTime": "2016-03-10T15:27:15.567+1300",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature1",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-03-10T15:27:13.692+1300",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "52615df5828f1dddf672b86d64196294e3fbee88"
+            },
+            {
+                "changeSet": [
+    
+                ],
+                "durationInMillis": 1716,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-03-10T15:27:13.692+1300",
+                "endTime": "2016-03-10T15:27:15.409+1300",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "master",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-03-10T15:27:13.693+1300",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "bfd1f72dc63ca63a8c1b152dc9263c7c81862afa"
+            },
+            {
+                "changeSet": [
+    
+                ],
+                "durationInMillis": 1714,
+                "estimatedDurationInMillis" : 567,
+                "enQueueTime": "2016-03-10T15:27:13.700+1300",
+                "endTime": "2016-03-10T15:27:15.415+1300",
+                "id": "1",
+                "organization": "jenkins",
+                "pipeline": "feature2",
+                "result": "SUCCESS",
+                "runSummary": "stable",
+                "startTime": "2016-03-10T15:27:13.701+1300",
+                "state": "FINISHED",
+                "type": "WorkflowRun",
+                "commitId": "84cb56b50589e720385ef2491a1ebab9d227da6e"
+            }
+        ]
+
+
+> This API collects runs (in descending order) for each branch in a multi-branch project( branches sorted in descending order of branch with latest activity). It fetches max up to 250 runs for each branch by default, it can be changed using JVM property MAX_MBP_RUNS_ROWS.
+
 
 ## Get change set for a run
 
@@ -1366,6 +1528,123 @@ Get steps of 'test' stage node:
     } ]
 
 
+### Get Pipeline Steps with Input 
+
+    curl -v -X GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/
+
+    [ {
+      "_class" : "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/"
+        },
+        "actions" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/actions/"
+        }
+      },
+      "actions" : [...],
+      "displayName" : "Wait for interactive input",
+      "durationInMillis" : 81,
+      "id" : "12",
+      "input" : {
+        "_class" : "io.jenkins.blueocean.rest.impl.pipeline.InputStepImpl",
+        "_links" : {
+          "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/input/"
+          }
+        },
+        "id" : "C51b52435b43a326d5d4f92c290a64d5",
+        "message" : "Please input branch to test against",
+        "ok" : "Proceed",
+        "parameters" : [ {
+          "_class" : "hudson.model.StringParameterDefinition",
+          "defaultParameterValue" : {
+            "_class" : "hudson.model.StringParameterValue",
+            "name" : "branch",
+            "value" : "master"
+          },
+          "description" : "",
+          "name" : "branch",
+          "type" : "StringParameterDefinition"
+        } ],
+        "submitter" : null
+      },
+      "result" : "UNKNOWN",
+      "startTime" : "2016-12-21T17:41:58.488+0530",
+      "state" : "PAUSED"
+    } ]
+
+### Submit step input to proceed
+
+    curl -v -u 'xxx:yyy'  -H 'Content-Type: application/json' -X POST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/12/ -d 
+    '{
+       "id" : "C51b52435b43a326d5d4f92c290a64d5",
+       "parameters" : [{
+         "name" : "branch",
+         "value" : "master"
+       }]
+     }'
+     
+Above, "id" is the input.id received in GET /steps/ call:
+
+     curl -v -X GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/
+     [ {
+           "_class" : "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
+           "_links" : {
+             "self" : {
+               "_class" : "io.jenkins.blueocean.rest.hal.Link",
+               "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/"
+             },
+             "actions" : {
+               "_class" : "io.jenkins.blueocean.rest.hal.Link",
+               "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/actions/"
+             }
+           },
+           "actions" : [...],
+           "displayName" : "Wait for interactive input",
+           "durationInMillis" : 81,
+           "id" : "12",
+           "input" : {
+             "_class" : "io.jenkins.blueocean.rest.impl.pipeline.InputStepImpl",
+             "_links" : {
+               "self" : {
+                 "_class" : "io.jenkins.blueocean.rest.hal.Link",
+                 "href" : "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/input/"
+               }
+             },
+             "id" : "C51b52435b43a326d5d4f92c290a64d5",
+             "message" : "Please input branch to test against",
+             "ok" : "Proceed",
+             "parameters" : [ {
+               "_class" : "hudson.model.StringParameterDefinition",
+               "defaultParameterValue" : {
+                 "_class" : "hudson.model.StringParameterValue",
+                 "name" : "branch",
+                 "value" : "master"
+               },
+               "description" : "",
+               "name" : "branch",
+               "type" : "StringParameterDefinition"
+             } ],
+             "submitter" : null
+           },
+           "result" : "UNKNOWN",
+           "startTime" : "2016-12-21T17:41:58.488+0530",
+           "state" : "PAUSED"
+         } ]
+
+Here input.id is 'C51b52435b43a326d5d4f92c290a64d5' and this must be sent as 'id' element in POST call to submit input action.    
+     
+### Submit step input to abort     
+
+    curl -v -u 'xxx:yyy'  -H 'Content-Type: application/json' -X POST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/12/ -d 
+    '{
+       "id" : "C51b52435b43a326d5d4f92c290a64d5",
+       "abort" : true
+     }'
 
 ## Replay a pipeline build
 

@@ -1,13 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    actions,
-    pipeline as pipelineSelector,
-    connect,
-    createSelector,
-} from '../redux';
 import { Link } from 'react-router';
 import Extensions from '@jenkins-cd/js-extensions';
-import NotFound from './NotFound';
 import {
     ExpandablePath,
     Page,
@@ -17,49 +10,70 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
+import { i18nTranslator, NotFound, User, Paths } from '@jenkins-cd/blueocean-core-js';
+import { Icon } from 'react-material-icons-blue';
 import PageLoading from './PageLoading';
-import { buildOrganizationUrl, buildPipelineUrl } from '../util/UrlUtils';
+import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
+import { observer } from 'mobx-react';
+import { observable, action } from 'mobx';
 
+const RestPaths = Paths.rest;
 /**
  * returns true if the pipeline is defined and has branchNames
  */
 export function pipelineBranchesUnsupported(pipeline) {
-    if ((pipeline && !pipeline.branchNames) ||
-        (pipeline && !pipeline.branchNames.length)) {
-        return true;
-    }
-    return false;
+    return (pipeline && !pipeline.branchNames) ||
+      (pipeline && !pipeline.branchNames.length);
 }
 
-export class PipelinePage extends Component {
-    getChildContext() {
-        return {
-            pipeline: this.props.pipeline,
-        };
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (!User.current().isAnonymous()) {
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
     }
+    return link;
+};
+
+const translate = i18nTranslator('blueocean-dashboard');
+
+@observer
+export class PipelinePage extends Component {
+
 
     componentWillMount() {
         if (this.props.params) {
-            this.props.fetchPipeline(this.props.params.organization, this.props.params.pipeline);
+            this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
+            this.context.pipelineService.fetchPipeline(this.href, { useCache: true }).catch(err => this._setError(err));
         }
     }
 
+    @observable error;
+
+    @action
+    _setError(error) {
+        this.error = error;
+    }
+
+
     render() {
-        const { pipeline, setTitle } = this.props;
+        const pipeline = this.context.pipelineService.getPipeline(this.href);
+
+        const { setTitle } = this.props;
+        const { location = {} } = this.context;
+
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
         const orgUrl = buildOrganizationUrl(organization);
         const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
-        const isReady = pipeline && !pipeline.$pending;
+        const isReady = !!pipeline;
 
-        if (pipeline && pipeline.$failed) {
+        if (!pipeline && this.error) {
             return <NotFound />;
         }
 
         setTitle(`${organization} / ${name}`);
 
         const baseUrl = buildPipelineUrl(organization, fullName);
-
         return (
             <Page>
                 <PageHeader>
@@ -73,26 +87,28 @@ export class PipelinePage extends Component {
                     <Title>
                         <WeatherIcon score={pipeline.weatherScore} size="large" />
                         <h1>
-                            <Link to={orgUrl}>{organization}</Link>
+                            <Link to={orgUrl} query={location.query}>{organization}</Link>
                             <span>&nbsp;/&nbsp;</span>
-                            <Link to={activityUrl}>
+                            <Link to={activityUrl} query={location.query}>
                                 <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
                             </Link>
                         </h1>
                         <Extensions.Renderer
                           extensionPoint="jenkins.pipeline.detail.header.action"
                           store={this.context.store}
-                          pipeline={this.props.pipeline}
+                          pipeline={pipeline}
                         />
+                        {classicConfigLink(pipeline)}
                     </Title>
                     }
+
                     <PageTabs base={baseUrl}>
-                        <TabLink to="/activity">Activity</TabLink>
-                        <TabLink to="/branches">Branches</TabLink>
-                        <TabLink to="/pr">Pull Requests</TabLink>
+                        <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>
+                        <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' }) }</TabLink>
+                        <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>
                     </PageTabs>
                 </PageHeader>
-                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle })}
+                {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: translate.lng })}
             </Page>
         );
     }
@@ -100,23 +116,18 @@ export class PipelinePage extends Component {
 
 PipelinePage.propTypes = {
     children: PropTypes.any,
-    fetchPipeline: PropTypes.func.isRequired,
     pipeline: PropTypes.any,
     params: PropTypes.object,
     setTitle: PropTypes.func,
 };
 
+
 PipelinePage.contextTypes = {
     config: PropTypes.object.isRequired,
     location: PropTypes.object,
     store: PropTypes.object,
+    pipelineService: PropTypes.object,
 };
 
-PipelinePage.childContextTypes = {
-    pipeline: PropTypes.any,
-};
+export default documentTitle(PipelinePage);
 
-const selectors = createSelector([pipelineSelector],
-    (pipeline) => ({ pipeline }));
-
-export default connect(selectors, actions)(documentTitle(PipelinePage));

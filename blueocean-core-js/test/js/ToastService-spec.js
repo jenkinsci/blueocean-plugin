@@ -1,7 +1,6 @@
 /**
  * Created by cmeyers on 8/22/16.
  */
-import 'babel-polyfill';
 import { assert } from 'chai';
 
 import { ToastService } from '../../src/js/ToastService';

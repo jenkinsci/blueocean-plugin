@@ -1,8 +1,6 @@
 const ext = require('@jenkins-cd/js-extensions');
 ext.store.init({
-    extensionDataProvider: (cb) => {
-        cb([]);
-    },
+    extensionData: [],
     typeInfoProvider: (type, cb) => {
         cb(null);
     },
@@ -13,3 +11,4 @@ require('./status');
 require('./icons');
 require('./logDisplay');
 require('./changes');
+require('./moments');

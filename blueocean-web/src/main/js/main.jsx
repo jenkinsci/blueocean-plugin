@@ -2,28 +2,34 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
+import { i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound } from '@jenkins-cd/blueocean-core-js';
+import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
-
-import Extensions from '@jenkins-cd/js-extensions';
-
 import Config from './config';
 import { ToastDrawer } from './components/ToastDrawer';
 import { DevelopmentFooter } from './DevelopmentFooter';
+import { useStrict } from 'mobx';
+useStrict(true);
 
-import { AppConfig, Security, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
 
 let config; // Holder for various app-wide state
 
-function loginOrLogout() {
+const translate = i18nTranslator('blueocean-web');
+
+function loginOrLogout(t) {
     if (Security.isSecurityEnabled()) {
         if (Security.isAnonymousUser()) {
             const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
-            return <a href={loginUrl} className="btn-primary inverse small">Login</a>;
+            return (<a href={loginUrl} className="btn-primary inverse small">{t('login', {
+                defaultValue: 'login',
+            })}</a>);
         } else {
             const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
-            return <a href={logoutUrl} className="btn-secondary inverse small">Logout</a>;
+            return (<a href={logoutUrl} className="btn-secondary inverse small">{t('logout', {
+                defaultValue: 'logout',
+            })}</a>);
         }
     }
 }
@@ -37,17 +43,25 @@ class App extends Component {
     }
 
     render() {
+        const { location } = this.context;
+
+        var adminCaption = translate('administration', {
+            defaultValue: 'Administation',
+        });
+        var pipeCaption = translate('pipelines', {
+            defaultValue: 'Pipelines',
+        });
         return (
             <div className="Site">
                 <header className="Site-header">
                     <div className="global-header">
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
-                            <Link to="/pipelines">Pipelines</Link>
-                            <a href="#">Administration</a>
+                            <Link query={location.query} to="/pipelines">{pipeCaption}</Link>
+                            <a href="#">{adminCaption}</a>
                         </nav>
                         <div className="button-bar">
-                            { loginOrLogout() }
+                            { loginOrLogout(translate) }
                         </div>
                     </div>
                 </header>
@@ -64,20 +78,18 @@ class App extends Component {
 }
 
 App.propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
 };
 
 App.childContextTypes = {
     config: PropTypes.object
 };
 
-class NotFound extends Component {
-    // FIXME: We're going to need to polish this up at some point
-    render() {
-        return <h1>Not found</h1>;
-    }
-}
+App.contextTypes = {
+    location: PropTypes.object.isRequired,
+};
 
+const closeHandler = (props) => props.onClose || {};
 function makeRoutes(routes) {
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
     const appRoutes = [
@@ -89,7 +101,7 @@ function makeRoutes(routes) {
 
     const routeProps = {
         path: "/",
-        component: App
+        component: App,
     };
 
     return React.createElement(Route, routeProps, ...appRoutes);
@@ -154,7 +166,11 @@ function startApp(routes, stores) {
             type: ACTION_TYPES.SET_LOCATION_CURRENT,
             payload: newLocation.pathname,
         });
+
+        locationService.setCurrent(newLocation.pathname);
     });
+
+    sseService._initListeners();
 
     // Start React
     render(

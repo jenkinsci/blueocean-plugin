@@ -1,8 +1,0 @@
-<?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
-  <!--
-  The following Stapler adjunct adds the "Try Blue Ocean JavaScript bundle to
-  every page in "classic" Jenkins.
-  -->
-  <st:adjunct includes="io.jenkins.blueocean.try"/>
-</j:jelly>

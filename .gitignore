@@ -17,3 +17,5 @@ npm-debug.log
 blueocean-web/src/main/webapp/assets
 .build_container
 .watch_trigger
+.vscode
+jsconfig.json

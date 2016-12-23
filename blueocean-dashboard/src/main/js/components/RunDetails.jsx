@@ -6,30 +6,45 @@ import {
     PageTabs,
     TabLink,
 } from '@jenkins-cd/design-language';
+import { i18nTranslator, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
-import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
-
-import {
-    actions,
-    currentRun as runSelector,
-    isMultiBranch as isMultiBranchSelector,
-    previous as previousSelector,
-    createSelector,
-    connect,
-} from '../redux';
+import { Icon } from 'react-material-icons-blue';
 
 import {
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
+    buildClassicConfigUrl,
 } from '../util/UrlUtils';
-
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
+import { Paths, capable, locationService } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
+import { User } from '@jenkins-cd/blueocean-core-js';
 
 const { func, object, any, string } = PropTypes;
 
+const { rest: RestPaths } = Paths;
+
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (!User.current().isAnonymous()) {
+        let url = buildClassicConfigUrl(pipeline);
+        link = (
+            <a href={url} target="_blank" style={{ height: '24px' }}>
+                <Icon size={24} icon="settings" style={{ fill: '#fff' }} />
+            </a>
+        );
+    }
+    return link;
+};
+
+const translate = i18nTranslator('blueocean-dashboard');
+
+
+@observer
 class RunDetails extends Component {
 
     componentWillMount() {
@@ -47,19 +62,19 @@ class RunDetails extends Component {
     }
 
     _fetchRun(props, storePreviousRoute) {
-        if (props.isMultiBranch === null) {
-            return; // multiple redux selectors haven't completed
-        }
+        this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE);
+
         if (this.context.config && this.context.params) {
-            props.fetchRun({
+            this.href = RestPaths.run({
                 organization: props.params.organization,
                 pipeline: props.params.pipeline,
-                branch: props.isMultiBranch && props.params.branch,
+                branch: this.isMultiBranch && props.params.branch,
                 runId: props.params.runId,
             });
 
+            this.context.activityService.fetchActivity(this.href, { useCache: true });
             if (storePreviousRoute) {
-                this.opener = props.previous;
+                this.opener = locationService.previous;
             }
         }
     }
@@ -73,16 +88,21 @@ class RunDetails extends Component {
 
     navigateToOrganization() {
         const { organization } = this.props.pipeline;
+        const { location } = this.context;
         const organizationUrl = buildOrganizationUrl(organization);
-        this.context.router.push(organizationUrl);
+        location.pathname = organizationUrl;
+        this.context.router.push(location);
     }
     navigateToPipeline() {
         const { organization, fullName } = this.props.pipeline;
+        const { location } = this.context;
         const pipelineUrl = buildPipelineUrl(organization, fullName);
-        this.context.router.push(pipelineUrl);
+        location.pathname = pipelineUrl;
+        this.context.router.push(location);
     }
     navigateToChanges() {
         const {
+            location,
             params: {
                 organization,
                 pipeline,
@@ -92,25 +112,27 @@ class RunDetails extends Component {
         } = this.context;
 
         const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
-        this.context.router.push(changesUrl);
+        location.pathname = changesUrl;
+        this.context.router.push(location);
     }
     render() {
+        const run = this.context.activityService.getActivity(this.href);
         // early out
         if (!this.context.params
-            || !this.props.run
-            || this.props.isMultiBranch === null) {
+            || !run) {
             return null;
         }
 
-        if (this.props.run.$pending || this.context.pipeline.$pending) {
+
+        const { router, location, params } = this.context;
+        const { pipeline, setTitle, t, locale } = this.props;
+
+        if (!run || !pipeline) {
             return <PageLoading />;
         }
 
-        const { router, location, params, pipeline = {} } = this.context;
-
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
-        const { run, setTitle } = this.props;
         const currentRun = new RunRecord(run);
         const status = currentRun.getComputedResult() || '';
 
@@ -144,6 +166,8 @@ class RunDetails extends Component {
                 <ModalHeader>
                     <div>
                         <RunDetailsHeader
+                          t={ t }
+                          locale={locale}
                           pipeline={pipeline}
                           data={currentRun}
                           onOrganizationClick={() => this.navigateToOrganization()}
@@ -151,10 +175,18 @@ class RunDetails extends Component {
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
                         <PageTabs base={baseUrl}>
-                            <TabLink to="/pipeline">Pipeline</TabLink>
-                            <TabLink to="/changes">Changes</TabLink>
-                            <TabLink to="/tests">Tests</TabLink>
-                            <TabLink to="/artifacts">Artifacts</TabLink>
+                            <TabLink to="/pipeline">{t('rundetail.header.tab.pipeline', {
+                                defaultValue: 'Pipeline',
+                            })}</TabLink>
+                            <TabLink to="/changes">{t('rundetail.header.tab.changes', {
+                                defaultValue: 'Changes',
+                            })}</TabLink>
+                            <TabLink to="/tests">{t('rundetail.header.tab.tests', {
+                                defaultValue: 'Tests',
+                            })}</TabLink>
+                            <TabLink to="/artifacts">{t('rundetail.header.tab.artifacts', {
+                                defaultValue: 'Artifacts',
+                            })}</TabLink>
                         </PageTabs>
 
                         <div className="button-bar">
@@ -172,14 +204,15 @@ class RunDetails extends Component {
                               latestRun={currentRun}
                               buttonType="stop-only"
                             />
+                            {classicConfigLink(pipeline)}
                         </div>
                     </div>
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {run.$success && React.cloneElement(
+                        {run && React.cloneElement(
                             this.props.children,
-                            { baseUrl, result: currentRun, ...this.props }
+                            { locale: translate.lng, baseUrl, t: translate, result: currentRun, isMultiBranch: this.isMultiBranch, ...this.props }
                         )}
                     </div>
                 </ModalBody>
@@ -193,7 +226,7 @@ RunDetails.contextTypes = {
     params: object,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
-    pipeline: object,
+    activityService: object.isRequired,
 };
 
 RunDetails.propTypes = {
@@ -201,15 +234,11 @@ RunDetails.propTypes = {
     params: any,
     pipeline: object,
     run: object,
-    isMultiBranch: any,
-    fetchRun: func,
-    getPipeline: func,
     previous: string,
     setTitle: func,
+    locale: string,
+    t: func,
 };
 
-const selectors = createSelector(
-    [runSelector, isMultiBranchSelector, previousSelector],
-    (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
+export default RunDetails;
 
-export default connect(selectors, actions)(RunDetails);

@@ -4,7 +4,10 @@ import com.google.common.base.Predicate;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
+import org.jenkinsci.plugins.workflow.actions.TimingAction;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -18,6 +21,7 @@ import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StatusAndTiming;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +45,6 @@ import java.util.Stack;
 public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements NodeGraphBuilder{
     private final WorkflowRun run;
 
-    public final Map<FlowNodeWrapper, List<FlowNodeWrapper>> parentToChildrenMap = new LinkedHashMap<>();
-
     private final ArrayDeque<FlowNodeWrapper> parallelBranches = new ArrayDeque<>();
 
     public final ArrayDeque<FlowNodeWrapper> nodes = new ArrayDeque<>();
@@ -62,8 +64,15 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     private final Stack<FlowNode> nestedStages = new Stack<>();
     private final Stack<FlowNode> nestedbranches = new Stack<>();
 
+    private final ArrayDeque<FlowNode> pendingInputSteps = new ArrayDeque<>();
+
+    private final Stack<FlowNode> parallelBranchEndNodes = new Stack<>();
+
+    private final InputAction inputAction;
+
     public PipelineNodeGraphVisitor(WorkflowRun run) {
         this.run = run;
+        this.inputAction = run.getAction(InputAction.class);
         if(run.getExecution()!=null) {
             ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), this, new StageChunkFinder());
         }
@@ -74,8 +83,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         super.chunkStart(startNode, beforeBlock, scanner);
         if(isNodeVisitorDumpEnabled)
             dump(String.format("chunkStart=> id: %s, name: %s, function: %s", startNode.getId(),
-                startNode.getDisplayName(), startNode.getDisplayFunctionName()));
+                    startNode.getDisplayName(), startNode.getDisplayFunctionName()));
 
+        if(PipelineNodeUtil.isSyntheticStage(startNode)){
+            return;
+        }
         if (NotExecutedNodeAction.isExecuted(startNode)) {
             firstExecuted = startNode;
         }
@@ -88,14 +100,16 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
         if(isNodeVisitorDumpEnabled)
             dump(String.format("chunkEnd=> id: %s, name: %s, function: %s, type:%s", endNode.getId(),
-                endNode.getDisplayName(), endNode.getDisplayFunctionName(), endNode.getClass()));
+                    endNode.getDisplayName(), endNode.getDisplayFunctionName(), endNode.getClass()));
 
         if(isNodeVisitorDumpEnabled && endNode instanceof StepEndNode){
             dump("\tStartNode: "+((StepEndNode) endNode).getStartNode());
         }
 
         //if block stage node push it to stack as it may have nested stages
-        if(endNode instanceof StepEndNode && PipelineNodeUtil.isStage(((StepEndNode) endNode).getStartNode())) {
+        if(endNode instanceof StepEndNode
+                && !PipelineNodeUtil.isSyntheticStage(((StepEndNode) endNode).getStartNode()) //skip synthetic stages
+                && PipelineNodeUtil.isStage(((StepEndNode) endNode).getStartNode())) {
             nestedStages.push(endNode);
         }
         firstExecuted = null;
@@ -110,10 +124,50 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     public void parallelStart(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchNode, @Nonnull ForkScanner scanner) {
         if(isNodeVisitorDumpEnabled) {
             dump(String.format("parallelStart=> id: %s, name: %s, function: %s", parallelStartNode.getId(),
-                parallelStartNode.getDisplayName(), parallelStartNode.getDisplayFunctionName()));
+                    parallelStartNode.getDisplayName(), parallelStartNode.getDisplayFunctionName()));
             dump(String.format("\tbranch=> id: %s, name: %s, function: %s", branchNode.getId(),
-                branchNode.getDisplayName(), branchNode.getDisplayFunctionName()));
+                    branchNode.getDisplayName(), branchNode.getDisplayFunctionName()));
         }
+
+        assert nestedbranches.size() == parallelBranchEndNodes.size();
+
+        while(!nestedbranches.empty() && !parallelBranchEndNodes.empty()){
+            FlowNode branchStartNode = nestedbranches.pop();
+
+            FlowNode endNode = parallelBranchEndNodes.pop();
+
+            TimingInfo times;
+            NodeRunStatus status;
+
+            if(endNode != null) {
+                times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), branchStartNode, endNode,
+                        chunk.getNodeAfter());
+                if(endNode instanceof StepAtomNode){
+                    if(PipelineNodeUtil.isPausedForInputStep((StepAtomNode) endNode, inputAction)) {
+                        status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
+                    }else{
+                        status = new NodeRunStatus(endNode);
+                    }
+                }else {
+                    GenericStatus genericStatus = StatusAndTiming.computeChunkStatus(run,
+                            parallelStartNode, branchStartNode, endNode, parallelEnd);
+                    status = new NodeRunStatus(genericStatus);
+                }
+            }else{
+                times = new TimingInfo(TimingAction.getStartTime(branchStartNode)+System.currentTimeMillis(),
+                        chunk.getPauseTimeMillis(),
+                        TimingAction.getStartTime(branchStartNode));
+                status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING);
+            }
+
+            FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode, status, times, run);
+
+            if(nextStage!=null) {
+                branch.addEdge(nextStage.getId());
+            }
+            parallelBranches.push(branch);
+        }
+
         FlowNodeWrapper[] sortedBranches = parallelBranches.toArray(new FlowNodeWrapper[parallelBranches.size()]);
         Arrays.sort(sortedBranches, new Comparator<FlowNodeWrapper>() {
             @Override
@@ -131,14 +185,19 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             nodeMap.put(p.getId(), p);
         }
         this.parallelEnd = null;
-
     }
 
     @Override
     public void parallelEnd(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode parallelEndNode, @Nonnull ForkScanner scanner) {
-        if(isNodeVisitorDumpEnabled)
+        if(isNodeVisitorDumpEnabled) {
             dump(String.format("parallelEnd=> id: %s, name: %s, function: %s", parallelEndNode.getId(),
-                parallelEndNode.getDisplayName(), parallelEndNode.getDisplayFunctionName()));
+                    parallelEndNode.getDisplayName(), parallelEndNode.getDisplayFunctionName()));
+            if(parallelEndNode instanceof StepEndNode){
+                dump(String.format("parallelEnd=> id: %s, StartNode: %s, name: %s, function: %s", parallelEndNode.getId(),
+                        ((StepEndNode) parallelEndNode).getStartNode().getId(),((StepEndNode) parallelEndNode).getStartNode().getDisplayName(), ((StepEndNode) parallelEndNode).getStartNode().getDisplayFunctionName()));
+            }
+        }
+
 
         this.parallelEnd = parallelEndNode;
     }
@@ -147,41 +206,24 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     public void parallelBranchStart(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchStartNode, @Nonnull ForkScanner scanner) {
         if(isNodeVisitorDumpEnabled)
             dump(String.format("parallelBranchStart=> id: %s, name: %s, function: %s", branchStartNode.getId(),
-                branchStartNode.getDisplayName(), branchStartNode.getDisplayFunctionName()));
+                    branchStartNode.getDisplayName(), branchStartNode.getDisplayFunctionName()));
 
-        if(nestedbranches.size() > 1){
-            nestedbranches.pop();
-            if(nestedbranches.size() > 1) {
-                return;
-            }
-        }
-        FlowNode endNode = nestedbranches.pop();
-
-        TimingInfo times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), branchStartNode, endNode,
-            chunk.getNodeAfter());
-
-        if(times == null){
-            times = new TimingInfo();
-        }
-
-        GenericStatus status = StatusAndTiming.computeChunkStatus(run,
-            parallelStartNode, branchStartNode, endNode, parallelEnd);
-
-        FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode,
-            new NodeRunStatus(status), times);
-
-        if(nextStage!=null) {
-            branch.addEdge(nextStage.getId());
-        }
-        parallelBranches.push(branch);
+        nestedbranches.push(branchStartNode);
     }
 
     @Override
     public void parallelBranchEnd(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchEndNode, @Nonnull ForkScanner scanner) {
-        if(isNodeVisitorDumpEnabled)
+        if(isNodeVisitorDumpEnabled) {
             dump(String.format("parallelBranchEnd=> id: %s, name: %s, function: %s, type: %s", branchEndNode.getId(),
-                branchEndNode.getDisplayName(), branchEndNode.getDisplayFunctionName(), branchEndNode.getClass()));
-        nestedbranches.push(branchEndNode);
+                    branchEndNode.getDisplayName(), branchEndNode.getDisplayFunctionName(), branchEndNode.getClass()));
+            if(branchEndNode instanceof StepEndNode){
+                dump(String.format("parallelBranchEnd=> id: %s, StartNode: %s, name: %s, function: %s", branchEndNode.getId(),
+                        ((StepEndNode) branchEndNode).getStartNode().getId(),((StepEndNode) branchEndNode).getStartNode().getDisplayName(),
+                        ((StepEndNode) branchEndNode).getStartNode().getDisplayFunctionName()));
+            }
+
+        }
+        parallelBranchEndNodes.add(branchEndNode);
     }
 
     // This gets triggered on encountering a new chunk (stage or branch)
@@ -189,8 +231,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     protected void handleChunkDone(@Nonnull MemoryFlowChunk chunk) {
         if(isNodeVisitorDumpEnabled)
             dump(String.format("handleChunkDone=> id: %s, name: %s, function: %s", chunk.getFirstNode().getId(),
-                chunk.getFirstNode().getDisplayName(), chunk.getFirstNode().getDisplayFunctionName()));
+                    chunk.getFirstNode().getDisplayName(), chunk.getFirstNode().getDisplayFunctionName()));
 
+        if(PipelineNodeUtil.isSyntheticStage(chunk.getFirstNode())){
+            return;
+        }
 
         if(!nestedStages.empty()){
             nestedStages.pop(); //we throw away nested stages
@@ -200,7 +245,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
         TimingInfo times = null;
-        if (firstExecuted != null) {
+
+        //TODO: remove chunk.getLastNode() != null check based on how JENKINS-40200 gets resolved
+        if (firstExecuted != null && chunk.getLastNode() != null) {
             times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
         }
 
@@ -208,29 +255,42 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             times = new TimingInfo();
         }
 
-        GenericStatus status = (firstExecuted == null) ? GenericStatus.NOT_EXECUTED :StatusAndTiming
-            .computeChunkStatus(run, chunk.getNodeBefore(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
+        NodeRunStatus status;
+        boolean skippedStage = PipelineNodeUtil.isSkippedStage(chunk.getFirstNode());
+        if(skippedStage){
+            status = new NodeRunStatus(BlueRun.BlueRunResult.NOT_BUILT, BlueRun.BlueRunState.SKIPPED);
+        }else if (firstExecuted == null) {
+            status = new NodeRunStatus(GenericStatus.NOT_EXECUTED);
+        }else if(chunk.getLastNode() != null){
+            status = new NodeRunStatus(StatusAndTiming
+                    .computeChunkStatus(run, chunk.getNodeBefore(),
+                            firstExecuted, chunk.getLastNode(), chunk.getNodeAfter()));
+        }else{
+            status = new NodeRunStatus(firstExecuted);
+        }
 
-
+        if (!pendingInputSteps.isEmpty()) {
+            status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
+        }
         FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
-            new NodeRunStatus(status), times);
+                status, times, run);
 
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);
-        if(!parallelBranches.isEmpty()){
+        if(!skippedStage && !parallelBranches.isEmpty()){
             Iterator<FlowNodeWrapper> branches = parallelBranches.descendingIterator();
             while(branches.hasNext()){
                 FlowNodeWrapper p = branches.next();
                 p.addParent(stage);
                 stage.addEdge(p.getId());
             }
-            parallelBranches.clear();
         }else{
             if(nextStage != null) {
                 nextStage.addParent(stage);
                 stage.addEdge(nextStage.getId());
             }
         }
+        parallelBranches.clear();
         this.nextStage = stage;
     }
 
@@ -238,23 +298,30 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     protected void resetChunk(@Nonnull MemoryFlowChunk chunk) {
         super.resetChunk(chunk);
         firstExecuted = null;
+        pendingInputSteps.clear();
     }
 
     @Override
-    public void atomNode(@CheckForNull FlowNode before, @Nonnull FlowNode atomNode, @CheckForNull FlowNode after, @Nonnull ForkScanner scan) {
+    public void atomNode(@CheckForNull FlowNode before, @Nonnull FlowNode atomNode,
+                         @CheckForNull FlowNode after, @Nonnull ForkScanner scan) {
         if(isNodeVisitorDumpEnabled)
             dump(String.format("atomNode=> id: %s, name: %s, function: %s, type: %s", atomNode.getId(),
-                atomNode.getDisplayName(), atomNode.getDisplayFunctionName(), atomNode.getClass()));
+                    atomNode.getDisplayName(), atomNode.getDisplayFunctionName(), atomNode.getClass()));
 
         if (NotExecutedNodeAction.isExecuted(atomNode)) {
             firstExecuted = atomNode;
         }
         long pause = PauseAction.getPauseDuration(atomNode);
         chunk.setPauseTimeMillis(chunk.getPauseTimeMillis()+pause);
+
+        if(atomNode instanceof StepAtomNode
+                && PipelineNodeUtil.isPausedForInputStep((StepAtomNode) atomNode, inputAction)){
+            pendingInputSteps.add(atomNode);
+        }
     }
 
     private void dump(String str){
-        logger.debug(str);
+        System.out.println(str);
     }
 
     @Override
@@ -283,7 +350,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             @Override
             public boolean apply(@Nullable FlowNode input) {
                 return (input!= null && input.getId().equals(nodeId) &&
-                    (PipelineNodeUtil.isStage(input) || PipelineNodeUtil.isParallelBranch(input)));
+                        (PipelineNodeUtil.isStage(input) || PipelineNodeUtil.isParallelBranch(input)));
             }
         });
 
@@ -356,8 +423,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     }
                 }
                 FlowNodeWrapper n = new FlowNodeWrapper(futureNode.getNode(),
-                    new NodeRunStatus(null,null),
-                    new TimingInfo());
+                        new NodeRunStatus(null,null),
+                        new TimingInfo(), run);
                 n.addEdges(futureNode.edges);
                 n.addParents(futureNode.getParents());
                 currentNodes.add(n);

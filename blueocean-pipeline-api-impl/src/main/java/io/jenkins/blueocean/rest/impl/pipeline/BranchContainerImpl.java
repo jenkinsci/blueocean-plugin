@@ -2,7 +2,6 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.Ordering;
 import hudson.model.Job;
-
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -119,7 +118,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
     //TODO: implement rest of the methods
     @Override
     public BluePipeline get(String name) {
-        Job job = pipeline.mbp.getBranch(name);
+        Job job = pipeline.mbp.getItem(name);
         if(job != null){
             return new BranchImpl(job, getLink());
         }

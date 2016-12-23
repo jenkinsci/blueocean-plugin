@@ -11,8 +11,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
-
-const { object, string, any } = PropTypes;
+import { CellRow, CellLink } from './CellLink';
 
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
@@ -24,87 +23,83 @@ export default class Runs extends Component {
     }
     render() {
         // early out
-        if (!this.props.result || !this.context.pipeline) {
+        if (!this.props.run || !this.props.pipeline) {
             return null;
         }
-        const {
-            context: {
-                router,
-                location,
-                pipeline: {
-                    _class: pipelineClass,
-                    fullName,
-                    organization,
-                },
-            },
-            props: {
-                result: {
-                    durationInMillis,
-                    estimatedDurationInMillis,
-                    pipeline,
-                    id,
-                    result,
-                    state,
-                    startTime,
-                    endTime,
-                    commitId,
-                },
-                changeset,
-            },
-        } = this;
+        const { router, location } = this.context;
 
-        const resultRun = result === 'UNKNOWN' ? state : result;
+        const { run, changeset, pipeline, t, locale } = this.props;
+
+        const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const running = resultRun === 'RUNNING';
         const durationMillis = !running ?
-            durationInMillis :
-            moment().diff(moment(startTime));
+            run.durationInMillis :
+            moment().diff(moment(run.startTime));
 
-        const open = () => {
-            const pipelineName = decodeURIComponent(pipeline);
-            location.pathname = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
-            router.push(location);
-        };
+        const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
 
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
 
-        return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
-            <td>
-                <LiveStatusIndicator result={resultRun} startTime={startTime}
-                  estimatedDuration={estimatedDurationInMillis}
+
+        return (
+        <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
+            <CellLink>
+                <LiveStatusIndicator result={resultRun} startTime={run.startTime}
+                  estimatedDuration={run.estimatedDurationInMillis}
                 />
-            </td>
-            <td>{id}</td>
-            <td><CommitHash commitId={commitId} /></td>
-            <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
-                <td>{decodeURIComponent(pipeline)}</td>
+            </CellLink>
+            <CellLink>{run.id}</CellLink>
+            <CellLink><CommitHash commitId={run.commitId} /></CellLink>
+            <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
+                <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
-            <td>{changeset && changeset.msg || '-'}</td>
-            <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
-            <td><ReadableDate date={endTime} liveUpdate /></td>
+            <CellLink>{changeset && changeset.msg || '-'}</CellLink>
+            <CellLink>
+                <TimeDuration
+                  millis={durationMillis}
+                  liveUpdate={running}
+                  locale={locale}
+                  liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+                  hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+                />
+            </CellLink>
+            <CellLink>
+                <ReadableDate
+                  date={run.endTime}
+                  liveUpdate
+                  locale={locale}
+                  shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                  longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                />
+            </CellLink>
             <td>
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                 <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
                 { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
-                <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
-                    <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} onNavigation={openRunDetails} />
+                <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
+                    <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
                 </IfCapability>
             </td>
-        </tr>);
+        </CellRow>
+        );
     }
 }
 
+const { object, string, any, func } = PropTypes;
+
 Runs.propTypes = {
-    run: PropTypes.object,
-    pipeline: PropTypes.object,
+    run: object,
+    pipeline: object,
     result: any.isRequired, // FIXME: create a shape
     data: string,
+    locale: string,
     changeset: object.isRequired,
+    t: func,
 };
 Runs.contextTypes = {
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };

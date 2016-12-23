@@ -1,14 +1,17 @@
 /**
  * Created by cmeyers on 8/26/16.
  */
-
 import React, { Component, PropTypes } from 'react';
 import { Icon } from 'react-material-icons-blue';
-
-import { RunApi as runApi } from '../';
-import { ToastService as toastService } from '../';
-import { ToastUtils } from '../';
+import {
+    RunApi as runApi,
+    ToastService as toastService,
+    ToastUtils,
+} from '../';
 import Security from '../security';
+import i18nTranslator from '../i18n/i18n';
+
+const translate = i18nTranslator('blueocean-web');
 
 const { permit } = Security;
 
@@ -68,10 +71,13 @@ export class RunButton extends Component {
 
         const name = decodeURIComponent(this.props.runnable.name);
         const runId = this.props.latestRun.id;
-
-        toastService.newToast({
-            text: `Stopping "${name}" #${runId}...`,
+        const text = translate('toast.run.stopping', {
+            0: name,
+            1: runId,
+            defaultValue: 'Stoppping "{0}" #{1}',
         });
+
+        toastService.newToast({ text });
     }
 
     render() {
@@ -81,7 +87,8 @@ export class RunButton extends Component {
         const stopClass = this.state.stopping ? 'stopping' : '';
 
         const status = this.props.latestRun ? this.props.latestRun.state : '';
-        const runningStatus = status && (status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
+        const isPaused = status.toLowerCase() === 'paused';
+        const runningStatus = status && (isPaused || status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
 
         let showRunButton = this.props.buttonType === 'run-only' || (this.props.buttonType === 'toggle' && !runningStatus);
         let showStopButton = runningStatus && (this.props.buttonType === 'toggle' || this.props.buttonType === 'stop-only');
@@ -89,8 +96,18 @@ export class RunButton extends Component {
         showRunButton = showRunButton && permit(this.props.runnable).start();
         showStopButton = showStopButton && permit(this.props.runnable).stop();
 
-        const runLabel = this.props.runText || 'Run';
-        const stopLabel = this.state.stopping ? 'Stopping...' : 'Stop';
+        const runLabel = this.props.runText || translate('toast.run', {
+            defaultValue: 'Run',
+        });
+        let stopLabel = this.state.stopping ? translate('toast.stopping', {
+            defaultValue: 'Stopping ...',
+        }) : translate('toast.stop', {
+            defaultValue: 'Stop',
+        });
+
+        if (isPaused && !this.state.stopping) {
+            stopLabel = translate('toast.abort', { defaultValue: 'Abort' });
+        }
 
         if (!showRunButton && !showStopButton) {
             return null;

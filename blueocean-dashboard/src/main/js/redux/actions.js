@@ -614,6 +614,7 @@ export const actions = {
                                 found.$success = true;
                             } catch (e) {
                                 // Ignore, might be a real item
+                                console.log('amoc', e);
                             }
                             dispatch({
                                 id: config.pipeline,
@@ -629,7 +630,10 @@ export const actions = {
                         payload: tryToFixRunState(data, runs),
                     });
                 }
-            );
+            )
+            .catch(err => {
+                debugLog('Fetch error: ', err);
+            });
         };
     },
 

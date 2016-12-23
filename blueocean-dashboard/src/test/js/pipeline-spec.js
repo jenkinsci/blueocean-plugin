@@ -1,9 +1,9 @@
 import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
-
 import PipelineRowItem from '../../main/js/components/PipelineRowItem.jsx';
 import { PipelineRecord } from '../../main/js/components/records.jsx';
+import i18next from 'i18next';
 
 const hack = {
     MultiBranch: () => {},
@@ -51,6 +51,31 @@ const pipelineSimple = {
 };
 /* eslint-enable quote-props */
 
+const TEST_LANG = 'en';
+const TEST_NS = 'translation';
+const i18nextInst = i18next.init({
+    lng: TEST_LANG,
+    // have a common namespace used around the full app
+    ns: [TEST_NS],
+    defaultNS: TEST_NS,
+    preload: [TEST_LANG],
+    keySeparator: false, // we do not have any nested keys in properties files
+    interpolation: {
+        prefix: '{',
+        suffix: '}',
+        escapeValue: false, // not needed for react!!
+    },
+    resources: {
+        en: {
+            translation: {
+                'home.pipelineslist.row.failing': '{0} failing',
+                'home.pipelineslist.row.passing': '{0} passing',
+            },
+        },
+    },
+});
+const t = i18nextInst.getFixedT(TEST_LANG, TEST_NS);
+
 describe('PipelineRecord', () => {
     it('create without error', () => {
         const pipelineRecord = new PipelineRecord(pipelineMultiSuccess);
@@ -62,6 +87,7 @@ describe('PipelineRowItem', () => {
     it('simple pipeline', () => {
         const wrapper = shallow(
             <PipelineRowItem
+              t={t}
               hack={hack}
               pipeline={pipelineSimple}
               simple
@@ -89,6 +115,7 @@ describe('PipelineRowItem', () => {
         it('with failing items', () => {
             const wrapper = shallow(
                 <PipelineRowItem
+                  t={t}
                   hack={hack}
                   pipeline={pipelineMulti}
                 />
@@ -111,6 +138,7 @@ describe('PipelineRowItem', () => {
         it('with success', () => {
             const wrapper = shallow(
                 <PipelineRowItem
+                  t={t}
                   hack={hack}
                   pipeline={pipelineMultiSuccess}
                 />

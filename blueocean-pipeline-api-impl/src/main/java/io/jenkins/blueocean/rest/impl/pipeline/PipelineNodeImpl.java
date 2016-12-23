@@ -2,12 +2,15 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,6 +104,15 @@ public class PipelineNodeImpl extends BluePipelineNode {
         return PipelineImpl.getActionProxies(node.getNode().getAllActions(), this);
     }
 
+    @Override
+    public BlueInputStep getInputStep() {
+        return null;
+    }
+
+    @Override
+    public HttpResponse submitInputStep(StaplerRequest request) {
+        return null;
+    }
 
     public static class EdgeImpl extends Edge{
         private final String id;

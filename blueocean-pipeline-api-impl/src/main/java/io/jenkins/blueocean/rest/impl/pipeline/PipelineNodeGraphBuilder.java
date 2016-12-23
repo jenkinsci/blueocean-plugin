@@ -241,7 +241,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
             }else if(status.state == BlueRun.BlueRunState.RUNNING){
                 durationInMillis = System.currentTimeMillis()-TimingAction.getStartTime(n);
             }
-            FlowNodeWrapper wrapper = new FlowNodeWrapper(n, status, new TimingInfo(durationInMillis,0,startTime));
+            FlowNodeWrapper wrapper = new FlowNodeWrapper(n, status, new TimingInfo(durationInMillis,0,startTime), run);
             for(FlowNode c: parentToChildrenMap.get(n)){
                 wrapper.addEdge(c.getId());
             }
@@ -270,7 +270,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
         for(FlowNode node: flowNodes){
             steps.add(new PipelineStepImpl(new FlowNodeWrapper(node,
                 new NodeRunStatus(node),
-                new TimingInfo(getDurationInMillis(node), 0, 0)), parent));
+                new TimingInfo(getDurationInMillis(node), 0, 0), run), parent));
         }
         return steps;
     }
@@ -332,7 +332,7 @@ public class PipelineNodeGraphBuilder implements NodeGraphBuilder{
 
                 FlowNodeWrapper n = new FlowNodeWrapper(futureNode.getNode(),
                     new NodeRunStatus(null,null),
-                    new TimingInfo());
+                    new TimingInfo(), run);
                 n.addEdges(futureNode.edges);
                 n.addParents(futureNode.getParents());
                 currentNodes.add(n);
