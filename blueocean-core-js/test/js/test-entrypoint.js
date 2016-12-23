@@ -5,5 +5,5 @@
 
 import 'babel-polyfill';
 
-import { mockTranslator } from '../../src/js/i18n/i18n';
-mockTranslator('blueocean-web');
+import { enableMocks } from '../../src/js/i18n/i18n';
+enableMocks();

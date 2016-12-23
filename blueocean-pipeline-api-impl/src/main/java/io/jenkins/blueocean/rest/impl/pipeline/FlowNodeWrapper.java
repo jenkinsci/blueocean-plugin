@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 
@@ -25,27 +26,36 @@ public class FlowNodeWrapper {
     public final NodeType type;
     private final String displayName;
     private final InputStep inputStep;
+    private final WorkflowRun run;
 
     private List<FlowNodeWrapper> parents = new ArrayList<>();
 
 
-    public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo) {
+
+    public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull  WorkflowRun run) {
         this.node = node;
         this.status = status;
         this.timingInfo = timingInfo;
         this.type = getNodeType(node);
         this.displayName = PipelineNodeUtil.getDisplayName(node);
         this.inputStep = null;
+        this.run = run;
     }
 
     public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status,
-                           @Nonnull TimingInfo timingInfo, @Nullable InputStep inputStep) {
+                           @Nonnull TimingInfo timingInfo, @Nullable InputStep inputStep, @Nonnull WorkflowRun run) {
         this.node = node;
         this.status = status;
         this.timingInfo = timingInfo;
         this.type = getNodeType(node);
         this.displayName = PipelineNodeUtil.getDisplayName(node);
         this.inputStep = inputStep;
+        this.run = run;
+    }
+
+
+    public WorkflowRun getRun() {
+        return run;
     }
 
     public @Nonnull String getDisplayName() {
@@ -108,7 +118,7 @@ public class FlowNodeWrapper {
         if(!(obj instanceof FlowNodeWrapper)){
             return false;
         }
-        return node.equals(obj);
+        return node.equals(((FlowNodeWrapper)obj).node);
     }
 
     public @CheckForNull InputStep getInputStep() {

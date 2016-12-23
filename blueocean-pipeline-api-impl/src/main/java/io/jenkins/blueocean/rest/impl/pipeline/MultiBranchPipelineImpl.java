@@ -34,6 +34,7 @@ import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.actions.ChangeRequestAction;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.ArrayList;
@@ -277,10 +278,6 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 return MultiBranchPipelineImpl.this.getLink().rel("runs");
             }
 
-            @Override
-            public BluePipeline getPipeline(String name) {
-                return null;
-            }
 
             @Override
             public BlueRun get(String name) {
@@ -375,7 +372,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
 
             @Override
-            public BlueQueueItem create() {
+            public BlueQueueItem create(StaplerRequest request) {
                 throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };
@@ -477,5 +474,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             }
         };
 
+    }
+
+    @Override
+    public List<Object> getParameters() {
+        return null;
     }
 }

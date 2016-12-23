@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.0.0-b14-SNAPSHOT</version>
+  <version>1.0.0-b15-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -109,6 +109,8 @@
     <module>blueocean-config</module>
     <module>blueocean</module>
     <module>blueocean-jwt</module>
+    <module>blueocean-github-pipeline</module>
+    <module>blueocean-git-pipeline</module>
   </modules>
 
   <repositories>
@@ -200,9 +202,19 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- TODO: should be moved out of blueocean repo as separate plugin -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-github-pipeline</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-git-pipeline</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- 3rd party dependencies -->
-
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sse-gateway</artifactId>
