@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.impl.pipeline;
+package io.jenkins.blueocean.rest.impl.pipeline.credential;
 
 import com.cloudbees.plugins.credentials.CredentialsStoreAction;
 import com.cloudbees.plugins.credentials.ViewCredentialsAction;

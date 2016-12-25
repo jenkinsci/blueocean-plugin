@@ -22,17 +22,6 @@ import java.util.Map;
  */
 public class CredentialApiTest extends PipelineBaseTest {
 
-
-//    @Test
-    public void createCredential(){
-        post("/organizations/jenkins/credentials/system/domains/_/credentials/", ImmutableMap.of("password", "y",
-                "$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl",
-                "username","xx",
-                "scope", "GLOBAL"));
-
-//        get("/organizations/jenkins/credentials/system/domains/_/credentials/");
-    }
-
     @Test
     public void listCredentials() throws IOException {
         SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
@@ -84,6 +73,93 @@ public class CredentialApiTest extends PipelineBaseTest {
         creds = get("/search?q=type:credential;domain:domain2", List.class);
         Assert.assertEquals(1, creds.size());
         Assert.assertEquals(credentials2.getId(), creds.get(0).get("id"));
+    }
+
+    @Test
+    public void createSshCredentialUsingSshFileOnMaster() throws IOException {
+        SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
+        CredentialsStore systemStore = system.getStore(j.getInstance());
+        systemStore.addDomain(new Domain("domain1", null, null));
+
+        Map<String, Object> resp = post("/organizations/jenkins/credentials/system/domains/domain1/credentials/",
+                ImmutableMap.of("credentials",
+                        new ImmutableMap.Builder<String,Object>()
+                                .put("privateKeySource", ImmutableMap.of("privateKeyFile", "~/.ssh/blah", "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$FileOnMasterPrivateKeySource"))
+                                .put("passphrase", "ssh2")
+                                .put("scope", "GLOBAL")
+                                .put("description", "ssh2 desc")
+                                .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
+                                .put("username", "ssh2").build()
+                                )
+                , 201);
+        Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
+        Assert.assertEquals("domain1", resp.get("domain"));
+    }
+
+    @Test
+    public void createSshCredentialUsingDefaultSshOnMaster() throws IOException {
+        SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
+        CredentialsStore systemStore = system.getStore(j.getInstance());
+        systemStore.addDomain(new Domain("domain1", null, null));
+
+        Map<String, Object> resp = post("/organizations/jenkins/credentials/system/domains/domain1/credentials/",
+                ImmutableMap.of("credentials",
+                        new ImmutableMap.Builder<String,Object>()
+                                .put("privateKeySource", ImmutableMap.of("stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$UsersPrivateKeySource"))
+                                .put("passphrase", "ssh2")
+                                .put("scope", "GLOBAL")
+                                .put("description", "ssh2 desc")
+                                .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
+                                .put("username", "ssh2").build()
+                )
+                , 201);
+        Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
+        Assert.assertEquals("domain1", resp.get("domain"));
+    }
+
+    @Test
+    public void createSshCredentialUsingDirectSsh() throws IOException {
+        SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
+        CredentialsStore systemStore = system.getStore(j.getInstance());
+        systemStore.addDomain(new Domain("domain1", null, null));
+
+        Map<String, Object> resp = post("/organizations/jenkins/credentials/system/domains/domain1/credentials/",
+                ImmutableMap.of("credentials",
+                        new ImmutableMap.Builder<String,Object>()
+                                .put("privateKeySource", ImmutableMap.of(
+                                        "privateKey", "abcabc1212",
+                                        "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
+                                .put("passphrase", "ssh2")
+                                .put("scope", "GLOBAL")
+                                .put("description", "ssh2 desc")
+                                .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
+                                .put("username", "ssh2").build()
+                )
+                , 201);
+        Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
+        Assert.assertEquals("domain1", resp.get("domain"));
+    }
+
+
+    @Test
+    public void createUsingUsernamePassword() throws IOException {
+        SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
+        CredentialsStore systemStore = system.getStore(j.getInstance());
+        systemStore.addDomain(new Domain("domain1", null, null));
+
+        Map<String, Object> resp = post("/organizations/jenkins/credentials/system/domains/domain1/credentials/",
+                ImmutableMap.of("credentials",
+                        new ImmutableMap.Builder<String,Object>()
+                                .put("password", "abcd")
+                                .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                                .put("scope", "GLOBAL")
+                                .put("description", "joe desc")
+                                .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                                .put("username", "joe").build()
+                )
+                , 201);
+        Assert.assertEquals("Username with password", resp.get("typeName"));
+        Assert.assertEquals("domain1", resp.get("domain"));
     }
 
 }
