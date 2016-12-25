@@ -58,6 +58,7 @@ public class CredentialApiTest extends PipelineBaseTest {
         Assert.assertEquals(credentialsWrapper.getDisplayName(),cred1.get("displayName"));
         Assert.assertEquals(credentialsWrapper.getFullName(),cred1.get("fullName"));
         Assert.assertEquals(String.format("%s:%s:%s", credentialsWrapper.getDisplayName(), credentialsWrapper.getDomain().getUrlName(), credentialsWrapper.getTypeName()),cred1.get("description"));
+        Assert.assertEquals(credentialsWrapper.getDomain().getUrlName(),cred1.get("domain"));
     }
 
     @Test

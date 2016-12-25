@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Credential API implementation.
  *
- * TODO: it can very well be moved out in to it's own plugin or pulled inside Credentials plugin as well.
+ * TODO: Remove it once proper REST API is implemented in Credentials plugin
  *
  * @author Vivek Pandey
  */
@@ -184,6 +184,11 @@ public class CredentialApi extends Resource {
         @Override
         public Link getLink() {
             return self;
+        }
+
+        @Exported
+        public String getDomain(){
+            return credentialsWrapper.getDomain().getUrlName();
         }
 
         /**
