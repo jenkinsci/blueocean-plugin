@@ -6,8 +6,7 @@ import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
-import jdk.nashorn.internal.scripts.JO;
+import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
@@ -22,7 +21,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
