@@ -7,7 +7,7 @@ import hudson.ExtensionList;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.service.embedded.rest.OrganizationAction;
+import io.jenkins.blueocean.rest.OrganizationRoute;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Extension
 @ExportedBean
-public class CredentialContainer extends Container<CredentialApi> implements OrganizationAction{
+public class CredentialContainer extends Container<CredentialApi> implements OrganizationRoute {
     private final Link self;
 
     public CredentialContainer() {
@@ -33,16 +33,6 @@ public class CredentialContainer extends Container<CredentialApi> implements Org
         };
         this.self = (organization != null) ? organization.getLink().rel("credentials")
                 : new Link("/organizations/jenkins/credentials/");
-    }
-
-    @Override
-    public String getIconFileName() {
-        return null;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return null;
     }
 
     @Override
