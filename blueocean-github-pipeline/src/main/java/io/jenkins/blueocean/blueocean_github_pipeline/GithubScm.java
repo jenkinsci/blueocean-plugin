@@ -9,7 +9,9 @@ import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.tasks.Mailer;
@@ -40,13 +42,13 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -114,13 +116,12 @@ public class GithubScm extends Scm {
             final Link link = getLink().rel("organizations");
             Map<String, GHOrganization> organizationMap = github.getMyOrganizations();
 
-            Map<String, ScmOrganization> orgMap = new LinkedHashMap<>();
-
-
-            for(GHOrganization org: organizationMap.values()){
-                orgMap.put(org.getLogin(), new GithubOrganization(org, link));
-            }
-
+            Map<String, ScmOrganization> orgMap = Maps.transformValues(github.getMyOrganizations(), new Function<GHOrganization, ScmOrganization>() {
+                @Override
+                public ScmOrganization apply(@Nullable GHOrganization input) {
+                    return new GithubOrganization(input, link);
+                }
+            });
             return Containers.fromResourceMap(link,orgMap);
 
         } catch (IOException e) {
