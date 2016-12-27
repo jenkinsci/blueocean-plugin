@@ -1,11 +1,17 @@
 package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.rest.pageable.Pageable;
+import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import net.sf.json.JSONObject;
+import org.kohsuke.stapler.Header;
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
+import org.kohsuke.stapler.verb.GET;
 import org.kohsuke.stapler.verb.PUT;
 
 import javax.annotation.CheckForNull;
@@ -22,6 +28,9 @@ public abstract class Scm extends Resource {
     public static final String CREDENTIAL_ID = "credentialId";
     public static final String VALIDATE = "validate";
 
+    public static final String X_CREDENTIAL_ID = "X-CREDENTIAL-ID";
+
+
     /** SCM id. For example, github, bitbucket etc. */
     @Exported(name = ID)
     public abstract @Nonnull String getId();
@@ -30,8 +39,29 @@ public abstract class Scm extends Resource {
     @Exported(name = URI)
     public abstract @Nonnull String getUri();
 
+    /** credentialId attached to this scm */
     @Exported(name = CREDENTIAL_ID)
     public abstract String getCredentialId();
+
+    /**
+     * Pageable list of {@link ScmOrganization}s.
+     */
+    /**
+     * Pageable list of {@link ScmOrganization}s.
+     *
+     * Credential Id to use with github must be provided either as credentialId query parameter or as X-CREDENTIAL-ID http header.
+     *
+     * credentialId query parameter overrides X-CREDENTIAL-ID http header.
+     *
+     * @param credentialId provided as query parameter 'credentialId'.
+     * @param credentialIdFromHeader if credentialId query parameter is not provided then header X-CREDENTIAL-ID is looked for.
+     * @return {@link Pageable} {@link ScmOrganization}s.
+     */
+    @Navigable
+    @PagedResponse
+    @WebMethod(name = "organizations")
+    @GET
+    public abstract Pageable<ScmOrganization> getOrganizations(@QueryParameter("credentialId") String credentialId, @Header(X_CREDENTIAL_ID) String credentialIdFromHeader);
 
     /**
      * Validate given accessToken for authentication and authorization.

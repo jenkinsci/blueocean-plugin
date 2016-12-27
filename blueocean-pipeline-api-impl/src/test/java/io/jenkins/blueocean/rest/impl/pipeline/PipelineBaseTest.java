@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
@@ -415,6 +416,7 @@ public abstract class PipelineBaseTest{
         private int expectedStatus = 200;
         private String token;
 
+        private Map<String,String> headers = new HashMap<>();
 
         private String getBaseUrl(String path){
             return baseUrl + path;
@@ -474,6 +476,11 @@ public abstract class PipelineBaseTest{
             return this;
         }
 
+        public RequestBuilder header(String key, String value){
+            this.headers.put(key, value);
+            return this;
+        }
+
         public RequestBuilder post(String url) {
             this.url = url;
             this.method = "POST";
@@ -522,6 +529,7 @@ public abstract class PipelineBaseTest{
 
                 request.header("Content-Type", contentType);
 
+                request.headers(headers);
 
                 if(request instanceof HttpRequestWithBody && data != null) {
                     ((HttpRequestWithBody)request).body(data);

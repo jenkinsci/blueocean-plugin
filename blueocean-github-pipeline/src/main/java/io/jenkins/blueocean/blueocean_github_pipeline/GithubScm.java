@@ -6,9 +6,12 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.tasks.Mailer;
@@ -18,24 +21,36 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
+import io.jenkins.blueocean.rest.pageable.Pageable;
+import io.jenkins.blueocean.rest.pageable.Pageables;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHUser;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.HttpConnector;
+import org.kohsuke.github.RateLimitHandler;
+import org.kohsuke.stapler.Header;
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -79,6 +94,45 @@ public class GithubScm extends Scm {
         }
         return null;
     }
+
+    @Override
+    public Pageable<ScmOrganization> getOrganizations(@QueryParameter("credentialId") String credentialId, @Header(X_CREDENTIAL_ID) String credentialIdFromHeader) {
+        if(credentialId == null){
+            credentialId = credentialIdFromHeader;
+        }
+        if(credentialId == null){
+            throw new ServiceException.BadRequestExpception("Missing credential id. It must be provided either as HTTP header: " + X_CREDENTIAL_ID+" or as query parameter 'credentialId'");
+        }
+
+        StandardUsernamePasswordCredentials credential = GithubScm.findUsernamePasswordCredential(credentialId);
+
+        String accessToken = credential.getPassword().getPlainText();
+
+        try {
+            GitHub github = new GitHubBuilder().withOAuthToken(accessToken)
+                    .withRateLimitHandler(new RateLimitHandlerImpl())
+                    .withEndpoint(getUri()).build();
+            Map<String, GHOrganization> organizationMap = github.getMyOrganizations();
+            return Pageables.wrap(Iterables.transform(organizationMap.values(),
+                    new Function<GHOrganization, ScmOrganization>(){
+                @Override
+                public ScmOrganization apply(@Nullable final GHOrganization input) {
+                    return new GithubOrganization(input);
+                }
+            }));
+
+        } catch (IOException e) {
+            throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
+        }
+    }
+
+    public static class RateLimitHandlerImpl extends RateLimitHandler{
+        @Override
+        public void onError(IOException e, HttpURLConnection httpURLConnection) throws IOException {
+            throw new ServiceException.BadRequestExpception("API rate limit reached."+e.getMessage(), e);
+        }
+    }
+
 
     @Override
     public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
@@ -200,6 +254,18 @@ public class GithubScm extends Scm {
                         Jenkins.getAuthentication(),
                         URIRequirementBuilder.fromUri(scm.getUri()).build()),
                 CredentialsMatchers.allOf(CredentialsMatchers.withId(scm.getId()),
+                        CredentialsMatchers.anyOf(CredentialsMatchers.instanceOf(StandardUsernamePasswordCredentials.class)))
+        );
+    }
+
+    public static StandardUsernamePasswordCredentials findUsernamePasswordCredential(String id){
+        return CredentialsMatchers.firstOrNull(
+                CredentialsProvider.lookupCredentials(
+                        StandardUsernamePasswordCredentials.class,
+                        Jenkins.getInstance(),
+                        Jenkins.getAuthentication(),
+                        Collections.<DomainRequirement>emptyList()),
+                CredentialsMatchers.allOf(CredentialsMatchers.withId(id),
                         CredentialsMatchers.anyOf(CredentialsMatchers.instanceOf(StandardUsernamePasswordCredentials.class)))
         );
     }
