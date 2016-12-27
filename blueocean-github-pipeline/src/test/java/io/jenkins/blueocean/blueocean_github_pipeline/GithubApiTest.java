@@ -74,8 +74,8 @@ public class GithubApiTest extends PipelineBaseTest{
         Assert.assertEquals("github", r.get("credentialId"));
     }
 
-//    @Test
-    public void getOrganizations() throws Exception{
+    //@Test
+    public void getOrganizationsAndRepositories() throws Exception{
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
         hudson.model.User bob = j.jenkins.getUser("bob");
@@ -90,7 +90,6 @@ public class GithubApiTest extends PipelineBaseTest{
         UserCredentialsProvider userCredentialsProvider = ExtensionList.lookup(CredentialsProvider.class).get(UserCredentialsProvider.class);
         CredentialsStore userCredentialsProviderStore = userCredentialsProvider.getStore(bob);
         userCredentialsProviderStore.addDomain(new Domain("domain1", null, null));
-
 
         //check credentialId of this SCM, should be null
         Map r = new RequestBuilder(baseUrl)
@@ -111,6 +110,21 @@ public class GithubApiTest extends PipelineBaseTest{
                 .get("/organizations/jenkins/scm/github/organizations/?credentialId="+credentialId)
                 .header(Scm.X_CREDENTIAL_ID, credentialId+"sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(List.class);
+
+
+        Map resp  = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .get("/organizations/jenkins/scm/github/organizations/stapler/repositories/?credentialId="+credentialId)
+                .header(Scm.X_CREDENTIAL_ID, credentialId+"sdsdsd") //it must be ignored as credentialId query parameter overrides it.
+                .build(Map.class);
+
+        resp  = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .get("/organizations/jenkins/scm/github/organizations/stapler/repositories/less/?credentialId="+credentialId)
+                .header(Scm.X_CREDENTIAL_ID, credentialId+"sdsdsd") //it must be ignored as credentialId query parameter overrides it.
+                .build(Map.class);
 
         //TODO: add more tests once there is test githuhb account
     }

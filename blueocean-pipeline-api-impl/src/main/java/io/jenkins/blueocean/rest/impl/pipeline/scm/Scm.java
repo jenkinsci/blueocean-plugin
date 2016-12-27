@@ -4,15 +4,11 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.rest.pageable.Pageable;
-import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.Header;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.verb.GET;
 import org.kohsuke.stapler.verb.PUT;
 
 import javax.annotation.CheckForNull;
@@ -42,7 +38,7 @@ public abstract class Scm extends Resource {
 
     /** credentialId attached to this scm */
     @Exported(name = CREDENTIAL_ID)
-    public abstract String getCredentialId();
+    public abstract @CheckForNull String getCredentialId();
 
     /**
      * Pageable list of {@link ScmOrganization}s.
@@ -54,15 +50,10 @@ public abstract class Scm extends Resource {
      *
      * credentialId query parameter overrides X-CREDENTIAL-ID http header.
      *
-     * @param credentialId provided as query parameter 'credentialId'.
-     * @param credentialIdFromHeader if credentialId query parameter is not provided then header X-CREDENTIAL-ID is looked for.
      * @return {@link Pageable} {@link ScmOrganization}s.
      */
     @Navigable
-    @PagedResponse
-    @WebMethod(name = "organizations")
-    @GET
-    public abstract Container<ScmOrganization> getOrganizations(@QueryParameter("credentialId") String credentialId, @Header(X_CREDENTIAL_ID) String credentialIdFromHeader);
+    public abstract Container<ScmOrganization> getOrganizations();
 
     /**
      * Validate given accessToken for authentication and authorization.

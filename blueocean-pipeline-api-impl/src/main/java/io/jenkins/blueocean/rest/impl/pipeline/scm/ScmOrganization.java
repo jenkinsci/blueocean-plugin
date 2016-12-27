@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.export.Exported;
 
@@ -12,9 +13,13 @@ import org.kohsuke.stapler.export.Exported;
  * @author Vivek Pandey
  */
 public abstract class ScmOrganization extends Resource{
+    public static final String ID="id";
 
     /** organization id */
-    @Exported
+    @Exported(name = ID)
     public abstract String getId();
 
+    /** SCM repositories */
+    @Navigable
+    public abstract ScmRepositories getRepositories();
 }

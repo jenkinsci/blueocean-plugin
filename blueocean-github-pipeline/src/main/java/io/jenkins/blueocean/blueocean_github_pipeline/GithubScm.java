@@ -23,7 +23,6 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Containers;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
@@ -34,13 +33,13 @@ import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.HttpConnector;
 import org.kohsuke.github.RateLimitHandler;
-import org.kohsuke.stapler.Header;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.json.JsonBody;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.ServletException;
@@ -49,6 +48,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -76,12 +76,12 @@ public class GithubScm extends Scm {
     }
 
     @Override
-    public String getId() {
+    public @Nonnull String getId() {
         return ID;
     }
 
     @Override
-    public String getUri() {
+    public @Nonnull String getUri() {
         return DEFAULT_API_URI;
     }
 
@@ -96,15 +96,16 @@ public class GithubScm extends Scm {
     }
 
     @Override
-    public Container<ScmOrganization> getOrganizations(@QueryParameter("credentialId") String credentialId, @Header(X_CREDENTIAL_ID) String credentialIdFromHeader) {
-        if(credentialId == null){
-            credentialId = credentialIdFromHeader;
-        }
-        if(credentialId == null){
-            throw new ServiceException.BadRequestExpception("Missing credential id. It must be provided either as HTTP header: " + X_CREDENTIAL_ID+" or as query parameter 'credentialId'");
-        }
+    public Container<ScmOrganization> getOrganizations() {
+        StaplerRequest request = Stapler.getCurrentRequest();
 
-        StandardUsernamePasswordCredentials credential = GithubScm.findUsernamePasswordCredential(credentialId);
+        String credentialId = getCredentialIdFromRequest(request);
+
+        final StandardUsernamePasswordCredentials credential = GithubScm.findUsernamePasswordCredential(credentialId);
+
+        if(credential == null){
+            throw new ServiceException.BadRequestExpception("Invalid credentialId: "+credentialId);
+        }
 
         String accessToken = credential.getPassword().getPlainText();
 
@@ -114,19 +115,44 @@ public class GithubScm extends Scm {
                     .withEndpoint(getUri()).build();
 
             final Link link = getLink().rel("organizations");
-            Map<String, GHOrganization> organizationMap = github.getMyOrganizations();
 
-            Map<String, ScmOrganization> orgMap = Maps.transformValues(github.getMyOrganizations(), new Function<GHOrganization, ScmOrganization>() {
+            final Map<String, ScmOrganization> orgMap = Maps.transformValues(github.getMyOrganizations(), new Function<GHOrganization, ScmOrganization>() {
                 @Override
                 public ScmOrganization apply(@Nullable GHOrganization input) {
-                    return new GithubOrganization(input, link);
+                    return new GithubOrganization(GithubScm.this, input, credential, link);
                 }
             });
-            return Containers.fromResourceMap(link,orgMap);
+            return new Container<ScmOrganization>() {
+                @Override
+                public ScmOrganization get(String name) {
+                    return orgMap.get(name);
+                }
 
+                @Override
+                public Link getLink() {
+                    return link;
+                }
+
+                @Override
+                public Iterator<ScmOrganization> iterator() {
+                    return orgMap.values().iterator();
+                }
+            };
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
         }
+    }
+
+     private static String getCredentialIdFromRequest(StaplerRequest request){
+        String credentialId = request.getParameter(CREDENTIAL_ID);
+
+        if(credentialId == null){
+            credentialId = request.getHeader(X_CREDENTIAL_ID);
+        }
+        if(credentialId == null){
+            throw new ServiceException.BadRequestExpception("Missing credential id. It must be provided either as HTTP header: " + X_CREDENTIAL_ID+" or as query parameter 'credentialId'");
+        }
+        return credentialId;
     }
 
     public static class RateLimitHandlerImpl extends RateLimitHandler{
@@ -135,7 +161,6 @@ public class GithubScm extends Scm {
             throw new ServiceException.BadRequestExpception("API rate limit reached."+e.getMessage(), e);
         }
     }
-
 
     @Override
     public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
@@ -149,20 +174,8 @@ public class GithubScm extends Scm {
                 throw new ServiceException.UnauthorizedException("No authenticated user found");
             }
 
-            HttpURLConnection connection = HttpConnector.DEFAULT.connect(new URL(getUri()+"/user"));
+            HttpURLConnection connection = connect(String.format("%s/%s", getUri(), "user"),accessToken);
 
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-type", "application/json");
-            connection.setRequestProperty("Authorization", "token "+accessToken);
-            connection.connect();
-
-            int status = connection.getResponseCode();
-            if(status == 401 || status == 403){
-                throw new ServiceException.ForbiddenException("Invalid accessToken");
-            }
-            if(status != 200) {
-                throw new ServiceException.BadRequestExpception(String.format("Github Api returned error: %s. Error message: %s.", connection.getResponseCode(), connection.getResponseMessage()));
-            }
             //check for user:email or user AND repo scopes
             String scopesHeader = connection.getHeaderField("X-OAuth-Scopes");
             if(scopesHeader == null){
@@ -230,7 +243,30 @@ public class GithubScm extends Scm {
         }
     }
 
-    public Domain getFirstDomain(CredentialsStore store){
+    static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
+        HttpURLConnection connection = HttpConnector.DEFAULT.connect(new URL(apiUrl));
+
+        connection.setDoOutput(true);
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Content-type", "application/json");
+        connection.setRequestProperty("Authorization", "token "+accessToken);
+        connection.connect();
+
+        int status = connection.getResponseCode();
+        if(status == 401 || status == 403){
+            throw new ServiceException.ForbiddenException("Invalid accessToken");
+        }
+        if(status == 404){
+            throw new ServiceException.NotFoundException("Not Found");
+        }
+        if(status != 200) {
+            throw new ServiceException.BadRequestExpception(String.format("Github Api returned error: %s. Error message: %s.", connection.getResponseCode(), connection.getResponseMessage()));
+        }
+
+        return connection;
+    }
+
+    private Domain getFirstDomain(CredentialsStore store){
         for(Domain d:store.getDomains()){
             if(d.getName() != null){
                 return d;
@@ -239,7 +275,7 @@ public class GithubScm extends Scm {
         return null;
     }
 
-    public static HttpResponse createResponse(final String credentialId){
+     private HttpResponse createResponse(final String credentialId){
         return new HttpResponse() {
             @Override
             public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
@@ -249,7 +285,7 @@ public class GithubScm extends Scm {
         };
     }
 
-    public static StandardUsernamePasswordCredentials findUsernamePasswordCredential(Scm scm){
+     private static StandardUsernamePasswordCredentials findUsernamePasswordCredential(Scm scm){
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                         StandardUsernamePasswordCredentials.class,
@@ -261,7 +297,7 @@ public class GithubScm extends Scm {
         );
     }
 
-    public static StandardUsernamePasswordCredentials findUsernamePasswordCredential(String id){
+    private static @CheckForNull StandardUsernamePasswordCredentials findUsernamePasswordCredential(String id){
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                         StandardUsernamePasswordCredentials.class,
