@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
@@ -61,7 +62,7 @@ public abstract class Scm extends Resource {
     @PagedResponse
     @WebMethod(name = "organizations")
     @GET
-    public abstract Pageable<ScmOrganization> getOrganizations(@QueryParameter("credentialId") String credentialId, @Header(X_CREDENTIAL_ID) String credentialIdFromHeader);
+    public abstract Container<ScmOrganization> getOrganizations(@QueryParameter("credentialId") String credentialId, @Header(X_CREDENTIAL_ID) String credentialIdFromHeader);
 
     /**
      * Validate given accessToken for authentication and authorization.

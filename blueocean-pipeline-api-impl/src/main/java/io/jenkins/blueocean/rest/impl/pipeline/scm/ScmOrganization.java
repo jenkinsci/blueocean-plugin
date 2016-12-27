@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
+import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  *
@@ -11,8 +11,7 @@ import org.kohsuke.stapler.export.ExportedBean;
  *
  * @author Vivek Pandey
  */
-@ExportedBean
-public abstract class ScmOrganization {
+public abstract class ScmOrganization extends Resource{
 
     /** organization id */
     @Exported

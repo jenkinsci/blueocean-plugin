@@ -9,9 +9,7 @@ import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.tasks.Mailer;
@@ -22,8 +20,8 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
-import io.jenkins.blueocean.rest.pageable.Pageable;
-import io.jenkins.blueocean.rest.pageable.Pageables;
+import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Containers;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
@@ -42,13 +40,13 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -96,7 +94,7 @@ public class GithubScm extends Scm {
     }
 
     @Override
-    public Pageable<ScmOrganization> getOrganizations(@QueryParameter("credentialId") String credentialId, @Header(X_CREDENTIAL_ID) String credentialIdFromHeader) {
+    public Container<ScmOrganization> getOrganizations(@QueryParameter("credentialId") String credentialId, @Header(X_CREDENTIAL_ID) String credentialIdFromHeader) {
         if(credentialId == null){
             credentialId = credentialIdFromHeader;
         }
@@ -112,14 +110,18 @@ public class GithubScm extends Scm {
             GitHub github = new GitHubBuilder().withOAuthToken(accessToken)
                     .withRateLimitHandler(new RateLimitHandlerImpl())
                     .withEndpoint(getUri()).build();
+
+            final Link link = getLink().rel("organizations");
             Map<String, GHOrganization> organizationMap = github.getMyOrganizations();
-            return Pageables.wrap(Iterables.transform(organizationMap.values(),
-                    new Function<GHOrganization, ScmOrganization>(){
-                @Override
-                public ScmOrganization apply(@Nullable final GHOrganization input) {
-                    return new GithubOrganization(input);
-                }
-            }));
+
+            Map<String, ScmOrganization> orgMap = new LinkedHashMap<>();
+
+
+            for(GHOrganization org: organizationMap.values()){
+                orgMap.put(org.getLogin(), new GithubOrganization(org, link));
+            }
+
+            return Containers.fromResourceMap(link,orgMap);
 
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
