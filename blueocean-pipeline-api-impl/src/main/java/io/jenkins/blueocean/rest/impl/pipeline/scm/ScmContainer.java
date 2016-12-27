@@ -1,11 +1,11 @@
 package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
 import hudson.Extension;
+import io.jenkins.blueocean.rest.OrganizationRoute;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationContainer;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.service.embedded.rest.OrganizationAction;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.Iterator;
@@ -18,7 +18,7 @@ import java.util.Iterator;
  */
 @Extension
 @ExportedBean
-public class ScmContainer extends Container<Scm> implements OrganizationAction {
+public class ScmContainer extends Container<Scm> implements OrganizationRoute {
     private final Link self;
 
     private static final String URL_NAME="scm";
@@ -41,16 +41,6 @@ public class ScmContainer extends Container<Scm> implements OrganizationAction {
     @Override
     public Link getLink() {
         return self;
-    }
-
-    @Override
-    public String getIconFileName() {
-        return null;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return null;
     }
 
     @Override
