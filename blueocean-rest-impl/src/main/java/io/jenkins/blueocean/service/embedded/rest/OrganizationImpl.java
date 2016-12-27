@@ -6,6 +6,7 @@ import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.OrganizationRoute;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -35,9 +36,6 @@ public class OrganizationImpl extends BlueOrganization {
      * In embedded mode, there's only one organization
      */
     public static final OrganizationImpl INSTANCE = new OrganizationImpl();
-
-    private OrganizationImpl() {
-    }
 
     /**
      * In embedded mode, there's only one organization
@@ -99,20 +97,18 @@ public class OrganizationImpl extends BlueOrganization {
     /**
      * Give plugins chance to handle this API route.
      *
-     * TODO: copied from PR 593, remove methods below after PR 593 is merged
-     *
      * @param route URL path that needs handling. e.g. for requested url /rest/organizations/:id/xyz,  route param value will be 'xyz'
      * @return stapler object that can handle give route. Could be null
      */
     public Object getDynamic(String route){
         //First look for OrganizationActions
-        for(OrganizationAction organizationAction: ExtensionList.lookup(OrganizationAction.class)){
-            if(organizationAction.getUrlName() != null && organizationAction.getUrlName().equals(route)){
-                return wrap(organizationAction);
+        for(OrganizationRoute organizationRoute: ExtensionList.lookup(OrganizationRoute.class)){
+            if(organizationRoute.getUrlName() != null && organizationRoute.getUrlName().equals(route)){
+                return wrap(organizationRoute);
             }
         }
 
-        // No OrganizationAction found, now lookup in available actions from Jenkins instance serving root
+        // No OrganizationRoute found, now lookup in available actions from Jenkins instance serving root
         for(Action action:Jenkins.getInstance().getActions()) {
             if (action.getUrlName() != null && action.getUrlName().equals(route)) {
                 return wrap(action);
@@ -121,7 +117,7 @@ public class OrganizationImpl extends BlueOrganization {
         return null;
     }
 
-    private Object wrap(Action action){
+    private Object wrap(Object action){
         if (isExportedBean(action.getClass())) {
             return action;
         } else {
