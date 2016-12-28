@@ -6,6 +6,11 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
+import com.cloudbees.plugins.credentials.domains.DomainSpecification;
+import com.cloudbees.plugins.credentials.domains.HostnamePortSpecification;
+import com.cloudbees.plugins.credentials.domains.HostnameSpecification;
+import com.cloudbees.plugins.credentials.domains.PathSpecification;
+import com.cloudbees.plugins.credentials.domains.SchemeSpecification;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.google.common.collect.ImmutableMap;
@@ -33,6 +38,8 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +55,7 @@ public class GithubScm extends Scm {
     private static final String USER_EMAIL_SCOPE = "user:email";
     private static final String USER_SCOPE = "user";
     private static final String REPO_SCOPE = "repo";
+    private static final String DOMAIN_NAME="github-domain";
 
     private final Link self;
 
@@ -157,18 +165,48 @@ public class GithubScm extends Scm {
                 throw new ServiceException.ForbiddenException(String.format("Logged in user: %s doesn't have writable credentials store", authenticatedUser.getId()));
             }
 
-            Domain domain = getFirstDomain(store);
+            Domain domain = store.getDomainByName(DOMAIN_NAME);
             if(domain == null){
-                throw new ServiceException.BadRequestExpception("Github accessToken is valid but no valid credential domain found");
+                java.net.URI uri = new URI(getUri());
+
+                List<DomainSpecification> domainSpecifications = new ArrayList<>();
+
+                // XXX: UriRequirementBuilder.fromUri() maps "" path to "/", so need to take care of it here
+                String path = uri.getRawPath() == null ? null : (uri.getRawPath().trim().isEmpty() ? "/" : uri.getRawPath());
+                domainSpecifications.add(new PathSpecification(path, "", false));
+                if(uri.getPort() != -1){
+                    domainSpecifications.add(new HostnamePortSpecification(uri.getHost()+":"+uri.getPort(), null));
+                }else{
+                    domainSpecifications.add(new HostnameSpecification(uri.getHost(),null));
+                }
+                domainSpecifications.add(new SchemeSpecification(uri.getScheme()));
+
+                boolean result = store.addDomain(new Domain(DOMAIN_NAME,
+                        "Github Domain to store personal access token",
+                        domainSpecifications
+                ));
+                if(!result){
+                    throw new ServiceException.BadRequestExpception("Github accessToken is valid but no valid credential domain found and could not be created");
+                }
+                domain = store.getDomainByName(DOMAIN_NAME);
+                if(domain == null){
+                    throw new ServiceException.BadRequestExpception("Github accessToken is valid but no valid credential domain found and could not be created");
+                }
             }
+
             if(githubCredential == null){
-                store.addCredentials(domain, credential);
+                if(!store.addCredentials(domain, credential)){
+                    throw new ServiceException.UnexpectedErrorException("Failed to add credential to domain");
+                }
+
             }else{
-                store.updateCredentials(domain, githubCredential, credential);
+                if(!store.updateCredentials(domain, githubCredential, credential)){
+                    throw new ServiceException.UnexpectedErrorException("Failed to update credential to domain");
+                }
             }
             return createResponse(credential.getId());
 
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new ServiceException.UnexpectedErrorException(e.getMessage());
         }
     }
