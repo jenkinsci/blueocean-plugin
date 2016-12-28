@@ -104,7 +104,7 @@ public class GithubRepositories extends ScmRepositories {
     }
 
     @Override
-    public Iterable<ScmRepository> getRepositories() {
+    public Iterable<ScmRepository> getItems() {
         return Lists.transform(Arrays.asList(repositories), new com.google.common.base.Function<GHRepository, ScmRepository>() {
             @Override
             public ScmRepository apply(@Nullable GHRepository input) {
@@ -127,19 +127,4 @@ public class GithubRepositories extends ScmRepositories {
     public Integer getPageSize(){
         return pageSize;
     }
-    public final Object getDynamic(String name) {
-        return get(name);
-    }
-
-    public ScmRepository get(String name){
-        try {
-            HttpURLConnection connection = GithubScm.connect(String.format("%s/repos/%s/%s",githubOrganization.getScmRootUrl(), githubOrganization.getId(),name),accessToken);
-
-            final GHRepository repository = JsonConverter.toJava(IOUtils.toString(connection.getInputStream()), GHRepository.class);
-            return new GithubRepository(repository, accessToken, this);
-        } catch (IOException e) {
-            throw new ServiceException.UnexpectedErrorException(e.getMessage(),e);
-        }
-    }
-
 }

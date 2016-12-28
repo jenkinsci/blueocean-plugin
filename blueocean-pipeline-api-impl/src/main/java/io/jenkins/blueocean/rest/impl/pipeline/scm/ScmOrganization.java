@@ -21,5 +21,5 @@ public abstract class ScmOrganization extends Resource{
 
     /** SCM repositories */
     @Navigable
-    public abstract ScmRepositories getRepositories();
+    public abstract ScmRepositoryContainer getRepositories();
 }

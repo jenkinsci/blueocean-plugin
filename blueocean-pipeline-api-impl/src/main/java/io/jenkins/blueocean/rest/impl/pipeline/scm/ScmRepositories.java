@@ -11,8 +11,8 @@ import org.kohsuke.stapler.export.Exported;
  * @author Vivek Pandey
  */
 public abstract class ScmRepositories extends Resource {
-    public static final String REPOSITORIES="repositories";
+    public static final String ITEMS ="items";
 
-    @Exported(name=REPOSITORIES)
-    public abstract Iterable<ScmRepository> getRepositories();
+    @Exported(name= ITEMS, inline = true)
+    public abstract Iterable<ScmRepository> getItems();
 }

@@ -79,6 +79,11 @@
 - [SCM API](#scm-api)
   - [Validate Github personal access token](#validate-github-personal-access-token)
   - [Check SCM for available credentialId to use:](#check-scm-for-available-credentialid-to-use)
+  - [List organizations of SCM (e.g. github)](#list-organizations-of-scm-eg-github)
+  - [Repositories API](#repositories-api)
+    - [Get SCM repositories in an organization](#get-scm-repositories-in-an-organization)
+      - [Pagination for GitHub repositories](#pagination-for-github-repositories)
+    - [Get SCM repository in an organization](#get-scm-repository-in-an-organization)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1949,5 +1954,150 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
   "credentialId" : ".....",
   "id" : "github",
   "uri" : "https://api.github.com"
+}
+````
+
+## List organizations of SCM (e.g. github)
+
+> As prerequisite GitHub personal access token must be set as Credential with id 'github' in 'github-domain' domain of authenticated user's credential store. Calling validate access token API above automatically sets it up for you. You can also do it manually.
+
+> Credential id corresponding to github personal access token must be sent either as query parameter 'credentialId' or as HTTP header X-CREDENTIAL-ID. If both are provided query parameter takes precedence. 
+
+````
+curl -XGET -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/organizations/?credentialId=github
+
+[
+   {
+      "_links" : {
+         "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/organizations/jenkins/scm/github/organizations/jenkinsci/"
+         }
+      },
+      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
+      "id" : "jenkinsci"
+   },
+   {
+      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
+      "id" : "stapler",
+      "_links" : {
+         "self" : {
+            "href" : "/organizations/jenkins/scm/github/organizations/stapler/",
+            "_class" : "io.jenkins.blueocean.rest.hal.Link"
+         }
+      }
+   },
+   {
+      "_links" : {
+         "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/organizations/jenkins/scm/github/organizations/CloudBees-community/"
+         }
+      },
+      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
+      "id" : "CloudBees-community"
+   },
+   {
+      "_links" : {
+         "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/organizations/jenkins/scm/github/organizations/cloudbees/"
+         }
+      },
+      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
+      "id" : "cloudbees"
+   },
+   {
+      "_links" : {
+         "self" : {
+            "_class" : "io.jenkins.blueocean.rest.hal.Link",
+            "href" : "/organizations/jenkins/scm/github/organizations/jruby/"
+         }
+      },
+      "id" : "jruby",
+      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization"
+   }
+]
+````
+
+## Repositories API
+
+> Credential id corresponding to github personal access token must be sent either as query parameter 'credentialId' or as HTTP header X-CREDENTIAL-ID. If both are provided query parameter takes precedence. 
+
+### Get SCM repositories in an organization
+
+````
+curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId=github&pageSize=10&pageNumber=3
+
+{
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubRespositoryContainer",
+  "_links" : {
+    "self" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/"
+    }
+  },
+  "repositories" : {
+    "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubRepositories",
+    "_links" : {
+      "self" : {
+        "_class" : "io.jenkins.blueocean.rest.hal.Link",
+        "href" : "/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/"
+      }
+    },
+    "items" : [ {
+      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubRepository",
+      "_links" : {
+        "self" : {
+          "_class" : "io.jenkins.blueocean.rest.hal.Link",
+          "href" : "/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/bees-cli-router-plugin/"
+        }
+      },
+      "defaultBranch" : "master",
+      "description" : "CloudBees SDK \"router:*\" plugin",
+      "name" : "bees-cli-router-plugin",
+      "permissions" : {
+        "admin" : false,
+        "push" : false,
+        "pull" : true
+      },
+      ...],
+    "lastPage" : 5,
+    "nextPage" : 4,
+    "pageSize" : 10
+  }
+}      
+````
+
+#### Pagination for GitHub repositories
+
+Repositories response includes nextPage, lastPage and pageSize. nextPage or lastPage might be null if there is no more pages available.
+
+> use pageSize and pageNumber query parameter to get number of items in a page and which page number is needed. Default value of pageNumber is 1 and default and max size is 100. 
+ 
+
+### Get SCM repository in an organization
+
+````
+curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/game-of-life/?credentialId=github
+
+{
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubRepository",
+  "_links" : {
+    "self" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/game-of-life/?credentialId=github"
+    }
+  },
+  "defaultBranch" : "master",
+  "description" : "Demo application for the 'Jenkins: The Definitive Guide' book",
+  "name" : "game-of-life",
+  "permissions" : {
+    "admin" : false,
+    "push" : false,
+    "pull" : true
+  },
+  "private" : false,
+  "fullName" : "CloudBees-community/game-of-life"
 }
 ````

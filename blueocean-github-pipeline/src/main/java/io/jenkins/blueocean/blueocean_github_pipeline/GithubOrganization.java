@@ -4,7 +4,7 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositoryContainer;
 import org.kohsuke.github.GHOrganization;
 
 /**
@@ -34,8 +34,8 @@ public class GithubOrganization extends ScmOrganization {
     }
 
     @Override
-    public ScmRepositories getRepositories() {
-        return new GithubRepositories(this);
+    public ScmRepositoryContainer getRepositories() {
+        return new GithubRespositoryContainer(this);
     }
 
     GHOrganization getGHOrganization() {

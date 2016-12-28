@@ -112,7 +112,8 @@ public class GithubScm extends Scm {
         final StandardUsernamePasswordCredentials credential = GithubScm.findUsernamePasswordCredential(credentialId);
 
         if(credential == null){
-            throw new ServiceException.BadRequestExpception("Invalid credentialId: "+credentialId);
+            String user = User.current() == null ? "anonymous" : User.current().getId();
+            throw new ServiceException.BadRequestExpception(String.format("Credential id: %s not found for user %s", credentialId, user));
         }
 
         String accessToken = credential.getPassword().getPlainText();
@@ -133,7 +134,11 @@ public class GithubScm extends Scm {
             return new Container<ScmOrganization>() {
                 @Override
                 public ScmOrganization get(String name) {
-                    return orgMap.get(name);
+                    ScmOrganization org = orgMap.get(name);
+                    if(org == null){
+                        throw new ServiceException.NotFoundException(String.format("GitHub organization %s not found", name));
+                    }
+                    return org;
                 }
 
                 @Override
@@ -336,6 +341,9 @@ public class GithubScm extends Scm {
     }
 
     private static @CheckForNull StandardUsernamePasswordCredentials findUsernamePasswordCredential(String id){
+        if(User.current() == null){
+            throw new ServiceException.UnauthorizedException("No authenticated user found. Please login");
+        }
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                         StandardUsernamePasswordCredentials.class,

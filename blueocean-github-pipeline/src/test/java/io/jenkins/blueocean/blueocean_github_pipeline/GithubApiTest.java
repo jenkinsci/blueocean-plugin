@@ -87,10 +87,6 @@ public class GithubApiTest extends PipelineBaseTest{
         SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
 
 
-        UserCredentialsProvider userCredentialsProvider = ExtensionList.lookup(CredentialsProvider.class).get(UserCredentialsProvider.class);
-        CredentialsStore userCredentialsProviderStore = userCredentialsProvider.getStore(bob);
-        userCredentialsProviderStore.addDomain(new Domain("domain1", null, null));
-
         //check credentialId of this SCM, should be null
         Map r = new RequestBuilder(baseUrl)
                 .data(ImmutableMap.of("accessToken", "..."))
@@ -115,14 +111,14 @@ public class GithubApiTest extends PipelineBaseTest{
         Map resp  = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
-                .get("/organizations/jenkins/scm/github/organizations/stapler/repositories/?credentialId="+credentialId)
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId="+credentialId+"&pageSize=10&pageNumber=3")
                 .header(Scm.X_CREDENTIAL_ID, credentialId+"sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(Map.class);
 
-        resp  = new RequestBuilder(baseUrl)
+            resp  = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
-                .get("/organizations/jenkins/scm/github/organizations/stapler/repositories/less/?credentialId="+credentialId)
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/game-of-life/?credentialId="+credentialId)
                 .header(Scm.X_CREDENTIAL_ID, credentialId+"sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(Map.class);
 
