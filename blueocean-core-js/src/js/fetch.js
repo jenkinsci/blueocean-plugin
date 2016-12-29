@@ -32,6 +32,7 @@ export const FetchFunctions = {
         }
         return response;
     },
+
     /**
      * This method checks for for 2XX http codes. Throws error it it is not.
      * This should only be used if not using fetch or fetchJson.
@@ -83,6 +84,23 @@ export const FetchFunctions = {
             throw error;
         });
     },
+
+    /* eslint-disable no-param-reassign */
+    /**
+     * Parses the response body for the error generated in checkStatus.
+     */
+    parseErrorJson(error) {
+        return error.response.json().then(
+            body => {
+                error.responseBody = body;
+                throw error;
+            },
+            () => {
+                error.responseBody = null;
+                throw error;
+            });
+    },
+    /* eslint-enable no-param-reassign */
 
      /**
      * Error function helper to log errors to console.
@@ -232,7 +250,6 @@ export const Fetch = {
      */
     fetch(url, { onSuccess, onError, fetchOptions } = {}) {
         let fixedUrl = url;
-
 
         if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
             fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;

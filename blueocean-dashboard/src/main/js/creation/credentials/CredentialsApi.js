@@ -1,7 +1,6 @@
-/**
- * Created by cmeyers on 11/22/16.
- */
-import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import es6Promise from 'es6-promise'; es6Promise.polyfill();
+import { capabilityAugmenter, Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import TempUtils from '../TempUtils';
 
 export class CredentialsApi {
 
@@ -11,10 +10,33 @@ export class CredentialsApi {
 
     listAllCredentials() {
         const path = UrlConfig.getJenkinsRootURL();
-        const searchUrl = Utils.cleanSlashes(`${path}/blue/rest/search?q=type:credential`, false);
+        const searchUrl = TempUtils.cleanSlashes(`${path}/blue/rest/search?q=type:credential`, false);
 
         return this._fetch(searchUrl)
             .then(data => capabilityAugmenter.augmentCapabilities(data));
+    }
+
+    // eslint-disable-next-line no-unused-vars
+    saveSshKeyCredential(key) {
+        const credentialId = Math.random() * Number.MAX_SAFE_INTEGER;
+        const promise = new Promise(resolve => {
+            setTimeout(() => {
+                resolve({
+                    credentialId,
+                });
+            }, 2000);
+        });
+
+        return promise;
+    }
+
+    // eslint-disable-next-line no-unused-vars
+    saveUsernamePasswordCredential(username, password) {
+        return this.saveSshKeyCredential();
+    }
+
+    useSystemSshCredential() {
+        return this.saveSshKeyCredential();
     }
 
 }

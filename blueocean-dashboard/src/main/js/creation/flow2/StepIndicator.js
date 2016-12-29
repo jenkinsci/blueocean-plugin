@@ -1,6 +1,3 @@
-/**
- * Created by cmeyers on 10/17/16.
- */
 import React, { PropTypes } from 'react';
 import { StatusIndicator } from '@jenkins-cd/design-language';
 import status from './FlowStepStatus';

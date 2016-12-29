@@ -17,6 +17,13 @@ export default class ScmProvider {
     }
 
     /**
+     * Return a FlowManager subclass which will return the initial step to begin.
+     */
+    getFlowManager() {
+        throw new Error('must implement getFlowManager');
+    }
+
+    /**
      * Return a React element that composes MultiStepFlow with one or more child FlowStep elements.
      * Call props.onCompleteFlow to finish the flow.
      */

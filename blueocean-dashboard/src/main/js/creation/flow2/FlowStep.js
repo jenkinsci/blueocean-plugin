@@ -1,6 +1,3 @@
-/**
- * Created by cmeyers on 10/19/16.
- */
 import React, { PropTypes } from 'react';
 import VerticalStep from './VerticalStep';
 import status from './FlowStepStatus';
@@ -33,6 +30,4 @@ FlowStep.propTypes = {
     status: PropTypes.string,
     percentage: PropTypes.number,
     isLastStep: PropTypes.bool,
-    onCompleteStep: PropTypes.func,
-    onCompleteFlow: PropTypes.func,
 };
