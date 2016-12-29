@@ -5,7 +5,6 @@ import hudson.model.Cause;
 import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.impl.pipeline.OrganizationFolderPipelineImpl;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreateRequestImpl;
@@ -68,12 +67,12 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
             OrganizationFolder organizationFolder = (OrganizationFolder) item;
             organizationFolder.getNavigators().replace(gitHubSCMNavigator);
             organizationFolder.scheduleBuild(new Cause.UserIdCause());
-            return new OrganizationFolderPipelineImpl(organizationFolder, parent.getLink());
+            return new GithubOrganizationFolder(organizationFolder, parent.getLink());
         }
         return null;
     }
 
-    private void validateCredentialId(String credentialId, OrganizationFolder item, GitHubSCMNavigator navigator) throws IOException {
+     static void validateCredentialId(String credentialId, OrganizationFolder item, GitHubSCMNavigator navigator) throws IOException {
         if (credentialId != null && !credentialId.trim().isEmpty()) {
             StandardCredentials credentials = Connector.lookupScanCredentials(item, navigator.getApiUri(), credentialId);
             if (credentials == null) {

@@ -1,4 +1,4 @@
-
+// @flow
 
 /**
  * Trims duplicate forward slashes to a single slash and adds trailing slash if needed.
@@ -22,7 +22,7 @@ const cleanSlashes = (url, trailingSlash = true) => {
 
 export default {
     cleanSlashes,
-    clone(obj) {
+    clone(obj: Object) {
         return JSON.parse(JSON.stringify(obj));
     },
     windowOrGlobal() {

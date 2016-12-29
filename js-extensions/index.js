@@ -31,7 +31,7 @@ exports.componentType = require('./dist/ComponentTypeFilter.js').componentType;
 exports.init = function init(args) {
     exports.classMetadataStore.init(args.classMetadataProvider);
     exports.store.init({
-        extensionDataProvider: args.extensionDataProvider,
+        extensionData: args.extensionData,
         classMetadataStore: exports.classMetadataStore,
     });
 };

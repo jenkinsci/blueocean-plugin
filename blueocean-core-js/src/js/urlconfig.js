@@ -12,12 +12,12 @@ function loadConfig() {
         if (typeof blueOceanAppURL !== 'string') {
             blueOceanAppURL = '/';
         }
-          
+
         jenkinsRootURL = headElement.getAttribute('data-rooturl');
         loaded = true;
     } catch (error) {
         // eslint-disable-next-line no-console
-        console.warn('error reading attributes from document; urls will be empty');
+        console.warn('error reading attributes from document; urls will be empty', error);
 
         loaded = false;
     }
@@ -30,7 +30,7 @@ export default {
         }
         return jenkinsRootURL;
     },
-    
+
     getBlueOceanAppURL() {
         if (!loaded) {
             loadConfig();

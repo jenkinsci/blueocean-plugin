@@ -10,10 +10,10 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.0.0-b13-SNAPSHOT</version>
+  <version>1.0.0-b15-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Blue Ocean UI Parent</name>
+  <name>Blue Ocean Parent</name>
 
   <properties>
     <java.level>7</java.level>
@@ -98,6 +98,7 @@
 
   <modules>
     <module>blueocean-commons</module>
+    <module>blueocean-i18n</module>
     <module>blueocean-web</module>
     <module>blueocean-rest</module>
     <module>blueocean-rest-impl</module>
@@ -132,6 +133,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-i18n</artifactId>
             <version>${project.version}</version>
         </dependency>
 

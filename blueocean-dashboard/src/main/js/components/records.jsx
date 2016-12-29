@@ -65,6 +65,7 @@ export class RunRecord extends Record({
     state: null,
     type: null,
     commitId: null,
+    artifactsZipFile: null,
 }) {
     isQueued() {
         return this.state === 'QUEUED';
@@ -80,7 +81,10 @@ export class RunRecord extends Record({
     }
 
     getComputedResult() {
-        return this.isCompleted() ? this.result : this.state;
+        if (this.isCompleted()) {
+            return this.result;
+        }
+        return this.state;
     }
 }
 

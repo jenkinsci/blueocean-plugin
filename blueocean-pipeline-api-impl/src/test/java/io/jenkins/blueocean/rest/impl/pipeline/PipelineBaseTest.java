@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.logging.LogManager;
 
 import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
+import static org.junit.Assert.fail;
 
 /**
  * @author Vivek Pandey
@@ -557,4 +558,23 @@ public abstract class PipelineBaseTest{
         // tests that test token generation and validation
         return token;
     }
+
+    protected WorkflowJob scheduleAndFindBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
+        mp.scheduleBuild2(0).getFuture().get();
+        return findBranchProject(mp, name);
+    }
+
+    protected void scheduleAndFindBranchProject(WorkflowMultiBranchProject mp) throws Exception {
+        mp.scheduleBuild2(0).getFuture().get();
+    }
+
+    protected WorkflowJob findBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
+        WorkflowJob p = mp.getItem(name);
+        if (p == null) {
+            mp.getIndexing().writeWholeLogTo(System.out);
+            fail(name + " project not found");
+        }
+        return p;
+    }
+
 }

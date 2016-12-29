@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Queue;
 import io.jenkins.blueocean.rest.Navigable;
@@ -11,8 +10,6 @@ import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
-import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import jenkins.branch.OrganizationFolder;
@@ -22,6 +19,8 @@ import org.kohsuke.stapler.export.Exported;
 import java.util.Iterator;
 
 /**
+ * BlueOcean abstraction of {@link OrganizationFolder}
+ *
  * @author Vivek Pandey
  */
 public class OrganizationFolderPipelineImpl extends PipelineFolderImpl {
@@ -31,6 +30,11 @@ public class OrganizationFolderPipelineImpl extends PipelineFolderImpl {
         super(folder, parent);
         this.folder = folder;
 
+    }
+
+    @Exported
+    public String getIcon() {
+        return folder.getIcon().getImageOf("32x32");
     }
 
     @Navigable
@@ -50,26 +54,15 @@ public class OrganizationFolderPipelineImpl extends PipelineFolderImpl {
         return new OrganizationFolderRunContainerImpl(this, this).get(OrganizationFolderRunImpl.RUN_ID);
     }
 
-    @Extension(ordinal = 0)
-    public static class PipelineFactoryImpl extends BluePipelineFactory {
 
+    public abstract static class OrganizationFolderFactory extends PipelineFolderImpl.PipelineFactoryImpl {
+
+        protected abstract OrganizationFolderPipelineImpl getFolder(jenkins.branch.OrganizationFolder folder, Reachable parent);
+
+        @Override
         public OrganizationFolderPipelineImpl getPipeline(Item item, Reachable parent) {
-            return item instanceof OrganizationFolder ? new OrganizationFolderPipelineImpl((OrganizationFolder) item,
-                    parent.getLink()) : null;
-        }
-
-        public Resource resolve(Item context, Reachable parent, Item target) {
-            OrganizationFolderPipelineImpl folder = this.getPipeline(context, parent);
-            if (folder != null) {
-                if (context == target) {
-                    return folder;
-                }
-                Item nextChild = findNextStep(folder.folder, target);
-                for (BluePipelineFactory f : all()) {
-                    Resource answer = f.resolve(nextChild, folder, target);
-                    if (answer != null)
-                        return answer;
-                }
+            if (item instanceof jenkins.branch.OrganizationFolder) {
+                return getFolder((jenkins.branch.OrganizationFolder)item, parent);
             }
             return null;
         }

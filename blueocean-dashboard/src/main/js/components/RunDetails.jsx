@@ -6,18 +6,9 @@ import {
     PageTabs,
     TabLink,
 } from '@jenkins-cd/design-language';
-import { I18n, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
 import { Icon } from 'react-material-icons-blue';
-
-import {
-    actions,
-    currentRun as runSelector,
-    isMultiBranch as isMultiBranchSelector,
-    previous as previousSelector,
-    createSelector,
-    connect,
-} from '../redux';
 
 import {
     buildOrganizationUrl,
@@ -25,13 +16,17 @@ import {
     buildRunDetailsUrl,
     buildClassicConfigUrl,
 } from '../util/UrlUtils';
-
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import PageLoading from './PageLoading';
+import { Paths, capable, locationService } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
 import { User } from '@jenkins-cd/blueocean-core-js';
 
 const { func, object, any, string } = PropTypes;
+
+const { rest: RestPaths } = Paths;
 
 const classicConfigLink = (pipeline) => {
     let link = null;
@@ -46,8 +41,10 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const translate = I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.dashboard.Messages');
+const translate = i18nTranslator('blueocean-dashboard');
 
+
+@observer
 class RunDetails extends Component {
 
     componentWillMount() {
@@ -65,19 +62,19 @@ class RunDetails extends Component {
     }
 
     _fetchRun(props, storePreviousRoute) {
-        if (props.isMultiBranch === null) {
-            return; // multiple redux selectors haven't completed
-        }
+        this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE);
+
         if (this.context.config && this.context.params) {
-            props.fetchRun({
+            this.href = RestPaths.run({
                 organization: props.params.organization,
                 pipeline: props.params.pipeline,
-                branch: props.isMultiBranch && props.params.branch,
+                branch: this.isMultiBranch && props.params.branch,
                 runId: props.params.runId,
             });
 
+            this.context.activityService.fetchActivity(this.href, { useCache: true });
             if (storePreviousRoute) {
-                this.opener = props.previous;
+                this.opener = locationService.previous;
             }
         }
     }
@@ -119,17 +116,18 @@ class RunDetails extends Component {
         this.context.router.push(location);
     }
     render() {
+        const run = this.context.activityService.getActivity(this.href);
         // early out
         if (!this.context.params
-            || !this.props.run
-            || this.props.isMultiBranch === null) {
+            || !run) {
             return null;
         }
 
-        const { router, location, params } = this.context;
-        const { pipeline, run, setTitle, t, locale } = this.props;
 
-        if (run.$pending || pipeline.$pending) {
+        const { router, location, params } = this.context;
+        const { pipeline, setTitle, t, locale } = this.props;
+
+        if (!run || !pipeline) {
             return <PageLoading />;
         }
 
@@ -212,9 +210,9 @@ class RunDetails extends Component {
                 </ModalHeader>
                 <ModalBody>
                     <div>
-                        {run.$success && React.cloneElement(
+                        {run && React.cloneElement(
                             this.props.children,
-                            { locale: I18n.language, baseUrl, t: translate, result: currentRun, ...this.props }
+                            { locale: translate.lng, baseUrl, t: translate, result: currentRun, isMultiBranch: this.isMultiBranch, ...this.props }
                         )}
                     </div>
                 </ModalBody>
@@ -228,6 +226,7 @@ RunDetails.contextTypes = {
     params: object,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
+    activityService: object.isRequired,
 };
 
 RunDetails.propTypes = {
@@ -235,17 +234,11 @@ RunDetails.propTypes = {
     params: any,
     pipeline: object,
     run: object,
-    isMultiBranch: any,
-    fetchRun: func,
-    getPipeline: func,
     previous: string,
     setTitle: func,
     locale: string,
     t: func,
 };
 
-const selectors = createSelector(
-    [runSelector, isMultiBranchSelector, previousSelector],
-    (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
+export default RunDetails;
 
-export default connect(selectors, actions)(RunDetails);

@@ -9,9 +9,9 @@ import {
     ToastUtils,
 } from '../';
 import Security from '../security';
-import I18n from '../i18n/i18n';
+import i18nTranslator from '../i18n/i18n';
 
-const translate = I18n ? I18n.getFixedT(I18n.language, 'jenkins.plugins.blueocean.web.Messages') : function () { };
+const translate = i18nTranslator('blueocean-web');
 
 const { permit } = Security;
 
@@ -87,7 +87,8 @@ export class RunButton extends Component {
         const stopClass = this.state.stopping ? 'stopping' : '';
 
         const status = this.props.latestRun ? this.props.latestRun.state : '';
-        const runningStatus = status && (status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
+        const isPaused = status.toLowerCase() === 'paused';
+        const runningStatus = status && (isPaused || status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
 
         let showRunButton = this.props.buttonType === 'run-only' || (this.props.buttonType === 'toggle' && !runningStatus);
         let showStopButton = runningStatus && (this.props.buttonType === 'toggle' || this.props.buttonType === 'stop-only');
@@ -98,11 +99,15 @@ export class RunButton extends Component {
         const runLabel = this.props.runText || translate('toast.run', {
             defaultValue: 'Run',
         });
-        const stopLabel = this.state.stopping ? translate('toast.stopping', {
+        let stopLabel = this.state.stopping ? translate('toast.stopping', {
             defaultValue: 'Stopping ...',
         }) : translate('toast.stop', {
             defaultValue: 'Stop',
         });
+
+        if (isPaused && !this.state.stopping) {
+            stopLabel = translate('toast.abort', { defaultValue: 'Abort' });
+        }
 
         if (!showRunButton && !showStopButton) {
             return null;
