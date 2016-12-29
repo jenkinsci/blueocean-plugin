@@ -134,11 +134,16 @@ export default class GitConnectStep extends React.Component {
         if (this.state.selectedCredential) {
             this.props.manager.createPipeline(this.state.repositoryUrl, this.state.selectedCredential.id);
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
-            this.props.manager.createWithSshKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
+            this.props.credentialsManager.saveSshKeyCredential(this.state.sshKeyValue)
+                .then(response => this.props.manager.createPipeline(this.state.repositoryUrl, response.credentialId));
+            // this.props.manager.createWithSshKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
-            this.props.manager.createWithUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);
+            this.props.credentialsManager.saveUsernamePasswordCredential(this.state.usernameValue, this.state.passwordValue)
+                .then(response => this.props.manager.createPipeline(this.state.repositoryUrl, response.credentialId));
+            // this.props.manager.createWithUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);
         } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH) {
-            this.props.manager.createWithSystemSshCredential(this.state.repositoryUrl);
+            return;
+            // this.props.manager.createWithSystemSshCredential(this.state.repositoryUrl);
         }
 
         this.props.onCompleteStep();
