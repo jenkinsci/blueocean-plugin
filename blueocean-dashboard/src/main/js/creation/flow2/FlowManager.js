@@ -43,6 +43,12 @@ export default class FlowManager {
         this._stepsChanged();
     }
 
+    @action popStep() {
+        const step = this.activeSteps.pop();
+        this._stepsChanged();
+        return step;
+    }
+
     @action
     replaceCurrentStep(step) {
         this.activeSteps.splice(-1, 1, step);

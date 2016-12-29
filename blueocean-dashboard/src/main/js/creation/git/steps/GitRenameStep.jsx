@@ -27,11 +27,9 @@ export default class GitRenameStep extends React.Component {
     }
 
     render() {
-        const conflictName = 'PLACEHOLDER';
-
         return (
             <FlowStep {...this.props} title={this.title}>
-                <p>A pipeline with the same name "{conflictName}" already exists in the same folder. A unique name is required.</p>
+                <p>{this.props.pipelineError}. A unique name is required.</p>
 
                 <div className="rename-container">
                     <TextInput
@@ -50,4 +48,5 @@ export default class GitRenameStep extends React.Component {
 
 GitRenameStep.propTypes = {
     flowManager: PropTypes.string,
+    pipelineError: PropTypes.string,
 };

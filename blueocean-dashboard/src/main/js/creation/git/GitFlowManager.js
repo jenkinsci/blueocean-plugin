@@ -12,7 +12,11 @@ export default class GitFlowManger extends FlowManager {
     @observable
     creationStatus = null;
 
+    hasNameConflict = false;
+
     pipeline = null;
+
+    pipelineName = null;
 
     constructor(createApi, credentialsApi) {
         super();
@@ -39,7 +43,7 @@ export default class GitFlowManger extends FlowManager {
         this._setStatus(FlowStatus.CREATE_CREDS);
 
         return this._credentialsApi.saveSshKeyCredential(sshKey)
-            .then(credentialId => (
+            .then(({ credentialId }) => (
                     this.createPipeline(repositoryUrl, credentialId)
                 )
             );
@@ -47,12 +51,19 @@ export default class GitFlowManger extends FlowManager {
 
     // eslint-disable-next-line no-unused-vars
     createWithUsernamePasswordCredential(repositoryUrl, username, password) {
-        return this.createWithSshKeyCredential();
+        this._setStatus(FlowStatus.CREATE_CREDS);
+
+        return this._credentialsApi.saveUsernamePasswordCredential(username, password)
+            .then(({ credentialId }) => (
+                    this.createPipeline(repositoryUrl, credentialId)
+                )
+            );
     }
 
     // eslint-disable-next-line no-unused-vars
     createWithSystemSshCredential(repositoryUrl) {
-        return this.createWithSshKeyCredential();
+        return;
+        // return this.createWithSshKeyCredential();
     }
 
     createPipeline(repositoryUrl, credentialId) {
@@ -87,10 +98,18 @@ export default class GitFlowManger extends FlowManager {
     }
 
     @action
-    _pipelineError() {
+    _pipelineError(error) {
+        const { responseBody } = error;
+
         this._setStatus(FlowStatus.NAME_CONFLICT);
-        this.replaceCurrentStep(<GitRenameStep />);
+
+        if (this.hasNameConflict) {
+            this.popStep();
+        }
+
+        this.replaceCurrentStep(<GitRenameStep pipelineError={responseBody.message} />);
         this.setPendingSteps(['Completed']);
+        this.hasNameConflict = true;
     }
 
 }
