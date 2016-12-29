@@ -12,12 +12,4 @@ export class CredentialsManager {
         return this._api.listAllCredentials();
     }
 
-    saveUsernamePasswordCredential(username, password) {
-        return this._api.saveUsernamePasswordCredential(username, password);
-    }
-
-    saveSshKeyCredential(privateKey) {
-        return this._api.saveSshKeyCredential(privateKey);
-    }
-
 }
