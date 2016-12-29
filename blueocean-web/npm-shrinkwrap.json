@@ -25,9 +25,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.94",
-      "from": "@jenkins-cd/design-language@0.0.94",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.94.tgz"
+      "version": "0.0.96",
+      "from": "@jenkins-cd/design-language@0.0.96",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.96.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -55,6 +55,11 @@
       "version": "0.0.8",
       "from": "@jenkins-cd/js-modules@0.0.8",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.8.tgz"
+    },
+    "@jenkins-cd/react-material-icons": {
+      "version": "1.0.0",
+      "from": "@jenkins-cd/react-material-icons@1.0.0",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
       "version": "0.0.10",
