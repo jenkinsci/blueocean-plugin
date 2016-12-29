@@ -150,7 +150,7 @@ export const FetchFunctions = {
                 future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                     .then(FetchFunctions.checkRefreshHeader)
                     .then(FetchFunctions.checkStatus)
-                    .then(FetchFunctions.parseJSON);
+                    .then(FetchFunctions.parseJSON, FetchFunctions.parseErrorJson);
             }
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
