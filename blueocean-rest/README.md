@@ -1966,58 +1966,91 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
 ````
 curl -XGET -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/organizations/?credentialId=github
 
-[
-   {
-      "_links" : {
-         "self" : {
-            "_class" : "io.jenkins.blueocean.rest.hal.Link",
-            "href" : "/organizations/jenkins/scm/github/organizations/jenkinsci/"
-         }
-      },
-      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
-      "id" : "jenkinsci"
-   },
-   {
-      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
-      "id" : "stapler",
-      "_links" : {
-         "self" : {
-            "href" : "/organizations/jenkins/scm/github/organizations/stapler/",
-            "_class" : "io.jenkins.blueocean.rest.hal.Link"
-         }
-      }
-   },
-   {
-      "_links" : {
-         "self" : {
-            "_class" : "io.jenkins.blueocean.rest.hal.Link",
-            "href" : "/organizations/jenkins/scm/github/organizations/CloudBees-community/"
-         }
-      },
-      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
-      "id" : "CloudBees-community"
-   },
-   {
-      "_links" : {
-         "self" : {
-            "_class" : "io.jenkins.blueocean.rest.hal.Link",
-            "href" : "/organizations/jenkins/scm/github/organizations/cloudbees/"
-         }
-      },
-      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
-      "id" : "cloudbees"
-   },
-   {
-      "_links" : {
-         "self" : {
-            "_class" : "io.jenkins.blueocean.rest.hal.Link",
-            "href" : "/organizations/jenkins/scm/github/organizations/jruby/"
-         }
-      },
-      "id" : "jruby",
-      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization"
-   }
-]
+[ {
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
+  "_links" : {
+    "repositories" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/jenkinsci/repositories/"
+    },
+    "self" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/jenkinsci/"
+    }
+  },
+  "jenkinsOrganizationPipeline" : false,
+  "name" : "jenkinsci"
+}, {
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
+  "_links" : {
+    "repositories" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/"
+    },
+    "self" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/CloudBees-community/"
+    }
+  },
+  "jenkinsOrganizationPipeline" : false,
+  "name" : "CloudBees-community"
+}, {
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
+  "_links" : {
+    "repositories" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/cloudbees/repositories/"
+    },
+    "self" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/cloudbees/"
+    }
+  },
+  "jenkinsOrganizationPipeline" : false,
+  "name" : "cloudbees"
+}, {
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubUserOrganization",
+  "_links" : {
+    "repositories" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/vivek/repositories/"
+    },
+    "self" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/vivek/"
+    }
+  },
+  "jenkinsOrganizationPipeline" : false,
+  "name" : "vivek"
+}, {
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
+  "_links" : {
+    "repositories" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/stapler/repositories/"
+    },
+    "self" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/stapler/"
+    }
+  },
+  "jenkinsOrganizationPipeline" : false,
+  "name" : "stapler"
+}, {
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
+  "_links" : {
+    "repositories" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/jruby/repositories/"
+    },
+    "self" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/organizations/jruby/"
+    }
+  },
+  "jenkinsOrganizationPipeline" : false,
+  "name" : "jruby"
+} ]
 ````
 
 ## Repositories API

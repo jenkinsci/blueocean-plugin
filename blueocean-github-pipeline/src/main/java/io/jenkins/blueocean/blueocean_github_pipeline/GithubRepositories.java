@@ -1,8 +1,10 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
@@ -29,13 +31,13 @@ public class GithubRepositories extends ScmRepositories {
     private final Integer nextPage;
     private final Integer lastPage;
     private final int pageSize;
-    private final GithubOrganization githubOrganization;
+    private final StandardUsernamePasswordCredentials credential;
 
 
-    public GithubRepositories(GithubOrganization parent) {
-        this.githubOrganization = parent;
+    public GithubRepositories(StandardUsernamePasswordCredentials credentials, String orgUrl, Reachable parent) {
         this.self = parent.getLink().rel("repositories");
-        this.accessToken = parent.getCredential().getPassword().getPlainText();
+        this.accessToken = credentials.getPassword().getPlainText();
+        this.credential = credentials;
 
         StaplerRequest request = Stapler.getCurrentRequest();
         int pageNumber = 0;
@@ -56,7 +58,7 @@ public class GithubRepositories extends ScmRepositories {
 
             HttpURLConnection connection = null;
             connection = GithubScm.connect(String.format("%s/repos?per_page=%s&page=%s",
-                    parent.getGHOrganization().getUrl(),
+                    orgUrl,
                     pageSize, pageNumber), accessToken);
             this.repositories = JsonConverter.toJava(IOUtils.toString(connection.getInputStream()), GHRepository[].class);
 
@@ -108,7 +110,7 @@ public class GithubRepositories extends ScmRepositories {
         return Lists.transform(Arrays.asList(repositories), new com.google.common.base.Function<GHRepository, ScmRepository>() {
             @Override
             public ScmRepository apply(@Nullable GHRepository input) {
-                return new GithubRepository(input, accessToken, GithubRepositories.this);
+                return new GithubRepository(input, credential, GithubRepositories.this);
             }
         });
     }

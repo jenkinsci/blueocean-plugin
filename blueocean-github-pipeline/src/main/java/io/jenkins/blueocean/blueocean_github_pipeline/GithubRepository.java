@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.collect.ImmutableMap;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -15,12 +16,12 @@ import java.util.Map;
 public class GithubRepository extends ScmRepository {
     private final GHRepository ghRepository;
 
-    private final String accessToken;
+    private final StandardUsernamePasswordCredentials credentials;
     private final Link self;
 
-    public GithubRepository(GHRepository ghRepository, String accessToken, Reachable parent) {
+    public GithubRepository(GHRepository ghRepository, StandardUsernamePasswordCredentials credentials, Reachable parent) {
         this.ghRepository = ghRepository;
-        this.accessToken = accessToken;
+        this.credentials = credentials;
         this.self = parent.getLink().rel(ghRepository.getName());
     }
 

@@ -13,11 +13,15 @@ import org.kohsuke.stapler.export.Exported;
  * @author Vivek Pandey
  */
 public abstract class ScmOrganization extends Resource{
-    public static final String ID="id";
+    public static final String NAME ="name";
+    private static final String IS_JENKINS_ORG_PIPELINE = "jenkinsOrganizationPipeline";
 
     /** organization id */
-    @Exported(name = ID)
-    public abstract String getId();
+    @Exported(name = NAME)
+    public abstract String getName();
+
+    @Exported(name = IS_JENKINS_ORG_PIPELINE)
+    public abstract boolean isJenkinsOrganizationPipeline();
 
     /** SCM repositories */
     @Navigable

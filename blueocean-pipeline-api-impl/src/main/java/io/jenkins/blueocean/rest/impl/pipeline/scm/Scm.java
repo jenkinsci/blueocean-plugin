@@ -25,7 +25,7 @@ public abstract class Scm extends Resource {
     public static final String CREDENTIAL_ID = "credentialId";
     public static final String VALIDATE = "validate";
 
-    public static final String X_CREDENTIAL_ID = "X-CREDENTIAL-ID";
+    public static final String X_CREDENTIAL_ID = "X-CREDENTIAL-NAME";
 
 
     /** SCM id. For example, github, bitbucket etc. */
@@ -46,9 +46,9 @@ public abstract class Scm extends Resource {
     /**
      * Pageable list of {@link ScmOrganization}s.
      *
-     * Credential Id to use with github must be provided either as credentialId query parameter or as X-CREDENTIAL-ID http header.
+     * Credential Id to use with github must be provided either as credentialId query parameter or as X-CREDENTIAL-NAME http header.
      *
-     * credentialId query parameter overrides X-CREDENTIAL-ID http header.
+     * credentialId query parameter overrides X-CREDENTIAL-NAME http header.
      *
      * @return {@link Pageable} {@link ScmOrganization}s.
      */

@@ -14,9 +14,7 @@ import com.cloudbees.plugins.credentials.domains.PathSpecification;
 import com.cloudbees.plugins.credentials.domains.SchemeSpecification;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.tasks.Mailer;
@@ -32,6 +30,7 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
@@ -46,7 +45,6 @@ import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -55,7 +53,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -125,16 +125,23 @@ public class GithubScm extends Scm {
 
             final Link link = getLink().rel("organizations");
 
-            final Map<String, ScmOrganization> orgMap = Maps.transformValues(github.getMyOrganizations(), new Function<GHOrganization, ScmOrganization>() {
-                @Override
-                public ScmOrganization apply(@Nullable GHOrganization input) {
-                    return new GithubOrganization(GithubScm.this, input, credential, link);
-                }
-            });
+            Map<String, ScmOrganization> orgMap = new LinkedHashMap<>(); // preserve the same order that github org api returns
+
+            for(Map.Entry<String, GHOrganization> entry: github.getMyOrganizations().entrySet()){
+                    orgMap.put(entry.getKey(),
+                            new GithubOrganization(GithubScm.this, entry.getValue(), credential, link));
+            }
+
+            GHMyself user = github.getMyself();
+            if(orgMap.get(user.getLogin()) == null){ //this is to take care of case if/when github starts reporting user login as org later on
+                orgMap = new HashMap<>(orgMap);
+                orgMap.put(user.getLogin(), new GithubUserOrganization(user, credential, this));
+            }
+            final Map<String, ScmOrganization> orgs = orgMap;
             return new Container<ScmOrganization>() {
                 @Override
                 public ScmOrganization get(String name) {
-                    ScmOrganization org = orgMap.get(name);
+                    ScmOrganization org = orgs.get(name);
                     if(org == null){
                         throw new ServiceException.NotFoundException(String.format("GitHub organization %s not found", name));
                     }
@@ -148,7 +155,7 @@ public class GithubScm extends Scm {
 
                 @Override
                 public Iterator<ScmOrganization> iterator() {
-                    return orgMap.values().iterator();
+                    return orgs.values().iterator();
                 }
             };
         } catch (IOException e) {

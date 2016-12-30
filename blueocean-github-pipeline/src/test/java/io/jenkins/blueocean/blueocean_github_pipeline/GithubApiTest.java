@@ -115,12 +115,21 @@ public class GithubApiTest extends PipelineBaseTest{
                 .header(Scm.X_CREDENTIAL_ID, credentialId+"sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(Map.class);
 
-            resp  = new RequestBuilder(baseUrl)
+     resp  = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/game-of-life/?credentialId="+credentialId)
                 .header(Scm.X_CREDENTIAL_ID, credentialId+"sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(Map.class);
+
+
+        resp  = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .get("/organizations/jenkins/scm/github/organizations/vivek/repositories/stapler/?credentialId="+credentialId)
+                .header(Scm.X_CREDENTIAL_ID, credentialId+"sdsdsd") //it must be ignored as credentialId query parameter overrides it.
+                .build(Map.class);
+
 
         //TODO: add more tests once there is test githuhb account
     }
