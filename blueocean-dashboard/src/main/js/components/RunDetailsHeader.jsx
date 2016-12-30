@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 import { ExpandablePath, ReadableDate, LiveStatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import moment from 'moment';

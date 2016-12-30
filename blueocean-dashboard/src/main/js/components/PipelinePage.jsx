@@ -6,12 +6,12 @@ import {
     Page,
     PageHeader,
     Title,
-    PageTabs,
+    PageTabsOld,
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
 import { i18nTranslator, NotFound, User, Paths } from '@jenkins-cd/blueocean-core-js';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
@@ -102,11 +102,11 @@ export class PipelinePage extends Component {
                     </Title>
                     }
 
-                    <PageTabs base={baseUrl}>
+                    <PageTabsOld base={baseUrl}>
                         <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>
                         <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' }) }</TabLink>
                         <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>
-                    </PageTabs>
+                    </PageTabsOld>
                 </PageHeader>
                 {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: translate.lng })}
             </Page>

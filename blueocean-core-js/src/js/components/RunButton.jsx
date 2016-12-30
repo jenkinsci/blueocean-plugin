@@ -2,7 +2,7 @@
  * Created by cmeyers on 8/26/16.
  */
 import React, { Component, PropTypes } from 'react';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 import {
     RunApi as runApi,
     ToastService as toastService,

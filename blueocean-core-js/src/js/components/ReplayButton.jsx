@@ -3,7 +3,7 @@
  */
 
 import React, { Component, PropTypes } from 'react';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 import { capable, RunApi as runApi, ToastUtils } from '../index';
 import Security from '../security';

@@ -3,7 +3,7 @@
  */
 import React, { PropTypes } from 'react';
 import { BasicDialog, DialogContent } from '@jenkins-cd/design-language';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
