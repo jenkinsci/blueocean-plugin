@@ -2,7 +2,7 @@ package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.google.common.collect.ImmutableMap;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
+import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.junit.Assert;
 import org.junit.Before;

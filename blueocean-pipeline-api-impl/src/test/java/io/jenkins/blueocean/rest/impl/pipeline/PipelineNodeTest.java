@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hudson.model.Result;
 import hudson.model.queue.QueueTaskFuture;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
+import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import jenkins.branch.BranchSource;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
