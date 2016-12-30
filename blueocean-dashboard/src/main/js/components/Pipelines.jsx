@@ -45,7 +45,6 @@ export class Pipelines extends Component {
         const orgLink = organization ?
             <Link
               to={`organizations/${organization}`}
-              className="inverse"
               query={location.query}
             >
                 {organization}
@@ -67,7 +66,6 @@ export class Pipelines extends Component {
                             <Link
                               to="/"
                               query={location.query}
-                              className="inverse"
                             >
                                 { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
                             </Link>
