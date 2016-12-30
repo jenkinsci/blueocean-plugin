@@ -510,16 +510,18 @@ public abstract class PipelineBaseTest{
 
                 }
                 request.header("Accept-Encoding","");
-                if(token == null) {
-                    request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
+                if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
+                    request.basicAuth(username, password);
                 }else{
-                    request.header("Authorization", "Bearer " + token);
+                    if (token == null) {
+                        request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
+                    }else{
+                        request.header("Authorization", "Bearer " + token);
+                    }
                 }
 
                 request.header("Content-Type", contentType);
-                if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
-                    request.basicAuth(username, password);
-                }
+
 
                 if(request instanceof HttpRequestWithBody && data != null) {
                     ((HttpRequestWithBody)request).body(data);

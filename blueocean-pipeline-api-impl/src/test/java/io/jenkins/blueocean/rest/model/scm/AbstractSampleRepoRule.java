@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package io.jenkins.blueocean.rest.impl.pipeline.scm;
+package io.jenkins.blueocean.rest.model.scm;
 
 import hudson.triggers.SCMTrigger;
 import org.junit.Assert;

@@ -128,5 +128,4 @@ public class OrganizationImpl extends BlueOrganization {
     private boolean isExportedBean(Class clz){
         return clz.getAnnotation(ExportedBean.class) != null;
     }
-
 }
