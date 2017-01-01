@@ -7,6 +7,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.HttpResponse;
@@ -101,7 +102,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return PipelineImpl.getActionProxies(node.getNode().getAllActions(), this);
+        return ActionProxiesImpl.getActionProxies(node.getNode().getAllActions(), this);
     }
 
     @Override
