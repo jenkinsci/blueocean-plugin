@@ -20,9 +20,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.96",
-      "from": "@jenkins-cd/design-language@0.0.96",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.96.tgz"
+      "version": "0.0.97",
+      "from": "@jenkins-cd/design-language@0.0.97",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.97.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -5729,9 +5729,9 @@
       "dev": true
     },
     "nan": {
-      "version": "2.4.0",
+      "version": "2.5.0",
       "from": "nan@>=2.3.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/nan/-/nan-2.4.0.tgz",
+      "resolved": "https://registry.npmjs.org/nan/-/nan-2.5.0.tgz",
       "dev": true,
       "optional": true
     },

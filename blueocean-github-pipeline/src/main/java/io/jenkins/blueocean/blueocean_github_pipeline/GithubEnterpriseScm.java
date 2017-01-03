@@ -19,12 +19,12 @@ public class GithubEnterpriseScm extends GithubScm {
     }
 
     @Override
-    public String getId() {
+    public @Nonnull String getId() {
         return ID;
     }
 
     @Override
-    public String getUri() {
+    public @Nonnull String getUri() {
         return super.getUri()+DEFAULT_ENTERPRISE_API_SUFFIX;
     }
 
