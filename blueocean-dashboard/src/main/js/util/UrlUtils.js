@@ -1,24 +1,4 @@
 /**
- * Return a new array with leading and trailing whitespace elements removed.
- *
- * @param {Array} tokens
- * @returns {Array}
- */
-function trimEmptyTokens(tokens) {
-    const copy = tokens.slice();
-
-    if (copy[0] === '') {
-        copy.shift();
-    }
-
-    if (copy[copy.length - 1] === '') {
-        copy.pop();
-    }
-
-    return copy;
-}
-
-/**
  * Build a root-relative URL to the organization's pipeline list screen.
  * @param organization
  */
@@ -62,25 +42,6 @@ export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabNam
         `${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
-
-/**
- * Test a URL to see if it looks like a Run Details URL.
- * @param {string} url
- */
-export function isRunDetailsUrl(url) {
-    const tokens = url ? trimEmptyTokens(url.split('/')) : null;
-
-    if (tokens) {
-        // this logic may not be perfect but it's probably close enough
-        return tokens[0] === 'organizations' &&
-            tokens[3] === 'detail' &&
-            !isNaN(parseInt(tokens[5], 0)) &&
-                tokens.length >= 6 &&
-                tokens.length <= 7;
-    }
-
-    return false;
-}
 
 /*
  * helper to clean the path replace(/%2F/g, '%252F')

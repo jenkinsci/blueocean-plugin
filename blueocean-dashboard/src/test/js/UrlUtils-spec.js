@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 
 import {
-    buildOrganizationUrl, buildPipelineUrl, buildRunDetailsUrl, isRunDetailsUrl,
+    buildOrganizationUrl, buildPipelineUrl, buildRunDetailsUrl,
     calculateRunLogURLObject, calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl,
     buildClassicConfigUrl,
 } from '../../main/js/util/UrlUtils';
@@ -77,46 +77,6 @@ describe('UrlUtils', () => {
             assert.equal(url, '/organizations/jenkins/blueocean/detail/feature%2FJENKINS-666/1/changes');
         });
     });
-
-    describe('isRunDetailsUrl', () => {
-        it('should match for a simple freestyle project URL format', () => {
-            const url = '/organizations/jenkins/freestyle-1/detail/freestyle-1/25/';
-            assert.isTrue(isRunDetailsUrl(url));
-        });
-
-        it('should match for nested multi-branch pipeline using gitflow naming', () => {
-            const url = buildRunDetailsUrl(
-                'jenkins',
-                'blueocean/blueocean-plugin',
-                'feature/JENKINS-666',
-                1
-            );
-
-            assert.isTrue(isRunDetailsUrl(url));
-        });
-
-        it('should match for nested multi-branch pipeline using gitflow naming and tab name', () => {
-            const url = buildRunDetailsUrl(
-                'jenkins',
-                'blueocean/blueocean-plugin',
-                'feature/JENKINS-666',
-                1,
-                'changes'
-            );
-
-            assert.isTrue(isRunDetailsUrl(url));
-        });
-        it('should fail for project activity URL', () => {
-            const url = buildPipelineUrl(
-                'jenkins',
-                'blueocean/blueocean-plugin',
-                'activity'
-            );
-
-            assert.isFalse(isRunDetailsUrl(url));
-        });
-    });
-
     describe('calculate log url', () => {
         it('should build the logUrl with only url set', () => {
             const testUrl = '/some/thing/';
