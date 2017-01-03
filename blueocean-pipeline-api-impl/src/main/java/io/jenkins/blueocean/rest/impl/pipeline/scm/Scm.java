@@ -1,6 +1,9 @@
 package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
+import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.rest.pageable.Pageable;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.WebMethod;
@@ -22,6 +25,9 @@ public abstract class Scm extends Resource {
     public static final String CREDENTIAL_ID = "credentialId";
     public static final String VALIDATE = "validate";
 
+    public static final String X_CREDENTIAL_ID = "X-CREDENTIAL-NAME";
+
+
     /** SCM id. For example, github, bitbucket etc. */
     @Exported(name = ID)
     public abstract @Nonnull String getId();
@@ -30,8 +36,24 @@ public abstract class Scm extends Resource {
     @Exported(name = URI)
     public abstract @Nonnull String getUri();
 
+    /** credentialId attached to this scm */
     @Exported(name = CREDENTIAL_ID)
-    public abstract String getCredentialId();
+    public abstract @CheckForNull String getCredentialId();
+
+    /**
+     * Pageable list of {@link ScmOrganization}s.
+     */
+    /**
+     * Pageable list of {@link ScmOrganization}s.
+     *
+     * Credential Id to use with github must be provided either as credentialId query parameter or as X-CREDENTIAL-NAME http header.
+     *
+     * credentialId query parameter overrides X-CREDENTIAL-NAME http header.
+     *
+     * @return {@link Pageable} {@link ScmOrganization}s.
+     */
+    @Navigable
+    public abstract Container<ScmOrganization> getOrganizations();
 
     /**
      * Validate given accessToken for authentication and authorization.
