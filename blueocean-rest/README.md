@@ -76,6 +76,9 @@
   - [Download a log for a Pipeline run](#download-a-log-for-a-pipeline-run)
   - [Get log for a Pipeline run](#get-log-for-a-pipeline-run)
   - [Get log for a Pipeline step](#get-log-for-a-pipeline-step)
+- [SCM API](#scm-api)
+  - [Validate Github personal access token](#validate-github-personal-access-token)
+  - [Check SCM for available credentialId to use:](#check-scm-for-available-credentialid-to-use)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1900,3 +1903,51 @@ This will show up as a download in the browser.
     GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/13/steps/21/log/
     
     Unit testing...
+
+# SCM API
+
+## Validate Github personal access token
+
+This API does the following:
+
+- Calls SCM provider API, for example GitHub API, to validate the token as well as look for appropriate scopes (in case of GitHub its repo and user:email). It picks up SCM provider from URL path (../scm/:id/validate)
+- If the token is valid 
+  - Look for domain 'github-domain' with github api url specifications in authenticated user's  credential store. If its not found then a new one is created. 
+  - If the token is valid and there is no Jenkins credentials found with id 'github' in authenticated user scoped domain 'github-domain' then this new credential is created.
+  - If there exists a Jenkins credentials with authenticated user scope, in user scope domain named 'github-domain' and credentialId == scm id 'github', then this credential is updated with the given token. SCM id is picked from URL path (../scm/:id/validate).
+  - HTTP response with credentialId and status 200 is returned
+- If the token is not valid for any reason then 403 error is returned with cause of validation failure.
+
+eg: 
+
+```
+curl -v -u admin:admin -d '{"accessToken": boo"}' -H "Content-Type:application/json" -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/validate 
+```
+
+Response:
+
+````
+{
+  "credentialId" : "github"
+}
+````
+If invalid/forbidden/unauthorized 403 error is returned. For bad request 400.
+
+## Check SCM for available credentialId to use:
+
+````
+curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/
+
+{
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubScm",
+  "_links" : {
+    "self" : {
+      "_class" : "io.jenkins.blueocean.rest.hal.Link",
+      "href" : "/organizations/jenkins/scm/github/"
+    }
+  },
+  "credentialId" : ".....",
+  "id" : "github",
+  "uri" : "https://api.github.com"
+}
+````

@@ -66,7 +66,6 @@ public abstract class BlueExtensionClassContainer implements ApiRoutable, Extens
     public String getUrlName() {
         return "classes";
     }
-
 }
 
 

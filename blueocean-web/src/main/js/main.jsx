@@ -22,12 +22,12 @@ function loginOrLogout(t) {
     if (Security.isSecurityEnabled()) {
         if (Security.isAnonymousUser()) {
             const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
-            return (<a href={loginUrl} className="btn-primary inverse small">{t('login', {
+            return (<a href={loginUrl} className="btn-link">{t('login', {
                 defaultValue: 'login',
             })}</a>);
         } else {
             const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
-            return (<a href={logoutUrl} className="btn-secondary inverse small">{t('logout', {
+            return (<a href={logoutUrl} className="btn-link">{t('logout', {
                 defaultValue: 'logout',
             })}</a>);
         }
@@ -60,7 +60,7 @@ class App extends Component {
                             <Link query={location.query} to="/pipelines">{pipeCaption}</Link>
                             <a href="#">{adminCaption}</a>
                         </nav>
-                        <div className="button-bar">
+                        <div className="button-bar layout-small inverse">
                             { loginOrLogout(translate) }
                         </div>
                     </div>

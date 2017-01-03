@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, FileSize, Table } from '@jenkins-cd/design-language';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
@@ -88,7 +88,7 @@ export default class RunDetailsArtifacts extends Component {
         }
         const { artifactsZipFile: zipFile } = result;
         const artifacts = this.artifacts.value;
-       
+
         if (!artifacts || !artifacts.length) {
             return (<EmptyStateView tightSpacing>
                 <Markdown>

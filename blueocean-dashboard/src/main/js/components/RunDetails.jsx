@@ -3,12 +3,12 @@ import {
     ModalView,
     ModalBody,
     ModalHeader,
-    PageTabs,
+    PageTabsOld,
     TabLink,
 } from '@jenkins-cd/design-language';
 import { i18nTranslator, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 import {
     buildOrganizationUrl,
@@ -174,7 +174,7 @@ class RunDetails extends Component {
                           onNameClick={() => this.navigateToPipeline()}
                           onAuthorsClick={() => this.navigateToChanges()}
                         />
-                        <PageTabs base={baseUrl}>
+                        <PageTabsOld base={baseUrl}>
                             <TabLink to="/pipeline">{t('rundetail.header.tab.pipeline', {
                                 defaultValue: 'Pipeline',
                             })}</TabLink>
@@ -187,7 +187,7 @@ class RunDetails extends Component {
                             <TabLink to="/artifacts">{t('rundetail.header.tab.artifacts', {
                                 defaultValue: 'Artifacts',
                             })}</TabLink>
-                        </PageTabs>
+                        </PageTabsOld>
 
                         <div className="button-bar">
                             <ReplayButton

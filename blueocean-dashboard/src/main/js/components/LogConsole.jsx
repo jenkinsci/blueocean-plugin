@@ -134,7 +134,7 @@ export class LogConsole extends Component {
                 { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
                     <a
                       target="_blank"
-                      className="btn-secondary inverse"
+                      className="btn-link inverse"
                       key={0}
                       href={logUrl}
                     >
