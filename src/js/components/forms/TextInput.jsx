@@ -6,7 +6,7 @@ export class TextInput extends React.Component {
     render() {
         return (
             <TextControl {...this.props} className={`TextInput ${this.props.className}`}>
-                <input type="text" className="TextInput-control"/>
+                <input type="text" className="TextInput-control" { ...{ name: this.props.name } } />
             </TextControl>
         );
     }
@@ -15,6 +15,7 @@ export class TextInput extends React.Component {
 
 TextInput.propTypes = {
     className: PropTypes.string,
+    name: PropTypes.string,
     placeholder: PropTypes.string,
     defaultValue: PropTypes.string,
     disabled: PropTypes.bool,

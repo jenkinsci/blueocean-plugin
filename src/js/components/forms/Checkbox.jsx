@@ -63,6 +63,7 @@ export class Checkbox extends Component {
                        onClick={(event) => event.stopPropagation()}
                 >
                     <input type="checkbox"
+                           { ...{ name: this.props.name } }
                            onChange={this._toggle.bind(this)}
                            checked={this.state.checked}
                            disabled={this.props.disabled}
@@ -88,6 +89,7 @@ Checkbox.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
     label: PropTypes.string,
+    name: PropTypes.string,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
     onToggle: PropTypes.func

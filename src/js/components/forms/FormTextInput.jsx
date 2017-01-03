@@ -40,15 +40,17 @@ export class FormTextInput extends React.Component {
     }
 
     render() {
+        const { placeholder, defaultValue, name } = this.props;
         return (
             <FormElement title={this.props.title} errorMessage={this.state.errorMessage}>
-                <TextInput
-                  ref={input => this.input = input}
-                  placeholder={this.props.placeholder}
-                  defaultValue={this.props.defaultValue}
-                  onChange={this._onChange}
-                  onBlur={() => this._onBlur()}
-                />
+                <TextInput { ...{
+                    onBlur: () => this._onBlur(),
+                    onChange: this._onChange,
+                    ref: input => this.input = input,
+                    defaultValue,
+                    name,
+                    placeholder,
+                }}/>
             </FormElement>
         );
     }
@@ -58,6 +60,7 @@ export class FormTextInput extends React.Component {
 FormTextInput.propTypes = {
     className: PropTypes.string,
     title: PropTypes.string,
+    name: PropTypes.string,
     placeholder: PropTypes.string,
     defaultValue: PropTypes.string,
     onChange: PropTypes.string,
