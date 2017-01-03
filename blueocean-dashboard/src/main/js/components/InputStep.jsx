@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import isoFetch from 'isomorphic-fetch';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+// import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import { supportedInputTypesMapping } from './parameter/index';
 
 /**
@@ -14,7 +14,7 @@ const stopProp = (event) => {
 /**
  * Translate function
  */
-const translate = i18nTranslator('blueocean-dashboard');
+// const translate = i18nTranslator('blueocean-dashboard');
 
 /**
  * Creating a "<form/>"less form to submit the input parameters requested by the user in pipeline.
@@ -148,8 +148,11 @@ export default class InputStep extends Component {
 
         // console.log('state', this.state);
         // console.log('stateToFormSubmit', this.stateParametersToArray());
-
-        const cancelCaption = translate('rundetail.input.cancel');
+        // the cancel button should not be shown for now
+        // const cancelCaption = translate('rundetail.input.cancel');
+        // const cancelButton =  <a title={cancelCaption} onClick={() => this.cancelForm()} className="btn inverse inputStepCancel" >
+       //             <span className="button-label">{cancelCaption}</span>
+       //         </a>;
         return (<div className="inputStep">
             <h3>{message}</h3>
             <div className="inputBody">
@@ -169,9 +172,7 @@ export default class InputStep extends Component {
                 }
             </div>
             <div onClick={(event => stopProp(event))} className="inputControl">
-                <a title={cancelCaption} onClick={() => this.cancelForm()} className="btn inverse inputStepCancel" >
-                    <span className="button-label">{cancelCaption}</span>
-                </a>
+                <span>&nbsp;</span>
                 <a title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
                     <span className="button-label">{ok}</span>
                 </a>
