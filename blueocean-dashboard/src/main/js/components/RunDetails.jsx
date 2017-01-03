@@ -14,6 +14,7 @@ import {
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
+    isRunDetailsUrl,
     buildClassicConfigUrl,
 } from '../util/UrlUtils';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
@@ -115,6 +116,19 @@ class RunDetails extends Component {
         location.pathname = changesUrl;
         this.context.router.push(location);
     }
+    navigateAfterClose() {
+        const { router, location, params } = this.context;
+        const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
+        // sometimes the opener can be a run details URL: use the fallback URL instead
+        location.pathname = !isRunDetailsUrl(this.opener) ? this.opener : fallbackUrl;
+        /*
+        FIXME: reset query when you go back, we may want to store the whole location object in previous so we have a perfect prev.
+        this.opener would then be location and we the above location = this.opener || {pathname: fallbackUrl]
+        */
+        location.query = null;
+        console.log('modal closed; navigating to: ', location.pathname);
+        router.push(location);
+    }
     render() {
         const run = this.context.activityService.getActivity(this.href);
         // early out
@@ -122,7 +136,6 @@ class RunDetails extends Component {
             || !run) {
             return null;
         }
-
 
         const { router, location, params } = this.context;
         const { pipeline, setTitle, t, locale } = this.props;
@@ -132,7 +145,6 @@ class RunDetails extends Component {
         }
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
-
         const currentRun = new RunRecord(run);
         const status = currentRun.getComputedResult() || '';
 
@@ -143,25 +155,13 @@ class RunDetails extends Component {
 
         setTitle(`${currentRun.organization} / ${pipeline.fullName} #${currentRun.id}`);
 
-        const afterClose = () => {
-            const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
-            location.pathname = this.opener || fallbackUrl;
-            // reset query
-            /*
-            FIXME: reset query when you go back, we may want to store the whole location object in previous so we have a perfect prev.
-            this.opener would then be location and we the above location = this.opener || {pathname: fallbackUrl]
-             */
-            location.query = null;
-            router.push(location);
-        };
-
         return (
             <ModalView
               isVisible
               transitionClass="expand-in"
               transitionDuration={150}
               result={status}
-              {...{ afterClose }}
+              afterClose={() => this.navigateAfterClose()}
             >
                 <ModalHeader>
                     <div>
