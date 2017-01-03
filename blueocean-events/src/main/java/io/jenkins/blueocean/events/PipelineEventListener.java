@@ -21,6 +21,7 @@ import org.jenkinsci.plugins.workflow.flow.GraphListener;
 import org.jenkinsci.plugins.workflow.graph.FlowEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,7 +73,8 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
             } else if (flowNode instanceof StepAtomNode) {
                 List<String> branch = getBranch(flowNode);
                 StageAction stageAction = flowNode.getAction(StageAction.class);
-                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
+                Message message = newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch);
+                publishEvent(message);
             } else if (flowNode instanceof StepEndNode) {
                 if (flowNode.getAction(BodyInvocationAction.class) != null) {
                     try {
@@ -159,6 +161,11 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 StepNode stepNode = (StepNode) flowNode;
                 message.set(PipelineEventChannel.EventProps.pipeline_step_name, stepNode.getDescriptor().getFunctionName());
             }
+
+	    if (flowNode instanceof StepAtomNode && PipelineNodeUtil.isPausedForInputStep((StepAtomNode)flowNode, this.run.getAction(InputAction.class))) {
+                message.set(PipelineEventChannel.EventProps.pipeline_job_run_status, "PAUSED");
+                LOGGER.log(Level.SEVERE, "message " + message);
+	    }
 
             return message;
         }

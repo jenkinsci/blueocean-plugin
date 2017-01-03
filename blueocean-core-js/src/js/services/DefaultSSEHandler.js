@@ -7,6 +7,7 @@ export class DefaultSSEHandler {
     }
 
     handleEvents = (event) => {
+        console.log('defaultSSEHandler', event);
         switch (event.jenkins_event) {
         case 'job_crud_created':
             // Refetch pagers here. This will pull in the newly created pipeline into the bunker.

@@ -80,7 +80,7 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.result.isQueued()) {
+        if (nextProps.result.isQueued()) {
             return;
         }
         const followAlong = this.state.followAlong;
@@ -207,7 +207,7 @@ export class RunDetailsPipeline extends Component {
                 }
             default:
                 {
-                    // //console.log(event);
+                    console.log(event);
                 }
             }
         } catch (e) {
