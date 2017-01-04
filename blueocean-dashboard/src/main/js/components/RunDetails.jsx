@@ -8,7 +8,7 @@ import {
 } from '@jenkins-cd/design-language';
 import { i18nTranslator, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 import {
     buildOrganizationUrl,

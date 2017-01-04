@@ -5,7 +5,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import LogConsoleView from './LogConsoleView';
 import { sseConnection } from '@jenkins-cd/blueocean-core-js';
 import { EmptyStateView } from '@jenkins-cd/design-language';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
@@ -306,7 +306,7 @@ export class RunDetailsPipeline extends Component {
             ;
 
         const logGeneral = calculateRunLogURLObject(this.mergedConfig);
-   
+
         let title = this.mergedConfig.nodeReducer.displayName;
         if (this.mergedConfig.nodeReducer.id !== null && title) {
             title = `${t('rundetail.pipeline.steps', { defaultValue: 'Steps' })} - ${title}`;

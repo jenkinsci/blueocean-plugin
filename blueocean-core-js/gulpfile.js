@@ -50,7 +50,7 @@ gulp.task("watch", ["clean-build"], () => {
 // Default to all
 
 gulp.task("default", () =>
-    runSequence("clean", "lint", "build", "validate"));
+    runSequence("clean", "lint", "test", "build", "validate"));
 
 // Clean and build only, for watching
 

@@ -12,4 +12,5 @@ require('./icons');
 require('./logDisplay');
 require('./changes');
 require('./moments');
+require('./inputStep');
 require('./headers');

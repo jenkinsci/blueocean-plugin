@@ -10,6 +10,8 @@ import hudson.model.Action;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
+import hudson.model.ParameterDefinition;
+import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
@@ -229,6 +231,22 @@ public class AbstractPipelineImpl extends BluePipeline {
                 return activityIterator(getQueue(), getRuns(), start, limit);
             }
         };
+    }
+
+    @Override
+    public List<Object> getParameters() {
+        return getParameterDefinitions(job);
+    }
+
+    public static List<Object> getParameterDefinitions(Job job){
+        ParametersDefinitionProperty pp = (ParametersDefinitionProperty) job.getProperty(ParametersDefinitionProperty.class);
+        List<Object> pds = new ArrayList<>();
+        if(pp != null){
+            for(ParameterDefinition pd : pp.getParameterDefinitions()){
+                pds.add(pd);
+            }
+        }
+        return pds;
     }
 
     public static Iterator<Resource> activityIterator(final BlueQueueContainer queueContainer,
