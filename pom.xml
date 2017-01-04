@@ -15,8 +15,37 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/BlueOcean+Pipeline+Editor+Plugin</url>
+    
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
 
+    <scm>
+      <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+      <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+      <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+      <tag>HEAD</tag>
+    </scm>
+    
+    <developers>
+     <developer>
+       <id>sophistifunk</id>
+       <name>Josh McDonald</name>
+     </developer>
+     <developer>
+       <id>kzantow</id>
+       <name>Keith Zantow</name>
+     </developer>
+     <developer>
+       <id>abayer</id>
+       <name>Andrew Bayer</name>
+     </developer>
+    </developers>
+    
     <properties>
         <java.level>7</java.level>
         <jackson.version>2.2.3</jackson.version>
@@ -30,14 +59,14 @@
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
+            <url>https://repo.jenkins-ci.org/public/</url>
         </repository>
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
             <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
+            <url>https://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
 
