@@ -207,7 +207,7 @@ export class RunDetailsPipeline extends Component {
                 }
             default:
                 {
-                    console.log(event);
+                    // console.log(event);
                 }
             }
         } catch (e) {

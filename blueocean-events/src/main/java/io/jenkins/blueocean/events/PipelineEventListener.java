@@ -6,10 +6,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
-import org.jenkins.pubsub.Message;
-import org.jenkins.pubsub.MessageException;
-import org.jenkins.pubsub.PubsubBus;
-import org.jenkins.pubsub.SimpleMessage;
+import org.jenkins.pubsub.*;
 import org.jenkinsci.plugins.workflow.actions.BodyInvocationAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
@@ -73,8 +70,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
             } else if (flowNode instanceof StepAtomNode) {
                 List<String> branch = getBranch(flowNode);
                 StageAction stageAction = flowNode.getAction(StageAction.class);
-                Message message = newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch);
-                publishEvent(message);
+                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
             } else if (flowNode instanceof StepEndNode) {
                 if (flowNode.getAction(BodyInvocationAction.class) != null) {
                     try {
@@ -162,11 +158,22 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 message.set(PipelineEventChannel.EventProps.pipeline_step_name, stepNode.getDescriptor().getFunctionName());
             }
 
-	    if (flowNode instanceof StepAtomNode && PipelineNodeUtil.isPausedForInputStep((StepAtomNode)flowNode, this.run.getAction(InputAction.class))) {
-                message.set(PipelineEventChannel.EventProps.pipeline_is_paused, "true");
-                LOGGER.log(Level.SEVERE, "message " + message);
-	    }
-
+            if (flowNode instanceof StepAtomNode) {
+                boolean pausedForInputStep = PipelineNodeUtil
+                    .isPausedForInputStep((StepAtomNode) flowNode, this.run.getAction(InputAction.class));
+                if (pausedForInputStep) {
+                    // Fire job event to tell we are paused
+                    // We will publish on the job channel
+                    try {
+                        PubsubBus.getBus().publish(new RunMessage(run)
+                            .setEventName(Events.JobChannel.job_run_paused)
+                        );
+                    } catch (MessageException e) {
+                        LOGGER.log(Level.WARNING, "Error publishing Run pause event.", e);
+                    }
+                }
+                message.set(PipelineEventChannel.EventProps.pipeline_is_paused, String.valueOf(pausedForInputStep));
+            }
             return message;
         }
 

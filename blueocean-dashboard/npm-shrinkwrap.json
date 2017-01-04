@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.40-unpublishedEvents",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.40-unpublishedEvents",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.40-unpublishedEvents.tgz",
+      "version": "0.0.40-unpublishedEvents3",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.40-unpublishedEvents3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.40-unpublishedEvents3.tgz",
       "dependencies": {
         "@jenkins-cd/sse-gateway": {
           "version": "0.0.10",
