@@ -120,17 +120,25 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         this.setState({selectedStep});
     }
 
-    stepDataChanged(newValue:any) {
-
-        const {selectedStep} = this.state;
+    stepDataChanged(newStep:any) {
+        const {selectedStage,selectedStep} = this.state;
 
         if (!selectedStep) {
             console.log("unable to set new step data, no currently selected step");
             return;
         }
-        selectedStep.data = newValue;
+
+        const parentStep = pipelineStore.findParentStep(selectedStep);
+        const stepArray = (parentStep && parentStep.children) || selectedStage.steps;
+        let idx = 0;
+        for (; idx < stepArray.length; idx++) {
+            if (stepArray[idx].id === selectedStep.id) {
+                break;
+            }
+        }
+        stepArray[idx] = newStep;
         this.setState({
-            selectedStep: selectedStep
+            selectedStep: newStep
         });
     }
 

@@ -211,4 +211,74 @@ describe('Pipeline Syntax Converter', () => {
             arguments[0].
             key == 'script', "Incorrect conversion to JSON");
     });
+
+    it('restores unknown sections from JSON', () => {
+        const p = {
+            "pipeline": {
+                "agent": [  {
+                    "key": "docker",
+                    "value": {
+                        "isLiteral": true,
+                        "value": "httpd:2.4.12"
+                    }
+                }],
+                "stages": [  {
+                    "name": "foo",
+                    "branches": [{
+                        "name": "default",
+                        "steps": [{
+                            "name": "bat",
+                            "arguments": {
+                                "isLiteral": true,
+                                "value": "someBatScript"
+                            }
+                        }],
+                        "stageUnknownSection": {
+                            "someStageKey": "someStageValue",
+                        }
+                    }]
+                }],
+                "someUnkownSection": {
+                    "someKey": "someValue",
+                }
+            }};
+        const internal = convertJsonToInternalModel(p);
+        assert(internal.someUnkownSection, "Internal unknown section not saved");
+        assert(internal.
+            children[0].
+            stageUnknownSection, "Internal stage unknown section not saved");
+
+        const out = convertInternalModelToJson(internal);
+        assert(out.pipeline.someUnkownSection, "Unknown section not restored");
+        assert(out.pipeline.
+            stages[0].
+            branches[0].
+            stageUnknownSection, "Stage unknown section not restored");
+    });
+
+    it('handles unknown steps', () => {
+        const p = {"pipeline": {
+            "stages": [{"name": "stage 1",
+            "branches": [{
+                "name": "default","steps": [{
+                    "name": "unknownStep","arguments": [
+                        {"key": "someArgument","value": {"isLiteral": true,"value": 5}},],
+                       }]}]}],
+            "agent": {"isLiteral": true,"value": "any"}}};
+        const internal = convertJsonToInternalModel(p);
+        const unknownStep = internal.children[0].steps[0];
+        assert(unknownStep.name == 'unknownStep', "Unknown step not converted");
+
+        const out = convertInternalModelToJson(internal);
+        const containerStep = out.pipeline.
+            stages[0].
+            branches[0].
+            steps[0];
+        assert(containerStep.
+            name == 'unknownStep', "Unknown step not restored");
+        assert(containerStep.
+            arguments[0].
+            key == 'someArgument', "Unknown step arguments not restored");
+    });
+    
 });

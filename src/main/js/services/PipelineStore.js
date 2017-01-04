@@ -6,7 +6,7 @@
 export type StageInfo = {
     name: string,
     id: number,
-    children: StageInfo[],
+    children: Array<StageInfo|UnknownSection>,
     steps: StepInfo[],
 };
 
@@ -25,6 +25,15 @@ export type StepInfo = {
 export type PipelineInfo = StageInfo & {
     agent: StepInfo,
 };
+
+export class UnknownSection {
+    prop: string;
+    json: any;
+    constructor(prop: string, json: any) {
+        this.prop = prop;
+        this.json = json;
+    }
+}
 
 function _copy<T>(obj: T): ?T {
     if (!obj) {

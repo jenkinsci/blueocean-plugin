@@ -3,7 +3,8 @@
 import React, {Component, PropTypes} from 'react';
 import pipelineStepListStore from '../../services/PipelineStepListStore';
 import type {StepInfo} from './common';
-import GenericEditor from './steps/GenericStepEditor';
+import GenericStepEditor from './steps/GenericStepEditor';
+import UnknownStepEditor from './steps/UnknownStepEditor';
 
 const allStepEditors = [
     require('./steps/ShellScriptStepEditor').default,
@@ -51,7 +52,7 @@ export class EditorStepDetails extends Component {
     commitValue(step) {
         const {onDataChange} = this.props;
         if (onDataChange) {
-            onDataChange(step.data);
+            onDataChange(step);
         }
     }
 
@@ -70,7 +71,15 @@ export class EditorStepDetails extends Component {
         if (editor) {
             return editor;
         }
-        return GenericEditor;
+        if (!this.state.stepMetadata) {
+            return null;
+        }
+
+        const foundMeta = this.state.stepMetadata.filter(md => md.functionName === step.name);
+        if (foundMeta.length === 0) {
+            return UnknownStepEditor;
+        }
+        return GenericStepEditor;
     }
 
     render() {
