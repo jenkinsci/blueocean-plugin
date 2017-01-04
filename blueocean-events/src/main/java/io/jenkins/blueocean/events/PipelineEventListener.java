@@ -5,10 +5,12 @@ import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
+import io.jenkins.blueocean.rest.impl.pipeline.BlueOceanGraphListener;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
 import org.jenkins.pubsub.Message;
 import org.jenkins.pubsub.MessageException;
 import org.jenkins.pubsub.PubsubBus;
+import org.jenkins.pubsub.RunMessage;
 import org.jenkins.pubsub.SimpleMessage;
 import org.jenkinsci.plugins.workflow.actions.BodyInvocationAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
@@ -21,11 +23,15 @@ import org.jenkinsci.plugins.workflow.flow.GraphListener;
 import org.jenkinsci.plugins.workflow.graph.FlowEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -168,6 +174,21 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 pubSubBus.publish(message);
             } catch (MessageException e) {
                 LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
+            }
+        }
+    }
+
+    @Extension
+    public static class InputStepPublisher implements BlueOceanGraphListener{
+
+        @Override
+        public void onStepContinue(InputStep inputStep, WorkflowRun run) {
+            try {
+                PubsubBus.getBus().publish(new RunMessage(run)
+                        .setEventName("job_run_unpaused") //TODO: replace it with Events.JobChannel.job_run_paused when its available over there
+                );
+            } catch (MessageException e) {
+                LOGGER.log(Level.WARNING, "Error publishing Run pause event.", e);
             }
         }
     }

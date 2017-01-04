@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.model.FileParameterValue;
 import hudson.model.ParameterDefinition;
@@ -144,7 +145,11 @@ public class PipelineStepImpl extends BluePipelineStep {
 
             Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
 
-            return execution.proceed(o);
+            HttpResponse response =  execution.proceed(o);
+            for(BlueOceanGraphListener listener: ExtensionList.lookup(BlueOceanGraphListener.class)){
+                listener.onStepContinue(execution.getInput(), run);
+            }
+            return response;
         } catch (IOException | InterruptedException | ServletException e) {
             throw new ServiceException.UnexpectedErrorException("Error processing Input Submit request."+e.getMessage());
         }
