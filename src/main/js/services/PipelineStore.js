@@ -1,5 +1,7 @@
 // @flow
 
+import idgen from './IdGenerator';
+
 /**
  * A stage in a pipeline
  */
@@ -43,12 +45,10 @@ function _copy<T>(obj: T): ?T {
     return JSON.parse(JSON.stringify(obj));
 }
 
-let idSeq = -11111;
-
 function createBasicStage(name:string):StageInfo {
     return {
         name,
-        id: idSeq--,
+        id: idgen.next(),
         children: [],
         steps: [],
     };
@@ -258,7 +258,7 @@ class PipelineStore {
         let newStepsForStage = oldStepsForStage;
 
         let newStep:StepInfo = {
-            id: --idSeq,
+            id: idgen.next(),
             isContainer: step.isBlockContainer,
             children: [],
             name: step.functionName,

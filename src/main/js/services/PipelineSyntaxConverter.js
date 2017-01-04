@@ -4,6 +4,7 @@ import { Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import { UnknownSection } from './PipelineStore';
 import type { PipelineInfo, StageInfo, StepInfo } from './PipelineStore';
 import pipelineStepListStore from './PipelineStepListStore';
+import idgen from './IdGenerator';
 
 const value = 'value';
 
@@ -38,8 +39,6 @@ export type PipelineStage = {
     agent?: PipelineValueDescriptor,
     steps?: PipelineStep[],
 };
-
-const idgen = { id: 0, next() { return --this.id; } };
 
 function singleValue(v: any) {
     if (Array.isArray(v)) {
