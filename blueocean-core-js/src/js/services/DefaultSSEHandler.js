@@ -7,9 +7,9 @@ export class DefaultSSEHandler {
     }
 
     handleEvents = (event) => {
-        console.log('defaultSSEHandler', event);
         switch (event.jenkins_event) {
         case 'job_run_paused':
+        case 'job_run_unpaused':
             this.updateJob(event);
             break;
         case 'job_crud_created':
