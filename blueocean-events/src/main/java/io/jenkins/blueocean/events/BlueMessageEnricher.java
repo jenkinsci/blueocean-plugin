@@ -67,7 +67,7 @@ public class BlueMessageEnricher extends MessageEnricher {
             if (isPaused == null) {
                 isPaused = "false";
             }
-            jobChannelMessage.set(BlueEventProps.blueocean_job_is_paused, isPaused);
+            jobChannelMessage.set(PipelineEventChannel.EventProps.pipeline_is_paused, isPaused);
             System.out.print("isPaused XXX " + isPaused + " " + PipelineEventChannel.EventProps.pipeline_is_paused);
 
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
