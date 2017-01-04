@@ -163,7 +163,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
             }
 
 	    if (flowNode instanceof StepAtomNode && PipelineNodeUtil.isPausedForInputStep((StepAtomNode)flowNode, this.run.getAction(InputAction.class))) {
-                message.set(PipelineEventChannel.EventProps.pipeline_job_run_status, "PAUSED");
+                message.set(PipelineEventChannel.EventProps.pipeline_is_paused, "true");
                 LOGGER.log(Level.SEVERE, "message " + message);
 	    }
 
