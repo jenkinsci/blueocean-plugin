@@ -19,6 +19,7 @@ import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,6 +74,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     }
 
     @Override
+    public List<Object> getParameters() {
+        return null;
+    }
+
+    @Override
     public BluePipelineContainer getPipelines() {
         return new PipelineContainerImpl(folder, this);
     }
@@ -121,7 +127,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
         return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
     }
 
-    @Extension(ordinal = 0)
+    @Extension(ordinal = -10)
     public static class PipelineFactoryImpl extends BluePipelineFactory{
 
         @Override

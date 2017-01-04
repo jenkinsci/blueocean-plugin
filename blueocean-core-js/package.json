@@ -1,12 +1,12 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.32",
+  "version": "0.0.40-unpublished",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
     "gulp": "gulp",
     "test": "gulp test",
-    "prepublish": "gulp test; gulp"
+    "prepublish": "gulp"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
   "contributors": [
@@ -26,18 +26,17 @@
   "dependencies": {
     "@jenkins-cd/js-extensions": "0.0.32",
     "@jenkins-cd/js-modules": "0.0.8",
+    "@jenkins-cd/react-material-icons": "1.0.0",
     "@jenkins-cd/sse-gateway": "0.0.10",
     "es6-promise": "4.0.5",
-    "eslint": "2.13.1",
-    "eslint-plugin-react": "4.3.0",
     "i18next": "3.5.2",
-    "i18next-browser-languagedetector": "^1.0.0",
+    "i18next-browser-languagedetector": "1.0.0",
     "i18next-xhr-backend": "1.2.0",
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "7.1.9",
     "mobx": "2.6.0",
+    "mobx-utils": "1.1.2",
     "pem-jwk": "1.5.1",
-    "react-material-icons-blue": "1.0.4",
     "react-router": "3.0.0"
   },
   "peerDependencies": {
@@ -57,8 +56,9 @@
     "chai": "3.5.0",
     "del": "2.2.2",
     "enzyme": "2.4.1",
-    "eslint-plugin-react": "6.3.0",
-    "flow-bin": "^0.34.0",
+    "eslint": "2.13.1",
+    "eslint-plugin-react": "4.3.0",
+    "flow-bin": "0.34.0",
     "gulp": "3.9.1",
     "gulp-babel": "6.1.2",
     "gulp-copy": "0.0.2",

@@ -2,7 +2,6 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.Ordering;
 import hudson.model.Job;
-
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;

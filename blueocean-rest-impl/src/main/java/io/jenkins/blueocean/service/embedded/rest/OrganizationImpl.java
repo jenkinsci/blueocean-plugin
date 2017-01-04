@@ -1,19 +1,21 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Objects;
-import hudson.Util;
+import hudson.ExtensionList;
+import hudson.model.Action;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.OrganizationRoute;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
+import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.PUT;
 
@@ -26,6 +28,8 @@ import java.io.IOException;
  * @author Kohsuke Kawaguchi
  */
 public class OrganizationImpl extends BlueOrganization {
+    public final static String DEFAULT_ORG_NAME = "jenkins";
+
     private final UserContainerImpl users = new UserContainerImpl(this);
 
     /**
@@ -33,19 +37,16 @@ public class OrganizationImpl extends BlueOrganization {
      */
     public static final OrganizationImpl INSTANCE = new OrganizationImpl();
 
-    private OrganizationImpl() {
-    }
-
     /**
      * In embedded mode, there's only one organization
      */
     public String getName() {
-        return Util.rawEncode(Jenkins.getInstance().getDisplayName().toLowerCase());
+        return DEFAULT_ORG_NAME;
     }
 
     @Override
     public String getDisplayName() {
-        return Jenkins.getInstance().getDisplayName();
+        return "Jenkins";
     }
 
     @Override
@@ -93,4 +94,38 @@ public class OrganizationImpl extends BlueOrganization {
         return ApiHead.INSTANCE().getLink().rel("organizations/"+getName());
     }
 
+    /**
+     * Give plugins chance to handle this API route.
+     *
+     * @param route URL path that needs handling. e.g. for requested url /rest/organizations/:id/xyz,  route param value will be 'xyz'
+     * @return stapler object that can handle give route. Could be null
+     */
+    public Object getDynamic(String route){
+        //First look for OrganizationActions
+        for(OrganizationRoute organizationRoute: ExtensionList.lookup(OrganizationRoute.class)){
+            if(organizationRoute.getUrlName() != null && organizationRoute.getUrlName().equals(route)){
+                return wrap(organizationRoute);
+            }
+        }
+
+        // No OrganizationRoute found, now lookup in available actions from Jenkins instance serving root
+        for(Action action:Jenkins.getInstance().getActions()) {
+            if (action.getUrlName() != null && action.getUrlName().equals(route)) {
+                return wrap(action);
+            }
+        }
+        return null;
+    }
+
+    private Object wrap(Object action){
+        if (isExportedBean(action.getClass())) {
+            return action;
+        } else {
+            return new GenericResource<>(action);
+        }
+    }
+
+    private boolean isExportedBean(Class clz){
+        return clz.getAnnotation(ExportedBean.class) != null;
+    }
 }

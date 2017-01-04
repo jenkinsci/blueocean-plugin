@@ -116,12 +116,11 @@ export class Activity extends Component {
                         runs.map((run, index) => {
                             const changeset = run.changeSet;
                             let latestRecord = {};
+                  
                             if (changeset && changeset.length > 0) {
-                                latestRecord = new ChangeSetRecord(changeset[
-                                    Object.keys(changeset)[changeset.length - 1]
-                                ]);
+                                latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
                             }
-
+                            
                             return (
                                 <Runs {...{
                                     t,
@@ -139,7 +138,7 @@ export class Activity extends Component {
                 }
 
                 {runs && runs.length > 0 &&
-                <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchMore()}>
+                <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
                     {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
                 </button>
                 }

@@ -5,6 +5,9 @@ import utils from './utils';
 import config from './config';
 import dedupe from './utils/dedupe-calls';
 import urlconfig from './urlconfig';
+import { prefetchdata } from './scopes';
+
+const Promise = es6Promise.Promise;
 
 import { capabilityAugmenter } from './capability/index';
 let refreshToken = null;
@@ -142,10 +145,13 @@ export const FetchFunctions = {
      */
     rawFetchJSON(url, { onSuccess, onError, fetchOptions, disableDedupe } = {}) {
         const request = () => {
-            const future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
-                .then(FetchFunctions.checkRefreshHeader)
-                .then(FetchFunctions.checkStatus)
-                .then(FetchFunctions.parseJSON, FetchFunctions.parseErrorJson);
+            let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
+            if (!future) {
+                future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+                    .then(FetchFunctions.checkRefreshHeader)
+                    .then(FetchFunctions.checkStatus)
+                    .then(FetchFunctions.parseJSON, FetchFunctions.parseErrorJson);
+            }
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
             }
@@ -173,10 +179,12 @@ export const FetchFunctions = {
      */
     rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe } = {}) {
         const request = () => {
-            const future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
-                .then(FetchFunctions.checkRefreshHeader)
-                .then(FetchFunctions.checkStatus);
-
+            let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
+            if (!future) {
+                future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+                    .then(FetchFunctions.checkRefreshHeader)
+                    .then(FetchFunctions.checkStatus);
+            }
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
             }
@@ -259,3 +267,42 @@ export const Fetch = {
     },
 };
 
+function trimRestUrl(url) {
+    const REST_PREFIX = 'blue/rest/organizations';
+    const prefixOffset = url.indexOf(REST_PREFIX);
+
+    if (prefixOffset !== -1) {
+        return url.substring(prefixOffset);
+    }
+
+    return url;
+}
+
+function getPrefetchedDataFuture(url) {
+    const trimmedUrl = trimRestUrl(url);
+
+    for (const prop in prefetchdata) {
+        if (prefetchdata.hasOwnProperty(prop)) {
+            const preFetchEntry = prefetchdata[prop];
+            if (preFetchEntry.restUrl && preFetchEntry.data) {
+                // If the trimmed/normalized rest URL matches the url arg supplied
+                // to the function, construct a pre-resolved future object containing
+                // the prefetched data as the value.
+                if (trimRestUrl(preFetchEntry.restUrl) === trimmedUrl) {
+                    try {
+                        return Promise.resolve(JSON.parse(preFetchEntry.data));
+                    } finally {
+                        // Delete the preFetchEntry i.e. we only use these entries once. So, this
+                        // works only for the first request for the data at that URL. Subsequent
+                        // calls on that REST endpoint will result in a proper fetch. A local
+                        // store needs to be used (redux/mobx etc) if you want to avoid multiple calls
+                        // for the same data. This is not a caching layer/mechanism !!!
+                        delete prefetchdata[prop];
+                    }
+                }
+            }
+        }
+    }
+
+    return undefined;
+}

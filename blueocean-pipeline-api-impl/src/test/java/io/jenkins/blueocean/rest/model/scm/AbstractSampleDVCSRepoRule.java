@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package io.jenkins.blueocean.rest.impl.pipeline.scm;
+package io.jenkins.blueocean.rest.model.scm;
 
 import org.apache.commons.io.FileUtils;
 
@@ -44,7 +44,7 @@ public abstract class AbstractSampleDVCSRepoRule extends AbstractSampleRepoRule 
     }
 
     public final void write(String rel, String text) throws IOException {
-        FileUtils.write(new File(sampleRepo, rel), text);
+        FileUtils.writeStringToFile(new File(sampleRepo, rel), text);
     }
 
     @Override public final String toString() {

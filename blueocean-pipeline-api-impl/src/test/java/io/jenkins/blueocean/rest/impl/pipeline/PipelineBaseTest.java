@@ -32,11 +32,13 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 
 import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
+import static org.junit.Assert.fail;
 
 /**
  * @author Vivek Pandey
@@ -414,6 +416,7 @@ public abstract class PipelineBaseTest{
         private int expectedStatus = 200;
         private String token;
 
+        private Map<String,String> headers = new HashMap<>();
 
         private String getBaseUrl(String path){
             return baseUrl + path;
@@ -473,6 +476,11 @@ public abstract class PipelineBaseTest{
             return this;
         }
 
+        public RequestBuilder header(String key, String value){
+            this.headers.put(key, value);
+            return this;
+        }
+
         public RequestBuilder post(String url) {
             this.url = url;
             this.method = "POST";
@@ -509,16 +517,19 @@ public abstract class PipelineBaseTest{
 
                 }
                 request.header("Accept-Encoding","");
-                if(token == null) {
-                    request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
+                if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
+                    request.basicAuth(username, password);
                 }else{
-                    request.header("Authorization", "Bearer " + token);
+                    if (token == null) {
+                        request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
+                    }else{
+                        request.header("Authorization", "Bearer " + token);
+                    }
                 }
 
                 request.header("Content-Type", contentType);
-                if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
-                    request.basicAuth(username, password);
-                }
+
+                request.headers(headers);
 
                 if(request instanceof HttpRequestWithBody && data != null) {
                     ((HttpRequestWithBody)request).body(data);
@@ -557,4 +568,23 @@ public abstract class PipelineBaseTest{
         // tests that test token generation and validation
         return token;
     }
+
+    protected WorkflowJob scheduleAndFindBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
+        mp.scheduleBuild2(0).getFuture().get();
+        return findBranchProject(mp, name);
+    }
+
+    protected void scheduleAndFindBranchProject(WorkflowMultiBranchProject mp) throws Exception {
+        mp.scheduleBuild2(0).getFuture().get();
+    }
+
+    protected WorkflowJob findBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
+        WorkflowJob p = mp.getItem(name);
+        if (p == null) {
+            mp.getIndexing().writeWholeLogTo(System.out);
+            fail(name + " project not found");
+        }
+        return p;
+    }
+
 }

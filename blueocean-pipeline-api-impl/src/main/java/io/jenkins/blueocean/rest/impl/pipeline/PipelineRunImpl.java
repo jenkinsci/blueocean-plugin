@@ -24,6 +24,7 @@ import io.jenkins.blueocean.service.embedded.rest.QueueContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
 
@@ -57,6 +58,16 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         }
         return Containers.fromResourceMap(getLink(),m);
     }
+
+    @Override
+    public BlueRunState getStateObj() {
+        InputAction inputAction = run.getAction(InputAction.class);
+        if(inputAction != null && inputAction.getExecutions().size() > 0){
+            return BlueRunState.PAUSED;
+        }
+        return super.getStateObj();
+    }
+
     @Override
     public BlueQueueItem replay() {
         ReplayAction replayAction = run.getAction(ReplayAction.class);

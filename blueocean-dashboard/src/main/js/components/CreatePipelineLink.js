@@ -11,13 +11,15 @@ const QUERY_STRING_KEY = 'blueCreate';
 
 export default function CreatePipelineLink(props, context) {
     const caption = translate('home.header.button.createpipeline', { defaultValue: 'New Pipeline' });
+    const className = 'btn-new-pipeline btn-link inverse';
+
     // if special key is not defined, create a link to classic UI
     if (!context.location || !context.location.query || !(QUERY_STRING_KEY in context.location.query)) {
         const baseUrl = UrlConfig.getJenkinsRootURL();
         const newJobUrl = `${baseUrl}/view/All/newJob`;
 
         return (
-            <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
+            <a target="_blank" className={className} href={newJobUrl}>
                 { caption }
             </a>
         );
@@ -29,7 +31,7 @@ export default function CreatePipelineLink(props, context) {
     }
 
     return (
-        <Link to="/create-pipeline" className="btn-secondary inverse">
+        <Link to="/create-pipeline" className={className}>
             { caption }
         </Link>
     );

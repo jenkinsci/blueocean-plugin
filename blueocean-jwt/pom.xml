@@ -5,13 +5,13 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.0.0-b13-SNAPSHOT</version>
+    <version>1.0.0-b15-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-jwt</artifactId>
   <packaging>hpi</packaging>
 
-  <name>Module :: BlueOcean :: JWT module</name>
+  <name>JWT for Blue Ocean</name>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
   <dependencies>

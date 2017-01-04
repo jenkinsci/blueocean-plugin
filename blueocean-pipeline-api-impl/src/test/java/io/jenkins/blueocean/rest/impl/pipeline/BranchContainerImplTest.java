@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.ImmutableMap;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
+import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
@@ -15,12 +15,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * @author Ivan Meredith
@@ -89,24 +87,6 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         Map o3 = (Map)l2.get(1);
 
         Assert.assertEquals(o.get("name"), o1.get("name"));
-    }
-
-    private WorkflowJob scheduleAndFindBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
-        mp.scheduleBuild2(0).getFuture().get();
-        return findBranchProject(mp, name);
-    }
-
-    private void scheduleAndFindBranchProject(WorkflowMultiBranchProject mp) throws Exception {
-        mp.scheduleBuild2(0).getFuture().get();
-    }
-
-    private WorkflowJob findBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
-        WorkflowJob p = mp.getItem(name);
-        if (p == null) {
-            mp.getIndexing().writeWholeLogTo(System.out);
-            fail(name + " project not found");
-        }
-        return p;
     }
 
     private void setupScm() throws Exception {
