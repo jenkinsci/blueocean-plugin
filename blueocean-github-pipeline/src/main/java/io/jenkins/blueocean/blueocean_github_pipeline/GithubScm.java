@@ -6,6 +6,7 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.domains.HostnamePortSpecification;
 import com.cloudbees.plugins.credentials.domains.HostnameSpecification;
@@ -23,17 +24,26 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
+import io.jenkins.blueocean.rest.model.Container;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHUser;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.HttpConnector;
+import org.kohsuke.github.RateLimitHandler;
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.json.JsonBody;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -42,7 +52,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -69,12 +84,12 @@ public class GithubScm extends Scm {
     }
 
     @Override
-    public String getId() {
+    public @Nonnull String getId() {
         return ID;
     }
 
     @Override
-    public String getUri() {
+    public @Nonnull String getUri() {
         return DEFAULT_API_URI;
     }
 
@@ -89,6 +104,85 @@ public class GithubScm extends Scm {
     }
 
     @Override
+    public Container<ScmOrganization> getOrganizations() {
+        StaplerRequest request = Stapler.getCurrentRequest();
+
+        String credentialId = getCredentialIdFromRequest(request);
+
+        final StandardUsernamePasswordCredentials credential = GithubScm.findUsernamePasswordCredential(credentialId);
+
+        if(credential == null){
+            String user = User.current() == null ? "anonymous" : User.current().getId();
+            throw new ServiceException.BadRequestExpception(String.format("Credential id: %s not found for user %s", credentialId, user));
+        }
+
+        String accessToken = credential.getPassword().getPlainText();
+
+        try {
+            GitHub github = new GitHubBuilder().withOAuthToken(accessToken)
+                    .withRateLimitHandler(new RateLimitHandlerImpl())
+                    .withEndpoint(getUri()).build();
+
+            final Link link = getLink().rel("organizations");
+
+            Map<String, ScmOrganization> orgMap = new LinkedHashMap<>(); // preserve the same order that github org api returns
+
+            for(Map.Entry<String, GHOrganization> entry: github.getMyOrganizations().entrySet()){
+                    orgMap.put(entry.getKey(),
+                            new GithubOrganization(GithubScm.this, entry.getValue(), credential, link));
+            }
+
+            GHMyself user = github.getMyself();
+            if(orgMap.get(user.getLogin()) == null){ //this is to take care of case if/when github starts reporting user login as org later on
+                orgMap = new HashMap<>(orgMap);
+                orgMap.put(user.getLogin(), new GithubUserOrganization(user, credential, this));
+            }
+            final Map<String, ScmOrganization> orgs = orgMap;
+            return new Container<ScmOrganization>() {
+                @Override
+                public ScmOrganization get(String name) {
+                    ScmOrganization org = orgs.get(name);
+                    if(org == null){
+                        throw new ServiceException.NotFoundException(String.format("GitHub organization %s not found", name));
+                    }
+                    return org;
+                }
+
+                @Override
+                public Link getLink() {
+                    return link;
+                }
+
+                @Override
+                public Iterator<ScmOrganization> iterator() {
+                    return orgs.values().iterator();
+                }
+            };
+        } catch (IOException e) {
+            throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
+        }
+    }
+
+     private static String getCredentialIdFromRequest(StaplerRequest request){
+        String credentialId = request.getParameter(CREDENTIAL_ID);
+
+        if(credentialId == null){
+            credentialId = request.getHeader(X_CREDENTIAL_ID);
+        }
+        if(credentialId == null){
+            throw new ServiceException.BadRequestExpception("Missing credential id. It must be provided either as HTTP header: " + X_CREDENTIAL_ID+" or as query parameter 'credentialId'");
+        }
+        return credentialId;
+    }
+
+    public static class RateLimitHandlerImpl extends RateLimitHandler{
+        @Override
+        public void onError(IOException e, HttpURLConnection httpURLConnection) throws IOException {
+            throw new ServiceException.BadRequestExpception("API rate limit reached."+e.getMessage(), e);
+        }
+    }
+
+    @Override
     public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
         String accessToken = (String) request.get("accessToken");
         if(accessToken == null){
@@ -100,20 +194,8 @@ public class GithubScm extends Scm {
                 throw new ServiceException.UnauthorizedException("No authenticated user found");
             }
 
-            HttpURLConnection connection = HttpConnector.DEFAULT.connect(new URL(getUri()+"/user"));
+            HttpURLConnection connection = connect(String.format("%s/%s", getUri(), "user"),accessToken);
 
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-type", "application/json");
-            connection.setRequestProperty("Authorization", "token "+accessToken);
-            connection.connect();
-
-            int status = connection.getResponseCode();
-            if(status == 401 || status == 403){
-                throw new ServiceException.ForbiddenException("Invalid accessToken");
-            }
-            if(status != 200) {
-                throw new ServiceException.BadRequestExpception(String.format("Github Api returned error: %s. Error message: %s.", connection.getResponseCode(), connection.getResponseMessage()));
-            }
             //check for user:email or user AND repo scopes
             String scopesHeader = connection.getHeaderField("X-OAuth-Scopes");
             if(scopesHeader == null){
@@ -211,7 +293,30 @@ public class GithubScm extends Scm {
         }
     }
 
-    public Domain getFirstDomain(CredentialsStore store){
+    static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
+        HttpURLConnection connection = HttpConnector.DEFAULT.connect(new URL(apiUrl));
+
+        connection.setDoOutput(true);
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Content-type", "application/json");
+        connection.setRequestProperty("Authorization", "token "+accessToken);
+        connection.connect();
+
+        int status = connection.getResponseCode();
+        if(status == 401 || status == 403){
+            throw new ServiceException.ForbiddenException("Invalid accessToken");
+        }
+        if(status == 404){
+            throw new ServiceException.NotFoundException("Not Found");
+        }
+        if(status != 200) {
+            throw new ServiceException.BadRequestExpception(String.format("Github Api returned error: %s. Error message: %s.", connection.getResponseCode(), connection.getResponseMessage()));
+        }
+
+        return connection;
+    }
+
+    private Domain getFirstDomain(CredentialsStore store){
         for(Domain d:store.getDomains()){
             if(d.getName() != null){
                 return d;
@@ -220,7 +325,7 @@ public class GithubScm extends Scm {
         return null;
     }
 
-    public static HttpResponse createResponse(final String credentialId){
+     private HttpResponse createResponse(final String credentialId){
         return new HttpResponse() {
             @Override
             public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
@@ -230,7 +335,7 @@ public class GithubScm extends Scm {
         };
     }
 
-    public static StandardUsernamePasswordCredentials findUsernamePasswordCredential(Scm scm){
+     private static StandardUsernamePasswordCredentials findUsernamePasswordCredential(Scm scm){
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                         StandardUsernamePasswordCredentials.class,
@@ -238,6 +343,21 @@ public class GithubScm extends Scm {
                         Jenkins.getAuthentication(),
                         URIRequirementBuilder.fromUri(scm.getUri()).build()),
                 CredentialsMatchers.allOf(CredentialsMatchers.withId(scm.getId()),
+                        CredentialsMatchers.anyOf(CredentialsMatchers.instanceOf(StandardUsernamePasswordCredentials.class)))
+        );
+    }
+
+    private static @CheckForNull StandardUsernamePasswordCredentials findUsernamePasswordCredential(String id){
+        if(User.current() == null){
+            throw new ServiceException.UnauthorizedException("No authenticated user found. Please login");
+        }
+        return CredentialsMatchers.firstOrNull(
+                CredentialsProvider.lookupCredentials(
+                        StandardUsernamePasswordCredentials.class,
+                        Jenkins.getInstance(),
+                        Jenkins.getAuthentication(),
+                        Collections.<DomainRequirement>emptyList()),
+                CredentialsMatchers.allOf(CredentialsMatchers.withId(id),
                         CredentialsMatchers.anyOf(CredentialsMatchers.instanceOf(StandardUsernamePasswordCredentials.class)))
         );
     }
