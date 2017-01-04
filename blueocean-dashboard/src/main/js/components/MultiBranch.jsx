@@ -29,7 +29,7 @@ const NotSupported = ({ t }) => (
     <main>
         <EmptyStateView>
             <Markdown>
-                {t('EmptyState.branches.notSupported', { defaultValue: '# Branches are unsupported\nBranch builds only work with the _Multibranch Pipeline_ job type. This is just one of the many reasons to switch to Jenkins Pipeline.\n\n[Learn more](https://jenkins.io/doc/book/pipeline-as-code/)' })}
+                {t('EmptyState.branches.notSupported', { defaultValue: '# Branches are unsupported\nBranch runs only work with the _Multibranch Pipeline_ job type. This is just one of the many reasons to switch to Jenkins Pipeline.\n\n[Learn more](https://jenkins.io/doc/book/pipeline-as-code/)' })}
             </Markdown>
         </EmptyStateView>
     </main>
