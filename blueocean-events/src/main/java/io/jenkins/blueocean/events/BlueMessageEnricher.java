@@ -64,7 +64,7 @@ public class BlueMessageEnricher extends MessageEnricher {
             ParameterizedJobMixIn.ParameterizedJob job = jobChannelMessage.getJob();
             Link jobUrl = LinkResolver.resolveLink(job);
             String isPaused = message.get(PipelineEventChannel.EventProps.pipeline_is_paused);
-            if (isPaused === null) {
+            if (isPaused == null) {
                 isPaused = "false";
             }
             jobChannelMessage.set(BlueEventProps.blueocean_job_is_paused, isPaused);
