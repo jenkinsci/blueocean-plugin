@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.service.embedded.rest.LogAppender;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
@@ -25,8 +26,11 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -82,8 +86,18 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public Object getLog() {
-
         if(PipelineNodeUtil.isLoggable.apply(node.getNode())){
+
+            if(node.getBlockErrorAction() != null
+                    && node.getBlockErrorAction().getError() != null){
+                return new LogResource(node.getNode().getAction(LogAction.class).getLogText(), new LogAppender() {
+                    @Nonnull
+                    @Override
+                    public Reader getLog() {
+                        return new StringReader(node.getBlockErrorAction().getError().getMessage());
+                    }
+                });
+            }
             return new LogResource(node.getNode().getAction(LogAction.class).getLogText());
         }
         return null;
