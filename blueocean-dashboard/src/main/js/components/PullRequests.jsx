@@ -71,14 +71,14 @@ export class PullRequests extends Component {
 
         const head = 'pipelinedetail.pullrequests.header';
         const status = t(`${head}.status`, { defaultValue: 'Status' });
-        const run = t(`${head}.run`, { defaultValue: 'PR' });
+        const runHeader = t(`${head}.run`, { defaultValue: 'PR' });
         const author = t(`${head}.author`, { defaultValue: 'Author' });
         const summary = t(`${head}.summary`, { defaultValue: 'Summary' });
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
 
         const headers = [
             status,
-            { label: run, className: 'run' },
+            { label: runHeader, className: 'run' },
             { label: summary, className: 'summary' },
             author,
             { label: completed, className: 'completed' },
