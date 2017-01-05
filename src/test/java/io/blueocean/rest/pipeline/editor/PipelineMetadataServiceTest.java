@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.JSONWebResponse;
 
+import hudson.model.JDK;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -71,6 +72,28 @@ public class PipelineMetadataServiceTest {
         assertTrue(m.getHasSingleRequiredParameter());
 
         assertEquals(3, m.getParameters().size());
+    }
+
+    @Test
+    public void toolMetadata() throws Exception {
+        PipelineMetadataService svc = new PipelineMetadataService();
+
+        List<ExportedToolDescriptor> tools = new ArrayList<>();
+        tools.addAll(Arrays.asList(svc.doToolMetadata()));
+
+        assertFalse(tools.isEmpty());
+
+        ExportedToolDescriptor t = null;
+
+        for (ExportedToolDescriptor a : tools) {
+            if (a.getType().equals(JDK.DescriptorImpl.class.getName())) {
+                t = a;
+            }
+        }
+
+        assertNotNull(t);
+
+        assertEquals("jdk", t.getSymbol());
     }
 
     @Test

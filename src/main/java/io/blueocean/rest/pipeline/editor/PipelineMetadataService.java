@@ -12,6 +12,8 @@ import hudson.Launcher;
 import hudson.model.Describable;
 import hudson.tasks.Builder;
 import hudson.tasks.Publisher;
+import hudson.tools.ToolDescriptor;
+import hudson.tools.ToolInstallation;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.plugins.pipeline.modeldefinition.agent.DeclarativeAgent;
 import org.jenkinsci.plugins.pipeline.modeldefinition.agent.DeclarativeAgentDescriptor;
@@ -22,7 +24,6 @@ import org.jenkinsci.plugins.structs.describable.DescribableModel;
 import org.jenkinsci.plugins.workflow.steps.Step;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.kohsuke.stapler.NoStaplerConstructorException;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.verb.GET;
 
 import hudson.Extension;
@@ -73,6 +74,24 @@ public class PipelineMetadataService implements ApiRoutable {
             }
         }
         return models.toArray(new ExportedDescribableModel[models.size()]);
+    }
+
+    /**
+     * Function to return all {@link ExportedToolDescriptor}s present in the system when accessed through the REST API,
+     * pipeline scripts need: symbol and name to specify tools
+     */
+    @GET
+    @TreeResponse
+    public ExportedToolDescriptor[] doToolMetadata() {
+        List<ExportedToolDescriptor> models = new ArrayList<>();
+        for (ToolDescriptor<? extends ToolInstallation> d : ToolInstallation.all()) {
+            ExportedToolDescriptor descriptor = new ExportedToolDescriptor(d.getDisplayName(), symbolForObject(d), d.getClass());
+            models.add(descriptor);
+            for (ToolInstallation installation : d.getInstallations()) {
+                descriptor.addInstallation(new ExportedToolDescriptor.ExportedToolInstallation(installation.getName(), installation.getClass()));
+            }
+        }
+        return models.toArray(new ExportedToolDescriptor[models.size()]);
     }
 
     /**
