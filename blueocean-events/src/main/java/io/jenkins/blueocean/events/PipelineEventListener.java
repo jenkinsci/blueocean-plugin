@@ -165,7 +165,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                     // Fire job event to tell we are paused
                     // We will publish on the job channel
                     try {
-                        PubsubBus.getBus().publish(new RunMessage(run)
+                        PubsubBus.getBus().publish(new RunMessage(this.run)
                             .setEventName(Events.JobChannel.job_run_paused)
                         );
                     } catch (MessageException e) {
