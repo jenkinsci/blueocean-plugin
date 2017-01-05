@@ -147,13 +147,9 @@ export class RunDetailsPipeline extends Component {
     _onSseEvent(event) {
         const { fetchNodes, fetchSteps, removeStep, removeLogs } = this.props;
         const jenkinsEvent = event.jenkins_event;
-        function refetchNodes() {
-            delete this.mergedConfig.node;
-            setTimeout(fetchNodes({...this.mergedConfig, refetch}), 50);
-        }
         // we are using try/catch to throw an early out error
         try {
-            let runId = this.props.result.id;
+            const runId = this.props.result.id;
             // we get events from the pipeline and the job channel, they have different naming for the id
             if (event.pipeline_run_id !== runId && event.jenkins_object_id !== runId) {
                 // console.log('early out');
@@ -161,6 +157,10 @@ export class RunDetailsPipeline extends Component {
             }
             // we turn on refetch so we always fetch a new Node result
             const refetch = true;
+            const refetchNodes = () => {
+                delete this.mergedConfig.node;
+                setTimeout(fetchNodes({ ...this.mergedConfig, refetch }), 50);
+            };
             switch (jenkinsEvent) {
 
             // In all in the following cases we need to update the display of the run
