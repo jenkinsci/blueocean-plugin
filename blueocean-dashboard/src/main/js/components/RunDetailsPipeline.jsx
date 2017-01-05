@@ -171,7 +171,7 @@ export class RunDetailsPipeline extends Component {
             case 'pipeline_block_start':
             case 'pipeline_block_end':
                 {
-                    refetchNodes.call(this);
+                    refetchNodes();
                     break;
                 }
             case 'pipeline_step':
@@ -189,7 +189,7 @@ export class RunDetailsPipeline extends Component {
                          */
                         if (event.pipeline_step_stage_id !== this.mergedConfig.node && parallel) {
                             // console.log('nodes fetching via ssePipeline triggered');
-                            refetchNodes.call(this);
+                            refetchNodes();
                         } else {
                             // console.log('only steps fetching via ssePipeline triggered');
                             setTimeout(fetchSteps({ ...this.mergedConfig, refetch }), 500);
@@ -224,7 +224,7 @@ export class RunDetailsPipeline extends Component {
                         notFinishedSteps.map((step) => removeStep(step.nodesBaseUrl));
                     }
                     // we always want to refresh if the run has finished
-                    refetchNodes.call(this);
+                    refetchNodes();
                     break;
                 }
             default:
