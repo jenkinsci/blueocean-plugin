@@ -5,7 +5,7 @@ import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
-import io.jenkins.blueocean.rest.impl.pipeline.BlueOceanGraphListener;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineInputStepListener;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
 import org.jenkins.pubsub.Events;
 import org.jenkins.pubsub.Message;
@@ -197,7 +197,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
     }
 
     @Extension
-    public static class InputStepPublisher implements BlueOceanGraphListener{
+    public static class InputStepPublisher implements PipelineInputStepListener {
 
         @Override
         public void onStepContinue(InputStep inputStep, WorkflowRun run) {
@@ -207,7 +207,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                         .setEventName(Events.JobChannel.job_run_unpaused)
                 );
             } catch (MessageException e) {
-                LOGGER.log(Level.WARNING, "Error publishing Run pause event.", e);
+                LOGGER.log(Level.WARNING, "Error publishing Run un-pause event.", e);
             }
         }
     }

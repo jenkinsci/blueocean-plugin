@@ -146,7 +146,7 @@ public class PipelineStepImpl extends BluePipelineStep {
             Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
 
             HttpResponse response =  execution.proceed(o);
-            for(BlueOceanGraphListener listener: ExtensionList.lookup(BlueOceanGraphListener.class)){
+            for(PipelineInputStepListener listener: ExtensionList.lookup(PipelineInputStepListener.class)){
                 listener.onStepContinue(execution.getInput(), run);
             }
             return response;

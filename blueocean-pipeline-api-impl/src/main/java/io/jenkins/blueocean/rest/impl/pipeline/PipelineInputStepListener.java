@@ -10,7 +10,7 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
  *
  * @author Vivek Pandey
  */
-public interface BlueOceanGraphListener extends ExtensionPoint{
+public interface PipelineInputStepListener extends ExtensionPoint{
     /**
      * This event is sent when an input step moves from paused to continue state. That is when an input form is submitted.
      *
