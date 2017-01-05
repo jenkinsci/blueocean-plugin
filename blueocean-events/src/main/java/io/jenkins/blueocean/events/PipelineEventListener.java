@@ -182,7 +182,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                         LOGGER.log(Level.WARNING, "Error publishing Run pause event.", e);
                     }
                 }
-                message.set(PipelineEventChannel.EventProps.pipeline_is_paused, String.valueOf(pausedForInputStep));
+                message.set(PipelineEventChannel.EventProps.pipeline_step_is_paused, String.valueOf(pausedForInputStep));
             }
             return message;
         }

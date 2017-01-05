@@ -62,7 +62,8 @@ export class RunDetailsPipeline extends Component {
             }
         }
 
-        this.listener.sse = sseConnection.subscribe('pipeline', this._onSseEvent);
+        this.listener.ssePipeline = sseConnection.subscribe('pipeline', this._onSseEvent);
+        this.listener.sseJob = sseConnection.subscribe('job', this._onSseEvent);
     }
 
     componentDidMount() {
@@ -105,9 +106,13 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillUnmount() {
-        if (this.listener.sse) {
-            sseConnection.unsubscribe(this.listener.sse);
-            delete this.listener.sse;
+        if (this.listener.ssePipeline) {
+            sseConnection.unsubscribe(this.listener.ssePipeline);
+            delete this.listener.ssePipeline;
+        }
+        if (this.listener.sseJob) {
+            sseConnection.unsubscribe(this.listener.sseJob);
+            delete this.listener.sseJob;
         }
 
         if (this.props.result.isQueued()) {
@@ -142,15 +147,33 @@ export class RunDetailsPipeline extends Component {
     _onSseEvent(event) {
         const { fetchNodes, fetchSteps, removeStep, removeLogs } = this.props;
         const jenkinsEvent = event.jenkins_event;
+        function refetchNodes() {
+            delete this.mergedConfig.node;
+            setTimeout(fetchNodes({...this.mergedConfig, refetch}), 50);
+        }
         // we are using try/catch to throw an early out error
         try {
-            if (event.pipeline_run_id !== this.props.result.id) {
+            let runId = this.props.result.id;
+            // we get events from the pipeline and the job channel, they have different naming for the id
+            if (event.pipeline_run_id !== runId && event.jenkins_object_id !== runId) {
                 // console.log('early out');
                 throw new Error('exit');
             }
             // we turn on refetch so we always fetch a new Node result
             const refetch = true;
             switch (jenkinsEvent) {
+
+            // In all in the following cases we need to update the display of the run
+            case 'job_run_started':
+            case 'job_run_unpaused':
+            case 'pipeline_stage':
+            case 'pipeline_start':
+            case 'pipeline_block_start':
+            case 'pipeline_block_end':
+                {
+                    refetchNodes.call(this);
+                    break;
+                }
             case 'pipeline_step':
                 {
                     // we are not using an early out for the events since we want to refresh the node if we finished
@@ -165,17 +188,16 @@ export class RunDetailsPipeline extends Component {
                          * some steps.
                          */
                         if (event.pipeline_step_stage_id !== this.mergedConfig.node && parallel) {
-                            // console.log('nodes fetching via sse triggered');
-                            delete this.mergedConfig.node;
-                            fetchNodes({ ...this.mergedConfig, refetch });
+                            // console.log('nodes fetching via ssePipeline triggered');
+                            refetchNodes.call(this);
                         } else {
-                            // console.log('only steps fetching via sse triggered');
-                            fetchSteps({ ...this.mergedConfig, refetch });
+                            // console.log('only steps fetching via ssePipeline triggered');
+                            setTimeout(fetchSteps({ ...this.mergedConfig, refetch }), 500);
                         }
                     }
                     break;
                 }
-            case 'pipeline_end':
+            case 'pipeline_end': // FIXME: the following code will be go away when refactoring to mobx
                 {
                     // get all steps from the current run, we use the nodeKey and remove the last bit
                     const keyArray = this.mergedConfig.nodeKey.split('/');
@@ -202,7 +224,7 @@ export class RunDetailsPipeline extends Component {
                         notFinishedSteps.map((step) => removeStep(step.nodesBaseUrl));
                     }
                     // we always want to refresh if the run has finished
-                    fetchNodes({ ...this.mergedConfig, refetch });
+                    refetchNodes.call(this);
                     break;
                 }
             default:
