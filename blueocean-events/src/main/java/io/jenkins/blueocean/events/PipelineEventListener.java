@@ -201,9 +201,10 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
 
         @Override
         public void onStepContinue(InputStep inputStep, WorkflowRun run) {
+            // fire an unpaused event in case the input step has received its input
             try {
                 PubsubBus.getBus().publish(new RunMessage(run)
-                        .setEventName("job_run_unpaused") //TODO: replace it with Events.JobChannel.job_run_paused when its available over there
+                        .setEventName(Events.JobChannel.job_run_unpaused)
                 );
             } catch (MessageException e) {
                 LOGGER.log(Level.WARNING, "Error publishing Run pause event.", e);
