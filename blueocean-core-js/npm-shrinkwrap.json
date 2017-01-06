@@ -33,6 +33,11 @@
       "from": "@jenkins-cd/sse-gateway@0.0.10",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.10.tgz"
     },
+    "@jenkins-cd/storage": {
+      "version": "0.0.2",
+      "from": "@jenkins-cd/storage@latest",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.2.tgz"
+    },
     "abab": {
       "version": "1.0.3",
       "from": "abab@>=1.0.0 <2.0.0",
@@ -4385,6 +4390,11 @@
       "from": "load-json-file@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/load-json-file/-/load-json-file-1.1.0.tgz",
       "dev": true
+    },
+    "localstorage-memory": {
+      "version": "1.0.2",
+      "from": "localstorage-memory@>=1.0.2 <2.0.0",
+      "resolved": "https://registry.npmjs.org/localstorage-memory/-/localstorage-memory-1.0.2.tgz"
     },
     "lodash": {
       "version": "4.17.2",
