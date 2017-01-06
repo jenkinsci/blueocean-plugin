@@ -57,6 +57,14 @@ public class BranchImpl extends PipelineImpl {
         return null;
     }
 
+    public String getUrl() {
+        ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
+        if (om == null) {
+            return null;
+        }
+        return  om.getObjectUrl() != null ? om.getObjectUrl() : null;
+    }
+
     @Override
     public Link getLink() {
         return parent.rel(Util.rawEncode(getName()));
