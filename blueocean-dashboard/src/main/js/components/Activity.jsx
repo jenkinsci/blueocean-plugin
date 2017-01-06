@@ -75,7 +75,7 @@ export class Activity extends Component {
         const head = 'pipelinedetail.activity.header';
 
         const status = t(`${head}.status`, { defaultValue: 'Status' });
-        const run = t(`${head}.run`, { defaultValue: 'Run' });
+        const runHeader = t(`${head}.run`, { defaultValue: 'Run' });
         const commit = t(`${head}.commit`, { defaultValue: 'Commit' });
         const message = t(`${head}.message`, { defaultValue: 'Message' });
         const duration = t(`${head}.duration`, { defaultValue: 'Duration' });
@@ -83,7 +83,7 @@ export class Activity extends Component {
         const branch = t(`${head}.branch`, { defaultValue: 'Branch' });
         const headers = isMultiBranchPipeline ? [
             status,
-            run,
+            runHeader,
             commit,
             { label: branch, className: 'branch' },
             { label: message, className: 'message' },
@@ -92,7 +92,7 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ] : [
             status,
-            run,
+            runHeader,
             commit,
             { label: message, className: 'message' },
             { label: duration, className: 'duration' },
