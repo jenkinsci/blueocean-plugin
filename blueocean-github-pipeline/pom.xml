@@ -21,12 +21,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kohsuke</groupId>
-      <artifactId>github-api</artifactId>
-      <version>1.82</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>github-organization-folder</artifactId>
       <version>1.5</version>
@@ -35,7 +29,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>github-branch-source</artifactId>
-      <version>1.8.1</version>
+      <version>2.0.0-beta-2</version>
     </dependency>
 
 
