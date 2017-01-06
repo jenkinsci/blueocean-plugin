@@ -92,8 +92,9 @@ public class LogResource{
                 text = appenderLogReader.read();
             }
         }
-        w.close();
         rsp.addHeader("X-Text-Size",String.valueOf(r));
+        w.close();
+
     }
 
     private Writer createWriter(StaplerRequest req, StaplerResponse rsp, long size) throws IOException {
