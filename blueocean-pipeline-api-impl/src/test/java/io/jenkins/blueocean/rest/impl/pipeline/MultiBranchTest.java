@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.collect.ImmutableMap;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
+import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.plugins.favorite.Favorites;
 import hudson.plugins.favorite.user.FavoriteUserProperty;
@@ -10,6 +11,7 @@ import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.security.LegacyAuthorizationStrategy;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
@@ -17,6 +19,7 @@ import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
+import jenkins.scm.api.metadata.ObjectMetadataAction;
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.collection.IsArrayContainingInAnyOrder;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
@@ -44,6 +47,8 @@ import java.util.concurrent.ExecutionException;
 import static io.jenkins.blueocean.rest.model.BlueRun.DATE_FORMAT_STRING;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Vivek Pandey
@@ -77,6 +82,16 @@ public class MultiBranchTest extends PipelineBaseTest {
         return System.getenv("RUN_MULTIBRANCH_TESTS") != null;
     }
 
+
+    @Test
+    public void testGetURL() {
+        Job job = mock(Job.class);
+        BranchImpl branch = new BranchImpl(job, new Link("foo"));
+        assertNull(branch.getUrl());
+        ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
+        when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
+        assertEquals("https://path/to/branch", branch.getUrl());
+    }
 
     @Test
     public void resolveMbpLink() throws Exception {
