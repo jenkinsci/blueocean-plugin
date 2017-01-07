@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.FilePath;
+import hudson.console.AnnotatedLargeText;
 import hudson.model.FileParameterValue;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
@@ -25,12 +26,14 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.framework.io.ByteBuffer;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -87,7 +90,6 @@ public class PipelineStepImpl extends BluePipelineStep {
     @Override
     public Object getLog() {
         if(PipelineNodeUtil.isLoggable.apply(node.getNode())){
-
             if(node.getBlockErrorAction() != null
                     && node.getBlockErrorAction().getError() != null){
                 return new LogResource(node.getNode().getAction(LogAction.class).getLogText(), new LogAppender() {
@@ -99,8 +101,31 @@ public class PipelineStepImpl extends BluePipelineStep {
                 });
             }
             return new LogResource(node.getNode().getAction(LogAction.class).getLogText());
+        }else{
+            return getLogResource(node);
         }
-        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static LogResource getLogResource(FlowNodeWrapper  node){
+        String msg=null;
+        if(node.getNode().getError() != null && node.getNode().getError().getError() != null){
+            msg = node.getNode().getError().getError().getMessage()+"\n";
+        } else if((node.getBlockErrorAction() != null && node.getBlockErrorAction().getError() != null)){
+            msg = node.getBlockErrorAction().getError().getMessage()+"\n";
+        }
+        if(msg == null){
+            return null;
+        }
+        ByteBuffer byteBuffer = new ByteBuffer();
+        try {
+            byteBuffer.write(msg.getBytes("UTF-8"));
+            byteBuffer.close();
+            return new LogResource(new AnnotatedLargeText(byteBuffer, Charset.forName("UTF-8"),true, null));
+        } catch (IOException e) {
+            throw new ServiceException.UnexpectedErrorException(e.getMessage());
+        }
+
     }
 
 

@@ -2111,6 +2111,27 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertTrue(resp.trim().endsWith("Cannot set property 'bar' on null object"));
     }
 
+    @Test
+    public void pipelineLogError1() throws Exception {
+        String script =
+                "node {\n" +
+                "    stage('blah') {\n" +
+                "        sh \"echo 42\"\n" +
+                "        error(\"this error should appear in log\")\n" +
+                "        \n" +
+                "    }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+
+        String resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/8/log/", String.class);
+
+        Assert.assertTrue(resp.trim().endsWith("this error should appear in log"));
+    }
+
     private void setupScm(String script) throws Exception {
         // create git repo
         sampleRepo.init();
