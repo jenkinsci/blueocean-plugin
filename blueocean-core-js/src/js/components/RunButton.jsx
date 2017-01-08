@@ -83,7 +83,7 @@ export class RunButton extends Component {
     render() {
         const outerClass = this.props.className ? this.props.className : '';
         const outerClassNames = outerClass.split(' ');
-        const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'btn inverse' : '';
+        const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? this.props.innerButtonClasses : '';
         const stopClass = this.state.stopping ? 'stopping' : '';
 
         const status = this.props.latestRun ? this.props.latestRun.state : '';
@@ -147,8 +147,10 @@ RunButton.propTypes = {
     latestRun: PropTypes.object,
     onNavigation: PropTypes.func,
     runText: PropTypes.string,
+    innerButtonClasses: PropTypes.string,
 };
 
 RunButton.defaultProps = {
     buttonType: 'toggle',
+    innerButtonClasses: 'btn inverse',
 };
