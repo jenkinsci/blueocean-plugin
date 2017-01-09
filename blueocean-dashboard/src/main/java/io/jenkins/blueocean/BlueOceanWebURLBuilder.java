@@ -116,12 +116,8 @@ public class BlueOceanWebURLBuilder {
             return pipelineModelMapping.blueUiUrl + "/detail/" + encodeURIComponent(decodeURIComponent(job.getName())) + "/" + encodeURIComponent(run.getId());
         } else if (classicModelObject instanceof Item) {
             Resource blueResource = BluePipelineFactory.resolve((Item) classicModelObject);
-            if (blueResource != null) {
-                if (blueResource instanceof BlueMultiBranchPipeline) {
-                    return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
-                } else if (blueResource instanceof BluePipeline) {
-                    return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName());
-                }
+            if (blueResource instanceof BlueMultiBranchPipeline) {
+                return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
             }
         }
 

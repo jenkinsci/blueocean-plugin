@@ -31,7 +31,7 @@ export class RunDetailsTests extends Component {
             return (<EmptyStateView tightSpacing>
                  <Markdown>
                     {t('EmptyState.tests', {
-                        defaultValue: 'There are no tests run for this build.\n\n',
+                        defaultValue: 'There are no tests archived for this run.\n\n',
                     })}
                 </Markdown>
             </EmptyStateView>);

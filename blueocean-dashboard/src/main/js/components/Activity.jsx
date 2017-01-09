@@ -75,7 +75,7 @@ export class Activity extends Component {
         const head = 'pipelinedetail.activity.header';
 
         const status = t(`${head}.status`, { defaultValue: 'Status' });
-        const build = t(`${head}.build`, { defaultValue: 'Build' });
+        const runHeader = t(`${head}.run`, { defaultValue: 'Run' });
         const commit = t(`${head}.commit`, { defaultValue: 'Commit' });
         const message = t(`${head}.message`, { defaultValue: 'Message' });
         const duration = t(`${head}.duration`, { defaultValue: 'Duration' });
@@ -83,7 +83,7 @@ export class Activity extends Component {
         const branch = t(`${head}.branch`, { defaultValue: 'Branch' });
         const headers = isMultiBranchPipeline ? [
             status,
-            build,
+            runHeader,
             commit,
             { label: branch, className: 'branch' },
             { label: message, className: 'message' },
@@ -92,7 +92,7 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ] : [
             status,
-            build,
+            runHeader,
             commit,
             { label: message, className: 'message' },
             { label: duration, className: 'duration' },
@@ -108,6 +108,7 @@ export class Activity extends Component {
                   latestRun={latestRun}
                   buttonType="run-only"
                   onNavigation={onNavigation}
+                  innerButtonClasses="btn-secondary"
                 />
                 }
                 {runs.length > 0 &&

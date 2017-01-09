@@ -109,7 +109,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return getActionProxies(job.getAllActions(), this);
+        return ActionProxiesImpl.getActionProxies(job.getAllActions(), this);
     }
 
     @Override
@@ -194,18 +194,6 @@ public class AbstractPipelineImpl extends BluePipeline {
             pipelinePath.append(pipeline.getFullName());
         }
         return pipelinePath.toString();
-    }
-
-    public static Collection<BlueActionProxy> getActionProxies(List<? extends Action> actions, Reachable parent){
-        List<BlueActionProxy> actionProxies = new ArrayList<>();
-        for(Action action:actions){
-            if(action == null){
-                continue;
-            }
-            actionProxies.add(new ActionProxiesImpl(action, parent));
-        }
-        return actionProxies;
-
     }
 
     @Override

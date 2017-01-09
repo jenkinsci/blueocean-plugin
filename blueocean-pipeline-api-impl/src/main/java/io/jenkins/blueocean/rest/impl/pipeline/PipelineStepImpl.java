@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.console.AnnotatedLargeText;
 import hudson.model.FileParameterValue;
@@ -12,6 +13,7 @@ import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.LogAppender;
+import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
@@ -131,7 +133,7 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return PipelineImpl.getActionProxies(node.getNode().getActions(), this);
+        return ActionProxiesImpl.getActionProxies(node.getNode().getActions(), this);
     }
 
     @Override
@@ -183,7 +185,11 @@ public class PipelineStepImpl extends BluePipelineStep {
 
             Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
 
-            return execution.proceed(o);
+            HttpResponse response =  execution.proceed(o);
+            for(PipelineInputStepListener listener: ExtensionList.lookup(PipelineInputStepListener.class)){
+                listener.onStepContinue(execution.getInput(), run);
+            }
+            return response;
         } catch (IOException | InterruptedException | ServletException e) {
             throw new ServiceException.UnexpectedErrorException("Error processing Input Submit request."+e.getMessage());
         }

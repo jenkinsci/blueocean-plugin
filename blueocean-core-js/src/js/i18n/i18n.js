@@ -15,6 +15,7 @@ export const defaultLngDetector = new LngDetector(null, {
     lookupQuerystring: 'language',
 });
 const prefix = urlConfig.getJenkinsRootURL() || '';
+const FALLBACK_LANG = '';
 
 function newPluginXHR(pluginName) {
     let pluginVersion = store.getPluginVersion(pluginName);
@@ -91,7 +92,7 @@ const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) =
         defaultNS: namespace,
         keySeparator: false, // we do not have any nested keys in properties files
         debug: false,
-        fallbackLng: '',
+        fallbackLng: FALLBACK_LANG,
         load: 'currentOnly',
         interpolation: {
             prefix: '{',
@@ -136,7 +137,13 @@ export default function i18nTranslator(pluginName, namespace) {
     const I18n = pluginI18next(pluginName, namespace);
 
     // Create and cache the translator instance.
-    translator = I18n.getFixedT(defaultLngDetector.detect(), namespace);
+    let detectedLang;
+    try {
+        detectedLang = defaultLngDetector.detect();
+    } catch (e) {
+        detectedLang = FALLBACK_LANG;
+    }
+    translator = I18n.getFixedT(detectedLang, namespace);
     translatorCache[translatorCacheKey] = translator;
 
     return translator;
