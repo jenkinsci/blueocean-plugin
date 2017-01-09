@@ -70,7 +70,9 @@ export class DashboardCards extends Component {
               );
           });
 
-        const favoriteCards = this.props.favorites.map(favorite => {
+        const favoriteCards = this.props.favorites
+          .filter(favorite => favorite.item.latestRun.state !== 'PAUSED')
+          .map(favorite => {
             const pipeline = favorite.item;
 
             return (
@@ -85,18 +87,20 @@ export class DashboardCards extends Component {
             );
         });
 
+        const inputParent = pausedCards.size > 0 ? (<div className="favorites-card-stack">
+              <div> {t('dashboardCard.input.required')}</div>
+              <TransitionGroup transitionName="vertical-expand-collapse"
+                               transitionEnterTimeout={300}
+                               transitionLeaveTimeout={300}
+              >
+                {pausedCards}
+              </TransitionGroup>
+          </div>) : null;
+
         return (
             <FavoritesProvider store={this.props.store}>
                 <div>
-                    <div className="favorites-card-stack">
-                        <div> {t('dashboardCard.input.required')}</div>
-                        <TransitionGroup transitionName="vertical-expand-collapse"
-                          transitionEnterTimeout={300}
-                          transitionLeaveTimeout={300}
-                        >
-                          {pausedCards}
-                        </TransitionGroup>
-                    </div>
+                    { inputParent }
                     <div className="favorites-card-stack">
                         <div>{t('dashboardCard.input.favorite')}</div>
                         <TransitionGroup transitionName="vertical-expand-collapse"
