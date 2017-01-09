@@ -6,6 +6,8 @@ import TransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
@@ -13,6 +15,8 @@ import favoritesSseListener from '../model/FavoritesSseListener';
 
 import FavoritesProvider from './FavoritesProvider';
 import { PipelineCard } from './PipelineCard';
+
+const t = i18nTranslator('blueocean-personalization');
 
 /**
  * Renders a stack of "favorites cards" including current most recent status.
@@ -49,6 +53,23 @@ export class DashboardCards extends Component {
             return null;
         }
 
+        const pausedCards = this.props.favorites
+          .filter(favorite => favorite.item.latestRun.state === 'PAUSED')
+          .map(favorite => {
+              const pipeline = favorite.item;
+
+              return (
+                <div key={favorite._links.self.href}>
+                    <PipelineCard
+                      router={this.props.router}
+                      runnable={pipeline}
+                      favorite
+                      onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
+                    />
+                </div>
+              );
+        });
+
         const favoriteCards = this.props.favorites.map(favorite => {
             const pipeline = favorite.item;
 
@@ -66,13 +87,25 @@ export class DashboardCards extends Component {
 
         return (
             <FavoritesProvider store={this.props.store}>
-                <div className="favorites-card-stack">
-                    <TransitionGroup transitionName="vertical-expand-collapse"
-                      transitionEnterTimeout={300}
-                      transitionLeaveTimeout={300}
-                    >
-                        {favoriteCards}
-                    </TransitionGroup>
+                <div>
+                    <div className="favorites-card-stack">
+                        <div> {t('dashboardCard.input.required')}</div>
+                        <TransitionGroup transitionName="vertical-expand-collapse"
+                                         transitionEnterTimeout={300}
+                                         transitionLeaveTimeout={300}
+                        >
+                          {pausedCards}
+                        </TransitionGroup>
+                    </div>
+                    <div className="favorites-card-stack">
+                        <div>{t('dashboardCard.input.favorite')}</div>
+                        <TransitionGroup transitionName="vertical-expand-collapse"
+                                         transitionEnterTimeout={300}
+                                         transitionLeaveTimeout={300}
+                        >
+                          {favoriteCards}
+                        </TransitionGroup>
+                    </div>
                 </div>
             </FavoritesProvider>
         );
