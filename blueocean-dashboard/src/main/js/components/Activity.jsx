@@ -108,6 +108,7 @@ export class Activity extends Component {
                   latestRun={latestRun}
                   buttonType="run-only"
                   onNavigation={onNavigation}
+                  innerButtonClasses="btn-secondary"
                 />
                 }
                 {runs.length > 0 &&
