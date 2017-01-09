@@ -167,11 +167,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public String getArtifactsZipFile() {
-        if(run.getHasArtifacts()) {
-            return "/" + run.getUrl()+"artifact/*zip*/archive.zip";
-        }
-
-        return null;
+        return "/" + run.getUrl()+"artifact/*zip*/archive.zip";
     }
 
     protected BlueRun stop(Boolean blocking, Integer timeOutInSecs, StoppableRun stoppableRun){

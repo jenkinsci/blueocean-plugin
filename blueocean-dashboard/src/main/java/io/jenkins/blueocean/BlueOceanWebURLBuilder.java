@@ -44,6 +44,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -108,15 +109,15 @@ public class BlueOceanWebURLBuilder {
             Run run = (Run) classicModelObject;
             Job job = run.getParent();
             BlueOceanModelMapping pipelineModelMapping = getPipelineModelMapping(job);
-            return pipelineModelMapping.blueUiUrl + "/detail/" + encodeURIComponent(job.getName()) + "/" + encodeURIComponent(run.getId());
+            // The job can be created with a name that has special encoding chars in it (if created outside the UI e.g. MBP indexing),
+            // specifically %. Encoding it again breaks things ala JENKINS-40137. The creation name can also
+            // have spaces, even from the UI (it should prevent that). So, decode to revert anything that's already
+            // encoded and re-encode to do the full monty. Nasty :)
+            return pipelineModelMapping.blueUiUrl + "/detail/" + encodeURIComponent(decodeURIComponent(job.getName())) + "/" + encodeURIComponent(run.getId());
         } else if (classicModelObject instanceof Item) {
             Resource blueResource = BluePipelineFactory.resolve((Item) classicModelObject);
-            if (blueResource != null) {
-                if (blueResource instanceof BlueMultiBranchPipeline) {
-                    return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
-                } else if (blueResource instanceof BluePipeline) {
-                    return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName());
-                }
+            if (blueResource instanceof BlueMultiBranchPipeline) {
+                return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
             }
         }
 
@@ -159,6 +160,14 @@ public class BlueOceanWebURLBuilder {
                 blueResource,
                 getOrgPrefix() + "/" + encodeURIComponent(blueResource.getFullName())
             );
+        }
+    }
+
+    static String decodeURIComponent(String string) {
+        try {
+            return URLDecoder.decode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Unexpected UTF-8 encoding error.", e);
         }
     }
 
