@@ -139,13 +139,13 @@ export class SseBus {
             .then((data) => {
                 const updatedRun = utils.clone(data);
 
-                //FIXME: Talk to CMeyers why we cannot use the data.state?
+                // FIXME: Talk to CMeyers why we cannot use the data.state?
                 // in many cases the SSE and subsequent REST call occur so quickly
                 // that the run's state is stale. force the state to the correct value.
                 if (event.jenkins_event === 'job_run_ended') {
-                  updatedRun.state = 'FINISHED';
+                    updatedRun.state = 'FINISHED';
                 } else if (event.jenkins_event === 'job_run_paused') {
-                    updatedRun.state='PAUSED';
+                    updatedRun.state = 'PAUSED';
                 } else {
                     updatedRun.state = 'RUNNING';
                 }

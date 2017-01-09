@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.42-unpublishedEvents1",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.42-unpublishedEvents1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.42-unpublishedEvents1.tgz",
+      "version": "0.0.43-unpublishedEvents1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.43-unpublishedEvents1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.43-unpublishedEvents1.tgz",
       "dependencies": {
         "history": {
           "version": "3.2.1",
