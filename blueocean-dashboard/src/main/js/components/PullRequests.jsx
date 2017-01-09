@@ -28,7 +28,7 @@ const NotSupported = ({ t }) => (
         <EmptyStateView>
             <Markdown>
                 {t('EmptyState.pr.notSupported', {
-                    defaultValue: '# Pull Requests are unsupported\nValidated pull request builds only work with the _Multibranch Pipeline_ job type. This is just one of the many reasons to switch to Jenkins Pipeline.\n\n[Learn more](https://jenkins.io/doc/book/pipeline-as-code/)',
+                    defaultValue: '# Pull Requests are unsupported\nValidated pull requests only work with the _Multibranch Pipeline_ job type. This is just one of the many reasons to switch to Jenkins Pipeline.\n\n[Learn more](https://jenkins.io/doc/book/pipeline-as-code/)',
                 })}
             </Markdown>
         </EmptyStateView>
@@ -71,14 +71,14 @@ export class PullRequests extends Component {
 
         const head = 'pipelinedetail.pullrequests.header';
         const status = t(`${head}.status`, { defaultValue: 'Status' });
-        const build = t(`${head}.build`, { defaultValue: 'PR' });
+        const runHeader = t(`${head}.run`, { defaultValue: 'PR' });
         const author = t(`${head}.author`, { defaultValue: 'Author' });
         const summary = t(`${head}.summary`, { defaultValue: 'Summary' });
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
 
         const headers = [
             status,
-            { label: build, className: 'build' },
+            { label: runHeader, className: 'run' },
             { label: summary, className: 'summary' },
             author,
             { label: completed, className: 'completed' },
