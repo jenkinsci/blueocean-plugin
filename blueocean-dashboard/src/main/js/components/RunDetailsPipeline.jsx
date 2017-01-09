@@ -80,12 +80,34 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.result.isQueued()) {
+        if (nextProps.result.isQueued()) {
             return;
         }
         const followAlong = this.state.followAlong;
         this.mergedConfig = this.generateConfig({ ...nextProps, followAlong });
-
+        
+        if (this.mergedConfig.supportsNode && (!nextProps.nodes || !nextProps.nodes[this.mergedConfig.nodeKey])) {
+            const tryNodes = () => {
+                // in order to handle queued items during re-run, we need to retry fetching nodes periodically
+                if (!this.props.nodes || !this.props.nodes[this.mergedConfig.nodeKey]) {
+                    this.props.fetchNodes(this.mergedConfig);
+                }
+            };
+            setTimeout(tryNodes, 500);
+        }
+        
+        if (!nextProps.steps || !nextProps.steps[this.mergedConfig.stepKey]) {
+            const trySteps = () => {
+                this.props.fetchSteps({ ...this.mergedConfig, refetch: true });
+                if (!this.props.steps || !this.props.steps[this.mergedConfig.stepKey]) {
+                    setTimeout(trySteps, 500);
+                } else {
+                    this.setState({ followAlong: true });
+                }
+            };
+            setTimeout(trySteps, 500);
+        }
+        
         // we do not want any timeouts if we are not doing karaoke
         if (!this.state.followAlong && this.timeout) {
             clearTimeout(this.timeout);
