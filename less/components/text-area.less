@@ -1,6 +1,7 @@
 .TextArea {
     .TextArea-medium;
-    width: 240px;
+    display: inline-block;
+    width: 100%;
 
     .TextArea-control {
         width: 100%;
@@ -18,6 +19,8 @@
         }
     }
 }
+
+// sizing
 
 .TextArea-small {
     height: 83px; // 5 lines
@@ -50,5 +53,15 @@
 
     .layout-large & {
         .TextArea-large;
+    }
+}
+
+// errors
+
+.TextArea {
+    .TextArea-control {
+        .FormElement.u-error-state & {
+            border-color: @brand-danger;
+        }
     }
 }

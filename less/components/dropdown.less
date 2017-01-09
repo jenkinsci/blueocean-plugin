@@ -1,11 +1,10 @@
-@dropdown-min-width: 200px;
-
 .Dropdown {
-    display: flex;
+    display: inline-flex;
+    width: 100%;
     align-items: center;
 
     .Dropdown-button {
-        min-width: @dropdown-min-width;
+        width: 100%;
         padding: 5px 8px;
         padding-right: 25px;
         flex-grow: 0;
@@ -15,6 +14,10 @@
         font-family: @font-family-base;
         .control-border;
         .text-overflow;
+
+        &[disabled]:hover {
+            background-color: inherit;
+        }
     }
 
     .Dropdown-thumb {
@@ -37,8 +40,8 @@
     }
 
     .Dropdown-menu {
+        width: 100%;
         overflow-y: scroll;
-        min-width: @dropdown-min-width;
         max-height: 200px;
         list-style-type: none;
         padding: 0;

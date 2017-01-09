@@ -1,19 +1,17 @@
-/**
- * Created by cmeyers on 11/1/16.
- */
 import React, { PropTypes } from 'react';
 
 export function FormElement(props) {
     const extraClass = props.className || '';
-    const errorClass = props.errorMessage ? 'error-state' : '';
+    const errorClass = props.errorMessage ? 'u-error-state' : '';
+    const dividerClass = props.showDivider ? 'u-show-divider' : '';
 
     return (
-        <div className={`form-element ${extraClass} ${errorClass}`}>
-            <div className="form-heading">
-                <label className="form-label">{props.title}</label>
+        <div className={`FormElement ${extraClass} ${errorClass} ${dividerClass}`}>
+            <div className="FormElement-heading">
+                <label className="FormElement-title">{props.title}</label>
                 <span>&nbsp;</span>
                 { props.errorMessage &&
-                <span className="error-text">- {props.errorMessage}</span>
+                <span className="FormElement-error">- {props.errorMessage}</span>
                 }
             </div>
 
@@ -27,4 +25,5 @@ FormElement.propTypes = {
     className: PropTypes.string,
     title: PropTypes.string,
     errorMessage: PropTypes.string,
+    showDivider: PropTypes.bool,
 };

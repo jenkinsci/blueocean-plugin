@@ -1,6 +1,7 @@
 .TextInput {
     .TextInput-medium;
-    width: 240px;
+    display: inline-block;
+    width: 100%;
 
     .TextInput-control {
         width: 100%;
@@ -17,6 +18,8 @@
         }
     }
 }
+
+// sizing
 
 .TextInput-small {
     .TextInput-control {
@@ -43,5 +46,15 @@
 
     .layout-large & {
         .TextInput-large;
+    }
+}
+
+// errors
+
+.TextInput {
+    .TextInput-control {
+        .FormElement.u-error-state & {
+            border-color: @brand-danger;
+        }
     }
 }

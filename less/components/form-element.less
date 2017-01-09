@@ -1,21 +1,69 @@
-.form-element {
+.FormElement {
+    .FormElement-medium;
     display: flex;
     flex-direction: column;
-    font-size: 16px;
-    margin-bottom: 10px;
-}
 
-.error-text {
-    color: @brand-danger;
-}
-
-.form-element.error-state {
-    .form-label {
+    .FormElement-error {
         color: @brand-danger;
     }
 
-    .text-field {
-        border-color: @brand-danger;
-        outline-color: @brand-danger-lite;
+    &.u-show-divider .FormElement-heading {
+        border-bottom: 1px solid @gray;
+    }
+}
+
+// sizing
+
+.FormElement-small {
+    margin-bottom: 6px;
+
+    .FormElement-heading {
+        padding-bottom: 2px;
+    }
+
+    &.u-show-divider .FormElement-heading {
+        margin-bottom: 4px;
+    }
+}
+
+.FormElement-medium {
+    margin-bottom: 10px;
+
+    .FormElement-heading {
+        padding-bottom: 4px;
+    }
+
+    &.u-show-divider .FormElement-heading {
+        margin-bottom: 6px;
+    }
+}
+
+.FormElement-large {
+    margin-bottom: 16px;
+
+    .FormElement-heading {
+        padding-bottom: 8px;
+    }
+
+    &.u-show-divider .FormElement-heading {
+        margin-bottom: 12px;
+    }
+}
+
+.FormElement {
+    .layout-small & {
+        .FormElement-small;
+    }
+
+    .layout-large & {
+        .FormElement-large;
+    }
+}
+
+// errors
+
+.FormElement.u-error-state {
+    .FormElement-title {
+        color: @brand-danger;
     }
 }

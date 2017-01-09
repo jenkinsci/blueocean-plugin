@@ -286,6 +286,7 @@ export class Dropdown extends React.Component {
         const openClass = this.state.menuOpen ? 'Dropdown-menu-open' : 'Dropdown-menu-closed';
         const promptClass = !this.state.selectedOption ? 'Dropdown-placeholder' : '';
         const buttonLabel = this._optionToLabel(this.state.selectedOption) || this.props.placeholder;
+        const menuWidth = this.buttonRef && this.buttonRef.offsetWidth || 0;
 
         return (
             <div className={`Dropdown ${openClass} ${extraClass}`}>
@@ -306,7 +307,11 @@ export class Dropdown extends React.Component {
                 </a>
 
                 { this.state.menuOpen &&
-                <FloatingElement targetElement={this.buttonRef} positionFunction={positionMenu}>
+                <FloatingElement
+                    targetElement={this.buttonRef}
+                    positionFunction={positionMenu}
+                    style={{width: menuWidth}}
+                >
                     <ul
                         ref={list => { this.menuRef = list; }}
                         className="Dropdown-menu"

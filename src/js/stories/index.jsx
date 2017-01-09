@@ -7,7 +7,7 @@ require('./ExpandablePathStories');
 require('./FavoriteStories.jsx');
 require('./filesize.jsx');
 require('./FloatingElementStories');
-// require('./FormStories');
+require('./FormElementStories');
 require('./modalview.jsx');
 require('./pipelinegraph.jsx');
 require('./pipelineresult.jsx');
