@@ -66,6 +66,11 @@
       "from": "@jenkins-cd/sse-gateway@0.0.9",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.9.tgz"
     },
+    "@jenkins-cd/storage": {
+      "version": "0.0.3",
+      "from": "@jenkins-cd/storage@0.0.3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.3.tgz"
+    },
     "@kadira/react-split-pane": {
       "version": "1.4.7",
       "from": "@kadira/react-split-pane@>=1.4.0 <2.0.0",
@@ -3623,6 +3628,11 @@
           "resolved": "https://registry.npmjs.org/json5/-/json5-0.5.0.tgz"
         }
       }
+    },
+    "localstorage-memory": {
+      "version": "1.0.2",
+      "from": "localstorage-memory@>=1.0.2 <2.0.0",
+      "resolved": "https://registry.npmjs.org/localstorage-memory/-/localstorage-memory-1.0.2.tgz"
     },
     "lodash": {
       "version": "4.17.2",
