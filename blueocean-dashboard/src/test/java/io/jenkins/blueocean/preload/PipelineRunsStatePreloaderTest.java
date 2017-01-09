@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class PipelineStatePreloaderTest extends BaseTest {
+public class PipelineRunsStatePreloaderTest extends BaseTest {
 
     @Test
     public void test() throws IOException, ExecutionException, InterruptedException, SAXException {
@@ -54,7 +54,7 @@ public class PipelineStatePreloaderTest extends BaseTest {
         Document doc = Jsoup.connect(projectBlueUrl + "/activity/").get();
         String script = doc.select("head script").toString();
 
-        Assert.assertTrue(script.contains(String.format("setState('prefetchdata.%s',", PipelineStatePreloader.class.getSimpleName())));
+        Assert.assertTrue(script.contains(String.format("setState('prefetchdata.%s',", PipelineRunsStatePreloader.class.getSimpleName())));
         Assert.assertTrue(script.contains("\"restUrl\":\"/blue/rest/organizations/jenkins/pipelines/freestyle/activities/?start=0&limit=26\""));
     }
 }

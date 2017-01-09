@@ -48,9 +48,9 @@ import java.util.logging.Logger;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Extension
-public class PipelineStatePreloader extends RESTFetchPreloader {
+public class PipelineRunsStatePreloader extends RESTFetchPreloader {
 
-    private static final Logger LOGGER = Logger.getLogger(PipelineStatePreloader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PipelineRunsStatePreloader.class.getName());
 
     private static final int DEFAULT_LIMIT = 26;
 
