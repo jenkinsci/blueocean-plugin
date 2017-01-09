@@ -68,7 +68,7 @@ export class DashboardCards extends Component {
                     />
                 </div>
               );
-        });
+          });
 
         const favoriteCards = this.props.favorites.map(favorite => {
             const pipeline = favorite.item;
@@ -91,8 +91,8 @@ export class DashboardCards extends Component {
                     <div className="favorites-card-stack">
                         <div> {t('dashboardCard.input.required')}</div>
                         <TransitionGroup transitionName="vertical-expand-collapse"
-                                         transitionEnterTimeout={300}
-                                         transitionLeaveTimeout={300}
+                          transitionEnterTimeout={300}
+                          transitionLeaveTimeout={300}
                         >
                           {pausedCards}
                         </TransitionGroup>
@@ -100,8 +100,8 @@ export class DashboardCards extends Component {
                     <div className="favorites-card-stack">
                         <div>{t('dashboardCard.input.favorite')}</div>
                         <TransitionGroup transitionName="vertical-expand-collapse"
-                                         transitionEnterTimeout={300}
-                                         transitionLeaveTimeout={300}
+                          transitionEnterTimeout={300}
+                          transitionLeaveTimeout={300}
                         >
                           {favoriteCards}
                         </TransitionGroup>
