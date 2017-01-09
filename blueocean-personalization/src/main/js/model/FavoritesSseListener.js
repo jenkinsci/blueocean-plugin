@@ -38,6 +38,7 @@ class FavoritesSseListener {
 
     _filterJobs(event) {
         const favorites = this.store.getState().favoritesStore.get('favorites');
+        console.log('perso', event);
 
         // suppress processing of any events whose job URL doesn't match the favorited item's URL
         if (favorites && favorites.size > 0) {

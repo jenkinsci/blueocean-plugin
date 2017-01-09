@@ -1,11 +1,11 @@
 {
   "name": "blueocean-personalization",
-  "version": "0.0.1",
+  "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.42-unpublishedEvents",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.42-unpublishedEvents",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.42-unpublishedEvents.tgz",
+      "version": "0.0.42-unpublishedEvents1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.42-unpublishedEvents1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.42-unpublishedEvents1.tgz",
       "dependencies": {
         "react-router": {
           "version": "3.0.0",
