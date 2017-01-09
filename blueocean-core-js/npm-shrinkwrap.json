@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.43-location2",
+  "version": "0.0.44-unpublished",
   "dependencies": {
     "@jenkins-cd/diag": {
       "version": "0.0.2",
