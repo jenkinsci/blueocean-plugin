@@ -8,6 +8,10 @@ export class DefaultSSEHandler {
 
     handleEvents = (event) => {
         switch (event.jenkins_event) {
+        case 'job_run_paused':
+        case 'job_run_unpaused':
+            this.updateJob(event);
+            break;
         case 'job_crud_created':
             // Refetch pagers here. This will pull in the newly created pipeline into the bunker.
             this.pipelineService.refreshPagers();
