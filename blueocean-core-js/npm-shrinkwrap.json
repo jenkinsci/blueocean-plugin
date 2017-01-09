@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.41-unpublished",
+  "version": "0.0.42-unpublished",
   "dependencies": {
     "@jenkins-cd/diag": {
       "version": "0.0.2",
@@ -34,9 +34,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.10.tgz"
     },
     "@jenkins-cd/storage": {
-      "version": "0.0.2",
-      "from": "@jenkins-cd/storage@latest",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.2.tgz"
+      "version": "0.0.3",
+      "from": "@jenkins-cd/storage@0.0.3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.3.tgz"
     },
     "abab": {
       "version": "1.0.3",
