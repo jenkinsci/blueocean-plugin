@@ -67,10 +67,7 @@ public class ActionProxiesImpl extends BlueActionProxy {
         for(Action action : Iterables.filter(actions, new Predicate<Action>() {
             @Override
             public boolean apply(Action action) {
-                if(action == null){
-                    return false;
-                }
-                return !BANNED_ACTIONS.contains(action.getClass().getName());
+                return action != null && !BANNED_ACTIONS.contains(action.getClass().getName());
             }
         })){
             actionProxies.add(new ActionProxiesImpl(action, parent));
