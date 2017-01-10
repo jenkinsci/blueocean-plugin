@@ -65,6 +65,7 @@ export class RunRecord extends Record({
     state: null,
     type: null,
     commitId: null,
+    parameters: null,
     artifactsZipFile: null,
 }) {
     isQueued() {

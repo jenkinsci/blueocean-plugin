@@ -1,11 +1,15 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, Table } from '@jenkins-cd/design-language';
+import {
+  EmptyStateView,
+  Table,
+} from '@jenkins-cd/design-language';
 import { RunButton, capable } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
+import { observer } from 'mobx-react';
+import InputParameters from './InputParameters';
 import Runs from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import { observer } from 'mobx-react';
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -39,6 +43,7 @@ EmptyState.propTypes = {
 };
 @observer
 export class Activity extends Component {
+
     componentWillMount() {
         if (this.context.params) {
             const organization = this.context.params.organization;
@@ -53,7 +58,7 @@ export class Activity extends Component {
         if (!pipeline || this.pager.pending) {
             return null;
         }
-
+        const { parameters, _links } = pipeline;
 
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
 
@@ -100,16 +105,28 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ];
 
+        const runButtonProps = {
+            buttonType: 'run-only',
+            runnable: pipeline,
+            innerButtonClasses: 'btn-secondary',
+            onNavigation,
+            latestRun,
+        };
+        if (parameters) {
+            runButtonProps.onClick = () => {
+                this.refs.inputParameters.show();
+            };
+        }
         return (<main>
             <article className="activity">
-                { showRunButton &&
-                <RunButton
+                <InputParameters
+                  ref="inputParameters"
+                  input={{ parameters, _links }}
                   runnable={pipeline}
-                  latestRun={latestRun}
-                  buttonType="run-only"
                   onNavigation={onNavigation}
-                  innerButtonClasses="btn-secondary"
                 />
+                { showRunButton &&
+                <RunButton {...runButtonProps} />
                 }
                 {runs.length > 0 &&
                 <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
