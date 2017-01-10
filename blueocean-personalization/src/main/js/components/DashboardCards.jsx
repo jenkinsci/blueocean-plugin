@@ -73,9 +73,9 @@ export class DashboardCards extends Component {
         const favoriteCards = this.props.favorites
           .filter(favorite => favorite.item.latestRun.state !== 'PAUSED')
           .map(favorite => {
-            const pipeline = favorite.item;
+              const pipeline = favorite.item;
 
-            return (
+              return (
                 <div key={favorite._links.self.href}>
                     <PipelineCard
                       router={this.props.router}
@@ -85,13 +85,13 @@ export class DashboardCards extends Component {
                     />
                 </div>
             );
-        });
+          });
 
         const inputParent = pausedCards.size > 0 ? (<div className="favorites-card-stack">
               <div> {t('dashboardCard.input.required')}</div>
               <TransitionGroup transitionName="vertical-expand-collapse"
-                               transitionEnterTimeout={300}
-                               transitionLeaveTimeout={300}
+                transitionEnterTimeout={300}
+                transitionLeaveTimeout={300}
               >
                 {pausedCards}
               </TransitionGroup>
