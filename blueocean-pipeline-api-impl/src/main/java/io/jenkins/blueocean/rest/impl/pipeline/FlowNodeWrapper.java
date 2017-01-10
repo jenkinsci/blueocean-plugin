@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -29,6 +30,8 @@ public class FlowNodeWrapper {
     private final WorkflowRun run;
 
     private List<FlowNodeWrapper> parents = new ArrayList<>();
+
+    private ErrorAction blockErrorAction;
 
 
 
@@ -128,5 +131,13 @@ public class FlowNodeWrapper {
     @Override
     public int hashCode() {
         return node.hashCode();
+    }
+
+    public ErrorAction getBlockErrorAction() {
+        return blockErrorAction;
+    }
+
+    public void setBlockErrorAction(ErrorAction blockErrorAction) {
+        this.blockErrorAction = blockErrorAction;
     }
 }
