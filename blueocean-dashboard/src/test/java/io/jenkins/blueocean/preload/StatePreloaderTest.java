@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class PipelineRunsStatePreloaderTest extends BaseTest {
+public class StatePreloaderTest extends BaseTest {
 
     @Test
     public void test() throws IOException, ExecutionException, InterruptedException, SAXException {
