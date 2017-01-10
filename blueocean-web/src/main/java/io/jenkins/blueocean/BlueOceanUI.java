@@ -1,6 +1,9 @@
 package io.jenkins.blueocean;
 
+import com.google.inject.Inject;
 import hudson.ExtensionList;
+import jenkins.model.Jenkins;
+import jnr.ffi.annotations.In;
 
 import java.util.List;
 
@@ -11,6 +14,9 @@ import java.util.List;
  */
 public class BlueOceanUI {
     private final String urlBase;
+
+    @Inject
+    private ResourceManager resourceManager;
 
     public BlueOceanUI(String rootPath) {
         this.urlBase = rootPath;
@@ -40,5 +46,9 @@ public class BlueOceanUI {
 
     public List<BluePageDecorator> getPageDecorators(){
         return BluePageDecorator.all();
+    }
+
+    public ResourceManager getResources() {
+        return resourceManager;
     }
 }
