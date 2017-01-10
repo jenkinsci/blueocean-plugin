@@ -1,14 +1,14 @@
 .credentials-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
 
-    .credentials-type-picker {
-        min-width: 250px;
-    }
+    > .FormElement {
+        flex: 0 1 50%;
+        max-width: 50%;
+        margin-right: 20px;
 
-    .credentials-separator {
-        width: 50px;
+        &:last-child {
+            margin: 0;
+        }
     }
 }
 

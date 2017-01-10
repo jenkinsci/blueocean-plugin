@@ -1,15 +1,32 @@
-/**
- * Created by cmeyers on 10/19/16.
- */
 import React, { PropTypes } from 'react';
-import { Dropdown } from '@jenkins-cd/design-language';
+import { Dropdown, ErrorMessage, FormElement, PasswordInput, RadioButtonGroup, TextArea, TextInput } from '@jenkins-cd/design-language';
+import ValidationUtils from '../../util/ValidationUtils';
+import debounce from 'lodash.debounce';
+import pause from '../flow2/pause';
 
 import FlowStep from '../flow2/FlowStep';
 
-const CREDENTIAL_CHOICE = {
-    SSH: 'SSH',
+const NEW_CREDENTIAL_TYPE = {
+    SSH_KEY: 'SSH_KEY',
     SYSTEM_SSH: 'SYSTEM_SSH',
     USER_PASS: 'USER_PASS',
+    values: () => [
+        NEW_CREDENTIAL_TYPE.SSH_KEY,
+        NEW_CREDENTIAL_TYPE.USER_PASS,
+        NEW_CREDENTIAL_TYPE.SYSTEM_SSH,
+    ],
+    toLabel(option) {
+        switch (option) {
+        case NEW_CREDENTIAL_TYPE.SSH_KEY:
+            return 'SSH Key';
+        case NEW_CREDENTIAL_TYPE.SYSTEM_SSH:
+            return 'Use System SSH';
+        case NEW_CREDENTIAL_TYPE.USER_PASS:
+            return 'Username & Password';
+        default:
+            return '';
+        }
+    },
 };
 
 /**
@@ -23,13 +40,18 @@ export default class GitConnectStep extends React.Component {
 
         this.state = {
             repositoryUrl: null,
+            repositoryErrorMsg: null,
+            credentialsErrorMsg: null,
             existingCredentials: null,
             selectedCredential: null,
-            credentialsSelection: null,
+            newCredentialType: null,
             sshKeyValue: null,
+            sshKeyErrorMsg: null,
             usernameValue: null,
+            usernameErrorMsg: null,
             passwordValue: null,
-            createButtonDisabled: true,
+            passwordErrorMsg: null,
+            createButtonDisabled: false,
             createInProgress: false,
         };
     }
@@ -37,11 +59,12 @@ export default class GitConnectStep extends React.Component {
     componentDidMount() {
         this.props.flowManager
             .listAllCredentials()
+            .then(pause)
             .then(data => this._setExistingCredentials(data));
     }
 
     componentDidUpdate() {
-        this._updateCreateButton();
+        // this._updateCreateButton();
     }
 
     _setExistingCredentials(creds) {
@@ -54,78 +77,154 @@ export default class GitConnectStep extends React.Component {
         this.setState({
             repositoryUrl: value,
         });
+
+        this._updateRepositoryErrorMsg();
     }
 
-    _selectExistingCredential(cred) {
+    _updateRepositoryErrorMsg = debounce(() => {
+        if (this.state.repositoryErrorMsg && ValidationUtils.validateUrl(this.state.repositoryUrl)) {
+            this.setState({
+                repositoryErrorMsg: null,
+            });
+        }
+    }, 200);
+
+    _selectedCredentialChange(cred) {
         this.setState({
             selectedCredential: cred,
         });
+
+        this._updateCredentialsErrorMsg();
+        this._updateSshKeyErrorMsg();
+        this._updateUsernameErrorMsg();
+        this._updatePasswordErrorMsg();
     }
 
-    _credentialsChange(option) {
+    _newCredentialTypeChange(option) {
         this.setState({
-            credentialsSelection: option,
+            newCredentialType: option,
         });
+
+        this._updateCredentialsErrorMsg();
     }
+
+    _updateCredentialsErrorMsg = debounce(() => {
+        if (this.state.credentialsErrorMsg && (this.state.newCredentialType || this.state.selectedCredential)) {
+            this.setState({
+                credentialsErrorMsg: null,
+            });
+        }
+    }, 200);
 
     _sshKeyChange(value) {
         this.setState({
             sshKeyValue: value,
         });
+
+        this._updateSshKeyErrorMsg();
     }
+
+    _updateSshKeyErrorMsg = debounce(() => {
+        if (this.state.sshKeyErrorMsg && this.state.sshKeyValue) {
+            this.setState({
+                sshKeyErrorMsg: null,
+            });
+        }
+    }, 200);
 
     _usernameChange(value) {
         this.setState({
             usernameValue: value,
         });
+
+        this._updateSshKeyErrorMsg();
     }
+
+    _updateUsernameErrorMsg = debounce(() => {
+        if (this.state.usernameErrorMsg && this.state.usernameValue) {
+            this.setState({
+                usernameErrorMsg: null,
+            });
+        }
+    }, 200);
 
     _passwordChange(value) {
         this.setState({
             passwordValue: value,
         });
+
+        this._updatePasswordErrorMsg();
     }
 
-    /**
-     * Enables/disables the create button based on the state of the form.
-     * @private
-     */
-    _updateCreateButton() {
-        let disabled = !this._isInputValid();
-
-        if (this.state.createInProgress) {
-            disabled = true;
-        }
-
-        // only set the new button state if it's out of sync; prevents nasty update loop
-        if (this.state.createButtonDisabled !== disabled) {
+    _updatePasswordErrorMsg = debounce(() => {
+        if (this.state.passwordErrorMsg && this.state.passwordValue) {
             this.setState({
-                createButtonDisabled: disabled,
+                passwordErrorMsg: null,
             });
         }
-    }
+    }, 200);
 
-    _isInputValid() {
-        if (!this.state.repositoryUrl) {
-            return false;
+    _performValidation() {
+        let result = true;
+
+        if (!ValidationUtils.validateUrl(this.state.repositoryUrl)) {
+            this.setState({
+                repositoryErrorMsg: 'please enter a valid URL.',
+            });
+
+            result = false;
+        }
+
+        if (!this.state.newCredentialType && !this.state.selectedCredential) {
+            this.setState({
+                credentialsErrorMsg: 'Please make a selection below or choose an existing credential.',
+            });
+
+            result = false;
         }
 
         if (this.state.selectedCredential) {
             return true;
-        }
-
-        if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
-            return !!this.state.sshKeyValue;
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
-            return !(!this.state.usernameValue || !this.state.passwordValue);
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH) {
+        } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SYSTEM_SSH) {
             return true;
+        } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS) {
+            if (!this.state.usernameValue) {
+                this.setState({
+                    usernameErrorMsg: 'Please enter a valid username',
+                });
+
+                result = false;
+            }
+
+            if (!this.state.passwordValue) {
+                this.setState({
+                    passwordErrorMsg: 'Please enter a valid password',
+                });
+
+                result = false;
+            }
+
+            return result;
+        } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SSH_KEY) {
+            if (!this.state.sshKeyValue) {
+                this.setState({
+                    sshKeyErrorMsg: 'Please enter a valid SSH public key.',
+                });
+
+                result = false;
+            }
         }
 
-        return false;
+        return result;
     }
 
     _beginCreation() {
+        const isValid = this._performValidation();
+
+        if (!isValid) {
+            return;
+        }
+
         this.setState({
             createInProgress: true,
             createButtonDisabled: true,
@@ -133,11 +232,11 @@ export default class GitConnectStep extends React.Component {
 
         if (this.state.selectedCredential) {
             this.props.flowManager.createPipeline(this.state.repositoryUrl, this.state.selectedCredential.id);
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
+        } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SSH_KEY) {
             this.props.flowManager.createWithSshKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
+        } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS) {
             this.props.flowManager.createWithUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH) {
+        } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SYSTEM_SSH) {
             this.props.flowManager.createWithSystemSshCredential(this.state.repositoryUrl);
         }
     }
@@ -147,72 +246,60 @@ export default class GitConnectStep extends React.Component {
             <FlowStep {...this.props} title="Connect to a Git repository">
                 <p>Make sure you have a Jenkinsfile... yadda yadda.</p>
 
-                <h2>Repository Url</h2>
-                <input type="text" onChange={(e) => this._repositoryUrlChange(e.currentTarget.value)} />
+                <FormElement title="Repository Url" errorMessage={this.state.repositoryErrorMsg}>
+                    <TextInput className="text-repository-url" onChange={val => this._repositoryUrlChange(val)} />
+                </FormElement>
 
-                <h2>Credentials</h2>
+                { this.state.credentialsErrorMsg && <ErrorMessage text={this.state.credentialsErrorMsg} /> }
 
                 <div className="credentials-container">
-                    <ul className="credentials-type-picker">
-                        <li>
-                            <label>
-                                <input type="radio"
-                                  value={CREDENTIAL_CHOICE.SSH}
-                                  checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH}
-                                  onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.SSH)}
-                                />
-                                <span>SSH</span>
-                            </label>
-                        </li>
-                        <li>
-                            <label>
-                                <input type="radio"
-                                  value={CREDENTIAL_CHOICE.USER_PASS}
-                                  checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS}
-                                  onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.USER_PASS)}
-                                />
-                                <span>Username &amp; Password</span>
-                            </label>
-                        </li>
-                        <li>
-                            <label>
-                                <input type="radio"
-                                  value={CREDENTIAL_CHOICE.SYSTEM_SSH}
-                                  checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH}
-                                  onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.SYSTEM_SSH)}
-                                />
-                                <span>Use System SSH</span>
-                            </label>
-                        </li>
-                    </ul>
+                    <FormElement title="New credential" showDivider>
+                        <RadioButtonGroup
+                          className="credentials-type-picker"
+                          options={NEW_CREDENTIAL_TYPE.values()}
+                          labelFunction={NEW_CREDENTIAL_TYPE.toLabel}
+                          onChange={option => this._newCredentialTypeChange(option)}
+                        />
 
-                    <div className="credentials-separator">OR</div>
-                    <div className="credentials-picker">
+                        { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SSH_KEY &&
+                        <FormElement title="SSH Public Key" errorMessage={this.state.sshKeyErrorMsg}>
+                            <TextArea onChange={val => this._sshKeyChange(val)} />
+                        </FormElement>
+                        }
+
+                        { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS &&
+                        <div>
+                            <FormElement title="Username" errorMessage={this.state.usernameErrorMsg}>
+                                <TextInput onChange={val => this._usernameChange(val)} />
+                            </FormElement>
+
+                            <FormElement title="Password" errorMessage={this.state.passwordErrorMsg}>
+                                <PasswordInput onChange={val => this._passwordChange(val)} />
+                            </FormElement>
+                        </div>
+                        }
+                    </FormElement>
+
+                    <FormElement title="Existing Credential" showDivider>
+                    {
+                        !this.state.existingCredentials &&
+                        <div>Loading Credentials...</div>
+                    }
+                    {
+                        this.state.existingCredentials && !this.state.existingCredentials.length &&
+                        <div>No credentials available.</div>
+                    }
+                    {
+                        this.state.existingCredentials && this.state.existingCredentials.length &&
                         <Dropdown
                           placeholder="Choose credentials"
                           options={this.state.existingCredentials}
                           labelField="displayName"
-                          onChange={opt => this._selectExistingCredential(opt)}
+                          onChange={opt => this._selectedCredentialChange(opt)}
                         />
-                    </div>
+                    }
+                    </FormElement>
                 </div>
-
-                { this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH &&
-                <div>
-                    <h2>SSH Key</h2>
-                    <textarea onChange={(e) => this._sshKeyChange(e.currentTarget.value)} />
-                </div>
-                }
-
-                { this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS &&
-                <div>
-                    <h2>Username</h2>
-                    <input type="text" name="username" onChange={(e) => this._usernameChange(e.currentTarget.value)} />
-
-                    <h2>Password</h2>
-                    <input type="password" name="password" onChange={(e) => this._passwordChange(e.currentTarget.value)} />
-                </div>
-                }
 
                 <button
                   onClick={() => this._beginCreation()}
