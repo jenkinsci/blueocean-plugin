@@ -11,6 +11,7 @@ import status from './FlowStepStatus';
 export default function FlowStep(props) {
     return (
         <VerticalStep
+          className={props.className}
           status={props.status}
           percentage={props.percentage}
           isLastStep={props.isLastStep}
@@ -26,8 +27,13 @@ export default function FlowStep(props) {
 
 FlowStep.propTypes = {
     children: PropTypes.node,
+    className: PropTypes.string,
     title: PropTypes.string,
     status: PropTypes.string,
     percentage: PropTypes.number,
     isLastStep: PropTypes.bool,
+};
+
+FlowStep.defaultProps = {
+    className: '',
 };
