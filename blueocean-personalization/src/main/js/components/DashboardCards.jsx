@@ -89,8 +89,7 @@ export class DashboardCards extends Component {
         };
         // Only show paused pipelines when we really have some
         // do we have any paused pipelines?
-        const hasPausedFavorites = pausedCards.length > 0;
-        const pausedCardsStack = hasPausedFavorites ? (<StackOutput
+        const pausedCardsStack = pausedCards.length > 0 ? (<StackOutput
           message={t('dashboardCard.input.required')}
           cards={pausedCards}
         />) : null;
