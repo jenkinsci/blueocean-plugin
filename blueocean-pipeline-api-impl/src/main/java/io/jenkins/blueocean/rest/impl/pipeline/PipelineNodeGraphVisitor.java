@@ -1,14 +1,17 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
+import hudson.model.Queue;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.graphanalysis.DepthFirstScanner;
@@ -21,6 +24,7 @@ import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StatusAndTiming;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +98,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     }
 
+    private StepStartNode agentNode = null;
+
     @Override
     public void chunkEnd(@Nonnull FlowNode endNode, @CheckForNull FlowNode afterBlock, @Nonnull ForkScanner scanner) {
         super.chunkEnd(endNode, afterBlock, scanner);
@@ -106,6 +112,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             dump("\tStartNode: "+((StepEndNode) endNode).getStartNode());
         }
 
+        if(endNode instanceof StepStartNode){
+            if(endNode.getDisplayFunctionName().equals("node")){
+                agentNode = (StepStartNode) endNode;
+            }
+        }
         //if block stage node push it to stack as it may have nested stages
         if(endNode instanceof StepEndNode
                 && !PipelineNodeUtil.isSyntheticStage(((StepEndNode) endNode).getStartNode()) //skip synthetic stages
@@ -275,6 +286,31 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
                 status, times, run);
 
+        //check if its blocked
+        if(agentNode != null){
+            for(FlowNode p:agentNode.getParents()){
+                if(p.equals(chunk.getFirstNode())){
+                    //see if there is blocked item in queue with this id
+                    for(Queue.Item i: Jenkins.getInstance().getQueue().getItems()){
+                        if(i.task instanceof ExecutorStepExecution.PlaceholderTask){
+                            ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
+                            String cause = i.getCauseOfBlockage().getShortDescription();
+                            if(task.getCauseOfBlockage() != null){
+                                cause = task.getCauseOfBlockage().getShortDescription();
+                            }
+                            if(cause != null){
+                                //XXX: We need to somehow associate the Queue.Item to the labeled 'node' block in the script
+                                //     and if this node belongs inside stage then use this Queue.Item.getCauseOfBlockage() in this stage.
+
+                                //     For now we simply use it to set on stage as stages are sequential. when declarative supports parallel
+                                //     execution of stages then it needs to do association of Queue.Item to appropriate stage/parallel.
+                                stage.setCauseOfFailure(cause);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);
         if(!skippedStage && !parallelBranches.isEmpty()){

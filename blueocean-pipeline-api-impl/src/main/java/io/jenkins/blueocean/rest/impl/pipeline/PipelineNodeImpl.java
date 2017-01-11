@@ -91,6 +91,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
+    public String getCauseOfBlockage() {
+        return node.getCauseOfFailure();
+    }
+
+    @Override
     public BluePipelineStepContainer getSteps() {
         return new PipelineStepContainerImpl(node, self, run);
     }
