@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import { ErrorMessage } from '../ErrorMessage';
 
 export function FormElement(props) {
     const extraClass = props.className || '';
@@ -11,7 +12,7 @@ export function FormElement(props) {
                 <label className="FormElement-title">{props.title}</label>
                 <span>&nbsp;</span>
                 { props.errorMessage &&
-                <span className="FormElement-error">- {props.errorMessage}</span>
+                <ErrorMessage>- {props.errorMessage}</ErrorMessage>
                 }
             </div>
 
@@ -21,7 +22,7 @@ export function FormElement(props) {
 }
 
 FormElement.propTypes = {
-    children: PropTypes.element,
+    children: PropTypes.node,
     className: PropTypes.string,
     title: PropTypes.string,
     errorMessage: PropTypes.string,

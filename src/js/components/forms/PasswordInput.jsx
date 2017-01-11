@@ -6,7 +6,7 @@ export class PasswordInput extends React.Component {
     render() {
         return (
             <TextControl {...this.props} className={`PasswordInput ${this.props.className}`}>
-                <input type="password" className="PasswordInput-control" { ...{ name: this.props.name } } />
+                <input type="password" className="TextInput-control" { ...{ name: this.props.name } } />
             </TextControl>
         );
     }

@@ -1,0 +1,26 @@
+.ErrorMessage {
+    .ErrorMessage-medium;
+    .u-error-color;
+}
+
+.ErrorMessage-small {
+    margin-bottom: 6px;
+}
+
+.ErrorMessage-medium {
+    margin-bottom: 10px;
+}
+
+.ErrorMessage-large {
+    margin-bottom: 16px;
+}
+
+.ErrorMessage {
+    .layout-small & {
+        .ErrorMessage-small;
+    }
+
+    .layout-large & {
+        .ErrorMessage-large;
+    }
+}

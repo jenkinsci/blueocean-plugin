@@ -3,6 +3,7 @@ require('./CheckboxStories');
 require('./DropdownStories');
 require('./emptystateview.jsx');
 require('./HeaderStories.jsx');
+require('./ErrorMessageStories');
 require('./ExpandablePathStories');
 require('./FavoriteStories.jsx');
 require('./filesize.jsx');

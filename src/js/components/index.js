@@ -19,6 +19,7 @@ export {
 export {
     LiveStatusIndicator,
 } from './status/LiveStatusIndicator';
+export { ErrorMessage } from './ErrorMessage';
 export { Favorite } from './favorite/Favorite';
 export { ReadableDate } from './ReadableDate';
 export { CommitHash } from './CommitHash';

@@ -1,4 +1,4 @@
-.TextInput {
+.TextInput, .PasswordInput {
     .TextInput-medium;
     display: inline-block;
     width: 100%;
@@ -51,10 +51,10 @@
 
 // errors
 
-.TextInput {
-    .TextInput-control {
-        .FormElement.u-error-state & {
-            border-color: @brand-danger;
+.FormElement.u-error-state {
+    > .TextInput, > .PasswordInput {
+        .TextInput-control {
+            .u-error-border;
         }
     }
 }

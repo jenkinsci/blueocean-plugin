@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { storiesOf } from '@kadira/storybook';
 import { FormElement } from '../components/forms/FormElement';
+import { PasswordInput } from '../components/forms/PasswordInput';
 import { RadioButtonGroup } from '../components/forms/RadioButtonGroup';
 import { TextArea } from '../components/forms/TextArea';
 import { TextInput } from '../components/forms/TextInput';
@@ -36,8 +37,29 @@ function General() {
             <div style={style}>
                 <p>With errorMessage</p>
 
-                <FormElement title="Title" errorMessage="and errorMessage">
-                    <TextInput defaultValue="Child" />
+                <FormElement title="TextInput" errorMessage="error">
+                    <TextInput defaultValue="error" />
+                </FormElement>
+                <FormElement title="PasswordInput" errorMessage="error">
+                    <PasswordInput defaultValue="error" />
+                </FormElement>
+                <FormElement title="TextArea" errorMessage="error">
+                    <TextArea defaultValue="error" />
+                </FormElement>
+            </div>
+            <div style={style}>
+                <p>Nesting!</p>
+
+                <FormElement title="Authentication Details" showDivider errorMessage="provide key">
+                    <FormElement title="Username">
+                        <TextInput defaultValue="michael.garibaldi"/>
+                    </FormElement>
+                    <FormElement title="Password">
+                        <PasswordInput defaultValue="peekaboo"/>
+                    </FormElement>
+                    <FormElement title="Secret Key">
+                        <TextArea />
+                    </FormElement>
                 </FormElement>
             </div>
         </div>

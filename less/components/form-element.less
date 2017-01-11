@@ -7,8 +7,12 @@
         color: @brand-danger;
     }
 
-    &.u-show-divider .FormElement-heading {
-        border-bottom: 1px solid @gray;
+    > .FormElement-heading .ErrorMessage {
+        display: inline;
+    }
+
+    &.u-show-divider > .FormElement-heading {
+        border-bottom: 1px solid @gray-lighter;
     }
 }
 
@@ -63,7 +67,21 @@
 // errors
 
 .FormElement.u-error-state {
-    .FormElement-title {
-        color: @brand-danger;
+    > .FormElement-heading {
+        .u-error-color;
+    }
+}
+
+// nesting!
+
+.FormElement .FormElement {
+    margin-top: 10px;
+
+    .layout-small & {
+        margin-top: 6px;
+    }
+
+    .layout-large & {
+        margin-top: 16px;
     }
 }
