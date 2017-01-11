@@ -29,8 +29,8 @@ import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.ModelObjectSerializer;
 import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
@@ -43,14 +43,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Preload pipeline runs onto the page if the requested page is a pipeline runs page.
+ * Preload pipeline activity onto the page if the requested page is a pipeline activity page.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Extension
-public class PipelineRunsStatePreloader extends RESTFetchPreloader {
+public class PipelineActivityStatePreloader extends RESTFetchPreloader {
 
-    private static final Logger LOGGER = Logger.getLogger(PipelineRunsStatePreloader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PipelineActivityStatePreloader.class.getName());
 
     private static final int DEFAULT_LIMIT = 26;
 
@@ -59,26 +59,26 @@ public class PipelineRunsStatePreloader extends RESTFetchPreloader {
         BluePipeline pipeline = getPipeline(blueUrl);
 
         if (pipeline != null) {
-            // It's a pipeline page. Let's prefetch the pipeline runs and add them to the page,
+            // It's a pipeline page. Let's prefetch the pipeline activity and add them to the page,
             // saving the frontend the overhead of requesting them.
 
-            BlueRunContainer runsContainer = pipeline.getRuns();
-            Iterator<BlueRun> runsIterator = runsContainer.iterator(0, DEFAULT_LIMIT);
-            JSONArray runs = new JSONArray();
+            Container<Resource> activitiesContainer = pipeline.getActivities();
+            Iterator<Resource> activitiesIterator = activitiesContainer.iterator(0, DEFAULT_LIMIT);
+            JSONArray activities = new JSONArray();
 
-            while(runsIterator.hasNext()) {
-                BlueRun blueRun = runsIterator.next();
+            while(activitiesIterator.hasNext()) {
+                Resource blueActivity = activitiesIterator.next();
                 try {
-                    runs.add(JSONObject.fromObject(ModelObjectSerializer.toJson(blueRun)));
+                    activities.add(JSONObject.fromObject(ModelObjectSerializer.toJson(blueActivity)));
                 } catch (IOException e) {
-                    LOGGER.log(Level.FINE, String.format("Unable to preload runs for Job '%s'. Run serialization error.", pipeline.getFullName()), e);
+                    LOGGER.log(Level.FINE, String.format("Unable to preload runs for Job '%s'. Activity serialization error.", pipeline.getFullName()), e);
                     return null;
                 }
             }
 
             return new FetchData(
-                pipeline.getActivities().getLink().getHref() + "?start=0&limit=" + DEFAULT_LIMIT,
-                runs.toString());
+                activitiesContainer.getLink().getHref() + "?start=0&limit=" + DEFAULT_LIMIT,
+                activities.toString());
         }
 
         // Don't preload any data on the page.

@@ -56,7 +56,7 @@ public class StatePreloaderTest extends BaseTest {
         String script = doc.select("head script").toString();
 
         Assert.assertTrue(script.contains(String.format("setState('prefetchdata.%s',", PipelineStatePreloader.class.getSimpleName())));
-        Assert.assertTrue(script.contains(String.format("setState('prefetchdata.%s',", PipelineRunsStatePreloader.class.getSimpleName())));
+        Assert.assertTrue(script.contains(String.format("setState('prefetchdata.%s',", PipelineActivityStatePreloader.class.getSimpleName())));
         Assert.assertTrue(script.contains("\"restUrl\":\"/blue/rest/organizations/jenkins/pipelines/freestyle/activities/?start=0&limit=26\""));
     }
 }
