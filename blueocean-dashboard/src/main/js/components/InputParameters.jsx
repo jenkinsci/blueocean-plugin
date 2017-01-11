@@ -7,7 +7,7 @@ import {
 } from '@jenkins-cd/blueocean-core-js';
 import { Dialog } from '@jenkins-cd/design-language';
 
-import { supportedInputTypesMapping, ParameterService } from './parameter/index';
+import { ParameterService, ParametersRender } from './parameter/index';
 
 /**
  * Translate function
@@ -115,11 +115,14 @@ export default class InputParameters extends Component {
     render() {
         const { runnable, onNavigation, latestRun } = this.props;
         const parameters = this.parameterService.parameters;
-        const message = t('parameterized.pipeline.header', { defaultValue: 'Pipeline parameter' });
-        const ok = t('parameterized.pipeline.submit', { defaultValue: 'Build' });
+        const message = t('parametrised.pipeline.header', { defaultValue: 'Pipeline parameters' });
+        const ok = t('parametrised.pipeline.submit', { defaultValue: 'Build' });
         const cancelCaption = t('rundetail.input.cancel');
         const cancelButton = (<button title={cancelCaption} onClick={() => this.hide()} className="btn inputStepCancel run-button btn-secondary" >
             <span className="button-label">{cancelCaption}</span>
+        </button>);
+        const okButton = (<button title={ok} onClick={() => this.initializeBuild()} className="btn inputStepSubmit" >
+            <span className="button-label">{ok}</span>
         </button>);
         const runButtonProps = {
             buttonType: 'run-only',
@@ -128,38 +131,27 @@ export default class InputParameters extends Component {
             onNavigation,
             latestRun,
         };
+        // when we have build parameters we need to show them before trigger a build
         if (parameters.length > 0) {
             runButtonProps.onClick = () => {
                 this.show();
             };
         }
-        const buttons = [cancelButton,
-            <button title={ok} onClick={() => this.initializeBuild()} className="btn inputStepSubmit" >
-                <span className="button-label">{ok}</span>
-        </button>];
         return (<div>
             <RunButton {...runButtonProps} />
-            { this.state.visible && <Dialog
-              buttons={buttons}
-              onDismiss={() => console.log('User dismiss')}
-              title={message}
-              className="Dialog--input"
-            >
-                {
-                    parameters.map((parameter, index) => {
-                        const { type } = parameter;
-                        const returnValue = supportedInputTypesMapping[type];
-                        if (returnValue) {
-                            return React.createElement(returnValue, {
-                                ...parameter,
-                                key: index,
-                                onChange: (event) => this.parameterService.changeParameter(index, event),
-                            });
-                        }
-                        return <div>No component found for type {type}.</div>;
-                    })
-                }
-            </Dialog>}
+            { this.state.visible &&
+                <Dialog
+                  buttons={[cancelButton, okButton]}
+                  onDismiss={this.hide.bind(this)}
+                  title={message}
+                  className="Dialog--input"
+                >
+                    <ParametersRender
+                      parameters={parameters}
+                      onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
+                    />
+                </Dialog>
+            }
         </div>);
     }
 }
