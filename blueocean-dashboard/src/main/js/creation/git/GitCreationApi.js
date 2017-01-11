@@ -4,7 +4,6 @@ import TempUtils from '../TempUtils';
 
 /**
  * Proxy to the backend REST API.
- * Currently implemented as a mock.
  */
 export default class GitCreationApi {
 
@@ -12,7 +11,6 @@ export default class GitCreationApi {
         this._fetch = fetch || Fetch.fetchJSON;
     }
 
-    // eslint-disable-next-line no-unused-vars
     createPipeline(repositoryUrl, credentialId, pipelineName = null) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines`);
@@ -36,6 +34,21 @@ export default class GitCreationApi {
         };
 
         return this._fetch(createUrl, { fetchOptions });
+    }
+
+    checkPipelineNameAvailable(name) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const checkUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/${name}`);
+
+        const fetchOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        return this._fetch(checkUrl, { fetchOptions })
+            .then(() => false, () => true);
     }
 
 }

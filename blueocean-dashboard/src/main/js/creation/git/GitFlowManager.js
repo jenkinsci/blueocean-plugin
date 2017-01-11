@@ -1,5 +1,6 @@
 import React from 'react';
 import { action, observable } from 'mobx';
+import { Promise } from 'es6-promise';
 
 import FlowManager from '../flow2/FlowManager';
 import GitConnectStep from './GitConnectStep';
@@ -75,6 +76,14 @@ export default class GitFlowManger extends FlowManager {
                     this.createPipeline(repositoryUrl, credentialId)
                 )
             );
+    }
+
+    checkPipelineNameAvailable(name) {
+        if (!name) {
+            return new Promise(() => false);
+        }
+
+        return this._createApi.checkPipelineNameAvailable(name);
     }
 
     createPipeline(repositoryUrl, credentialId) {
