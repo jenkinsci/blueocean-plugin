@@ -7,10 +7,15 @@ import GitCompletedStep from './GitCompletedStep';
 import GitRenameStep from './steps/GitRenameStep';
 import FlowStatus from './GitCreationStatus';
 
+const SYSTEM_SSH_ID = 'github-ssh-key-master';
+const SYSTEM_SSH_DESCRIPTION = 'Master SSH Key for Git Creation';
+
 export default class GitFlowManger extends FlowManager {
 
     @observable
     creationStatus = null;
+
+    systemSshCredential = null;
 
     hasNameConflict = false;
 
@@ -36,7 +41,8 @@ export default class GitFlowManger extends FlowManager {
     }
 
     listAllCredentials() {
-        return this._credentialsApi.listAllCredentials();
+        return this._credentialsApi.listAllCredentials()
+            .then(creds => this._prepareCredentialsList(creds));
     }
 
     createWithSshKeyCredential(repositoryUrl, sshKey) {
@@ -49,7 +55,6 @@ export default class GitFlowManger extends FlowManager {
             );
     }
 
-    // eslint-disable-next-line no-unused-vars
     createWithUsernamePasswordCredential(repositoryUrl, username, password) {
         this._setStatus(FlowStatus.CREATE_CREDS);
 
@@ -60,10 +65,16 @@ export default class GitFlowManger extends FlowManager {
             );
     }
 
-    // eslint-disable-next-line no-unused-vars
     createWithSystemSshCredential(repositoryUrl) {
-        return;
-        // return this.createWithSshKeyCredential();
+        if (this.systemSshCredential) {
+            return this.createPipeline(repositoryUrl, this.systemSshCredential.id);
+        }
+
+        return this._credentialsApi.saveSystemSshCredential(SYSTEM_SSH_ID, SYSTEM_SSH_DESCRIPTION)
+            .then(({ credentialId }) => (
+                    this.createPipeline(repositoryUrl, credentialId)
+                )
+            );
     }
 
     createPipeline(repositoryUrl, credentialId) {
@@ -75,6 +86,19 @@ export default class GitFlowManger extends FlowManager {
     saveRenamedPipeline(pipelineName) {
         this.pipelineName = pipelineName;
         return this._initiateCreatePipeline();
+    }
+
+    _prepareCredentialsList(credentialList) {
+        const systemSsh = credentialList
+            .filter(item => item.id === SYSTEM_SSH_ID)
+            .pop();
+
+        if (systemSsh) {
+            this.systemSshCredential = systemSsh;
+        }
+
+        return credentialList
+            .filter(item => item.id !== SYSTEM_SSH_ID);
     }
 
     _initiateCreatePipeline() {
