@@ -5,20 +5,9 @@ import {
   ToastUtils,
   RunButton,
 } from '@jenkins-cd/blueocean-core-js';
-import {
-  ModalView,
-  ModalBody,
-  ModalHeader,
-} from '@jenkins-cd/design-language';
-import { supportedInputTypesMapping } from './parameter/index';
+import { Dialog } from '@jenkins-cd/design-language';
 
-/**
- * Simple helper to stop stopPropagation
- * @param event the event we want to cancel
- */
-const stopProp = (event) => {
-    event.stopPropagation();
-};
+import { supportedInputTypesMapping, ParameterService } from './parameter/index';
 
 /**
  * Translate function
@@ -26,9 +15,9 @@ const stopProp = (event) => {
 const t = i18nTranslator('blueocean-dashboard');
 
 /**
- * Creating a "<form/>"less form to submit the input parameters requested by the user in pipeline.
+ * Creating a "<form/>"less form to submit the build parameters requested by the user for a parametrised job..
  *
- * We keep all form data in state and change them onChange and onToggle (depending of the parameter
+ * We keep all form data in the ParameterService and change them onChange and onToggle (depending of the parameter
  * type). We match the different supported inputTypes with a mapping functions
  * @see supportedInputTypesMapping
  * That mapping delegates to the specific implementation where we further delegate to JDL components.
@@ -36,6 +25,13 @@ const t = i18nTranslator('blueocean-dashboard');
  * and further in './parameter/commonProptypes' you need to include the new type in the oneOf array.
  */
 export default class InputParameters extends Component {
+
+    constructor(props) {
+        super(props);
+        const { parameters = [] } = props.input;
+        this.parameterService = new ParameterService();
+        this.parameterService.addParameters(parameters);
+    }
 
     // we start with an empty state
     state = {};
@@ -48,55 +44,19 @@ export default class InputParameters extends Component {
     }
 
     /**
-     * react life cycle mapper to invoke the creation of the form state
-     */
-    componentWillReceiveProps(nextProps) {
-        this.createFormState(nextProps);
-    }
-
-    /**
-     * Create a replica of the input parameters in state. Basically we just dump the whole item.
+     * Create some information for form handling
      * @param props
      */
     createFormState(props) {
         const { input } = props;
         if (input) {
             const { config = {} } = this.context;
-            const { parameters: inputParameters, _links: { self: { href } } } = input;
-            const parameters = {};
-            inputParameters.map((parameter, index) => {
-                parameters[index] = parameter;
-                return parameter;
+            const { _links: { self: { href } } } = input;
+            this.setState({
+                href: `${config._rootURL}${href}/runs/`,
+                visible: false,
             });
-            this.setState({ parameters, href: `${config._rootURL}${href}/runs/` });
         }
-    }
-
-    /**
-     * change a specific parameter value and update the state.
-     * @param index - which parameter we need to change
-     * @param event - the event leading to the change
-     */
-    changeParameter(index, event) {
-        // console.log('onChange', index, event);
-        this.setState(prevState => {
-            const originalParameters = Object.assign({}, prevState.parameters);
-            console.log(originalParameters);
-            originalParameters[index].defaultParameterValue.value = event;
-            return { parameters: originalParameters };
-        });
-    }
-
-    /**
-     * Creates an array from the parameter object which is in the current state
-     * @returns array - of values
-     */
-    stateParametersToArray() {
-        const { parameters } = this.state;
-        return Object.keys(parameters).map(key => {
-            const item = parameters[key];
-            return { name: item.name, value: item.defaultParameterValue.value };
-        });
     }
 
     /**
@@ -128,17 +88,16 @@ export default class InputParameters extends Component {
     }
 
     /**
-     * Submit the form as "cancel"
+     * Hide the dialog / Submit the form as "cancel"
      */
-    cancelForm() {
-        this.refs.startWrapper.hide();
+    hide() {
+        this.setState({ visible: false });
     }
-
     /**
-     * Submit the form as "ok" out of the state data parameters.
+     * Submit the form out of the data parameters and create a Toast
      */
-    okForm() {
-        const body = { parameters: this.stateParametersToArray() };
+    initializeBuild() {
+        const body = { parameters: this.parameterService.parametersToSubmitArray() };
         this.submitForm(body)
             .then((runInfo) => {
                 ToastUtils
@@ -146,32 +105,22 @@ export default class InputParameters extends Component {
         return this.hide();
     }
 
+    /**
+     * Show the dialog
+     */
     show() {
-        this.refs.startWrapper.show();
-    }
-
-    hide() {
-        this.refs.startWrapper.hide();
+        this.setState({ visible: true });
     }
 
     render() {
-        console.log(this.props);
         const { runnable, onNavigation, latestRun } = this.props;
-        const { parameters } = this.state;
-        // Early out
-        if (!parameters) {
-            return null;
-        }
+        const parameters = this.parameterService.parameters;
         const message = t('parameterized.pipeline.header', { defaultValue: 'Pipeline parameter' });
         const ok = t('parameterized.pipeline.submit', { defaultValue: 'Build' });
-        const parametersArray = Object.keys(parameters).map(key => parameters[key]);
-
-        // console.log('state', this.state);
-        // console.log('stateToFormSubmit', this.stateParametersToArray());
         const cancelCaption = t('rundetail.input.cancel');
-        const cancelButton = (<a title={cancelCaption} onClick={() => this.cancelForm()} className="btn inputStepCancel run-button btn-secondary" >
+        const cancelButton = (<button title={cancelCaption} onClick={() => this.hide()} className="btn inputStepCancel run-button btn-secondary" >
             <span className="button-label">{cancelCaption}</span>
-        </a>);
+        </button>);
         const runButtonProps = {
             buttonType: 'run-only',
             innerButtonClasses: 'btn-secondary',
@@ -179,50 +128,38 @@ export default class InputParameters extends Component {
             onNavigation,
             latestRun,
         };
-        if (parameters) {
+        if (parameters.length > 0) {
             runButtonProps.onClick = () => {
                 this.show();
             };
         }
-
+        const buttons = [cancelButton,
+            <button title={ok} onClick={() => this.initializeBuild()} className="btn inputStepSubmit" >
+                <span className="button-label">{ok}</span>
+        </button>];
         return (<div>
             <RunButton {...runButtonProps} />
-            <ModalView
-              ref="startWrapper"
-              hideOnOverlayClicked
-              transitionClass="expand-in"
-              transitionDuration={150}
+            { this.state.visible && <Dialog
+              buttons={buttons}
+              onDismiss={() => console.log('User dismiss')}
+              title={message}
+              className="Dialog--input"
             >
-                <ModalHeader>
-                    <h3>{message}</h3>
-                </ModalHeader>
-                <ModalBody>
-                    <div className="inputStep">
-                        <div className="inputBody">
-                          {
-                            parametersArray.map((parameter, index) => {
-                                const { type } = parameter;
-                                const returnValue = supportedInputTypesMapping[type];
-                                if (returnValue) {
-                                    return React.createElement(returnValue, {
-                                        ...parameter,
-                                        key: index,
-                                        onChange: (event) => this.changeParameter(index, event),
-                                    });
-                                }
-                                return <div>No component found for type {type}.</div>;
-                            })
-                          }
-                        </div>
-                        <div onClick={(event => stopProp(event))} className="inputControl">
-                            <span>{cancelButton}</span>
-                            <a title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
-                                <span className="button-label">{ok}</span>
-                            </a>
-                        </div>
-                    </div>
-                </ModalBody>
-            </ModalView>
+                {
+                    parameters.map((parameter, index) => {
+                        const { type } = parameter;
+                        const returnValue = supportedInputTypesMapping[type];
+                        if (returnValue) {
+                            return React.createElement(returnValue, {
+                                ...parameter,
+                                key: index,
+                                onChange: (event) => this.parameterService.changeParameter(index, event),
+                            });
+                        }
+                        return <div>No component found for type {type}.</div>;
+                    })
+                }
+            </Dialog>}
         </div>);
     }
 }
@@ -230,6 +167,7 @@ export default class InputParameters extends Component {
 const { bool, func, object } = PropTypes;
 
 InputParameters.propTypes = {
+    input: object,
     visible: bool,
     onNavigation: func,
     runnable: object,
