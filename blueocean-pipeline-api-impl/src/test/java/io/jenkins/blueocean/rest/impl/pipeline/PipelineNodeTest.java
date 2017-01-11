@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hudson.model.Result;
 import hudson.model.queue.QueueTaskFuture;
+import hudson.util.RunList;
 import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import jenkins.branch.BranchSource;
 import jenkins.plugins.git.GitSCMSource;
@@ -22,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -1927,7 +1929,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 "            echo \"BRANCH NAME: ${branchInput}\"\n" +
                 "        }, \n" +
                 "        right : {\n" +
-                "            sh 'echo 'right done''\n" +
+                "            sh 'echo \"right done\"'\n" +
                 "        }\n" +
                 "    }\n" +
                 "}";
@@ -1967,11 +1969,12 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 )
                 , 200);
 
-        Thread.sleep(1000);
-        Map<String,Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/");
-        Assert.assertEquals("FINISHED", resp.get("state"));
-        Assert.assertEquals("SUCCESS", resp.get("result"));
-        Assert.assertEquals("12", resp.get("id"));
+        if(waitForBuildCount(job1,1, Result.SUCCESS)) {
+            Map<String, Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/");
+            Assert.assertEquals("FINISHED", resp.get("state"));
+            Assert.assertEquals("SUCCESS", resp.get("result"));
+            Assert.assertEquals("12", resp.get("id"));
+        }
     }
 
     @Test
@@ -2020,11 +2023,12 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/",req, 200);
 
-        Thread.sleep(1000);
-        Map<String,Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/");
-        Assert.assertEquals("FINISHED", resp.get("state"));
-        Assert.assertEquals("FAILURE", resp.get("result"));
-        Assert.assertEquals("12", resp.get("id"));
+        if(waitForBuildCount(job1,1, Result.ABORTED)) {
+            Map<String, Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/");
+            Assert.assertEquals("FINISHED", resp.get("state"));
+            Assert.assertEquals("FAILURE", resp.get("result"));
+            Assert.assertEquals("12", resp.get("id"));
+        }
     }
 
 
@@ -2086,6 +2090,50 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", resp.get("state"));
     }
 
+    @Test
+    public void pipelineLogError() throws Exception {
+        String script = "def foo = null\n" +
+                "\n" +
+                "node {\n" +
+                "    stage('blah') {\n" +
+                "        sh \"echo 42\"\n" +
+                "        foo.bar = 42\n" +
+                "        sh \"echo 43\"\n" +
+                "        \n" +
+                "    }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+
+        String resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/7/log", String.class);
+        System.out.println(resp);
+        Assert.assertTrue(resp.trim().endsWith("Cannot set property 'bar' on null object"));
+    }
+
+    @Test
+    public void pipelineLogError1() throws Exception {
+        String script =
+                "node {\n" +
+                "    stage('blah') {\n" +
+                "        sh \"echo 42\"\n" +
+                "        error(\"this error should appear in log\")\n" +
+                "        \n" +
+                "    }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE, b1);
+
+        String resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/8/log/", String.class);
+
+        Assert.assertTrue(resp.trim().endsWith("this error should appear in log"));
+    }
+
     private void setupScm(String script) throws Exception {
         // create git repo
         sampleRepo.init();
@@ -2109,6 +2157,41 @@ public class PipelineNodeTest extends PipelineBaseTest {
             }
         }
         return null;
+    }
+
+
+    private static boolean waitForBuildCount(WorkflowJob job, int numBuilds, Result status) throws InterruptedException {
+        long start = System.currentTimeMillis();
+
+        while(countBuilds(job, status) < numBuilds) {
+            // 2m is a long timeout but it seems as though it can actually take a fair bit of time for resumed
+            // builds to complete.  Don't want the build randomly failing.
+            if (System.currentTimeMillis() > start + 120000) {
+                //Assert.fail("Timed out waiting on build count to get to " + numBuilds);
+                return false;
+            }
+            Thread.sleep(200);
+        }
+        return true;
+    }
+
+    private static int countBuilds(WorkflowJob job) {
+        return countBuilds(job, null);
+    }
+    private static int countBuilds(WorkflowJob job, Result status) {
+        RunList<WorkflowRun> builds = job.getNewBuilds();
+        Iterator<WorkflowRun> iterator = builds.iterator();
+        int numBuilds = 0;
+
+        while (iterator.hasNext()) {
+            WorkflowRun build = iterator.next();
+            Result buildRes = build.getResult();
+            if (status == null || buildRes == status) {
+                numBuilds++;
+            }
+        }
+
+        return numBuilds;
     }
 
 }

@@ -1,7 +1,7 @@
 import { observable, action } from 'mobx';
 
 /**
- * Stores the previous and current pathnames.
+ * Stores the previous and current location pathnames.
  */
 export default class LocationService {
     @observable current;
@@ -9,7 +9,7 @@ export default class LocationService {
 
     @action setCurrent(newLocation) {
         if (newLocation.action !== 'REPLACE') {
-            this.current = this.previous;
+            this.previous = this.current;
         }
 
         this.current = newLocation.pathname;

@@ -186,4 +186,4 @@ Extensions.store.getExtensions(['jenkins.main.routes', 'jenkins.main.stores'], (
 });
 
 // Enable page reload.
-require('./reload');
+// require('./reload');
