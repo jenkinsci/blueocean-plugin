@@ -6,6 +6,8 @@ import TransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
@@ -13,6 +15,8 @@ import favoritesSseListener from '../model/FavoritesSseListener';
 
 import FavoritesProvider from './FavoritesProvider';
 import { PipelineCard } from './PipelineCard';
+
+const t = i18nTranslator('blueocean-personalization');
 
 /**
  * Renders a stack of "favorites cards" including current most recent status.
@@ -49,30 +53,56 @@ export class DashboardCards extends Component {
             return null;
         }
 
-        const favoriteCards = this.props.favorites.map(favorite => {
-            const pipeline = favorite.item;
+        // empty array will be filled in the next method if any paused fav's exist
+        const pausedCards = [];
+        const favoriteCards = this.props.favorites
+          .map(favorite => {
+              const pipeline = favorite.item;
+              const responseElement = (<div key={favorite._links.self.href}>
+                  <PipelineCard
+                    router={this.props.router}
+                    runnable={pipeline}
+                    favorite
+                    onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
+                  />
+              </div>);
+              // if we are in paused state fill the pause array and return null
+              if (favorite.item.latestRun.state === 'PAUSED') {
+                  pausedCards.push(responseElement);
+                  return null;
+              }
+              return (responseElement);
+          });
 
-            return (
-                <div key={favorite._links.self.href}>
-                    <PipelineCard
-                      router={this.props.router}
-                      runnable={pipeline}
-                      favorite
-                      onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
-                    />
-                </div>
-            );
-        });
+        // generic sub-render to output fav or paused stacks
+        const StackOutput = (properties) => {
+            const { cards, message } = properties;
+            return (<div key={message} className="favorites-card-stack">
+                <div className="favorites-card-stack-heading"> {message}</div>
+                <TransitionGroup transitionName="vertical-expand-collapse"
+                  transitionEnterTimeout={300}
+                  transitionLeaveTimeout={300}
+                >
+                    {cards}
+                </TransitionGroup>
+            </div>);
+        };
+        // Only show paused pipelines when we really have some
+        // do we have any paused pipelines?
+        const pausedCardsStack = pausedCards.length > 0 ? (<StackOutput
+          message={t('dashboardCard.input.required')}
+          cards={pausedCards}
+        />) : null;
+        const favoriteCardsStack = (<StackOutput
+          message={t('dashboardCard.input.favorite')}
+          cards={favoriteCards}
+        />);
 
         return (
             <FavoritesProvider store={this.props.store}>
-                <div className="favorites-card-stack">
-                    <TransitionGroup transitionName="vertical-expand-collapse"
-                      transitionEnterTimeout={300}
-                      transitionLeaveTimeout={300}
-                    >
-                        {favoriteCards}
-                    </TransitionGroup>
+                <div>
+                    { pausedCardsStack }
+                    { favoriteCardsStack }
                 </div>
             </FavoritesProvider>
         );
