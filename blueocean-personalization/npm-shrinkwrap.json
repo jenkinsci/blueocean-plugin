@@ -15,9 +15,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.99",
-      "from": "@jenkins-cd/design-language@0.0.99",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.99.tgz"
+      "version": "0.0.100-tfbeta1",
+      "from": "@jenkins-cd/design-language@0.0.100-tfbeta1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.100-tfbeta1.tgz"
     },
     "@jenkins-cd/diag": {
       "version": "0.0.2",
