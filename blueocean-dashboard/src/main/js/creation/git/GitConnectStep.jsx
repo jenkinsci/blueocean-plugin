@@ -250,7 +250,7 @@ export default class GitConnectStep extends React.Component {
                     <TextInput className="text-repository-url" onChange={val => this._repositoryUrlChange(val)} />
                 </FormElement>
 
-                { this.state.credentialsErrorMsg && <ErrorMessage text={this.state.credentialsErrorMsg} /> }
+                { this.state.credentialsErrorMsg && <ErrorMessage>{this.state.credentialsErrorMsg}</ErrorMessage> }
 
                 <div className="credentials-container">
                     <FormElement title="New credential" showDivider>
