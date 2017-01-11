@@ -155,19 +155,20 @@ function startApp(routes, stores) {
         const { dispatch, getState } = store;
         const { current } = getState().location;
 
-        // no current happens on the first request
-        if (current) {
+        // don't store current as previous if doing a REPLACE (or on the first request)
+        if (newLocation.action !== 'REPLACE' && current) {
             dispatch({
                 type: ACTION_TYPES.SET_LOCATION_PREVIOUS,
                 payload: current,
             });
         }
+
         dispatch({
             type: ACTION_TYPES.SET_LOCATION_CURRENT,
             payload: newLocation.pathname,
         });
 
-        locationService.setCurrent(newLocation.pathname);
+        locationService.setCurrent(newLocation);
     });
 
     sseService._initListeners();

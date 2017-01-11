@@ -55,6 +55,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
 
     private ArrayDeque<String> stages = new ArrayDeque<>();
     private InputAction inputAction;
+    private StepEndNode closestEndNode;
 
     private static final Logger logger = LoggerFactory.getLogger(PipelineStepVisitor.class);
 
@@ -129,6 +130,10 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             return;
         }
 
+        if(atomNode instanceof StepEndNode){
+            this.closestEndNode = (StepEndNode) atomNode;
+        }
+
         if(atomNode instanceof StepAtomNode &&
                 !PipelineNodeUtil.isSkippedStage(currentStage)) { //if skipped stage, we don't collect its steps
 
@@ -171,6 +176,12 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
                 }
             }
             stepMap.put(node.getId(), node);
+
+            //If there is closest block boundary, we capture it's error to the last step encountered and prepare for next block.
+            if(closestEndNode!=null && closestEndNode.getError() != null) {
+                node.setBlockErrorAction(closestEndNode.getError());
+                closestEndNode = null; //prepare for next block
+            }
         }
     }
 

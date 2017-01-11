@@ -1,7 +1,9 @@
 #!groovy
 
-/* Only keep the 10 most recent builds. */
-properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', numToKeepStr: '10']]])
+properties([
+    buildDiscarder(logRotator(numToKeepStr: '10')),
+    pipelineTriggers([cron('@weekly')]),
+])
 
 node('docker') {
   stage('Checkout') {
