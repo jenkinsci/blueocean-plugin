@@ -105,28 +105,15 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ];
 
-        const runButtonProps = {
-            buttonType: 'run-only',
-            runnable: pipeline,
-            innerButtonClasses: 'btn-secondary',
-            onNavigation,
-            latestRun,
-        };
-        if (parameters) {
-            runButtonProps.onClick = () => {
-                this.refs.inputParameters.show();
-            };
-        }
         return (<main>
             <article className="activity">
+                { showRunButton &&
                 <InputParameters
-                  ref="inputParameters"
                   input={{ parameters, _links }}
                   runnable={pipeline}
+                  latestRun={latestRun}
                   onNavigation={onNavigation}
                 />
-                { showRunButton &&
-                <RunButton {...runButtonProps} />
                 }
                 {runs.length > 0 &&
                 <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>

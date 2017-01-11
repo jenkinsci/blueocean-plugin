@@ -3,6 +3,7 @@ import isoFetch from 'isomorphic-fetch';
 import {
   i18nTranslator,
   ToastUtils,
+  RunButton,
 } from '@jenkins-cd/blueocean-core-js';
 import {
   ModalView,
@@ -78,9 +79,12 @@ export default class InputParameters extends Component {
      */
     changeParameter(index, event) {
         // console.log('onChange', index, event);
-        const originalParameters = this.state.parameters;
-        originalParameters[index].defaultParameterValue.value = event;
-        this.setState({ parameters: originalParameters });
+        this.setState(prevState => {
+            const originalParameters = Object.assign({}, prevState.parameters);
+            console.log(originalParameters);
+            originalParameters[index].defaultParameterValue.value = event;
+            return { parameters: originalParameters };
+        });
     }
 
     /**
@@ -136,16 +140,23 @@ export default class InputParameters extends Component {
     okForm() {
         const body = { parameters: this.stateParametersToArray() };
         this.submitForm(body)
-            .then((runInfo) => ToastUtils
-              .createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation));
+            .then((runInfo) => {
+                ToastUtils
+                  .createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation);});
+        return this.hide();
     }
 
     show() {
         this.refs.startWrapper.show();
     }
 
+    hide() {
+        this.refs.startWrapper.hide();
+    }
+
     render() {
         console.log(this.props);
+        const { runnable, onNavigation, latestRun } = this.props;
         const { parameters } = this.state;
         // Early out
         if (!parameters) {
@@ -161,52 +172,68 @@ export default class InputParameters extends Component {
         const cancelButton = (<a title={cancelCaption} onClick={() => this.cancelForm()} className="btn inputStepCancel run-button btn-secondary" >
             <span className="button-label">{cancelCaption}</span>
         </a>);
-        return (<ModalView
-          ref="startWrapper"
-          hideOnOverlayClicked
-          transitionClass="expand-in"
-          transitionDuration={150}
-        >
-            <ModalHeader>
-                <h3>{message}</h3>
-            </ModalHeader>
-            <ModalBody>
-                <div className="inputStep">
-                    <div className="inputBody">
-                      {
-                        parametersArray.map((parameter, index) => {
-                            const { type } = parameter;
-                            const returnValue = supportedInputTypesMapping[type];
-                            if (returnValue) {
-                                return React.createElement(returnValue, {
-                                    ...parameter,
-                                    key: index,
-                                    onChange: (event) => this.changeParameter(index, event),
-                                });
-                            }
-                            return <div>No component found for type {type}.</div>;
-                        })
-                      }
+        const runButtonProps = {
+            buttonType: 'run-only',
+            innerButtonClasses: 'btn-secondary',
+            runnable,
+            onNavigation,
+            latestRun,
+        };
+        if (parameters) {
+            runButtonProps.onClick = () => {
+                this.show();
+            };
+        }
+
+        return (<div>
+            <RunButton {...runButtonProps} />
+            <ModalView
+              ref="startWrapper"
+              hideOnOverlayClicked
+              transitionClass="expand-in"
+              transitionDuration={150}
+            >
+                <ModalHeader>
+                    <h3>{message}</h3>
+                </ModalHeader>
+                <ModalBody>
+                    <div className="inputStep">
+                        <div className="inputBody">
+                          {
+                            parametersArray.map((parameter, index) => {
+                                const { type } = parameter;
+                                const returnValue = supportedInputTypesMapping[type];
+                                if (returnValue) {
+                                    return React.createElement(returnValue, {
+                                        ...parameter,
+                                        key: index,
+                                        onChange: (event) => this.changeParameter(index, event),
+                                    });
+                                }
+                                return <div>No component found for type {type}.</div>;
+                            })
+                          }
+                        </div>
+                        <div onClick={(event => stopProp(event))} className="inputControl">
+                            <span>{cancelButton}</span>
+                            <a title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
+                                <span className="button-label">{ok}</span>
+                            </a>
+                        </div>
                     </div>
-                    <div onClick={(event => stopProp(event))} className="inputControl">
-                        <span>{cancelButton}</span>
-                        <a title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
-                            <span className="button-label">{ok}</span>
-                        </a>
-                    </div>
-                </div>
-            </ModalBody>
-        </ModalView>);
+                </ModalBody>
+            </ModalView>
+        </div>);
     }
 }
 
-const { bool, func, object, shape } = PropTypes;
+const { bool, func, object } = PropTypes;
 
 InputParameters.propTypes = {
     visible: bool,
-    node: shape().isRequired,
     onNavigation: func,
     runnable: object,
+    latestRun: object,
 };
 
 InputParameters.contextTypes = {
