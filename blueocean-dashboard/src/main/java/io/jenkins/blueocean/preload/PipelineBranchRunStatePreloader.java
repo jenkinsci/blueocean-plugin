@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 /**
  * Preload pipeline run onto the page if the requested page is a pipeline run details page for
  * a Multi Branch Project branch.
- * <p/>
+ * <p>
  * Yes, we don't need to load specific run details for npn MBP runs atm. This may change of
  * course, in which case we need to tweak this class impl.
  *
