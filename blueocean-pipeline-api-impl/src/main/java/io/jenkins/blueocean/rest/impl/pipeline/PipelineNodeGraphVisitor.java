@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import hudson.model.Queue;
+import hudson.model.Run;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
@@ -298,7 +299,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                             if(task.getCauseOfBlockage() != null){
                                 cause = task.getCauseOfBlockage().getShortDescription();
                             }
-                            if(cause != null){
+
+                            //check if this task belongs to this run
+                            Run r = task.runForDisplay();
+
+                            if(cause != null && r != null && r.equals(run)){
                                 //XXX: We need to somehow associate the Queue.Item to the labeled 'node' block in the script
                                 //     and if this node belongs inside stage then use this Queue.Item.getCauseOfBlockage() in this stage.
 
@@ -306,6 +311,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                                 //     execution of stages then it needs to do association of Queue.Item to appropriate stage/parallel.
                                 stage.setCauseOfFailure(cause);
                             }
+
                         }
                     }
                 }
