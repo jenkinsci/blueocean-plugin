@@ -32,7 +32,7 @@ export default class CreatePipeline extends React.Component {
         this._onExit(path);
     }
 
-    _onExit({ url }) {
+    _onExit({ url } = {}) {
         if (url) {
             this.context.router.replace(url);
         } else if (history && history.length <= 2) {
