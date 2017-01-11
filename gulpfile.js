@@ -43,15 +43,7 @@ const config = {
             dest: "dist/assets/"
         },
         octicons: {
-            sources: "node_modules/octicons/build/font/octicons.{eot,woff,woff2,ttf,svg,css}",
-            dest: "dist/assets/octicons/"
-        },
-        normalize: {
-            sources: "node_modules/normalize.css/normalize.css",
-            dest: "dist/assets/css/"
-        },
-        fontsCSS: {
-            sources: "fonts/*.css",
+            sources: "node_modules/octicons/build/font/octicons.{eot,woff,woff2,ttf,svg}",
             dest: "dist/assets/css/"
         },
         fonts: {
@@ -173,7 +165,7 @@ gulp.task("svgmin", () =>
 
 // Copy things
 
-gulp.task("copy", ["copy-icons", "copy-octicons", "copy-normalize", "copy-fontsCSS", "copy-fonts",
+gulp.task("copy", ["copy-icons", "copy-octicons", "copy-fonts",
     "copy-componentDocFiles", "copy-licenses-octicons", "copy-licenses-ofl"]);
 
 gulp.task("copy-icons", () =>
@@ -183,14 +175,6 @@ gulp.task("copy-icons", () =>
 gulp.task("copy-octicons", () =>
     gulp.src(config.copy.octicons.sources)
         .pipe(copy(config.copy.octicons.dest, {prefix: 4})));
-
-gulp.task("copy-normalize", () =>
-    gulp.src(config.copy.normalize.sources)
-        .pipe(copy(config.copy.normalize.dest, {prefix: 2})));
-
-gulp.task("copy-fontsCSS", () =>
-    gulp.src(config.copy.fontsCSS.sources)
-        .pipe(copy(config.copy.fontsCSS.dest, {prefix: 1})));
 
 gulp.task("copy-fonts", () =>
     gulp.src(config.copy.fonts.sources)
