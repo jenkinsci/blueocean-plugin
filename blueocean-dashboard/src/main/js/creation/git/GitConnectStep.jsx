@@ -191,9 +191,9 @@ export default class GitConnectStep extends React.Component {
         }
 
         if (this.state.selectedCredential) {
-            return true;
+            return result;
         } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SYSTEM_SSH) {
-            return true;
+            return result;
         } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS) {
             if (!this.state.usernameValue) {
                 this.setState({
