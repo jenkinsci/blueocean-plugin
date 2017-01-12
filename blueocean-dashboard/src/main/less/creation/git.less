@@ -17,3 +17,29 @@
         margin-right: 10px;
     }
 }
+
+// TODO: temp fixes need to go into JDL
+@brand-danger:          #d54c53;
+
+.u-error-border {
+    border-color: @brand-danger;
+}
+
+.FormElement.u-error-state {
+    > .FormElement-children > .TextArea {
+        .TextArea-control {
+            .u-error-border;
+        }
+    }
+}
+
+.FormElement.u-error-state {
+    > .FormElement-children {
+        > .TextInput, > .PasswordInput {
+            .TextInput-control {
+                .u-error-border;
+            }
+        }
+    }
+}
+
