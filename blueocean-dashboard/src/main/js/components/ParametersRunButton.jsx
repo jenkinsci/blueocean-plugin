@@ -24,7 +24,7 @@ const t = i18nTranslator('blueocean-dashboard');
  * In case you want to register a new mapping you need to edit './parameter/index' to add a new mapping
  * and further in './parameter/commonProptypes' you need to include the new type in the oneOf array.
  */
-export default class InputParameters extends Component {
+export default class ParametersRunButton extends Component {
 
     constructor(props) {
         super(props);
@@ -101,7 +101,8 @@ export default class InputParameters extends Component {
         this.submitForm(body)
             .then((runInfo) => {
                 ToastUtils
-                  .createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation);});
+                  .createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation);
+            });
         return this.hide();
     }
 
@@ -114,7 +115,7 @@ export default class InputParameters extends Component {
 
     render() {
         const { runnable, onNavigation, latestRun } = this.props;
-        const parameters = this.parameterService.parameters;
+        const { parameters } = this.parameterService;
         const message = t('parametrised.pipeline.header', { defaultValue: 'Pipeline parameters' });
         const ok = t('parametrised.pipeline.submit', { defaultValue: 'Build' });
         const cancelCaption = t('rundetail.input.cancel');
@@ -158,7 +159,7 @@ export default class InputParameters extends Component {
 
 const { bool, func, object } = PropTypes;
 
-InputParameters.propTypes = {
+ParametersRunButton.propTypes = {
     input: object,
     visible: bool,
     onNavigation: func,
@@ -166,6 +167,6 @@ InputParameters.propTypes = {
     latestRun: object,
 };
 
-InputParameters.contextTypes = {
+ParametersRunButton.contextTypes = {
     config: object.isRequired,
 };

@@ -6,7 +6,7 @@ import {
 import { RunButton, capable } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
-import InputParameters from './InputParameters';
+import ParametersRunButton from './ParametersRunButton';
 import Runs from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
@@ -108,44 +108,44 @@ export class Activity extends Component {
         return (<main>
             <article className="activity">
                 { showRunButton &&
-                <InputParameters
-                  input={{ parameters, _links }}
-                  runnable={pipeline}
-                  latestRun={latestRun}
-                  onNavigation={onNavigation}
-                />
+                    <ParametersRunButton
+                      input={{ parameters, _links }}
+                      runnable={pipeline}
+                      latestRun={latestRun}
+                      onNavigation={onNavigation}
+                    />
                 }
-                {runs.length > 0 &&
-                <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
-                    {
-                        runs.map((run, index) => {
-                            const changeset = run.changeSet;
-                            let latestRecord = {};
+                { runs.length > 0 &&
+                    <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
+                        {
+                            runs.map((run, index) => {
+                                const changeset = run.changeSet;
+                                let latestRecord = {};
 
-                            if (changeset && changeset.length > 0) {
-                                latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
-                            }
+                                if (changeset && changeset.length > 0) {
+                                    latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
+                                }
 
-                            return (
-                                <Runs {...{
-                                    t,
-                                    locale,
-                                    run,
-                                    pipeline,
-                                    key: index,
-                                    changeset: latestRecord,
-                                }}
-                                />
-                            );
-                        })
-                    }
-                </Table>
+                                return (
+                                    <Runs {...{
+                                        t,
+                                        locale,
+                                        run,
+                                        pipeline,
+                                        key: index,
+                                        changeset: latestRecord,
+                                    }}
+                                    />
+                                );
+                            })
+                        }
+                    </Table>
                 }
 
-                {runs && runs.length > 0 &&
-                <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
-                    {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
-                </button>
+                { runs && runs.length > 0 &&
+                    <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
+                        {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
+                    </button>
                 }
             </article>
         </main>);
