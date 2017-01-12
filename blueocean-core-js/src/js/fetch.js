@@ -268,7 +268,7 @@ export const Fetch = {
 };
 
 function trimRestUrl(url) {
-    const REST_PREFIX = 'blue/rest/organizations';
+    const REST_PREFIX = 'blue/rest/';
     const prefixOffset = url.indexOf(REST_PREFIX);
 
     if (prefixOffset !== -1) {

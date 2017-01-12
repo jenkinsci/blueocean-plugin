@@ -24,60 +24,57 @@
 package io.jenkins.blueocean.preload;
 
 import hudson.Extension;
-import hudson.model.Item;
+import hudson.model.User;
 import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.ModelObjectSerializer;
-import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
-import jenkins.model.Jenkins;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.model.BlueFavorite;
+import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
+import io.jenkins.blueocean.service.embedded.rest.UserImpl;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Preload pipeline onto the page if the requested page is a pipeline page.
+ * Preload user favorites.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Extension
-public class PipelineStatePreloader extends RESTFetchPreloader {
+public class FavoritesStatePreloader extends RESTFetchPreloader {
 
-    private static final Logger LOGGER = Logger.getLogger(PipelineStatePreloader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(FavoritesStatePreloader.class.getName());
 
     @Override
     protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
-        // e.g. /blue/organizations/jenkins/Pipeline (or a url on that)
-        if (!blueUrl.hasPart(BlueUrlTokenizer.UrlPart.PIPELINE)) {
-            // Not interested in it
-            return null;
-        }
+        User jenkinsUser = User.current();
 
-        Jenkins jenkins = Jenkins.getInstance();
-        String pipelineFullName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE);
+        if (jenkinsUser != null) {
+            UserImpl blueUser = new UserImpl(jenkinsUser);
+            BlueFavoriteContainer favoritesContainer = blueUser.getFavorites();
 
-        try {
-            Item pipelineJobItem = jenkins.getItemByFullName(pipelineFullName);
+            if (favoritesContainer != null) {
+                JSONArray favorites = new JSONArray();
+                Iterator<BlueFavorite> favoritesIterator = favoritesContainer.iterator();
 
-            if (pipelineJobItem != null) {
-                BluePipeline bluePipeline = (BluePipeline) BluePipelineFactory.resolve(pipelineJobItem);
-                if (bluePipeline != null) {
+                while(favoritesIterator.hasNext()) {
+                    Reachable favorite = favoritesIterator.next();
                     try {
-                        return new FetchData(bluePipeline.getLink().getHref(), ModelObjectSerializer.toJson(bluePipeline));
+                        favorites.add(JSONObject.fromObject(ModelObjectSerializer.toJson(favorite)));
                     } catch (IOException e) {
-                        LOGGER.log(Level.FINE, String.format("Unable to preload pipeline '%s'. Serialization error.", pipelineJobItem.getUrl()), e);
+                        LOGGER.log(Level.FINE, String.format("Unable to preload favorites for User '%s'. Serialization error.", jenkinsUser.getFullName()), e);
                         return null;
                     }
-                } else {
-                    LOGGER.log(Level.FINE, String.format("Unable to preload pipeline '%s'. Failed to convert to Blue Ocean Resource.", pipelineJobItem.getUrl()));
-                    return null;
                 }
+
+                return new FetchData(favoritesContainer.getLink().getHref(), favorites.toString());
             }
-        } catch (Exception e) {
-            LOGGER.log(Level.FINE, String.format("Unable to find pipeline named '%s'.", pipelineFullName), e);
-            return null;
         }
 
         // Don't preload any data on the page.
