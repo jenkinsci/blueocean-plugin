@@ -33,13 +33,6 @@
             <st:adjunct includes="org.jenkinsci.plugins.ssegateway.sse.EventSource" />
             <j:set var="assetsPath" value="${resURL}/plugin/blueocean-web/assets" />
 
-            <!-- Reset -->
-            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/normalize.css" />
-
-            <!-- Icons + Fonts -->
-            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/latofonts.css" />
-            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/octicons/octicons.css" />
-
             <!-- Core Styles -->
             <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/jenkins-design-language.css" />
             <link rel="stylesheet" type="text/css" href="${assetsPath}/corejs/css/blueocean-core-js.css" />

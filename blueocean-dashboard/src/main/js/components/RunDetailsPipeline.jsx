@@ -25,6 +25,7 @@ import { calculateNode } from '../util/KaraokeHelper';
 
 const { string, object, any, func } = PropTypes;
 
+// FIXME: needs to use i18n for translations
 const QueuedState = () => (
     <EmptyStateView tightSpacing>
         <p>
