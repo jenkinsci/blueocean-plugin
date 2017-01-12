@@ -147,9 +147,9 @@ export class RunDetailsPipeline extends Component {
     // We filter them only for steps and the end event all other we let pass
     _onSseEvent(event) {
         const { fetchNodes, fetchSteps, removeStep, removeLogs } = this.props;
-        const jenkinsEvent = event.jenkins_event;
         // we are using try/catch to throw an early out error
         try {
+            const jenkinsEvent = event.jenkins_event;
             const runId = this.props.result.id;
             // we get events from the pipeline and the job channel, they have different naming for the id
             if (event.pipeline_run_id !== runId && event.jenkins_object_id !== runId) {
@@ -160,7 +160,7 @@ export class RunDetailsPipeline extends Component {
             const refetch = true;
             const refetchNodes = () => {
                 delete this.mergedConfig.node;
-                setTimeout(fetchNodes({ ...this.mergedConfig, refetch }), 50);
+                fetchNodes({ ...this.mergedConfig, refetch });
             };
             switch (jenkinsEvent) {
 
@@ -193,7 +193,7 @@ export class RunDetailsPipeline extends Component {
                             refetchNodes();
                         } else {
                             // console.log('only steps fetching via ssePipeline triggered');
-                            setTimeout(fetchSteps({ ...this.mergedConfig, refetch }), 500);
+                            fetchSteps({ ...this.mergedConfig, refetch });
                         }
                     }
                     break;
