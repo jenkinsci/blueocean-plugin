@@ -1,5 +1,5 @@
 import React from 'react';
-import { action, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { Promise } from 'es6-promise';
 
 import FlowManager from '../flow2/FlowManager';
@@ -16,10 +16,22 @@ export default class GitFlowManger extends FlowManager {
     @observable
     creationStatus = null;
 
+    @computed
+    get isConnectEnabled() {
+        return this.creationStatus !== FlowStatus.STEP_RENAME &&
+                this.creationStatus !== FlowStatus.COMPLETE;
+    }
+
+    @computed
+    get isRenameEnabled() {
+        return this.creationStatus === FlowStatus.STEP_RENAME;
+    }
+
     systemSshCredential = null;
 
+    // TODO: eliminate this property if possible
     hasNameConflict = false;
-
+    // TODO: eliminate this property if possible
     pipeline = null;
 
     pipelineName = null;
@@ -118,7 +130,7 @@ export default class GitFlowManger extends FlowManager {
         this.setPendingSteps();
 
         return this._createApi.createPipeline(this.repositoryUrl, this.credentialId, this.pipelineName)
-            .then(pipeline => this._setPipeline(pipeline), error => this._pipelineError(error));
+            .then(pipeline => this._createPipelineSuccess(pipeline), error => this._createPipelineError(error));
     }
 
     @action
@@ -127,16 +139,16 @@ export default class GitFlowManger extends FlowManager {
     }
 
     @action
-    _setPipeline(pipeline) {
+    _createPipelineSuccess(pipeline) {
         this._setStatus(FlowStatus.COMPLETE);
         this.pipeline = pipeline;
     }
 
     @action
-    _pipelineError(error) {
+    _createPipelineError(error) {
         const { responseBody } = error;
 
-        this._setStatus(FlowStatus.NAME_CONFLICT);
+        this._setStatus(FlowStatus.STEP_RENAME);
 
         if (this.hasNameConflict) {
             this.popStep();

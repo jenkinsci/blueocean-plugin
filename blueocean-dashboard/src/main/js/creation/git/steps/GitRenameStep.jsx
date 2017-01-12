@@ -45,6 +45,7 @@ export default class GitRenameStep extends React.Component {
     }
 
     render() {
+        const disabled = !this.props.flowManager.isRenameEnabled;
         let headingText = '';
 
         if (this.state.isNameValid === null) {
@@ -56,7 +57,7 @@ export default class GitRenameStep extends React.Component {
         }
 
         return (
-            <FlowStep className="git-step-rename" {...this.props} title={this.title}>
+            <FlowStep className="git-step-rename" {...this.props} title={this.title} disabled={disabled}>
                 <FormElement title={headingText}>
                     <TextInput
                       className="text-pipeline"

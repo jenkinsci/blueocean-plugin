@@ -12,6 +12,10 @@
     }
 }
 
+.git-step-connect {
+
+}
+
 .git-step-rename {
     .text-pipeline {
         margin-right: 10px;
@@ -23,6 +27,11 @@
 
 .u-error-border {
     border-color: @brand-danger;
+}
+
+.u-disabled {
+    opacity: 0.4;
+    cursor: auto;
 }
 
 .FormElement.u-error-state {
@@ -43,3 +52,43 @@
     }
 }
 
+fieldset {
+    padding: 0;
+    border: 0;
+    margin: 0;
+}
+
+fieldset[disabled] {
+    .Checkbox {
+        .Checkbox-indicator, .Checkbox-text {
+            .u-disabled;
+        }
+    }
+
+    // TODO: temp override. we should eliminate explicit disabled bgcolor in the JDL instead
+    .Dropdown {
+        .Dropdown-button {
+            &:hover, &:focus, &:active {
+                background-color: inherit;
+            }
+        }
+    }
+
+    .RadioButtonGroup {
+        .RadioButtonGroup-indicator, .RadioButtonGroup-text {
+            .u-disabled;
+        }
+    }
+
+    .TextInput, .PasswordInput {
+        .TextInput-control {
+            .u-disabled;
+        }
+    }
+
+    .TextArea .TextArea-control {
+        .u-disabled;
+    }
+
+
+}

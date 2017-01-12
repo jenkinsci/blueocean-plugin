@@ -19,7 +19,9 @@ export default function FlowStep(props) {
             <h1>{props.title}</h1>
             {
                 props.status !== status.INCOMPLETE &&
-                props.children
+                <fieldset disabled={props.disabled}>
+                    {props.children}
+                </fieldset>
             }
         </VerticalStep>
     );
@@ -31,6 +33,7 @@ FlowStep.propTypes = {
     title: PropTypes.string,
     status: PropTypes.string,
     percentage: PropTypes.number,
+    disabled: PropTypes.bool,
     isLastStep: PropTypes.bool,
 };
 

@@ -1,5 +1,7 @@
 import React, { PropTypes } from 'react';
+import { observer } from 'mobx-react';
 import { Dropdown, ErrorMessage, FormElement, PasswordInput, RadioButtonGroup, TextArea, TextInput } from '@jenkins-cd/design-language';
+
 import ValidationUtils from '../../util/ValidationUtils';
 import debounce from 'lodash.debounce';
 import pause from '../flow2/pause';
@@ -33,6 +35,7 @@ const NEW_CREDENTIAL_TYPE = {
  * Component that accepts repository URL and credentials to initiate
  * creation of a new pipeline.
  */
+@observer
 export default class GitConnectStep extends React.Component {
 
     constructor(props) {
@@ -249,8 +252,10 @@ export default class GitConnectStep extends React.Component {
     }
 
     render() {
+        const disabled = !this.props.flowManager.isConnectEnabled;
+
         return (
-            <FlowStep {...this.props} title="Connect to a Git repository">
+            <FlowStep {...this.props} className="git-step-connect" title="Connect to a Git repository" disabled={disabled}>
                 <p>Make sure you have a Jenkinsfile... yadda yadda.</p>
 
                 <FormElement title="Repository Url" errorMessage={this.state.repositoryErrorMsg}>
@@ -259,7 +264,7 @@ export default class GitConnectStep extends React.Component {
 
                 { this.state.credentialsErrorMsg && <ErrorMessage>{this.state.credentialsErrorMsg}</ErrorMessage> }
 
-                <div className="credentials-container">
+                <FormElement>
                     <FormElement title="New credential" showDivider verticalLayout>
                         <RadioButtonGroup
                           className="credentials-type-picker"
@@ -306,7 +311,7 @@ export default class GitConnectStep extends React.Component {
                         />
                     }
                     </FormElement>
-                </div>
+                </FormElement>
 
                 <button
                   onClick={() => this._beginCreation()}
