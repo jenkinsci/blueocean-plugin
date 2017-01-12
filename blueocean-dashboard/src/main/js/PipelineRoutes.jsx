@@ -1,4 +1,4 @@
-import {Route, Redirect, IndexRedirect} from 'react-router';
+import { Route, Redirect, IndexRedirect } from 'react-router';
 import React from 'react';
 import Dashboard from './Dashboard';
 import {
@@ -13,7 +13,7 @@ import {
     RunDetailsArtifacts,
     RunDetailsTests,
 } from './components';
-import {CreatePipeline} from './creation';
+import { CreatePipeline } from './creation';
 
 /**
  * gets the background element used for the modal underlay
@@ -109,30 +109,30 @@ function persistBackgroundOnNavigationChange(prevState, nextState, replace, call
 
 export default (
     <Route path="/" component={Dashboard} onChange={persistBackgroundOnNavigationChange}>
-        <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines"/>
-        <Route path="organizations/:organization/pipelines" component={Pipelines}/>
+        <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
+        <Route path="organizations/:organization/pipelines" component={Pipelines} />
 
         <Route path="organizations/:organization" component={PipelinePage}>
-            <Route path=":pipeline/branches" component={MultiBranch}/>
-            <Route path=":pipeline/activity" component={Activity}/>
-            <Route path=":pipeline/pr" component={PullRequests}/>
+            <Route path=":pipeline/branches" component={MultiBranch} />
+            <Route path=":pipeline/activity" component={Activity} />
+            <Route path=":pipeline/pr" component={PullRequests} />
 
             <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
-                <IndexRedirect to="pipeline"/>
+                <IndexRedirect to="pipeline" />
                 <Route path="pipeline" component={RunDetailsPipeline}>
-                    <Route path=":node" component={RunDetailsPipeline}/>
+                    <Route path=":node" component={RunDetailsPipeline} />
                 </Route>
-                <Route path="changes" component={RunDetailsChanges}/>
-                <Route path="tests" component={RunDetailsTests}/>
-                <Route path="artifacts" component={RunDetailsArtifacts}/>
+                <Route path="changes" component={RunDetailsChanges} />
+                <Route path="tests" component={RunDetailsTests} />
+                <Route path="artifacts" component={RunDetailsArtifacts} />
             </Route>
 
-            <Redirect from=":pipeline(/*)" to=":pipeline/activity"/>
+            <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
 
         </Route>
-        <Route path="/pipelines" component={Pipelines}/>
+        <Route path="/pipelines" component={Pipelines} />
 
-        <Route path="/create-pipeline" component={CreatePipeline}/>
-        <IndexRedirect to="pipelines"/>
+        <Route path="/create-pipeline" component={CreatePipeline} />
+        <IndexRedirect to="pipelines" />
     </Route>
 );
