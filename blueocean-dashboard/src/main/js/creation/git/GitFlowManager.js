@@ -8,7 +8,7 @@ import GitCompletedStep from './GitCompletedStep';
 import GitRenameStep from './steps/GitRenameStep';
 import FlowStatus from './GitCreationStatus';
 
-const SYSTEM_SSH_ID = 'github-ssh-key-master';
+const SYSTEM_SSH_ID = 'git-ssh-key-master';
 const SYSTEM_SSH_DESCRIPTION = 'Master SSH Key for Git Creation';
 
 export default class GitFlowManger extends FlowManager {
@@ -23,6 +23,8 @@ export default class GitFlowManger extends FlowManager {
     pipeline = null;
 
     pipelineName = null;
+
+    credentialId = null;
 
     constructor(createApi, credentialsApi) {
         super();
