@@ -103,9 +103,16 @@ export default class GitConnectStep extends React.Component {
     _newCredentialTypeChange(option) {
         this.setState({
             newCredentialType: option,
+            // if we change the credential type, reset all the values in the child forms
+            sshKeyValue: null,
+            usernameValue: null,
+            passwordValue: null,
         });
 
         this._updateCredentialsErrorMsg();
+        this._updateSshKeyErrorMsg(true);
+        this._updateUsernameErrorMsg(true);
+        this._updatePasswordErrorMsg(true);
     }
 
     _updateCredentialsErrorMsg = debounce(() => {
@@ -124,8 +131,8 @@ export default class GitConnectStep extends React.Component {
         this._updateSshKeyErrorMsg();
     }
 
-    _updateSshKeyErrorMsg = debounce(() => {
-        if (this.state.sshKeyErrorMsg && this.state.sshKeyValue) {
+    _updateSshKeyErrorMsg = debounce(reset => {
+        if (reset || (this.state.sshKeyErrorMsg && this.state.sshKeyValue)) {
             this.setState({
                 sshKeyErrorMsg: null,
             });
@@ -137,11 +144,11 @@ export default class GitConnectStep extends React.Component {
             usernameValue: value,
         });
 
-        this._updateSshKeyErrorMsg();
+        this._updateUsernameErrorMsg();
     }
 
-    _updateUsernameErrorMsg = debounce(() => {
-        if (this.state.usernameErrorMsg && this.state.usernameValue) {
+    _updateUsernameErrorMsg = debounce(reset => {
+        if (reset || (this.state.usernameErrorMsg && this.state.usernameValue)) {
             this.setState({
                 usernameErrorMsg: null,
             });
@@ -156,8 +163,8 @@ export default class GitConnectStep extends React.Component {
         this._updatePasswordErrorMsg();
     }
 
-    _updatePasswordErrorMsg = debounce(() => {
-        if (this.state.passwordErrorMsg && this.state.passwordValue) {
+    _updatePasswordErrorMsg = debounce(reset => {
+        if (reset || (this.state.passwordErrorMsg && this.state.passwordValue)) {
             this.setState({
                 passwordErrorMsg: null,
             });
