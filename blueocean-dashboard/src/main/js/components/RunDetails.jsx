@@ -134,13 +134,8 @@ class RunDetails extends Component {
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
 
         const currentRun = new RunRecord(run);
-        const runParameter = currentRun.parameters;
         const status = currentRun.getComputedResult() || '';
 
-        console.log('parameters', runParameter);
-        if (runParameter !== null) {
-            console.log('parameters', runParameter);
-        }
         const switchRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
