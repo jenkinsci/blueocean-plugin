@@ -83,7 +83,7 @@ export class CredentialsApi {
                 username: null,
                 passphrase: null,
                 privateKeySource: {
-                    'stapler-class': 'com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$UsersPrivateKeySource'
+                    'stapler-class': 'com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$UsersPrivateKeySource',
                 },
             },
         };

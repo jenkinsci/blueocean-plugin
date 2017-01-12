@@ -32,7 +32,7 @@ export default class GitRenameStep extends React.Component {
             .then(available => this._validateName(name, available));
     }, 500);
 
-    _validateName(pipelineName, available)  {
+    _validateName(pipelineName, available) {
         const isNameValid = !!pipelineName && available;
         this.setState({
             pipelineName,
