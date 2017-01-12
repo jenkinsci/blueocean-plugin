@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { Dropdown, ErrorMessage, FormElement, PasswordInput, RadioButtonGroup, TextArea, TextInput } from '@jenkins-cd/design-language';
+import { Dropdown, FormElement, PasswordInput, RadioButtonGroup, TextArea, TextInput } from '@jenkins-cd/design-language';
 
 import ValidationUtils from '../../util/ValidationUtils';
 import debounce from 'lodash.debounce';
@@ -256,15 +256,13 @@ export default class GitConnectStep extends React.Component {
 
         return (
             <FlowStep {...this.props} className="git-step-connect" title="Connect to a Git repository" disabled={disabled}>
-                <p>Make sure you have a Jenkinsfile... yadda yadda.</p>
+                <p className="instructions">Make sure you have a Jenkinsfile... yadda yadda.</p>
 
                 <FormElement title="Repository Url" errorMessage={this.state.repositoryErrorMsg}>
                     <TextInput className="text-repository-url" onChange={val => this._repositoryUrlChange(val)} />
                 </FormElement>
 
-                { this.state.credentialsErrorMsg && <ErrorMessage>{this.state.credentialsErrorMsg}</ErrorMessage> }
-
-                <FormElement>
+                <FormElement className="credentials" errorMessage={this.state.credentialsErrorMsg}>
                     <FormElement title="New credential" showDivider verticalLayout>
                         <RadioButtonGroup
                           className="credentials-type-picker"

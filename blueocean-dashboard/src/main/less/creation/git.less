@@ -1,94 +1,15 @@
-.credentials-container {
-    display: flex;
-
-    > .FormElement {
-        flex: 0 1 50%;
-        max-width: 50%;
-        margin-right: 20px;
-
-        &:last-child {
-            margin: 0;
-        }
-    }
-}
-
 .git-step-connect {
+    .instructions {
+        margin-top: 0;
+    }
 
+    .credentials > .FormElement-heading {
+        padding: 0;
+    }
 }
 
 .git-step-rename {
     .text-pipeline {
         margin-right: 10px;
     }
-}
-
-// TODO: temp fixes need to go into JDL
-@brand-danger:          #d54c53;
-
-.u-error-border {
-    border-color: @brand-danger;
-}
-
-.u-disabled {
-    opacity: 0.4;
-    cursor: auto;
-}
-
-.FormElement.u-error-state {
-    > .FormElement-children > .TextArea {
-        .TextArea-control {
-            .u-error-border;
-        }
-    }
-}
-
-.FormElement.u-error-state {
-    > .FormElement-children {
-        > .TextInput, > .PasswordInput {
-            .TextInput-control {
-                .u-error-border;
-            }
-        }
-    }
-}
-
-fieldset {
-    padding: 0;
-    border: 0;
-    margin: 0;
-}
-
-fieldset[disabled] {
-    .Checkbox {
-        .Checkbox-indicator, .Checkbox-text {
-            .u-disabled;
-        }
-    }
-
-    // TODO: temp override. we should eliminate explicit disabled bgcolor in the JDL instead
-    .Dropdown {
-        .Dropdown-button {
-            &:hover, &:focus, &:active {
-                background-color: inherit;
-            }
-        }
-    }
-
-    .RadioButtonGroup {
-        .RadioButtonGroup-indicator, .RadioButtonGroup-text {
-            .u-disabled;
-        }
-    }
-
-    .TextInput, .PasswordInput {
-        .TextInput-control {
-            .u-disabled;
-        }
-    }
-
-    .TextArea .TextArea-control {
-        .u-disabled;
-    }
-
-
 }
