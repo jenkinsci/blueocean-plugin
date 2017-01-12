@@ -280,6 +280,12 @@ public class AbstractPipelineImpl extends BluePipeline {
 
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
+            // Maven modules are not pipelines.
+            // TODO: Handle Maven modules better?
+            if (item != null && item.getClass().getName().equals("hudson.maven.MavenModule")) {
+                return null;
+            }
+
             if (item instanceof Job) {
                 return new AbstractPipelineImpl((Job) item);
             }
