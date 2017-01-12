@@ -260,7 +260,7 @@ export default class GitConnectStep extends React.Component {
                 { this.state.credentialsErrorMsg && <ErrorMessage>{this.state.credentialsErrorMsg}</ErrorMessage> }
 
                 <div className="credentials-container">
-                    <FormElement title="New credential" showDivider>
+                    <FormElement title="New credential" showDivider verticalLayout>
                         <RadioButtonGroup
                           className="credentials-type-picker"
                           options={NEW_CREDENTIAL_TYPE.values()}
@@ -275,15 +275,15 @@ export default class GitConnectStep extends React.Component {
                         }
 
                         { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS &&
-                        <div>
-                            <FormElement title="Username" errorMessage={this.state.usernameErrorMsg}>
-                                <TextInput onChange={val => this._usernameChange(val)} />
-                            </FormElement>
+                        <FormElement title="Username" errorMessage={this.state.usernameErrorMsg}>
+                            <TextInput onChange={val => this._usernameChange(val)} />
+                        </FormElement>
+                        }
 
-                            <FormElement title="Password" errorMessage={this.state.passwordErrorMsg}>
-                                <PasswordInput onChange={val => this._passwordChange(val)} />
-                            </FormElement>
-                        </div>
+                        { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS &&
+                        <FormElement title="Password" errorMessage={this.state.passwordErrorMsg}>
+                            <PasswordInput onChange={val => this._passwordChange(val)} />
+                        </FormElement>
                         }
                     </FormElement>
 
