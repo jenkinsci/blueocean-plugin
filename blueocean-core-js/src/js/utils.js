@@ -22,7 +22,13 @@ export default {
     cleanSlashes,
     clone(obj: Object) {
         if (!obj) return obj;
-        return JSON.parse(JSON.stringify(obj));
+        try {
+            const clone = JSON.parse(JSON.stringify(obj));
+            return clone;
+        } catch (e) {
+            console.error(e);
+        }
+        return undefined;
     },
     windowOrGlobal() {
         return (typeof self === 'object' && self.self === self && self) ||
