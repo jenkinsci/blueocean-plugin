@@ -290,10 +290,7 @@ function getPrefetchedDataFuture(url) {
                 // the prefetched data as the value.
                 if (trimRestUrl(preFetchEntry.restUrl) === trimmedUrl) {
                     try {
-                        const parse = JSON.parse(preFetchEntry.data);
-                        return Promise.resolve(parse);
-                    } catch (e) {
-                        console.error('preFetch Error', e);
+                        return Promise.resolve(JSON.parse(preFetchEntry.data));
                     } finally {
                         // Delete the preFetchEntry i.e. we only use these entries once. So, this
                         // works only for the first request for the data at that URL. Subsequent

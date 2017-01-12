@@ -32,13 +32,8 @@ function newPluginXHR(pluginName) {
         allowMultiLoading: false,
         parse: (data) => {
             // we need to parse the response and then extract the data since the rest is garbage for us
-            try {
-                const response = JSON.parse(data);
-                return response.data;
-            } catch (e) {
-                console.error(e);
-            }
-            return undefined;
+            const response = JSON.parse(data);
+            return response.data;
         },
     });
 }
