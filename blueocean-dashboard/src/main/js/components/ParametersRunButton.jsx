@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import isoFetch from 'isomorphic-fetch';
+import { Fetch } from '@jenkins-cd/blueocean-core-js';
 import {
   i18nTranslator,
   ToastUtils,
@@ -74,17 +74,7 @@ export default class ParametersRunButton extends Component {
             },
             body: JSON.stringify(body),
         };
-        return isoFetch(href, fetchOptions)
-            .then(
-                response => {
-                    if (response.status >= 300 || response.status < 200) {
-                        const error = new Error(response.statusText);
-                        error.response = response;
-                        throw error;
-                    }
-                    return response.json();
-                }
-            );
+        return Fetch.fetchJSON(href, { fetchOptions });
     }
 
     /**

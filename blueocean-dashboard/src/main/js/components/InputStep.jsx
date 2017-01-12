@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import isoFetch from 'isomorphic-fetch';
-// import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import { ParameterService, ParametersRender } from './parameter/index';
+import { Fetch } from '@jenkins-cd/blueocean-core-js';
 /**
  * Simple helper to stop stopPropagation
  * @param event the event we want to cancel
@@ -77,17 +76,7 @@ export default class InputStep extends Component {
             },
             body: JSON.stringify(body),
         };
-        isoFetch(href, fetchOptions)
-            .then(
-                response => {
-                    if (response.status >= 300 || response.status < 200) {
-                        const error = new Error(response.statusText);
-                        error.response = response;
-                        throw error;
-                    }
-                    return response.json();
-                }
-            );
+        return Fetch.fetchJSON(href, { fetchOptions });
     }
 
     /**
