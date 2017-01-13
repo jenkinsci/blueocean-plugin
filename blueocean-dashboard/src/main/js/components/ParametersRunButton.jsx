@@ -87,7 +87,7 @@ export default class ParametersRunButton extends Component {
         const { runnable, onNavigation, latestRun } = this.props;
         const { parameters } = parameterService;
         // Captions
-        const message = t('parametrised.pipeline.header', { defaultValue: 'Pipeline parameters' });
+        const message = t('parametrised.pipeline.header', { defaultValue: 'Input required' });
         const ok = t('parametrised.pipeline.submit', { defaultValue: 'Build' });
         const cancelCaption = t('parametrised.pipeline.cancel', { defaultValue: 'Cancel' });
         // buttons
@@ -114,17 +114,19 @@ export default class ParametersRunButton extends Component {
         return (<div>
             <RunButton {...runButtonProps} />
             { this.state.visible &&
-                <Dialog
-                  buttons={[cancelButton, okButton]}
-                  onDismiss={this.hide.bind(this)}
-                  title={message}
-                  className="Dialog--input"
-                >
-                    <ParametersRender
-                      parameters={parameters}
-                      onChange={(index, newValue) => parameterService.changeParameter(index, newValue) }
-                    />
-                </Dialog>
+                <div className="inputParameters">
+                    <Dialog
+                        buttons={[cancelButton, okButton]}
+                        onDismiss={this.hide.bind(this)}
+                        title={message}
+                        className="Dialog--input"
+                    >
+                        <ParametersRender
+                            parameters={parameters}
+                            onChange={(index, newValue) => parameterService.changeParameter(index, newValue) }
+                        />
+                    </Dialog>
+                </div>
             }
         </div>);
     }
