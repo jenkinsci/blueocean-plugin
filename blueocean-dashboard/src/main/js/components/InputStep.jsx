@@ -31,7 +31,7 @@ export default class InputStep extends Component {
 
     constructor(props) {
         super(props);
-        parameterService.addParameters(this.props.node.input.parameters);
+        parameterService.init(this.props.node.input.parameters);
     }
     // we start with an empty state
     state = {};
@@ -94,7 +94,7 @@ export default class InputStep extends Component {
             <div className="inputBody">
                 <ParametersRender
                   parameters={parameters}
-                  onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
+                  onChange={(index, newValue) => parameterService.changeParameter(index, newValue) }
                 />
             </div>
             <div onClick={(event => stopProp(event))} className="inputControl">

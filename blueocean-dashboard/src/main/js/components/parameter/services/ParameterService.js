@@ -8,6 +8,14 @@ export class ParameterService {
     @observable parameters = [];
 
     /**
+     * initialize array from parameters.
+     * @param parameters - array of parameter
+     */
+    @action
+    init(parameters) {
+        this.parameters = parameters;
+    }
+    /**
      * Adds a parameter to the list.
      *
      * @param parameter object with the following shape:
@@ -31,7 +39,7 @@ export class ParameterService {
     }
 
     /**
-     * Add an array of parameters. Normally used in initial setup.
+     * Add an array of parameters.
      * @param parameters - array of parameter
      */
     @action

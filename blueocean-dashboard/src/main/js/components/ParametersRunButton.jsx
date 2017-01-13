@@ -33,7 +33,7 @@ export default class ParametersRunButton extends Component {
     constructor(props) {
         super(props);
         const { parameters = [] } = props.input;
-        parameterService.addParameters(parameters);
+        parameterService.init(parameters);
     }
     // we start with an empty state
     state = {};
