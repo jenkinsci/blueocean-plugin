@@ -1,14 +1,18 @@
 import React, { Component, PropTypes } from 'react';
-import { Fetch } from '@jenkins-cd/blueocean-core-js';
+
 import {
   i18nTranslator,
   ToastUtils,
   RunButton,
 } from '@jenkins-cd/blueocean-core-js';
+
+import {
+    ParameterService,
+    ParametersRender,
+    ParameterApi as  parameterApi,
+} from './parameter/index';
+
 import { Dialog } from '@jenkins-cd/design-language';
-
-import { ParameterService, ParametersRender } from './parameter/index';
-
 /**
  * Translate function
  */
@@ -32,17 +36,14 @@ export default class ParametersRunButton extends Component {
         this.parameterService = new ParameterService();
         this.parameterService.addParameters(parameters);
     }
-
     // we start with an empty state
     state = {};
-
     /**
      * react life cycle mapper to invoke the creation of the form state
      */
     componentWillMount() {
         this.createFormState(this.props);
     }
-
     /**
      * Create some information for form handling
      * @param props
@@ -58,25 +59,6 @@ export default class ParametersRunButton extends Component {
             });
         }
     }
-
-    /**
-     * Generic submit function. The calculations for the url has been done in
-     * @see createFormState Here we simply POST the data to the server.
-     * @param body - could be ok or cancel body
-     */
-    submitForm(body) {
-        const { href } = this.state;
-        const fetchOptions = {
-            credentials: 'include',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-        };
-        return Fetch.fetchJSON(href, { fetchOptions });
-    }
-
     /**
      * Hide the dialog / Submit the form as "cancel"
      */
@@ -84,11 +66,17 @@ export default class ParametersRunButton extends Component {
         this.setState({ visible: false });
     }
     /**
+     * Show the dialog
+     */
+    show() {
+        this.setState({ visible: true });
+    }
+    /**
      * Submit the form out of the data parameters and create a Toast
      */
     initializeBuild() {
-        const body = { parameters: this.parameterService.parametersToSubmitArray() };
-        this.submitForm(body)
+        const parameters = this.parameterService.parametersToSubmitArray();
+        parameterApi.startRunWithParameters(this.state.href, parameters)
             .then((runInfo) => {
                 ToastUtils
                   .createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation);
@@ -96,19 +84,12 @@ export default class ParametersRunButton extends Component {
         return this.hide();
     }
 
-    /**
-     * Show the dialog
-     */
-    show() {
-        this.setState({ visible: true });
-    }
-
     render() {
         const { runnable, onNavigation, latestRun } = this.props;
         const { parameters } = this.parameterService;
         const message = t('parametrised.pipeline.header', { defaultValue: 'Pipeline parameters' });
         const ok = t('parametrised.pipeline.submit', { defaultValue: 'Build' });
-        const cancelCaption = t('rundetail.input.cancel');
+        const cancelCaption = t('parametrised.pipeline.cancel', { defaultValue: 'Cancel' });
         const cancelButton = (<button title={cancelCaption} onClick={() => this.hide()} className="btn inputStepCancel run-button btn-secondary" >
             <span className="button-label">{cancelCaption}</span>
         </button>);

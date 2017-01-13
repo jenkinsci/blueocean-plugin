@@ -1,6 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { ParameterService, ParametersRender } from './parameter/index';
-import { Fetch } from '@jenkins-cd/blueocean-core-js';
+import {
+    ParameterService,
+    ParametersRender,
+    ParameterApi as  parameterApi,
+} from './parameter/index';
 /**
  * Simple helper to stop stopPropagation
  * @param event the event we want to cancel
@@ -61,31 +64,13 @@ export default class InputStep extends Component {
         }
     }
 
-    /**
-     * Generic submit function. The calculations for the url has been done in
-     * @see createFormState Here we simply POST the data to the server.
-     * @param body - could be ok or cancel body
-     */
-    submitForm(body) {
-        const { href } = this.state;
-        const fetchOptions = {
-            credentials: 'include',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-        };
-        return Fetch.fetchJSON(href, { fetchOptions });
-    }
 
     /**
      * Submit the form as "cancel" out of the state data id.
      */
     cancelForm() {
         const { id } = this.state;
-        const body = { id, abort: true };
-        this.submitForm(body);
+        parameterApi.cancelInputParameter(this.state.href, id);
     }
 
     /**
@@ -93,8 +78,8 @@ export default class InputStep extends Component {
      */
     okForm() {
         const { id } = this.state;
-        const body = { id, parameters: this.parameterService.parametersToSubmitArray() };
-        this.submitForm(body);
+        const parameters = this.parameterService.parametersToSubmitArray();
+        parameterApi.submitInputParameter(this.state.href, id, parameters);
     }
 
     render() {
