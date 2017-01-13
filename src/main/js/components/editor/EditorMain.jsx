@@ -4,6 +4,8 @@ import React, { Component, PropTypes } from 'react';
 import { EditorPipelineGraph } from './EditorPipelineGraph';
 import { EditorStepList } from './EditorStepList';
 import { EditorStepDetails } from './EditorStepDetails';
+import { AgentConfiguration } from './AgentConfiguration';
+import { EnvironmentConfiguration } from './EnvironmentConfiguration';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { AddStepSelectionDialog } from './AddStepSelectionDialog';
 import pipelineStore from '../../services/PipelineStore';
@@ -44,7 +46,11 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
     }
 
     doUpdate() {
-        this.forceUpdate();
+        if (!pipelineStore.findParentStage(pipelineStore.pipeline, this.state.selectedStage)) {
+            this.setState({selectedStage: null});
+        } else {
+            this.forceUpdate();
+        }
     }
 
     componentWillReceiveProps(nextProps:Props) {
@@ -242,8 +248,30 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
             </div>
         ) : null;
 
+        // FIXME - agents are defined at the top stage level, this will change
+        let configurationStage = selectedStage && (pipelineStore.findParentStage(selectedStage) || selectedStage);
+        if (pipelineStore.pipeline === configurationStage) {
+            configurationStage = selectedStage;
+        }
+        if (!selectedStage) {
+            configurationStage = pipelineStore.pipeline;
+        }
+
+        const configPanel = pipelineStore.pipeline && (<div className="editor-config-panel" key={selectedStage?selectedStage.id:0}>
+            <div>
+                <h4 className="stage-name-edit">
+                    {selectedStage && 
+                    <input defaultValue={title} onChange={e => (selectedStage.name = e.target.value) && this.pipelineUpdated()} />
+                    }
+                    {!selectedStage && 'Pipeline Configuration'}
+                </h4>
+                <AgentConfiguration key={'agent'+configurationStage.id} node={configurationStage} onChange={agent => (selectedStage && agent.type == 'none' ? delete configurationStage.agent : configurationStage.agent = agent) && this.pipelineUpdated()} />
+                <EnvironmentConfiguration key={'env'+configurationStage.id} node={configurationStage} onChange={e => this.pipelineUpdated()} />
+            </div>
+        </div>);
+
         return (
-            <div className="editor-main">
+            <div className="editor-main" key={pipelineStore.pipeline && pipelineStore.pipeline.id}>
                 <div className="editor-main-graph">
                     {pipelineStore.pipeline &&
                     <EditorPipelineGraph stages={pipelineStore.pipeline.children}
@@ -253,6 +281,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                                          onCreateParallelStage={(name, parentStage) => this.createParallelStage(name, parentStage)}/>
                     }
                 </div>
+                {configPanel}
                 {titleBar}
                 {detailsOrPlaceholder}
                 {this.state.showSelectStep && <AddStepSelectionDialog

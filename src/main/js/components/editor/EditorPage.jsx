@@ -6,7 +6,7 @@ import pipelineStore from '../../services/PipelineStore';
 import { convertInternalModelToJson, convertJsonToPipeline, convertPipelineToJson, convertJsonToInternalModel } from '../../services/PipelineSyntaxConverter';
 import type { PipelineInfo } from '../../services/PipelineStore';
 import type { PipelineJsonContainer } from '../../services/PipelineSyntaxConverter';
-import pipelineStepListStore from '../../services/PipelineStepListStore';
+import pipelineMetadataService from '../../services/PipelineMetadataService';
 
 const PIPELINE_KEY = 'jenkins.pipeline.editor.workingCopy';
 
@@ -46,7 +46,7 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
     componentWillMount() {
         let existingPipeline: any = localStorage.getItem(PIPELINE_KEY);
         if (existingPipeline) {
-            pipelineStepListStore.getStepListing(steps => {
+            pipelineMetadataService.getStepListing(steps => {
                 existingPipeline = convertJsonToInternalModel(JSON.parse(existingPipeline));
                 pipelineStore.setPipeline(existingPipeline);
             });
@@ -109,7 +109,7 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
                 if (!err) {
                     this.setState({showPipelineScript: true, pipelineErrors: null, pipelineScript: result});
                 } else {
-                    this.setState({showPipelineScript: true, pipelineErrors: err});
+                    this.setState({showPipelineScript: true, pipelineErrors: err, pipelineScript: ''});
                 }
             });
         } else {
@@ -145,7 +145,7 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
                         buttons={<div><button onClick={e => this.updateStateFromPipelineScript(this.refs.pipelineScript.value)}>Update</button></div>}>
                         {this.state.pipelineErrors &&
                             <div className="errors">
-                                {this.state.pipelineErrors.map(err => <div className="error">{err}</div>)}
+                                {this.state.pipelineErrors.map(err => <div className="error">{err.location && err.location.join('/')} {err.error}</div>)}
                             </div>
                         }
                         <div className="editor-text-area">

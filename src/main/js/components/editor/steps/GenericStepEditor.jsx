@@ -1,15 +1,15 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import pipelineStepListStore from '../../../services/PipelineStepListStore';
+import pipelineMetadataService from '../../../services/PipelineMetadataService';
 import debounce from 'lodash.debounce';
 import { TextInput } from '@jenkins-cd/design-language';
 
 const allPropertyEditors = [
-    require('./properties/BooleanPropertyInput').default,
-    require('./properties/IntegerPropertyInput').default,
-    require('./properties/DecimalPropertyInput').default,
-    require('./properties/StringPropertyInput').default,
+    require('../../properties/BooleanPropertyInput').default,
+    require('../../properties/IntegerPropertyInput').default,
+    require('../../properties/DecimalPropertyInput').default,
+    require('../../properties/StringPropertyInput').default,
 ];
 
 const propertyEditorsByName = {
@@ -42,7 +42,7 @@ export default class GenericStepEditorPanel extends Component<DefaultProps, Prop
     }
 
     componentWillMount() {
-        pipelineStepListStore.getStepListing(stepMetadata => {
+        pipelineMetadataService.getStepListing(stepMetadata => {
             this.setState({stepMetadata: stepMetadata});
         });
     }

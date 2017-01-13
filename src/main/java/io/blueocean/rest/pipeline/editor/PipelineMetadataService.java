@@ -68,7 +68,7 @@ public class PipelineMetadataService implements ApiRoutable {
             try {
                 DescribableModel<? extends DeclarativeAgent> model = new DescribableModel<>(d.clazz);
 
-                models.add(new ExportedDescribableModel(model));
+                models.add(new ExportedDescribableModel(model, symbolForObject(d)));
             } catch (NoStaplerConstructorException e) {
                 // Ignore!
             }

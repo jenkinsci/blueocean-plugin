@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import pipelineStepListStore from '../../services/PipelineStepListStore';
+import pipelineMetadataService from '../../services/PipelineMetadataService';
 import { Dialog } from '@jenkins-cd/design-language';
 import { Icon } from "react-material-icons-blue";
 import debounce from 'lodash.debounce';
@@ -38,7 +38,7 @@ export class AddStepSelectionDialog extends Component<DefaultProps, Props, State
     }
 
     componentWillMount() {
-        pipelineStepListStore.getStepListing(data => {
+        pipelineMetadataService.getStepListing(data => {
             this.setState({steps: data});
         });
     }

@@ -1,16 +1,16 @@
 import { convertJsonToInternalModel, convertInternalModelToJson }  from '../../../main/js/services/PipelineSyntaxConverter';
-import pipelineStepListStore  from '../../../main/js/services/PipelineStepListStore';
+import pipelineMetadataService  from '../../../main/js/services/PipelineMetadataService';
 import { assert } from 'chai';
 
 describe('Pipeline Syntax Converter', () => {
     before(() => {
-        pipelineStepListStore.stepData = JSON.parse(
+        pipelineMetadataService.cache.pipelineStepMetadata = JSON.parse(
             require("fs").readFileSync(
                 require("path").normalize(__dirname + "/../StepMetadata.json", "utf8")));
     });
 
     after(() => {
-        delete pipelineStepListStore.stepData;
+        delete pipelineMetadataService.stepData;
     });
     
     it('converts from JSON: agent any', () => {

@@ -3,7 +3,7 @@
 import { Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import { UnknownSection } from './PipelineStore';
 import type { PipelineInfo, StageInfo, StepInfo } from './PipelineStore';
-import pipelineStepListStore from './PipelineStepListStore';
+import pipelineMetadataService from './PipelineMetadataService';
 import idgen from './IdGenerator';
 
 const value = 'value';
@@ -12,9 +12,19 @@ export type PipelineJsonContainer = {
     pipeline: PipelineJson,
 };
 
+export type PipelineAgent = {
+    type: string,
+    arguments: PipelineNamedValueDescriptor[],
+};
+
 export type PipelineJson = {
     stages: PipelineStage[],
-    agent: PipelineValueDescriptor,
+    agent: PipelineAgent,
+    environment: PipelineEnvironment,
+};
+
+export type PipelineEnvironment = {
+    environment: Map<String,String>,
 };
 
 export type PipelineValueDescriptor = {
@@ -36,8 +46,9 @@ export type PipelineStep = {
 export type PipelineStage = {
     name: string,
     branches?: PipelineStage[],
-    agent?: PipelineValueDescriptor,
+    agent?: PipelineValueDescriptor[],
     steps?: PipelineStep[],
+    environment?: PipelineEnvironment,
 };
 
 function singleValue(v: any) {
@@ -86,12 +97,14 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
         out.agent = pipeline.agent;
     }
 
+    out.environment = pipeline.environment;
+
     if (!pipeline.stages) {
         throw new Error('Pipeline must define stages');
     }
 
     // capture unknown sections
-    captureUnknownSections(pipeline, out, 'agent', 'stages');
+    captureUnknownSections(pipeline, out, 'agent', 'stages', 'environment');
 
     for (let i = 0; i < pipeline.stages.length; i++) {
         const topStage = pipeline.stages[i];
@@ -102,6 +115,9 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
             children: [],
             steps: [],
         };
+
+        // FIXME: this is per top-level stage, only...
+        topStageInfo.environment = topStage.environment;
 
         out.children.push(topStageInfo);
 
@@ -124,7 +140,7 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
                 topStageInfo.children.push(stage);
             }
 
-            captureUnknownSections(b, stage, 'name', 'steps');
+            captureUnknownSections(b, stage, 'name', 'steps', 'environment');
     
             for (let stepIndex = 0; stepIndex < b.steps.length; stepIndex++) {
                 const s = b.steps[stepIndex];
@@ -140,7 +156,7 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
 export function convertStepFromJson(s: PipelineStep) {
     // this will already have been called and cached:
     let stepMeta = [];
-    pipelineStepListStore.getStepListing(steps => {
+    pipelineMetadataService.getStepListing(steps => {
         stepMeta = steps;
     });
     const meta = stepMeta.filter(md => md.functionName === s.name)[0]
@@ -234,6 +250,17 @@ export function convertStageToJson(stage: StageInfo): PipelineStage {
         name: stage.name,
     };
 
+    // FIXME this is going to have to change, there's currently no way to define
+    // an agent for each parallel branch, with nested stages and/or execution
+    // graph order, this will go away in favor of a different mechanism...
+    if (stage.agent && stage.agent && stage.agent.type != 'none') {
+        out.agent = stage.agent;
+    }
+
+    if (stage.environment && stage.environment.length && stage.environment[0].key != 'none') {
+        out.environment = stage.environment;
+    }
+
     if (stage.children && stage.children.length > 0) {
         // parallel
         out.branches = [];
@@ -251,14 +278,14 @@ export function convertStageToJson(stage: StageInfo): PipelineStage {
         }
     } else {
         // single, add a 'default' branch
-        out.branches = [
-            {
-                name: 'default',
-                steps: convertStepsToJson(stage.steps),
-            }
-        ];
+        const outBranch = {
+            name: 'default',
+            steps: convertStepsToJson(stage.steps),
+        };
 
-        restoreUnknownSections(stage, out.branches[0]);
+        out.branches = [ outBranch ];
+
+        restoreUnknownSections(stage, outBranch);
     }
 
     return out;
@@ -272,6 +299,10 @@ export function convertInternalModelToJson(pipeline: PipelineInfo): PipelineJson
         },
     };
     const outPipeline = out.pipeline;
+
+    if (pipeline.environment && pipeline.environment.length) {
+        outPipeline.environment = pipeline.environment;
+    }
 
     restoreUnknownSections(pipeline, outPipeline);
 
@@ -320,7 +351,7 @@ function fetch(url, body, handler) {
 }
 
 export function convertPipelineToJson(pipeline: string, handler: Function) {
-    pipelineStepListStore.getStepListing(steps => {
+    pipelineMetadataService.getStepListing(steps => {
         fetch(`${UrlConfig.getJenkinsRootURL()}/pipeline-model-converter/toJson`,
             'jenkinsfile=' + encodeURIComponent(pipeline), data => {
                 if (data.errors) {
@@ -332,7 +363,7 @@ export function convertPipelineToJson(pipeline: string, handler: Function) {
 }
 
 export function convertJsonToPipeline(json: string, handler: Function) {
-    pipelineStepListStore.getStepListing(steps => {
+    pipelineMetadataService.getStepListing(steps => {
         fetch(`${UrlConfig.getJenkinsRootURL()}/pipeline-model-converter/toJenkinsfile`,
             'json=' + encodeURIComponent(json), data => {
                 if (data.errors) {
@@ -344,7 +375,7 @@ export function convertJsonToPipeline(json: string, handler: Function) {
 }
 
 export function convertPipelineStepsToJson(pipeline: string, handler: Function) {
-    pipelineStepListStore.getStepListing(steps => {
+    pipelineMetadataService.getStepListing(steps => {
         fetch(`${UrlConfig.getJenkinsRootURL()}/pipeline-model-converter/stepsToJson`,
             'jenkinsfile=' + encodeURIComponent(pipeline), data => {
                 if (data.errors) {
@@ -356,7 +387,7 @@ export function convertPipelineStepsToJson(pipeline: string, handler: Function) 
 }
 
 export function convertJsonStepsToPipeline(step: PipelineStep, handler: Function) {
-    pipelineStepListStore.getStepListing(steps => {
+    pipelineMetadataService.getStepListing(steps => {
         fetch(`${UrlConfig.getJenkinsRootURL()}/pipeline-model-converter/stepsToJenkinsfile`,
             'json=' + encodeURIComponent(JSON.stringify(step)), data => {
                 if (data.errors) {

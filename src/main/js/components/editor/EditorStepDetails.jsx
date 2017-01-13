@@ -1,7 +1,7 @@
 // @flow
 
 import React, {Component, PropTypes} from 'react';
-import pipelineStepListStore from '../../services/PipelineStepListStore';
+import pipelineMetadataService from '../../services/PipelineMetadataService';
 import type {StepInfo} from './common';
 import GenericStepEditor from './steps/GenericStepEditor';
 import UnknownStepEditor from './steps/UnknownStepEditor';
@@ -38,7 +38,7 @@ export class EditorStepDetails extends Component {
     }
 
     componentWillMount() {
-        pipelineStepListStore.getStepListing(stepMetadata => {
+        pipelineMetadataService.getStepListing(stepMetadata => {
             this.setState({stepMetadata: stepMetadata});
         });
     }

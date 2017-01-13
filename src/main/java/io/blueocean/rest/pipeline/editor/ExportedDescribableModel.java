@@ -36,9 +36,15 @@ import java.util.List;
 @ExportedBean
 public class ExportedDescribableModel {
     protected final DescribableModel<?> model;
+    protected final String symbol;
 
     public ExportedDescribableModel(DescribableModel<?> model) {
+        this(model, null);
+    }
+
+    public ExportedDescribableModel(DescribableModel<?> model, String symbol) {
         this.model = model;
+        this.symbol = symbol;
     }
 
     /**
@@ -48,6 +54,15 @@ public class ExportedDescribableModel {
     @Exported
     public String getType() {
         return model.getType().getName();
+    }
+    
+    /**
+     * Provides the symbol for this describable
+     * @return
+     */
+    @Exported
+    public String getSymbol() {
+        return symbol;
     }
 
     /**
