@@ -17,7 +17,51 @@ import type { Result } from '../components/status/StatusIndicator';
 storiesOf('Header', module)
     .add('Basic', basic)
     .add('StatusColor', statusColors)
+    .add('Split', split)
 ;
+
+/**
+ * We'll show a single-parent and split header side-by side here, to make sure they look the same. We want to be able
+ * to split the normal content page style header into two, because in BO we have a "site header" in blueocean-web, and
+ * we need pages located in plugins to be able to control their own "page header" with the HeaderDetails
+ */
+function split() {
+
+    const containerStyle = {
+        display: "flex"
+    };
+
+    const colStyle = {
+        width: "50%"
+    };
+
+    return (
+        <div style={containerStyle}>
+            <div style={colStyle}>
+                <BasicHeader>
+                    <TopNav style={{justifyContent: "center"}}>
+                        The left and right halves of this...
+                    </TopNav>
+                    <HeaderDetails style={{justifyContent: "center"}}>
+                        ... should appear the same.
+                    </HeaderDetails>
+                </BasicHeader>
+            </div>
+            <div style={colStyle}>
+                <BasicHeader>
+                    <TopNav style={{justifyContent: "center"}}>
+                        We need to be able to split the basic header in two...
+                    </TopNav>
+                </BasicHeader>
+                <BasicHeader>
+                    <HeaderDetails style={{justifyContent: "center"}}>
+                        ... because it lives in two modules in BlueOcean
+                    </HeaderDetails>
+                </BasicHeader>
+            </div>
+        </div>
+    );
+}
 
 const Example = (props: {statusColor?: Result}) =>
     <BasicHeader {...props}>
