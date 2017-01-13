@@ -7,7 +7,7 @@ import {
 } from '@jenkins-cd/blueocean-core-js';
 
 import {
-    ParameterService as parameterService,
+    ParameterService,
     ParametersRender,
     ParameterApi as parameterApi,
 } from './index';
@@ -32,8 +32,13 @@ export class ParametersRunButton extends Component {
 
     constructor(props) {
         super(props);
-        const { parameters = [] } = props.input;
-        parameterService.init(parameters);
+        if (props.input && props.input.parameters) {
+            const { parameters } = props.input;
+            this.parameterService = new ParameterService();
+            this.parameterService.init(parameters);
+        } else {
+            this.parameterService = { parameters: [] };
+        }
     }
     // we start with an empty state
     state = {};
@@ -74,7 +79,7 @@ export class ParametersRunButton extends Component {
      * Submit the form out of the data parameters and create a Toast
      */
     initializeBuild() {
-        const parameters = parameterService.parametersToSubmitArray();
+        const parameters = this.parameterService.parametersToSubmitArray();
         parameterApi.startRunWithParameters(this.state.href, parameters)
             .then((runInfo) => {
                 ToastUtils
@@ -84,7 +89,7 @@ export class ParametersRunButton extends Component {
     }
 
     render() {
-        const { parameters } = parameterService;
+        const { parameters } = this.parameterService;
         // Captions
         const message = t('parametrised.pipeline.header', { defaultValue: 'Input required' });
         const ok = t('parametrised.pipeline.submit', { defaultValue: 'Build' });
@@ -116,7 +121,7 @@ export class ParametersRunButton extends Component {
                     >
                         <ParametersRender
                           parameters={parameters}
-                          onChange={(index, newValue) => parameterService.changeParameter(index, newValue) }
+                          onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
                         />
                     </Dialog>
                 </div>

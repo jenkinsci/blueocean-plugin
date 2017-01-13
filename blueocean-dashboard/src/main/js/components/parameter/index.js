@@ -9,7 +9,7 @@ export { Boolean, Choice, String, Text, Password };
 export { ParametersRender } from './renderer/ParametersRender';
 export { DebugRender } from './renderer/DebugRender';
 // service and apis
-import { ParameterService } from './services/ParameterService';
+export { ParameterService } from './services/ParameterService';
 import { ParameterApi } from './rest/ParameterApi';
 // run button extension
 export { ParametersRunButton } from './ParametersRunButton';
@@ -33,6 +33,3 @@ export const supportedInputTypes = Object.keys(supportedInputTypesMapping);
 
 const parameterApi = new ParameterApi();
 export { parameterApi as ParameterApi };
-
-const parameterService = new ParameterService();
-export { parameterService as ParameterService };
