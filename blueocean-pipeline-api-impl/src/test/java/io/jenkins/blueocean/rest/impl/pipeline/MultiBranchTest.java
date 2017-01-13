@@ -20,6 +20,7 @@ import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.metadata.ObjectMetadataAction;
+import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.collection.IsArrayContainingInAnyOrder;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
@@ -51,6 +52,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -95,13 +97,16 @@ public class MultiBranchTest extends PipelineBaseTest {
 
 
     @Test
-    public void testGetURL() {
+    public void testBranchInfo() {
         Job job = mock(Job.class);
         BranchImpl branch = new BranchImpl(job, new Link("foo"));
         assertNull(branch.getBranch());
         ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
         when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
         assertEquals("https://path/to/branch", branch.getBranch().getUrl());
+        assertFalse(branch.getBranch().isPrimary());
+        when(job.getAction(PrimaryInstanceMetadataAction.class)).thenReturn(new PrimaryInstanceMetadataAction());
+        assertTrue(branch.getBranch().isPrimary());
     }
 
     @Test
