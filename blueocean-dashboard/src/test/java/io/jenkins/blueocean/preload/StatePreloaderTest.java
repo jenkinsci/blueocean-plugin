@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class PipelineStatePreloaderTest extends BaseTest {
+public class StatePreloaderTest extends BaseTest {
 
     @Test
     public void test() throws IOException, ExecutionException, InterruptedException, SAXException {
@@ -49,12 +49,14 @@ public class PipelineStatePreloaderTest extends BaseTest {
         j.waitForCompletion(run);
 
         // Lets request the activity page for that project. The page should
-        // contain some prefetched javascript for the runs on the page
+        // contain some prefetched javascript for the pipeline
+        // details + the runs on the page
         String projectBlueUrl = BlueOceanWebURLBuilder.toBlueOceanURL(freestyleProject);
         Document doc = Jsoup.connect(projectBlueUrl + "/activity/").get();
         String script = doc.select("head script").toString();
 
         Assert.assertTrue(script.contains(String.format("setState('prefetchdata.%s',", PipelineStatePreloader.class.getSimpleName())));
+        Assert.assertTrue(script.contains(String.format("setState('prefetchdata.%s',", PipelineActivityStatePreloader.class.getSimpleName())));
         Assert.assertTrue(script.contains("\"restUrl\":\"/blue/rest/organizations/jenkins/pipelines/freestyle/activities/?start=0&limit=26\""));
     }
 }
