@@ -84,7 +84,6 @@ export class ParametersRunButton extends Component {
     }
 
     render() {
-        const { runnable, onNavigation, latestRun } = this.props;
         const { parameters } = parameterService;
         // Captions
         const message = t('parametrised.pipeline.header', { defaultValue: 'Input required' });
@@ -98,7 +97,7 @@ export class ParametersRunButton extends Component {
             <span className="button-label">{ok}</span>
         </button>);
         // common run properties
-        const runButtonProps = {...this.props};
+        const runButtonProps = { ...this.props };
         // when we have build parameters we need to show them before trigger a build
         if (parameters.length > 0) {
             runButtonProps.onClick = () => {

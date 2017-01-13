@@ -12,7 +12,7 @@ export { DebugRender } from './renderer/DebugRender';
 import { ParameterService } from './services/ParameterService';
 import { ParameterApi } from './rest/ParameterApi';
 // run button extension
-export {ParametersRunButton} from './ParametersRunButton';
+export { ParametersRunButton } from './ParametersRunButton';
 /**
  * all input types that we know of mapping against the component
  * @type {{BooleanParameterDefinition: Boolean, ChoiceParameterDefinition: Choice, TextParameterDefinition: String, StringParameterDefinition: Text, PasswordParameterDefinition: Password}}

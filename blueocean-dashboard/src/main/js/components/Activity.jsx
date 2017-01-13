@@ -6,7 +6,7 @@ import {
 import { capable } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
-import { ParametersRunButton as RunButton} from './parameter'
+import { ParametersRunButton as RunButton } from './parameter';
 import Runs from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
