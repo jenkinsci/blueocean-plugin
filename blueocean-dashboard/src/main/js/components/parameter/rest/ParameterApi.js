@@ -1,4 +1,4 @@
-import {Fetch} from '@jenkins-cd/blueocean-core-js';
+import { Fetch } from '@jenkins-cd/blueocean-core-js';
 /**
  * Generic options needed for all requests
  * @type {{credentials: string, method: string, headers: {Content-Type: string}}}
@@ -36,7 +36,7 @@ export class ParameterApi {
      */
     startRunWithParameters(href, parameters) {
         const fetchOptions = prepareOptions({ parameters });
-        return Fetch.fetchJSON(href, {fetchOptions});
+        return Fetch.fetchJSON(href, { fetchOptions });
     }
 
     /**
@@ -47,8 +47,8 @@ export class ParameterApi {
      * @returns {*} Promise
      */
     submitInputParameter(href, id, parameters) {
-        const fetchOptions = prepareOptions({id, parameters});
-        return Fetch.fetchJSON(href, {fetchOptions});
+        const fetchOptions = prepareOptions({ id, parameters });
+        return Fetch.fetchJSON(href, { fetchOptions });
     }
 
     /**
@@ -60,6 +60,6 @@ export class ParameterApi {
     cancelInputParameter(href, id) {
         const fetchOptions = prepareOptions();
         fetchOptions.body = { id, abort: true };
-        return Fetch.fetchJSON(href, {fetchOptions});
+        return Fetch.fetchJSON(href, { fetchOptions });
     }
 }

@@ -34,4 +34,4 @@ const parameterApi = new ParameterApi();
 export { parameterApi as ParameterApi };
 
 const parameterService = new ParameterService();
-export { parameterService as ParameterService};
+export { parameterService as ParameterService };

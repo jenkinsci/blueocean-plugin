@@ -9,7 +9,7 @@ import {
 import {
     ParameterService as parameterService,
     ParametersRender,
-    ParameterApi as  parameterApi,
+    ParameterApi as parameterApi,
 } from './parameter/index';
 
 import { Dialog } from '@jenkins-cd/design-language';
@@ -116,14 +116,14 @@ export default class ParametersRunButton extends Component {
             { this.state.visible &&
                 <div className="inputParameters">
                     <Dialog
-                        buttons={[cancelButton, okButton]}
-                        onDismiss={this.hide.bind(this)}
-                        title={message}
-                        className="Dialog--input"
+                      buttons={[cancelButton, okButton]}
+                      onDismiss={this.hide.bind(this)}
+                      title={message}
+                      className="Dialog--input"
                     >
                         <ParametersRender
-                            parameters={parameters}
-                            onChange={(index, newValue) => parameterService.changeParameter(index, newValue) }
+                          parameters={parameters}
+                          onChange={(index, newValue) => parameterService.changeParameter(index, newValue) }
                         />
                     </Dialog>
                 </div>
