@@ -2,7 +2,10 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import hudson.model.Action;
+import hudson.model.Queue;
+import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.pipeline.StageStatus;
 import org.jenkinsci.plugins.pipeline.SyntheticStage;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
@@ -18,11 +21,13 @@ import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -142,6 +147,61 @@ public class PipelineNodeUtil {
             node.getAction(ThreadNameAction.class) != null;
     }
 
+    /**
+     *  Gives cause of block for declarative style plugin where agent (node block) is declared inside a stage.
+     *  <pre>
+     *    pipeline {
+     *      agent none
+     *      stages {
+     *          stage ('first') {
+     *              agent {
+     *                  label 'first'
+     *              }
+     *              steps{
+     *                  sh 'echo "from first"'
+     *              }
+     *          }
+     *      }
+     *    }
+     *  </pre>
+     *
+     * @param stage stage's {@link FlowNode}
+     * @param nodeBlock agent or node block's {@link FlowNode}
+     * @param run {@link WorkflowRun} instance
+     * @return cause of block if present, nul otherwise
+     * @throws IOException in case of IOException
+     * @throws InterruptedException in case of Interrupted exception
+     */
+    public static @CheckForNull String getCauseOfBlockage(@Nonnull FlowNode stage, @Nullable FlowNode nodeBlock, @Nonnull WorkflowRun run) throws IOException, InterruptedException {
+        if(nodeBlock != null){
+            //Check and see if this node block is inside this stage
+            for(FlowNode p:nodeBlock.getParents()){
+                if(p.equals(stage)){
+
+                    //see if there is blocked item in queue
+                    for(Queue.Item i: Jenkins.getInstance().getQueue().getItems()){
+                        if(i.task instanceof ExecutorStepExecution.PlaceholderTask){
+                            ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
+                            String cause = i.getCauseOfBlockage().getShortDescription();
+                            if(task.getCauseOfBlockage() != null){
+                                cause = task.getCauseOfBlockage().getShortDescription();
+                            }
+
+                            Run r = task.runForDisplay();
+
+                            //Set cause if its there and run and node block in the queue is same as the one we
+                            if(cause != null && r != null && r.equals(run) && task.getNode() != null && task.getNode().equals(nodeBlock)){
+                                return cause;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public static Predicate<FlowNode> isLoggable = new Predicate<FlowNode>() {
         @Override
         public boolean apply(@Nullable FlowNode input) {
@@ -152,7 +212,7 @@ public class PipelineNodeUtil {
     };
 
 
-    public static boolean isNestedInParallel(@Nonnull List<FlowNode> sortedNodes, @Nonnull FlowNode node){
+    static boolean isNestedInParallel(@Nonnull List<FlowNode> sortedNodes, @Nonnull FlowNode node){
         FlowNode p = getClosestEnclosingParallelBranch(sortedNodes,node, node.getParents());
         return isInBlock(p, getStepEndNode(sortedNodes, p), node);
     }
@@ -184,7 +244,7 @@ public class PipelineNodeUtil {
                 && pauseAction.getCause().equals("Input"));
     }
 
-    public static FlowNode getStepEndNode(List<FlowNode> sortedNodes, FlowNode startNode){
+    static FlowNode getStepEndNode(List<FlowNode> sortedNodes, FlowNode startNode){
         for(int i = sortedNodes.size() - 1; i >=0; i--){
             FlowNode n = sortedNodes.get(i);
             if(n instanceof StepEndNode){
@@ -196,7 +256,7 @@ public class PipelineNodeUtil {
         return null;
     }
 
-    public static FlowNode getEndNode(List<FlowNode> sortedNodes, FlowNode startNode){
+    static FlowNode getEndNode(List<FlowNode> sortedNodes, FlowNode startNode){
         for(int i = sortedNodes.size() - 1; i >=0; i--){
             FlowNode n = sortedNodes.get(i);
             if(n instanceof StepAtomNode){
@@ -208,11 +268,11 @@ public class PipelineNodeUtil {
         return null;
     }
 
-    public static boolean isInBlock(FlowNode startNode, FlowNode endNode, FlowNode c){
+    static boolean isInBlock(FlowNode startNode, FlowNode endNode, FlowNode c){
         return isChildOf(startNode, c) && isChildOf(c, endNode);
     }
 
-    public static boolean isChildOf(FlowNode parent, FlowNode child){
+    private static boolean isChildOf(FlowNode parent, FlowNode child){
         if(child == null){
             return false;
         }
@@ -225,7 +285,7 @@ public class PipelineNodeUtil {
         return false;
     }
 
-    public static boolean isBranchNestedInBranch(FlowNode node){
+    private static boolean isBranchNestedInBranch(FlowNode node){
         for(FlowNode n: node.getParents()){
             if(isParallelBranch(node)){
                 return true;

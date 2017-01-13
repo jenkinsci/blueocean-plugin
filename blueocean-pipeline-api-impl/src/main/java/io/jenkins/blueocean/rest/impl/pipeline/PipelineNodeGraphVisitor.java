@@ -1,13 +1,10 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
-import hudson.model.Queue;
-import hudson.model.Run;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
@@ -25,7 +22,6 @@ import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StatusAndTiming;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
-import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -287,35 +284,13 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
                 status, times, run);
 
-        //check if its blocked
-        if(agentNode != null){
-            for(FlowNode p:agentNode.getParents()){
-                if(p.equals(chunk.getFirstNode())){
-                    //see if there is blocked item in queue with this id
-                    for(Queue.Item i: Jenkins.getInstance().getQueue().getItems()){
-                        if(i.task instanceof ExecutorStepExecution.PlaceholderTask){
-                            ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
-                            String cause = i.getCauseOfBlockage().getShortDescription();
-                            if(task.getCauseOfBlockage() != null){
-                                cause = task.getCauseOfBlockage().getShortDescription();
-                            }
-
-                            //check if this task belongs to this run
-                            Run r = task.runForDisplay();
-
-                            if(cause != null && r != null && r.equals(run)){
-                                //XXX: We need to somehow associate the Queue.Item to the labeled 'node' block in the script
-                                //     and if this node belongs inside stage then use this Queue.Item.getCauseOfBlockage() in this stage.
-
-                                //     For now we simply use it to set on stage as stages are sequential. when declarative supports parallel
-                                //     execution of stages then it needs to do association of Queue.Item to appropriate stage/parallel.
-                                stage.setCauseOfFailure(cause);
-                            }
-
-                        }
-                    }
-                }
-            }
+        try {
+            String cause = PipelineNodeUtil.getCauseOfBlockage(stage.getNode(), agentNode, run);
+            stage.setCauseOfFailure(cause);
+        } catch (IOException | InterruptedException e) {
+            //log the error but don't fail. This is better as in worst case all we will lose is blockage cause of a node.
+            logger.error(String.format("Error trying to get blockage status of pipeline: %s, runId: %s node block: %s. %s"
+                    ,run.getParent().getFullName(), run.getId(), agentNode, e.getMessage()), e);
         }
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);
