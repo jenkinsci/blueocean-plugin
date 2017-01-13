@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Dropdown, FormElement, RadioButtonGroup } from '@jenkins-cd/design-language';
-import { propTypes } from './commonProptypes';
+import { propTypes } from '../commonProptypes';
 
 export class Choice extends Component {
 

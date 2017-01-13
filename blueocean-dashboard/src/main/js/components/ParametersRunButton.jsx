@@ -7,7 +7,7 @@ import {
 } from '@jenkins-cd/blueocean-core-js';
 
 import {
-    ParameterService,
+    ParameterService as parameterService,
     ParametersRender,
     ParameterApi as  parameterApi,
 } from './parameter/index';
@@ -33,8 +33,7 @@ export default class ParametersRunButton extends Component {
     constructor(props) {
         super(props);
         const { parameters = [] } = props.input;
-        this.parameterService = new ParameterService();
-        this.parameterService.addParameters(parameters);
+        parameterService.addParameters(parameters);
     }
     // we start with an empty state
     state = {};
@@ -75,7 +74,7 @@ export default class ParametersRunButton extends Component {
      * Submit the form out of the data parameters and create a Toast
      */
     initializeBuild() {
-        const parameters = this.parameterService.parametersToSubmitArray();
+        const parameters = parameterService.parametersToSubmitArray();
         parameterApi.startRunWithParameters(this.state.href, parameters)
             .then((runInfo) => {
                 ToastUtils
@@ -86,16 +85,19 @@ export default class ParametersRunButton extends Component {
 
     render() {
         const { runnable, onNavigation, latestRun } = this.props;
-        const { parameters } = this.parameterService;
+        const { parameters } = parameterService;
+        // Captions
         const message = t('parametrised.pipeline.header', { defaultValue: 'Pipeline parameters' });
         const ok = t('parametrised.pipeline.submit', { defaultValue: 'Build' });
         const cancelCaption = t('parametrised.pipeline.cancel', { defaultValue: 'Cancel' });
+        // buttons
         const cancelButton = (<button title={cancelCaption} onClick={() => this.hide()} className="btn inputStepCancel run-button btn-secondary" >
             <span className="button-label">{cancelCaption}</span>
         </button>);
         const okButton = (<button title={ok} onClick={() => this.initializeBuild()} className="btn inputStepSubmit" >
             <span className="button-label">{ok}</span>
         </button>);
+        // common run properties
         const runButtonProps = {
             buttonType: 'run-only',
             innerButtonClasses: 'btn-secondary',
@@ -120,7 +122,7 @@ export default class ParametersRunButton extends Component {
                 >
                     <ParametersRender
                       parameters={parameters}
-                      onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
+                      onChange={(index, newValue) => parameterService.changeParameter(index, newValue) }
                     />
                 </Dialog>
             }

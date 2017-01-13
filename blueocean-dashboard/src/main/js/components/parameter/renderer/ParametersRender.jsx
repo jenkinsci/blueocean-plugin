@@ -1,5 +1,5 @@
 import React from 'react';
-import { supportedInputTypesMapping } from './index';
+import { supportedInputTypesMapping } from '../index';
 
 export function ParametersRender(properties) {
     const { parameters, onChange = () => {} } = properties;

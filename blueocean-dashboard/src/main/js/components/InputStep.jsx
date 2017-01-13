@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    ParameterService,
+    ParameterService as parameterService,
     ParametersRender,
-    ParameterApi as  parameterApi,
+    ParameterApi as parameterApi,
 } from './parameter/index';
 /**
  * Simple helper to stop stopPropagation
@@ -31,8 +31,7 @@ export default class InputStep extends Component {
 
     constructor(props) {
         super(props);
-        this.parameterService = new ParameterService();
-        this.parameterService.addParameters(this.props.node.input.parameters);
+        parameterService.addParameters(this.props.node.input.parameters);
     }
     // we start with an empty state
     state = {};
@@ -78,12 +77,12 @@ export default class InputStep extends Component {
      */
     okForm() {
         const { id } = this.state;
-        const parameters = this.parameterService.parametersToSubmitArray();
+        const parameters = parameterService.parametersToSubmitArray();
         parameterApi.submitInputParameter(this.state.href, id, parameters);
     }
 
     render() {
-        const { parameters } = this.parameterService;
+        const { parameters } = parameterService;
         // Early out
         if (!parameters) {
             return null;
