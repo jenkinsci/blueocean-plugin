@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.44-unpublishedParams",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.44-unpublishedParams",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.44-unpublishedParams.tgz",
+      "version": "0.0.46-unpublishedParam",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.46-unpublishedParam",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.46-unpublishedParam.tgz",
       "dependencies": {
         "history": {
           "version": "3.2.1",
