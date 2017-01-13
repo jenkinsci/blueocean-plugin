@@ -3,10 +3,10 @@ import {
   EmptyStateView,
   Table,
 } from '@jenkins-cd/design-language';
-import { RunButton, capable } from '@jenkins-cd/blueocean-core-js';
+import { capable } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
-import ParametersRunButton from './ParametersRunButton';
+import { ParametersRunButton as RunButton} from './parameter'
 import Runs from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
@@ -108,7 +108,9 @@ export class Activity extends Component {
         return (<main>
             <article className="activity">
                 { showRunButton &&
-                    <ParametersRunButton
+                    <RunButton
+                      buttonType="run-only"
+                      innerButtonClasses="btn-secondary"
                       input={{ parameters, _links }}
                       runnable={pipeline}
                       latestRun={latestRun}

@@ -10,7 +10,7 @@ import {
     ParameterService as parameterService,
     ParametersRender,
     ParameterApi as parameterApi,
-} from './parameter/index';
+} from './index';
 
 import { Dialog } from '@jenkins-cd/design-language';
 /**
@@ -28,7 +28,7 @@ const t = i18nTranslator('blueocean-dashboard');
  * In case you want to register a new mapping you need to edit './parameter/index' to add a new mapping
  * and further in './parameter/commonProptypes' you need to include the new type in the oneOf array.
  */
-export default class ParametersRunButton extends Component {
+export class ParametersRunButton extends Component {
 
     constructor(props) {
         super(props);
@@ -98,13 +98,7 @@ export default class ParametersRunButton extends Component {
             <span className="button-label">{ok}</span>
         </button>);
         // common run properties
-        const runButtonProps = {
-            buttonType: 'run-only',
-            innerButtonClasses: 'btn-secondary',
-            runnable,
-            onNavigation,
-            latestRun,
-        };
+        const runButtonProps = {...this.props};
         // when we have build parameters we need to show them before trigger a build
         if (parameters.length > 0) {
             runButtonProps.onClick = () => {
@@ -132,7 +126,7 @@ export default class ParametersRunButton extends Component {
     }
 }
 
-const { bool, func, object } = PropTypes;
+const { bool, func, object, oneOf, string } = PropTypes;
 
 ParametersRunButton.propTypes = {
     input: object,
@@ -140,6 +134,11 @@ ParametersRunButton.propTypes = {
     onNavigation: func,
     runnable: object,
     latestRun: object,
+    buttonType: oneOf('toggle', 'stop-only', 'run-only'),
+    className: string,
+    onClick: func,
+    runText: string,
+    innerButtonClasses: string,
 };
 
 ParametersRunButton.contextTypes = {
