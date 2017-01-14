@@ -48,7 +48,7 @@
     height:100%;
     flex-grow:1;
     position: relative;
-    padding-right: 25%;
+    padding-right: 360px;
 }
 
 .editor-main-graph {
@@ -427,16 +427,111 @@
     top: 0;
     right: 0;
     bottom: 0;
-    width: 25%;
-    border-left: 1px solid #ccc;
     background: #f8f8f8;
-    padding: 1em;
-    min-width: 250px;
+    padding: 32px;
+    width: 360px;
 }
 
 .split {
+    display: table-row;
     .split-child {
-        display: inline-block;
+        display: table-cell;
         width: 50%;
     }
 }
+
+.editor-pipeline-dialog .errors .error {
+    margin: -1em 0 1.2em 0;
+    color: #c00;
+    background: #fff4f4;
+    padding: 16px;
+    border-radius: 3px;
+}
+
+.editor-config-panel > div > * {
+    margin: .2em 0 1em 0;
+}
+
+.editor-config-panel {
+    .stage-name-edit input {
+        background: rgba(255,255,255,0.5);
+        border: 0;
+        border: none;
+        padding: .2em 0;
+        border-bottom: 1px solid #cdd7e3;
+        width: 100%;
+
+        &:focus {
+            outline: none;
+            border-bottom-color: @brand-color;
+        }
+    }
+
+    input[type=text], .Dropdown-button {
+        border-color: rgba(73, 73, 73, 0.25);
+    }
+}
+
+.editor-config-panel > div > div > h5 {
+    margin: .2em 0 .8em 0;
+    border-bottom: 1px solid rgba(204, 215, 227, 0.5);
+    padding: .3em 0;
+}
+
+.environment-entry .split-child + .split-child {
+    padding-left: 10px;
+}
+
+.agent-parameters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin: 0 -5px;
+
+    .agent-param {
+        flex: 0 0 50%;
+        padding: 0 5px;
+
+        label > div:first-child {
+            margin: 6px 0 0 1px;
+        }
+    }
+}
+
+.environment-add-delete-icon {
+    cursor: pointer;
+    vertical-align: middle;
+    background: transparent;
+    display: inline-block;
+    border: 0;
+    padding: 0;
+    margin: 0;
+
+    &:hover, &:focus {
+        background: transparent;
+        border: 0;
+    }
+
+    &.add circle {
+        fill: #a5c8f1;
+    }
+
+    &.delete circle {
+        fill: #e8818d;
+    }
+
+    // FIXME hover/focus styles beyond just color
+    &:hover, &:focus {
+        &.add circle {
+            fill: darken(#a5c8f1, 20%); //#4a90e2;
+        }
+        &.delete circle {
+            fill: darken(#e8818d, 20%); //#d65766
+        }
+    }
+}
+
+.environment-entry {
+    margin-top: 8px;
+}
+

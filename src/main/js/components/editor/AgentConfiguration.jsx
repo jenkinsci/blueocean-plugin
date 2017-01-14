@@ -4,7 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import type { PipelineAgent } from '../../services/PipelineSyntaxConverter';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
 import type { PipelineInfo, StageInfo } from '../../services/PipelineStore';
-import { Dropdown } from '@jenkins-cd/design-language';
+import { Dropdown, TextInput } from '@jenkins-cd/design-language';
 import { Split } from './Split';
 
 type Props = {
@@ -112,18 +112,18 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
         }
         
         return (<div className="agent-select">
-            <h4>Agent Configuration</h4>
+            <h5>Agent</h5>
             <Dropdown labelField="symbol" options={agents}
                 defaultOption={selectedAgentMetadata}
                 onChange={agent => this.onAgentChanged(agent)} />
             <Split>
-            {selectedAgent && selectedAgentMetadata && <div className="agent-configuration">
+            {selectedAgent && selectedAgentMetadata && <div className="agent-parameters">
                 {selectedAgentMetadata.parameters.map(param => <div className="agent-param">
                     <label key={selectedAgent.type + '/' + param.name}>
-                        <div>{param.capitalizedName}</div>
+                        <div>{param.capitalizedName} {param.isRequired?'*':''}</div>
                         <div>
-                            <input defaultValue={this.getRealOrEmptyArg(param.name).value.value}
-                                onChange={e => this.setAgentValue(param.name, e.target.value)}/>
+                            <TextInput defaultValue={this.getRealOrEmptyArg(param.name).value.value}
+                                onChange={val => this.setAgentValue(param.name, val)}/>
                         </div>
                     </label>
                 </div>)}

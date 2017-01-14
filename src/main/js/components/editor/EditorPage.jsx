@@ -133,7 +133,7 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
                 <div className="editor-page-header">
                     <h3>{ title }</h3>
                     <div className="editor-page-header-controls">
-                        <button disabled={this.currentHistoryIndex <= 0} className="btn-secondary inverse" onClick={() => this.undo()}>Undo</button>
+                        {false && <button disabled={this.currentHistoryIndex <= 0} className="btn-secondary inverse" onClick={() => this.undo()}>Undo</button>}
                         <button className="btn-secondary inverse" onClick={() => this.newPipeline()}>New</button>
                         <button className="btn inverse" onClick={() => this.showPipelineScriptDialog()}>Load/Save</button>
                     </div>

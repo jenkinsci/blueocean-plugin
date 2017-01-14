@@ -46,7 +46,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
     }
 
     doUpdate() {
-        if (!pipelineStore.findParentStage(pipelineStore.pipeline, this.state.selectedStage)) {
+        if (this.state.selectedStage && !pipelineStore.findParentStage(this.state.selectedStage)) {
             this.setState({selectedStage: null});
         } else {
             this.forceUpdate();
@@ -263,7 +263,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                     {selectedStage && 
                     <input defaultValue={title} onChange={e => (selectedStage.name = e.target.value) && this.pipelineUpdated()} />
                     }
-                    {!selectedStage && 'Pipeline Configuration'}
+                    {!selectedStage && 'Pipeline Settings'}
                 </h4>
                 <AgentConfiguration key={'agent'+configurationStage.id} node={configurationStage} onChange={agent => (selectedStage && agent.type == 'none' ? delete configurationStage.agent : configurationStage.agent = agent) && this.pipelineUpdated()} />
                 <EnvironmentConfiguration key={'env'+configurationStage.id} node={configurationStage} onChange={e => this.pipelineUpdated()} />
