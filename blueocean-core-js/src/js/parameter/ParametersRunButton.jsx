@@ -1,10 +1,12 @@
 import React, { Component, PropTypes } from 'react';
+import { Dialog } from '@jenkins-cd/design-language';
 
 import {
-  i18nTranslator,
   ToastUtils,
-  RunButton,
-} from '@jenkins-cd/blueocean-core-js';
+  RunButtonBase as RunButton,
+} from '../index';
+
+import i18nTranslator from '../i18n/i18n';
 
 import {
     ParameterService,
@@ -12,11 +14,10 @@ import {
     ParameterApi as parameterApi,
 } from './index';
 
-import { Dialog } from '@jenkins-cd/design-language';
 /**
  * Translate function
  */
-const t = i18nTranslator('blueocean-dashboard');
+const t = i18nTranslator('blueocean-web');
 
 /**
  * Creating a "<form/>"less form to submit the build parameters requested by the user for a parametrised job..
@@ -32,8 +33,8 @@ export class ParametersRunButton extends Component {
 
     constructor(props) {
         super(props);
-        if (props.input && props.input.parameters) {
-            const { parameters } = props.input;
+        if (props.runnable && props.runnable.parameters) {
+            const { parameters } = props.runnable;
             this.parameterService = new ParameterService();
             this.parameterService.init(parameters);
         } else {
@@ -53,10 +54,10 @@ export class ParametersRunButton extends Component {
      * @param props
      */
     createFormState(props) {
-        const { input } = props;
-        if (input) {
+        const { runnable } = props;
+        if (runnable) {
             const { config = {} } = this.context;
-            const { _links: { self: { href } } } = input;
+            const { _links: { self: { href } } } = runnable;
             this.setState({
                 href: `${config._rootURL}${href}/runs/`,
                 visible: false,
@@ -104,7 +105,7 @@ export class ParametersRunButton extends Component {
         // common run properties
         const runButtonProps = { ...this.props };
         // when we have build parameters we need to show them before trigger a build
-        if (parameters.length > 0) {
+        if (parameters.length > 0 && runButtonProps.buttonType !== 'stop-only') {
             runButtonProps.onClick = () => {
                 this.show();
             };
@@ -133,7 +134,6 @@ export class ParametersRunButton extends Component {
 const { bool, func, object, oneOf, string } = PropTypes;
 
 ParametersRunButton.propTypes = {
-    input: object,
     visible: bool,
     onNavigation: func,
     runnable: object,

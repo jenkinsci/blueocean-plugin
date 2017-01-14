@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    ParameterService as parameterService,
+    ParameterService,
     ParametersRender,
     ParameterApi as parameterApi,
-} from './parameter/index';
+} from '@jenkins-cd/blueocean-core-js';
 /**
  * Simple helper to stop stopPropagation
  * @param event the event we want to cancel
@@ -31,7 +31,8 @@ export default class InputStep extends Component {
 
     constructor(props) {
         super(props);
-        parameterService.init(this.props.node.input.parameters);
+        this.parameterService = new ParameterService();
+        this.parameterService.init(this.props.node.input.parameters);
     }
     // we start with an empty state
     state = {};
@@ -77,12 +78,12 @@ export default class InputStep extends Component {
      */
     okForm() {
         const { id } = this.state;
-        const parameters = parameterService.parametersToSubmitArray();
+        const parameters = this.parameterService.parametersToSubmitArray();
         parameterApi.submitInputParameter(this.state.href, id, parameters);
     }
 
     render() {
-        const { parameters } = parameterService;
+        const { parameters } = this.parameterService;
         // Early out
         if (!parameters) {
             return null;
@@ -94,7 +95,7 @@ export default class InputStep extends Component {
             <div className="inputBody">
                 <ParametersRender
                   parameters={parameters}
-                  onChange={(index, newValue) => parameterService.changeParameter(index, newValue) }
+                  onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
                 />
             </div>
             <div onClick={(event => stopProp(event))} className="inputControl">

@@ -1,12 +1,16 @@
 import React, { Component, PropTypes } from 'react';
-import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
-import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
+import {
+    CommitHash,
+    ReadableDate,
+    LiveStatusIndicator,
+    WeatherIcon,
+} from '@jenkins-cd/design-language';
 import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
+import { observer } from 'mobx-react';
 import { CellRow, CellLink } from './CellLink';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
-import { observer } from 'mobx-react';
 
 @observer
 export default class Branches extends Component {
@@ -33,7 +37,6 @@ export default class Branches extends Component {
         };
 
         const { msg } = (latestRun.changeSet && latestRun.changeSet.length > 0) ? (latestRun.changeSet[latestRun.changeSet.length - 1] || {}) : {};
-        
         return (
             <CellRow linkUrl={runDetailsUrl} id={`${cleanBranchName}-${latestRun.id}`}>
                 <CellLink disableDefaultPadding>

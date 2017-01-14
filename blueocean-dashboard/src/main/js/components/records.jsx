@@ -103,6 +103,7 @@ export const RunsRecord = Record({
     _capabilities: [],
     _links: null,
     latestRun: RunRecord,
+    parameters: null,
     name: null,
     weatherScore: 0,
     pullRequest: PullRequestRecord,

@@ -29,7 +29,8 @@ export class Choice extends Component {
                 { React.createElement(uxChoice, { ...options }) }
                 { description && <div className="inputDescription">{description}</div> }
             </div>
-        </FormElement>); }
+        </FormElement>);
+    }
 }
 // <Dropdown {...options} />
 // extending the common propType since we have additional properties

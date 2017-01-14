@@ -1,4 +1,4 @@
-import { Fetch } from '@jenkins-cd/blueocean-core-js';
+import { Fetch } from '../..';
 /**
  * Generic options needed for all requests
  * @type {{credentials: string, method: string, headers: {Content-Type: string}}}
