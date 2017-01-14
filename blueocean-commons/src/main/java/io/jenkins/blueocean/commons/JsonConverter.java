@@ -52,7 +52,7 @@ public class JsonConverter{
         try {
             return om.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(String.format("Failed to convert %s to json", value.toString()));
+            throw new RuntimeException(String.format("Failed to convert %s to json", value.toString()), e);
         }
     }
 

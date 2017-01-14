@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +36,78 @@ public class GitScmTest extends PipelineBaseTest {
 
 
         Assert.assertEquals("demo", resp.get("name"));
+    }
+
+    @Test
+    public void simpleOrgShouldFailOnValidation1(){
+        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
+                ImmutableMap.of(
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                ), 400);
+
+        Assert.assertEquals(resp.get("code"), 400);
+
+        List<Map> errors = (List<Map>) resp.get("errors");
+
+        Assert.assertEquals(errors.get(0).get("field"), "name");
+        Assert.assertEquals(errors.get(0).get("code"), "MISSING");
+        Assert.assertEquals(errors.get(1).get("field"), "$class");
+        Assert.assertEquals(errors.get(1).get("code"), "MISSING");
+    }
+
+    @Test
+    public void simpleOrgShouldFailOnValidation2(){
+        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
+                ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest"
+                ), 400);
+
+        Assert.assertEquals(resp.get("code"), 400);
+
+        List<Map> errors = (List<Map>) resp.get("errors");
+
+        Assert.assertEquals(errors.get(0).get("field"), "scmConfig");
+        Assert.assertEquals(errors.get(0).get("code"), "MISSING");
+    }
+
+    @Test
+    public void simpleOrgShouldFailOnValidation3(){
+        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
+                ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of()), 400);
+
+        Assert.assertEquals(resp.get("code"), 400);
+
+        List<Map> errors = (List<Map>) resp.get("errors");
+
+        Assert.assertEquals(errors.get(0).get("field"), "scmConfig.uri");
+        Assert.assertEquals(errors.get(0).get("code"), "MISSING");
+    }
+
+
+    @Test
+    public void simpleOrgShouldFailOnValidation4(){
+
+        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
+                ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                ), 201);
+
+
+        Assert.assertEquals("demo", resp.get("name"));
+
+        resp = post("/organizations/jenkins/pipelines/",
+                ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                ), 400);
+        List<Map> errors = (List<Map>) resp.get("errors");
+
+        Assert.assertEquals(errors.get(0).get("field"), "name");
+        Assert.assertEquals(errors.get(0).get("code"), "ALREADY_EXISTS");
+
     }
 
     private void setupScm() throws Exception {
