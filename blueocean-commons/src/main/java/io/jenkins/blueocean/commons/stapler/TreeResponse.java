@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.commons.stapler;
 
 import hudson.model.Api;
+import io.jenkins.blueocean.commons.stapler.export.Export;
 import org.kohsuke.stapler.CancelRequestHandlingException;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
@@ -45,7 +46,7 @@ public @interface TreeResponse {
                 return new HttpResponse() {
                     @Override
                     public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                        new Api(resp).doJson(req, rsp);
+                        Export.doJson(req, rsp, resp);;
                     }
                 };
             }else{

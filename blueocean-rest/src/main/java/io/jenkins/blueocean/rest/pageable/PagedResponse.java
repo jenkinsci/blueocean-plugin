@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.pageable;
 
 import com.google.common.collect.Iterators;
-import hudson.model.Api;
+import io.jenkins.blueocean.commons.stapler.export.Export;
 import org.kohsuke.stapler.CancelRequestHandlingException;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
@@ -21,7 +21,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Renders {@link Pageable} to HTTP by honoring the current page, links to next page, etc.
  *
- * @author Kohsuke Kawaguchi
+ * @author Kohsuke KawaguchiF
  */
 @Retention(RUNTIME)
 @Target(METHOD)
@@ -55,7 +55,8 @@ public @interface PagedResponse {
                     Object[] page = Iterators.toArray(resp.iterator(start, limit), Object.class);
                         String separator = (req.getQueryString() != null) ? "&" : "?";
                         rsp.setHeader("Link", "<" + req.getRequestURIWithQueryString() + separator + "start=" + (start + limit) + "&limit="+limit + ">; rel=\"next\"");
-                    new Api(page).doJson(req, rsp);
+
+                    Export.doJson(req, rsp, page);
                 }
             };
         }
