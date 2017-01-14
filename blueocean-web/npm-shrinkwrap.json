@@ -3,10 +3,15 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.46-unpublishedParam",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.46-unpublishedParam",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.46-unpublishedParam.tgz",
+      "version": "0.0.46",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.46",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.46.tgz",
       "dependencies": {
+        "@jenkins-cd/design-language": {
+          "version": "0.0.102",
+          "from": "@jenkins-cd/design-language@0.0.102",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.102.tgz"
+        },
         "history": {
           "version": "3.2.1",
           "from": "history@>=3.0.0 <4.0.0",
