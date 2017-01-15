@@ -4,15 +4,16 @@ import { ExpandablePath, WeatherIcon } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { capable, UrlConfig } from '@jenkins-cd/blueocean-core-js';
-import { MATRIX_PIPELINE } from '../Capabilities'
+import { MATRIX_PIPELINE } from '../Capabilities';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
 function generateRedirectLink(pipeline) {
     if (capable(pipeline, MATRIX_PIPELINE)) {
-        return (<a 
-          className='pipelineRedirectLink'
+        return (<a
+          className="pipelineRedirectLink"
           href={`${UrlConfig.getJenkinsRootURL()}${pipeline._links.self.href}`}
-          target="_blank">
+          target="_blank"
+        >
             {pipeline.fullDisplayName}<Icon size={24} icon="exit_to_app" />
         </a>);
     }
