@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 
-import io.jenkins.blueocean.commons.stapler.export.Export;
+import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.Reachable;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;

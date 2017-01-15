@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.commons.stapler;
 
 import hudson.model.Api;
-import io.jenkins.blueocean.commons.stapler.export.Export;
 import org.kohsuke.stapler.CancelRequestHandlingException;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
@@ -17,8 +16,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Takes the return value of a web method and serve it as a JSON representation

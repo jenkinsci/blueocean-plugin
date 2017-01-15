@@ -1,6 +1,13 @@
-package io.jenkins.blueocean.commons.stapler.export;
+package io.jenkins.blueocean.commons.stapler;
 
 import hudson.ExtensionList;
+import io.jenkins.blueocean.commons.stapler.export.DataWriter;
+import io.jenkins.blueocean.commons.stapler.export.ExportConfig;
+import io.jenkins.blueocean.commons.stapler.export.Flavor;
+import io.jenkins.blueocean.commons.stapler.export.Model;
+import io.jenkins.blueocean.commons.stapler.export.ModelBuilder;
+import io.jenkins.blueocean.commons.stapler.export.NamedPathPruner;
+import io.jenkins.blueocean.commons.stapler.export.TreePruner;
 import io.jenkins.blueocean.commons.stapler.export.TreePruner.ByDepth;
 import jenkins.model.Jenkins;
 import jenkins.security.SecureRequester;
