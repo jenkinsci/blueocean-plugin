@@ -6,10 +6,4 @@ ext.store.init({
     },
 });
 
-require('./pipelines');
-require('./status');
-require('./icons');
-require('./logDisplay');
-require('./changes');
-require('./moments');
-require('./inputStep');
+require('./ContentPageHeaderStories'); // TODO: Split this into two

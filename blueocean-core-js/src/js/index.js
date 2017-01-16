@@ -45,6 +45,12 @@ export {
     Password,
     ParametersRender,
 } from './parameter';
+export {
+    BlueLogo,
+    BlueOceanIcon,
+} from './components/BlueLogo';
+export { ContentPageHeader } from './components/ContentPageHeader';
+export { ResultPageHeader } from './components/ResultPageHeader';
 
 // Create and export the SSE connection that will be shared by other
 // Blue Ocean components via this package.
@@ -74,3 +80,12 @@ export const locationService = new LocationService();
 
 const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, pagerService);
 sseService.registerHandler(defaultSSEhandler.handleEvents);
+
+// Export some debugging stuff client code may need
+
+import { enableMocksForI18n, disableMocksForI18n } from './i18n/i18n';
+
+export const DEBUG = {
+    enableMocksForI18n,
+    disableMocksForI18n,
+};

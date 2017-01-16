@@ -5,5 +5,5 @@
 
 import 'babel-polyfill';
 
-import { enableMocks } from '../../src/js/i18n/i18n';
-enableMocks();
+import { enableMocksForI18n } from '../../src/js/i18n/i18n';
+enableMocksForI18n();

@@ -28,6 +28,7 @@ public class FlowNodeWrapper {
     private final String displayName;
     private final InputStep inputStep;
     private final WorkflowRun run;
+    private String causeOfFailure;
 
     private List<FlowNodeWrapper> parents = new ArrayList<>();
 
@@ -114,6 +115,14 @@ public class FlowNodeWrapper {
 
     public @Nonnull List<FlowNodeWrapper> getParents(){
         return parents;
+    }
+
+    public String getCauseOfFailure() {
+        return causeOfFailure;
+    }
+
+    public void setCauseOfFailure(String causeOfFailure) {
+        this.causeOfFailure = causeOfFailure;
     }
 
     @Override

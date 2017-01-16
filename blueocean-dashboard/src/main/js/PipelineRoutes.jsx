@@ -33,7 +33,7 @@ function cleanupCopy(el) {
         for (let i = 0; i < el.childNodes.length; i++) {
             const child = el.childNodes[i];
             if (child.nodeType !== Node.TEXT_NODE
-                    && child.nodeType !== Node.ELEMENT_NODE) {
+                && child.nodeType !== Node.ELEMENT_NODE) {
                 el.removeChild(child);
             } else if (child.nodeType === Node.ELEMENT_NODE) {
                 cleanupCopy(child);
@@ -101,7 +101,7 @@ function persistBackgroundOnNavigationChange(prevState, nextState, replace, call
     if (isPersistBackgroundRoute(prevState, nextState)) {
         persistModalBackground();
     } else if (isRemovePersistedBackgroundRoute(prevState, nextState)) {
-         // need to delay this a little to let the route re-render
+        // need to delay this a little to let the route re-render
         setTimeout(discardPersistedBackground, 200);
     }
     callback();
@@ -110,28 +110,28 @@ function persistBackgroundOnNavigationChange(prevState, nextState, replace, call
 export default (
     <Route path="/" component={Dashboard} onChange={persistBackgroundOnNavigationChange}>
         <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
-            <Route path="organizations/:organization/pipelines" component={Pipelines} />
+        <Route path="organizations/:organization/pipelines" component={Pipelines} />
 
-            <Route path="organizations/:organization" component={PipelinePage}>
-                <Route path=":pipeline/branches" component={MultiBranch} />
-                <Route path=":pipeline/activity" component={Activity} />
-                <Route path=":pipeline/pr" component={PullRequests} />
+        <Route path="organizations/:organization" component={PipelinePage}>
+            <Route path=":pipeline/branches" component={MultiBranch} />
+            <Route path=":pipeline/activity" component={Activity} />
+            <Route path=":pipeline/pr" component={PullRequests} />
 
-                <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
-                    <IndexRedirect to="pipeline" />
-                    <Route path="pipeline" component={RunDetailsPipeline} >
-                        <Route path=":node" component={RunDetailsPipeline} />
-                    </Route>
-                    <Route path="changes" component={RunDetailsChanges} />
-                    <Route path="tests" component={RunDetailsTests} />
-                    <Route path="artifacts" component={RunDetailsArtifacts} />
+            <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
+                <IndexRedirect to="pipeline" />
+                <Route path="pipeline" component={RunDetailsPipeline}>
+                    <Route path=":node" component={RunDetailsPipeline} />
                 </Route>
+                <Route path="changes" component={RunDetailsChanges} />
+                <Route path="tests" component={RunDetailsTests} />
+                <Route path="artifacts" component={RunDetailsArtifacts} />
+            </Route>
 
-                <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
-       
+            <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
+
         </Route>
         <Route path="/pipelines" component={Pipelines} />
-           
+
         <Route path="/create-pipeline" component={CreatePipeline} />
         <IndexRedirect to="pipelines" />
     </Route>
