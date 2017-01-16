@@ -1,7 +1,7 @@
-/**
- * Created by cmeyers on 10/21/16.
- */
 import React, { PropTypes } from 'react';
+import { IconButton } from '@jenkins-cd/design-language';
+
+import { GitIcon } from './GitIcon';
 
 export default function GitDefaultOption(props) {
     function onSelect() {
@@ -11,9 +11,11 @@ export default function GitDefaultOption(props) {
     }
 
     return (
-        <button onClick={onSelect}>
-            Git
-        </button>
+        <div>
+            <IconButton className="monochrome" label="Git" onClick={onSelect}>
+                <GitIcon />
+            </IconButton>
+        </div>
     );
 }
 
