@@ -33,6 +33,27 @@ function loginOrLogout(t) {
         }
     }
 }
+
+// Show link when only when someone is logged in...unless security is not configured,
+// then show it anyway.
+const AdminLink = (props) => {
+    const { t } = props;
+    const showLink = !Security.isSecurityEnabled() || !Security.isAnonymousUser();
+
+    if (showLink) {
+        var adminCaption = t('administration', {
+            defaultValue: 'Administation',
+        });
+        return <a href={`${UrlConfig.getJenkinsRootURL()}/manage`}>{adminCaption}</a>;          
+    }
+
+    return null;
+};
+
+AdminLink.propTypes = {
+    t: PropTypes.func,
+};
+
 /**
  * Root Blue Ocean UI component
  */
@@ -45,9 +66,6 @@ class App extends Component {
     render() {
         const { location } = this.context;
 
-        var adminCaption = translate('administration', {
-            defaultValue: 'Administation',
-        });
         var pipeCaption = translate('pipelines', {
             defaultValue: 'Pipelines',
         });
@@ -58,7 +76,7 @@ class App extends Component {
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
                             <Link query={location.query} to="/pipelines">{pipeCaption}</Link>
-                            <a href="#">{adminCaption}</a>
+                            <AdminLink t={translate} />
                         </nav>
                         <div className="button-bar layout-small inverse">
                             { loginOrLogout(translate) }
