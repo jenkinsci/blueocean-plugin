@@ -8,6 +8,7 @@ import status from './FlowStepStatus';
  */
 export default function StepIndicator(props) {
     const newProps = {};
+    newProps.width = newProps.height = 32;
 
     if (props.percentage >= 0 && props.percentage < 100 && props.status !== status.COMPLETE) {
         newProps.result = 'running';
