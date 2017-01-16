@@ -46,3 +46,5 @@ ContentPageHeader.propTypes = {
     pageTabLinks: PropTypes.node,
     children: PropTypes.node,
 };
+
+export default ContentPageHeader;

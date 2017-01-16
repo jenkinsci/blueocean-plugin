@@ -128,31 +128,35 @@ export default function i18nTranslator(pluginName, namespace) {
         return translator;
     }
 
-    if (useMockFallback) {
-        return function mockTranslate(key) {
-            return key;
-        };
-    }
+    // Lazily construct what we need instead of on creation
+    return function translate(key, params) {
+        if (useMockFallback) {
+            return (params && params.defaultValue) || key;
+        }
 
-    const I18n = pluginI18next(pluginName, namespace);
+        if (!translator) {
+            const I18n = pluginI18next(pluginName, namespace);
 
-    // Create and cache the translator instance.
-    let detectedLang;
-    try {
-        detectedLang = defaultLngDetector.detect();
-    } catch (e) {
-        detectedLang = FALLBACK_LANG;
-    }
-    translator = I18n.getFixedT(detectedLang, namespace);
-    translatorCache[translatorCacheKey] = translator;
+            // Create and cache the translator instance.
+            let detectedLang;
+            try {
+                detectedLang = defaultLngDetector.detect();
+            } catch (e) {
+                detectedLang = FALLBACK_LANG;
+            }
+            translator = I18n.getFixedT(detectedLang, namespace);
+            translatorCache[translatorCacheKey] = translator;
+        }
 
-    return translator;
+        return translator(key, params);
+    };
 }
 
-export function enableMocks() {
+export function enableMocksForI18n() {
     useMockFallback = true;
 }
 
-export function disableMocks() {
+export function disableMocksForI18n() {
     useMockFallback = false;
 }
+
