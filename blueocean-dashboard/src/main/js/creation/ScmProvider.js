@@ -23,20 +23,4 @@ export default class ScmProvider {
         throw new Error('must implement getFlowManager');
     }
 
-    /**
-     * Return a React element that composes MultiStepFlow with one or more child FlowStep elements.
-     * Call props.onCompleteFlow to finish the flow.
-     */
-    getCreationFlow() {
-        throw new Error('must implement getCreationFlow');
-    }
-
-    getRentrantOption() {
-        return null;
-    }
-
-    getRentrantFlow() {
-        return null;
-    }
-
 }
