@@ -93,7 +93,7 @@ export class ParametersRunButton extends Component {
         const { parameters } = this.parameterService;
         // Captions
         const message = t('parametrised.pipeline.header', { defaultValue: 'Input required' });
-        const ok = t('parametrised.pipeline.submit', { defaultValue: 'Build' });
+        const ok = t('parametrised.pipeline.submit', { defaultValue: 'Run' });
         const cancelCaption = t('parametrised.pipeline.cancel', { defaultValue: 'Cancel' });
         // buttons
         const cancelButton = (<button title={cancelCaption} onClick={() => this.hide()} className="btn inputStepCancel run-button btn-secondary" >
@@ -138,7 +138,7 @@ ParametersRunButton.propTypes = {
     onNavigation: func,
     runnable: object,
     latestRun: object,
-    buttonType: oneOf('toggle', 'stop-only', 'run-only'),
+    buttonType: oneOf(['toggle', 'stop-only', 'run-only']),
     className: string,
     onClick: func,
     runText: string,
