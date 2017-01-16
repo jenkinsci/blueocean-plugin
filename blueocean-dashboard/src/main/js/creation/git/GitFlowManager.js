@@ -2,6 +2,9 @@ import React from 'react';
 import { action, computed, observable } from 'mobx';
 import { Promise } from 'es6-promise';
 
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+const translate = i18nTranslator('blueocean-dashboard');
+
 import FlowManager from '../flow2/FlowManager';
 import GitConnectStep from './GitConnectStep';
 import GitCompletedStep from './GitCompletedStep';
@@ -43,6 +46,10 @@ export default class GitFlowManger extends FlowManager {
 
         this._createApi = createApi;
         this._credentialsApi = credentialsApi;
+    }
+
+    translate(key, opts) {
+        return translate(key, opts);
     }
 
     getInitialStep() {

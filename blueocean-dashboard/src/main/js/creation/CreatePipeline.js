@@ -1,6 +1,3 @@
-/**
- * Created by cmeyers on 10/17/16.
- */
 import React, { PropTypes } from 'react';
 import { BasicDialog, DialogContent } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
@@ -11,6 +8,11 @@ import VerticalStep from './flow2/VerticalStep';
 
 import Extensions from '@jenkins-cd/js-extensions';
 const Sandbox = Extensions.SandboxedComponent;
+
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+const translate = i18nTranslator('blueocean-dashboard');
+const t = translate;
+const locale = t.lng;
 
 export default class CreatePipeline extends React.Component {
 
@@ -54,7 +56,7 @@ export default class CreatePipeline extends React.Component {
                 <CustomHeader onClose={() => this._onExit()} />
                 <DialogContent>
                     <VerticalStep className="first-step" status={firstStepStatus}>
-                        <h1>Where do you store your code?</h1>
+                        <h1>{t('creation.intro.scm_provider', { defaultValue: 'Where do you store your code?' })}</h1>
 
                         <CreatePipelineScmListRenderer
                           extensionPoint="jenkins.pipeline.create.scm.provider"
@@ -81,8 +83,10 @@ CreatePipeline.contextTypes = {
 function CustomHeader(props) {
     return (
         <div className="Dialog-header creation-header">
-            <h3>Create Pipeline</h3>
-            <a className="close-button" href="#" onClick={props.onClose}>
+            <h3>{t('creation.header.title', { defaultValue: 'Create Pipeline' })}</h3>
+            <a className="close-button" href="#" onClick={props.onClose}
+              title={t('creation.intro.close', { defaultValue: 'Close' })}
+            >
                 <Icon icon="close" size={42} />
             </a>
         </div>

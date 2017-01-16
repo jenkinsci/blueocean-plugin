@@ -31,6 +31,8 @@ const NEW_CREDENTIAL_TYPE = {
     },
 };
 
+let t = null;
+
 /**
  * Component that accepts repository URL and credentials to initiate
  * creation of a new pipeline.
@@ -57,6 +59,8 @@ export default class GitConnectStep extends React.Component {
             createButtonDisabled: false,
             createInProgress: false,
         };
+
+        t = this.props.flowManager.translate;
     }
 
     componentDidMount() {
@@ -179,7 +183,7 @@ export default class GitConnectStep extends React.Component {
 
         if (!ValidationUtils.validateUrl(this.state.repositoryUrl)) {
             this.setState({
-                repositoryErrorMsg: 'please enter a valid URL.',
+                repositoryErrorMsg: t('creation.git.step1.repo_error'),
             });
 
             result = false;
@@ -255,10 +259,13 @@ export default class GitConnectStep extends React.Component {
         const disabled = !this.props.flowManager.isConnectEnabled;
 
         return (
-            <FlowStep {...this.props} className="git-step-connect" title="Connect to a Git repository" disabled={disabled}>
-                <p className="instructions">Make sure you have a Jenkinsfile... yadda yadda.</p>
+            <FlowStep {...this.props} className="git-step-connect" title={t('creation.git.step1.title')} disabled={disabled}>
+                <p className="instructions">
+                    {t('creation.git.step1.instructions')} &nbsp;
+                    <a href="https://jenkins.io/doc/book/pipeline/jenkinsfile/" target="_blank">{t('creation.git.step1.instructions_link')}</a>
+                </p>
 
-                <FormElement title="Repository Url" errorMessage={this.state.repositoryErrorMsg}>
+                <FormElement title={t('creation.git.step1.repo_title')} errorMessage={this.state.repositoryErrorMsg}>
                     <TextInput className="text-repository-url" onChange={val => this._repositoryUrlChange(val)} />
                 </FormElement>
 
