@@ -4,15 +4,21 @@ import XHR from 'i18next-xhr-backend';
 import { store } from '@jenkins-cd/js-extensions';
 
 import urlConfig from '../urlconfig';
+import logging from '../logging';
+
+const logger = logging.logger('io.jenkins.blueocean.i18n');
 
 /**
  * Init language detector, we are going to use first queryString and then the navigator prefered language
  */
 export const defaultLngDetector = new LngDetector(null, {
     // order and from where user language should be detected
-    order: ['querystring', 'navigator'],
+    order: ['querystring', 'htmlTag', 'navigator'],
     // keys or params to lookup language from
     lookupQuerystring: 'language',
+    // Don't use the default (document.documentElement) because that can
+    // trigger the browsers auto-translate, which is quite annoying.
+    htmlTag: document.head,
 });
 const prefix = urlConfig.getJenkinsRootURL() || '';
 const FALLBACK_LANG = '';
@@ -33,6 +39,9 @@ function newPluginXHR(pluginName) {
         parse: (data) => {
             // we need to parse the response and then extract the data since the rest is garbage for us
             const response = JSON.parse(data);
+            if (logger.isDebugEnabled()) {
+                logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
+            }
             return response.data;
         },
     });
@@ -144,6 +153,11 @@ export default function i18nTranslator(pluginName, namespace) {
             } catch (e) {
                 detectedLang = FALLBACK_LANG;
             }
+
+            if (logger.isLogEnabled()) {
+                logger.log('Translator instance created for "%s". Language detected as "%s".', translatorCacheKey, detectedLang);
+            }
+
             translator = I18n.getFixedT(detectedLang, namespace);
             translatorCache[translatorCacheKey] = translator;
         }
