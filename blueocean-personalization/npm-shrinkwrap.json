@@ -3,10 +3,15 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.46-tfbeta4",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.46-tfbeta4",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.46-tfbeta4.tgz",
+      "version": "0.0.46-tfbeta5",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.46-tfbeta5",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.46-tfbeta5.tgz",
       "dependencies": {
+        "@jenkins-cd/design-language": {
+          "version": "0.0.97",
+          "from": "@jenkins-cd/design-language@0.0.97",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.97.tgz"
+        },
         "react-router": {
           "version": "3.0.0",
           "from": "react-router@3.0.0",
@@ -44,14 +49,7 @@
     "@jenkins-cd/logging": {
       "version": "0.0.5",
       "from": "@jenkins-cd/logging@>=0.0.5 <0.0.6",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.5.tgz",
-      "dependencies": {
-        "@jenkins-cd/storage": {
-          "version": "0.0.5",
-          "from": "@jenkins-cd/storage@>=0.0.5 <0.0.6",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.5.tgz"
-        }
-      }
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.5.tgz"
     },
     "@jenkins-cd/react-material-icons": {
       "version": "1.0.0",
@@ -64,9 +62,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.14.tgz"
     },
     "@jenkins-cd/storage": {
-      "version": "0.0.4",
-      "from": "@jenkins-cd/storage@0.0.4",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.4.tgz"
+      "version": "0.0.5",
+      "from": "@jenkins-cd/storage@0.0.5",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.5.tgz"
     },
     "@kadira/react-split-pane": {
       "version": "1.4.7",
