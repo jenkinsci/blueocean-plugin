@@ -6,8 +6,10 @@ import { FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
 
+let t = null;
+
 /**
- * Shows the current progress after creation was initiated.
+ * Handling renaming when a name conflict occurs during creation.
  */
 @observer
 export default class GitRenameStep extends React.Component {
@@ -15,12 +17,12 @@ export default class GitRenameStep extends React.Component {
     constructor(props) {
         super(props);
 
-        this.title = 'Naming conflict';
-
         this.state = {
             pipelineName: '',
             isNameValid: null,
         };
+
+        t = this.props.flowManager.translate;
     }
 
     _onChange(name) {
@@ -49,26 +51,26 @@ export default class GitRenameStep extends React.Component {
         let headingText = '';
 
         if (this.state.isNameValid === null) {
-            headingText = `${this.props.pipelineError}. A unique name is required.`;
+            headingText = t('creation.git.step2.name_required');
         } else if (this.state.isNameValid === false) {
-            headingText = `The name '${this.state.pipelineName}' is not available. Please try a different name.`;
+            headingText = t('creation.git.step2.name_unavailable', { 0: this.state.pipelineName });
         } else if (this.state.isNameValid === true) {
-            headingText = `Success! '${this.state.pipelineName}' is available.`;
+            headingText = t('creation.git.step2.name_available', { 0: this.state.pipelineName });
         }
 
         return (
-            <FlowStep className="git-step-rename" {...this.props} title={this.title} disabled={disabled}>
+            <FlowStep className="git-step-rename" {...this.props} title={t('creation.git.step2.title')} disabled={disabled}>
                 <FormElement title={headingText}>
                     <TextInput
                       className="text-pipeline"
-                      placeholder="Pipeline name"
+                      placeholder={t('creation.git.step2.text_name_placeholder')}
                       onChange={val => this._onChange(val)}
                     />
 
                     <button disabled={!this.state.isNameValid}
                       onClick={() => this._onSave()}
                     >
-                        Save
+                        {t('creation.git.step2.button_save')}
                     </button>
                 </FormElement>
 

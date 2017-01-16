@@ -8,6 +8,8 @@ import pause from '../flow2/pause';
 
 import FlowStep from '../flow2/FlowStep';
 
+let t = null;
+
 const NEW_CREDENTIAL_TYPE = {
     SSH_KEY: 'SSH_KEY',
     SYSTEM_SSH: 'SYSTEM_SSH',
@@ -20,18 +22,17 @@ const NEW_CREDENTIAL_TYPE = {
     toLabel(option) {
         switch (option) {
         case NEW_CREDENTIAL_TYPE.SSH_KEY:
-            return 'SSH Key';
+            return t('creation.git.step1.credential_type_ssh_key');
         case NEW_CREDENTIAL_TYPE.SYSTEM_SSH:
-            return 'Use System SSH';
+            return t('creation.git.step1.credential_type_system_ssh');
         case NEW_CREDENTIAL_TYPE.USER_PASS:
-            return 'Username & Password';
+            return t('creation.git.step1.credential_type_user_pass');
         default:
             return '';
         }
     },
 };
 
-let t = null;
 
 /**
  * Component that accepts repository URL and credentials to initiate
@@ -191,7 +192,7 @@ export default class GitConnectStep extends React.Component {
 
         if (!this.state.newCredentialType && !this.state.selectedCredential) {
             this.setState({
-                credentialsErrorMsg: 'Please make a selection below or choose an existing credential.',
+                credentialsErrorMsg: t('creation.git.step1.credential_error'),
             });
 
             result = false;
@@ -204,7 +205,7 @@ export default class GitConnectStep extends React.Component {
         } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS) {
             if (!this.state.usernameValue) {
                 this.setState({
-                    usernameErrorMsg: 'Please enter a valid username',
+                    usernameErrorMsg: t('creation.git.step1.username_error'),
                 });
 
                 result = false;
@@ -212,7 +213,7 @@ export default class GitConnectStep extends React.Component {
 
             if (!this.state.passwordValue) {
                 this.setState({
-                    passwordErrorMsg: 'Please enter a valid password',
+                    passwordErrorMsg: t('creation.git.step1.password_error'),
                 });
 
                 result = false;
@@ -222,7 +223,7 @@ export default class GitConnectStep extends React.Component {
         } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SSH_KEY) {
             if (!this.state.sshKeyValue) {
                 this.setState({
-                    sshKeyErrorMsg: 'Please enter a valid SSH public key.',
+                    sshKeyErrorMsg: t('creation.git.step1.sshkey_error'),
                 });
 
                 result = false;
@@ -270,7 +271,7 @@ export default class GitConnectStep extends React.Component {
                 </FormElement>
 
                 <FormElement className="credentials" errorMessage={this.state.credentialsErrorMsg}>
-                    <FormElement title="New credential" showDivider verticalLayout>
+                    <FormElement title={t('creation.git.step1.credential_new')} showDivider verticalLayout>
                         <RadioButtonGroup
                           className="credentials-type-picker"
                           options={NEW_CREDENTIAL_TYPE.values()}
@@ -279,37 +280,37 @@ export default class GitConnectStep extends React.Component {
                         />
 
                         { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SSH_KEY &&
-                        <FormElement title="SSH Public Key" errorMessage={this.state.sshKeyErrorMsg}>
+                        <FormElement title={t('creation.git.step1.sshkey_title')} errorMessage={this.state.sshKeyErrorMsg}>
                             <TextArea onChange={val => this._sshKeyChange(val)} />
                         </FormElement>
                         }
 
                         { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS &&
-                        <FormElement title="Username" errorMessage={this.state.usernameErrorMsg}>
+                        <FormElement title={t('creation.git.step1.username_title')} errorMessage={this.state.usernameErrorMsg}>
                             <TextInput onChange={val => this._usernameChange(val)} />
                         </FormElement>
                         }
 
                         { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS &&
-                        <FormElement title="Password" errorMessage={this.state.passwordErrorMsg}>
+                        <FormElement title={t('creation.git.step1.password_title')} errorMessage={this.state.passwordErrorMsg}>
                             <PasswordInput onChange={val => this._passwordChange(val)} />
                         </FormElement>
                         }
                     </FormElement>
 
-                    <FormElement title="Existing Credential" showDivider>
+                    <FormElement title={t('creation.git.step1.credential_existing')} showDivider>
                     {
                         !this.state.existingCredentials &&
-                        <div>Loading Credentials...</div>
+                        <div>{t('creation.git.step1.credential_loading_msg')}</div>
                     }
                     {
                         this.state.existingCredentials && !this.state.existingCredentials.length &&
-                        <div>No credentials available.</div>
+                        <div>{t('creation.git.step1.credential_none_available')}</div>
                     }
                     {
                         this.state.existingCredentials && this.state.existingCredentials.length &&
                         <Dropdown
-                          placeholder="Choose credentials"
+                          placeholder={t('creation.git.step1.credential_existing_placeholder')}
                           options={this.state.existingCredentials}
                           labelField="displayName"
                           onChange={opt => this._selectedCredentialChange(opt)}
@@ -322,7 +323,9 @@ export default class GitConnectStep extends React.Component {
                   onClick={() => this._beginCreation()}
                   disabled={this.state.createButtonDisabled}
                 >
-                    {this.state.createInProgress ? 'Creating Pipeline...' : 'Create Pipeline'}
+                    {this.state.createInProgress ?
+                        t('creation.git.step1.create_button_progress') :
+                        t('creation.git.step1.create_button')}
                 </button>
 
             </FlowStep>

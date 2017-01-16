@@ -6,11 +6,19 @@ import FlowStep from '../flow2/FlowStep';
 import StepStatus from '../flow2/FlowStepStatus';
 import FlowStatus from './GitCreationStatus';
 
+let t = null;
+
 /**
  * Shows the current progress after creation was initiated.
  */
 @observer
 export default class GitCompletedStep extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        t = this.props.flowManager.translate;
+    }
 
     finish() {
         const pipeline = this.props.flowManager.pipeline;
@@ -26,26 +34,23 @@ export default class GitCompletedStep extends React.Component {
 
         switch (this.props.flowManager.creationStatus) {
         case FlowStatus.CREATE_CREDS:
-            percentage = 25;
-            title = `${title} - Creating Credentials...`;
+            percentage = 33;
+            title = t('creation.git.step3.title_credential_create');
             break;
         case FlowStatus.CREATE_PIPELINE:
-            percentage = 50;
-            title = `${title} - Creating Pipeline...`;
-            break;
-        case FlowStatus.RUN_PIPELINE:
-            percentage = 75;
-            title = `${title} - Starting Pipeline...`;
+            percentage = 67;
+            title = t('creation.git.step3.title_pipeline_create');
             break;
         case FlowStatus.COMPLETE:
             percentage = 100;
-            title = `${title}!`;
+            title = t('creation.git.step3.title_completed');
             content = (
-                <button onClick={() => this.finish()}>Open</button>
+                <button onClick={() => this.finish()}>{t('creation.git.step3.button_open')}</button>
             );
             status = StepStatus.COMPLETE;
             break;
         default:
+            title = t('creation.git.step3.title_default');
             break;
         }
 

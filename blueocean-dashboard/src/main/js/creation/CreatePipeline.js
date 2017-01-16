@@ -56,7 +56,7 @@ export default class CreatePipeline extends React.Component {
                 <CustomHeader onClose={() => this._onExit()} />
                 <DialogContent>
                     <VerticalStep className="first-step" status={firstStepStatus}>
-                        <h1>{t('creation.intro.scm_provider', { defaultValue: 'Where do you store your code?' })}</h1>
+                        <h1>{t('creation.core.intro.scm_provider', { defaultValue: 'Where do you store your code?' })}</h1>
 
                         <CreatePipelineScmListRenderer
                           extensionPoint="jenkins.pipeline.create.scm.provider"
@@ -83,9 +83,9 @@ CreatePipeline.contextTypes = {
 function CustomHeader(props) {
     return (
         <div className="Dialog-header creation-header">
-            <h3>{t('creation.header.title', { defaultValue: 'Create Pipeline' })}</h3>
+            <h3>{t('creation.core.header.title', { defaultValue: 'Create Pipeline' })}</h3>
             <a className="close-button" href="#" onClick={props.onClose}
-              title={t('creation.intro.close', { defaultValue: 'Close' })}
+              title={t('creation.core.intro.close', { defaultValue: 'Close' })}
             >
                 <Icon icon="close" size={42} />
             </a>
