@@ -18,7 +18,7 @@ export const defaultLngDetector = new LngDetector(null, {
     lookupQuerystring: 'language',
     // Don't use the default (document.documentElement) because that can
     // trigger the browsers auto-translate, which is quite annoying.
-    htmlTag: (document ? document.head : undefined),
+    htmlTag: (window.document ? window.document.head : undefined),
 });
 const prefix = urlConfig.getJenkinsRootURL() || '';
 const FALLBACK_LANG = '';
