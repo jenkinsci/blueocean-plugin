@@ -16,7 +16,8 @@
 
         <j:set var="isMSIE" value="${userAgent.contains('MSIE') || userAgent.contains('Trident')}"/>
 
-        <head data-rooturl="${rootURL}"
+        <head lang="${it.lang}"
+              data-rooturl="${rootURL}"
               data-resurl="${resURL}"
               data-appurl="${rootURL}/${it.urlBase}"
               data-adjuncturl="${rootURL}/${j.getAdjuncts('').rootURL}">
