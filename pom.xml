@@ -35,7 +35,7 @@
     </licenses>
 
     <scm>
-      <connection>scm:git:ssh://git@github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+      <connection>scm:git:ssh://git@github.com:jenkinsci/${project.artifactId}-plugin.git</connection>
       <developerConnection>scm:git:ssh://git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
       <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
       <tag>HEAD</tag>
