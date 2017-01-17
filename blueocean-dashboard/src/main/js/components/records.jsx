@@ -59,6 +59,7 @@ export class RunRecord extends Record({
     id: null,
     organization: null,
     pipeline: null,
+    pipelineDisplayName: null,
     result: null,
     runSummary: null,
     startTime: null,
