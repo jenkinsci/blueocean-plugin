@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {
+    i18nTranslator,
     ParameterService,
     ParametersRender,
     ParameterApi as parameterApi,
@@ -15,7 +16,7 @@ const stopProp = (event) => {
 /**
  * Translate function
  */
-// const translate = i18nTranslator('blueocean-dashboard');
+const translate = i18nTranslator('blueocean-dashboard');
 
 /**
  * Creating a "<form/>"less form to submit the input parameters requested by the user in pipeline.
@@ -69,17 +70,17 @@ export default class InputStep extends Component {
      * Submit the form as "cancel" out of the state data id.
      */
     cancelForm() {
-        const { id } = this.state;
-        parameterApi.cancelInputParameter(this.state.href, id);
+        const { href, id } = this.state;
+        parameterApi.cancelInputParameter(href, id);
     }
 
     /**
      * Submit the form as "ok" out of the state data parameters and id.
      */
     okForm() {
-        const { id } = this.state;
+        const { href, id } = this.state;
         const parameters = this.parameterService.parametersToSubmitArray();
-        parameterApi.submitInputParameter(this.state.href, id, parameters);
+        parameterApi.submitInputParameter(href, id, parameters);
     }
 
     render() {
@@ -89,20 +90,24 @@ export default class InputStep extends Component {
             return null;
         }
         const { input: { message, ok } } = this.props.node;
+        const cancelCaption = translate('rundetail.input.cancel', { defaultValue: 'Cancel' });
+        const cancelButton =  <button title={cancelCaption} onClick={() => this.cancelForm()} className="btn btn-secondary inputStepCancel" >
+            <span className="button-label">{cancelCaption}</span>
+        </button>;
 
         return (<div className="inputStep">
-            <h3>{message}</h3>
             <div className="inputBody">
+                <h3>{message}</h3>
                 <ParametersRender
                   parameters={parameters}
                   onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
                 />
-            </div>
-            <div onClick={(event => stopProp(event))} className="inputControl">
-                <span>&nbsp;</span>
-                <a title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
-                    <span className="button-label">{ok}</span>
-                </a>
+                <div onClick={(event => stopProp(event))} className="inputControl">
+                    { cancelButton }
+                    <button title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
+                        <span className="button-label">{ok}</span>
+                    </button>
+                </div>
             </div>
         </div>);
     }
