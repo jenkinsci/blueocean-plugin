@@ -10,6 +10,7 @@
     </parent>
 
     <name>Jenkins BlueOcean Pipeline Editor</name>
+    <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-pipeline-editor</artifactId>
     <version>1.0-alpha-3-SNAPSHOT</version>
     <packaging>hpi</packaging>
