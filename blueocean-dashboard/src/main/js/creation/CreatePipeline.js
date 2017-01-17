@@ -12,7 +12,6 @@ const Sandbox = Extensions.SandboxedComponent;
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 const translate = i18nTranslator('blueocean-dashboard');
 const t = translate;
-const locale = t.lng;
 
 export default class CreatePipeline extends React.Component {
 
