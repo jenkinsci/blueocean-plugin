@@ -86,15 +86,19 @@ export class DashboardCards extends Component {
                     {cards}
                 </TransitionGroup>
             </div>);
-        };
+        };        
         // Only show paused pipelines when we really have some
         // do we have any paused pipelines?
         const pausedCardsStack = pausedCards.length > 0 ? (<StackOutput
-          message={t('dashboardCard.input.required')}
+          message={t('dashboardCard.input.favorite', {
+              defaultValue: 'Favorite',
+          })}
           cards={pausedCards}
         />) : null;
         const favoriteCardsStack = (<StackOutput
-          message={t('dashboardCard.input.favorite')}
+          message={t('dashboardCard.input.favorite', {
+              defaultValue: 'Favorite',
+          })}
           cards={favoriteCards}
         />);
 
