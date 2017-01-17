@@ -66,6 +66,7 @@ export class RunRecord extends Record({
     state: null,
     type: null,
     commitId: null,
+    parameters: null,
     artifactsZipFile: null,
 }) {
     isQueued() {
@@ -103,6 +104,7 @@ export const RunsRecord = Record({
     _capabilities: [],
     _links: null,
     latestRun: RunRecord,
+    parameters: null,
     name: null,
     weatherScore: 0,
     pullRequest: PullRequestRecord,

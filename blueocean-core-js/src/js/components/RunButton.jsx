@@ -114,10 +114,11 @@ export class RunButton extends Component {
             return null;
         }
 
+        const { onClick = () => this._onRunClick() } = this.props;
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
                 { showRunButton &&
-                <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={() => this._onRunClick()}>
+                <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={onClick}>
                     <Icon size={24} icon="play_circle_outline" />
                     <span className="button-label">{runLabel}</span>
                 </a>
@@ -147,6 +148,7 @@ RunButton.propTypes = {
     runnable: PropTypes.object,
     latestRun: PropTypes.object,
     onNavigation: PropTypes.func,
+    onClick: PropTypes.func,
     runText: PropTypes.string,
     innerButtonClasses: PropTypes.string,
 };

@@ -1,11 +1,11 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.48",
+  "version": "0.0.49-params",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.97",
+      "version": "0.0.102",
       "from": "@jenkins-cd/design-language@latest",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.97.tgz",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.102.tgz",
       "dependencies": {
         "moment": {
           "version": "2.15.1",
@@ -32,8 +32,15 @@
     },
     "@jenkins-cd/logging": {
       "version": "0.0.5",
-      "from": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.5.tgz",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.5.tgz"
+      "from": "@jenkins-cd/logging@>=0.0.5 <0.0.6",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.5.tgz",
+      "dependencies": {
+        "@jenkins-cd/storage": {
+          "version": "0.0.5",
+          "from": "@jenkins-cd/storage@>=0.0.5 <0.0.6",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.5.tgz"
+        }
+      }
     },
     "@jenkins-cd/react-material-icons": {
       "version": "1.0.0",
@@ -3462,9 +3469,9 @@
           "dev": true
         },
         "qs": {
-          "version": "6.2.0",
+          "version": "6.2.1",
           "from": "qs@>=6.2.0 <6.3.0",
-          "resolved": "https://registry.npmjs.org/qs/-/qs-6.2.0.tgz",
+          "resolved": "https://registry.npmjs.org/qs/-/qs-6.2.1.tgz",
           "dev": true,
           "optional": true
         },

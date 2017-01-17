@@ -77,7 +77,12 @@ export default class Runs extends Component {
             </CellLink>
             <td>
                 <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
-                <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
+                <RunButton
+                  className="icon-button"
+                  runnable={this.props.pipeline}
+                  latestRun={this.props.run}
+                  buttonType="stop-only"
+                />
                 { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
                 <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
                     <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />

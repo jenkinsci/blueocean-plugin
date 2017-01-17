@@ -35,7 +35,18 @@ export Fullscreen from './Fullscreen';
 export NotFound from './NotFound';
 
 export { ReplayButton } from './components/ReplayButton';
-export { RunButton } from './components/RunButton';
+export { RunButton as RunButtonBase } from './components/RunButton';
+export {
+    ParametersRunButton as RunButton,
+    ParameterService,
+    ParameterApi,
+    Boolean,
+    Choice,
+    String,
+    Text,
+    Password,
+    ParametersRender,
+} from './parameter';
 export {
     BlueLogo,
     BlueOceanIcon,
