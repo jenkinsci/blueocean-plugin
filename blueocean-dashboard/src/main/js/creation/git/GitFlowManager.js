@@ -101,7 +101,7 @@ export default class GitFlowManger extends FlowManager {
 
     checkPipelineNameAvailable(name) {
         if (!name) {
-            return new Promise(() => false);
+            return new Promise(resolve => resolve(false));
         }
 
         return this._createApi.checkPipelineNameAvailable(name);
