@@ -42,6 +42,7 @@ public abstract class BlueRun extends Resource {
     public static final String ACTIONS = "actions";
 
     public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;
+    private static final String PIPELINE_DISPLAY_NAME = "pipelineDisplayName";
 
 
 
@@ -66,6 +67,13 @@ public abstract class BlueRun extends Resource {
      */
     @Exported(name = PIPELINE)
     public abstract String getPipeline();
+
+
+    /**
+     * @return Pipeline display name
+     */
+    @Exported(name = PIPELINE_DISPLAY_NAME)
+    public abstract String getPipelineDisplayName();
 
 
     /**

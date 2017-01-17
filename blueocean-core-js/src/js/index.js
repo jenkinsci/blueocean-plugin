@@ -13,6 +13,8 @@ import { ToastService } from './ToastService';
 // export i18n provider
 export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
 
+export logging from './logging';
+
 export { Fetch, FetchFunctions } from './fetch';
 export UrlBuilder from './UrlBuilder';
 export UrlConfig from './urlconfig';

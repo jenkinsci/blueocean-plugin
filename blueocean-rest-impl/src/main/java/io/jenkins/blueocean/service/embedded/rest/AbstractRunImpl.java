@@ -67,6 +67,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
+    public String getPipelineDisplayName() {
+        return run.getParent().getDisplayName();
+    }
+
+    @Override
     public Date getStartTime() {
         return new Date(run.getStartTimeInMillis());
     }

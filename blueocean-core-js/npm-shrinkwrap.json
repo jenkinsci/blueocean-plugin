@@ -32,15 +32,8 @@
     },
     "@jenkins-cd/logging": {
       "version": "0.0.5",
-      "from": "@jenkins-cd/logging@>=0.0.5 <0.0.6",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.5.tgz",
-      "dependencies": {
-        "@jenkins-cd/storage": {
-          "version": "0.0.5",
-          "from": "@jenkins-cd/storage@>=0.0.5 <0.0.6",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.5.tgz"
-        }
-      }
+      "from": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.5.tgz",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.5.tgz"
     },
     "@jenkins-cd/react-material-icons": {
       "version": "1.0.0",
