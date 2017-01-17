@@ -54,7 +54,7 @@ export default class Runs extends Component {
             <CellLink>{run.id}</CellLink>
             <CellLink><CommitHash commitId={run.commitId} /></CellLink>
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
-                <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipelineDisplayName)}</CellLink>
+                <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
             <CellLink>{changeset && changeset.msg || '-'}</CellLink>
             <CellLink>

@@ -230,7 +230,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.84</version>
+            <version>1.72</version>
         </dependency>
 
         <dependency>

@@ -46,7 +46,7 @@ function extractNames(pipeline, isBranch) {
         pipelineName = extractPath(pipeline.fullName, -2, -1);
         // extract everything up to "branch"
         fullName = extractPath(pipeline.fullName, 0, -1);
-        branchName = pipeline.displayName;
+        branchName = pipeline.name;
     } else {
         pipelineName = pipeline.name;
         fullName = pipeline.fullName;
