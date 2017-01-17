@@ -91,9 +91,9 @@ export default class InputStep extends Component {
         }
         const { input: { message, ok } } = this.props.node;
         const cancelCaption = translate('rundetail.input.cancel', { defaultValue: 'Cancel' });
-        const cancelButton =  <button title={cancelCaption} onClick={() => this.cancelForm()} className="btn btn-secondary inputStepCancel" >
+        const cancelButton = (<button title={cancelCaption} onClick={() => this.cancelForm()} className="btn btn-secondary inputStepCancel" >
             <span className="button-label">{cancelCaption}</span>
-        </button>;
+        </button>);
 
         return (<div className="inputStep">
             <div className="inputBody">
