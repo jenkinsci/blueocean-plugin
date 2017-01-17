@@ -94,7 +94,9 @@ export class DashboardCards extends Component {
           cards={pausedCards}
         />) : null;
         const favoriteCardsStack = (<StackOutput
-          message={t('dashboardCard.input.favorite')}
+          message={t('dashboardCard.input.favorite', {              
+              defaultValue: 'Favorite'
+          })}          
           cards={favoriteCards}
         />);
 
