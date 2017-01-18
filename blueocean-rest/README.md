@@ -6,6 +6,7 @@
 - [Schema](#schema)
   - [Media Type](#media-type)
   - [Date Format](#date-format)
+  - [Error Message](#error-message)
   - [Crumbs](#crumbs)
 - [Security](#security)
   - [API access from browser with JWT enabled](#api-access-from-browser-with-jwt-enabled)
@@ -146,6 +147,27 @@ _errors.field_ - Name of the field in request. Top level field name are represen
 
 * If value is map its represented with . notation. For example for `{"scmConfig":{"uri":"abcd"}}`, the field name will be scmConfig.uri
 * If value is array its represented with [index] notation. For example for `{"repos":[{"name":"abcd"}}]`, the field name will be repos[0].name
+
+_Field Error codes_
+
+| Field Error Code  | Descriptiojn  |
+| ------------------|:-------------:|
+| ALREADY_EXISTS    | Field value already exists |
+| MISSING| Required field|
+| NOT_FOUND | Field value not found |
+| INVALID | Invalid field value |
+
+_Http Error codes_
+
+| HTTP Error Code  | Descriptiojn  |
+| ------------------|:-------------:|
+| 400    | Bad Request |
+| 400    | Bad Request |
+| 401| Unauthorized, invalid credentials|
+| 403| Forbidden, not authorized|
+| 404 | Not found |
+| 500 | Unexpected error
+
 
 
 ## Crumbs
