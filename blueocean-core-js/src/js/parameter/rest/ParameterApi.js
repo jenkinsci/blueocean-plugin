@@ -59,7 +59,7 @@ export class ParameterApi {
      */
     cancelInputParameter(href, id) {
         const fetchOptions = prepareOptions();
-        fetchOptions.body = { id, abort: true };
+        fetchOptions.body = JSON.stringify({ id, abort: true });
         return Fetch.fetchJSON(href, { fetchOptions });
     }
 }
