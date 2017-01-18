@@ -1,4 +1,5 @@
 require('./ButtonStories');
+require('./IconButtonStories');
 require('./CheckboxStories');
 require('./DropdownStories');
 require('./emptystateview.jsx');

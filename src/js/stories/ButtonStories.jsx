@@ -5,6 +5,7 @@ import { storiesOf } from '@kadira/storybook';
 storiesOf('Button', module)
     .add('general', General)
     .add('inverse', Inverse)
+    .add('monochrome', Monochrome)
 ;
 
 const titleCell = {
@@ -122,6 +123,20 @@ function Inverse() {
             <ButtonRow label="Hover" element="a" text="Link Button" props={{className: 'btn-link hover', href: '#'}}/>
             <ButtonRow label="Active" element="a" text="Link Button" props={{className: 'btn-link active', href: '#'}}/>
             <ButtonRow label="Focus" element="a" text="Link Button" props={{className: 'btn-link focus', href: '#'}}/>
+        </ButtonTable>
+    )
+}
+
+function Monochrome() {
+    return (
+        <ButtonTable className="monochrome">
+            <ButtonHeader title="Primary" />
+            <ButtonRow label="Normal" props={{className:'monochrome'}} />
+            <ButtonRow label="Hover" props={{className:'monochrome hover'}} />
+            <ButtonRow label="Active" props={{className:'monochrome active'}} />
+            <ButtonRow label="Disabled" props={{className:'monochrome', disabled: true}} />
+            <ButtonRow label="Focus" props={{className:'monochrome focus'}} />
+            <ButtonRow label="Destructive" props={{className: 'monochrome'}} />
         </ButtonTable>
     )
 }

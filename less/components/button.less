@@ -125,6 +125,13 @@ button, .btn, .btn-default, .btn-primary, .btn-secondary, .btn-danger, a.btn-lin
     }
 }
 
+// monochrome buttons
+button, .btn, .btn-default, .btn-primary, .btn-secondary {
+    &.monochrome {
+        .btn-styles(transparent, @gray-light, @text-color, @gray-lighter, @gray-lighter);
+    }
+}
+
 // button sizing
 button, .btn, .btn-default, .btn-primary, .btn-secondary, .btn-danger, a.btn-link {
     .Button-medium;
