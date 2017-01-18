@@ -69,7 +69,6 @@ public class BlueMessageEnricher extends MessageEnricher {
                 ItemGroup<? extends Item> parent = jobChannelItem.getParent();
                 if (parent instanceof WorkflowMultiBranchProject) {
                     String multiBranchProjectName = parent.getFullName();
-                    jobChannelMessage.set(EventProps.Job.job_ismultibranch, "true");
                     jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, multiBranchProjectName);
                     jobChannelMessage.set(BlueEventProps.blueocean_job_branch_name, jobChannelItem.getName());
                 }
