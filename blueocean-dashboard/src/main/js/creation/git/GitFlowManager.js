@@ -55,7 +55,7 @@ export default class GitFlowManger extends FlowManager {
 
     onInitialized() {
         this.setPendingSteps([
-            'Complete',
+            this.translate('creation.git.step3.title_default'),
         ]);
     }
 
@@ -154,7 +154,9 @@ export default class GitFlowManger extends FlowManager {
 
         this._setStatus(FlowStatus.STEP_RENAME);
         this.replaceCurrentStep(<GitRenameStep pipelineError={responseBody.message} />);
-        this.setPendingSteps(['Completed']);
+        this.setPendingSteps([
+            this.translate('creation.git.step3.title_default'),
+        ]);
     }
 
 }
