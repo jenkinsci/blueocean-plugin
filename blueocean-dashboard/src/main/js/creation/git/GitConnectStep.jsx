@@ -308,7 +308,7 @@ export default class GitConnectStep extends React.Component {
                         <div>{t('creation.git.step1.credential_none_available')}</div>
                     }
                     {
-                        this.state.existingCredentials && this.state.existingCredentials.length &&
+                        this.state.existingCredentials && this.state.existingCredentials.length > 0 &&
                         <Dropdown
                           placeholder={t('creation.git.step1.credential_existing_placeholder')}
                           options={this.state.existingCredentials}
