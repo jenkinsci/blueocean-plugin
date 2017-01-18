@@ -54,7 +54,8 @@
         .focus-styles;
     }
 
-    input[disabled] {
+    input[disabled],
+    fieldset[disabled] & input {
         & + .Checkbox-indicator, & ~ .Checkbox-text {
             .u-disabled;
         }

@@ -10,13 +10,13 @@
         flex-grow: 0;
         text-align: left;
         color: @text-color;
-        background: #fff;
+        background-color: #fff;
         font-family: @font-family-base;
         .control-border;
         .text-overflow;
 
-        &[disabled]:hover {
-            background-color: inherit;
+        &[disabled]:hover, fieldset[disabled]:hover & {
+            background-color: #fff;
         }
     }
 

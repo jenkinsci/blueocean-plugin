@@ -1,15 +1,13 @@
 import React, { PropTypes } from 'react';
 import { storiesOf } from '@kadira/storybook';
-import { FormElement } from '../components/forms/FormElement';
-import { PasswordInput } from '../components/forms/PasswordInput';
-import { RadioButtonGroup } from '../components/forms/RadioButtonGroup';
-import { TextArea } from '../components/forms/TextArea';
-import { TextInput } from '../components/forms/TextInput';
+import { Checkbox, Dropdown, Favorite, FormElement, PasswordInput, RadioButtonGroup, TextArea, TextInput } from '../components';
 
 storiesOf('FormElement', module)
     .add('general', () => <General />)
-    .add('sizes', () => <Sizes />)
+    .add('layouts', () => <Layouts />)
+    .add('disabled', () => <Disabled />)
     .add('errors', () => <Errors />)
+    .add('sizes', () => <Sizes />)
 ;
 
 const style = {
@@ -47,10 +45,46 @@ function General() {
                     <TextArea defaultValue="error" />
                 </FormElement>
             </div>
-            <div style={style}>
-                <p>Nesting!</p>
+        </div>
+    );
+}
 
-                <FormElement title="Authentication Details" showDivider errorMessage="provide key">
+function Layouts() {
+    return (
+        <div>
+            <div style={style}>
+                <p>Multiple children lay out horizontally by default...</p>
+
+                <FormElement title="Details">
+                    <TextInput placeholder="name" />
+                    <button>Save</button>
+                </FormElement>
+            </div>
+            <div style={style}>
+                <p>... or use verticalLayout=true</p>
+
+                <FormElement title="Details" verticalLayout>
+                    <TextArea placeholder="name" />
+                    <button>Save</button>
+                </FormElement>
+            </div>
+            <div style={style}>
+                <p>Nesting FormElements within FormElements</p>
+
+                <FormElement title="Legal Name" showDivider>
+                    <FormElement title="First Name">
+                        <TextInput defaultValue="Michael"/>
+                    </FormElement>
+                    <FormElement title="Last Name">
+                        <TextInput defaultValue="Garibaldi"/>
+                    </FormElement>
+                </FormElement>
+            </div>
+
+            <div style={style}>
+                <p>Nesting FormElements within FormElements with verticalLayout=true</p>
+
+                <FormElement title="Authentication Details" showDivider verticalLayout errorMessage="fill in fields below">
                     <FormElement title="Username">
                         <TextInput defaultValue="michael.garibaldi"/>
                     </FormElement>
@@ -65,6 +99,7 @@ function General() {
         </div>
     );
 }
+
 
 // Sizes
 
@@ -121,6 +156,43 @@ function Sizes() {
             <div className="layout-large" style={style}>
                 <p>Using layout-large</p>
                 <TextInputGroup divider />
+            </div>
+        </div>
+    );
+}
+
+function Disabled() {
+    return (
+        <div>
+            <div style={style}>
+                <p>Elements are disabled when nested in &#60;fieldset disabled&#62;</p>
+
+                <fieldset disabled>
+                    <FormElement>
+                        <button>Button</button>
+                    </FormElement>
+                    <FormElement>
+                        <TextInput placeholder="TextInput" />
+                    </FormElement>
+                    <FormElement>
+                        <PasswordInput placeholder="PasswordInput" />
+                    </FormElement>
+                    <FormElement>
+                        <TextArea placeholder="TextArea" />
+                    </FormElement>
+                    <FormElement>
+                        <Checkbox label="Checkbox" />
+                    </FormElement>
+                    <FormElement>
+                        <Favorite label="Favorite" />
+                    </FormElement>
+                    <FormElement>
+                        <RadioButtonGroup options={['Radio','Button','Group']} />
+                    </FormElement>
+                    <FormElement>
+                        <Dropdown placeholder="Dropdown" options={['Drop','Down','Menu']} />
+                    </FormElement>
+                </fieldset>
             </div>
         </div>
     );

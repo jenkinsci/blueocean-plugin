@@ -1,18 +1,34 @@
+fieldset {
+    padding: 0;
+    border: 0;
+    margin: 0;
+}
+
 .FormElement {
     .FormElement-medium;
     display: flex;
     flex-direction: column;
 
-    .FormElement-error {
-        color: @brand-danger;
-    }
-
     > .FormElement-heading .ErrorMessage {
         display: inline;
     }
 
+    // children go horizontal by default
+    .FormElement-children {
+        display: flex;
+        align-items: flex-start;
+    }
+
     &.u-show-divider > .FormElement-heading {
         border-bottom: 1px solid @gray-lighter;
+    }
+
+    &.u-layout-vertical .FormElement-children {
+        flex-direction: column;
+    }
+
+    &.u-child-free > .FormElement-heading {
+        padding-bottom: 0;
     }
 }
 
@@ -74,14 +90,32 @@
 
 // nesting!
 
-.FormElement .FormElement {
-    margin-top: 10px;
+.FormElement {
+    .FormElement-children > .FormElement {
+        // in horizontal layout, make the form items fill the space
+        flex-grow: 1;
+        // and put space between them
+        margin-top: 10px;
+        margin-right: 10px;
 
-    .layout-small & {
-        margin-top: 6px;
+        &:last-child {
+            margin-right: 0;
+        }
+
+        .layout-small & {
+            margin-top: 6px;
+            margin-right: 6px;
+        }
+
+        .layout-large & {
+            margin-top: 16px;
+            margin-right: 16px;
+        }
     }
 
-    .layout-large & {
-        margin-top: 16px;
+    &.u-layout-vertical .FormElement-children > .FormElement {
+        // in vertical layout, child FormElements should go full-width
+        align-self: stretch;
+        margin-right: 0;
     }
 }

@@ -14,7 +14,8 @@
             outline: 0;
         }
 
-        &[disabled] {
+        &[disabled],
+        fieldset[disabled] & {
             .u-disabled;
         }
     }
@@ -59,7 +60,7 @@
 // errors
 
 .FormElement.u-error-state {
-    > .TextArea {
+    > .FormElement-children > .TextArea {
         .TextArea-control {
             .u-error-border;
         }

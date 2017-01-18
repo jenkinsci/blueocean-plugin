@@ -2,9 +2,11 @@
 
 .RadioButtonGroup {
     .RadioButtonGroup-medium;
-    display: inline-block;
+    // by default, stack vertically
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
-    // by default, there is no layout - stack vertically
     .RadioButtonGroup-item {
         display: flex;
         align-items: center;
@@ -59,7 +61,8 @@
             }
         }
 
-        input[type="radio"][disabled] {
+        input[type="radio"][disabled],
+        fieldset[disabled] & input[type="radio"] {
             & ~ .RadioButtonGroup-indicator, & ~ .RadioButtonGroup-text {
                 .u-disabled;
             }
@@ -67,7 +70,7 @@
     }
 
     &.u-layout-horizontal {
-        display: inline-flex;
+        flex-direction: row;
 
         .RadioButtonGroup-item {
             margin-right: 10px;
