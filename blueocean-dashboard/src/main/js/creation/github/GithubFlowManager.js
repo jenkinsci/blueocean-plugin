@@ -1,9 +1,7 @@
-/**
- * Created by cmeyers on 11/30/16.
- */
 import React from 'react';
 import { action, observable } from 'mobx';
 
+import pause from '../flow2/pause';
 import FlowManager from '../flow2/FlowManager';
 import GithubInitialStep from './steps/GithubInitialStep';
 import GithubCredentialsStep from './steps/GithubCredentialStep';
@@ -17,14 +15,43 @@ export default class GithubFlowManager extends FlowManager {
     @observable
     repositories = {};
 
-    constructor(api) {
+    _credentialId = null;
+
+    _creationApi = null;
+
+    _credentialsApi = null;
+
+    constructor(creationApi, credentialsApi) {
         super();
 
-        this._api = api;
+        this._creationApi = creationApi;
+        this._credentialsApi = credentialsApi;
     }
 
     getInitialStep() {
         return <GithubInitialStep />;
+    }
+
+    findExistingCredential() {
+        return this._credentialsApi.findExistingCredential()
+            .then(pause)
+            .then(credential => this._afterInitialStep(credential));
+    }
+
+    _afterInitialStep(credential) {
+        console.log('cred:', credential);
+
+        if (credential && credential.credentialId) {
+            this.replaceCurrentStep(<GithubOrgListStep />);
+            this.setPendingSteps([
+                'Set Pending Step',
+                'Another Pending Step',
+            ]);
+        } else {
+            this.replaceCurrentStep(<GithubCredentialsStep />);
+        }
+
+        return null;
     }
 
     @action
