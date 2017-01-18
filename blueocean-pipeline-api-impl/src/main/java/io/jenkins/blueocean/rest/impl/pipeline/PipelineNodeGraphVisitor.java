@@ -72,6 +72,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     private final InputAction inputAction;
 
+    private StepStartNode agentNode = null;
+
+
     public PipelineNodeGraphVisitor(WorkflowRun run) {
         this.run = run;
         this.inputAction = run.getAction(InputAction.class);
@@ -95,8 +98,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
     }
-
-    private StepStartNode agentNode = null;
 
     @Override
     public void chunkEnd(@Nonnull FlowNode endNode, @CheckForNull FlowNode afterBlock, @Nonnull ForkScanner scanner) {
@@ -281,17 +282,24 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         if (!pendingInputSteps.isEmpty()) {
             status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
         }
-        FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
-                status, times, run);
 
+        String cause=null;
         try {
-            String cause = PipelineNodeUtil.getCauseOfBlockage(stage.getNode(), agentNode, run);
-            stage.setCauseOfFailure(cause);
+            cause = PipelineNodeUtil.getCauseOfBlockage(chunk.getFirstNode(), agentNode, run);
+            status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED);
         } catch (IOException | InterruptedException e) {
             //log the error but don't fail. This is better as in worst case all we will lose is blockage cause of a node.
             logger.error(String.format("Error trying to get blockage status of pipeline: %s, runId: %s node block: %s. %s"
                     ,run.getParent().getFullName(), run.getId(), agentNode, e.getMessage()), e);
         }
+
+        FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
+                status, times, run);
+
+        if(cause != null){
+            stage.setCauseOfFailure(cause);
+        }
+
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);
         if(!skippedStage && !parallelBranches.isEmpty()){
