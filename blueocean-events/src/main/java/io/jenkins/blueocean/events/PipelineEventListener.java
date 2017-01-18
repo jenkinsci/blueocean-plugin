@@ -65,6 +65,8 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
 
         @Override
         public void onNewHead(FlowNode flowNode) {
+            boolean isParallel = PipelineNodeUtil.isParallelBranch(flowNode);
+            System.out.print("isParallel " + isParallel);
             // test whether we have a stage node
             if (PipelineNodeUtil.isStage(flowNode)) {
                 List<String> branch = getBranch(flowNode);

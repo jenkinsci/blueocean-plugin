@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import LogConsoleView from './LogConsoleView';
-import { sseConnection } from '@jenkins-cd/blueocean-core-js';
+import { sseConnection, logging } from '@jenkins-cd/blueocean-core-js';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
@@ -22,8 +22,8 @@ import {
 import { calculateLogView, calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl, calculateFetchAll } from '../util/UrlUtils';
 import { calculateNode } from '../util/KaraokeHelper';
 
-
 const { string, object, any, func } = PropTypes;
+const logger = logging.logger('io.jenkins.blueocean.karaoke');
 
 // FIXME: needs to use i18n for translations
 const QueuedState = () => (
@@ -159,6 +159,9 @@ export class RunDetailsPipeline extends Component {
             // we turn on refetch so we always fetch a new Node result
             const refetch = true;
             const refetchNodes = () => {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(`re-fetching from server`);
+                }
                 delete this.mergedConfig.node;
                 fetchNodes({ ...this.mergedConfig, refetch });
             };
@@ -230,6 +233,9 @@ export class RunDetailsPipeline extends Component {
                 }
             default:
                 {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(`event has arrived and not handled. Event: ${event}`);
+                    }
                     // console.log(event);
                 }
             }
