@@ -162,7 +162,6 @@ _Http Error codes_
 | HTTP Error Code  | Descriptiojn  |
 | ------------------|:-------------:|
 | 400    | Bad Request |
-| 400    | Bad Request |
 | 401| Unauthorized, invalid credentials|
 | 403| Forbidden, not authorized|
 | 404 | Not found |
