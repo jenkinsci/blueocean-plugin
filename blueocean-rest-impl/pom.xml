@@ -26,7 +26,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>scm-api</artifactId>
-            <version>2.0.1</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
-            <version>5.16</version>
+            <version>5.12</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>

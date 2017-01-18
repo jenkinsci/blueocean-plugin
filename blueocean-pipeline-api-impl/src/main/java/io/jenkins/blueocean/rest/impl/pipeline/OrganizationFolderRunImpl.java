@@ -62,11 +62,6 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
-    public String getPipelineDisplayName() {
-        return pipeline.getDisplayName();
-    }
-
-    @Override
     public Date getStartTime() {
         return folderComputation.getTimestamp().getTime();
     }

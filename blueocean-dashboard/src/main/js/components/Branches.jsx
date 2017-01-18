@@ -47,7 +47,7 @@ export default class Branches extends Component {
                       startTime={latestRun.startTime} estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
                 </CellLink>
-                <CellLink>{branch.displayName}</CellLink>
+                <CellLink>{cleanBranchName}</CellLink>
                 <CellLink><CommitHash commitId={latestRun.commitId} /></CellLink>
                 <CellLink>{msg || '-'}</CellLink>
                 <CellLink>
