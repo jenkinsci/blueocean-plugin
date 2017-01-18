@@ -5,17 +5,21 @@ import { observer } from 'mobx-react';
 @observer
 export default class GithubOrgListStep extends React.Component {
 
-    selectOrganization(org) {
-        this.props.flowManager.selectOrganization(org);
+    selectRepository(org) {
+        this.props.flowManager.selectRepository(org);
     }
 
     render() {
         const { flowManager } = this.props;
 
+        debugger;
+
         return (
-            <FlowStep {...this.props} title="In which Github organization are your repositories located?">
-                {flowManager.organizations.map(org => (
-                    <button onClick={() => this.selectOrganization(org)}>{org.name}</button>
+            <FlowStep {...this.props} title="Choose a repository">
+                {flowManager.repos.map(repo => (
+                    <div>
+                        <button onClick={() => this.selectRepository(repo)}>{repo.name}</button>
+                    </div>
                 ))}
             </FlowStep>
         );
