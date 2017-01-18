@@ -286,7 +286,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         String cause=null;
         try {
             cause = PipelineNodeUtil.getCauseOfBlockage(chunk.getFirstNode(), agentNode, run);
-            status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED);
+            if(cause!=null) {
+                status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED);
+            }
         } catch (IOException | InterruptedException e) {
             //log the error but don't fail. This is better as in worst case all we will lose is blockage cause of a node.
             logger.error(String.format("Error trying to get blockage status of pipeline: %s, runId: %s node block: %s. %s"
