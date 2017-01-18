@@ -271,7 +271,7 @@ export default class GitConnectStep extends React.Component {
                 </FormElement>
 
                 <FormElement className="credentials" errorMessage={this.state.credentialsErrorMsg}>
-                    <FormElement title={t('creation.git.step1.credential_new')} showDivider verticalLayout>
+                    <FormElement className="credentials-new" title={t('creation.git.step1.credential_new')} showDivider verticalLayout>
                         <RadioButtonGroup
                           className="credentials-type-picker"
                           options={NEW_CREDENTIAL_TYPE.values()}
@@ -298,7 +298,7 @@ export default class GitConnectStep extends React.Component {
                         }
                     </FormElement>
 
-                    <FormElement title={t('creation.git.step1.credential_existing')} showDivider>
+                    <FormElement className="credentials-existing" title={t('creation.git.step1.credential_existing')} showDivider>
                     {
                         !this.state.existingCredentials &&
                         <div>{t('creation.git.step1.credential_loading_msg')}</div>
