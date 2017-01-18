@@ -5,6 +5,9 @@ import GitFlowManager from './GitFlowManager';
 import GitCreationApi from './GitCreationApi';
 import { CredentialsApi } from '../credentials/CredentialsApi';
 
+/**
+ * Provides the impl of FlowManager and the button for starting the git flow.
+ */
 export default class GitScmProvider extends ScmProvider {
 
     constructor() {

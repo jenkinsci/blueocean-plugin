@@ -11,10 +11,14 @@ import GitCompletedStep from './GitCompletedStep';
 import GitRenameStep from './steps/GitRenameStep';
 import FlowStatus from './GitCreationStatus';
 
+// constants used to defined the special 'system ssh' key to ensure it's only created once, then reused.
 const SYSTEM_SSH_ID = 'git-ssh-key-master';
 const SYSTEM_SSH_DESCRIPTION = 'Master SSH Key for Git Creation';
 
-export default class GitFlowManger extends FlowManager {
+/**
+ * Impl of FlowManager for git creation flow.
+ */
+export default class GitFlowManager extends FlowManager {
 
     @observable
     creationStatus = null;
@@ -85,10 +89,12 @@ export default class GitFlowManger extends FlowManager {
     }
 
     createWithSystemSshCredential(repositoryUrl) {
+        // if the system ssh credential was created previously, we can proceed to creation immediately
         if (this.systemSshCredential) {
             return this.createPipeline(repositoryUrl, this.systemSshCredential.id);
         }
 
+        // if it wasn't, then we need to create the cred, then use it in the creation
         return this._credentialsApi.saveSystemSshCredential(SYSTEM_SSH_ID, SYSTEM_SSH_DESCRIPTION)
             .then(({ credentialId }) => (
                     this.createPipeline(repositoryUrl, credentialId)
@@ -116,6 +122,7 @@ export default class GitFlowManger extends FlowManager {
     }
 
     _prepareCredentialsList(credentialList) {
+        // find the special 'system ssh' credential if it was already created
         const systemSsh = credentialList
             .filter(item => item.id === SYSTEM_SSH_ID)
             .pop();
@@ -124,6 +131,7 @@ export default class GitFlowManger extends FlowManager {
             this.systemSshCredential = systemSsh;
         }
 
+        // remove 'system ssh' from the main list
         return credentialList
             .filter(item => item.id !== SYSTEM_SSH_ID);
     }
