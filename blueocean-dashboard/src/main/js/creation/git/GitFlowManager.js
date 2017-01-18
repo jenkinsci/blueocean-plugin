@@ -32,14 +32,11 @@ export default class GitFlowManger extends FlowManager {
 
     systemSshCredential = null;
 
-    // TODO: eliminate this property if possible
-    hasNameConflict = false;
-    // TODO: eliminate this property if possible
-    pipeline = null;
-
     pipelineName = null;
 
     credentialId = null;
+
+    pipeline = null;
 
     constructor(createApi, credentialsApi) {
         super();
@@ -156,14 +153,8 @@ export default class GitFlowManger extends FlowManager {
         const { responseBody } = error;
 
         this._setStatus(FlowStatus.STEP_RENAME);
-
-        if (this.hasNameConflict) {
-            this.popStep();
-        }
-
         this.replaceCurrentStep(<GitRenameStep pipelineError={responseBody.message} />);
         this.setPendingSteps(['Completed']);
-        this.hasNameConflict = true;
     }
 
 }
