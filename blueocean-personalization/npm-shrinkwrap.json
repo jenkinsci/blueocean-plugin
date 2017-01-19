@@ -3,9 +3,9 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.50",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.50",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.50.tgz",
+      "version": "0.0.52",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.52",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.52.tgz",
       "dependencies": {
         "react-router": {
           "version": "3.0.0",
@@ -42,9 +42,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.8.tgz"
     },
     "@jenkins-cd/logging": {
-      "version": "0.0.5",
-      "from": "@jenkins-cd/logging@>=0.0.5 <0.0.6",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.5.tgz"
+      "version": "0.0.6",
+      "from": "@jenkins-cd/logging@0.0.6",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.6.tgz"
     },
     "@jenkins-cd/react-material-icons": {
       "version": "1.0.0",
@@ -52,14 +52,14 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.14",
-      "from": "@jenkins-cd/sse-gateway@0.0.14",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.14.tgz"
+      "version": "0.0.15",
+      "from": "@jenkins-cd/sse-gateway@0.0.15",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.15.tgz"
     },
     "@jenkins-cd/storage": {
-      "version": "0.0.5",
-      "from": "@jenkins-cd/storage@0.0.5",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.5.tgz"
+      "version": "0.0.6",
+      "from": "@jenkins-cd/storage@0.0.6",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.6.tgz"
     },
     "@kadira/react-split-pane": {
       "version": "1.4.7",
