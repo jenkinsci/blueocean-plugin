@@ -6,6 +6,7 @@ import hudson.model.Items;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.security.ACL;
+import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipelineCreateRequest;
 import jenkins.model.Jenkins;
@@ -33,7 +34,9 @@ public abstract class AbstractPipelineCreateRequestImpl extends BluePipelineCrea
         try {
             return parent.createProject(descriptor, name, true);
         }catch (IllegalArgumentException e){
-            throw new ServiceException.BadRequestExpception("Pipeline "+ name + " already exists");
+            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline: "+name)
+                    .add(new ErrorMessage.Error("name",
+                            ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), name+" already exists")));
         }
     }
 }

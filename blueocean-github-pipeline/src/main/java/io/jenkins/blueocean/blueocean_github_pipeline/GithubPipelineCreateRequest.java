@@ -3,6 +3,7 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import hudson.model.Cause;
 import hudson.model.TopLevelItem;
+import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -81,7 +82,9 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 } catch (InterruptedException e) {
                     throw new ServiceException.UnexpectedErrorException("Invalid credentialId: " + credentialId + ". Failure during cleaing up folder: " + item.getName() + ". Error: " + e.getMessage(), e);
                 }
-                throw new ServiceException.BadRequestExpception("Invalid credentialId: " + credentialId);
+                throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline")
+                        .add(new ErrorMessage.Error("credentialId", ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Invalid credentialId")));
+
             }
         }
     }
