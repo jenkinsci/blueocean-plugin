@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
-            <version>5.16</version>
+            <version>5.17-20170118.220629-5</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
