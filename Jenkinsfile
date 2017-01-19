@@ -1,5 +1,5 @@
 pipeline {
-  agent docker:'cloudbees/java-build-tools'
+  agent { docker 'cloudbees/java-build-tools' }
   stages {
     stage('build') {
       steps {
