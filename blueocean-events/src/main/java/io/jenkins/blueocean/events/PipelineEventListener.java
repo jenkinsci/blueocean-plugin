@@ -66,7 +66,10 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
         @Override
         public void onNewHead(FlowNode flowNode) {
             boolean isParallel = PipelineNodeUtil.isParallelBranch(flowNode);
-            System.out.print("isParallel " + isParallel);
+            if (isParallel) {
+                System.out.print(flowNode.getId() + " isParallel " + isParallel + '\n');
+
+            }
             // test whether we have a stage node
             if (PipelineNodeUtil.isStage(flowNode)) {
                 List<String> branch = getBranch(flowNode);
@@ -81,7 +84,6 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 }
             } else if (flowNode instanceof StepAtomNode) {
                 List<String> branch = getBranch(flowNode);
-                StageAction stageAction = flowNode.getAction(StageAction.class);
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
             } else if (flowNode instanceof StepEndNode) {
                 if (flowNode.getAction(BodyInvocationAction.class) != null) {
@@ -99,6 +101,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
             } else if (flowNode instanceof FlowEndNode) {
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_end));
             }
+
         }
 
         private List<String> getBranch(FlowNode flowNode) {
@@ -173,6 +176,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
             if (flowNode instanceof StepAtomNode) {
                 boolean pausedForInputStep = PipelineNodeUtil
                     .isPausedForInputStep((StepAtomNode) flowNode, this.run.getAction(InputAction.class));
+                boolean isParallel = PipelineNodeUtil.isParallelBranch(flowNode);
                 if (pausedForInputStep) {
                     // Fire job event to tell we are paused
                     // We will publish on the job channel
@@ -185,6 +189,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                     }
                 }
                 message.set(PipelineEventChannel.EventProps.pipeline_step_is_paused, String.valueOf(pausedForInputStep));
+                message.set(PipelineEventChannel.EventProps.pipeline_stage_is_parallel, String.valueOf(isParallel));
             }
             return message;
         }

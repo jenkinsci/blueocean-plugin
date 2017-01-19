@@ -159,9 +159,7 @@ export class RunDetailsPipeline extends Component {
             // we turn on refetch so we always fetch a new Node result
             const refetch = true;
             const refetchNodes = () => {
-                if (logger.isDebugEnabled()) {
-                    logger.debug(`re-fetching from server`);
-                }
+                logger.debug(`re-fetching from server`);
                 delete this.mergedConfig.node;
                 fetchNodes({ ...this.mergedConfig, refetch });
             };
@@ -180,6 +178,7 @@ export class RunDetailsPipeline extends Component {
                 }
             case 'pipeline_step':
                 {
+                    logger.debug('event', event);
                     // we are not using an early out for the events since we want to refresh the node if we finished
                     if (this.state.followAlong) { // if we do it means we want karaoke
                         let parallel = true;// JENKINS-37962 FIXME the problem is with new syntax that is not reporting satge_id
@@ -233,9 +232,7 @@ export class RunDetailsPipeline extends Component {
                 }
             default:
                 {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(`event has arrived and not handled. Event: ${event}`);
-                    }
+                    logger.debug(`event has arrived and not handled. Event:`, event);
                     // console.log(event);
                 }
             }
@@ -383,6 +380,9 @@ export class RunDetailsPipeline extends Component {
 
         const shouldShowCV = (!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView;
         const shouldShowEmptyState = !isPipelineQueued && hasResultsForSteps && noSteps;
+        if (nodes && nodes[nodeKey]) {
+            logger.debug(`with key: ${nodeKey}\n`, nodes[nodeKey].model);
+        }
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer

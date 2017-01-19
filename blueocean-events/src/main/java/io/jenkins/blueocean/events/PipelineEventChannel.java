@@ -50,6 +50,7 @@ public interface PipelineEventChannel {
         pipeline_job_name,
         pipeline_run_id,
         pipeline_context,
+        pipeline_stage_is_parallel,
         pipeline_step_name,
         pipeline_step_flownode_id,
         pipeline_step_stage_name,
