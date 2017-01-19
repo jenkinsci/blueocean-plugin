@@ -28,6 +28,10 @@ public class GithubOrganization extends AbstractGithubOrganization {
         return ghOrganization.getLogin();
     }
 
+    @Override
+    public String getAvatar() {
+        return ghOrganization.getAvatarUrl();
+    }
 
     @Override
     public ScmRepositoryContainer getRepositories() {
