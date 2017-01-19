@@ -161,6 +161,8 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
 
         private Message newMessage(PipelineEventChannel.Event event, FlowNode flowNode, List<String> branch) {
             Message message = newMessage(event);
+            boolean isParallel = PipelineNodeUtil.isParallelBranch(flowNode);
+            message.set(PipelineEventChannel.EventProps.pipeline_stage_is_parallel, String.valueOf(isParallel));
 
             message.set(PipelineEventChannel.EventProps.pipeline_step_flownode_id, flowNode.getId());
             message.set(PipelineEventChannel.EventProps.pipeline_context, toPath(branch));
@@ -176,7 +178,6 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
             if (flowNode instanceof StepAtomNode) {
                 boolean pausedForInputStep = PipelineNodeUtil
                     .isPausedForInputStep((StepAtomNode) flowNode, this.run.getAction(InputAction.class));
-                boolean isParallel = PipelineNodeUtil.isParallelBranch(flowNode);
                 if (pausedForInputStep) {
                     // Fire job event to tell we are paused
                     // We will publish on the job channel
@@ -189,7 +190,6 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                     }
                 }
                 message.set(PipelineEventChannel.EventProps.pipeline_step_is_paused, String.valueOf(pausedForInputStep));
-                message.set(PipelineEventChannel.EventProps.pipeline_stage_is_parallel, String.valueOf(isParallel));
             }
             return message;
         }
