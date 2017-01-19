@@ -106,13 +106,10 @@ describe('PipelineCard', () => {
         assert.equal(wrapper.find('.not_built-bg-lite').length, 1);
     });
 
-    //XXX: This test probably should be removed because with branch-api 2.0 plugin
-    //     .branchText is now set to raw pipeline.displayName, so no encoding is
-    //     envolved
     it('escapes the branch name', () => {
         const branch = 'experiment/build-locally-docker';
         item.fullName = `jdl1/${encodeURIComponent(branch)}`;
-        item.displayName = branch;
+        item.name = encodeURIComponent(branch);
         const wrapper = shallowRenderCard();
 
         const elements = wrapper.find('.branchText');

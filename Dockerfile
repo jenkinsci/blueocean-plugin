@@ -21,6 +21,4 @@ RUN for f in /usr/share/jenkins/ref/plugins/blueocean-*.jpi; do mv "$f" "$f.over
 # let scripts customize the reference Jenkins folder. Used in bin/build-in-docker to inject the git build data
 COPY docker/ref /usr/share/jenkins/ref
 
-RUN npm install -g npm@3.10.9
-
 USER jenkins
