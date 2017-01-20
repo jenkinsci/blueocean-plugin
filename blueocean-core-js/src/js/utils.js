@@ -5,7 +5,7 @@
  * @param url
  * @returns {string}
  */
-const cleanSlashes = (url: string) => {
+function cleanSlashes(url: string) {
     let baseUrl = '';
     let urlParams = '';
 
@@ -16,16 +16,15 @@ const cleanSlashes = (url: string) => {
         baseUrl = url;
     }
 
-    while (baseUrl.indexOf('//') !== -1) {
-        baseUrl = baseUrl.replace('//', '/');
-    }
+    // replace any number of consecutive slashes with one slash
+    baseUrl = baseUrl.replace(/\/\/+/g, '/');
 
     if (baseUrl.substr(-1) !== '/') {
         baseUrl = `${baseUrl}/`;
     }
 
     return !urlParams ? baseUrl : `${baseUrl}?${urlParams}`;
-};
+}
 
 
 export default {
