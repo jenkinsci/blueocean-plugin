@@ -1,6 +1,5 @@
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
-import { Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
-import TempUtils from '../TempUtils';
+import { Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
 
 /**
  * Proxy to the backend REST API.
@@ -13,7 +12,7 @@ export default class GitCreationApi {
 
     createPipeline(repositoryUrl, credentialId, name) {
         const path = UrlConfig.getJenkinsRootURL();
-        const createUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines`);
+        const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines`);
 
         const requestBody = {
             name,
@@ -37,7 +36,7 @@ export default class GitCreationApi {
 
     checkPipelineNameAvailable(name) {
         const path = UrlConfig.getJenkinsRootURL();
-        const checkUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/${name}`);
+        const checkUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/${name}`);
 
         const fetchOptions = {
             method: 'GET',
