@@ -162,7 +162,7 @@ export default class GitFlowManager extends FlowManager {
         const { responseBody } = error;
 
         this._setStatus(FlowStatus.STEP_RENAME);
-        this.replaceCurrentStep(<GitRenameStep pipelineError={responseBody.message} />);
+        this.replaceCurrentStep(<GitRenameStep pipelineName={this.pipelineName} />);
         this.setPendingSteps([
             this.translate('creation.git.step3.title_default'),
         ]);
