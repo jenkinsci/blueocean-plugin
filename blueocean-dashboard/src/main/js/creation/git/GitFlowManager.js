@@ -158,9 +158,7 @@ export default class GitFlowManager extends FlowManager {
     }
 
     @action
-    _createPipelineError(error) {
-        const { responseBody } = error;
-
+    _createPipelineError() {
         this._setStatus(FlowStatus.STEP_RENAME);
         this.replaceCurrentStep(<GitRenameStep pipelineName={this.pipelineName} />);
         this.setPendingSteps([
