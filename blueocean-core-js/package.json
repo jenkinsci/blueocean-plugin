@@ -33,7 +33,7 @@
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/react-material-icons": "1.0.0",
-    "@jenkins-cd/sse-gateway": "0.0.15",
+    "@jenkins-cd/sse-gateway": "0.0.16-tfbeta1",
     "@jenkins-cd/storage": "0.0.6",
     "es6-promise": "4.0.5",
     "i18next": "3.5.2",

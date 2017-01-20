@@ -41,9 +41,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.15",
-      "from": "@jenkins-cd/sse-gateway@0.0.15",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.15.tgz"
+      "version": "0.0.16-tfbeta1",
+      "from": "@jenkins-cd/sse-gateway@0.0.16-tfbeta1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.16-tfbeta1.tgz"
     },
     "@jenkins-cd/storage": {
       "version": "0.0.6",
