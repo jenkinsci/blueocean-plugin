@@ -41,7 +41,7 @@ export class CredentialsApi {
         return this._fetch(requestUrl, { fetchOptions });
     }
 
-    saveSshKeyCredential(privateKey) {
+    saveSSHKeyCredential(privateKey) {
         const path = UrlConfig.getJenkinsRootURL();
         const requestUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
 
@@ -70,7 +70,7 @@ export class CredentialsApi {
         return this._fetch(requestUrl, { fetchOptions });
     }
 
-    saveSystemSshCredential(id, description) {
+    saveSystemSSHCredential(id, description) {
         const path = UrlConfig.getJenkinsRootURL();
         const requestUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
 

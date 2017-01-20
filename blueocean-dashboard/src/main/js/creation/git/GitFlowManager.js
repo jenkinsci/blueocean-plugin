@@ -34,7 +34,7 @@ export default class GitFlowManager extends FlowManager {
         return this.creationStatus === FlowStatus.STEP_RENAME;
     }
 
-    systemSshCredential = null;
+    systemSSHCredential = null;
 
     pipelineName = null;
 
@@ -68,10 +68,10 @@ export default class GitFlowManager extends FlowManager {
             .then(creds => this._prepareCredentialsList(creds));
     }
 
-    createWithSshKeyCredential(repositoryUrl, sshKey) {
+    createWithSSHKeyCredential(repositoryUrl, sshKey) {
         this._setStatus(FlowStatus.CREATE_CREDS);
 
-        return this._credentialsApi.saveSshKeyCredential(sshKey)
+        return this._credentialsApi.saveSSHKeyCredential(sshKey)
             .then(({ credentialId }) => (
                     this.createPipeline(repositoryUrl, credentialId)
                 )
@@ -88,14 +88,14 @@ export default class GitFlowManager extends FlowManager {
             );
     }
 
-    createWithSystemSshCredential(repositoryUrl) {
+    createWithSystemSSHCredential(repositoryUrl) {
         // if the system ssh credential was created previously, we can proceed to creation immediately
-        if (this.systemSshCredential) {
-            return this.createPipeline(repositoryUrl, this.systemSshCredential.id);
+        if (this.systemSSHCredential) {
+            return this.createPipeline(repositoryUrl, this.systemSSHCredential.id);
         }
 
         // if it wasn't, then we need to create the cred, then use it in the creation
-        return this._credentialsApi.saveSystemSshCredential(SYSTEM_SSH_ID, SYSTEM_SSH_DESCRIPTION)
+        return this._credentialsApi.saveSystemSSHCredential(SYSTEM_SSH_ID, SYSTEM_SSH_DESCRIPTION)
             .then(({ credentialId }) => (
                     this.createPipeline(repositoryUrl, credentialId)
                 )
@@ -123,12 +123,12 @@ export default class GitFlowManager extends FlowManager {
 
     _prepareCredentialsList(credentialList) {
         // find the special 'system ssh' credential if it was already created
-        const systemSsh = credentialList
+        const systemSSH = credentialList
             .filter(item => item.id === SYSTEM_SSH_ID)
             .pop();
 
-        if (systemSsh) {
-            this.systemSshCredential = systemSsh;
+        if (systemSSH) {
+            this.systemSSHCredential = systemSSH;
         }
 
         // remove 'system ssh' from the main list

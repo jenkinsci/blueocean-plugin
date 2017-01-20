@@ -103,7 +103,7 @@ export default class GitConnectStep extends React.Component {
         });
 
         this._updateCredentialsErrorMsg();
-        this._updateSshKeyErrorMsg();
+        this._updateSSHKeyErrorMsg();
         this._updateUsernameErrorMsg();
         this._updatePasswordErrorMsg();
     }
@@ -118,7 +118,7 @@ export default class GitConnectStep extends React.Component {
         });
 
         this._updateCredentialsErrorMsg();
-        this._updateSshKeyErrorMsg(true);
+        this._updateSSHKeyErrorMsg(true);
         this._updateUsernameErrorMsg(true);
         this._updatePasswordErrorMsg(true);
     }
@@ -136,10 +136,10 @@ export default class GitConnectStep extends React.Component {
             sshKeyValue: value,
         });
 
-        this._updateSshKeyErrorMsg();
+        this._updateSSHKeyErrorMsg();
     }
 
-    _updateSshKeyErrorMsg = debounce(reset => {
+    _updateSSHKeyErrorMsg = debounce(reset => {
         if (reset || (this.state.sshKeyErrorMsg && this.state.sshKeyValue)) {
             this.setState({
                 sshKeyErrorMsg: null,
@@ -248,11 +248,11 @@ export default class GitConnectStep extends React.Component {
         if (this.state.selectedCredential) {
             this.props.flowManager.createPipeline(this.state.repositoryUrl, this.state.selectedCredential.id);
         } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SSH_KEY) {
-            this.props.flowManager.createWithSshKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
+            this.props.flowManager.createWithSSHKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
         } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS) {
             this.props.flowManager.createWithUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);
         } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SYSTEM_SSH) {
-            this.props.flowManager.createWithSystemSshCredential(this.state.repositoryUrl);
+            this.props.flowManager.createWithSystemSSHCredential(this.state.repositoryUrl);
         }
     }
 
