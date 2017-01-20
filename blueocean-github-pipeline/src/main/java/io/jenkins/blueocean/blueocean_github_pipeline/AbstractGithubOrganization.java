@@ -21,7 +21,7 @@ public abstract class AbstractGithubOrganization extends ScmOrganization {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractGithubOrganization.class.getName());
 
-    static final int AVATAR_SIZE = 50;
+    private static final int AVATAR_SIZE = 50;
 
     @Override
     public boolean isJenkinsOrganizationPipeline() {
@@ -43,7 +43,7 @@ public abstract class AbstractGithubOrganization extends ScmOrganization {
     }
 
     @Nullable
-    static String getAvatarWithSize(@Nonnull String avatarUrl) {
+    private static String getAvatarWithSize(@Nonnull String avatarUrl) {
         try {
             return new URIBuilder(avatarUrl).addParameter("s", Integer.toString(AVATAR_SIZE)).build().toString();
         } catch (URISyntaxException e) {
