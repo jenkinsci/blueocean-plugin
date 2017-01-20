@@ -43,7 +43,7 @@ public abstract class AbstractGithubOrganization extends ScmOrganization {
     }
 
     @Nullable
-    private static String getAvatarWithSize(@Nonnull String avatarUrl) {
+    protected static String getAvatarWithSize(@Nonnull String avatarUrl) {
         try {
             return new URIBuilder(avatarUrl).addParameter("s", Integer.toString(AVATAR_SIZE)).build().toString();
         } catch (URISyntaxException e) {
