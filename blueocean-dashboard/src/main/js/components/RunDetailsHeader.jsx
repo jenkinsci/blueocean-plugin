@@ -28,7 +28,7 @@ class RunDetailsHeader extends Component {
     render() {
         const { data: run, pipeline: { fullDisplayName }, t, locale } = this.props;
         // pipeline name
-        const displayName = decodeURIComponent(run.pipelineDisplayName);
+        const displayName = decodeURIComponent(run.pipeline);
 
         // Grab author from each change, run through a set for uniqueness
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
