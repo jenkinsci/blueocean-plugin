@@ -7,6 +7,7 @@
     "start-storybook": "start-storybook --static-dir ./dist/assets/,./node_modules/@jenkins-cd/design-language/dist/assets/",
     "storybook": "npm run start-storybook -- -p 9001",
     "storybook:port": "npm run start-storybook -- -p ",
+    "flow": "flow",
     "gulp": "gulp",
     "test": "gulp test",
     "prepublish": "gulp"
