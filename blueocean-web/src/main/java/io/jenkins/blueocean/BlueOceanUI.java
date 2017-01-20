@@ -1,8 +1,11 @@
 package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Root of Blue Ocean UI
@@ -36,6 +39,23 @@ public class BlueOceanUI {
      */
     public String getUrlBase() {
         return urlBase;
+    }
+
+    /**
+     * Get the language associated with the current page.
+     * @return The language string.
+     */
+    public String getLang() {
+        StaplerRequest currentRequest = Stapler.getCurrentRequest();
+
+        if (currentRequest != null) {
+            Locale locale = currentRequest.getLocale();
+            if (locale != null) {
+                return locale.toString();
+            }
+        }
+
+        return null;
     }
 
     public List<BluePageDecorator> getPageDecorators(){

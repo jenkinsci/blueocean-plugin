@@ -6,6 +6,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Cause;
@@ -24,6 +25,7 @@ import hudson.model.StringParameterValue;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.security.LegacyAuthorizationStrategy;
 import hudson.tasks.ArtifactArchiver;
+import hudson.tasks.Maven;
 import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
 import hudson.tasks.junit.TestResultAction;
@@ -36,8 +38,11 @@ import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
 import org.junit.Test;
+import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.ToolInstallations;
+import org.jvnet.hudson.test.recipes.WithPlugin;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
@@ -46,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
+
+import static junit.framework.TestCase.assertFalse;
 
 /**
  * @author Vivek Pandey
@@ -635,4 +642,16 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals("FINISHED", resp.get("state"));
     }
 
+    @Test public void mavenModulesNoteListed() throws Exception {
+        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", Maven.MavenInstallation.MAVEN_21);
+        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
+        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
+        assertFalse("MavenModuleSet.isNonRecursive() should be false", m.isNonRecursive());
+        j.buildAndAssertSuccess(m);
+
+        List responses = get("/organizations/jenkins/pipelines/", List.class);
+        Assert.assertEquals(1, responses.size());
+        Assert.assertEquals("p", ((Map) responses.get(0)).get("name"));
+
+    }
 }

@@ -126,7 +126,6 @@ export class PipelineCard extends Component {
         if (!this.props.runnable) {
             return null;
         }
-
         const runnableItem = this.props.runnable;
         const latestRun = this.props.runnable.latestRun;
 
@@ -188,12 +187,10 @@ export class PipelineCard extends Component {
                 <span className="commit"></span>
                 }
 
-                <span className="actions">
-                    <ReplayButton
-                      className="icon-button dark"
-                      runnable={runnableItem}
-                      latestRun={latestRun}
-                      onNavigation={url => this._onRunDetails(url)}
+                <span className="actions" onClick={(event) => stopProp(event)}>
+
+                    <Favorite checked={this.state.favorite} className="dark-white"
+                      onToggle={() => this._onFavoriteToggle()}
                     />
 
                     <RunButton
@@ -203,8 +200,11 @@ export class PipelineCard extends Component {
                       onNavigation={url => this._onRunDetails(url)}
                     />
 
-                    <Favorite checked={this.state.favorite} className="dark-white"
-                      onToggle={() => this._onFavoriteToggle()}
+                    <ReplayButton
+                      className="icon-button dark"
+                      runnable={runnableItem}
+                      latestRun={latestRun}
+                      onNavigation={url => this._onRunDetails(url)}
                     />
                 </span>
             </div>

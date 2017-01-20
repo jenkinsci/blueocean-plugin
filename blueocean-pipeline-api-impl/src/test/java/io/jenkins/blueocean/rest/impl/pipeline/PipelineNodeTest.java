@@ -1601,7 +1601,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void KyotoNodesFailureTest1() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition("pipeline {\n" +
-            "    agent label:''\n" +
+            "    agent any\n" +
             "    stages {\n" +
             "        stage ('Build') {\n" +
                 "steps{\n" +
@@ -1640,7 +1640,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void KyotoNodesFailureTest2() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition("pipeline {\n" +
-            "    agent label:''\n" +
+            "    agent any\n" +
             "    stages {\n" +
             "        stage ('Build') {\n" +
                 "steps{\n" +
@@ -1675,7 +1675,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void KyotoNodesFailureTest3() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition("pipeline {\n" +
-            "    agent label:''\n" +
+            "    agent any\n" +
             "    stages {\n" +
             "        stage ('Build') {\n" +
                 "steps{\n"+
@@ -1710,7 +1710,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Test
     public void declarativeSyntheticSteps() throws Exception {
         setupScm("pipeline {\n" +
-                "    agent label:''\n" +
+                "    agent any\n" +
                 "    stages {\n" +
                 "        stage(\"build\") {\n" +
                 "            steps{\n" +
@@ -1777,7 +1777,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void declarativeSyntheticSkippedStage() throws Exception {
 
         setupScm("pipeline {\n" +
-                "    agent label:''\n" +
+                "    agent any\n" +
                 "    stages {\n" +
                 "        stage(\"build\") {\n" +
                 "            steps{\n" +
@@ -1787,8 +1787,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 "        }\n" +
                 "        stage(\"SkippedStage\") {\n" +
                 "            when {\n" +
-                "                echo \"Should I run?\"\n" +
+                "        expression {\n"+
                 "                return false\n" +
+                "        }\n"+
                 "            }\n" +
                 "            steps {\n" +
                 "                script {\n" +

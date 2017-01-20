@@ -70,32 +70,32 @@ describe('PipelineCard', () => {
     it('renders a "run" button when successful', () => {
         item.latestRun.result = 'SUCCESS';
         const wrapper = shallowRenderCard();
-        const runButton = wrapper.find('RunButton').shallow();
-
+        const pRunButton = wrapper.find('ParametersRunButton').shallow();
+        const runButton = pRunButton.find('RunButton').shallow();
         assert.equal(runButton.find('.run-button').length, 1);
     });
 
     it('renders no "run" button while running', () => {
         item.latestRun.state = 'RUNNING';
         const wrapper = shallowRenderCard();
-        const runButton = wrapper.find('RunButton').shallow();
-
+        const pRunButton = wrapper.find('ParametersRunButton').shallow();
+        const runButton = pRunButton.find('RunButton').shallow();
         assert.equal(runButton.find('.run-button').length, 0);
     });
 
     it('renders a "stop" button while running', () => {
         item.latestRun.state = 'RUNNING';
         const wrapper = shallowRenderCard();
-        const runButton = wrapper.find('RunButton').shallow();
-
+        const pRunButton = wrapper.find('ParametersRunButton').shallow();
+        const runButton = pRunButton.find('RunButton').shallow();
         assert.equal(runButton.find('.stop-button').length, 1);
     });
 
     it('renders no "stop" button after success', () => {
         item.latestRun.state = 'RUNNING';
         const wrapper = shallowRenderCard();
-        const runButton = wrapper.find('RunButton').shallow();
-
+        const pRunButton = wrapper.find('ParametersRunButton').shallow();
+        const runButton = pRunButton.find('RunButton').shallow();
         assert.equal(runButton.find('.stop-button').length, 1);
     });
 

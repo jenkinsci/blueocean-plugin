@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
-import { TextArea, FormElement } from '@jenkins-cd/design-language';
-import { propTypes } from './commonProptypes';
+import { TextInput, FormElement } from '@jenkins-cd/design-language';
+import { propTypes } from '../commonProptypes';
 
-export class Text extends Component {
+export class String extends Component {
+
     render() {
         const { defaultParameterValue: { value }, description, name, onChange } = this.props;
         return (<FormElement title={ name }>
-            <div className="Text">
-                <TextArea {...{ defaultValue: value, name, onChange }} />
+            <div className="String">
+                <TextInput {...{ defaultValue: value, name, onChange }} />
                 { description && <div className="inputDescription">{description}</div> }
             </div>
         </FormElement>);
     }
 }
 
-Text.propTypes = propTypes;
+String.propTypes = propTypes;

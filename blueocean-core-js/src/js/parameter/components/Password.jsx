@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FormElement, PasswordInput } from '@jenkins-cd/design-language';
-import { propTypes } from './commonProptypes';
+import { propTypes } from '../commonProptypes';
 // import { DebugRender } from './DebugRender';
 
 export class Password extends Component {

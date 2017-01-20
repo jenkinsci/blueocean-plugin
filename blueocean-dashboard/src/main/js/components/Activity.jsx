@@ -1,11 +1,14 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, Table } from '@jenkins-cd/design-language';
-import { RunButton, capable } from '@jenkins-cd/blueocean-core-js';
+import {
+  EmptyStateView,
+  Table,
+} from '@jenkins-cd/design-language';
+import { capable, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
+import { observer } from 'mobx-react';
 import Runs from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import { observer } from 'mobx-react';
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -39,6 +42,7 @@ EmptyState.propTypes = {
 };
 @observer
 export class Activity extends Component {
+
     componentWillMount() {
         if (this.context.params) {
             const organization = this.context.params.organization;
@@ -53,7 +57,6 @@ export class Activity extends Component {
         if (!pipeline || this.pager.pending) {
             return null;
         }
-
 
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
 
@@ -103,45 +106,45 @@ export class Activity extends Component {
         return (<main>
             <article className="activity">
                 { showRunButton &&
-                <RunButton
-                  runnable={pipeline}
-                  latestRun={latestRun}
-                  buttonType="run-only"
-                  onNavigation={onNavigation}
-                  innerButtonClasses="btn-secondary"
-                />
+                    <RunButton
+                      buttonType="run-only"
+                      innerButtonClasses="btn-secondary"
+                      runnable={pipeline}
+                      latestRun={latestRun}
+                      onNavigation={onNavigation}
+                    />
                 }
-                {runs.length > 0 &&
-                <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
-                    {
-                        runs.map((run, index) => {
-                            const changeset = run.changeSet;
-                            let latestRecord = {};
-                  
-                            if (changeset && changeset.length > 0) {
-                                latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
-                            }
-                            
-                            return (
-                                <Runs {...{
-                                    t,
-                                    locale,
-                                    run,
-                                    pipeline,
-                                    key: index,
-                                    changeset: latestRecord,
-                                }}
-                                />
-                            );
-                        })
-                    }
-                </Table>
+                { runs.length > 0 &&
+                    <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
+                        {
+                            runs.map((run, index) => {
+                                const changeset = run.changeSet;
+                                let latestRecord = {};
+
+                                if (changeset && changeset.length > 0) {
+                                    latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
+                                }
+
+                                return (
+                                    <Runs {...{
+                                        t,
+                                        locale,
+                                        run,
+                                        pipeline,
+                                        key: index,
+                                        changeset: latestRecord,
+                                    }}
+                                    />
+                                );
+                            })
+                        }
+                    </Table>
                 }
 
-                {runs && runs.length > 0 &&
-                <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
-                    {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
-                </button>
+                { runs && runs.length > 0 &&
+                    <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
+                        {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
+                    </button>
                 }
             </article>
         </main>);

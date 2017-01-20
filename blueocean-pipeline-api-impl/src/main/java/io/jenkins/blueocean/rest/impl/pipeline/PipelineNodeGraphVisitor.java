@@ -9,6 +9,7 @@ import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.graphanalysis.DepthFirstScanner;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,6 +96,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     }
 
+    private StepStartNode agentNode = null;
+
     @Override
     public void chunkEnd(@Nonnull FlowNode endNode, @CheckForNull FlowNode afterBlock, @Nonnull ForkScanner scanner) {
         super.chunkEnd(endNode, afterBlock, scanner);
@@ -106,6 +110,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             dump("\tStartNode: "+((StepEndNode) endNode).getStartNode());
         }
 
+        if(endNode instanceof StepStartNode){
+            if(endNode.getDisplayFunctionName().equals("node")){
+                agentNode = (StepStartNode) endNode;
+            }
+        }
         //if block stage node push it to stack as it may have nested stages
         if(endNode instanceof StepEndNode
                 && !PipelineNodeUtil.isSyntheticStage(((StepEndNode) endNode).getStartNode()) //skip synthetic stages
@@ -275,6 +284,14 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
                 status, times, run);
 
+        try {
+            String cause = PipelineNodeUtil.getCauseOfBlockage(stage.getNode(), agentNode, run);
+            stage.setCauseOfFailure(cause);
+        } catch (IOException | InterruptedException e) {
+            //log the error but don't fail. This is better as in worst case all we will lose is blockage cause of a node.
+            logger.error(String.format("Error trying to get blockage status of pipeline: %s, runId: %s node block: %s. %s"
+                    ,run.getParent().getFullName(), run.getId(), agentNode, e.getMessage()), e);
+        }
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);
         if(!skippedStage && !parallelBranches.isEmpty()){

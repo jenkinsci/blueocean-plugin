@@ -16,7 +16,8 @@
 
         <j:set var="isMSIE" value="${userAgent.contains('MSIE') || userAgent.contains('Trident')}"/>
 
-        <head data-rooturl="${rootURL}"
+        <head lang="${it.lang}"
+              data-rooturl="${rootURL}"
               data-resurl="${resURL}"
               data-appurl="${rootURL}/${it.urlBase}"
               data-adjuncturl="${rootURL}/${j.getAdjuncts('').rootURL}">
@@ -29,8 +30,8 @@
                 <script src="${resURL}/plugin/blueocean-web/scripts/ie-detect.js"></script>
                 <script src="${resURL}/plugin/blueocean-web/scripts/html5shiv-printshiv.min.js"></script>
                 <st:adjunct includes="org.jenkins.ui.jsmodules.blueocean-web.iepolyfills"/>
+                <st:adjunct includes="org.jenkinsci.plugins.ssegateway.sse.EventSource" />
             </j:if>
-            <st:adjunct includes="org.jenkinsci.plugins.ssegateway.sse.EventSource" />
             <j:set var="assetsPath" value="${resURL}/plugin/blueocean-web/assets" />
 
             <!-- Core Styles -->
