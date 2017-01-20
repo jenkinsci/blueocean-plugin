@@ -6,15 +6,25 @@
  * @returns {string}
  */
 const cleanSlashes = (url: string) => {
-    if (url.indexOf('//') !== -1) {
-        let cleanUrl = url.replace('//', '/');
-        cleanUrl = cleanUrl.substr(-1) === '/' ?
-            cleanUrl : `${cleanUrl}/`;
+    let baseUrl = '';
+    let urlParams = '';
 
-        return cleanSlashes(cleanUrl);
+    if (url && url.indexOf('?') > -1) {
+        baseUrl = url.split('?').slice(0, 1).join('');
+        urlParams = url.split('?').slice(-1).join('');
+    } else {
+        baseUrl = url;
     }
 
-    return url;
+    while (baseUrl.indexOf('//') !== -1) {
+        baseUrl = baseUrl.replace('//', '/');
+    }
+
+    if (baseUrl.substr(-1) !== '/') {
+        baseUrl = `${baseUrl}/`;
+    }
+
+    return !urlParams ? baseUrl : `${baseUrl}?${urlParams}`;
 };
 
 
