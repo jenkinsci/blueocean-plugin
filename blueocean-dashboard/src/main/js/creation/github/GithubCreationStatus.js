@@ -9,6 +9,7 @@ const status = {
     STEP_CHOOSE_ORGANIZATION: 'step_choose_organization',
     PENDING_LOADING_REPOSITORIES: 'pending_loading_repositories',
     STEP_CONFIRM_AUTODISCOVER: 'step_confirm_autodiscover',
+    STEP_CHOOSE_REPOSITORY: 'step_choose_repository',
     PENDING_CREATION: 'pending_creation',
     STEP_COMPLETE: 'step_complete',
 

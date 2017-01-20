@@ -26,12 +26,13 @@ export default class GithubOrgListStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
+        const title = 'In which Github organization are your repositories located?';
 
         return (
-            <FlowStep {...this.props} className="github-org-list-step layout-large" title="In which Github organization are your repositories located?">
+            <FlowStep {...this.props} className="github-org-list-step layout-large" title={title}>
                 <List
                   className="org-list"
-                  data={flowManager.organizations.slice()}
+                  data={flowManager.organizations}
                   onItemSelect={(idx, org) => this.selectOrganization(org)}
                   defaultContainerClass={false}
                 >

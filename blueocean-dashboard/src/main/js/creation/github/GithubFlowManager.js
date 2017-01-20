@@ -1,9 +1,10 @@
 import React from 'react';
-import { action, computed, observable } from 'mobx';
+import { action, observable } from 'mobx';
 
 import waitAtLeast from '../flow2/waitAtLeast';
 
 import FlowManager from '../flow2/FlowManager';
+import STATUS from './GithubCreationStatus';
 import GithubInitialStep from './steps/GithubInitialStep';
 import GithubCredentialsStep from './steps/GithubCredentialStep';
 import GithubOrgListStep from './steps/GithubOrgListStep';
@@ -14,17 +15,17 @@ import GithubRepositoryStep from './steps/GithubRepositoryStep';
 export default class GithubFlowManager extends FlowManager {
 
     @observable
+    status = null;
+
+    @observable
     organizations = [];
 
     @observable
-    repositories = {};
-
-    @computed
-    get repos() {
-        return this.repositories[this._selectedOrganization.name];
-    }
+    repositories = [];
 
     _selectedOrganization = null;
+
+    _repositoryCache = {};
 
     _discoverSelection = null;
 
@@ -96,15 +97,29 @@ export default class GithubFlowManager extends FlowManager {
         }
     }
 
+    selectRepository(repo) {
+        this._selectedRepository = repo;
+    }
+
     _loadAllRepositories(organization) {
         this._creationApi.listRepositories(this._credentialId, organization.name, 0, 100)
+            .then(waitAtLeast(1000))
             .then(repos => this._updateRepositories(organization.name, repos));
+
+        this._setStatus(STATUS.PENDING_LOADING_REPOSITORIES);
+        this.pushStep(<GithubRepositoryStep />);
+    }
+
+    @action
+    _setStatus(status) {
+        this.status = status;
     }
 
     @action
     _updateRepositories(organizationName, repos) {
-        this.repositories[organizationName] = repos;
-        this.pushStep(<GithubRepositoryStep />);
+        this.repositories.replace(repos);
+        this._repositoryCache[organizationName] = repos;
+        this._setStatus(STATUS.STEP_CHOOSE_REPOSITORY);
     }
 
 }
