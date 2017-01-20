@@ -3,9 +3,9 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.53-slashes1",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.53-slashes1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.53-slashes1.tgz",
+      "version": "0.0.53-slashes2",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.53-slashes2",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.53-slashes2.tgz",
       "dependencies": {
         "react-router": {
           "version": "3.0.0",
