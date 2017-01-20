@@ -11,10 +11,9 @@ export default class GitCreationApi {
         this._fetch = fetch || Fetch.fetchJSON;
     }
 
-    createPipeline(repositoryUrl, credentialId, pipelineName = null) {
+    createPipeline(repositoryUrl, credentialId, name) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines`);
-        const name = !pipelineName ? repositoryUrl.split('/').slice(-1).join('') : pipelineName;
 
         const requestBody = {
             name,

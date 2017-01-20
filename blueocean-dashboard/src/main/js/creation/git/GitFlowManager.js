@@ -113,6 +113,7 @@ export default class GitFlowManager extends FlowManager {
     createPipeline(repositoryUrl, credentialId) {
         this.repositoryUrl = repositoryUrl;
         this.credentialId = credentialId;
+        this.pipelineName = this._createNameFromRepoUrl(repositoryUrl);
         return this._initiateCreatePipeline();
     }
 
@@ -165,6 +166,11 @@ export default class GitFlowManager extends FlowManager {
         this.setPendingSteps([
             this.translate('creation.git.step3.title_default'),
         ]);
+    }
+
+    _createNameFromRepoUrl(repositoryUrl) {
+        const lastSlashToken = repositoryUrl ? repositoryUrl.split('/').slice(-1).join('') : '';
+        return lastSlashToken.split('.').slice(0, 1).join('');
     }
 
 }
