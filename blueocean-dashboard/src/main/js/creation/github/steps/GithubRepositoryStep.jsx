@@ -12,8 +12,6 @@ export default class GithubOrgListStep extends React.Component {
     render() {
         const { flowManager } = this.props;
 
-        debugger;
-
         return (
             <FlowStep {...this.props} title="Choose a repository">
                 {flowManager.repos.map(repo => (

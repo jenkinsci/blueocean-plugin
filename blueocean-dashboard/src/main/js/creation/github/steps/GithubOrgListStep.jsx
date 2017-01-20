@@ -1,6 +1,21 @@
 import React, { PropTypes } from 'react';
-import FlowStep from '../../flow2/FlowStep';
 import { observer } from 'mobx-react';
+import { List } from '@jenkins-cd/design-language';
+
+import FlowStep from '../../flow2/FlowStep';
+
+
+function OrgRenderer(props) {
+    const { listItem } = props;
+    const { name, avatar } = listItem;
+
+    return (
+        <div className="org-list-item">
+            <img className="avatar" width="30" height="30" src={`${avatar}&s=50`} />
+            <span>{name}</span>
+        </div>
+    );
+}
 
 @observer
 export default class GithubOrgListStep extends React.Component {
@@ -13,10 +28,15 @@ export default class GithubOrgListStep extends React.Component {
         const { flowManager } = this.props;
 
         return (
-            <FlowStep {...this.props} title="In which Github organization are your repositories located?">
-                {flowManager.organizations.map(org => (
-                    <button onClick={() => this.selectOrganization(org)}>{org.name}</button>
-                ))}
+            <FlowStep {...this.props} className="github-org-list-step layout-large" title="In which Github organization are your repositories located?">
+                <List
+                  className="org-list"
+                  data={flowManager.organizations.slice()}
+                  onItemSelect={(idx, org) => this.selectOrganization(org)}
+                  defaultContainerClass={false}
+                >
+                    <OrgRenderer />
+                </List>
             </FlowStep>
         );
     }

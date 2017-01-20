@@ -56,10 +56,10 @@ export default class GithubFlowManager extends FlowManager {
     _afterInitialStep(credential) {
         if (credential && credential.credentialId) {
             this._credentialId = credential.credentialId;
-            return this.listOrganizations();
+            this.listOrganizations();
+        } else {
+            this.replaceCurrentStep(<GithubCredentialsStep />);
         }
-
-        this.replaceCurrentStep(<GithubCredentialsStep />);
     }
 
     @action
