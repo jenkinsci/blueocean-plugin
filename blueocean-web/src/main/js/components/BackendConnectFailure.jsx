@@ -68,7 +68,6 @@ export class BackendConnectFailure extends Component {
 
         let title;
         let message;
-        let nextAction;
         let cssClass;
         if (!this.state.doPageReload) {
             cssClass = 'connection-lost';
@@ -77,9 +76,6 @@ export class BackendConnectFailure extends Component {
                 defaultValue: 'Connection lost',
             });
             message = translate('Connection.lost.message', {
-                defaultValue: 'The connection to the Jenkins Server has been lost.'
-            });
-            nextAction = translate('Connection.lost.nextaction', {
                 defaultValue: 'Waiting to reconnect ...'
             });
         } else {
@@ -89,10 +85,7 @@ export class BackendConnectFailure extends Component {
                 defaultValue: 'Connection ok again',
             });
             message = translate('Connection.ok.message', {
-                defaultValue: 'The connection to the Jenkins Server is okay again.'
-            });
-            nextAction = translate('Connection.ok.nextaction', {
-                defaultValue: 'Reloading page now ...'
+                defaultValue: 'Reloading page ...'
             });
             setTimeout(() => window.location.reload(true), 4000);
         }
@@ -103,8 +96,6 @@ export class BackendConnectFailure extends Component {
                     <h3>{title}</h3>
                     <div className="message">
                         {message}
-                        <p/>
-                        {nextAction}
                     </div>
                 </div>
             </Fullscreen>

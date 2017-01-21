@@ -8,6 +8,15 @@
 
     &.connection-lost, &.connection-ok {
         /*
+         * Lets ensure that the lost and ok messages are the same
+         * width Vs jumpy message box resizes.
+         */
+        .message-box {
+            min-width: 30em;
+            max-width: 30em;
+        }
+
+        /*
          * For some reason, we needed to set the font-weight on the
          * h3 used in the errorscreen when disconnected. If not, it
          * appears more bold than it does if the same screen is
