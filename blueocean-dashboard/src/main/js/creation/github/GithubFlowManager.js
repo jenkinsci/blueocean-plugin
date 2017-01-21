@@ -5,7 +5,7 @@ import waitAtLeast from '../flow2/waitAtLeast';
 
 import FlowManager from '../flow2/FlowManager';
 import STATUS from './GithubCreationStatus';
-import GithubInitialStep from './steps/GithubInitialStep';
+import GithubLoadingStep from './steps/GithubLoadingStep';
 import GithubCredentialsStep from './steps/GithubCredentialStep';
 import GithubOrgListStep from './steps/GithubOrgListStep';
 import GithubChooseDiscoverStep from './steps/GithubChooseDiscoverStep';
@@ -51,7 +51,11 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     getInitialStep() {
-        return <GithubInitialStep />;
+        return <GithubLoadingStep />;
+    }
+
+    onInitialized() {
+        this.findExistingCredential();
     }
 
     findExistingCredential() {
