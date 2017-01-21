@@ -5,4 +5,17 @@
     &.connection-ok {
         background-color: @blueocean-blue;
     }
+
+    &.connection-lost, &.connection-ok {
+        /*
+         * For some reason, we needed to set the font-weight on the
+         * h3 used in the errorscreen when disconnected. If not, it
+         * appears more bold than it does if the same screen is
+         * shown when connected, plus when compared to the 404 screen.
+         * Weird :(
+         */
+        h3 {
+            font-weight: 400;
+        }
+    }
 }
