@@ -73,6 +73,33 @@ export default class GithubFlowManager extends FlowManager {
         }
     }
 
+    createAccessToken(token) {
+        return this._credentialsApi.createAccessToken(token)
+            .then(waitAtLeast(MIN_DELAY))
+            .then(
+                cred => this._createTokenSuccess(cred),
+                error => this._createTokenFailure(error),
+            );
+    }
+
+    _createTokenSuccess(cred) {
+        this._credentialId = cred.credentialId;
+
+        this.pushStep(<GithubLoadingStep/>);
+        this.listOrganizations();
+
+        return {
+            success: true,
+        };
+    }
+
+    _createTokenFailure(error) {
+        return {
+            success: false,
+            detail: error.responseBody,
+        };
+    }
+
     @action
     listOrganizations() {
         return this._creationApi.listOrganizations(this._credentialId)
