@@ -2,7 +2,7 @@
 .github-org-list-step {
     .org-list {
         .List-ItemContainer {
-            width: 600px;
+            width: 100%
         }
 
         .org-list-item {
@@ -18,12 +18,22 @@
 }
 
 .github-repo-list-step {
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
+
     .repo-list {
         max-height: 192px;
 
         .List-ItemContainer {
-            width: 600px;
+            width: 100%
         }
+    }
+
+    .button-create {
+        margin-top: 10px;
+        align-self: flex-end;
     }
 }
 

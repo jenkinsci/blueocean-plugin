@@ -12,20 +12,36 @@ export default class GithubOrgListStep extends React.Component {
         this.props.flowManager.selectRepository(org);
     }
 
+    beginCreation() {
+        this.props.flowManager.createFromRepository();
+    }
+
     render() {
         const { flowManager } = this.props;
-
-        const title = flowManager.status === STATUS.PENDING_LOADING_REPOSITORIES ?
-            'Loading Repositories...' : 'Choose a repository';
+        const loaded = flowManager.status === STATUS.STEP_CHOOSE_REPOSITORY;
+        const disabled = !flowManager.selectedRepository;
+        const title = loaded ? 'Choose a repository' : 'Loading Repositories...';
 
         return (
             <FlowStep {...this.props} className="github-repo-list-step" title={title}>
-                <List
-                  className="repo-list"
-                  data={flowManager.repositories}
-                  onItemSelect={(idx, repo) => this.selectRepository(repo)}
-                  labelFunction={repo => repo.name}
-                />
+                { loaded &&
+                <div className="container">
+                    <List
+                      className="repo-list"
+                      data={flowManager.repositories}
+                      onItemSelect={(idx, repo) => this.selectRepository(repo)}
+                      labelFunction={repo => repo.name}
+                    />
+
+                    <button
+                      className="button-create"
+                      onClick={() => this.beginCreation()}
+                      disabled={disabled}
+                    >
+                        Create Pipeline
+                    </button>
+                </div>
+                }
             </FlowStep>
         );
     }

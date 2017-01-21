@@ -11,6 +11,10 @@ import GithubOrgListStep from './steps/GithubOrgListStep';
 import GithubChooseDiscoverStep from './steps/GithubChooseDiscoverStep';
 import GithubConfirmDiscoverStep from './steps/GithubConfirmDiscoverStep';
 import GithubRepositoryStep from './steps/GithubRepositoryStep';
+import GithubCompleteStep from './steps/GithubCompleteStep';
+
+const MIN_DELAY = 500;
+
 
 export default class GithubFlowManager extends FlowManager {
 
@@ -23,13 +27,15 @@ export default class GithubFlowManager extends FlowManager {
     @observable
     repositories = [];
 
-    _selectedOrganization = null;
+    @observable
+    selectedOrganization = null;
+
+    @observable
+    selectedRepository = null;
 
     _repositoryCache = {};
 
     _discoverSelection = null;
-
-    _selectedRepository = null;
 
     _credentialId = null;
 
@@ -50,7 +56,7 @@ export default class GithubFlowManager extends FlowManager {
 
     findExistingCredential() {
         return this._credentialsApi.findExistingCredential()
-            .then(waitAtLeast(1000))
+            .then(waitAtLeast(MIN_DELAY))
             .then(credential => this._afterInitialStep(credential));
     }
 
@@ -66,7 +72,7 @@ export default class GithubFlowManager extends FlowManager {
     @action
     listOrganizations() {
         return this._creationApi.listOrganizations(this._credentialId)
-            .then(waitAtLeast(1000))
+            .then(waitAtLeast(MIN_DELAY))
             .then(orgs => { this._updateOrganizations(orgs); });
     }
 
@@ -76,14 +82,13 @@ export default class GithubFlowManager extends FlowManager {
 
         this.replaceCurrentStep(<GithubOrgListStep />);
         this.setPendingSteps([
-            'Set Pending Step',
-            'Another Pending Step',
+            'Complete',
         ]);
     }
 
     @action
     selectOrganization(organization) {
-        this._selectedOrganization = organization;
+        this.selectedOrganization = organization;
         this.pushStep(<GithubChooseDiscoverStep />);
     }
 
@@ -91,19 +96,20 @@ export default class GithubFlowManager extends FlowManager {
         this._discoverSelection = discover;
 
         if (!discover) {
-            this._loadAllRepositories(this._selectedOrganization);
+            this._loadAllRepositories(this.selectedOrganization);
         } else {
             this.pushStep(<GithubConfirmDiscoverStep />);
         }
     }
 
+    @action
     selectRepository(repo) {
-        this._selectedRepository = repo;
+        this.selectedRepository = repo;
     }
 
     _loadAllRepositories(organization) {
         this._creationApi.listRepositories(this._credentialId, organization.name, 0, 100)
-            .then(waitAtLeast(1000))
+            .then(waitAtLeast(MIN_DELAY))
             .then(repos => this._updateRepositories(organization.name, repos));
 
         this._setStatus(STATUS.PENDING_LOADING_REPOSITORIES);
@@ -120,6 +126,11 @@ export default class GithubFlowManager extends FlowManager {
         this.repositories.replace(repos);
         this._repositoryCache[organizationName] = repos;
         this._setStatus(STATUS.STEP_CHOOSE_REPOSITORY);
+    }
+
+    createFromRepository() {
+        this.pushStep(<GithubCompleteStep />);
+        this.setPendingSteps();
     }
 
 }
