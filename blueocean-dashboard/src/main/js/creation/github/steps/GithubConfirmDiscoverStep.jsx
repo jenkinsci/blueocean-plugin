@@ -1,12 +1,13 @@
 import React, { PropTypes } from 'react';
-import FlowStep from '../../flow2/FlowStep';
 import { observer } from 'mobx-react';
+
+import FlowStep from '../../flow2/FlowStep';
 
 @observer
 export default class GithubConfirmDiscoverStep extends React.Component {
 
-    confirmDiscover(discover) {
-        this.props.flowManager.confirmDiscover(discover);
+    confirmDiscover() {
+        this.props.flowManager.confirmDiscover();
     }
 
     render() {

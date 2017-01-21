@@ -133,6 +133,15 @@ export default class GithubFlowManager extends FlowManager {
         }
     }
 
+    confirmDiscover() {
+        if (!this.selectedOrganization.jenkinsOrganizationPipeline) {
+            this._creationApi.createOrgFolder(this._credentialId, this.selectedOrganization);
+        } else {
+            // TODO: handle update case
+            console.log('TODO: handle update case');
+        }
+    }
+
     @action
     selectRepository(repo) {
         this.selectedRepository = repo;

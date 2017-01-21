@@ -91,5 +91,3 @@ export default class GithubCredentialsStep extends React.Component {
 GithubCredentialsStep.propTypes = {
     flowManager: PropTypes.object,
 };
-
-
