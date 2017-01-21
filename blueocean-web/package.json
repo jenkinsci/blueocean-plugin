@@ -13,7 +13,7 @@
     "mvntest": "gulp test lint"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.50",
+    "@jenkins-cd/js-builder": "0.0.51",
     "babel-eslint": "7.0.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
     "babel-polyfill": "6.16.0",
