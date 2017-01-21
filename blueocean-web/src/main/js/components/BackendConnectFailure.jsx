@@ -69,7 +69,10 @@ export class BackendConnectFailure extends Component {
         let title;
         let message;
         let nextAction;
+        let cssClass;
         if (!this.state.doPageReload) {
+            cssClass = 'connection-lost';
+
             title = translate('Connection.lost.heading', {
                 defaultValue: 'Connection lost',
             });
@@ -80,6 +83,8 @@ export class BackendConnectFailure extends Component {
                 defaultValue: 'Waiting to reconnect ...'
             });
         } else {
+            cssClass = 'connection-ok';
+
             title = translate('Connection.ok.heading', {
                 defaultValue: 'Connection ok again',
             });
@@ -93,11 +98,14 @@ export class BackendConnectFailure extends Component {
         }
 
         return (
-            <Fullscreen className="errorscreen not-found">
+            <Fullscreen className={`errorscreen ${cssClass}`}>
                 <div className="message-box">
                     <h3>{title}</h3>
-                    <div className="message">{message}</div>
-                    <div className="message">{nextAction}</div>
+                    <div className="message">
+                        {message}
+                        <p/>
+                        {nextAction}
+                    </div>
                 </div>
             </Fullscreen>
         );

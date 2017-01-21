@@ -1,6 +1,9 @@
 .errorscreen {
     .fullscreen;
 
+    // Default error screen background color.
+    background-color: @errorscreen-bg-color;
+
     &:before {
         content: '';
         background: url('./icons/kanagawa.svg') no-repeat bottom left;
@@ -22,7 +25,7 @@
         left: 50%;
         transform: translate(-50%, -51%);
         max-width: 40em;
-        background: #fff;
+        background-color: #fff;
         padding: 2em;
         border-radius: .2em;
         box-shadow: 2px 2px 8px rgba(0, 0, 0, .1);
