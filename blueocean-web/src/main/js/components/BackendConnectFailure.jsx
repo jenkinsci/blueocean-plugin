@@ -93,7 +93,7 @@ export class BackendConnectFailure extends Component {
         }
 
         return (
-            <Fullscreen className="not-found">
+            <Fullscreen className="errorscreen not-found">
                 <div className="message-box">
                     <h3>{title}</h3>
                     <div className="message">{message}</div>
