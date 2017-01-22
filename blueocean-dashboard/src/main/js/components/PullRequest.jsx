@@ -6,54 +6,62 @@ import { CellRow, CellLink } from './CellLink';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
+function noRun(pr, openRunDetails, t) {
+    return (<tr id={`${name}`}>
+                <td></td>
+                <td>{pr.pullRequest.id}</td>
+                <td>{pr.pullRequest.title || '-'}</td>
+                <td>{pr.pullRequest.author || '-'}</td>
+                <td></td>
+                <td className="actions">
+                    <RunButton
+                      className="icon-button"
+                      runnable={pr}
+                      latestRun={pr.latestRun}
+                      onNavigation={openRunDetails}
+                    />
+                    <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />
+                </td>
+            </tr>);
+}
 export default class PullRequest extends Component {
     render() {
         const { pr, t, locale, pipeline: contextPipeline } = this.props;
-        if (!pr || !pr.pullRequest || !pr.latestRun || !contextPipeline) {
+        if (!pr || !pr.pullRequest || !contextPipeline) {
             return null;
         }
-        const {
-            latestRun: {
-                result: resultString,
-                id,
-                startTime,
-                pipeline,
-                endTime,
-                estimatedDurationInMillis,
-                state,
-            },
-            pullRequest: {
-                id: prId,
-                title,
-                author,
-            },
-            name,
-        } = pr;
-        const result = resultString === 'UNKNOWN' ? state : resultString;
-        const {
-            router,
-            location,
-        } = this.context;
-        const { fullName, organization } = contextPipeline;
-        const runDetailsUrl = buildRunDetailsUrl(organization, fullName, decodeURIComponent(pipeline), id, 'pipeline');
 
+        const { router, location } = this.context;
+       
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
+
+        const { latestRun, pullRequest, name } = pr;
+   
+        if (!latestRun) {
+            return noRun(pr, openRunDetails, t);
+        }
+
+        const result = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
+        const { fullName, organization } = contextPipeline;
+        const runDetailsUrl = buildRunDetailsUrl(organization, fullName, decodeURIComponent(latestRun.pipeline), latestRun.id, 'pipeline');
+
+       
         return (
-            <CellRow linkUrl={runDetailsUrl} id={`${name}-${id}`}>
+            <CellRow linkUrl={runDetailsUrl} id={`${name}-${latestRun.id}`}>
                 <CellLink>
-                    <LiveStatusIndicator result={result} startTime={startTime}
-                      estimatedDuration={estimatedDurationInMillis}
+                    <LiveStatusIndicator result={result} startTime={latestRun.startTime}
+                      estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
                 </CellLink>
-                <CellLink>{prId}</CellLink>
-                <CellLink>{title || '-'}</CellLink>
-                <CellLink>{author || '-'}</CellLink>
+                <CellLink>{pullRequest.id}</CellLink>
+                <CellLink>{pullRequest.title || '-'}</CellLink>
+                <CellLink>{pullRequest.author || '-'}</CellLink>
                 <CellLink>
                     <ReadableDate
-                      date={endTime}
+                      date={latestRun.endTime}
                       liveUpdate
                       locale={locale}
                       shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
