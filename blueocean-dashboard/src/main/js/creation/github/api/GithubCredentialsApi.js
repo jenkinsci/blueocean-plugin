@@ -1,5 +1,4 @@
-import { capabilityAugmenter, Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
-import TempUtils from '../../TempUtils';
+import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
 
 export class GithubCredentialsApi {
 
@@ -9,7 +8,7 @@ export class GithubCredentialsApi {
 
     findExistingCredential() {
         const path = UrlConfig.getJenkinsRootURL();
-        const credUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github`);
+        const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github`);
 
         return this._fetch(credUrl)
             .then(credential => capabilityAugmenter.augmentCapabilities(credential));
@@ -17,7 +16,7 @@ export class GithubCredentialsApi {
 
     createAccessToken(accessToken) {
         const path = UrlConfig.getJenkinsRootURL();
-        const tokenUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github/validate`);
+        const tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github/validate`);
 
         const requestBody = {
             accessToken,

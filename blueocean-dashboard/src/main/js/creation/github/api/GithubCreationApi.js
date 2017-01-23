@@ -1,5 +1,4 @@
-import { capabilityAugmenter, Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
-import TempUtils from '../../TempUtils';
+import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
 
 export class GithubCreationApi {
 
@@ -9,7 +8,7 @@ export class GithubCreationApi {
 
     listOrganizations(credentialId) {
         const path = UrlConfig.getJenkinsRootURL();
-        const orgsUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github/organizations/?credentialId=${credentialId}`, false);
+        const orgsUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github/organizations/?credentialId=${credentialId}`, false);
 
         return this._fetch(orgsUrl)
             .then(credential => capabilityAugmenter.augmentCapabilities(credential));
@@ -17,10 +16,9 @@ export class GithubCreationApi {
 
     listRepositories(credentialId, organizationName, pageNumber = 0, pageSize = 10) {
         const path = UrlConfig.getJenkinsRootURL();
-        const reposUrl = TempUtils.cleanSlashes(
+        const reposUrl = Utils.cleanSlashes(
             `${path}/blue/rest/organizations/jenkins/scm/github/organizations/${organizationName}/repositories/` +
-            `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
-            false);
+            `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}`);
 
         return this._fetch(reposUrl)
             .then(response => capabilityAugmenter.augmentCapabilities(response))
@@ -29,7 +27,7 @@ export class GithubCreationApi {
 
     createOrgFolder(credentialId, organization, repoNames = []) {
         const path = UrlConfig.getJenkinsRootURL();
-        const createUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/`);
+        const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/`);
 
         const requestBody = this._buildRequestBody(
             true, credentialId, organization.name, organization.name, repoNames,
