@@ -34,7 +34,7 @@ export const getNodesInformation = (nodes) => {
     const finished = runningNodes.length === 0;
     const error = !(errorNodes.length === 0);
     const model = nodes.map((item, index) => {
-        const hasFailingNode = item.edges ? item.edges
+        const hasFailingNode = item.edges && item.edges.length >= 2 ? item.edges
             .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
         const isFailingNode = errorNodes.indexOf(item.id) > -1;
         const isRunningNode = runningNodes.indexOf(item.id) > -1;
