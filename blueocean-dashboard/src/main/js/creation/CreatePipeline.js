@@ -1,13 +1,17 @@
-/**
- * Created by cmeyers on 10/17/16.
- */
 import React, { PropTypes } from 'react';
 import { BasicDialog, DialogContent } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
 import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
-import VerticalStep from './VerticalStep';
+import VerticalStep from './flow2/VerticalStep';
+
+import Extensions from '@jenkins-cd/js-extensions';
+const Sandbox = Extensions.SandboxedComponent;
+
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+const translate = i18nTranslator('blueocean-dashboard');
+const t = translate;
 
 export default class CreatePipeline extends React.Component {
 
@@ -25,15 +29,17 @@ export default class CreatePipeline extends React.Component {
         });
     }
 
-    _onCompleteFlow() {
-        this._onExit();
+    _onCompleteFlow(path) {
+        this._onExit(path);
     }
 
-    _onExit() {
-        if (history && history.length > 2) {
-            this.context.router.goBack();
+    _onExit({ url } = {}) {
+        if (url) {
+            this.context.router.replace(url);
+        } else if (history && history.length <= 2) {
+            this.context.router.replace('/pipelines');
         } else {
-            this.context.router.push('/pipelines');
+            this.context.router.goBack();
         }
     }
 
@@ -42,14 +48,14 @@ export default class CreatePipeline extends React.Component {
 
         return (
             <BasicDialog
-              className="creation-dialog"
+              className="creation-dialog layout-medium"
               onDismiss={() => this._onExit()}
               ignoreEscapeKey
             >
                 <CustomHeader onClose={() => this._onExit()} />
                 <DialogContent>
                     <VerticalStep className="first-step" status={firstStepStatus}>
-                        <h1>Where do you store your code?</h1>
+                        <h1>{t('creation.core.intro.scm_provider', { defaultValue: 'Where do you store your code?' })}</h1>
 
                         <CreatePipelineScmListRenderer
                           extensionPoint="jenkins.pipeline.create.scm.provider"
@@ -57,10 +63,12 @@ export default class CreatePipeline extends React.Component {
                         />
                     </VerticalStep>
 
-                    <CreatePipelineStepsRenderer
-                      selectedProvider={this.state.selectedProvider}
-                      onCompleteFlow={() => this._onCompleteFlow()}
-                    />
+                    <Sandbox>
+                        <CreatePipelineStepsRenderer
+                          selectedProvider={this.state.selectedProvider}
+                          onCompleteFlow={(data) => this._onCompleteFlow(data)}
+                        />
+                    </Sandbox>
                 </DialogContent>
             </BasicDialog>
         );
@@ -74,8 +82,10 @@ CreatePipeline.contextTypes = {
 function CustomHeader(props) {
     return (
         <div className="Dialog-header creation-header">
-            <h3>Create Pipeline</h3>
-            <a className="close-button" href="#" onClick={props.onClose}>
+            <h3>{t('creation.core.header.title', { defaultValue: 'Create Pipeline' })}</h3>
+            <a className="close-button" href="#" onClick={props.onClose}
+              title={t('creation.core.intro.close', { defaultValue: 'Close' })}
+            >
                 <Icon icon="close" size={42} />
             </a>
         </div>

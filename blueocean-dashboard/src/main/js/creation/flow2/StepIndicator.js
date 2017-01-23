@@ -1,6 +1,3 @@
-/**
- * Created by cmeyers on 10/17/16.
- */
 import React, { PropTypes } from 'react';
 import { StatusIndicator } from '@jenkins-cd/design-language';
 import status from './FlowStepStatus';
@@ -11,6 +8,7 @@ import status from './FlowStepStatus';
  */
 export default function StepIndicator(props) {
     const newProps = {};
+    newProps.width = newProps.height = 32;
 
     if (props.percentage >= 0 && props.percentage < 100 && props.status !== status.COMPLETE) {
         newProps.result = 'running';

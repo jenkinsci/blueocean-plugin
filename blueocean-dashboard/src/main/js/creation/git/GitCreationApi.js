@@ -1,49 +1,52 @@
-/**
- * Created by cmeyers on 10/19/16.
- */
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
+import { Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
 
 /**
  * Proxy to the backend REST API.
- * Currently implemented as a mock.
  */
 export default class GitCreationApi {
 
-    // eslint-disable-next-line no-unused-vars
-    saveSshKeyCredential(key) {
-        const credentialId = Math.random() * Number.MAX_SAFE_INTEGER;
-        const promise = new Promise(resolve => {
-            setTimeout(() => {
-                resolve({
-                    credentialId,
-                });
-            }, 2000);
-        });
-
-        return promise;
+    constructor(fetch) {
+        this._fetch = fetch || Fetch.fetchJSON;
     }
 
-    // eslint-disable-next-line no-unused-vars
-    saveUsernamePasswordCredential(username, password) {
-        return this.saveSshKeyCredential();
+    createPipeline(repositoryUrl, credentialId, name) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines`);
+
+        const requestBody = {
+            name,
+            $class: 'io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest',
+            scmConfig: {
+                uri: repositoryUrl,
+                credentialId,
+            },
+        };
+
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        };
+
+        return this._fetch(createUrl, { fetchOptions });
     }
 
-    useSystemSshCredential() {
-        return this.saveSshKeyCredential();
-    }
+    checkPipelineNameAvailable(name) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const checkUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/${name}`);
 
-    // eslint-disable-next-line no-unused-vars
-    createPipeline(repositoryUrl, credentialId) {
-        const uniqueId = Math.random() * Number.MAX_SAFE_INTEGER;
-        const promise = new Promise(resolve => {
-            setTimeout(() => {
-                resolve({
-                    pipelineId: `pipeline-${uniqueId}`,
-                });
-            }, 2000);
-        });
+        const fetchOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
 
-        return promise;
+        return this._fetch(checkUrl, { fetchOptions })
+            .then(() => false, () => true);
     }
 
 }

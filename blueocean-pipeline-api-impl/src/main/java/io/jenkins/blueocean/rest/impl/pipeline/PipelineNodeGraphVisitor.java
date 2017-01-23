@@ -127,7 +127,18 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 endNode instanceof StepEndNode
                 && !PipelineNodeUtil.isSyntheticStage(((StepEndNode) endNode).getStartNode()) //skip synthetic stages
                 && PipelineNodeUtil.isStage(((StepEndNode) endNode).getStartNode())) {
-            nestedStages.push(endNode);
+
+
+            //XXX: There seems to be bug in eventing, chunkEnd is sent twice for the same FlowNode
+            //     Lets peek and if the last one is same as this endNode then skip adding it
+            FlowNode node=null;
+            if(!nestedStages.empty()){
+                node = nestedStages.peek();
+            }
+            if(node == null || !node.equals(endNode)){
+                nestedStages.push(endNode);
+            }
+
         }
         firstExecuted = null;
 
@@ -234,7 +245,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     branchNode.getDisplayName(), branchNode.getDisplayFunctionName()));
         }
 
-        assert nestedbranches.size() == parallelBranchEndNodes.size();
+        if(nestedbranches.size() != parallelBranchEndNodes.size()){
+            logger.error(String.format("nestedBranches size: %s not equal to parallelBranchEndNodes: %s",
+                    nestedbranches.size(), parallelBranchEndNodes.size()));
+            return;
+        }
 
         while(!nestedbranches.empty() && !parallelBranchEndNodes.empty()){
             FlowNode branchStartNode = nestedbranches.pop();
@@ -356,18 +371,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
     }
 
-    private void captureOrphanParallelBranches(){
-        if(!parallelBranches.isEmpty()){
-            FlowNodeWrapper synStage = createParallelSyntheticNode();
-            if(synStage!=null) {
-                nodes.push(synStage);
-                nodeMap.put(synStage.getId(), synStage);
-                parallelBranches.clear();
-                this.nextStage = synStage;
-            }
-        }
-    }
-
     private void dump(String str){
         System.out.println(str);
     }
@@ -455,16 +458,47 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 if(currentNodeSize>0 && i == currentNodeSize){
                     FlowNodeWrapper latestNode = currentNodes.get(i-1);
                     if(latestNode.type == FlowNodeWrapper.NodeType.STAGE){
-                        latestNode.addEdge(futureNode.getId());
+                        if(futureNode.type == FlowNodeWrapper.NodeType.STAGE){
+                            latestNode.addEdge(futureNode.getId());
+                        }else if(futureNode.type == FlowNodeWrapper.NodeType.PARALLEL){
+                            FlowNodeWrapper thatStage = futureNode.getFirstParent();
+                            if(thatStage.equals(latestNode)){
+                                for(String edge:thatStage.edges){
+                                    if(!latestNode.edges.contains(edge)){
+                                        latestNode.addEdge(edge);
+                                    }
+                                }
+                            }
+                        }
                     }else if(latestNode.type == FlowNodeWrapper.NodeType.PARALLEL){
-                        //get stage of this parallel
+                        String futureNodeId = null;
+                        FlowNodeWrapper thatStage = null;
+                        if(futureNode.type == FlowNodeWrapper.NodeType.STAGE){
+                            thatStage = futureNode;
+                            futureNodeId = futureNode.getId();
+                        }else if(futureNode.type == FlowNodeWrapper.NodeType.PARALLEL &&
+                                futureNode.getFirstParent().equals(latestNode.getFirstParent())){
+                            thatStage = futureNode.getFirstParent();
+                            if(futureNode.edges.size() > 0){
+                                futureNodeId = futureNode.edges.get(0);
+                            }
+                        }
                         FlowNodeWrapper stage = latestNode.getFirstParent();
                         if(stage != null){
                             //Add future node as edge to all edges of last stage
                             for(String id:stage.edges){
                                 FlowNodeWrapper node = nodeMap.get(id);
-                                if(node != null) {
-                                    node.addEdge(futureNode.getId());
+                                if(node != null && futureNodeId != null) {
+                                    node.addEdge(futureNodeId);
+                                }
+                            }
+
+                            //now patch edges in case its partial
+                            if(thatStage != null && futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
+                                for (String edge : thatStage.edges) {
+                                    if (!stage.edges.contains(edge)) {
+                                        stage.addEdge(edge);
+                                    }
                                 }
                             }
                         }
@@ -483,6 +517,21 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             newNodes.add(new PipelineNodeImpl(n,parent,run));
         }
         return newNodes;
+    }
+
+
+    private void captureOrphanParallelBranches(){
+        if(!parallelBranches.isEmpty() && (firstExecuted == null
+                || !PipelineNodeUtil.isStage(firstExecuted)
+        )){
+            FlowNodeWrapper synStage = createParallelSyntheticNode();
+            if(synStage!=null) {
+                nodes.push(synStage);
+                nodeMap.put(synStage.getId(), synStage);
+                parallelBranches.clear();
+                this.nextStage = synStage;
+            }
+        }
     }
 
     /**
