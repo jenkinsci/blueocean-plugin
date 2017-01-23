@@ -2135,6 +2135,136 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertTrue(resp.trim().endsWith("this error should appear in log"));
     }
 
+    @Test
+    public void orphanParallels1() throws Exception{
+        String script = "parallel('branch1':{\n" +
+                "        node {\n" +
+                "            stage('Setup') {\n" +
+                "                sh 'echo \"Setup...\"'\n" +
+                "            }\n" +
+                "            stage('Unit and Integration Tests') {\n" +
+                "                sh 'echo \"Unit and Integration Tests...\"'\n" +
+                "            }\n" +
+                "        }\n" +
+                "}, 'branch2': {\n" +
+                "        node {\n" +
+                "            stage('Setup') {\n" +
+                "                sh 'echo \"Branch2 setup...\"'\n" +
+                "            }\n" +
+                "            stage('Unit and Integration Tests') {\n" +
+                "                echo '\"my command to execute tests\"'\n" +
+                "            }\n" +
+                "        }\n" +
+                "})";
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.SUCCESS, b1);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+        Assert.assertEquals(3, resp.size());
+
+    }
+
+    @Test
+    public void orphanParallels2() throws Exception{
+        String script = "stage(\"stage1\"){\n" +
+                "    echo \"stage 1...\"\n" +
+                "}\n" +
+                "parallel('branch1':{\n" +
+                "        node {\n" +
+                "            stage('Setup') {\n" +
+                "                sh 'echo \"Setup...\"'\n" +
+                "            }\n" +
+                "            stage('Unit and Integration Tests') {\n" +
+                "                sh 'echo \"Unit and Integration Tests...\"'\n" +
+                "            }\n" +
+                "        }\n" +
+                "}, 'branch3': {\n" +
+                "        node {\n" +
+                "            stage('Setup') {\n" +
+                "                sh 'echo \"Branch3 setup...\"'\n" +
+                "            }\n" +
+                "            stage('Unit and Integration Tests') {\n" +
+                "                echo '\"my command to execute tests\"'\n" +
+                "            }\n" +
+                "        }\n" +
+                "}, 'branch2': {\n" +
+                "        node {\n" +
+                "            stage('Setup') {\n" +
+                "                sh 'echo \"Branch2 setup...\"'\n" +
+                "            }\n" +
+                "            stage('Unit and Integration Tests') {\n" +
+                "                echo '\"my command to execute tests\"'\n" +
+                "            }\n" +
+                "        }\n" +
+                "})\n" +
+                "stage(\"stage2\"){\n" +
+                "    echo \"stage 2...\"\n" +
+                "}";
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.SUCCESS, b1);
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+        Assert.assertEquals(6, nodes.size());
+
+        for(int i=0;i<nodes.size(); i++){
+            Map n = nodes.get(i);
+            List<Map> edges = (List<Map>) n.get("edges");
+            if(i==0){
+                assertEquals("stage1", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(i+1).get("id"), edges.get(0).get("id"));
+            }
+            if(i==1){
+                assertEquals("Parallel", n.get("displayName"));
+                assertEquals(nodes.get(i+1).get("id")+"-parallel-synthetic", n.get("id"));
+                Assert.assertEquals(3, edges.size());
+                assertEquals(nodes.get(i+1).get("id"), edges.get(0).get("id"));
+                assertEquals(nodes.get(i+2).get("id"), edges.get(1).get("id"));
+                assertEquals(nodes.get(i+3).get("id"), edges.get(2).get("id"));
+            }
+            if(i==2){
+                assertEquals("branch1", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+            }
+            if(i==3){
+                assertEquals("branch2", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+            }
+            if(i==4){
+                assertEquals("branch3", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+            }
+            if(i==5){
+                assertEquals("stage2", n.get("displayName"));
+                assertEquals(0, edges.size());
+            }
+        }
+
+        Map synNode = nodes.get(1);
+
+        List<Map> edges = (List<Map>) synNode.get("edges");
+
+        Map n = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+ synNode.get("id") +"/", Map.class);
+        List<Map> receivedEdges = (List<Map>) n.get("edges");
+        assertNotNull(n);
+        assertEquals(synNode.get("displayName"), n.get("displayName"));
+        assertEquals(synNode.get("id"), n.get("id"));
+
+        Assert.assertEquals(3, edges.size());
+        assertEquals(edges.get(0).get("id"), receivedEdges.get(0).get("id"));
+        assertEquals(edges.get(1).get("id"), receivedEdges.get(1).get("id"));
+        assertEquals(edges.get(2).get("id"), receivedEdges.get(2).get("id"));
+    }
+
     private void setupScm(String script) throws Exception {
         // create git repo
         sampleRepo.init();
