@@ -25,8 +25,7 @@ const TestCaseResultRow = (props) => {
     const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
 
     let testDetails = null;
-
-    if (t.errorStackTrace || t.errorDetails) {
+    if (t.errorStackTrace || t.errorDetails || t.stdout || t.stderr) {
         testDetails = (<div>
             <div className="test-details">
                 <div className="test-detail-text" style={{ display: 'none' }}>
@@ -38,6 +37,10 @@ const TestCaseResultRow = (props) => {
                 {t.errorDetails && <ConsoleLog className="error-message" text={t.errorDetails} key={`${t}-message`} />}
                 {t.errorStackTrace && <h4>{translation('rundetail.tests.results.error.output', { defaultValue: 'Stacktrace' })}</h4>}
                 {t.errorStackTrace && <ConsoleLog className="stack-trace" text={t.errorStackTrace} key={`${t}-stack-trace`} />}
+                {t.stdout && <h4>{translation('rundetail.tests.results.error.stdout', { defaultValue: 'Standard Output' })}</h4>}
+                {t.stdout && <ConsoleLog className="stack-trace" text={t.stdout} key={`${t}-stdout`} />}
+                {t.stderr && <h4>{translation('rundetail.tests.results.error.stderr', { defaultValue: 'Standard Error' })}</h4>}
+                {t.stderr && <ConsoleLog className="stack-trace" text={t.stderr} key={`${t}-stderr`} />}
             </div>
         </div>);
     }
