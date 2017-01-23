@@ -22,7 +22,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>branch-api</artifactId>
-            <version>2.0.0</version>
+            <version>2.0.2-beta-3</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-multibranch</artifactId>
-            <version>2.10</version>
+            <version>2.11-beta-1</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>scm-api</artifactId>
-            <version>2.0.1</version>
+            <version>2.0.2-beta-1</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>2.0.0</version>
+            <version>2.0.1-beta-2</version>
         </dependency>
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
