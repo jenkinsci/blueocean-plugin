@@ -1,3 +1,26 @@
+// from the JDL
+@brand-primary:         #4A90E2;
+
+// to the jdl
+
+.List-DefaultRenderer {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+.u-selection-style {
+    border-color: @brand-primary;
+    background-color: lighten(@brand-primary, 37.5%);
+}
+
+
+// github styles
+
+.github-org-list-step, .github-repo-list-step {
+    .List .List-Item.List-Item-selected {
+        .u-selection-style;
+    }
+}
 
 .github-credentials-step {
     .instructions {
@@ -47,9 +70,35 @@
     }
 }
 
-// to the jdl
+// TODO: JDL?
+.toggle {
+    display: flex;
+    flex-flow: column nowrap;
 
-.List-DefaultRenderer {
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
+    button {
+        text-align: left;
+        margin-bottom: 10px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+
+        .title, .text {
+            margin: 0;
+        }
+
+        .title {
+            margin-bottom: 10px;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &.u-selected {
+            .u-selection-style;
+        }
+    }
 }
