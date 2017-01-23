@@ -63,7 +63,16 @@ export class BackendConnectFailure extends Component {
 
     render() {
         if (this.state.connectionOkay) {
-            return null;
+            // Force loading of fonts etc. We need this because we need to make
+            // sure all required resources are available when there's no connection.
+            return (
+                <Fullscreen className="hidden">
+                    <div className="message-box">
+                        <h3>Okay</h3>
+                        <div className="message">Okay</div>
+                    </div>
+                </Fullscreen>
+            );
         }
 
         let title;
