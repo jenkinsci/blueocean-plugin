@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { ResultItem } from '@jenkins-cd/design-language';
+import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
 import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
@@ -89,7 +89,7 @@ export default class Node extends Component {
     }
 
     render() {
-        const { logs, nodesBaseUrl, fetchLog, followAlong, url, location, router } = this.props;
+        const { logs, nodesBaseUrl, fetchLog, followAlong, url, location, router, t, locale  } = this.props;
         const node = this.expandAnchor(this.props);
         // Early out
         if (!node || !fetchLog) {
@@ -157,10 +157,19 @@ export default class Node extends Component {
         } else if (!log && hasLogs) {
             children = <span>&nbsp;</span>;
         }
+        const time = (<TimeDuration
+            millis={durationInMillis}
+            liveUpdate={resultRun.toLowerCase() === 'running' || resultRun.toLowerCase() === 'paused'}
+            updatePeriod={1000}
+            locale={locale}
+            displayFormat={t('common.date.duration.display.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+            liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+            hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+        />);
 
         return (<div className={logConsoleClass}>
             <ResultItem {...{
-                durationInMillis,
+                extraInfo: time,
                 key: id,
                 result: runResult,
                 expanded: isFocused,
