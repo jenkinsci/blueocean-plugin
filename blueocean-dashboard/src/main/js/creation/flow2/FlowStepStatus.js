@@ -1,8 +1,4 @@
 /**
- * Created by cmeyers on 10/19/16.
- */
-
-/**
  * Valid statuses for a FlowStep.
  */
 const status = {

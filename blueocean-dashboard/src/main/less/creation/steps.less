@@ -5,8 +5,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-left: 20px;
-        margin-right: 20px;
+        margin-left: 30px;
+        margin-right: 30px;
 
         .step-stroke-top {
             width: 3px;
@@ -14,8 +14,8 @@
             background-color: #949393;
         }
 
-        .step-indicator-component {
-            height: 24px;
+        .step-indicator-component .svgResultStatus {
+            display: block;
         }
 
         .step-stroke-bottom {
@@ -26,23 +26,28 @@
     }
 
     .step-content {
+        width: 100%;
         min-height: 75px;
-        padding-bottom: 10px;
+        padding-bottom: 30px;
 
         h1 {
-            margin-top: 2px;
+            margin-top: 7px;
+            margin-bottom: 15px;
             font-size: 24px;
+            font-weight: normal;
         }
     }
 
     &.incomplete {
-        opacity: 0.5;
+        opacity: 0.4;
     }
 
-    &.incomplete, &.active {
+    &.active {
+        .svgResultStatus circle:first-child {
+            stroke: #3a70b0;
+        }
         .step-stroke-bottom {
-            background: transparent;
-            border-left: 3px dashed #949393;
+            opacity: 0.4
         }
     }
 
