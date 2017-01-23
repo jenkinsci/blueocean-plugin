@@ -16,8 +16,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Takes the return value of a web method and serve it as a JSON representation
@@ -45,7 +45,7 @@ public @interface TreeResponse {
                 return new HttpResponse() {
                     @Override
                     public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                        new Api(resp).doJson(req, rsp);
+                        Export.doJson(req, rsp, resp);;
                     }
                 };
             }else{

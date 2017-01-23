@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 
-import hudson.model.Api;
+import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.Reachable;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
@@ -35,6 +35,6 @@ public class CreateResponse implements HttpResponse {
         rsp.addHeader("Location", location);
 
         // Writes payload as a tree response
-        new Api(payload).doJson(req, rsp);
+        Export.doJson(req, rsp, payload);
     }
 }

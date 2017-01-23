@@ -24,7 +24,7 @@
 
 /**
  * Client-side local storage for Blue Ocean.
- * See https://tfennelly.github.io/jenkins-js-storage/
+ * See https://github.com/jenkinsci/js-storage
  */
 
 import * as storage from '@jenkins-cd/storage';

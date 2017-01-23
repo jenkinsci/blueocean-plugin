@@ -41,7 +41,6 @@ export default class PullRequest extends Component {
             location.pathname = newUrl;
             router.push(location);
         };
-
         return (
             <CellRow linkUrl={runDetailsUrl} id={`${name}-${id}`}>
                 <CellLink>

@@ -15,7 +15,7 @@ export default class GithubCompleteStep extends React.Component {
 
         return (
             <FlowStep {...this.props} title={title}>
-
+                complete
             </FlowStep>
         );
     }

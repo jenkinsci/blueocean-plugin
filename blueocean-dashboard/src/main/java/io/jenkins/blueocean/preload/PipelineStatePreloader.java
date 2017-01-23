@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2016, CloudBees, Inc.
+ * Copyright (c) 2017, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,21 +29,16 @@ import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.ModelObjectSerializer;
 import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import jenkins.model.Jenkins;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Preload pipeline runs onto the page if the requested page is a pipeline runs page.
+ * Preload pipeline onto the page if the requested page is a pipeline page.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
@@ -52,65 +47,40 @@ public class PipelineStatePreloader extends RESTFetchPreloader {
 
     private static final Logger LOGGER = Logger.getLogger(PipelineStatePreloader.class.getName());
 
-    private static final int DEFAULT_LIMIT = 26;
-
     @Override
     protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
-        BluePipeline pipeline = getPipeline(blueUrl);
+        // e.g. /blue/organizations/jenkins/Pipeline (or a url on that)
+        if (!blueUrl.hasPart(BlueUrlTokenizer.UrlPart.PIPELINE)) {
+            // Not interested in it
+            return null;
+        }
 
-        if (pipeline != null) {
-            // It's a pipeline page. Let's prefetch the pipeline runs and add them to the page,
-            // saving the frontend the overhead of requesting them.
+        Jenkins jenkins = Jenkins.getInstance();
+        String pipelineFullName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE);
 
-            BlueRunContainer runsContainer = pipeline.getRuns();
-            Iterator<BlueRun> runsIterator = runsContainer.iterator(0, DEFAULT_LIMIT);
-            JSONArray runs = new JSONArray();
+        try {
+            Item pipelineJobItem = jenkins.getItemByFullName(pipelineFullName);
 
-            while(runsIterator.hasNext()) {
-                BlueRun blueRun = runsIterator.next();
-                try {
-                    runs.add(JSONObject.fromObject(ModelObjectSerializer.toJson(blueRun)));
-                } catch (IOException e) {
-                    LOGGER.log(Level.FINE, String.format("Unable to preload runs for Job '%s'. Run serialization error.", pipeline.getFullName()), e);
+            if (pipelineJobItem != null) {
+                BluePipeline bluePipeline = (BluePipeline) BluePipelineFactory.resolve(pipelineJobItem);
+                if (bluePipeline != null) {
+                    try {
+                        return new FetchData(bluePipeline.getLink().getHref(), ModelObjectSerializer.toJson(bluePipeline));
+                    } catch (IOException e) {
+                        LOGGER.log(Level.FINE, String.format("Unable to preload pipeline '%s'. Serialization error.", pipelineJobItem.getUrl()), e);
+                        return null;
+                    }
+                } else {
+                    LOGGER.log(Level.FINE, String.format("Unable to preload pipeline '%s'. Failed to convert to Blue Ocean Resource.", pipelineJobItem.getUrl()));
                     return null;
                 }
             }
-
-            return new FetchData(
-                pipeline.getActivities().getLink().getHref() + "?start=0&limit=" + DEFAULT_LIMIT,
-                runs.toString());
+        } catch (Exception e) {
+            LOGGER.log(Level.FINE, String.format("Unable to find pipeline named '%s'.", pipelineFullName), e);
+            return null;
         }
 
         // Don't preload any data on the page.
         return null;
-    }
-
-    private BluePipeline getPipeline(BlueUrlTokenizer blueUrl) {
-        if (addPipelineRuns(blueUrl)) {
-            Jenkins jenkins = Jenkins.getInstance();
-            String pipelineFullName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE);
-
-            try {
-                Item pipelineJob = jenkins.getItemByFullName(pipelineFullName);
-                return (BluePipeline) BluePipelineFactory.resolve(pipelineJob);
-            } catch (Exception e) {
-                LOGGER.log(Level.FINE, String.format("Unable to find Job named '%s'.", pipelineFullName), e);
-                return null;
-            }
-        }
-
-        return null;
-    }
-
-    private boolean addPipelineRuns(@Nonnull BlueUrlTokenizer blueUrl) {
-        if (blueUrl.lastPartIs(BlueUrlTokenizer.UrlPart.PIPELINE)) {
-            // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/
-            return true;
-        } else if (blueUrl.lastPartIs(BlueUrlTokenizer.UrlPart.PIPELINE_TAB, "activity")) {
-            // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/activity/
-            return true;
-        }
-
-        return false;
     }
 }

@@ -2,6 +2,7 @@ package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import hudson.model.Cause;
 import hudson.model.TopLevelItem;
+import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl;
@@ -31,7 +32,8 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
     public GitPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
         setName(name);
         if(scmConfig == null){
-            throw new ServiceException.BadRequestExpception("scmConfig is required");
+            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline:"+name)
+                    .add(new ErrorMessage.Error("scmConfig", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "scmConfig is required")));
         }
         this.scmConfig = scmConfig;
     }
@@ -42,7 +44,8 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
         String sourceUri = scmConfig.getUri();
 
         if (sourceUri == null) {
-            throw new ServiceException.BadRequestExpception("uri is required");
+            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline:"+getName())
+                    .add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "uri is required")));
         }
 
         //XXX: set credentialId to empty string if null or we get NPE later on

@@ -23,10 +23,10 @@
  */
 package io.jenkins.blueocean.commons.stapler;
 
-import org.kohsuke.stapler.export.ExportConfig;
-import org.kohsuke.stapler.export.Flavor;
-import org.kohsuke.stapler.export.Model;
-import org.kohsuke.stapler.export.ModelBuilder;
+import io.jenkins.blueocean.commons.stapler.export.ExportConfig;
+import io.jenkins.blueocean.commons.stapler.export.Flavor;
+import io.jenkins.blueocean.commons.stapler.export.Model;
+import io.jenkins.blueocean.commons.stapler.export.ModelBuilder;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;

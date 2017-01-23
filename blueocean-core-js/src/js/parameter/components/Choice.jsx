@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Dropdown, FormElement, RadioButtonGroup } from '@jenkins-cd/design-language';
-import { propTypes } from './commonProptypes';
+import { propTypes } from '../commonProptypes';
 
 export class Choice extends Component {
 
@@ -29,7 +29,8 @@ export class Choice extends Component {
                 { React.createElement(uxChoice, { ...options }) }
                 { description && <div className="inputDescription">{description}</div> }
             </div>
-        </FormElement>); }
+        </FormElement>);
+    }
 }
 // <Dropdown {...options} />
 // extending the common propType since we have additional properties

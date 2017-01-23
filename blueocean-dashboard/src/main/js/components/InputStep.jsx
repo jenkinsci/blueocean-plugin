@@ -1,8 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import isoFetch from 'isomorphic-fetch';
-// import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
-import { supportedInputTypesMapping } from './parameter/index';
-
+import {
+    i18nTranslator,
+    ParameterService,
+    ParametersRender,
+    ParameterApi as parameterApi,
+} from '@jenkins-cd/blueocean-core-js';
 /**
  * Simple helper to stop stopPropagation
  * @param event the event we want to cancel
@@ -14,7 +16,7 @@ const stopProp = (event) => {
 /**
  * Translate function
  */
-// const translate = i18nTranslator('blueocean-dashboard');
+const translate = i18nTranslator('blueocean-dashboard');
 
 /**
  * Creating a "<form/>"less form to submit the input parameters requested by the user in pipeline.
@@ -28,21 +30,18 @@ const stopProp = (event) => {
  */
 export default class InputStep extends Component {
 
+    constructor(props) {
+        super(props);
+        this.parameterService = new ParameterService();
+        this.parameterService.init(this.props.node.input.parameters);
+    }
     // we start with an empty state
     state = {};
-
     /**
      * react life cycle mapper to invoke the creation of the form state
      */
     componentWillMount() {
         this.createFormState(this.props);
-    }
-
-    /**
-     * react life cycle mapper to invoke the creation of the form state
-     */
-    componentWillReceiveProps(nextProps) {
-        this.createFormState(nextProps);
     }
 
     /**
@@ -55,127 +54,60 @@ export default class InputStep extends Component {
         if (node) {
             const { config = {} } = this.context;
             const {
-                input: { id, parameters: inputParameters },
+                input: { id },
                 _links: { self: { href } },
             } = node;
-            const parameters = {};
-            inputParameters.map((parameter, index) => {
-                parameters[index] = parameter;
-                return parameter;
+            this.setState({
+                id,
+                href: `${config._rootURL}${href}`,
+                visible: false,
             });
-            this.setState({ parameters, id, href: `${config._rootURL}${href}` });
         }
     }
 
-    /**
-     * change a specific parameter value and update the state.
-     * @param index - which parameter we need to change
-     * @param event - the event leading to the change
-     */
-    changeParameter(index, event) {
-        // console.log('onChange', index, event);
-        const originalParameters = this.state.parameters;
-        originalParameters[index].defaultParameterValue.value = event;
-        this.setState({ parameters: originalParameters });
-    }
-
-    /**
-     * Creates an array from the parameter object which is in the current state
-     * @returns array - of values
-     */
-    stateParametersToArray() {
-        const { parameters } = this.state;
-        return Object.keys(parameters).map(key => {
-            const item = parameters[key];
-            return { name: item.name, value: item.defaultParameterValue.value };
-        });
-    }
-
-    /**
-     * Generic submit function. The calculations for the url has been done in
-     * @see createFormState Here we simply POST the data to the server.
-     * @param body - could be ok or cancel body
-     */
-    submitForm(body) {
-        const { href } = this.state;
-        const fetchOptions = {
-            credentials: 'include',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-        };
-        isoFetch(href, fetchOptions)
-            .then(
-                response => {
-                    if (response.status >= 300 || response.status < 200) {
-                        const error = new Error(response.statusText);
-                        error.response = response;
-                        throw error;
-                    }
-                    return response;
-                }
-            );
-    }
 
     /**
      * Submit the form as "cancel" out of the state data id.
      */
     cancelForm() {
-        const { id } = this.state;
-        const body = { id, abort: true };
-        this.submitForm(body);
+        const { href, id } = this.state;
+        parameterApi.cancelInputParameter(href, id);
     }
 
     /**
      * Submit the form as "ok" out of the state data parameters and id.
      */
     okForm() {
-        const { id } = this.state;
-        const body = { id, parameters: this.stateParametersToArray() };
-        this.submitForm(body);
+        const { href, id } = this.state;
+        const parameters = this.parameterService.parametersToSubmitArray();
+        parameterApi.submitInputParameter(href, id, parameters);
     }
 
     render() {
-        const { parameters } = this.state;
+        const { parameters } = this.parameterService;
         // Early out
         if (!parameters) {
             return null;
         }
         const { input: { message, ok } } = this.props.node;
-        const parametersArray = Object.keys(parameters).map(key => parameters[key]);
+        const cancelCaption = translate('rundetail.input.cancel', { defaultValue: 'Cancel' });
+        const cancelButton = (<button title={cancelCaption} onClick={() => this.cancelForm()} className="btn btn-secondary inputStepCancel" >
+            <span className="button-label">{cancelCaption}</span>
+        </button>);
 
-        // console.log('state', this.state);
-        // console.log('stateToFormSubmit', this.stateParametersToArray());
-        // the cancel button should not be shown for now
-        // const cancelCaption = translate('rundetail.input.cancel');
-        // const cancelButton =  <a title={cancelCaption} onClick={() => this.cancelForm()} className="btn inverse inputStepCancel" >
-       //             <span className="button-label">{cancelCaption}</span>
-       //         </a>;
         return (<div className="inputStep">
-            <h3>{message}</h3>
             <div className="inputBody">
-                {
-                    parametersArray.map((parameter, index) => {
-                        const { type } = parameter;
-                        const returnValue = supportedInputTypesMapping[type];
-                        if (returnValue) {
-                            return React.createElement(returnValue, {
-                                ...parameter,
-                                key: index,
-                                onChange: (event) => this.changeParameter(index, event),
-                            });
-                        }
-                        return <div>No component found for type {type}.</div>;
-                    })
-                }
-            </div>
-            <div onClick={(event => stopProp(event))} className="inputControl">
-                <span>&nbsp;</span>
-                <a title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
-                    <span className="button-label">{ok}</span>
-                </a>
+                <h3>{message}</h3>
+                <ParametersRender
+                  parameters={parameters}
+                  onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
+                />
+                <div onClick={(event => stopProp(event))} className="inputControl">
+                    { cancelButton }
+                    <button title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
+                        <span className="button-label">{ok}</span>
+                    </button>
+                </div>
             </div>
         </div>);
     }

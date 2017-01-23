@@ -17,6 +17,11 @@ function OrgRenderer(props) {
     );
 }
 
+OrgRenderer.propTypes = {
+    listItem: PropTypes.object,
+};
+
+
 @observer
 export default class GithubOrgListStep extends React.Component {
 

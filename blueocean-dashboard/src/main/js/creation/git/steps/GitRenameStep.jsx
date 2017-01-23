@@ -51,7 +51,7 @@ export default class GitRenameStep extends React.Component {
         let headingText = '';
 
         if (this.state.isNameValid === null) {
-            headingText = t('creation.git.step2.name_required');
+            headingText = t('creation.git.step2.name_required', { 0: this.props.pipelineName });
         } else if (this.state.isNameValid === false) {
             headingText = t('creation.git.step2.name_unavailable', { 0: this.state.pipelineName });
         } else if (this.state.isNameValid === true) {
@@ -81,5 +81,5 @@ export default class GitRenameStep extends React.Component {
 
 GitRenameStep.propTypes = {
     flowManager: PropTypes.string,
-    pipelineError: PropTypes.string,
+    pipelineName: PropTypes.string,
 };

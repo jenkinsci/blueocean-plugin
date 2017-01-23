@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { propTypes } from './commonProptypes';
+import { propTypes } from '../commonProptypes';
 
 export class DebugRender extends Component {
 

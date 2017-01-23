@@ -3,10 +3,15 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.44",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.44",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.44.tgz",
+      "version": "0.0.53",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.53",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.53.tgz",
       "dependencies": {
+        "@jenkins-cd/design-language": {
+          "version": "0.0.102",
+          "from": "@jenkins-cd/design-language@0.0.102",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.102.tgz"
+        },
         "history": {
           "version": "3.2.1",
           "from": "history@>=3.0.0 <4.0.0",
@@ -23,11 +28,6 @@
       "version": "0.0.105-list2",
       "from": "@jenkins-cd/design-language@0.0.105-list2",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.105-list2.tgz"
-    },
-    "@jenkins-cd/diag": {
-      "version": "0.0.2",
-      "from": "@jenkins-cd/diag@0.0.2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/diag/-/diag-0.0.2.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -51,20 +51,25 @@
       "from": "@jenkins-cd/js-modules@0.0.8",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.8.tgz"
     },
+    "@jenkins-cd/logging": {
+      "version": "0.0.6",
+      "from": "@jenkins-cd/logging@0.0.6",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.6.tgz"
+    },
     "@jenkins-cd/react-material-icons": {
       "version": "1.0.0",
       "from": "@jenkins-cd/react-material-icons@1.0.0",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.10",
-      "from": "@jenkins-cd/sse-gateway@0.0.10",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.10.tgz"
+      "version": "0.0.15",
+      "from": "@jenkins-cd/sse-gateway@0.0.15",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.15.tgz"
     },
     "@jenkins-cd/storage": {
-      "version": "0.0.3",
-      "from": "@jenkins-cd/storage@0.0.3",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.3.tgz"
+      "version": "0.0.6",
+      "from": "@jenkins-cd/storage@0.0.6",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/storage/-/storage-0.0.6.tgz"
     },
     "acorn": {
       "version": "4.0.3",
@@ -1791,11 +1796,6 @@
         }
       }
     },
-    "enabled": {
-      "version": "1.0.2",
-      "from": "enabled@1.0.2",
-      "resolved": "https://registry.npmjs.org/enabled/-/enabled-1.0.2.tgz"
-    },
     "encoding": {
       "version": "0.1.12",
       "from": "encoding@>=0.1.11 <0.2.0",
@@ -1820,11 +1820,6 @@
       "from": "entities@>=1.0.0 <1.1.0",
       "resolved": "https://registry.npmjs.org/entities/-/entities-1.0.0.tgz",
       "dev": true
-    },
-    "env-variable": {
-      "version": "0.0.3",
-      "from": "env-variable@>=0.0.0 <0.1.0",
-      "resolved": "https://registry.npmjs.org/env-variable/-/env-variable-0.0.3.tgz"
     },
     "envify": {
       "version": "3.4.1",
@@ -1989,11 +1984,6 @@
       "from": "events@>=1.1.0 <1.2.0",
       "resolved": "https://registry.npmjs.org/events/-/events-1.1.1.tgz",
       "dev": true
-    },
-    "eventsource": {
-      "version": "0.2.1",
-      "from": "eventsource@0.2.1",
-      "resolved": "https://registry.npmjs.org/eventsource/-/eventsource-0.2.1.tgz"
     },
     "evp_bytestokey": {
       "version": "1.0.0",
@@ -4030,7 +4020,8 @@
     "original": {
       "version": "1.0.0",
       "from": "original@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/original/-/original-1.0.0.tgz"
+      "resolved": "https://registry.npmjs.org/original/-/original-1.0.0.tgz",
+      "dev": true
     },
     "os-browserify": {
       "version": "0.1.2",
@@ -4273,9 +4264,9 @@
       "optional": true
     },
     "query-string": {
-      "version": "4.2.3",
+      "version": "4.3.1",
       "from": "query-string@>=4.2.2 <5.0.0",
-      "resolved": "https://registry.npmjs.org/query-string/-/query-string-4.2.3.tgz"
+      "resolved": "https://registry.npmjs.org/query-string/-/query-string-4.3.1.tgz"
     },
     "querystring": {
       "version": "0.2.0",
@@ -4292,7 +4283,8 @@
     "querystringify": {
       "version": "0.0.4",
       "from": "querystringify@>=0.0.0 <0.1.0",
-      "resolved": "https://registry.npmjs.org/querystringify/-/querystringify-0.0.4.tgz"
+      "resolved": "https://registry.npmjs.org/querystringify/-/querystringify-0.0.4.tgz",
+      "dev": true
     },
     "quote-stream": {
       "version": "1.0.2",
@@ -4528,7 +4520,8 @@
     "requires-port": {
       "version": "1.0.0",
       "from": "requires-port@>=1.0.0 <1.1.0",
-      "resolved": "https://registry.npmjs.org/requires-port/-/requires-port-1.0.0.tgz"
+      "resolved": "https://registry.npmjs.org/requires-port/-/requires-port-1.0.0.tgz",
+      "dev": true
     },
     "resolve": {
       "version": "1.1.7",
@@ -5285,7 +5278,8 @@
     "url-parse": {
       "version": "1.0.5",
       "from": "url-parse@>=1.0.0 <1.1.0",
-      "resolved": "https://registry.npmjs.org/url-parse/-/url-parse-1.0.5.tgz"
+      "resolved": "https://registry.npmjs.org/url-parse/-/url-parse-1.0.5.tgz",
+      "dev": true
     },
     "user-home": {
       "version": "2.0.0",
@@ -5538,7 +5532,8 @@
     "xmlhttprequest": {
       "version": "1.8.0",
       "from": "xmlhttprequest@1.8.0",
-      "resolved": "https://registry.npmjs.org/xmlhttprequest/-/xmlhttprequest-1.8.0.tgz"
+      "resolved": "https://registry.npmjs.org/xmlhttprequest/-/xmlhttprequest-1.8.0.tgz",
+      "dev": true
     },
     "xtend": {
       "version": "4.0.1",

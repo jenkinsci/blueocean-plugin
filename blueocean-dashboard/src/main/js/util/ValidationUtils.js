@@ -1,7 +1,6 @@
-// import validateUrl from './regex-weburl';
 
 export default {
-    // TODO: maybe we want a better way to validate this URL but there are too many permutations to obsess about it now.
+    // TODO: for now, just validate with have a string of some kind
     validateUrl(url) {
         return !!url && !!url.trim();
     },

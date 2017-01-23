@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import LocationService from '../../../src/js/services/LocationService';
+import { LocationService } from '../../../src/js/services/LocationService';
 
 /**
  * Utility for creating location object passed to history.listen

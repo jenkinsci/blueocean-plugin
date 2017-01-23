@@ -4,6 +4,7 @@ import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
+import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
@@ -81,12 +82,17 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
     /**
      * Gives {@link BluePipeline} instance from the first pipeline found.
      *
-     * @param item {@link Item} for which corresponding BlueOcean API object needs to be found
+     *
+     * @param item {@link Item} for which corresponding BlueOcean API object needs to be found. Must implement
+     *                         {@link TopLevelItem} for return to be not null
      * @param parent Parent {@link Reachable} object
      * @return {@link BluePipeline} if a map of item to BlueOcean API found, null otherwise.
      *
      */
     public static BluePipeline getPipelineInstance(Item item, final Reachable parent){
+        if(!(item instanceof TopLevelItem)) {
+            return null;
+        }
         for(BluePipelineFactory factory:BluePipelineFactory.all()){
             BluePipeline pipeline = factory.getPipeline(item, parent);
 

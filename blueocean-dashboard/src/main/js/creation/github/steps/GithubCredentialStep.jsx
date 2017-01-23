@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import debounce from 'lodash.debounce';
 import { FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';

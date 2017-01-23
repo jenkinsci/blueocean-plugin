@@ -5,39 +5,58 @@
     padding-left: 32px;
     padding-top: 26px;
     padding-bottom: 32px;
+    display: flex;
+    justify-content: center;
 
-    h3 {
-        padding-bottom: 10px;
-    }
+    .inputBody {
+        max-width: 400px;
+        min-width: 400px;
 
-    .inputControl {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 490px;
-    }
+        h3 {
+            padding-bottom: 10px;
+        }
 
-    .inputBody .form-element {
-        padding-top: 5px;
-        padding-bottom: 5px;
-
-        .Checkbox, .Choice {
+        .form-element,
+        .FormElement{
             padding-top: 5px;
-        }
-
-        * > .inputDescription {
-            padding-top: 5px;
-        }
-
-        * > .input,
-        * > .PasswordInput-control,
-        * > .TextInput-control,
-        * > .TextArea-control {
-            min-width: 490px;
-        }
-
-        .Choice .RadioButtonGroup label {
             padding-bottom: 5px;
+
+            .Checkbox, .Choice {
+                padding-top: 5px;
+            }
+
+            * > .inputDescription {
+                padding-top: 5px;
+                white-space: pre-wrap;
+            }
+
+            * > .input,
+            * > .PasswordInput-control,
+            * > .TextInput-control,
+            * > .TextArea-control {
+                min-width: 490px;
+            }
+
+            .Choice .RadioButtonGroup label {
+                padding-bottom: 5px;
+            }
+        }
+        .inputControl button{
+            margin-right: 8px;
+        }
+    }
+
+}
+.inputParameters {
+    .ModalContainer {
+        z-index: 1;
+    }
+
+    * > .Dialog {
+        min-width: 450px;
+
+        * > .FormElemet-heading {
+            margin-bottom: 7px;
         }
     }
 }

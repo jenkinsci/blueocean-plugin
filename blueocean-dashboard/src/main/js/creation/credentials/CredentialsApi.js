@@ -1,5 +1,4 @@
-import { capabilityAugmenter, Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
-import TempUtils from '../TempUtils';
+import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
 
 export class CredentialsApi {
 
@@ -9,7 +8,7 @@ export class CredentialsApi {
 
     listAllCredentials() {
         const path = UrlConfig.getJenkinsRootURL();
-        const searchUrl = TempUtils.cleanSlashes(`${path}/blue/rest/search?q=type:credential`, false);
+        const searchUrl = Utils.cleanSlashes(`${path}/blue/rest/search?q=type:credential`, false);
 
         return this._fetch(searchUrl)
             .then(data => capabilityAugmenter.augmentCapabilities(data));
@@ -17,7 +16,7 @@ export class CredentialsApi {
 
     saveUsernamePasswordCredential(username, password) {
         const path = UrlConfig.getJenkinsRootURL();
-        const requestUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
+        const requestUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
 
         const requestBody = {
             credentials: {
@@ -41,9 +40,9 @@ export class CredentialsApi {
         return this._fetch(requestUrl, { fetchOptions });
     }
 
-    saveSshKeyCredential(privateKey) {
+    saveSSHKeyCredential(privateKey) {
         const path = UrlConfig.getJenkinsRootURL();
-        const requestUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
+        const requestUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
 
         const requestBody = {
             credentials: {
@@ -70,9 +69,9 @@ export class CredentialsApi {
         return this._fetch(requestUrl, { fetchOptions });
     }
 
-    saveSystemSshCredential(id, description) {
+    saveSystemSSHCredential(id, description) {
         const path = UrlConfig.getJenkinsRootURL();
-        const requestUrl = TempUtils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
+        const requestUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
 
         const requestBody = {
             credentials: {

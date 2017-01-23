@@ -13,6 +13,8 @@ import { ToastService } from './ToastService';
 // export i18n provider
 export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
 
+export logging from './logging';
+
 export { Fetch, FetchFunctions } from './fetch';
 export UrlBuilder from './UrlBuilder';
 export UrlConfig from './urlconfig';
@@ -33,7 +35,24 @@ export Fullscreen from './Fullscreen';
 export NotFound from './NotFound';
 
 export { ReplayButton } from './components/ReplayButton';
-export { RunButton } from './components/RunButton';
+export { RunButton as RunButtonBase } from './components/RunButton';
+export {
+    ParametersRunButton as RunButton,
+    ParameterService,
+    ParameterApi,
+    Boolean,
+    Choice,
+    String,
+    Text,
+    Password,
+    ParametersRender,
+} from './parameter';
+export {
+    BlueLogo,
+    BlueOceanIcon,
+} from './components/BlueLogo';
+export { ContentPageHeader } from './components/ContentPageHeader';
+export { ResultPageHeader } from './components/ResultPageHeader';
 
 // Create and export the SSE connection that will be shared by other
 // Blue Ocean components via this package.
@@ -63,3 +82,12 @@ export const locationService = new LocationService();
 
 const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, pagerService);
 sseService.registerHandler(defaultSSEhandler.handleEvents);
+
+// Export some debugging stuff client code may need
+
+import { enableMocksForI18n, disableMocksForI18n } from './i18n/i18n';
+
+export const DEBUG = {
+    enableMocksForI18n,
+    disableMocksForI18n,
+};

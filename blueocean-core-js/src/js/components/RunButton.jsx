@@ -81,6 +81,7 @@ export class RunButton extends Component {
     }
 
     render() {
+        const buttonType = this.props.buttonType;
         const outerClass = this.props.className ? this.props.className : '';
         const outerClassNames = outerClass.split(' ');
         const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? this.props.innerButtonClasses : '';
@@ -90,8 +91,8 @@ export class RunButton extends Component {
         const isPaused = status.toLowerCase() === 'paused';
         const runningStatus = status && (isPaused || status.toLowerCase() === 'running' || status.toLowerCase() === 'queued');
 
-        let showRunButton = this.props.buttonType === 'run-only' || (this.props.buttonType === 'toggle' && !runningStatus);
-        let showStopButton = runningStatus && (this.props.buttonType === 'toggle' || this.props.buttonType === 'stop-only');
+        let showRunButton = buttonType === 'run-only' || (buttonType === 'toggle' && !runningStatus);
+        let showStopButton = runningStatus && (buttonType === 'toggle' || buttonType === 'stop-only');
 
         showRunButton = showRunButton && permit(this.props.runnable).start();
         showStopButton = showStopButton && permit(this.props.runnable).stop();
@@ -113,10 +114,11 @@ export class RunButton extends Component {
             return null;
         }
 
+        const { onClick = () => this._onRunClick() } = this.props;
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
                 { showRunButton &&
-                <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={() => this._onRunClick()}>
+                <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={onClick}>
                     <Icon size={24} icon="play_circle_outline" />
                     <span className="button-label">{runLabel}</span>
                 </a>
@@ -141,11 +143,12 @@ export class RunButton extends Component {
 }
 
 RunButton.propTypes = {
-    buttonType: PropTypes.oneOf('toggle', 'stop-only', 'run-only'),
+    buttonType: PropTypes.oneOf(['toggle', 'stop-only', 'run-only']),
     className: PropTypes.string,
     runnable: PropTypes.object,
     latestRun: PropTypes.object,
     onNavigation: PropTypes.func,
+    onClick: PropTypes.func,
     runText: PropTypes.string,
     innerButtonClasses: PropTypes.string,
 };

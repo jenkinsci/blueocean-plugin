@@ -85,7 +85,7 @@ export default class GithubFlowManager extends FlowManager {
     _createTokenSuccess(cred) {
         this._credentialId = cred.credentialId;
 
-        this.pushStep(<GithubLoadingStep/>);
+        this.pushStep(<GithubLoadingStep />);
         this.listOrganizations();
 
         return {
