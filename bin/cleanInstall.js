@@ -7,20 +7,7 @@ const prompt = require('prompt');
 
 const start = new Date().getTime();
 const directories = ['../blueocean-dashboard', '../blueocean-personalization', '../blueocean-web'];
-
-prompt.start();
-prompt.get({
-    properties: {
-        package: {
-            message: `PACKAGE to install?`,
-            required: true,
-        },
-        version: {
-            message: `VERSION to install?`,
-            required: true,
-        }
-    }
-}, function (err, result) {
+function invokeInstall(err, result) {
     // Log the results.
     console.log('Command-line input received:');
     console.log('package: ' + result.package);
@@ -38,8 +25,33 @@ prompt.get({
         console.log(`Install look good! took ${ellapsed}ms`);
         process.exit(0);
     });
-});
-
+}
+if (process.argv[2]) {
+  const versionArray = process.argv[2].split('@');
+  const result = {};
+  if (versionArray.length > 2) {
+    result.package = "@" + versionArray[1];
+    result.version = versionArray[2];
+  } else {
+    result.package = versionArray[0];
+    result.version = versionArray[1];
+  }
+  invokeInstall(null, result);
+} else {
+  prompt.start();
+  prompt.get({
+      properties: {
+          package: {
+              message: `PACKAGE to install?`,
+              required: true,
+          },
+          version: {
+              message: `VERSION to install?`,
+              required: true,
+          }
+      }
+  }, invokeInstall);
+}
 function buildPath(path) {
     try {
         return fs.realpathSync(path);
@@ -76,7 +88,7 @@ function deleteFolderRecursive(path) {
 }
 function install(packages, callback) {
     console.log('installing ', packages);
-    const child = exec('npm install ' + packages + ' --save -E',
+    const child = exec('npm prune; npm install; npm install ' + packages + ' --save -E; mvn clean install -DskipTests',
         function (error, stdout, stderr) {
             if (error !== null) {
                 callback(error);
