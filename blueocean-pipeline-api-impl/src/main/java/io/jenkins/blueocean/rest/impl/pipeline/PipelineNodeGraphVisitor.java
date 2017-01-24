@@ -74,6 +74,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     private final InputAction inputAction;
 
+    private StepStartNode agentNode = null;
+
     private final static String PARALLEL_SYNTHETIC_STAGE_NAME = "Parallel";
 
     public PipelineNodeGraphVisitor(WorkflowRun run) {
@@ -99,8 +101,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
     }
-
-    private StepStartNode agentNode = null;
 
     @Override
     public void chunkEnd(@Nonnull FlowNode endNode, @CheckForNull FlowNode afterBlock, @Nonnull ForkScanner scanner) {
