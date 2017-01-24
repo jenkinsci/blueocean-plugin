@@ -20,7 +20,7 @@
   "license": "MIT",
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.50",
+    "@jenkins-cd/js-builder": "0.0.51",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/js-test": "1.2.3",
     "babel-cli": "6.10.1",
