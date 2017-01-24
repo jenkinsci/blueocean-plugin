@@ -1,19 +1,30 @@
-.errorscreen {
-    &.connection-lost {
-        background-color: @errorscreen-bg-color;
-    }
-    &.connection-ok {
-        background-color: @blueocean-blue;
+.blockscreen {
+    &.connection-lost, &.connection-ok {
+        .toast {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            padding: 16px;
+            border-left: 5px solid;
+
+            .activity {
+                padding-left: 5px;
+                opacity: 0.5;
+            }
+        }
     }
 
-    &.connection-lost, &.connection-ok {
-        /*
-         * Lets ensure that the lost and ok messages are the same
-         * width Vs jumpy message box resizes.
-         */
-        .message-box {
-            min-width: 30em;
-            max-width: 30em;
+    //
+    // TODO: Get colors from the JDL once JENKINS-36858 is done. @brand-danger-lite and @brand-success-lite
+    //
+    &.connection-lost {
+        .toast {
+            border-left-color: #D54C53;
+        }
+    }
+    &.connection-ok {
+        .toast {
+            border-left-color: #8CC04F;
         }
     }
 }

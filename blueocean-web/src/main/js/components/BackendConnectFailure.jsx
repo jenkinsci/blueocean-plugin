@@ -65,47 +65,44 @@ export class BackendConnectFailure extends Component {
         if (this.state.connectionOkay) {
             // Force loading of fonts etc. We need this because we need to make
             // sure all required resources are available when there's no connection.
+            const style = { display: 'none' }; // react balks if inline style not defined this way ... yawn !!!
             return (
                 <Fullscreen className="hidden">
-                    <div className="message-box">
-                        <h3>Okay</h3>
-                        <div className="message">Okay</div>
+                    <div className="toast" style={style}>
+                        <div className="text">ok</div>
                     </div>
                 </Fullscreen>
             );
         }
 
-        let title;
         let message;
+        let activity;
         let cssClass;
         if (!this.state.doPageReload) {
             cssClass = 'connection-lost';
 
-            title = translate('Connection.lost.heading', {
-                defaultValue: 'Connection lost',
-            });
             message = translate('Connection.lost.message', {
-                defaultValue: 'Waiting to reconnect ...'
+                defaultValue: 'Connection lost'
+            });
+            activity = translate('Connection.lost.activity', {
+                defaultValue: 'waiting'
             });
         } else {
             cssClass = 'connection-ok';
 
-            title = translate('Connection.ok.heading', {
-                defaultValue: 'Connection ok again',
-            });
             message = translate('Connection.ok.message', {
-                defaultValue: 'Reloading page ...'
+                defaultValue: 'Connection ok'
             });
-            setTimeout(() => window.location.reload(true), 4000);
+            activity = translate('Connection.ok.activity', {
+                defaultValue: 'reloading'
+            });
+            setTimeout(() => window.location.reload(true), 2500);
         }
 
         return (
-            <Fullscreen className={`errorscreen ${cssClass}`}>
-                <div className="message-box">
-                    <h3>{title}</h3>
-                    <div className="message">
-                        {message}
-                    </div>
+            <Fullscreen className={`blockscreen ${cssClass}`}>
+                <div className="toast">
+                    <div className="text">{message}:<span className="activity">{activity}</span></div>
                 </div>
             </Fullscreen>
         );
