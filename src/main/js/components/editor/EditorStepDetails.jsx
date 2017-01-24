@@ -2,7 +2,7 @@
 
 import React, {Component, PropTypes} from 'react';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
-import type {StepInfo} from './common';
+import type { StepInfo } from '../../services/PipelineStore';
 import GenericStepEditor from './steps/GenericStepEditor';
 import UnknownStepEditor from './steps/UnknownStepEditor';
 
@@ -19,11 +19,9 @@ for (let e of allStepEditors) {
 type Props = {
     step?: ?StepInfo,
     onDataChange?: (newValue:any) => void,
-    onDeleteStepClick?: (step:StepInfo) => any
 }
 
 export class EditorStepDetails extends Component {
-
     props:Props;
 
     state:{
@@ -35,6 +33,10 @@ export class EditorStepDetails extends Component {
 
     constructor(props:Props) {
         super(props);
+    }
+
+    getTitle() {
+        return this.props.step.label;
     }
 
     componentWillMount() {
@@ -56,16 +58,6 @@ export class EditorStepDetails extends Component {
         }
     }
 
-    deleteStepClicked(e: HTMLEvent) {
-        e.target.blur(); // Don't leave the button focused
-
-        const {onDeleteStepClick, step} = this.props;
-
-        if (step && onDeleteStepClick) {
-            onDeleteStepClick(step);
-        }
-    }
-    
     getStepEditor(step) {
         const editor = stepEditorsByName[step.name];
         if (editor) {
@@ -98,11 +90,7 @@ export class EditorStepDetails extends Component {
 
         return (
             <div className="editor-step-detail">
-                <h4 className="editor-step-detail-label">{step.label}</h4>
                 <StepEditor key={step.id} onChange={step => this.commitValue(step)} step={step} />
-                <div className="editor-button-bar">
-                    <button className="btn-secondary editor-delete-btn" onClick={(e) => this.deleteStepClicked(e)}>Delete step</button>
-                </div>
             </div>
         );
     }

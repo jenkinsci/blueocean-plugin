@@ -1,6 +1,7 @@
 // @flow
 
 import idgen from './IdGenerator';
+import type { PipelineKeyValuePair } from './PipelineSyntaxConverter';
 
 /**
  * A stage in a pipeline
@@ -10,6 +11,12 @@ export type StageInfo = {
     id: number,
     children: Array<StageInfo|UnknownSection>,
     steps: StepInfo[],
+    environment: EnvironmentEntryInfo[],
+    agent: StepInfo,
+};
+
+export type EnvironmentEntryInfo = PipelineKeyValuePair | {
+    id: number,
 };
 
 /**
@@ -24,9 +31,7 @@ export type StepInfo = {
     data: any,
 };
 
-export type PipelineInfo = StageInfo & {
-    agent: StepInfo,
-};
+export type PipelineInfo = StageInfo;
 
 export class UnknownSection {
     prop: string;

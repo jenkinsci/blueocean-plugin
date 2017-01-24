@@ -1,17 +1,17 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import { getAddIconGroup, getGrabIconGroup, getDeleteIconGroup } from './common';
-
-import type {StepInfo} from './common';
+import { getAddIconGroup, getGrabIconGroup } from './common';
+import pipelineMetadataService from '../../services/PipelineMetadataService';
+import type { StepInfo } from '../../services/PipelineStore';
+import { Icon } from "@jenkins-cd/react-material-icons";
 
 type Props = {
     steps: Array<StepInfo>,
     selectedStep?: ?StepInfo,
     onAddStepClick?: () => any,
     onStepSelected?: (step:StepInfo) => any,
-    onDeleteStepClick?: (step:StepInfo) => any,
-    onAddChildStepClick?: (step:StepInfo) => any
+    onAddChildStepClick?: (step:StepInfo) => any,
 }
 
 type State = {
@@ -37,13 +37,19 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
         this.state = {selectedStep: props.selectedStep};
     }
 
+    componentWillMount() {
+        pipelineMetadataService.getStepListing(stepMetadata => {
+            this.setState({stepMetadata: stepMetadata});
+        });
+    }
+
     componentWillReceiveProps(nextProps:Props) {
         if (nextProps.selectedStep !== this.props.selectedStep) {
             this.setState({selectedStep: nextProps.selectedStep});
         }
     }
 
-    renderStep(step:StepInfo, selectedStep:?StepInfo) {
+    renderStep(step:StepInfo, selectedStep:?StepInfo, isChild: boolean = false) {
 
         let classNames = ["editor-step"];
 
@@ -56,56 +62,51 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
         if (step.isContainer && step.children && step.children.length) {
             children = (
                 <div className="editor-nested-steps">
-                    { step.children.map(step => this.renderStep(step, selectedStep)) }
+                    { step.children.map(step => this.renderStep(step, selectedStep, true)) }
                 </div>
             );
         }
 
         const addStepButton = (step.isContainer) ? (
             <div className="editor-button-bar">
-                <button className="btn-secondary"
-                        onClick={(e) => this.addChildStepClicked(step, e)}>Add {step.label} step
+                <button className="btn-primary add"
+                        onClick={(e) => this.addChildStepClicked(step, e)}>
+                    <Icon icon="add" size={20} />
+                    Add Step
                 </button>
             </div>
         ) : null;
 
+        if (!this.state.stepMetadata) {
+            return;
+        }
+        const thisMeta = this.state.stepMetadata.filter(md => md.functionName === step.name)[0];
+
         return (
             <div className={classNames.join(' ')} key={'s_' + step.id}>
-                <div className="editor-step-grab">
-                    <svg width="24" height="24">
-                        <g transform="translate(12,12)">{ getGrabIconGroup() }</g>
-                    </svg>
-                </div>
                 <div className="editor-step-main" onClick={(e) => this.stepClicked(step, e)}>
                     <div className="editor-step-content">
+                        {isChild && <div className="editor-step-child-icon">
+                            <svg fill="#000000" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 0h24v24H0V0z" fill="none"/>
+                                <path d="M19 15l-6 6-1.42-1.42L15.17 16H4V4h2v10h9.17l-3.59-3.58L13 9l6 6z"/>
+                            </svg>
+                        </div>}
                         <div className="editor-step-title">
                             <span className="editor-step-label">{step.label}</span>
-                            {/*
-                            <svg width="24"
-                                 height="24"
-                                 className="delete-step-button"
-                                 onClick={(e) => this.deleteStepClicked(step, e)}>
-                                <g transform="translate(12,12)">{ getDeleteIconGroup(12) }</g>
-                            </svg>
-                            */}
+                            <span className="editor-step-summary">
+                            {thisMeta.parameters.filter(p => p.isRequired).map(p =>
+                                step.data[p.name]
+                            )}
+                            </span>
                         </div>
-                        {children}
-                        {addStepButton}
                     </div>
 
+                    {children}
+                    {addStepButton}
                 </div>
             </div>
         );
-    }
-
-    deleteStepClicked(step:StepInfo, e:HTMLEvent) {
-        e.stopPropagation(); // Don't bubble up to parent
-
-        const {onDeleteStepClick} = this.props;
-
-        if (onDeleteStepClick) {
-            onDeleteStepClick(step);
-        }
     }
 
     stepClicked(step:StepInfo, e:HTMLEvent) {
@@ -139,7 +140,6 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
     }
 
     render() {
-
         const {steps} = this.props;
         const {selectedStep} = this.state;
 
@@ -147,7 +147,10 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
             <div className="editor-steps">
                 { steps.map(step => this.renderStep(step, selectedStep)) }
                 <div className="editor-button-bar">
-                    <button className="btn-secondary" onClick={(e) => this.addStepClicked(e)}>Add step</button>
+                    <button className="btn-primary add" onClick={(e) => this.addStepClicked(e)}>
+                        <Icon icon="add" size={20} />
+                        Add step
+                    </button>
                 </div>
             </div>
         );

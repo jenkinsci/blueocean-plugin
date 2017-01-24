@@ -26,9 +26,9 @@ type State = {
     searchFilter: Function,
 };
 
-type DefaultProps = typeof AddStepSelectionDialog.defaultProps;
+type DefaultProps = typeof AddStepSelectionSheet.defaultProps;
 
-export class AddStepSelectionDialog extends Component<DefaultProps, Props, State> {
+export class AddStepSelectionSheet extends Component<DefaultProps, Props, State> {
     props:Props;
     state:State;
 
@@ -51,8 +51,8 @@ export class AddStepSelectionDialog extends Component<DefaultProps, Props, State
         this.props.onClose();
     }
 
-    selectAddStep() {
-        this.props.onStepSelected(this.state.selectedStep);
+    addStep(step) {
+        this.props.onStepSelected(step);
         this.closeDialog();
     }
 
@@ -66,36 +66,27 @@ export class AddStepSelectionDialog extends Component<DefaultProps, Props, State
             this.props.onStepSelected(step);
             this.closeDialog();
         }
-        else if (e.key == ' ') {
-            this.setState({selectedStep: step});
-        }
     }
 
     render() {
         const { steps, selectedStep } = this.state;
         
-        const buttons = [
-            <button className="btn-secondary" onClick={() => this.closeDialog()}>Cancel</button>,
-            <button disabled={!this.state.selectedStep} onClick={() => this.selectAddStep()}>Use step</button>,
-        ];
-        
         return (
-            <Dialog onDismiss={() => this.closeDialog()} title="Add Step" buttons={buttons}>
-                <div className="editor-step-selection-dialog">
-                    <div className="editor-step-selection-dialog-search">
-                        <Icon icon="search" style={{ fill: '#ddd' }} size={32} />
-                        <input ref="searchInput" type="text" className="editor-step-selection-dialog-search-input" onChange={e => this.filterSteps(e.target.value)}
-                            placeholder="Find steps by name" />
-                    </div>
-                    <div className="editor-step-selection-dialog-steps">
-                    {steps && steps.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).map(step =>
-                        <div tabIndex="0" onKeyPress={e => this.selectItemByKeyPress(e, step)} onClick={() => this.setState({selectedStep: step})} onDoubleClick={() => this.selectAddStep()} className={'step-item' + (this.state.selectedStep === step ? ' selected' : '')}>
-                            {step.displayName}
-                        </div>
-                    )}
-                    </div>
+            <div className="editor-step-selection-dialog">
+                <div className="editor-step-search">
+                    <Icon icon="search" style={{ fill: '#ddd' }} size={22} />
+                    <input ref="searchInput" type="text" className="editor-step-search-input" onChange={e => this.filterSteps(e.target.value)}
+                        placeholder="Find steps by name" />
                 </div>
-            </Dialog>
+                <div className="editor-step-selector">
+                {steps && steps.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).map(step =>
+                    <div tabIndex="0" onKeyPress={e => this.selectItemByKeyPress(e, step)}
+                        onClick={() => this.addStep(step)}>
+                        {step.displayName}
+                    </div>
+                )}
+                </div>
+            </div>
         );
     }
 }

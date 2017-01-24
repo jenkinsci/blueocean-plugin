@@ -7,9 +7,12 @@ import { EditorStepDetails } from './EditorStepDetails';
 import { AgentConfiguration } from './AgentConfiguration';
 import { EnvironmentConfiguration } from './EnvironmentConfiguration';
 import { EmptyStateView } from '@jenkins-cd/design-language';
-import { AddStepSelectionDialog } from './AddStepSelectionDialog';
+import { AddStepSelectionSheet } from './AddStepSelectionSheet';
 import pipelineStore from '../../services/PipelineStore';
 import type { StageInfo, StepInfo } from '../../services/PipelineStore';
+import { Sheets } from '../Sheets';
+import { MoreMenu } from '../MoreMenu';
+import { Icon } from "@jenkins-cd/react-material-icons";
 
 type Props = {
 };
@@ -57,18 +60,17 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         //this.handleProps(nextProps, this.props, this.state);
     }
 
-    createSequentialStage(name:string) {
-        const newStage = pipelineStore.createSequentialStage(name);
+    createStage(parentStage:StageInfo) {
+        const newStage = parentStage
+            ? pipelineStore.createParallelStage('', parentStage)
+            : pipelineStore.createSequentialStage('');
         this.setState({
             selectedStage: newStage,
             selectedStep: null
-        });
-    }
-    createParallelStage(name:string, parentStage:StageInfo) {
-        let newStage = pipelineStore.createParallelStage(name, parentStage);
-        this.setState({
-            selectedStage: newStage,
-            selectedStep: null
+        }, e => {
+            setTimeout(() => {
+                document.querySelector('.stage-name-edit').focus();
+            }, 200);
         });
     }
     
@@ -105,16 +107,10 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
     }
 
     graphSelectedStageChanged(newSelectedStage:?StageInfo) {
-        let newSelectedStep = null;
-
-        if (newSelectedStage) {
-            const stepsForStage = newSelectedStage.steps || [];
-            newSelectedStep = stepsForStage[0] || null;
-        }
-
         this.setState({
             selectedStage: newSelectedStage,
-            selectedStep: newSelectedStep
+            selectedStep: null,
+            showSelectStep: false,
         });
     }
 
@@ -123,7 +119,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
     }
 
     selectedStepChanged(selectedStep:StepInfo) {
-        this.setState({selectedStep});
+        this.setState({selectedStep, showSelectStep: false});
     }
 
     stepDataChanged(newStep:any) {
@@ -150,19 +146,16 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
     addStep(step: any) {
         const newStep = pipelineStore.addStep(this.state.selectedStage, this.state.parentStep, step);
-        this.setState({showSelectStep: false, selectedStep: newStep});
+        this.setState({showSelectStep: false, selectedStep: newStep}, e => {
+            setTimeout(() => {
+                document.querySelector('.editor-step-detail input,.editor-step-detail textarea').focus();
+            }, 200);
+        });
     }
 
     deleteStep(step: any) {
-        let stage = pipelineStore.findStageByStep(step); // this sould be current
-        let selectedStep = pipelineStore.findParentStep(step);
         pipelineStore.deleteStep(step);
-        if (!selectedStep) {
-            if (stage) {
-                selectedStep = stage.steps[0];
-            }
-        }
-        this.setState({selectedStep: selectedStep});
+        this.setState({selectedStep: null});
     }
 
     deleteStageClicked(e:HTMLEvent) {
@@ -182,111 +175,78 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         const title = selectedStage ? selectedStage.name : 'Select or create a pipeline stage';
         const disableIfNoSelection = selectedStage ? {} : {disabled: 'disabled'}; // TODO: Delete if we don't use this any more
 
-        let detailsOrPlaceholder;
-
-        if (steps && steps.length) {
-            detailsOrPlaceholder = (
-                <div className="editor-main-stage-details">
-                    <div className="editor-main-step-list">
-                        {selectedStage ? <EditorStepList steps={steps}
-                                                         selectedStep={selectedStep}
-                                                         onAddStepClick={() => this.openSelectStepDialog()}
-                                                         onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
-                                                         onStepSelected={(step) => this.selectedStepChanged(step)}
-                                                         onDeleteStepClick={step => this.deleteStep(step)}/>
-                            : <p>Select or create a build stage</p>}
-                    </div>
-                    {selectedStep &&
-                    <div className="editor-main-step-details">
-                        {selectedStage ? <EditorStepDetails step={selectedStep} key={steps.indexOf(selectedStep)}
-                                                            onDataChange={newValue => this.stepDataChanged(newValue)}
-                                                            onDeleteStepClick={step => this.deleteStep(step)}/>
-                            : <p>Select or create a build stage</p>}
-                    </div>
-                    }
-                </div>
-            );
-        } else if (selectedStage) {
-            detailsOrPlaceholder = (
-                <div className="editor-main-stage-details editor-details-placeholder">
-                    <EmptyStateView>
-                        <h1>Add a step to <em>{title}</em></h1>
-
-                        <p>
-                            Jenkins uses steps within stages to help automate a variety of tasks such as running
-                            scripts, checkout out source code and much more.
-                        </p>
-
-                        <button onClick={() => this.openSelectStepDialog()}>Add Step</button>
-                    </EmptyStateView>
-                </div>
-            );
-        } else {
-            detailsOrPlaceholder = (
-                <div className="editor-main-stage-details editor-details-placeholder">
-                    <EmptyStateView>
-                        <h1>{title}</h1>
-
-                        <p>
-                            Select a stage on the graph above to reveal steps to be executed in the Pipeline.
-                        </p>
-                    </EmptyStateView>
-                </div>
-            );
-        }
-
-        let titleBar = selectedStage ? (
-            <div className="editor-main-selection-title">
-                <h4>{title}</h4>
-                <div className="editor-button-bar">
-                    <button className="btn-secondary editor-delete-btn"
-                        {...disableIfNoSelection}
-                            onClick={(e) => this.deleteStageClicked(e)}>
-                        Delete stage
-                    </button>
-                </div>
-            </div>
-        ) : null;
-
         // FIXME - agents are defined at the top stage level, this will change
         let configurationStage = selectedStage && (pipelineStore.findParentStage(selectedStage) || selectedStage);
         if (pipelineStore.pipeline === configurationStage) {
             configurationStage = selectedStage;
         }
-        if (!selectedStage) {
-            configurationStage = pipelineStore.pipeline;
-        }
 
-        const configPanel = pipelineStore.pipeline && (<div className="editor-config-panel" key={selectedStage?selectedStage.id:0}>
-            <div>
-                <h4 className="stage-name-edit">
-                    {selectedStage && 
-                    <input defaultValue={title} onChange={e => (selectedStage.name = e.target.value) && this.pipelineUpdated()} />
-                    }
-                    {!selectedStage && 'Pipeline Settings'}
-                </h4>
-                <AgentConfiguration key={'agent'+configurationStage.id} node={configurationStage} onChange={agent => (selectedStage && agent.type == 'none' ? delete configurationStage.agent : configurationStage.agent = agent) && this.pipelineUpdated()} />
-                <EnvironmentConfiguration key={'env'+configurationStage.id} node={configurationStage} onChange={e => this.pipelineUpdated()} />
-            </div>
+        const globalConfigPanel = pipelineStore.pipeline && (<div className="editor-config-panel global"
+            key={'globalConfig'+pipelineStore.pipeline.id}
+            title={<h4>
+                    Pipeline Settings
+                </h4>}>
+            <AgentConfiguration key={'agent'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={agent => (selectedStage && agent.type == 'none' ? delete pipelineStore.pipeline.agent : pipelineStore.pipeline.agent = agent) && this.pipelineUpdated()} />
+            <EnvironmentConfiguration key={'env'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={e => this.pipelineUpdated()} />
         </div>);
+
+        const stageConfigPanel = selectedStage && (<div className="editor-config-panel stage" key={'stageConfig'+selectedStage.id}
+            onClose={e => this.graphSelectedStageChanged(null)}
+            title={
+                <div>
+                    <input className="stage-name-edit" placeholder="Name your stage" defaultValue={title} 
+                        onChange={e => (selectedStage.name = e.target.value) && this.pipelineUpdated()} />
+                    <MoreMenu>
+                        <a onClick={e => this.deleteStageClicked(e)}>Delete</a>
+                    </MoreMenu>
+                </div>
+            }>
+            <EditorStepList steps={steps}
+                        selectedStep={selectedStep}
+                        onAddStepClick={() => this.openSelectStepDialog()}
+                        onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
+                        onStepSelected={(step) => this.selectedStepChanged(step)} />
+            {/*
+            <AgentConfiguration key={'agent'+configurationStage.id} node={configurationStage} onChange={agent => (selectedStage && agent.type == 'none' ? delete configurationStage.agent : configurationStage.agent = agent) && this.pipelineUpdated()} />
+            <EnvironmentConfiguration key={'env'+configurationStage.id} node={configurationStage} onChange={e => this.pipelineUpdated()} />
+            */}
+        </div>);
+
+        const stepConfigPanel = selectedStep && (<EditorStepDetails className="editor-config-panel step"
+                step={selectedStep} key={steps.indexOf(selectedStep)}
+                onDataChange={newValue => this.stepDataChanged(newValue)}
+                onClose={e => this.selectedStepChanged(null)}
+                title={<h4>
+                    {selectedStage.name} / {selectedStep.label}
+                    <MoreMenu>
+                        <a onClick={e => this.deleteStep(selectedStep)}>Delete</a>
+                    </MoreMenu>
+                </h4>} />);
+
+        const stepAddPanel = this.state.showSelectStep && (<AddStepSelectionSheet
+                onClose={() => this.setState({showSelectStep: false})}
+                onStepSelected={step => this.addStep(step)}
+                title={<h4>Choose step type</h4>} />);
+
+        const sheets = [];
+        if (globalConfigPanel) sheets.push(globalConfigPanel);
+        if (stageConfigPanel) sheets.push(stageConfigPanel);
+        if (stepConfigPanel) sheets.push(stepConfigPanel);
+        if (stepAddPanel) sheets.push(stepAddPanel);
 
         return (
             <div className="editor-main" key={pipelineStore.pipeline && pipelineStore.pipeline.id}>
-                <div className="editor-main-graph">
+                <div className="editor-main-graph" onClick={e => this.setState({selectedStage: null, selectedStep: null})}>
                     {pipelineStore.pipeline &&
                     <EditorPipelineGraph stages={pipelineStore.pipeline.children}
                                          selectedStage={selectedStage}
                                          onStageSelected={(stage) => this.graphSelectedStageChanged(stage)}
-                                         onCreateSequentialStage={(name) => this.createSequentialStage(name)}
-                                         onCreateParallelStage={(name, parentStage) => this.createParallelStage(name, parentStage)}/>
+                                         onCreateStage={(parentStage) => this.createStage(parentStage)}/>
                     }
                 </div>
-                {configPanel}
-                {titleBar}
-                {detailsOrPlaceholder}
-                {this.state.showSelectStep && <AddStepSelectionDialog
-                    onClose={() => this.setState({showSelectStep: false})}
-                    onStepSelected={step => this.addStep(step)} />}
+                <Sheets>
+                {sheets}
+                </Sheets>
             </div>
         );
     }

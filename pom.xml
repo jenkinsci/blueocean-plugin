@@ -19,8 +19,8 @@
         <java.level>7</java.level>
         <jackson.version>2.2.3</jackson.version>
         <jenkins.version>2.7.1</jenkins.version>
-        <node.version>5.8.0</node.version>
-        <npm.version>3.7.3</npm.version>
+        <node.version>6.2.1</node.version>
+        <npm.version>3.9.3</npm.version>
         <blueocean.version>1.0.0-b16</blueocean.version>
         <declarative.version>0.8.2</declarative.version>
     </properties>

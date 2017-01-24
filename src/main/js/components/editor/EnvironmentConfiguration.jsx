@@ -3,6 +3,7 @@
 import React, { Component, PropTypes } from 'react';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
 import type { PipelineInfo, StageInfo } from '../../services/PipelineStore';
+import idgen from '../../services/IdGenerator';
 import { Dropdown } from '@jenkins-cd/design-language';
 import { Split } from './Split';
 import { TextInput } from '@jenkins-cd/design-language';
@@ -56,6 +57,7 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
         }
         this.props.node.environment.push({
             key: '',
+            id: idgen.next(),
             value: {
                 isLiteral: true,
                 value: '',
@@ -64,8 +66,8 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
         this.props.onChange();
     }
 
-    removeEnviromentEntry(entry) {
-        this.props.node.environment = this.props.node.environment.filter(e => e != entry);
+    removeEnviromentEntry(entry, idx) {
+        this.props.node.environment.splice(idx,1);
         this.props.onChange();
     }
 
@@ -85,9 +87,9 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
             </Split>
             {node.environment && node.environment.map((env, idx) => <div className="environment-entry">
                 <Split>
-                    <TextInput key={idx} defaultValue={env.key} onChange={val => { env.key = val; this.props.onChange(); }} />
-                    <TextInput key={'val'+idx} defaultValue={env.value.value} onChange={val => { env.value.value = val; this.props.onChange(); }} />
-                    <button onClick={e => { this.removeEnviromentEntry(env); this.props.onChange(); }} title="Remove"  className="environment-add-delete-icon delete">{deleteIcon()}</button>
+                    <TextInput defaultValue={env.key} onChange={val => { env.key = val; this.props.onChange(); }} />
+                    <TextInput defaultValue={env.value.value} onChange={val => { env.value.value = val; this.props.onChange(); }} />
+                    <button onClick={e => { this.removeEnviromentEntry(env, idx); this.props.onChange(); }} title="Remove"  className="environment-add-delete-icon delete">{deleteIcon()}</button>
                 </Split>
             </div>)}
         </div>);

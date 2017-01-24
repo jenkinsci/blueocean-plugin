@@ -20,11 +20,6 @@ export type PipelineAgent = {
 export type PipelineJson = {
     stages: PipelineStage[],
     agent: PipelineAgent,
-    environment: PipelineEnvironment,
-};
-
-export type PipelineEnvironment = {
-    environment: Map<String,String>,
 };
 
 export type PipelineValueDescriptor = {
@@ -48,7 +43,7 @@ export type PipelineStage = {
     branches?: PipelineStage[],
     agent?: PipelineValueDescriptor[],
     steps?: PipelineStep[],
-    environment?: PipelineEnvironment,
+    environment?: PipelineNamedValueDescriptor[],
 };
 
 function singleValue(v: any) {
@@ -58,6 +53,10 @@ function singleValue(v: any) {
     return {
         value: v,
     };
+}
+
+function clone<T>(v: T): T {
+    return JSON.parse(JSON.stringify(v));
 }
 
 function captureUnknownSections(pipeline: any, internal: any, ...knownSections: string[]) {
@@ -76,6 +75,21 @@ function restoreUnknownSections(internal: any, out: any) {
             out[val.prop] = val.json;
         }
     }
+}
+
+function stripIdsFromList(list: any): any {
+    return list.map(o => {
+        const v = clone(o);
+        delete v.id;
+        return v;
+    });
+}
+
+function convertEnvironmentToInternal(environment: any[]): any[] {
+    return !environment ? [] : environment.map(o => {
+        o.id = idgen.next();
+        return o;
+    });
 }
 
 export function convertJsonToInternalModel(json: PipelineJsonContainer): PipelineInfo {
@@ -97,7 +111,7 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
         out.agent = pipeline.agent;
     }
 
-    out.environment = pipeline.environment;
+    out.environment = convertEnvironmentToInternal(pipeline.environment);
 
     if (!pipeline.stages) {
         throw new Error('Pipeline must define stages');
@@ -117,7 +131,7 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
         };
 
         // FIXME: this is per top-level stage, only...
-        topStageInfo.environment = topStage.environment;
+        topStageInfo.environment = convertEnvironmentToInternal(topStage.environment);
 
         out.children.push(topStageInfo);
 
@@ -257,8 +271,8 @@ export function convertStageToJson(stage: StageInfo): PipelineStage {
         out.agent = stage.agent;
     }
 
-    if (stage.environment && stage.environment.length && stage.environment[0].key != 'none') {
-        out.environment = stage.environment;
+    if (stage.environment && stage.environment.length) {
+        out.environment = stripIdsFromList(stage.environment);
     }
 
     if (stage.children && stage.children.length > 0) {
@@ -301,7 +315,7 @@ export function convertInternalModelToJson(pipeline: PipelineInfo): PipelineJson
     const outPipeline = out.pipeline;
 
     if (pipeline.environment && pipeline.environment.length) {
-        outPipeline.environment = pipeline.environment;
+        outPipeline.environment = stripIdsFromList(pipeline.environment);
     }
 
     restoreUnknownSections(pipeline, outPipeline);

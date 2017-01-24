@@ -72,8 +72,7 @@ type Props = {
     stages: Array<StageInfo>,
     layout?: Object,
     onStageSelected?: (stage:?StageInfo) => void,
-    onCreateSequentialStage?: (name:string) => void,
-    onCreateParallelStage?: (name:string, parentStage:StageInfo) => void,
+    onCreateStage?: (parentStage:StageInfo) => void,
     selectedStage?: ?StageInfo
 };
 
@@ -521,7 +520,7 @@ needsLayout = true;
                     className="pipeline-node-hittarget"
                     fillOpacity="0"
                     stroke="none"
-                    onClick={() => this.nodeClicked(node)}/>
+                    onClick={e => this.nodeClicked(node, e)}/>
         );
 
         // All the nodes are in shared code, so they're rendered at 0,0 so we transform within a <g>
@@ -568,7 +567,8 @@ needsLayout = true;
         return this.selectedNode && this.selectedNode.parentStage === stage;
     }
 
-    nodeClicked(node:NodeInfo) {
+    nodeClicked(node:NodeInfo, event) {
+        event.stopPropagation();
 
         const {onStageSelected} = this.props;
 
@@ -601,27 +601,7 @@ needsLayout = true;
     }
 
     addStage(parentStage:?StageInfo) {
-
-        const defaultName = "New Stage";
-        const {onCreateSequentialStage, onCreateParallelStage} = this.props;
-
-        // TODO: introduce an async process that pops up a dialog asking for a name
-        let name = prompt("Please enter a name for this new stage", defaultName);
-
-        if (name == null) {
-            return; // Cancelled
-        }
-
-        if (name.length == 0) {
-            name = defaultName;
-        }
-
-        // Notify container
-        if (parentStage && onCreateParallelStage) {
-            onCreateParallelStage(name, parentStage);
-        } else if (!parentStage && onCreateSequentialStage) {
-            onCreateSequentialStage(name);
-        }
+        this.props.onCreateStage(parentStage);
     }
 
     render() {
@@ -638,6 +618,7 @@ needsLayout = true;
         const outerDivStyle = {
             position: "relative", // So we can put the labels where we need them
             overflow: "visible", // So long labels can escape this component in layout,
+            margin: '30px auto', // need to center here, justify-content: center cuts it off
             //height: (measuredHeight + 80) + "px"
         };
 
