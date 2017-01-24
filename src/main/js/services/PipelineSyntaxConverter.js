@@ -1,6 +1,6 @@
 // @flow
 
-import { Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import fetch from './fetchClassic';
 import { UnknownSection } from './PipelineStore';
 import type { PipelineInfo, StageInfo, StepInfo } from './PipelineStore';
 import pipelineMetadataService from './PipelineMetadataService';
@@ -326,47 +326,9 @@ export function convertInternalModelToJson(pipeline: PipelineInfo): PipelineJson
     }
     return out;
 }
-
-function fetch(url, body, handler) {
-    Fetch.fetch(`${UrlConfig.getJenkinsRootURL()}/blue/rest/pipeline-metadata/crumbInfo`, {
-        fetchOptions: { method: 'GET' }
-    }).then(response => {
-        if (!response.ok) {
-            console.log('An error happened fetching ', url);
-            return;
-        }
-        const useCrumb = function (crumb) {
-            crumb = crumb.split('=');
-            const headers = {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            };
-            headers[crumb[0]] = crumb[1];
-            Fetch.fetchJSON(url, {
-                fetchOptions: {
-                    method: 'POST',
-                    body: body,
-                    headers: headers,
-                }
-            }).then(data => {
-                if (data.status === 'ok') {
-                    handler(data.data);
-                } else {
-                    console.log(data);
-                }
-            });
-        };
-        let crumb = response.text();
-        if (crumb instanceof Promise) {
-            crumb.then(useCrumb);
-        } else {
-            useCrumb(crumb);
-        }
-    });
-}
-
 export function convertPipelineToJson(pipeline: string, handler: Function) {
     pipelineMetadataService.getStepListing(steps => {
-        fetch(`${UrlConfig.getJenkinsRootURL()}/pipeline-model-converter/toJson`,
+        fetch('/pipeline-model-converter/toJson',
             'jenkinsfile=' + encodeURIComponent(pipeline), data => {
                 if (data.errors) {
                     console.log(data);
@@ -378,7 +340,7 @@ export function convertPipelineToJson(pipeline: string, handler: Function) {
 
 export function convertJsonToPipeline(json: string, handler: Function) {
     pipelineMetadataService.getStepListing(steps => {
-        fetch(`${UrlConfig.getJenkinsRootURL()}/pipeline-model-converter/toJenkinsfile`,
+        fetch('/pipeline-model-converter/toJenkinsfile',
             'json=' + encodeURIComponent(json), data => {
                 if (data.errors) {
                     console.log(data);
@@ -390,7 +352,7 @@ export function convertJsonToPipeline(json: string, handler: Function) {
 
 export function convertPipelineStepsToJson(pipeline: string, handler: Function) {
     pipelineMetadataService.getStepListing(steps => {
-        fetch(`${UrlConfig.getJenkinsRootURL()}/pipeline-model-converter/stepsToJson`,
+        fetch('/pipeline-model-converter/stepsToJson',
             'jenkinsfile=' + encodeURIComponent(pipeline), data => {
                 if (data.errors) {
                     console.log(data);
@@ -402,7 +364,7 @@ export function convertPipelineStepsToJson(pipeline: string, handler: Function) 
 
 export function convertJsonStepsToPipeline(step: PipelineStep, handler: Function) {
     pipelineMetadataService.getStepListing(steps => {
-        fetch(`${UrlConfig.getJenkinsRootURL()}/pipeline-model-converter/stepsToJenkinsfile`,
+        fetch('/pipeline-model-converter/stepsToJenkinsfile',
             'json=' + encodeURIComponent(JSON.stringify(step)), data => {
                 if (data.errors) {
                     console.log(data);

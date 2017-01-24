@@ -29,6 +29,7 @@ import org.kohsuke.stapler.verb.GET;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.Descriptor;
+import hudson.security.csrf.CrumbIssuer;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.ApiRoutable;
 import jenkins.model.Jenkins;
@@ -53,7 +54,11 @@ public class PipelineMetadataService implements ApiRoutable {
 
     @GET
     public String doCrumbInfo() {
-        return Jenkins.getInstance().getCrumbIssuer().getCrumbRequestField()  + "=" + Jenkins.getInstance().getCrumbIssuer().getCrumb();
+        CrumbIssuer crumbIssuer = Jenkins.getInstance().getCrumbIssuer();
+        if (crumbIssuer != null) {
+            return crumbIssuer.getCrumbRequestField()  + "=" + crumbIssuer.getCrumb();
+        }
+        return "";
     }
 
     /**
