@@ -162,6 +162,7 @@ export default class Node extends Component {
           liveUpdate={resultRun.toLowerCase() === 'running' || resultRun.toLowerCase() === 'paused'}
           updatePeriod={1000}
           locale={locale}
+          displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
           liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
           hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
         />);
