@@ -2,7 +2,7 @@
   "name": "blueocean-personalization",
   "version": "0.0.2-unpublished",
   "scripts": {
-    "storybook": "start-storybook -p 9001 -s node_modules/@jenkins-cd/design-language/dist/assets/,target/classes/org/jenkins/ui/jsmodules/blueocean_personalization/",
+    "storybook": "start-storybook -p 9001 -s node_modules/@jenkins-cd/design-language/dist/assets/,target/classes/org/jenkins/ui/jsmodules/blueocean-personalization/",
     "lint": "jjsbuilder --tasks lint",
     "lint:fix": "jjsbuilder --tasks lint --fixLint",
     "lint:watch": "jjsbuilder --tasks lint:watch --continueOnLint",
