@@ -4,19 +4,21 @@
   "description": "Pipeline editor plugin for Jenkins Blue Ocean",
   "scripts": {
     "storybook": "start-storybook -p 9002 -s node_modules/@jenkins-cd/design-language/dist/assets/,target/classes/org/jenkins/ui/jsmodules/blueocean_pipeline_editor/",
-    "lint": "gulp lint",
-    "lint:fix": "gulp lint --fixLint",
-    "lint:watch": "gulp lint:watch --continueOnLint",
-    "test": "gulp test",
-    "test:watch": "gulp test:watch",
-    "bundle": "gulp bundle",
-    "bundle:watch": "gulp bundle:watch"
+    "lint": "jjsbuilder --tasks lint",
+    "lint:fix": "jjsbuilder --tasks lint --fixLint",
+    "lint:watch": "jjsbuilder --tasks lint:watch --continueOnLint",
+    "test": "jjsbuilder --tasks test",
+    "test:watch": "jjsbuilder --tasks test:watch",
+    "bundle": "jjsbuilder --tasks bundle",
+    "bundle:watch": "jjsbuilder --tasks bundle:watch",
+    "mvnbuild": "jjsbuilder --tasks bundle",
+    "mvntest": "jjsbuilder --tasks test,lint"
   },
   "author": "Josh McDonald <josh@joshmcdonald.info> (https://github.com/sophistifunk)",
   "license": "MIT",
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.50",
+    "@jenkins-cd/js-builder": "0.0.51",
     "@jenkins-cd/js-test": "1.2.3",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
@@ -37,9 +39,9 @@
     "react-addons-test-utils": "15.3.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.21",
+    "@jenkins-cd/blueocean-core-js": "0.0.32",
     "@jenkins-cd/design-language": "0.0.99",
-    "@jenkins-cd/js-extensions": "0.0.25",
+    "@jenkins-cd/js-extensions": "0.0.32",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/react-material-icons": "1.0.0",
     "lodash.debounce": "4.0.8",
