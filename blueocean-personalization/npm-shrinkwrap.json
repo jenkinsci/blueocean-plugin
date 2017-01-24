@@ -20,9 +20,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.105-TimePrecise",
-      "from": "@jenkins-cd/design-language@0.0.105-TimePrecise",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.105-TimePrecise.tgz"
+      "version": "0.0.105",
+      "from": "@jenkins-cd/design-language@0.0.105",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.105.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
