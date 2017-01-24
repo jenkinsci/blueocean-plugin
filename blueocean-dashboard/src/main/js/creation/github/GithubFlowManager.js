@@ -14,7 +14,8 @@ import GithubRepositoryStep from './steps/GithubRepositoryStep';
 import GithubCompleteStep from './steps/GithubCompleteStep';
 
 const MIN_DELAY = 500;
-
+const FIRST_PAGE = 1;
+const PAGE_SIZE = 4;
 
 export default class GithubFlowManager extends FlowManager {
 
@@ -148,12 +149,16 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _loadAllRepositories(organization) {
-        this._creationApi.listRepositories(this._credentialId, organization.name, 0, 100)
+        this._loadPagedRepository(organization.name, FIRST_PAGE)
             .then(waitAtLeast(MIN_DELAY))
-            .then(repos => this._updateRepositories(organization.name, repos));
+            .then(repos => this._updateRepositories(organization.name, repos, FIRST_PAGE));
 
         this._setStatus(STATUS.PENDING_LOADING_REPOSITORIES);
         this.pushStep(<GithubRepositoryStep />);
+    }
+
+    _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
+        return this._creationApi.listRepositories(this._credentialId, organizationName, pageNumber, pageSize);
     }
 
     @action
@@ -162,10 +167,22 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     @action
-    _updateRepositories(organizationName, repos) {
-        this.repositories.replace(repos);
-        this._repositoryCache[organizationName] = repos;
+    _updateRepositories(organizationName, repos, pageNumber) {
+        //
+        if (pageNumber === 0) {
+            this.repositories.replace(repos);
+        } else {
+            this.repositories.push(...repos);
+        }
+
+        this._repositoryCache[organizationName] = this.repositories.slice();
         this._setStatus(STATUS.STEP_CHOOSE_REPOSITORY);
+
+        // if the last page is exactly the same as the page size, odds are there's another page to fetch
+        if (repos.length === PAGE_SIZE) {
+            this._loadPagedRepository(organizationName, pageNumber + 1)
+                .then(repos2 => this._updateRepositories(organizationName, repos2, pageNumber + 1));
+        }
     }
 
     createFromRepository() {

@@ -6,7 +6,7 @@ import FlowStep from '../../flow2/FlowStep';
 import STATUS from '../GithubCreationStatus';
 
 @observer
-export default class GithubOrgListStep extends React.Component {
+export default class GithubRepositoryStep extends React.Component {
 
     selectRepository(org) {
         this.props.flowManager.selectRepository(org);
@@ -21,6 +21,8 @@ export default class GithubOrgListStep extends React.Component {
         const loaded = flowManager.status === STATUS.STEP_CHOOSE_REPOSITORY;
         const disabled = !flowManager.selectedRepository;
         const title = loaded ? 'Choose a repository' : 'Loading Repositories...';
+        // touch 'repositories' to ensure that changes to it will trigger the @observer
+        flowManager.repositories.slice();
 
         return (
             <FlowStep {...this.props} className="github-repo-list-step" title={title}>
@@ -47,6 +49,6 @@ export default class GithubOrgListStep extends React.Component {
     }
 }
 
-GithubOrgListStep.propTypes = {
+GithubRepositoryStep.propTypes = {
     flowManager: PropTypes.object,
 };
