@@ -1,6 +1,3 @@
-/**
- * Created by cmeyers on 10/19/16.
- */
 import React, { PropTypes } from 'react';
 import VerticalStep from './VerticalStep';
 import status from './FlowStepStatus';
@@ -14,6 +11,7 @@ import status from './FlowStepStatus';
 export default function FlowStep(props) {
     return (
         <VerticalStep
+          className={props.className}
           status={props.status}
           percentage={props.percentage}
           isLastStep={props.isLastStep}
@@ -21,7 +19,9 @@ export default function FlowStep(props) {
             <h1>{props.title}</h1>
             {
                 props.status !== status.INCOMPLETE &&
-                props.children
+                <fieldset disabled={props.disabled}>
+                    {props.children}
+                </fieldset>
             }
         </VerticalStep>
     );
@@ -29,10 +29,14 @@ export default function FlowStep(props) {
 
 FlowStep.propTypes = {
     children: PropTypes.node,
+    className: PropTypes.string,
     title: PropTypes.string,
     status: PropTypes.string,
     percentage: PropTypes.number,
+    disabled: PropTypes.bool,
     isLastStep: PropTypes.bool,
-    onCompleteStep: PropTypes.func,
-    onCompleteFlow: PropTypes.func,
+};
+
+FlowStep.defaultProps = {
+    className: '',
 };

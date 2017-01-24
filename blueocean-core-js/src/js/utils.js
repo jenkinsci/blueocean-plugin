@@ -5,17 +5,26 @@
  * @param url
  * @returns {string}
  */
-const cleanSlashes = (url: string) => {
-    if (url.indexOf('//') !== -1) {
-        let cleanUrl = url.replace('//', '/');
-        cleanUrl = cleanUrl.substr(-1) === '/' ?
-            cleanUrl : `${cleanUrl}/`;
+function cleanSlashes(url: string) {
+    let baseUrl = '';
+    let urlParams = '';
 
-        return cleanSlashes(cleanUrl);
+    if (url && url.indexOf('?') > -1) {
+        baseUrl = url.split('?').slice(0, 1).join('');
+        urlParams = url.split('?').slice(-1).join('');
+    } else {
+        baseUrl = url;
     }
 
-    return url;
-};
+    // replace any number of consecutive slashes with one slash
+    baseUrl = baseUrl.replace(/\/\/+/g, '/');
+
+    if (baseUrl.substr(-1) !== '/') {
+        baseUrl = `${baseUrl}/`;
+    }
+
+    return !urlParams ? baseUrl : `${baseUrl}?${urlParams}`;
+}
 
 
 export default {

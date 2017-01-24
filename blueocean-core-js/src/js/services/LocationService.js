@@ -3,7 +3,7 @@ import { observable, action } from 'mobx';
 /**
  * Stores the previous and current location pathnames.
  */
-export default class LocationService {
+export class LocationService {
     @observable current;
     @observable previous;
 

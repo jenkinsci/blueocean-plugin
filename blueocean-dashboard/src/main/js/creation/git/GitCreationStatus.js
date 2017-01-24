@@ -1,18 +1,20 @@
 /**
- * Created by cmeyers on 10/24/16.
- */
-
-/**
- * Valid statuses for CompletedStep.
+ * Valid statuses for GitFlowManager.
  */
 const status = {
-    NOT_STARTED: 'not_started',
+    STEP_CONNECT: 'step_connect',
     CREATE_CREDS: 'create_creds',
     CREATE_PIPELINE: 'create_pipeline',
-    RUN_PIPELINE: 'run_pipeline',
+    STEP_RENAME: 'step_rename',
     COMPLETE: 'complete',
 
-    values: () => [status.NOT_STARTED, status.CREATE_CREDS, status.CREATE_PIPELINE, status.RUN_PIPELINE, status.COMPLETE],
+    values: () => [
+        status.STEP_CONNECT,
+        status.CREATE_CREDS,
+        status.CREATE_PIPELINE,
+        status.STEP_RENAME,
+        status.COMPLETE,
+    ],
 };
 
 export default status;

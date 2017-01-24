@@ -12,8 +12,8 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.service.embedded.rest.LogAppender;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
+import io.jenkins.blueocean.service.embedded.rest.LogAppender;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
@@ -93,7 +93,8 @@ public class PipelineStepImpl extends BluePipelineStep {
     public Object getLog() {
         if(PipelineNodeUtil.isLoggable.apply(node.getNode())){
             if(node.getBlockErrorAction() != null
-                    && node.getBlockErrorAction().getError() != null){
+                    && node.getBlockErrorAction().getError() != null &&
+                    node.getBlockErrorAction().getError().getMessage() != null){
                 return new LogResource(node.getNode().getAction(LogAction.class).getLogText(), new LogAppender() {
                     @Nonnull
                     @Override

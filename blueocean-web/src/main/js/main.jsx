@@ -42,7 +42,7 @@ const AdminLink = (props) => {
 
     if (showLink) {
         var adminCaption = t('administration', {
-            defaultValue: 'Administation',
+            defaultValue: 'Administration',
         });
         return <a href={`${UrlConfig.getJenkinsRootURL()}/manage`}>{adminCaption}</a>;          
     }
