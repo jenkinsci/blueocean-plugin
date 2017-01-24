@@ -1,7 +1,7 @@
 /**
  * Created by cmeyers on 6/28/16.
  */
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { action, storiesOf } from '@kadira/storybook';
 import moment from 'moment';
 import { DEBUG } from '@jenkins-cd/blueocean-core-js';
@@ -12,7 +12,25 @@ import { PipelineCard } from '../components/PipelineCard';
 const style = { padding: '10px' };
 const style2 = { paddingBottom: '10px' };
 
+class Context extends React.Component {
+    getChildContext() {
+        return {
+            config: {},
+        };
+    }
+
+    render() {
+        return this.props.children;
+    }
+}
+
+Context.childContextTypes = {
+    config: PropTypes.object,
+};
+
+
 storiesOf('PipelineCard', module)
+    .addDecorator(story => <Context>{story()}</Context>)
     .add('all states', () => {
         const states = 'SUCCESS,QUEUED,RUNNING,FAILURE,ABORTED,UNSTABLE,NOT_BUILT,UNKNOWN'.split(',');
         const startTime = moment().subtract(60, 'seconds').toISOString();
