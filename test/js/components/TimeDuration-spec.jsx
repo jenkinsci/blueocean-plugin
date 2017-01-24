@@ -23,10 +23,9 @@ describe("TimeDuration", () => {
     });
 
     it("renders 'a few seconds' with 1ms", () => {
-        const wrapper = shallow(<TimeDuration millis={1} />);
-
+        const wrapper = shallow(<TimeDuration millis={2000} />);
         assert.isTrue(wrapper.is('span'));
-        assert.equal(wrapper.text(), 'a few seconds');
+        assert.equal(wrapper.text(), '2 seconds');
     });
 
     it("renders 'a few seconds' with 1ms as string", () => {
@@ -41,7 +40,7 @@ describe("TimeDuration", () => {
         const wrapper = shallow(<TimeDuration millis={1000*60*60*3.25} />);
 
         assert.isTrue(wrapper.is('span'));
-        assert.equal(wrapper.text(), '3 hours');
+        assert.equal(wrapper.text(), '3 hours 15 minutes 0 seconds');
     });
 
     it("renders a tooltip of '5m, 5s' when supplied value", () => {

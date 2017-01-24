@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 import { ResultItem } from '../components';
+import { TimeDuration } from '../components/TimeDuration';
 
 import lipsum from './lipsum';
 
@@ -35,10 +36,39 @@ function onCollapse(data) {
     console.log("Collapsing",data);
 }
 
+function standardDe() {
+    return (
+        <TimeDuration
+            millis={5000000}
+            locale="de"
+            displayFormat="M [mos], d [Tage], h[Std.], m[m], s[s]"
+            hintFormat="M [Monate], d [Tage], h[Std.], m[m], s[s]"
+            liveFormat="m[ Minuten] s[ Sekunden]"
+        />
+    );
+}
+
+function liveUpdateDe() {
+    return (
+        <TimeDuration
+            liveUpdate
+            updatePeriod={3000}
+            millis={50000}
+            locale="de"
+            hintFormat="M [mos], d [Tage], h[Std.], m[m], s[s]"
+            liveFormat="m[ Minuten] s[ Sekunden]"
+        />
+    );
+}
+
 function basicStory() {
 
     return (
         <div style={wrapperStyle}>
+            <ResultItem result="success" label="Successful Step custom object" extraInfo={standardDe()} onExpand={onExpand}
+                        onCollapse={onCollapse} data="bravo">{moLipsum()}</ResultItem>
+            <ResultItem result="success" label="Successful Step custom objectLive" extraInfo={liveUpdateDe()} onExpand={onExpand}
+                        onCollapse={onCollapse} data="bravo">{moLipsum()}</ResultItem>
             <ResultItem result="success" label="Successful Step" extraInfo="11 sec" onExpand={onExpand}
                         onCollapse={onCollapse} data="bravo">{moLipsum()}</ResultItem>
             <ResultItem result="failure" label="Failed Step" extraInfo="29 sec" onExpand={onExpand}
@@ -55,7 +85,7 @@ function basicStory() {
                         onCollapse={onCollapse} data="foxtrot" expanded="true">{moLipsum()}</ResultItem>
 
             <h2>Separator</h2>
-            
+
             <ResultItem result="running" label="Running Step, with taller child" extraInfo="a few seconds"
                         onExpand={onExpand} onCollapse={onCollapse} data="foxtrot">
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur deserunt dicta impedit nam
@@ -67,9 +97,9 @@ function basicStory() {
                 <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
                 <p>Eius enim magnam obcaecati perferendis quam?</p>
             </ResultItem>
-            
+
             <h2>Separator</h2>
-            
+
             <ResultItem result="unstable" label="Unstable Step" extraInfo="55 sec" onExpand={onExpand}
                         onCollapse={onCollapse} data="golf">{moLipsum()}</ResultItem>
             <ResultItem result="not_built" label="Not Built Step - no details"/>

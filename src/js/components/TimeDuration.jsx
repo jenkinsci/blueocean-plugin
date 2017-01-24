@@ -11,6 +11,7 @@ type Props = {
      updatePeriod: number,
      hint?: string,
      liveUpdate: bool,
+     displayFormat: ?string,
      liveFormat: ?string,
      hintFormat: ?string,
      locale: ?string,
@@ -46,7 +47,7 @@ export class TimeDuration extends Component {
         const {updatePeriod = 30000} = this.props;
         this.timerPeriodMillis = typeof updatePeriod !== 'number' || isNaN(updatePeriod) ? 30000 : updatePeriod;
         this.clearIntervalId = 0;
-        
+
     }
 
     componentWillMount() {
@@ -97,18 +98,17 @@ export class TimeDuration extends Component {
         if (!isNaN(millis)) {
             const {
                 locale = 'en',
+                displayFormat = 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]',
                 liveFormat = 'm[ minutes] s[ seconds]',
                 hintFormat = 'M [mos], d [days], h[h], m[m], s[s]',
             } = this.props;
             moment.locale(locale);
             // in case we are in live update we are interested in seconds
             const duration = this.props.liveUpdate ?
-                moment.duration(millis).format(liveFormat)
-                    : moment.duration(millis).humanize();
+                moment.duration(millis).format(liveFormat) : moment.duration(millis).format(displayFormat);
 
             const hint = this.props.hint ?
-                this.props.hint :
-                moment.duration(millis).format(hintFormat);
+                this.props.hint : moment.duration(millis).format(hintFormat);
 
             return (
                 <span title={hint}>{duration}</span>
@@ -125,6 +125,7 @@ TimeDuration.propTypes = {
     hint: PropTypes.string,
     liveUpdate: PropTypes.bool,
     locale: PropTypes.string,
+    displayFormat: PropTypes.string,
     liveFormat: PropTypes.string,
     hintFormat: PropTypes.string,
 };
