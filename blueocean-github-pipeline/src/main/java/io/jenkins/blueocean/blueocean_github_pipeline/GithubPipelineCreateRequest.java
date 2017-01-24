@@ -44,7 +44,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         StringBuilder sb = new StringBuilder();
 
         if (scmConfig != null) {
-            apiUrl = scmConfig.getUri();
+            apiUrl = scmConfig.getUri() != null ?  scmConfig.getUri() : GithubScm.DEFAULT_API_URI;
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }

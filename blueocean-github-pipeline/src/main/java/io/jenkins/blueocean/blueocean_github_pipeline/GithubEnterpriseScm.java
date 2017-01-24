@@ -34,7 +34,7 @@ public class GithubEnterpriseScm extends GithubScm {
         @Override
         public Scm getScm(String id, Reachable parent) {
             if(id.equals(ID)){
-                return new GithubScm(parent);
+                return new GithubEnterpriseScm(parent);
             }
             return null;
         }
@@ -42,7 +42,7 @@ public class GithubEnterpriseScm extends GithubScm {
         @Nonnull
         @Override
         public Scm getScm(Reachable parent) {
-            return new GithubScm(parent);
+            return new GithubEnterpriseScm(parent);
         }
     }
 

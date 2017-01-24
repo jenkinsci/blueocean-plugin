@@ -17,6 +17,7 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.User;
+import hudson.security.ACL;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -47,6 +48,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -58,12 +60,13 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * @author Vivek Pandey
  */
 public class GithubScm extends Scm {
-    private static final String DEFAULT_API_URI = "https://api.github.com";
+    static final String DEFAULT_API_URI = "https://api.github.com";
     private static final String ID = "github";
 
     //desired scopes
@@ -96,7 +99,11 @@ public class GithubScm extends Scm {
 
     @Override
     public String getCredentialId(){
-        StandardUsernamePasswordCredentials githubCredential = findUsernamePasswordCredential(this);
+        User authenticatedUser =  User.current();
+        if(authenticatedUser == null){
+            throw new ServiceException.UnauthorizedException("No authenticated user found");
+        }
+        StandardUsernamePasswordCredentials githubCredential = findUsernamePasswordCredential(getUri(), getGithubCredentialId(authenticatedUser));
         if(githubCredential != null){
             return githubCredential.getId();
         }
@@ -109,7 +116,7 @@ public class GithubScm extends Scm {
 
         String credentialId = getCredentialIdFromRequest(request);
 
-        final StandardUsernamePasswordCredentials credential = GithubScm.findUsernamePasswordCredential(credentialId);
+        final StandardUsernamePasswordCredentials credential = GithubScm.findUsernamePasswordCredential(getUri(),credentialId);
 
         if(credential == null){
             String user = User.current() == null ? "anonymous" : User.current().getId();
@@ -216,8 +223,7 @@ public class GithubScm extends Scm {
                 throw new ServiceException.ForbiddenException("Invalid token, its missing scopes: "+ StringUtils.join(missingScopes, ","));
             }
 
-            String data = IOUtils.toString(connection.getInputStream());
-            GHUser user = JsonConverter.toJava(data, GHUser.class);
+            GHUser user = getResponse(connection, GHUser.class);
 
             if(user.getEmail() != null){
                 Mailer.UserProperty p = authenticatedUser.getProperty(Mailer.UserProperty.class);
@@ -229,14 +235,16 @@ public class GithubScm extends Scm {
             }
 
 
+            String expectedCredId = getGithubCredentialId(authenticatedUser);
             //Now we know the token is valid. Lets find credential
-            StandardUsernamePasswordCredentials githubCredential = findUsernamePasswordCredential(this);
+            StandardUsernamePasswordCredentials githubCredential = findUsernamePasswordCredential(getUri(), expectedCredId);
 
-            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, "github", "Github Access Token", user.getLogin(), accessToken);
+            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL,
+                    expectedCredId, "Github Access Token", user.getLogin(), accessToken);
 
 
             CredentialsStore store=null;
-            for(CredentialsStore s: CredentialsProvider.lookupStores(authenticatedUser)){
+            for(CredentialsStore s: CredentialsProvider.lookupStores(Jenkins.getInstance())){
                 if(s.hasPermission(CredentialsProvider.CREATE) && s.hasPermission(CredentialsProvider.UPDATE)){
                     store = s;
                     break;
@@ -293,6 +301,21 @@ public class GithubScm extends Scm {
         }
     }
 
+    private static String getGithubCredentialId(User user){
+        return String.format("github-%s", user.getId());
+    }
+
+    static <T> T getResponse(HttpURLConnection connection, Class<T> type) throws IOException {
+         InputStream in = null;
+         try {
+            in = wrapStream(connection, connection.getInputStream());
+            String data = IOUtils.toString(in);
+            return JsonConverter.toJava(data, type);
+        }finally {
+            IOUtils.closeQuietly(in);
+        }
+    }
+
     static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
         HttpURLConnection connection = HttpConnector.DEFAULT.connect(new URL(apiUrl));
 
@@ -316,6 +339,17 @@ public class GithubScm extends Scm {
         return connection;
     }
 
+    /**
+     * Handles the "Content-Encoding" header.
+     */
+    private static InputStream wrapStream(HttpURLConnection connection, InputStream in) throws IOException {
+        String encoding = connection.getContentEncoding();
+        if (encoding==null || in==null) return in;
+        if (encoding.equals("gzip"))    return new GZIPInputStream(in);
+
+        throw new UnsupportedOperationException("Unexpected Content-Encoding: "+encoding);
+    }
+
     private Domain getFirstDomain(CredentialsStore store){
         for(Domain d:store.getDomains()){
             if(d.getName() != null){
@@ -335,14 +369,14 @@ public class GithubScm extends Scm {
         };
     }
 
-     private static StandardUsernamePasswordCredentials findUsernamePasswordCredential(Scm scm){
+     private static StandardUsernamePasswordCredentials findUsernamePasswordCredential(String uri, String credentialId){
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                         StandardUsernamePasswordCredentials.class,
                         Jenkins.getInstance(),
-                        Jenkins.getAuthentication(),
-                        URIRequirementBuilder.fromUri(scm.getUri()).build()),
-                CredentialsMatchers.allOf(CredentialsMatchers.withId(scm.getId()),
+                        ACL.SYSTEM,
+                        URIRequirementBuilder.fromUri(uri).build()),
+                CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId),
                         CredentialsMatchers.anyOf(CredentialsMatchers.instanceOf(StandardUsernamePasswordCredentials.class)))
         );
     }
@@ -355,7 +389,7 @@ public class GithubScm extends Scm {
                 CredentialsProvider.lookupCredentials(
                         StandardUsernamePasswordCredentials.class,
                         Jenkins.getInstance(),
-                        Jenkins.getAuthentication(),
+                        ACL.SYSTEM,
                         Collections.<DomainRequirement>emptyList()),
                 CredentialsMatchers.allOf(CredentialsMatchers.withId(id),
                         CredentialsMatchers.anyOf(CredentialsMatchers.instanceOf(StandardUsernamePasswordCredentials.class)))
