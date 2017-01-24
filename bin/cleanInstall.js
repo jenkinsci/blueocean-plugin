@@ -1,5 +1,14 @@
 #!/usr/bin/env node
-
+/**
+ * This script will install the package and version you want in the directories
+ * that are defined in below array. It accept a full version string
+ * e.g. @jenkins-cd/design-language@0.0.105-TimePrecise
+ * as input and if you do not provide that it will start a prompt.
+ *
+ * We will prune and install BEFORE we install the requested version to make sure that
+ * shrinkwrap will update correctly everytime. We further do a mvn install afterwards
+ * to publish the new hpi to the local .m2 repository
+ */
 const fs = require('fs');
 const async = require('async');
 const exec = require('child_process').exec;
