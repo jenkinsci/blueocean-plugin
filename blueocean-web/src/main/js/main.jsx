@@ -144,13 +144,14 @@ function startApp(routes, stores) {
     const rootURL = headElement.getAttribute("data-rooturl");
     const resourceURL = headElement.getAttribute("data-resurl");
     const adjunctURL = headElement.getAttribute("data-adjuncturl");
-
-    // Stash urls in our module-local var, so that App can put them on context.
+    const timeOffset = headElement.getAttribute("data-servertime") - Date.now();
+    // Stash urls in our module-local qwqvar, so that App can put them on context.
     config = new Config({
         appURLBase,
         rootURL,
         resourceURL,
-        adjunctURL
+        adjunctURL,
+        timeOffset,
     });
 
     // Using this non-default history because it allows us to specify the base url for the app
