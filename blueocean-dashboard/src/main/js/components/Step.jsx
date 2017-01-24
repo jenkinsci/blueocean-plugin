@@ -89,7 +89,7 @@ export default class Node extends Component {
     }
 
     render() {
-        const { logs, nodesBaseUrl, fetchLog, followAlong, url, location, router, t, locale  } = this.props;
+        const { logs, nodesBaseUrl, fetchLog, followAlong, url, location, router, t, locale } = this.props;
         const node = this.expandAnchor(this.props);
         // Early out
         if (!node || !fetchLog) {
@@ -158,12 +158,12 @@ export default class Node extends Component {
             children = <span>&nbsp;</span>;
         }
         const time = (<TimeDuration
-            millis={durationInMillis}
-            liveUpdate={resultRun.toLowerCase() === 'running' || resultRun.toLowerCase() === 'paused'}
-            updatePeriod={1000}
-            locale={locale}
-            liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
-            hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+          millis={durationInMillis}
+          liveUpdate={resultRun.toLowerCase() === 'running' || resultRun.toLowerCase() === 'paused'}
+          updatePeriod={1000}
+          locale={locale}
+          liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+          hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
         />);
 
         return (<div className={logConsoleClass}>
@@ -193,4 +193,6 @@ Node.propTypes = {
     nodesBaseUrl: string,
     router: shape,
     url: string,
+    locale: object,
+    t: func,
 };
