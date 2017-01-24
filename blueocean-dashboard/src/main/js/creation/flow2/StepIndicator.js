@@ -10,7 +10,7 @@ export default function StepIndicator(props) {
     const newProps = {};
     newProps.width = newProps.height = 32;
 
-    if (props.percentage >= 0 && props.percentage < 100 && props.status !== status.COMPLETE) {
+    if (!isNaN(props.percentage) && props.percentage >= 0 && props.status !== status.COMPLETE) {
         newProps.result = 'running';
         newProps.percentage = props.percentage;
     } else if (props.status === status.COMPLETE) {
