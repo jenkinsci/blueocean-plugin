@@ -4,6 +4,8 @@
 import React from 'react';
 import { action, storiesOf } from '@kadira/storybook';
 import moment from 'moment';
+import { DEBUG } from '@jenkins-cd/blueocean-core-js';
+DEBUG.enableMocksForI18n();
 
 import { PipelineCard } from '../components/PipelineCard';
 
