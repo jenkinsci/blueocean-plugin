@@ -15,7 +15,7 @@ import GithubCompleteStep from './steps/GithubCompleteStep';
 
 const MIN_DELAY = 500;
 const FIRST_PAGE = 1;
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 100;
 
 export default class GithubFlowManager extends FlowManager {
 
