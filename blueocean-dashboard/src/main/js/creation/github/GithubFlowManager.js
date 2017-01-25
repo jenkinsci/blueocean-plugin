@@ -167,21 +167,22 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     @action
-    _updateRepositories(organizationName, repos, pageNumber) {
-        //
+    _updateRepositories(organizationName, repoData, pageNumber) {
+        const { items, nextPage } = repoData.repositories;
+
         if (pageNumber === 0) {
-            this.repositories.replace(repos);
+            this.repositories.replace(items);
         } else {
-            this.repositories.push(...repos);
+            this.repositories.push(...items);
         }
 
         this._repositoryCache[organizationName] = this.repositories.slice();
         this._setStatus(STATUS.STEP_CHOOSE_REPOSITORY);
 
-        // if the last page is exactly the same as the page size, odds are there's another page to fetch
-        if (repos.length === PAGE_SIZE) {
-            this._loadPagedRepository(organizationName, pageNumber + 1)
-                .then(repos2 => this._updateRepositories(organizationName, repos2, pageNumber + 1));
+        // if another page is available, keep fetching
+        if (nextPage !== null) {
+            this._loadPagedRepository(organizationName, nextPage)
+                .then(repos2 => this._updateRepositories(organizationName, repos2, nextPage));
         }
     }
 

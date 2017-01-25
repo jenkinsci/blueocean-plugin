@@ -14,15 +14,14 @@ export class GithubCreationApi {
             .then(credential => capabilityAugmenter.augmentCapabilities(credential));
     }
 
-    listRepositories(credentialId, organizationName, pageNumber = 0, pageSize = 10) {
+    listRepositories(credentialId, organizationName, pageNumber = 1, pageSize = 100) {
         const path = UrlConfig.getJenkinsRootURL();
         const reposUrl = Utils.cleanSlashes(
             `${path}/blue/rest/organizations/jenkins/scm/github/organizations/${organizationName}/repositories/` +
             `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}`);
 
         return this._fetch(reposUrl)
-            .then(response => capabilityAugmenter.augmentCapabilities(response))
-            .then(response => response.repositories.items);
+            .then(response => capabilityAugmenter.augmentCapabilities(response));
     }
 
     createOrgFolder(credentialId, organization, repoNames = []) {
