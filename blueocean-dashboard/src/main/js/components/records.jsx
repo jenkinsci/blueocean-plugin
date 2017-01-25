@@ -81,6 +81,10 @@ export class RunRecord extends Record({
         return this.state === 'RUNNING';
     }
 
+    isPaused() {
+        return this.state === 'PAUSED';
+    }
+
     getComputedResult() {
         if (this.isCompleted()) {
             return this.result;

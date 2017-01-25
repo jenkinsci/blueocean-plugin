@@ -1,9 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
+import { logging } from '@jenkins-cd/blueocean-core-js';
 import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 import InputStep from './InputStep';
+import { harmonizeTimes } from '../util/serverBrowserTimeHarmonize';
+
+const logger = logging.logger('io.jenkins.blueocean.dashboard');
 
 export default class Node extends Component {
     constructor(props) {
@@ -99,7 +103,6 @@ export default class Node extends Component {
         const {
           fetchAll,
           title,
-          durationInMillis,
           result,
           id,
           state,
@@ -126,9 +129,14 @@ export default class Node extends Component {
         };
         const runResult = resultRun.toLowerCase();
         const scrollToBottom =
-            resultRun.toLowerCase() === 'failure'
-            || (resultRun.toLowerCase() === 'running' && followAlong)
+            runResult === 'failure'
+            || (runResult === 'running' && followAlong)
         ;
+        const isRunning = () => runResult === 'running' || runResult === 'paused';
+        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
+        logger.debug('step - ServerBrowserTimeSkewMillis', skewMillis, 'run.startTime:', node.startTime);
+        // the time when we started the run harmonized with offset
+        const { durationMillis } = harmonizeTimes({ ...node, isRunning }, skewMillis);
         const logProps = {
             ...this.props,
             url,
@@ -158,8 +166,8 @@ export default class Node extends Component {
             children = <span>&nbsp;</span>;
         }
         const time = (<TimeDuration
-          millis={durationInMillis}
-          liveUpdate={resultRun.toLowerCase() === 'running' || resultRun.toLowerCase() === 'paused'}
+          millis={durationMillis}
+          liveUpdate={isRunning()}
           updatePeriod={1000}
           locale={locale}
           displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
@@ -196,4 +204,8 @@ Node.propTypes = {
     url: string,
     locale: object,
     t: func,
+};
+
+Node.contextTypes = {
+    config: object.isRequired,
 };
