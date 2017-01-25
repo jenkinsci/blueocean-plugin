@@ -4,12 +4,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
+import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.plugins.favorite.Favorites;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.security.LegacyAuthorizationStrategy;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
@@ -17,6 +19,7 @@ import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
+import jenkins.scm.api.metadata.ObjectMetadataAction;
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.collection.IsArrayContainingInAnyOrder;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
@@ -42,9 +45,17 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.BlueRun.DATE_FORMAT_STRING;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Vivek Pandey
@@ -82,6 +93,16 @@ public class MultiBranchTest extends PipelineBaseTest {
         return System.getenv("RUN_MULTIBRANCH_TESTS") != null;
     }
 
+
+    @Test
+    public void testGetURL() {
+        Job job = mock(Job.class);
+        BranchImpl branch = new BranchImpl(job, new Link("foo"));
+        assertNull(branch.getBranch());
+        ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
+        when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
+        assertEquals("https://path/to/branch", branch.getBranch().getUrl());
+    }
 
     @Test
     public void resolveMbpLink() throws Exception {
@@ -267,7 +288,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         List<Map> resp = get("/organizations/jenkins/pipelines/", List.class);
         Assert.assertEquals(1, resp.size());
         validateMultiBranchPipeline(mp, resp.get(0), 2);
-        Assert.assertNull(mp.getBranch("master"));
+        assertNull(mp.getBranch("master"));
     }
 
     @Test

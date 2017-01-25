@@ -228,12 +228,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.kohsuke</groupId>
-            <artifactId>github-api</artifactId>
-            <version>1.72</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.oltu.oauth2</groupId>
             <artifactId>org.apache.oltu.oauth2.client</artifactId>
             <version>1.0.1</version>
