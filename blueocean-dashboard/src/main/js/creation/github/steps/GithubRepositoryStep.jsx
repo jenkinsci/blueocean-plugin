@@ -18,19 +18,15 @@ export default class GithubRepositoryStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
-        const loaded = flowManager.status === STATUS.STEP_CHOOSE_REPOSITORY;
-        const disabled = !flowManager.selectedRepository;
-        const title = loaded ? 'Choose a repository' : 'Loading Repositories...';
-        // touch 'repositories' to ensure that changes to it will trigger the @observer
-        flowManager.repositories.slice();
+        const buttonDisabled = !flowManager.selectedRepository;
+        const title = 'Choose a repository';
 
         return (
             <FlowStep {...this.props} className="github-repo-list-step" title={title}>
-                { loaded &&
                 <div className="container">
                     <List
                       className="repo-list"
-                      data={flowManager.repositories}
+                      data={flowManager.selectableRepositories}
                       onItemSelect={(idx, repo) => this.selectRepository(repo)}
                       labelFunction={repo => repo.name}
                     />
@@ -38,12 +34,11 @@ export default class GithubRepositoryStep extends React.Component {
                     <button
                       className="button-create"
                       onClick={() => this.beginCreation()}
-                      disabled={disabled}
+                      disabled={buttonDisabled}
                     >
                         Create Pipeline
                     </button>
                 </div>
-                }
             </FlowStep>
         );
     }

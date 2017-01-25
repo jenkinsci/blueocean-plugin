@@ -11,10 +11,20 @@ export default class GithubConfirmDiscoverStep extends React.Component {
     }
 
     render() {
+        const { flowManager } = this.props;
+        const title = 'Create Pipelines';
+        const buttonLabel = `Create ${flowManager.selectableRepositories.length} Repositories`;
+
         return (
-            <FlowStep {...this.props} title="You sure about that buddy?">
+            <FlowStep {...this.props} className="github-confirm-discover-step" title={title}>
                 <div>
-                    <button onClick={() => this.confirmDiscover()}>Create</button>
+                    <p className="instructions">
+                        When this option is selected, Jenkins will actively search for new repositories
+                        in {flowManager.selectedOrganization.name} that contains Jenkinsfiles and
+                        create Pipelines for them.
+                    </p>
+
+                    <button onClick={() => this.confirmDiscover()}>{buttonLabel}</button>
                 </div>
             </FlowStep>
         );

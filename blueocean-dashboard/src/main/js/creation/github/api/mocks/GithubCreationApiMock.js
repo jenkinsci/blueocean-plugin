@@ -1,3 +1,4 @@
+import { Utils } from '@jenkins-cd/blueocean-core-js';
 import { ApiMock } from './ApiMock';
 
 import organizations from './organizations';
@@ -8,21 +9,44 @@ import repos3 from './repos-3';
 export class GithubCreationApi extends ApiMock {
 
     listOrganizations(credentialId) {
-        return this._delayedResolve(organizations);
+        const cloned = Utils.clone(organizations);
+
+        for (const org of cloned) {
+            if (org.jenkinsOrganizationPipeline) {
+                if (this._hasUrlKey('auto-discover=true')) {
+                    org.autoDiscover = true;
+                } else if (this._hasUrlKey('auto-discover=false')) {
+                    org.autoDiscover = false;
+                }
+            }
+        }
+
+        return this._delayedResolve(cloned);
     }
 
     listRepositories(credentialId, organizationName, pageNumber = 1, pageSize = 100) {
-        let payload = null;
+        let repoData = [];
 
         if (pageNumber === 2) {
-            payload = repos2;
+            repoData = repos2;
         } else if (pageNumber === 3) {
-            payload = repos3;
+            repoData = repos3;
         } else {
-            payload = repos1;
+            repoData = repos1;
         }
 
-        return this._delayedResolve(payload);
+        repoData = Utils.clone(repoData);
+
+        for (let index = 0; index < repoData.repositories.items.length; index++) {
+            const repo = repoData.repositories.items[index];
+            repo.pipelineCreated = false;
+
+            if (this._hasUrlKey('pipeline-created=true') && index % 2 === 0) {
+                repo.pipelineCreated = true;
+            }
+        }
+
+        return this._delayedResolve(repoData);
     }
 
     createOrgFolder(credentialId, organization, repoNames = []) {

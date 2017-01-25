@@ -1,5 +1,5 @@
 import React from 'react';
-import { action, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 
 import waitAtLeast from '../flow2/waitAtLeast';
 
@@ -27,6 +27,10 @@ export default class GithubFlowManager extends FlowManager {
 
     @observable
     repositories = [];
+
+    @computed get selectableRepositories() {
+        return this.repositories ? this.repositories.filter(repo => !repo.pipelineCreated) : [];
+    }
 
     @observable
     selectedOrganization = null;
@@ -126,12 +130,8 @@ export default class GithubFlowManager extends FlowManager {
 
     selectDiscover(discover) {
         this._discoverSelection = discover;
-
-        if (!discover) {
-            this._loadAllRepositories(this.selectedOrganization);
-        } else {
-            this.pushStep(<GithubConfirmDiscoverStep />);
-        }
+        this._loadAllRepositories(this.selectedOrganization);
+        this.pushStep(<GithubLoadingStep />);
     }
 
     confirmDiscover() {
@@ -148,13 +148,15 @@ export default class GithubFlowManager extends FlowManager {
         this.selectedRepository = repo;
     }
 
+    @action
     _loadAllRepositories(organization) {
+        this.repositories.replace([]);
+
         this._loadPagedRepository(organization.name, FIRST_PAGE)
             .then(waitAtLeast(MIN_DELAY))
             .then(repos => this._updateRepositories(organization.name, repos, FIRST_PAGE));
 
         this._setStatus(STATUS.PENDING_LOADING_REPOSITORIES);
-        this.pushStep(<GithubRepositoryStep />);
     }
 
     _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
@@ -167,22 +169,24 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     @action
-    _updateRepositories(organizationName, repoData, pageNumber) {
+    _updateRepositories(organizationName, repoData) {
         const { items, nextPage } = repoData.repositories;
 
-        if (pageNumber === 0) {
-            this.repositories.replace(items);
-        } else {
-            this.repositories.push(...items);
-        }
-
+        this.repositories.push(...items);
         this._repositoryCache[organizationName] = this.repositories.slice();
-        this._setStatus(STATUS.STEP_CHOOSE_REPOSITORY);
 
         // if another page is available, keep fetching
         if (nextPage !== null) {
             this._loadPagedRepository(organizationName, nextPage)
                 .then(repos2 => this._updateRepositories(organizationName, repos2, nextPage));
+        } else {
+            if (this._discoverSelection) {
+                this.replaceCurrentStep(<GithubConfirmDiscoverStep />);
+                this._setStatus(STATUS.STEP_CONFIRM_AUTODISCOVER);
+            } else {
+                this.replaceCurrentStep(<GithubRepositoryStep />);
+                this._setStatus(STATUS.STEP_CHOOSE_REPOSITORY);
+            }
         }
     }
 
