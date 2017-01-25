@@ -55,6 +55,9 @@ public class GitPipelineUpdateRequest extends BluePipelineUpdateRequest {
 
         if(scmConfig != null){
             sourceUri = scmConfig.getUri();
+            if(sourceUri != null) {
+                GitUtils.validateCredentials(mbp, sourceUri, scmConfig.getCredentialId());
+            }
             credentialId = scmConfig.getCredentialId() == null ? "" : scmConfig.getCredentialId();
         }
 

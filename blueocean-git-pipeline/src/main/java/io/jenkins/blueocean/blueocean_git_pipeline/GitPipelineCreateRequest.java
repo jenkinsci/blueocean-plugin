@@ -48,13 +48,15 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
                     .add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "uri is required")));
         }
 
-        //XXX: set credentialId to empty string if null or we get NPE later on
-        String credentialId = scmConfig.getCredentialId() == null ? "" : scmConfig.getCredentialId();
-
         TopLevelItem item = create(Jenkins.getInstance(), getName(), MODE, MultiBranchProjectDescriptor.class);
 
         if (item instanceof WorkflowMultiBranchProject) {
             WorkflowMultiBranchProject project = (WorkflowMultiBranchProject) item;
+            GitUtils.validateCredentials(project, sourceUri, scmConfig.getCredentialId());
+
+            //XXX: set credentialId to empty string if null or we get NPE later on
+            String credentialId = scmConfig.getCredentialId() == null ? "" : scmConfig.getCredentialId();
+
             project.getSourcesList().add(new BranchSource(new GitSCMSource(null, sourceUri, credentialId, "*", "", false)));
             project.scheduleBuild(new Cause.UserIdCause());
             return new MultiBranchPipelineImpl(project);
