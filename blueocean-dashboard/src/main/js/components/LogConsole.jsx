@@ -123,14 +123,13 @@ export class LogConsole extends Component {
         // const logUrl =`?start=0#${prefix || ''}log-${0}`
         const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
 
-        return (<div>
+        return (<div className="log-body">
             { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
                 <Progress />
             </div>}
 
-            { !isLoading && <code
-              className="block"
-            >
+
+            { !isLoading && <pre>
                 { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
                     <a
                       target="_blank"
@@ -141,27 +140,24 @@ export class LogConsole extends Component {
                         {t('Show.complete.logs')}
                     </a>
                 </div>}
-                <table className="highlight">
-                    <tbody>
-                        { lines.map((line, index) => <tr key={index + 1} id={`${prefix}log-${index + 1}`}>
-                            <td className="linenumber" onClick={() => {
-                                location.hash = `#${prefix || ''}log-${index + 1}`;
-                                router.push(location);
-                            }}
-                            >
-                            <a
-                              key={index + 1}
-                              href={`#${prefix || ''}log-${index + 1}`}
-                              name={`${prefix}log-${index + 1}`}
-                            >
-                                {index + 1}
-                            </a> </td>
-                            <td className="line">{line}</td>
-                        </tr>)}
-                    </tbody>
-                </table>
-                </code>
-            }
+                { !isLoading && lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
+                    <div className="log-boxes">
+                        <a
+                          className="linenumber"
+                          key={index + 1}
+                          href={`#${prefix || ''}log-${index + 1}`}
+                          name={`${prefix}log-${index + 1}`}
+                          onClick={() => {
+                              location.hash = `#${prefix || ''}log-${index + 1}`;
+                              router.push(location);
+                          }}
+                        >
+                        </a>
+                        <span className="line">{line}</span>
+                    </div>
+                </p>)}
+            </pre> }
+
         </div>);
     }
 }

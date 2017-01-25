@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.52",
+  "version": "0.0.54-unpublished",
   "dependencies": {
     "@jenkins-cd/design-language": {
       "version": "0.0.102",
@@ -41,9 +41,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.15",
-      "from": "@jenkins-cd/sse-gateway@0.0.15",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.15.tgz"
+      "version": "0.0.16",
+      "from": "@jenkins-cd/sse-gateway@0.0.16",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.16.tgz"
     },
     "@jenkins-cd/storage": {
       "version": "0.0.6",

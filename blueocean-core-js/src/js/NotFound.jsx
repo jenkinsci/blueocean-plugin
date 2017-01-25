@@ -9,7 +9,7 @@ const translate = i18nTranslator('blueocean-web');
  * Simple component to render a fullscreen 404 page
  */
 export default () => (
-    <Fullscreen className="not-found">
+    <Fullscreen className="errorscreen not-found">
         <div className="message-box">
             <h3>{translate('Not.found.heading', {
                 defaultValue: 'Page not found (404)',

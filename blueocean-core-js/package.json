@@ -1,12 +1,13 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.52",
+  "version": "0.0.54",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
     "start-storybook": "start-storybook --static-dir ./dist/assets/,./node_modules/@jenkins-cd/design-language/dist/assets/",
     "storybook": "npm run start-storybook -- -p 9001",
     "storybook:port": "npm run start-storybook -- -p ",
+    "flow": "flow",
     "gulp": "gulp",
     "test": "gulp test",
     "prepublish": "gulp"
@@ -32,7 +33,7 @@
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/react-material-icons": "1.0.0",
-    "@jenkins-cd/sse-gateway": "0.0.15",
+    "@jenkins-cd/sse-gateway": "0.0.16",
     "@jenkins-cd/storage": "0.0.6",
     "es6-promise": "4.0.5",
     "i18next": "3.5.2",
