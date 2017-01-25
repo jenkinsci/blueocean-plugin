@@ -20,7 +20,7 @@ export default class GithubConfirmDiscoverStep extends React.Component {
                 <div>
                     <p className="instructions">
                         When this option is selected, Jenkins will actively search for new repositories
-                        in {flowManager.selectedOrganization.name} that contains Jenkinsfiles and
+                        in {flowManager.selectedOrganization.name} that contain Jenkinsfiles and
                         create Pipelines for them.
                     </p>
 

@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import { List } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
-import STATUS from '../GithubCreationStatus';
 
 @observer
 export default class GithubRepositoryStep extends React.Component {

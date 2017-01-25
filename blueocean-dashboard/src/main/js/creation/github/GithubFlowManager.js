@@ -5,6 +5,7 @@ import waitAtLeast from '../flow2/waitAtLeast';
 
 import FlowManager from '../flow2/FlowManager';
 import STATUS from './GithubCreationStatus';
+import GithubAlreadyDiscoverStep from './steps/GithubAlreadyDiscoverStep';
 import GithubLoadingStep from './steps/GithubLoadingStep';
 import GithubCredentialsStep from './steps/GithubCredentialStep';
 import GithubOrgListStep from './steps/GithubOrgListStep';
@@ -125,13 +126,20 @@ export default class GithubFlowManager extends FlowManager {
     @action
     selectOrganization(organization) {
         this.selectedOrganization = organization;
+        this._setStatus(STATUS.STEP_CHOOSE_DISCOVER);
         this.pushStep(<GithubChooseDiscoverStep />);
     }
 
     selectDiscover(discover) {
         this._discoverSelection = discover;
-        this._loadAllRepositories(this.selectedOrganization);
-        this.pushStep(<GithubLoadingStep />);
+
+        if (this.selectedOrganization.autoDiscover && discover) {
+            this._setStatus(STATUS.STEP_ALREADY_DISCOVER);
+            this.pushStep(<GithubAlreadyDiscoverStep />);
+        } else {
+            this._loadAllRepositories(this.selectedOrganization);
+            this.pushStep(<GithubLoadingStep />);
+        }
     }
 
     confirmDiscover() {
@@ -182,7 +190,7 @@ export default class GithubFlowManager extends FlowManager {
         } else {
             if (this._discoverSelection) {
                 this.replaceCurrentStep(<GithubConfirmDiscoverStep />);
-                this._setStatus(STATUS.STEP_CONFIRM_AUTODISCOVER);
+                this._setStatus(STATUS.STEP_CONFIRM_DISCOVER);
             } else {
                 this.replaceCurrentStep(<GithubRepositoryStep />);
                 this._setStatus(STATUS.STEP_CHOOSE_REPOSITORY);
