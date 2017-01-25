@@ -33,7 +33,7 @@
 }
 
 .github-org-list-step {
-    .org-list {
+    .List.org-list {
         .List-ItemContainer {
             width: 100%;
             padding: 0;
@@ -49,6 +49,10 @@
                 margin-right: 18px;
             }
         }
+
+        .List-Item.List-Item-selected {
+            .u-selection-style;
+        }
     }
 }
 
@@ -58,11 +62,15 @@
         flex-direction: column;
     }
 
-    .repo-list {
+    .List.repo-list {
         max-height: 192px;
 
         .List-ItemContainer {
             width: 100%
+        }
+
+        .List-Item.List-Item-selected {
+            .u-selection-style;
         }
     }
 
