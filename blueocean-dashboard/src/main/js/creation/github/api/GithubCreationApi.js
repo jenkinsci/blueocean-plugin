@@ -49,9 +49,8 @@ export class GithubCreationApi {
             'GithubPipelineCreateRequest' :
             'GithubPipelineUpdateRequest';
 
-        // TODO: credentialId?
-
         return {
+            credentialId,
             name: itemName,
             $class: `io.jenkins.blueocean.blueocean_github_pipeline.${className}`,
             scmConfig: {
