@@ -1,12 +1,7 @@
 var $ = require('jquery-detached').getJQuery();
 
 function getAppUrl() {
-    const rootUrl = $('head').attr('data-rooturl');
-    if (!rootUrl) {
-        return '';
-    } else {
-        return rootUrl;
-    }
+    return rootUrl = $('head').attr('data-rooturl');
 }
 
 $(document).ready(() => {
