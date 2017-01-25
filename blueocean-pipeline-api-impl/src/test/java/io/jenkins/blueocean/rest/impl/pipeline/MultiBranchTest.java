@@ -65,7 +65,7 @@ public class MultiBranchTest extends PipelineBaseTest {
     public GitSampleRepoRule sampleRepo2 = new GitSampleRepoRule();
 
 
-    private final String[] branches={"master", "feature%2Fux-1", "feature2"};
+    private final String[] branches={"master", "feature-ux-1.0gorp7", "feature2"};
 
     @Before
     public void setup() throws Exception{
@@ -99,7 +99,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/",LinkResolver.resolveLink(mp).getHref());
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/master/",LinkResolver.resolveLink(mp.getBranch("master")).getHref());
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/",LinkResolver.resolveLink(mp.getBranch("feature%2Fux-1")).getHref());
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature-ux-1.0gorp7/",LinkResolver.resolveLink(mp.getBranch("feature-ux-1.0gorp7")).getHref());
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/",LinkResolver.resolveLink(mp.getBranch("feature2")).getHref());
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/f/",LinkResolver.resolveLink(f).getHref());
     }
@@ -240,7 +240,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         String href = null;
         for(Map r: resp){
-            if(r.get("name").equals("feature%2Fux-1")){
+            if(r.get("name").equals("feature-ux-1.0gorp7")){
                 href = (String) ((Map)((Map)r.get("_links")).get("self")).get("href");
 
                 href = StringUtils.substringAfter(href,"/blue/rest");
@@ -248,7 +248,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         }
         Assert.assertNotNull(href);
         Map r = get(href);
-        Assert.assertEquals("feature%2Fux-1", r.get("name"));
+        Assert.assertEquals("feature-ux-1.0gorp7", r.get("name"));
     }
 
     @Test
@@ -324,7 +324,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         assertEquals(3, mp.getItems().size());
 
         //execute feature/ux-1 branch build
-        p = scheduleAndFindBranchProject(mp, "feature%2Fux-1");
+        p = scheduleAndFindBranchProject(mp, "feature-ux-1.0gorp7");
         j.waitUntilNoActivity();
         WorkflowRun b2 = p.getLastBuild();
         assertEquals(1, b2.getNumber());
@@ -348,7 +348,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         Assert.assertTrue(branchNames.contains(((Map)(br.get(0).get("latestRun"))).get("pipeline")));
 
         for(String n:branches){
-            assertTrue(branchNames.contains(n));
+            assertTrue(String.format("%s contains %s", branchNames, n), branchNames.contains(n));
         }
 
         WorkflowRun[] runs = {b1,b2,b3};
@@ -387,14 +387,14 @@ public class MultiBranchTest extends PipelineBaseTest {
         for (SCMSource source : mp.getSCMSources()) {
             assertEquals(mp, source.getOwner());
         }
-        WorkflowJob p = scheduleAndFindBranchProject(mp, "feature%2Fux-1");
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "feature-ux-1.0gorp7");
         j.waitUntilNoActivity();
 
-        Map resp = post("/organizations/jenkins/pipelines/p/branches/"+ Util.rawEncode("feature%2Fux-1")+"/runs/",
+        Map resp = post("/organizations/jenkins/pipelines/p/branches/"+ Util.rawEncode("feature-ux-1.0gorp7")+"/runs/",
             Collections.EMPTY_MAP);
         String id = (String) resp.get("id");
         String link = getHrefFromLinks(resp, "self");
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/queue/"+id+"/", link);
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature-ux-1.0gorp7/queue/"+id+"/", link);
     }
 
 
@@ -416,7 +416,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         assertEquals(3, mp.getItems().size());
 
         //execute feature/ux-1 branch build
-        p = findBranchProject(mp, "feature%2Fux-1");
+        p = findBranchProject(mp, "feature-ux-1.0gorp7");
         WorkflowRun b2 = p.getLastBuild();
         assertEquals(1, b2.getNumber());
 
