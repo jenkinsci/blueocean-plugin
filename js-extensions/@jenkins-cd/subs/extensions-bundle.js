@@ -24,6 +24,10 @@ exports.bundle = function() {
             // Generate a bundle for the extensions.
             createBundle(jsxFile);
 
+            if (!extensionsJSON.i18nBundles) {
+                extensionsJSON.i18nBundles = findI18nBundles();
+            }
+
             return extensionsJSON;
         }
     } catch (e) {
@@ -56,7 +60,7 @@ exports.yamlToJSON = function(sourceFile, targetFile, transformer) {
     if (transformer) {
         asJSON = transformer(asJSON);
     }
-    
+
     var parentDir = paths.parentDir(targetFile);
     if (!fs.existsSync(parentDir)) {
         paths.mkdirp(parentDir);
@@ -161,4 +165,23 @@ function assertHasJenkinsJsExtensionsDependency(message) {
     if(!hasJenkinsJsExtensionsDep()) {
         dependencies.exitOnMissingDependency('@jenkins-cd/js-extensions', message);
     }
+}
+
+function findI18nBundles() {
+    var bundles = [];
+    var bundleFileDir = getPluginResourceBundleDir();
+
+    if (fs.existsSync(bundleFileDir)) {
+
+    }
+
+    return bundles;
+}
+
+function getPluginResourceBundleDir() => {
+    return 'src/main/resources/jenkins/plugins/' + maven.getArtifactId().replace(/-/g, '/');
+}
+
+function getPluginResourceBundleClasspath() => {
+    return 'jenkins.plugins.' + maven.getArtifactId().replace(/-/g, '.');
 }
