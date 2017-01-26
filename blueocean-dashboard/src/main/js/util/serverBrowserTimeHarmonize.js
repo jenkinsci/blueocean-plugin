@@ -15,7 +15,7 @@ export class TimeManager {
     }
 
     harmonizeTimes(run, skewMillis) {
-        logger.debug('skewMillis', skewMillis);
+        logger.warn('skewMillis', skewMillis);
         if (!run.startTime) {
             logger.error('not found any startTime, seems that a component should not have called this me');
             return {};
@@ -25,8 +25,8 @@ export class TimeManager {
     // what is the start time of the server
         const serverStartTime = moment(run.startTime);
     // sync server start date to local time via the skewMillis
-        if (skewMillis >= 0) {
-            serverStartTime.subtract({ milliseconds: skewMillis });
+        if (skewMillis < 0) {
+            serverStartTime.subtract({ milliseconds: skewMillis * -1 });
         } else {
             serverStartTime.add({ milliseconds: skewMillis });
         }
@@ -39,12 +39,14 @@ export class TimeManager {
         let durationMillis = 0;
         if (run.endTime) { // sync server end date to local time via the skewMillis
             const serverEndTime = moment(run.endTime);
-            if (skewMillis >= 0) {
-                serverEndTime.subtract({ milliseconds: skewMillis });
+            if (skewMillis < 0) {
+                serverEndTime.subtract({ milliseconds: skewMillis * -1 });
             } else {
                 serverEndTime.add({ milliseconds: skewMillis });
             }
             endTime = serverEndTime.toJSON();
+        }
+        if (run.endTime || !run.isRunning) { // sync server end date to local time via the skewMillis
             durationMillis = run.durationInMillis;
         } else {
             logger.debug('running, using timeElapsed for duration');

@@ -19,7 +19,7 @@ class RunDetailsHeader extends Component {
         const { durationMillis } = timeManager.harmonizeTimes({
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
-            isRunning,
+            isRunning: isRunning(),
         }, skewMillis);
         this.durationMillis = durationMillis;
     }

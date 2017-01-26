@@ -19,7 +19,16 @@ export default class Node extends Component {
         const { nodesBaseUrl, fetchLog } = this.props;
         const { config = {} } = this.context;
         const node = this.expandAnchor(this.props);
-        const { durationMillis } = this.durationHarmonize(node);
+        const {
+          durationInMillis,
+          state,
+          startTime,
+        } = node;
+        const { durationMillis } = this.durationHarmonize({
+            durationInMillis,
+            startTime,
+            isRunning: state === 'RUNNING' || state === 'PAUSED',
+        });
         this.durationMillis = durationMillis;
 
         if (node && node.isFocused) {
@@ -75,11 +84,7 @@ export default class Node extends Component {
     durationHarmonize(node) {
         const skewMillis = this.context.config ? this.context.config.getServerBrowserTimeSkewMillis() : 0;
         // the time when we started the run harmonized with offset
-        return timeManager.harmonizeTimes({
-            endTime: node.endTime,
-            startTime: node.startTime,
-            durationInMillis: node.durationInMillis,
-        }, skewMillis);
+        return timeManager.harmonizeTimes({ ...node }, skewMillis);
     }
     /*
      * Calculate whether we need to expand the step due to linking.
@@ -117,10 +122,13 @@ export default class Node extends Component {
           result,
           id,
           state,
+          durationInMillis,
+          endTime,
+          startTime,
           isInputStep = false,
           isFocused = false,
         } = node;
-
+        logger.warn('69', node);
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl, fetchAll })] : null;
         const getLogForNode = () => {
@@ -143,10 +151,15 @@ export default class Node extends Component {
             || (resultRun === 'RUNNING' && followAlong)
         ;
         const isRunning = () => resultRun === 'RUNNING' || resultRun === 'PAUSED';
-        const { durationMillis } = this.durationHarmonize(isRunning, node);
+        const { durationMillis } = this.durationHarmonize({
+            durationInMillis,
+            endTime,
+            startTime,
+            isRunning: isRunning(),
+        });
         // logger.debug('step - run.startTime:', node.startTime);
         // logger.debug('step - startTime:', startTime);
-        logger.debug('step - durationMillis:', this.durationMillis, durationMillis);
+        logger.warn('step - durationMillis:', this.durationMillis, durationMillis);
         const logProps = {
             ...this.props,
             url,

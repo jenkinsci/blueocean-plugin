@@ -3,8 +3,7 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
-import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
-
+import { logging, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 
 import Extensions from '@jenkins-cd/js-extensions';
@@ -14,6 +13,7 @@ import { CellRow, CellLink } from './CellLink';
 
 import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard');
 const timeManager = new TimeManager();
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
@@ -33,7 +33,12 @@ export default class Runs extends Component {
         const { run, changeset, pipeline, t, locale } = this.props;
 
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
-        const isRunning = () => run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
+        const isRunning = () => {
+            const running = run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
+            logger.warn('isRunning - inner ', running, run.state);
+            return running;
+        };
+        logger.warn('isRunning', isRunning());
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
         // the time when we started the run harmonized with offset
         const {
