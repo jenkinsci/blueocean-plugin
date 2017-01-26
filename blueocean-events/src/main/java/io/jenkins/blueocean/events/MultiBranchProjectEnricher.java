@@ -28,12 +28,12 @@ import hudson.model.Item;
 import hudson.model.Queue;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.MultiBranchProject.BranchIndexing;
-import org.jenkins.pubsub.EventProps;
-import org.jenkins.pubsub.Events;
-import org.jenkins.pubsub.JobChannelMessage;
-import org.jenkins.pubsub.Message;
-import org.jenkins.pubsub.MessageEnricher;
-import org.jenkins.pubsub.QueueTaskMessage;
+import org.jenkinsci.plugins.pubsub.EventProps;
+import org.jenkinsci.plugins.pubsub.Events;
+import org.jenkinsci.plugins.pubsub.JobChannelMessage;
+import org.jenkinsci.plugins.pubsub.Message;
+import org.jenkinsci.plugins.pubsub.MessageEnricher;
+import org.jenkinsci.plugins.pubsub.QueueTaskMessage;
 
 import javax.annotation.Nonnull;
 

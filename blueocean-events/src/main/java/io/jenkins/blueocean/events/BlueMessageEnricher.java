@@ -29,11 +29,11 @@ import hudson.model.ItemGroup;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
-import org.jenkins.pubsub.EventProps;
-import org.jenkins.pubsub.Events;
-import org.jenkins.pubsub.JobChannelMessage;
-import org.jenkins.pubsub.Message;
-import org.jenkins.pubsub.MessageEnricher;
+import org.jenkinsci.plugins.pubsub.EventProps;
+import org.jenkinsci.plugins.pubsub.Events;
+import org.jenkinsci.plugins.pubsub.JobChannelMessage;
+import org.jenkinsci.plugins.pubsub.Message;
+import org.jenkinsci.plugins.pubsub.MessageEnricher;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
