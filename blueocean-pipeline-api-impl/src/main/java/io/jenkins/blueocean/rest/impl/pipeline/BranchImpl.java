@@ -14,14 +14,13 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.metadata.ContributorMetadataAction;
 import jenkins.scm.api.metadata.ObjectMetadataAction;
+import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
 
 /**
  * @author Vivek Pandey
@@ -30,6 +29,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
 public class BranchImpl extends PipelineImpl {
 
     private static final String PULL_REQUEST = "pullRequest";
+    private static final String BRANCH = "branch";
 
     private final Link parent;
     protected final Job job;
@@ -58,6 +58,17 @@ public class BranchImpl extends PipelineImpl {
         return null;
     }
 
+    @Exported(name = BRANCH, inline = true)
+    public Branch getBranch() {
+        ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
+        PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
+        if (om == null && pima == null) {
+            return null;
+        }
+        String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
+        return new Branch(url, pima != null);
+    }
+
     @Override
     public Link getLink() {
         return parent.rel(Util.rawEncode(getName()));
@@ -80,6 +91,30 @@ public class BranchImpl extends PipelineImpl {
                 return getPipeline(context,parent);
             }
             return null;
+        }
+    }
+
+    @ExportedBean
+    public static class Branch {
+        private static final String BRANCH_URL = "url";
+        private static final String BRANCH_PRIMARY = "isPrimary";
+
+        private final String url;
+        private final boolean primary;
+
+        public Branch(String url, boolean primary) {
+            this.url = url;
+            this.primary = primary;
+        }
+
+        @Exported(name = BRANCH_URL)
+        public String getUrl() {
+            return url;
+        }
+
+        @Exported(name = BRANCH_PRIMARY)
+        public boolean isPrimary() {
+            return primary;
         }
     }
 

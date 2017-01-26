@@ -1,9 +1,6 @@
 package io.jenkins.blueocean.service.embedded.util;
 
-import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import hudson.model.Item;
-import hudson.model.Job;
-import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
 import hudson.plugins.favorite.Favorites.FavoriteException;
@@ -17,7 +14,6 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
-import jenkins.model.Jenkins;
 
 import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
@@ -27,8 +23,6 @@ import java.net.URLDecoder;
  * @author Ivan Meredith
  */
 public class FavoriteUtil {
-
-    private static final String DEFAULT_BRANCH = "master";
 
     public static void toggle(BlueFavoriteAction action, Item item) {
         if (action.isFavorite()) {
@@ -52,11 +46,6 @@ public class FavoriteUtil {
         } catch (UnsupportedEncodingException e) {
             throw new ServiceException.UnexpectedErrorException("Something went wrong URL decoding fullName: "+name, e);
         }
-    }
-
-    public static BlueFavorite getFavorite(String fullName, Reachable parent){
-        Item item = Jenkins.getInstance().getItem(fullName);
-        return getFavorite(item,parent);
     }
 
     public static BlueFavorite getFavorite(Item item){
@@ -101,23 +90,6 @@ public class FavoriteUtil {
         }
 
         return null;
-    }
-
-    /**
-     * Resolves the default branch for a folder
-     * @param folder to check within
-     * @return default branch
-     */
-    public static Job resolveDefaultBranch(AbstractFolder folder) {
-        // TODO: lookup the multibranch project and look for a default branch property
-        TopLevelItem job = folder.getJob(DEFAULT_BRANCH);
-        if(job == null) {
-            throw new ServiceException.BadRequestExpception("no master branch to favorite");
-        }
-        if (!(job instanceof Job)) {
-            throw new ServiceException.MethodNotAllowedException(DEFAULT_BRANCH + " is not a job");
-        }
-        return (Job) job;
     }
 
     private static User getUser() {
