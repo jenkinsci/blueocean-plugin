@@ -31,4 +31,10 @@ export default class GithubScmProvider extends ScmProvider {
     getFlowManager() {
         return this.manager;
     }
+
+    destroyFlowManager() {
+        if (this.manager) {
+            this.manager.destroy();
+        }
+    }
 }

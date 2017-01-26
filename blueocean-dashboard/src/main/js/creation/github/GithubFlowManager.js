@@ -64,6 +64,9 @@ export default class GithubFlowManager extends FlowManager {
         this.findExistingCredential();
     }
 
+    destroy() {
+    }
+
     findExistingCredential() {
         return this._credentialsApi.findExistingCredential()
             .then(waitAtLeast(MIN_DELAY))

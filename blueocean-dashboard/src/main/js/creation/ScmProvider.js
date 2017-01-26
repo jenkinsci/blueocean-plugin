@@ -23,4 +23,11 @@ export default class ScmProvider {
         throw new Error('must implement getFlowManager');
     }
 
+    /**
+     * Called when the creation flow is about to end. Perform cleanup here.
+     */
+    destroyFlowManager() {
+        throw new Error('must implement destroyFlowManager');
+    }
+
 }
