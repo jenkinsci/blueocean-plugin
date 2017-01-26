@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/design-language",
-  "version": "0.0.105-unpublished",
+  "version": "0.0.107-unpublished",
   "dependencies": {
     "@jenkins-cd/react-material-icons": {
       "version": "1.0.0",
