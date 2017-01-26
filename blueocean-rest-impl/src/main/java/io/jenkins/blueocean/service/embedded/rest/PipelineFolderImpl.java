@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
+import io.jenkins.blueocean.rest.model.BlueIcon;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
@@ -28,7 +29,7 @@ import java.util.Map;
 public class PipelineFolderImpl extends BluePipelineFolder {
 
     private final ItemGroup folder;
-    private final Link parent;
+    protected final Link parent;
 
     public PipelineFolderImpl(ItemGroup folder, Link parent) {
         this.folder = folder;
@@ -154,5 +155,10 @@ public class PipelineFolderImpl extends BluePipelineFolder {
             }
             return null;
         }
+    }
+
+    @Override
+    public BlueIcon getIcon() {
+        return null;
     }
 }
