@@ -26,9 +26,19 @@ function cleanSlashes(url: string) {
     return !urlParams ? baseUrl : `${baseUrl}?${urlParams}`;
 }
 
+/**
+ * Generate a "unique" ID with an optional prefix
+ * @param prefix
+ * @returns {string}
+ */
+function randomId(prefix = 'id') {
+    const integer = Math.round(Math.random() * Number.MAX_SAFE_INTEGER);
+    return `${prefix}-${integer}`;
+}
 
 export default {
     cleanSlashes,
+    randomId,
     clone(obj: Object) {
         if (!obj) return obj;
         return JSON.parse(JSON.stringify(obj));
