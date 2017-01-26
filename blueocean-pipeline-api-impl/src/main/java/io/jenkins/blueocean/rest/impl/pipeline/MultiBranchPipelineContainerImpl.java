@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
@@ -27,6 +28,9 @@ public class MultiBranchPipelineContainerImpl extends BluePipelineContainer {
     @Override
     public BlueMultiBranchPipeline get(String s) {
         MultiBranchProject mbp =  folder.getItem(s);
+        if(mbp == null){
+            throw new ServiceException.NotFoundException("Multibranch pipeline "+ s + " not found.");
+        }
         return new MultiBranchPipelineImpl(mbp);
     }
 
