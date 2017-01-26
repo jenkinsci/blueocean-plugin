@@ -15,11 +15,16 @@ export default class Node extends Component {
         const node = this.expandAnchor(props);
         this.state = { isFocused: node.isFocused };
     }
-
     componentWillMount() {
         const { nodesBaseUrl, fetchLog } = this.props;
         const { config = {} } = this.context;
         const node = this.expandAnchor(this.props);
+        const { result, state } = node;
+        const resultRun = result === 'UNKNOWN' || !result ? state : result;
+        const isRunning = () => resultRun === 'RUNNING' || resultRun === 'PAUSED';
+        const { durationMillis } = this.durationHarmonize(isRunning, node);
+        this.durationMillis = durationMillis;
+
         if (node && node.isFocused) {
             const fetchAll = node.fetchAll;
             const mergedConfig = { ...config, node, nodesBaseUrl, fetchAll };
@@ -69,6 +74,16 @@ export default class Node extends Component {
         if (this.timeout) {
             clearTimeout(this.timeout);
         }
+    }
+    durationHarmonize(isRunning, node) {
+        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
+        // the time when we started the run harmonized with offset
+        return harmonizeTimes({
+            endTime: node.endTime,
+            startTime: node.startTime,
+            durationInMillis: node.durationInMillis,
+            isRunning,
+        }, skewMillis);
     }
     /*
      * Calculate whether we need to expand the step due to linking.
@@ -127,16 +142,15 @@ export default class Node extends Component {
                 router.push(location);
             }
         };
-        const runResult = resultRun.toLowerCase();
         const scrollToBottom =
-            runResult === 'failure'
-            || (runResult === 'running' && followAlong)
+            resultRun === 'FAILURE'
+            || (resultRun === 'RUNNING' && followAlong)
         ;
-        const isRunning = () => runResult === 'running' || runResult === 'paused';
-        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
-        logger.debug('step - ServerBrowserTimeSkewMillis', skewMillis, 'run.startTime:', node.startTime);
-        // the time when we started the run harmonized with offset
-        const { durationMillis } = harmonizeTimes({ ...node, isRunning }, skewMillis);
+        const isRunning = () => resultRun === 'RUNNING' || resultRun === 'PAUSED';
+        const { durationMillis } = this.durationHarmonize(isRunning, node);
+        // logger.debug('step - run.startTime:', node.startTime);
+        // logger.debug('step - startTime:', startTime);
+        logger.debug('step - durationMillis:', this.durationMillis, durationMillis);
         const logProps = {
             ...this.props,
             url,
@@ -166,7 +180,7 @@ export default class Node extends Component {
             children = <span>&nbsp;</span>;
         }
         const time = (<TimeDuration
-          millis={durationMillis}
+          millis={isRunning() ? this.durationMillis : durationMillis }
           liveUpdate={isRunning()}
           updatePeriod={1000}
           locale={locale}
@@ -179,7 +193,7 @@ export default class Node extends Component {
             <ResultItem {...{
                 extraInfo: time,
                 key: id,
-                result: runResult,
+                result: resultRun.toLowerCase(),
                 expanded: isFocused,
                 label: title,
                 onCollapse: removeFocus,
@@ -190,6 +204,7 @@ export default class Node extends Component {
             </ResultItem>
       </div>);
     }
+
 }
 
 const { object, func, string, bool, shape } = PropTypes;

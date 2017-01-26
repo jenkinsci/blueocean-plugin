@@ -10,6 +10,18 @@ import { harmonizeTimes } from '../util/serverBrowserTimeHarmonize';
 const logger = logging.logger('io.jenkins.blueocean.dashboard');
 
 class RunDetailsHeader extends Component {
+    componentWillMount() {
+        const { data: run } = this.props;
+        const isRunning = () => run.isRunning() || run.isPaused() || run.isQueued();
+        // we need to make sure that we calculate with the correct time offset
+        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
+        const { durationMillis } = harmonizeTimes({
+            startTime: run.startTime,
+            durationInMillis: run.durationInMillis,
+            isRunning,
+        }, skewMillis);
+        this.durationMillis = durationMillis;
+    }
     handleAuthorsClick() {
         if (this.props.onAuthorsClick) {
             this.props.onAuthorsClick();
@@ -39,18 +51,23 @@ class RunDetailsHeader extends Component {
         const status = run.getComputedResult();
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
-        logger.debug('rundetails - ServerBrowserTimeSkewMillis', skewMillis, 'run.startTime:', run.startTime);
         // the time when we started the run harmonized with offset
+        const isRunning = () => run.isRunning() || run.isPaused();
         const {
             durationMillis,
             endTime,
             startTime,
-        } = harmonizeTimes(run, skewMillis);
-        logger.debug('dump', {
-            durationMillis,
-            endTime,
-            startTime,
-        });
+        } = harmonizeTimes({
+            endTime: run.endTime,
+            startTime: run.startTime,
+            durationInMillis: run.durationInMillis,
+            isRunning,
+        }, skewMillis);
+        logger.debug('rundetails - run.startTime:', run.startTime);
+        logger.debug('rundetails - startTime:', startTime);
+        logger.debug('rundetails - run.endTime:', run.endTime);
+        logger.debug('rundetails - endTime:', endTime);
+        logger.debug('rundetails - durationMillis:', durationMillis);
         const onAuthorsClick = () => this.handleAuthorsClick();
         return (
         <div className="pipeline-result run-details-header">
@@ -95,8 +112,8 @@ class RunDetailsHeader extends Component {
                             }}
                             />
                             <TimeDuration
-                              millis={durationMillis}
-                              liveUpdate={run.isRunning()}
+                              millis={isRunning() ? this.durationMillis : durationMillis}
+                              liveUpdate={isRunning()}
                               updatePeriod={1000}
                               locale={locale}
                               displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}

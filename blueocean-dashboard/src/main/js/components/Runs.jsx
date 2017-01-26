@@ -31,14 +31,14 @@ export default class Runs extends Component {
         const { run, changeset, pipeline, t, locale } = this.props;
 
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
-        const running = resultRun === 'RUNNING';
+        const isRunning = () => run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
         // the time when we started the run harmonized with offset
         const {
             durationMillis,
             endTime,
             startTime,
-        } = harmonizeTimes(run, skewMillis);
+        } = harmonizeTimes({ ...run, isRunning }, skewMillis);
 
         const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
 
@@ -63,7 +63,8 @@ export default class Runs extends Component {
             <CellLink>
                 <TimeDuration
                   millis={durationMillis}
-                  liveUpdate={running}
+                  updatePeriod={1000}
+                  liveUpdate={isRunning()}
                   locale={locale}
                   displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
                   liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
