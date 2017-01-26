@@ -1,0 +1,76 @@
+@list-margin: 8px;
+
+.List {
+    // core styling to handle layout properly
+    display: flex;
+
+    .List-ItemContainer {
+        display: inline-flex;
+        flex-flow: column nowrap;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .List-Item {
+        position: relative;
+    }
+
+    // default visual styling
+    .List-ItemContainer.u-default-list-container {
+        padding-left: @list-margin;
+        padding-top: @list-margin;
+        background-color: fade(@gray-lighter, 25%);
+        border-radius: 3px;
+
+        .List-Radio {
+            &:focus + .List-Item {
+                .focus-rect;
+            }
+        }
+
+        .List-Item {
+            margin-bottom: @list-margin;
+            margin-right: @list-margin;
+            background-color: #fff;
+            .control-border;
+
+            &.List-Item-selected {
+                background-color: @gray-lighter;
+            }
+
+            &:hover {
+                background-color: @gray-lighter;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .List-DefaultRenderer {
+        overflow: hidden;
+        padding: 8px 16px;
+
+        // TODO: redo this with SVG. this font stuff falls apart in non-webkit browsers
+        /*
+        // prevent icon (below) from causing overflow in the list
+        overflow: hidden;
+
+        padding-left: 38px;
+
+        .List-DefaultRenderer-text {
+            &:before {
+                content: '\2039\203a';
+                position: absolute;
+                top: 50%;
+                left: 5px;
+                margin-top: -23px;
+                font: 44px Sans-serif;
+                line-height: 38px;
+                color: @gray;
+                font-weight: 100;
+                letter-spacing: -4px;
+            }
+        }
+        */
+    }
+
+}

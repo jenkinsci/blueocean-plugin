@@ -1,7 +1,3 @@
-/**
- * Created by cmeyers on 11/4/16.
- */
-
 export default {
     TAB: 9,
     ENTER: 13,

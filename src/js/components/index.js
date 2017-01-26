@@ -36,6 +36,7 @@ export { Progress } from './Progress';
 export { Popover } from './Popover';
 export { PositionFunctions } from './Position';
 export { ExpandablePath } from './ExpandablePath';
+export { List } from './List';
 export {
     BasicDialog,
     ModalContainer,
