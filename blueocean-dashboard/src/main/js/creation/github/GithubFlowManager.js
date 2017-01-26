@@ -39,6 +39,9 @@ export default class GithubFlowManager extends FlowManager {
     @observable
     selectedRepository = null;
 
+    @observable
+    savedOrgFolder = null;
+
     _repositoryCache = {};
 
     _discoverSelection = null;
@@ -145,13 +148,8 @@ export default class GithubFlowManager extends FlowManager {
         }
     }
 
-    confirmDiscover() {
-        if (!this.selectedOrganization.jenkinsOrganizationPipeline) {
-            this._creationApi.createOrgFolder(this._credentialId, this.selectedOrganization);
-        } else {
-            // TODO: handle update case
-            console.log('TODO: handle update case');
-        }
+    saveAutoDiscover() {
+        this._saveOrgFolder();
     }
 
     @action
@@ -201,9 +199,55 @@ export default class GithubFlowManager extends FlowManager {
         }
     }
 
-    createFromRepository() {
+    saveSingleRepo() {
+        const repoNames = this._getFullRepoNameList();
+        this._saveOrgFolder(repoNames);
+    }
+
+    /**
+     * Get the full list of repo names for the org folder based on those already being scanned, and the user's selection.
+     *
+     * @returns {Array}
+     * @private
+     */
+    _getFullRepoNameList() {
+        const allRepos = this._repositoryCache[this.selectedOrganization.name];
+        const existingPipelines = allRepos.filter(repo => repo.pipelineCreated);
+        const repoNames = existingPipelines.map(repo => repo.name);
+        repoNames.push(this.selectedRepository.name);
+        return repoNames;
+    }
+
+    /**
+     * Save the org folder with the specified list of repo names.
+     * If omitted, the created org folder will scan all repos.
+     *
+     * @param repoNames
+     * @private
+     */
+    _saveOrgFolder(repoNames = []) {
+        this._setStatus(STATUS.PENDING_CREATION_SAVING);
         this.pushStep(<GithubCompleteStep />);
         this.setPendingSteps();
+
+        const shouldCreate = !this.selectedOrganization.jenkinsOrganizationPipeline;
+        const promise = shouldCreate ?
+            this._creationApi.createOrgFolder(this._credentialId, this.selectedOrganization, repoNames) :
+            this._creationApi.updateOrgFolder(this._credentialId, this.selectedOrganization, repoNames);
+
+        promise
+            .then(waitAtLeast(500))
+            .then(r => this._saveOrgFolderSuccess(r), e => this._saveOrgFolderFailure(e));
+    }
+
+    @action
+    _saveOrgFolderSuccess(orgFolder) {
+        this._setStatus(STATUS.STEP_COMPLETE_SUCCESS);
+        this.savedOrgFolder = orgFolder;
+    }
+
+    _saveOrgFolderFailure() {
+        this._setStatus(STATUS.STEP_COMPLETE_SAVING_ERROR);
     }
 
 }

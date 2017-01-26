@@ -7,7 +7,7 @@ import FlowStep from '../../flow2/FlowStep';
 export default class GithubConfirmDiscoverStep extends React.Component {
 
     confirmDiscover() {
-        this.props.flowManager.confirmDiscover();
+        this.props.flowManager.saveAutoDiscover();
     }
 
     render() {

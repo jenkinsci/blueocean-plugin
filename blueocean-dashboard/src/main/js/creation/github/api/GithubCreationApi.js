@@ -11,7 +11,22 @@ export class GithubCreationApi {
         const orgsUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github/organizations/?credentialId=${credentialId}`, false);
 
         return this._fetch(orgsUrl)
-            .then(credential => capabilityAugmenter.augmentCapabilities(credential));
+            .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
+            .then(orgs => this.__addHalHrefs(orgs));
+    }
+
+    // TODO: temp method to add HAL href, for testing only
+    __addHalHrefs(organizations) {
+        return organizations.map(organization => {
+            const org = organization;
+
+            org._links.orgfolder = {
+                _class: 'io.jenkins.blueocean.rest.hal.Link',
+                href: `/blue/rest/organizations/jenkins/pipelines/${organization.name}/`,
+            };
+
+            return org;
+        });
     }
 
     listRepositories(credentialId, organizationName, pageNumber = 1, pageSize = 100) {
@@ -41,6 +56,27 @@ export class GithubCreationApi {
         };
 
         return this._fetch(createUrl, { fetchOptions })
+            .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
+    }
+
+    updateOrgFolder(credentialId, organization, repoNames = []) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const { href } = organization._links.orgfolder;
+        const updateUrl = Utils.cleanSlashes(`${path}/${href}`);
+
+        const requestBody = this._buildRequestBody(
+            false, credentialId, organization.name, organization.name, repoNames,
+        );
+
+        const fetchOptions = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        };
+
+        return this._fetch(updateUrl, { fetchOptions })
             .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
     }
 

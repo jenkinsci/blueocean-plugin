@@ -12,7 +12,7 @@ export default class GithubRepositoryStep extends React.Component {
     }
 
     beginCreation() {
-        this.props.flowManager.createFromRepository();
+        this.props.flowManager.saveSingleRepo();
     }
 
     render() {

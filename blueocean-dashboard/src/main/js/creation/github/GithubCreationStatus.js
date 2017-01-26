@@ -12,8 +12,9 @@ const status = {
     PENDING_LOADING_REPOSITORIES: 'pending_loading_repositories',
     STEP_CONFIRM_DISCOVER: 'step_confirm_discover',
     STEP_CHOOSE_REPOSITORY: 'step_choose_repository',
-    PENDING_CREATION: 'pending_creation',
-    STEP_COMPLETE: 'step_complete',
+    PENDING_CREATION_SAVING: 'pending_creation_saving',
+    STEP_COMPLETE_SAVING_ERROR: 'step_complete_saving_error',
+    STEP_COMPLETE_SUCCESS: 'step_complete_success',
 
     values: () => [
         status.PENDING_LOADING_CREDS,
@@ -24,10 +25,11 @@ const status = {
         status.STEP_CHOOSE_DISCOVER,
         status.STEP_ALREADY_DISCOVER,
         status.PENDING_LOADING_REPOSITORIES,
-        status.PENDING_CREATION,
         status.STEP_CONFIRM_DISCOVER,
         status.STEP_CHOOSE_REPOSITORY,
-        status.STEP_COMPLETE,
+        status.PENDING_CREATION_SAVING,
+        status.STEP_COMPLETE_SAVING_ERROR,
+        status.STEP_COMPLETE_SUCCESS,
     ],
 };
 
