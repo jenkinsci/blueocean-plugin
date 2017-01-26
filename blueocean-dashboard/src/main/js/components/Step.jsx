@@ -5,10 +5,10 @@ import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 import InputStep from './InputStep';
-import { harmonizeTimes } from '../util/serverBrowserTimeHarmonize';
+import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard');
-
+const timeManager = new TimeManager();
 export default class Node extends Component {
     constructor(props) {
         super(props);
@@ -19,10 +19,7 @@ export default class Node extends Component {
         const { nodesBaseUrl, fetchLog } = this.props;
         const { config = {} } = this.context;
         const node = this.expandAnchor(this.props);
-        const { result, state } = node;
-        const resultRun = result === 'UNKNOWN' || !result ? state : result;
-        const isRunning = () => resultRun === 'RUNNING' || resultRun === 'PAUSED';
-        const { durationMillis } = this.durationHarmonize(isRunning, node);
+        const { durationMillis } = this.durationHarmonize(node);
         this.durationMillis = durationMillis;
 
         if (node && node.isFocused) {
@@ -75,14 +72,13 @@ export default class Node extends Component {
             clearTimeout(this.timeout);
         }
     }
-    durationHarmonize(isRunning, node) {
-        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
+    durationHarmonize(node) {
+        const skewMillis = this.context.config ? this.context.config.getServerBrowserTimeSkewMillis() : 0;
         // the time when we started the run harmonized with offset
-        return harmonizeTimes({
+        return timeManager.harmonizeTimes({
             endTime: node.endTime,
             startTime: node.startTime,
             durationInMillis: node.durationInMillis,
-            isRunning,
         }, skewMillis);
     }
     /*

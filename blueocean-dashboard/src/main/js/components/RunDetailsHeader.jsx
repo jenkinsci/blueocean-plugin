@@ -5,9 +5,10 @@ import { Icon } from '@jenkins-cd/react-material-icons';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, LiveStatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
-import { harmonizeTimes } from '../util/serverBrowserTimeHarmonize';
+import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard');
+const timeManager = new TimeManager();
 
 class RunDetailsHeader extends Component {
     componentWillMount() {
@@ -15,7 +16,7 @@ class RunDetailsHeader extends Component {
         const isRunning = () => run.isRunning() || run.isPaused() || run.isQueued();
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
-        const { durationMillis } = harmonizeTimes({
+        const { durationMillis } = timeManager.harmonizeTimes({
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
             isRunning,
@@ -57,11 +58,10 @@ class RunDetailsHeader extends Component {
             durationMillis,
             endTime,
             startTime,
-        } = harmonizeTimes({
+        } = timeManager.harmonizeTimes({
             endTime: run.endTime,
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
-            isRunning,
         }, skewMillis);
         logger.debug('rundetails - run.startTime:', run.startTime);
         logger.debug('rundetails - startTime:', startTime);

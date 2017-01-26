@@ -7,34 +7,56 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.harmonizeTimes');
  *
  * @param run
  * @param skewMillis
- * @returns {{diff: {start: number, end: number}, durationMillis: diff, endTime: Date, startTime: Date}}
+ * @returns {{ durationMillis: diff, endTime: Date, startTime: Date}}
  */
-export function harmonizeTimes(run, skewMillis) {
-    logger.debug('skewMillis', skewMillis);
-    if (!run.startTime) {
-        logger.error('not found any startTime, seems that a component should not have called this me');
-        return {};
+export class TimeManager {
+    currentTime() {
+        return moment();
     }
-    logger.warn('dates', Date.now(), run.startTime, new Date(moment(run.startTime)));
-    const startTime = new Date(moment(run.startTime) - skewMillis).toJSON();
-    const endTime = run.endTime ? new Date(moment(run.endTime) - skewMillis).toJSON() : null;
-    logger.warn('startTime:', startTime, 'endTime:', endTime, 'run.startTime:', run.startTime);
-    const start = Math.abs(moment(Date.now() - skewMillis).diff(moment(startTime)));
-    const end = run.endTime ? moment().diff(moment(endTime)) : null;
-    logger.debug('diff start:', start, 'diff end:', end);
-    const durationMillis = run.isRunning && run.isRunning() ?
-            start : run.durationInMillis;
-    logger.debug('durationMillis:', durationMillis);
-    logger.debug('running:', run.isRunning ? run.isRunning() : 'noComment');
-    const newVar = {
-        diff: {
-            start,
-            end,
-        },
-        durationMillis,
-        endTime,
-        startTime,
-    };
-    logger.debug('returning', newVar);
-    return newVar;
+
+    harmonizeTimes(run, skewMillis) {
+        logger.debug('skewMillis', skewMillis);
+        if (!run.startTime) {
+            logger.error('not found any startTime, seems that a component should not have called this me');
+            return {};
+        }
+    // What time is it now on the client
+        const clientTime = this.currentTime();
+    // what is the start time of the server
+        const serverStartTime = moment(run.startTime);
+    // sync server start date to local time via the skewMillis
+        if (skewMillis >= 0) {
+            serverStartTime.subtract({ milliseconds: skewMillis });
+        } else {
+            serverStartTime.add({ milliseconds: skewMillis });
+        }
+    // export the harmonized start time
+        const startTime = serverStartTime.toJSON();
+    // how long has passed from the start to now in milliseconds
+        const timeElapsed = clientTime.diff(serverStartTime, 'milliseconds');
+    // assume we do not have an end date
+        let endTime = null;
+        let durationMillis = 0;
+        if (run.endTime) { // sync server end date to local time via the skewMillis
+            const serverEndTime = moment(run.endTime);
+            if (skewMillis >= 0) {
+                serverEndTime.subtract({ milliseconds: skewMillis });
+            } else {
+                serverEndTime.add({ milliseconds: skewMillis });
+            }
+            endTime = serverEndTime.toJSON();
+            durationMillis = run.durationInMillis;
+        } else {
+            logger.debug('running, using timeElapsed for duration');
+            durationMillis = timeElapsed;
+        }
+        logger.debug('durationMillis:', durationMillis);
+        const harmonized = {
+            durationMillis,
+            endTime,
+            startTime,
+        };
+        logger.debug('returning', harmonized);
+        return harmonized;
+    }
 }

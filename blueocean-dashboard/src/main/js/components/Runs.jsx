@@ -4,7 +4,6 @@ import {
 }
     from '@jenkins-cd/design-language';
 import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
-import { harmonizeTimes } from '../util/serverBrowserTimeHarmonize';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 
@@ -13,6 +12,9 @@ import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import { CellRow, CellLink } from './CellLink';
 
+import { TimeManager } from '../util/serverBrowserTimeHarmonize';
+
+const timeManager = new TimeManager();
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
  */
@@ -38,7 +40,7 @@ export default class Runs extends Component {
             durationMillis,
             endTime,
             startTime,
-        } = harmonizeTimes({ ...run, isRunning }, skewMillis);
+        } = timeManager.harmonizeTimes(run, skewMillis);
 
         const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
 
