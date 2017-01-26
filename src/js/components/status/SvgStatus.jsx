@@ -40,11 +40,12 @@ export function getGlyphFor(result:Result) {
                 </g>
             );
         case "paused":
-            // "!"
+            // "||"
+            // 8px 9.3px
             return (
-                <g className="result-status-glyph" transform="scale(1.4)">
-                    <polygon points="-3,-4 -3,3 -3,3 -1,3 -1,-4"/>
-                    <polygon points="3,-4 1,-4 1,-4 1,3 3,3"/>
+                <g className="result-status-glyph">
+                    <polygon points="-4,-4.65 -4,4.65 -4,4.65 -1.5,4.65 -1.5,-4.65"/>
+                    <polygon points="4,-4.65 1.5,-4.65 1.5,-4.65 1.5,4.65 4,4.65"/>
                 </g>
             );
         case "unstable":
