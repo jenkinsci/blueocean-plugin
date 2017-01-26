@@ -15,6 +15,10 @@ export default class GithubRepositoryStep extends React.Component {
         this.props.flowManager.saveSingleRepo();
     }
 
+    _exit() {
+        this.props.flowManager.completeFlow();
+    }
+
     render() {
         const { flowManager } = this.props;
         const buttonDisabled = !flowManager.selectedRepository;
@@ -22,6 +26,7 @@ export default class GithubRepositoryStep extends React.Component {
 
         return (
             <FlowStep {...this.props} className="github-repo-list-step" title={title}>
+                { flowManager.selectableRepositories.length > 0 &&
                 <div className="container">
                     <List
                       className="repo-list"
@@ -38,6 +43,30 @@ export default class GithubRepositoryStep extends React.Component {
                         Create Pipeline
                     </button>
                 </div>
+                }
+
+                { flowManager.repositories.length > 0 && flowManager.selectableRepositories.length === 0 &&
+                <div className="container">
+                    <p className="instructions">
+                        It appears that all {flowManager.repositories.length} repositories in the organization
+                        "{flowManager.selectedOrganization.name}" already have pipelines created.
+                    </p>
+
+                    <button onClick={() => this._exit()}>Exit</button>
+                </div>
+                }
+
+                { flowManager.repositories.length === 0 &&
+                <div className="container">
+                    <p className="instructions">
+                        The organization "{flowManager.selectedOrganization.name}" has no repositories.
+
+                        Please pick a different organization or choose "Automatically Discover" instead.
+                    </p>
+
+                    <button onClick={() => this._exit()}>Exit</button>
+                </div>
+                }
             </FlowStep>
         );
     }
