@@ -17,6 +17,7 @@ import jenkins.scm.api.metadata.ObjectMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
@@ -82,7 +83,8 @@ public class BranchImpl extends PipelineImpl {
         }
     }
 
-    public static class PullRequest extends Resource {
+    @ExportedBean
+    public static class PullRequest {
         private static final String PULL_REQUEST_NUMBER = "id";
         private static final String PULL_REQUEST_AUTHOR = "author";
         private static final String PULL_REQUEST_TITLE = "title";
@@ -124,11 +126,6 @@ public class BranchImpl extends PipelineImpl {
         @Exported(name = PULL_REQUEST_AUTHOR)
         public String getAuthor() {
             return author;
-        }
-
-        @Override
-        public Link getLink() {
-            return null;
         }
     }
 
