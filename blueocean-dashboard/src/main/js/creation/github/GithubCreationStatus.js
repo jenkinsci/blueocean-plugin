@@ -14,6 +14,9 @@ const status = {
     STEP_CHOOSE_REPOSITORY: 'step_choose_repository',
     PENDING_CREATION_SAVING: 'pending_creation_saving',
     STEP_COMPLETE_SAVING_ERROR: 'step_complete_saving_error',
+    PENDING_CREATION_EVENTS: 'pending_creation_events',
+    STEP_COMPLETE_EVENT_ERROR: 'step_complete_event_error',
+    STEP_COMPLETE_EVENT_TIMEOUT: 'step_complete_event_timeout',
     STEP_COMPLETE_SUCCESS: 'step_complete_success',
 
     values: () => [
@@ -29,6 +32,9 @@ const status = {
         status.STEP_CHOOSE_REPOSITORY,
         status.PENDING_CREATION_SAVING,
         status.STEP_COMPLETE_SAVING_ERROR,
+        status.PENDING_CREATION_EVENTS,
+        status.STEP_COMPLETE_EVENT_ERROR,
+        status.STEP_COMPLETE_EVENT_TIMEOUT,
         status.STEP_COMPLETE_SUCCESS,
     ],
 };

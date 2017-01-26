@@ -1,5 +1,6 @@
 import React from 'react';
 import { action, computed, observable } from 'mobx';
+import { sseService } from '@jenkins-cd/blueocean-core-js';
 
 import waitAtLeast from '../flow2/waitAtLeast';
 
@@ -17,6 +18,7 @@ import GithubCompleteStep from './steps/GithubCompleteStep';
 const MIN_DELAY = 500;
 const FIRST_PAGE = 1;
 const PAGE_SIZE = 100;
+const SSE_TIMEOUT_DELAY = 1000 * 30;
 
 export default class GithubFlowManager extends FlowManager {
 
@@ -52,6 +54,10 @@ export default class GithubFlowManager extends FlowManager {
 
     _credentialsApi = null;
 
+    _sseSubscribeId = null;
+
+    _sseTimeoutId = null;
+
     constructor(creationApi, credentialsApi) {
         super();
 
@@ -68,6 +74,18 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     destroy() {
+        this._cleanupListeners();
+    }
+
+    _cleanupListeners() {
+        if (this._sseSubscribeId) {
+            sseService.removeHandler(this._sseSubscribeId);
+            this._sseSubscribeId = null;
+        }
+        if (this._sseTimeoutId) {
+            clearTimeout(this._sseTimeoutId);
+            this._sseTimeoutId = null;
+        }
     }
 
     findExistingCredential() {
@@ -244,10 +262,35 @@ export default class GithubFlowManager extends FlowManager {
     _saveOrgFolderSuccess(orgFolder) {
         this._setStatus(STATUS.STEP_COMPLETE_SUCCESS);
         this.savedOrgFolder = orgFolder;
+        this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
+        this._sseTimeoutId = setTimeout(() => {
+            this._onSseTimeout();
+        }, SSE_TIMEOUT_DELAY);
     }
 
     _saveOrgFolderFailure() {
         this._setStatus(STATUS.STEP_COMPLETE_SAVING_ERROR);
+    }
+
+    _onSseEvent(event) {
+        if (event.blueocean_job_rest_url.indexOf(this.savedOrgFolder._links.self.href) === 0) {
+            if (event.jenkins_event === 'job_run_queue_task_complete') {
+                // TODO: investigate why in some cases we seem to receive this event but without 'job_multibranch_indexing' props
+                // these fields might not be populated in the event of RateLimitExceededException
+                if (event.job_multibranch_indexing_result === 'SUCCESS') {
+                    this._setStatus(STATUS.STEP_COMPLETE_SUCCESS);
+                    this._cleanupListeners();
+                } else if (event.job_multibranch_indexing_result === 'FAILURE') {
+                    this._setStatus(STATUS.STEP_COMPLETE_EVENT_ERROR);
+                    this._cleanupListeners();
+                }
+            }
+        }
+    }
+
+    _onSseTimeout() {
+        this._setStatus(STATUS.STEP_COMPLETE_EVENT_TIMEOUT);
+        this._cleanupListeners();
     }
 
 }
