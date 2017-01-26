@@ -9,6 +9,7 @@ import { Provider, configureStore, combineReducers} from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
 import Config from './config';
 import { ToastDrawer } from './components/ToastDrawer';
+import { BackendConnectFailure } from './components/BackendConnectFailure';
 import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
 useStrict(true);
@@ -42,9 +43,9 @@ const AdminLink = (props) => {
 
     if (showLink) {
         var adminCaption = t('administration', {
-            defaultValue: 'Administation',
+            defaultValue: 'Administration',
         });
-        return <a href={`${UrlConfig.getJenkinsRootURL()}/manage`}>{adminCaption}</a>;          
+        return <a href={`${UrlConfig.getJenkinsRootURL()}/manage`}>{adminCaption}</a>;
     }
 
     return null;
@@ -90,6 +91,7 @@ class App extends Component {
                     <DevelopmentFooter />
                 </footer>
                 <ToastDrawer />
+                <BackendConnectFailure />
             </div>
         );
     }
