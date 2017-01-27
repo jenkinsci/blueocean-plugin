@@ -172,16 +172,41 @@ function findI18nBundles() {
     var bundleFileDir = getPluginResourceBundleDir();
 
     if (fs.existsSync(bundleFileDir)) {
+        var files = fs.readdirSync(bundleFileDir);
+        if (files) {
+            var cpPrefix = getPluginResourceBundleClasspath();
+            var propertiesFileMatcher = /\.properties$/; // endswith ".properties"
+            var everythingAfterFirstUnderscoreMatcher = /_.*$/;
 
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (propertiesFileMatcher.test(file)) {
+                    // Strip off the different parts we don't want. It might be that
+                    // resource bundle basenames can have underscores in them according
+                    // to specs (I didn't find a ref one way or the other), but trying to match
+                    // language/country/variant codes exactly and strip them off is going to
+                    // make the code a pita to impl/understand, so lets just say we only detect
+                    // basenames that do NOT contain underscores. If someone insists on using
+                    // underscores they can manually define the bundles in the yaml file.
+                    file = file.replace(propertiesFileMatcher, '');
+                    file = file.replace(everythingAfterFirstUnderscoreMatcher, '');
+
+                    var resourceBundleBaseName = cpPrefix + '.' + file;
+                    if (bundles.indexOf(resourceBundleBaseName) === -1) {
+                        bundles.push(resourceBundleBaseName);
+                    }
+                }
+            }
+        }
     }
 
     return bundles;
 }
 
-function getPluginResourceBundleDir() => {
+function getPluginResourceBundleDir() {
     return 'src/main/resources/jenkins/plugins/' + maven.getArtifactId().replace(/-/g, '/');
 }
 
-function getPluginResourceBundleClasspath() => {
+function getPluginResourceBundleClasspath() {
     return 'jenkins.plugins.' + maven.getArtifactId().replace(/-/g, '.');
 }
