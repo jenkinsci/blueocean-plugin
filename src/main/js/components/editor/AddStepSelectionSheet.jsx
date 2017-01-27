@@ -15,6 +15,33 @@ const isStepValidForSelectionUI = (step) => {
     return true;
 };
 
+// JENKINS-41360
+const knownStepOrder = [
+    'sh', // Shell Script
+    'echo', // Print Message
+    'timeout', // Enforce Time Limit
+    'retry', // Retry the body...
+    'sleep', // Sleep
+    'bat', // Windows Bash Script
+    'archiveArtifacts', // Archive The artifacts
+    'node', // Allocate Node
+];
+
+const stepSorter = (a,b) => {
+    const ai = knownStepOrder.indexOf(a.functionName);
+    const bi = knownStepOrder.indexOf(b.functionName);
+    if (ai < 0 && bi < 0) {
+        return a.displayName.localeCompare(b.displayName);
+    }
+    if (ai < 0) {
+        return 1;
+    }
+    if (bi < 0) {
+        return -1;
+    }
+    return ai < bi ? -1 : 1;
+};
+
 type Props = {
     onClose?: () => any,
     onStepSelected: (step:StepInfo) => any,
@@ -79,7 +106,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
                         placeholder="Find steps by name" />
                 </div>
                 <div className="editor-step-selector">
-                {steps && steps.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).map(step =>
+                {steps && steps.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).sort(stepSorter).map(step =>
                     <div tabIndex="0" onKeyPress={e => this.selectItemByKeyPress(e, step)}
                         onClick={() => this.addStep(step)}>
                         {step.displayName}
