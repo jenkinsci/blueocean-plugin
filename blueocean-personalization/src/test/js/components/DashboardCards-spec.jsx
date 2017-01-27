@@ -77,7 +77,7 @@ describe('DashboardCards', () => {
 
         assert.isOk(wrapper);
     });
-    it.only('renders without error for favorites props that has empty latestRun', () => {
+    it('renders without error for favorites props that has empty latestRun', () => {
         const wrapper = shallow(
             <DashboardCards favorites={noLatestRun}/>
         );
