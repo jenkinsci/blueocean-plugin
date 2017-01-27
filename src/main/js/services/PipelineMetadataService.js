@@ -20,6 +20,7 @@ class PipelineMetadataService {
     getStepListing(handler) {
         this._fetch('pipelineStepMetadata', data => {
             const filtered = this.filterStepListing(data);
+            filtered.find = step => filtered.filter(md => md.functionName === step.name)[0];
             handler(filtered);
         });
     }

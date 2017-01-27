@@ -5,7 +5,7 @@ export default function fetch(path, body, handler) {
         fetchOptions: { method: 'GET' }
     }).then(response => {
         if (!response.ok) {
-            console.log('An error happened fetching ', path);
+            console.error('An error occurred while fetching:', path);
             return;
         }
         const useCrumb = function (crumb) {
@@ -25,8 +25,6 @@ export default function fetch(path, body, handler) {
             }).then(data => {
                 if (data.status === 'ok') {
                     handler(data.data);
-                } else {
-                    console.log(data);
                 }
             });
         };

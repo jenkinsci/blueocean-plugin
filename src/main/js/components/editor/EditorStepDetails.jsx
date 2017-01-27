@@ -5,9 +5,12 @@ import pipelineMetadataService from '../../services/PipelineMetadataService';
 import type { StepInfo } from '../../services/PipelineStore';
 import GenericStepEditor from './steps/GenericStepEditor';
 import UnknownStepEditor from './steps/UnknownStepEditor';
+import { EditorStepList } from './EditorStepList';
+import { ValidationMessageList } from './ValidationMessageList';
 
 const allStepEditors = [
     require('./steps/ShellScriptStepEditor').default,
+    require('./steps/PipelineScriptStepEditor').default,
 ];
 
 const stepEditorsByName = {};
@@ -58,6 +61,14 @@ export class EditorStepDetails extends Component {
         }
     }
 
+    getStepMetadata(step) {
+        const meta = this.state.stepMetadata.filter(md => md.functionName === step.name);
+        if (meta && meta.length) {
+            return meta[0];
+        }
+        return null;
+    }
+
     getStepEditor(step) {
         const editor = stepEditorsByName[step.name];
         if (editor) {
@@ -67,8 +78,7 @@ export class EditorStepDetails extends Component {
             return null;
         }
 
-        const foundMeta = this.state.stepMetadata.filter(md => md.functionName === step.name);
-        if (foundMeta.length === 0) {
+        if (!this.getStepMetadata(step)) {
             return UnknownStepEditor;
         }
         return GenericStepEditor;
@@ -89,8 +99,18 @@ export class EditorStepDetails extends Component {
         const StepEditor = this.getStepEditor(step);
 
         return (
-            <div className="editor-step-detail">
-                <StepEditor key={step.id} onChange={step => this.commitValue(step)} step={step} />
+            <div className="editor-step-detail editor-config-panel">
+                <section>
+                    <ValidationMessageList node={step} />
+                    <StepEditor key={step.id} onChange={step => this.commitValue(step)} step={step} />
+                </section>
+                {step.isContainer && <section>
+                    <h5>Child steps</h5>
+                    <EditorStepList steps={step.children}
+                        parent={step}
+                        onAddStepClick={() => this.props.openSelectStepDialog(step)}
+                        onStepSelected={(step) => this.props.selectedStepChanged(step)} />
+                </section>}
             </div>
         );
     }

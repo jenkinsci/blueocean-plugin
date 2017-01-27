@@ -21,7 +21,7 @@
         <jenkins.version>2.7.1</jenkins.version>
         <node.version>6.2.1</node.version>
         <npm.version>3.9.3</npm.version>
-        <blueocean.version>1.0.0-b16</blueocean.version>
+        <blueocean.version>1.0.0-b19</blueocean.version>
         <declarative.version>0.8.2</declarative.version>
     </properties>
 

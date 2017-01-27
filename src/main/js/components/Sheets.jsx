@@ -3,24 +3,6 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Icon } from "@jenkins-cd/react-material-icons";
 
 export class Sheet extends React.Component {
-    componentWillAppear() {
-        console.log('ehh');
-    }
-    componentDidAppear() {
-        console.log('ehh');
-    }
-    componentWillEnter() {
-        console.log('ehh');
-    }
-    componentDidEnter() {
-        console.log('ehh');
-    }
-    componentWillLeave() {
-        console.log('ehh');
-    }
-    componentDidLeave() {
-        console.log('ehh');
-    }
     onClose() {
         const child = React.Children.only(this.props.children);
         child.props.onClose();

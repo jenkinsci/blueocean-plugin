@@ -83,7 +83,6 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
     }
 
     onAgentChanged(agent: any) {
-        console.log('agent changed', agent);
         const selectedAgent = {
             type: agent.symbol, // agent is metadata
             arguments: [],

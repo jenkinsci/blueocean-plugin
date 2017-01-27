@@ -4,19 +4,23 @@ import React, { Component, PropTypes } from 'react';
 
 import {getAddIconGroup} from './common';
 import type { StageInfo } from '../../services/PipelineStore';
+import pipelineValidator from '../../services/PipelineValidator';
 
 // Dimensions used for layout, px
 export const defaultLayout = {
     nodeSpacingH: 120,
     nodeSpacingV: 70,
-    nodeRadius: 12,
+    nodeRadius: 11,
+    startRadius: 7.5,
+    dotRadius: 3.4,
     curveRadius: 12,
-    connectorStrokeWidth: 3.5,
+    connectorStrokeWidth: 3.2,
+    addStrokeWidth: 1.7,
     labelOffsetV: 25,
     smallLabelOffsetV: 20
 };
 
-const nodeStrokeWidth = 3.5; //px
+const nodeStrokeWidth = 3.1;
 
 // Typedefs
 
@@ -85,6 +89,10 @@ type State = {
     measuredHeight: number,
     layout: LayoutInfo
 };
+
+function nodeHasErrors(graphNode) {
+    return graphNode.stage && pipelineValidator.hasValidationErrors(graphNode.stage);
+}
 
 type DefaultProps = typeof EditorPipelineGraph.defaultProps;
 export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
@@ -307,7 +315,10 @@ needsLayout = true;
             // Add connections from last column to these new nodes
 
             if (previousNodes.length) {
-                this.addConnectionDetails(connections, previousNodes, [...columnNodes, addStagePlaceholder]);
+                // add placeholders first to appear underneath
+                this.addConnectionDetails(connections, [previousNodes[0]], [addStagePlaceholder]);
+                // then add all other connections
+                this.addConnectionDetails(connections, previousNodes, columnNodes);
             }
 
             xp += nodeSpacingH;
@@ -383,6 +394,9 @@ needsLayout = true;
             || (stage && this.stageChildIsSelected(stage))) {
             classNames.push("selected");
         }
+        if (nodeHasErrors(details.node)) {
+            classNames.push("errors");
+        }
 
         return <div className={classNames.join(" ")} style={style} key={key}>{details.text}</div>;
     }
@@ -421,6 +435,9 @@ needsLayout = true;
         if (this.nodeIsSelected(details.node)) {
             classNames.push("selected");
         }
+        if (nodeHasErrors(details.node)) {
+            classNames.push("errors");
+        }
 
         return <div className={classNames.join(" ")} style={style} key={key}>{details.text}</div>;
     }
@@ -431,26 +448,27 @@ needsLayout = true;
 
         const [leftNode, rightNode] = connection;
         const placeholderLine = leftNode.isPlaceholder || rightNode.isPlaceholder;
+        const isConnectedToAdd = rightNode.type === 'add';
         const key = leftNode.key + "_con_" + rightNode.key;
 
         const leftPos = {
-            x: leftNode.x + nodeRadius - (nodeStrokeWidth / 2),
+            x: leftNode.x,// + nodeRadius - (nodeStrokeWidth / 2),
             y: leftNode.y
         };
 
         const rightPos = {
-            x: rightNode.x - nodeRadius + (nodeStrokeWidth / 2),
+            x: rightNode.x,// - nodeRadius + (nodeStrokeWidth / 2),
             y: rightNode.y
         };
 
         // Stroke props common to straight / curved connections
         let connectorStroke:any = {
-            className: "pipeline-connector",
+            className: isConnectedToAdd ? "pipeline-connector placeholder" : "pipeline-connector",
             strokeWidth: connectorStrokeWidth
         };
 
         if (placeholderLine) {
-            connectorStroke.strokeDasharray = "5,2";
+            //connectorStroke.strokeDasharray = "5,2";
         }
 
         if (leftPos.y == rightPos.y) {
@@ -485,24 +503,33 @@ needsLayout = true;
 
     getSVGForNode(node:NodeInfo) {
 
-        const {nodeRadius} = this.state.layout;
+        const {nodeRadius, startRadius, addStrokeWidth} = this.state.layout;
+        const nodeIsSelected = this.nodeIsSelected(node);
 
         if (node.isPlaceholder === true) {
             if (node.type === "start") {
-                return <circle r={nodeRadius * 0.6} fill="black" stroke="none"/>;
-                // TODO: ^^ Put this into styles
+                return <circle r={startRadius} className="start-node" stroke="none"/>;
             }
 
-            return getAddIconGroup(nodeRadius);
+            return getAddIconGroup(nodeRadius, addStrokeWidth);
         }
 
-        return <circle className="editor-graph-node" r={nodeRadius} strokeWidth={nodeStrokeWidth}/>;
+        /*
+        if (nodeHasErrors(node)) {
+            return (<g>
+                <circle className="editor-graph-node" r="13" strokeWidth="2.5"/>
+                <circle className="editor-graph-node" r="8.5" strokeWidth="2.5"/>
+            </g>);
+        }
+        */
+
+        return <circle className="editor-graph-node" r={nodeRadius} strokeWidth={nodeStrokeWidth} />;
     }
 
     renderNode(node:NodeInfo) {
 
         const nodeIsSelected = this.nodeIsSelected(node);
-        const { nodeRadius, connectorStrokeWidth } = this.state.layout;
+        const { nodeRadius, dotRadius, connectorStrokeWidth } = this.state.layout;
 
         // Use a bigger radius for invisible click/touch target
         const mouseTargetRadius = nodeRadius + (2 * connectorStrokeWidth);
@@ -511,6 +538,55 @@ needsLayout = true;
 
         const completePercent = node.completePercent || 0;
         const groupChildren = [this.getSVGForNode(node)];
+
+        const classNames = ["editor-graph-nodegroup"];
+        if (nodeHasErrors(node)) {
+            classNames.push("errors");
+            groupChildren.push(
+                <line 
+                transform="rotate(45)"
+                x1={0}
+                y1={-6}
+                x2={0}
+                y2={6}
+                strokeWidth={nodeStrokeWidth*.75} />
+            );
+            groupChildren.push(
+                <line 
+                transform="rotate(-45)"
+                x1={0}
+                y1={-6}
+                x2={0}
+                y2={6}
+                strokeWidth={nodeStrokeWidth*.75} />
+            );
+            /*
+            groupChildren.push(
+                <line 
+                //transform="rotate(45)"
+                transform="rotate(90)"
+                x1={0}
+                y1={-12}
+                x2={0}
+                y2={12}
+                strokeWidth={nodeStrokeWidth*.75} />
+            );
+            */
+            /*
+            groupChildren.push(
+                <text x="-7px" y="7px">!</text>
+            );
+            */
+        }
+
+        if (nodeIsSelected) {
+            classNames.push("selected");
+
+            // add a middle dot
+            groupChildren.push(
+                <circle className="pipeline-selection-highlight" r={dotRadius} strokeWidth={nodeStrokeWidth} />
+            );
+        }
 
         // Add an invisible click/touch target, coz the nodes are small and (more importantly)
         // many are hollow.
@@ -527,36 +603,10 @@ needsLayout = true;
         const groupProps = {
             key,
             transform: `translate(${node.x},${node.y})`,
-            className: nodeIsSelected ? "editor-graph-nodegroup selected" : "editor-graph-nodegroup"
+            className: classNames.join(' '),
         };
 
         return React.createElement("g", groupProps, ...groupChildren);
-    }
-
-    renderSelectionHighlight() {
-
-        const { nodeRadius, connectorStrokeWidth } = this.state.layout;
-        const highlightRadius = nodeRadius + (0.49 * connectorStrokeWidth);
-        let selectedNode = null;
-
-        for (const node of this.state.nodes) {
-            if (this.nodeIsSelected(node)) {
-                selectedNode = node;
-                break;
-            }
-        }
-
-        if (!selectedNode) {
-            return null;
-        }
-
-        const transform = `translate(${selectedNode.x} ${selectedNode.y})`;
-
-        return (
-            <g className="pipeline-selection-highlight" transform={transform}>
-                <circle r={highlightRadius} strokeWidth={connectorStrokeWidth * 1.1}/>
-            </g>
-        );
     }
 
     nodeIsSelected(node:NodeInfo) {
@@ -622,15 +672,10 @@ needsLayout = true;
             //height: (measuredHeight + 80) + "px"
         };
 
-        //console.log("render graph"); // TODO: RM
-        //console.log("    this.selectedStage", this.selectedStage); // TODO: RM
-        //console.log("   props.selectedStage", this.props.selectedStage); // TODO: RM
-
         return (
             <div style={outerDivStyle}>
                 <svg className="editor-graph-svg"
                     width={measuredWidth} height={measuredHeight}>
-                    {this.renderSelectionHighlight()}
                     {connections.map(conn => this.renderConnection(conn))}
                     {nodes.map(node => this.renderNode(node))}
                 </svg>

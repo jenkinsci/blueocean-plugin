@@ -7,7 +7,7 @@ export default class BooleanPropertyInput extends React.Component {
             <div>
                 <Checkbox checked={this.props.step.data[this.props.propName]}
                     onToggle={checked => { this.props.step.data[this.props.propName] = checked; this.props.onChange(this.props.step); }}
-                    label={this.props.type.capitalizedName} />
+                    label={this.props.type.capitalizedName + (this.props.type.isRequired ? '*' : '')} />
             </div>
         );
     }

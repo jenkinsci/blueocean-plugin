@@ -3,13 +3,14 @@
 import React, { Component, PropTypes } from 'react';
 import pipelineMetadataService from '../../../services/PipelineMetadataService';
 import debounce from 'lodash.debounce';
-import { TextInput } from '@jenkins-cd/design-language';
+import { FormElement, TextInput } from '@jenkins-cd/design-language';
 
 const allPropertyEditors = [
     require('../../properties/BooleanPropertyInput').default,
     require('../../properties/IntegerPropertyInput').default,
     require('../../properties/DecimalPropertyInput').default,
     require('../../properties/StringPropertyInput').default,
+    require('../../properties/ListPropertyInput').default,
 ];
 
 const propertyEditorsByName = {
@@ -69,12 +70,9 @@ export default class GenericStepEditorPanel extends Component<DefaultProps, Prop
                         return React.createElement(propTypeEditor, { step: step, type: p, propName: p.name, onChange: () => this.updateStepData() });
                     }
                     return (
-                        <div className="form-item">
-                            <label className="form-label">{p.capitalizedName}</label>
-                            <div className="form-input">
-                                <TextInput key={p.name} defaultValue={step.data[p.name]} onChange={val => { step.data[p.name] = val; this.updateStepData(); }} />
-                            </div>
-                        </div>
+                        <FormElement title={p.capitalizedName + p.isRequired ? '*' : ''} errorMessage={!step.isNew && !step.data[p.name] && (p.capitalizedName + ' is required')}>
+                            <TextInput key={p.name} defaultValue={step.data[p.name]} onChange={val => { step.data[p.name] = val; this.updateStepData(); }} />
+                        </FormElement>
                     );
                 })}
             </div>

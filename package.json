@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.32",
-    "@jenkins-cd/design-language": "0.0.99",
+    "@jenkins-cd/design-language": "0.0.105",
     "@jenkins-cd/js-extensions": "0.0.32",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/react-material-icons": "1.0.0",

@@ -13,18 +13,27 @@ import type { StageInfo, StepInfo } from '../../services/PipelineStore';
 import { Sheets } from '../Sheets';
 import { MoreMenu } from '../MoreMenu';
 import { Icon } from "@jenkins-cd/react-material-icons";
+import pipelineValidator from '../../services/PipelineValidator';
+import { ValidationMessageList } from './ValidationMessageList';
 
 type Props = {
 };
 
 type State = {
     selectedStage: ?StageInfo,
-    selectedStep: ?StepInfo,
+    selectedSteps: StepInfo[],
     showSelectStep: ?boolean,
     parentStep: ?StepInfo,
 };
 
 type DefaultProps = typeof EditorMain.defaultProps;
+
+function ConfigPanel({className, children}) {
+    return (<div className={className}>
+        {children}
+    </div>);
+}
+
 export class EditorMain extends Component<DefaultProps, Props, State> {
 
     static defaultProps = {};
@@ -36,11 +45,12 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
     state:State;
     pipelineUpdated: Function;
 
+    constructor() {
+        super();
+        this.state = { selectedSteps: [] };
+    }
+
     componentWillMount() {
-        this.handleProps(
-            this.props,
-            this.props,
-            this.state);
         pipelineStore.addListener(this.pipelineUpdated = p => this.doUpdate());
     }
 
@@ -56,17 +66,13 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         }
     }
 
-    componentWillReceiveProps(nextProps:Props) {
-        //this.handleProps(nextProps, this.props, this.state);
-    }
-
     createStage(parentStage:StageInfo) {
         const newStage = parentStage
             ? pipelineStore.createParallelStage('', parentStage)
             : pipelineStore.createSequentialStage('');
         this.setState({
             selectedStage: newStage,
-            selectedStep: null
+            selectedSteps: [],
         }, e => {
             setTimeout(() => {
                 document.querySelector('.stage-name-edit').focus();
@@ -74,42 +80,10 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         });
     }
     
-    handleProps(nextProps:Props, oldProps:Props, state:State) {
-
-        let updates = {},
-            stagesChanged = false,
-            stageStepsChanged = false;
-
-        // Update stages list?
-        if (nextProps.pipeline && nextProps.pipeline.children !== oldProps.pipeline.children) {
-            let stages = nextProps.pipeline.children;
-            updates.selectedStage = (stages && stages[0]) || null;
-            stagesChanged = true;
-        }
-
-        // If we've changed either stages or steps, we need a new selectedStep
-        if (stagesChanged || stageStepsChanged) {
-            let selectedStep = null; // If we don't find a first step we'll clear any old value
-
-            let selectedStage = stagesChanged ? updates.selectedStage : state.selectedStage;
-
-            if (selectedStage) {
-                let stepsForStage = selectedStage.steps;
-                if (stepsForStage && stepsForStage.length) {
-                    selectedStep = stepsForStage[0];
-                }
-            }
-
-            updates.selectedStep = selectedStep;
-        }
-
-        this.setState(updates);
-    }
-
     graphSelectedStageChanged(newSelectedStage:?StageInfo) {
         this.setState({
             selectedStage: newSelectedStage,
-            selectedStep: null,
+            selectedSteps: [],
             showSelectStep: false,
         });
     }
@@ -118,44 +92,45 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         this.setState({showSelectStep: true, parentStep: parentStep});
     }
 
-    selectedStepChanged(selectedStep:StepInfo) {
-        this.setState({selectedStep, showSelectStep: false});
+    selectedStepChanged(step: StepInfo, parentStep: ?StepInfo) {
+        let { selectedSteps } = this.state;
+        if (!step) {
+            selectedSteps.pop();
+        } else {
+            if (parentStep) {
+                selectedSteps.push(step);
+            } else {
+                selectedSteps = [ step ];
+            }
+        }
+        this.setState({selectedSteps, showSelectStep: false});
     }
 
     stepDataChanged(newStep:any) {
-        const {selectedStage,selectedStep} = this.state;
-
-        if (!selectedStep) {
-            console.log("unable to set new step data, no currently selected step");
-            return;
-        }
-
-        const parentStep = pipelineStore.findParentStep(selectedStep);
-        const stepArray = (parentStep && parentStep.children) || selectedStage.steps;
-        let idx = 0;
-        for (; idx < stepArray.length; idx++) {
-            if (stepArray[idx].id === selectedStep.id) {
-                break;
-            }
-        }
-        stepArray[idx] = newStep;
-        this.setState({
-            selectedStep: newStep
-        });
+        this.forceUpdate();
     }
 
     addStep(step: any) {
+        const { selectedSteps } = this.state;
         const newStep = pipelineStore.addStep(this.state.selectedStage, this.state.parentStep, step);
-        this.setState({showSelectStep: false, selectedStep: newStep}, e => {
-            setTimeout(() => {
-                document.querySelector('.editor-step-detail input,.editor-step-detail textarea').focus();
-            }, 200);
+        selectedSteps.push(newStep);
+        this.setState({showSelectStep: false, selectedSteps}, e => {
+            const focusFirstField = () => {
+                try {
+                    document.querySelector('.sheet:last-child .editor-step-detail input,.sheet:last-child .editor-step-detail textarea').focus();
+                } catch(e) {
+                    setTimeout(focusFirstField, 500);
+                }
+            };
+            setTimeout(focusFirstField, 200);
         });
     }
 
     deleteStep(step: any) {
+        const { selectedSteps } = this.state;
         pipelineStore.deleteStep(step);
-        this.setState({selectedStep: null});
+        selectedSteps.pop(); // FIXME
+        this.setState({selectedSteps});
     }
 
     deleteStageClicked(e:HTMLEvent) {
@@ -169,7 +144,8 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
     }
 
     render() {
-        const {selectedStage, selectedStep} = this.state;
+        const {selectedStage, selectedSteps} = this.state;
+        const sheets = [];
         const steps = selectedStage ? selectedStage.steps : [];
 
         const title = selectedStage ? selectedStage.name : 'Select or create a pipeline stage';
@@ -181,17 +157,19 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
             configurationStage = selectedStage;
         }
 
-        const globalConfigPanel = pipelineStore.pipeline && (<div className="editor-config-panel global"
+        const globalConfigPanel = pipelineStore.pipeline && (<ConfigPanel className="editor-config-panel global"
             key={'globalConfig'+pipelineStore.pipeline.id}
             title={<h4>
                     Pipeline Settings
                 </h4>}>
             <AgentConfiguration key={'agent'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={agent => (selectedStage && agent.type == 'none' ? delete pipelineStore.pipeline.agent : pipelineStore.pipeline.agent = agent) && this.pipelineUpdated()} />
             <EnvironmentConfiguration key={'env'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={e => this.pipelineUpdated()} />
-        </div>);
+        </ConfigPanel>);
 
-        const stageConfigPanel = selectedStage && (<div className="editor-config-panel stage" key={'stageConfig'+selectedStage.id}
-            onClose={e => this.graphSelectedStageChanged(null)}
+        if (globalConfigPanel) sheets.push(globalConfigPanel);
+
+        const stageConfigPanel = selectedStage && (<ConfigPanel className="editor-config-panel stage" key={'stageConfig'+selectedStage.id}
+            onClose={e => pipelineValidator.validate() || this.graphSelectedStageChanged(null)}
             title={
                 <div>
                     <input className="stage-name-edit" placeholder="Name your stage" defaultValue={title} 
@@ -201,8 +179,8 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                     </MoreMenu>
                 </div>
             }>
+            <ValidationMessageList node={selectedStage} />
             <EditorStepList steps={steps}
-                        selectedStep={selectedStep}
                         onAddStepClick={() => this.openSelectStepDialog()}
                         onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
                         onStepSelected={(step) => this.selectedStepChanged(step)} />
@@ -210,33 +188,39 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
             <AgentConfiguration key={'agent'+configurationStage.id} node={configurationStage} onChange={agent => (selectedStage && agent.type == 'none' ? delete configurationStage.agent : configurationStage.agent = agent) && this.pipelineUpdated()} />
             <EnvironmentConfiguration key={'env'+configurationStage.id} node={configurationStage} onChange={e => this.pipelineUpdated()} />
             */}
-        </div>);
+        </ConfigPanel>);
 
-        const stepConfigPanel = selectedStep && (<EditorStepDetails className="editor-config-panel step"
-                step={selectedStep} key={steps.indexOf(selectedStep)}
-                onDataChange={newValue => this.stepDataChanged(newValue)}
-                onClose={e => this.selectedStepChanged(null)}
-                title={<h4>
-                    {selectedStage.name} / {selectedStep.label}
-                    <MoreMenu>
-                        <a onClick={e => this.deleteStep(selectedStep)}>Delete</a>
-                    </MoreMenu>
-                </h4>} />);
+        if (stageConfigPanel) sheets.push(stageConfigPanel);
+
+        let parentStep = null;
+        for (const step of selectedSteps) {
+            const stepConfigPanel = (<EditorStepDetails className="editor-config-panel step"
+                    step={step} key={step.id}
+                    onDataChange={newValue => this.stepDataChanged(newValue)}
+                    onClose={e => pipelineValidator.validate() || this.selectedStepChanged(null, parentStep)}
+                    openSelectStepDialog={step => this.openSelectStepDialog(step)}
+                    selectedStepChanged={step => this.selectedStepChanged(step, parentStep)}
+                    title={<h4>
+                        {selectedStage && selectedStage.name} / {step.label}
+                        <MoreMenu>
+                            <a onClick={e => this.deleteStep(step)}>Delete</a>
+                        </MoreMenu>
+                    </h4>} />);
+
+            if (stepConfigPanel) sheets.push(stepConfigPanel);
+            parentStep = step;
+        }
 
         const stepAddPanel = this.state.showSelectStep && (<AddStepSelectionSheet
                 onClose={() => this.setState({showSelectStep: false})}
                 onStepSelected={step => this.addStep(step)}
                 title={<h4>Choose step type</h4>} />);
 
-        const sheets = [];
-        if (globalConfigPanel) sheets.push(globalConfigPanel);
-        if (stageConfigPanel) sheets.push(stageConfigPanel);
-        if (stepConfigPanel) sheets.push(stepConfigPanel);
         if (stepAddPanel) sheets.push(stepAddPanel);
 
         return (
             <div className="editor-main" key={pipelineStore.pipeline && pipelineStore.pipeline.id}>
-                <div className="editor-main-graph" onClick={e => this.setState({selectedStage: null, selectedStep: null})}>
+                <div className="editor-main-graph" onClick={e => pipelineValidator.validate() || this.setState({selectedStage: null, selectedSteps: []})}>
                     {pipelineStore.pipeline &&
                     <EditorPipelineGraph stages={pipelineStore.pipeline.children}
                                          selectedStage={selectedStage}

@@ -5,7 +5,7 @@ import React from 'react';
 /**
  * Returns an SVG group for the "add" icon used for step list and stage graph
  */
-export function getAddIconGroup(nodeRadius:number) {
+export function getAddIconGroup(nodeRadius:number, strokeWidth:number = 0, className:string = "editor-add-node-placeholder") {
 
     const crossPoints = "4.67 -3.73 3.73 -4.67 0 -0.94 -3.73 -4.67 -4.67 -3.73 -0.94 0 -4.67 3.73 -3.73 4.67 0 0.94 " +
         "3.73 4.67 4.67 3.73 0.94 0";
@@ -13,7 +13,7 @@ export function getAddIconGroup(nodeRadius:number) {
 
     return (
         <g>
-            <circle className="editor-add-node-placeholder" r={nodeRadius} stroke="none"/>
+            <circle className={className} r={nodeRadius} strokeWidth={strokeWidth}/>
             {/* TODO: ^^^ Put this into styles */}
             <g className="result-status-glyph" transform="rotate(45)">
                 <polygon points={crossPoints}/>
@@ -21,7 +21,6 @@ export function getAddIconGroup(nodeRadius:number) {
         </g>
     );
 }
-
 
 /**
  * Returns an SVG group for the "grabbable" parts of the graph / steps

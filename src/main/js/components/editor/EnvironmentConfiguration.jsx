@@ -85,7 +85,7 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
                 <span>Value</span>
                 <button onClick={e => this.addEnvironmentEntry()} title="Add"  className="environment-add-delete-icon add">{addIcon()}</button>
             </Split>
-            {node.environment && node.environment.map((env, idx) => <div className="environment-entry">
+            {node.environment && node.environment.map((env, idx) => <div className="environment-entry" key={env.id}>
                 <Split>
                     <TextInput defaultValue={env.key} onChange={val => { env.key = val; this.props.onChange(); }} />
                     <TextInput defaultValue={env.value.value} onChange={val => { env.value.value = val; this.props.onChange(); }} />

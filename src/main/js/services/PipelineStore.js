@@ -189,8 +189,8 @@ class PipelineStore {
         return newStage;
     }
 
-    findParentStage(selectedStage: StageInfo) {
-        return findParentStage(this.pipeline, selectedStage);
+    findParentStage(stage: StageInfo) {
+        return findParentStage(this.pipeline, stage);
     }
 
     findStageByStep(step: StepInfo): ?StageInfo {
@@ -215,42 +215,27 @@ class PipelineStore {
      *      * The Graph is valid, and contains selectedStage
      *      * Only top-level stages can have children (ie, graph is max depth of 2).
      */
-    deleteStage(selectedStage:StageInfo) {
-        const parentStage = this.findParentStage(selectedStage) || this.pipeline;
+    deleteStage(stage:StageInfo) {
+        const parentStage = this.findParentStage(stage) || this.pipeline;
 
         // For simplicity we'll just copy the stages list and then mutate it
         let newStages = [...parentStage.children];
 
-        // We will set this differently depending on our deletion logic
-        let newSelectedStage:?StageInfo = null;
-
         // First, remove selected stage from parent list
-
         let newChildren = [...parentStage.children];
-        let idx = newChildren.indexOf(selectedStage);
+        let idx = newChildren.indexOf(stage);
         newChildren.splice(idx, 1);
 
-        // Then check to see if there's more to do
-        if (newChildren.length > 1) {
-            // Still have multiple parallel branches, so select the next or last child stage
-            newSelectedStage = newChildren[Math.min(idx, newChildren.length - 1)];
-        } else {
-            // We can't have a single parallel stage, so we delete it and move its steps to the parent
+        // see if this is a nested stage and we need to move a parallel to a single top-level
+        if (parentStage != this.pipeline && newChildren.length === 1) {
             let onlyChild = newChildren[0];
             newChildren = [];
             parentStage.steps = onlyChild.steps;
-
-            newSelectedStage = parentStage; // Will be set to updated below
         }
 
         // Update the parent with new children list
         parentStage.children = newChildren;
 
-        // If we've selected a stage which has children, we need to select its first child instead.
-        // Parent stages aren't shown in the graph so aren't selectable; only the name is shown above a column.
-        if (newSelectedStage && newSelectedStage.children.length) {
-            newSelectedStage = newSelectedStage.children[0];
-        }
         this.notify();
     }
 
@@ -335,7 +320,6 @@ class PipelineStore {
     }
 
     notify() {
-        console.log('current pipeline: ', this.pipeline);
         this.listeners.map(l => l());
     }
 
