@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
-import FlowStep from '../../flow2/FlowStep';
 import { observer } from 'mobx-react';
+
+import FlowStep from '../../flow2/FlowStep';
 
 @observer
 export default class GithubChooseDiscoverStep extends React.Component {
