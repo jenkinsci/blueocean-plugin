@@ -5,6 +5,8 @@ import organizations from './organizations';
 import repos1 from './repos-1';
 import repos2 from './repos-2';
 import repos3 from './repos-3';
+import creationCreateSuccess from './creation-create-onerepo-success';
+import creationUpdateSuccess from './creation-update-onerepo-success';
 
 export class GithubCreationApi extends ApiMock {
 
@@ -50,8 +52,11 @@ export class GithubCreationApi extends ApiMock {
     }
 
     createOrgFolder(credentialId, organization, repoNames = []) {
-        // TODO: need response
-        return this._delayedResolve(null);
+        return this._delayedResolve(creationCreateSuccess);
+    }
+
+    updateOrgFolder(credentialId, organization, repoNames = []) {
+        return this._delayedResolve(creationUpdateSuccess);
     }
 
 }
