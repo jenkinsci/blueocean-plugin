@@ -36,8 +36,8 @@ class GitUtils {
             if (credentials == null) {
                 throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline")
                         .add(new ErrorMessage.Error("scmConfig.credentialId",
-                                ErrorMessage.Error.ErrorCodes.INVALID.toString(),
-                                "Invalid credentialId: " + credentialId)));
+                                ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
+                                String.format("credentialId: %s not found", credentialId))));
             }
         }
         Git git = new Git(TaskListener.NULL, new EnvVars());
@@ -50,9 +50,15 @@ class GitUtils {
         } catch (IOException | InterruptedException e) {
             throw  new ServiceException.UnexpectedErrorException("Failed to create pipeline due to unexpected error: "+e.getMessage(), e);
         } catch (GitException e){
-            throw new ServiceException.BadRequestExpception(e.getMessage(), e);
+            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline")
+                    .add(new ErrorMessage.Error("scmConfig.uri",
+                            ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                            "Invalid uri: " + uri)), e);
         } catch (IllegalStateException e){
-            throw new ServiceException.ForbiddenException(e.getMessage(), e);
+            throw new ServiceException.ForbiddenException(new ErrorMessage(403, "Failed to create Git pipeline")
+                    .add(new ErrorMessage.Error("scmConfig.credentialId",
+                            ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                            "Invalid credentialId: " + credentialId)), e);
         }
     }
 
