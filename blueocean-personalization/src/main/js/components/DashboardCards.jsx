@@ -67,7 +67,7 @@ export class DashboardCards extends Component {
                   />
               </div>);
               // if we are in paused state fill the pause array and return null
-              if (favorite.item.latestRun.state === 'PAUSED') {
+              if (favorite.item.latestRun && favorite.item.latestRun.state === 'PAUSED') {
                   pausedCards.push(responseElement);
                   return null;
               }
