@@ -21,9 +21,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.33-tfbeta1",
-      "from": "@jenkins-cd/js-extensions@0.0.33-tfbeta1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.33-tfbeta1.tgz"
+      "version": "0.0.33-tfbeta2",
+      "from": "@jenkins-cd/js-extensions@0.0.33-tfbeta2",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.33-tfbeta2.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
