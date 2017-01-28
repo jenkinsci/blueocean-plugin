@@ -168,7 +168,9 @@ export default function i18nTranslator(pluginName, namespace, onLoad) {
             translatorCache[translatorCacheKey] = translator;
         }
 
-        return translator(key, params);
+        if (key) {
+            return translator(key, params);
+        }
     };
 }
 
