@@ -47,6 +47,7 @@ builder.src([
 builder.bundle('src/main/js/blueocean.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/main/less/blueocean.less')
+    .onStartup('@jenkins-cd/blueocean-core-js/dist/js/i18n/bundle-startup')
     .export("@jenkins-cd/blueocean-core-js")
     .export("@jenkins-cd/design-language")
     .export("@jenkins-cd/js-extensions")

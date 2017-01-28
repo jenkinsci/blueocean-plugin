@@ -154,6 +154,7 @@ function transformToJSX() {
 function createBundle(jsxFile) {
     __builder.bundle(jsxFile)
         .namespace(maven.getArtifactId())
+        .onStartup('@jenkins-cd/blueocean-core-js/dist/js/i18n/bundle-startup')
         .inDir('target/classes/org/jenkins/ui/jsmodules/' + maven.getArtifactId());
 }
 

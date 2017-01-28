@@ -36,7 +36,7 @@
  */
 export function execute(done, config) {
     if (config.hpiPluginId) {
-        console.log(`**** i18n bundles loaded for ${config.hpiPluginId}`);
+        console.log(`**** i18n bundles loaded for: ${config.hpiPluginId}`);
         done();
     } else {
         done();
