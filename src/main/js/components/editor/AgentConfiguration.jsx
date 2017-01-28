@@ -6,6 +6,9 @@ import pipelineMetadataService from '../../services/PipelineMetadataService';
 import type { PipelineInfo, StageInfo } from '../../services/PipelineStore';
 import { Dropdown, TextInput } from '@jenkins-cd/design-language';
 import { Split } from './Split';
+import focusOnElement from './focusOnElement';
+import InputText from './InputText';
+import { ValidationMessageList } from './ValidationMessageList';
 
 type Props = {
     node: PipelineInfo|StageInfo,
@@ -15,6 +18,7 @@ type Props = {
 type State = {
     agents: ?any,
     selectedAgent: PipelineAgent,
+    isNew: ?boolean,
 };
 
 type DefaultProps = typeof AgentConfiguration.defaultProps;
@@ -87,13 +91,14 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
             type: agent.symbol, // agent is metadata
             arguments: [],
         };
-        this.setState({selectedAgent: selectedAgent});
+        this.setState({ selectedAgent: selectedAgent, isNew: true });
         this.props.onChange(selectedAgent);
+        focusOnElement('.agent-select .required input');
     }
 
     render() {
         const { node } = this.props;
-        const { agents, selectedAgent } = this.state;
+        const { agents, selectedAgent, isNew } = this.state;
 
         if (!agents) {
             return null;
@@ -109,23 +114,30 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
                 }
             }
         }
-        
+
         return (<div className="agent-select">
             <h5>Agent</h5>
+            <ValidationMessageList node={selectedAgent} />
             <Dropdown labelField="symbol" options={agents}
                 defaultOption={selectedAgentMetadata}
                 onChange={agent => this.onAgentChanged(agent)} />
             <Split>
             {selectedAgent && selectedAgentMetadata && <div className="agent-parameters">
-                {selectedAgentMetadata.parameters.map(param => <div className="agent-param">
-                    <label key={selectedAgent.type + '/' + param.name}>
-                        <div>{param.capitalizedName} {param.isRequired?'*':''}</div>
-                        <div>
-                            <TextInput defaultValue={this.getRealOrEmptyArg(param.name).value.value}
-                                onChange={val => this.setAgentValue(param.name, val)}/>
-                        </div>
-                    </label>
-                </div>)}
+                {selectedAgentMetadata.parameters.map(param => {
+                    const val = this.getRealOrEmptyArg(param.name).value.value;
+                    return (<div className="agent-param">
+                        <label key={selectedAgent.type + '/' + param.name}>
+                            <div>{param.capitalizedName} {param.isRequired?'*':''}</div>
+                            <div>
+                                <InputText hasError={param.isRequired && !isNew && !val}
+                                    isRequired={param.isRequired}
+                                    defaultValue={val}
+                                    onChange={val => { this.setAgentValue(param.name, val); param.isRequired && this.setState({ isNew: false }); }}
+                                    onBlur={e => param.isRequired && this.setState({ isNew: false })} />
+                            </div>
+                        </label>
+                    </div>);
+                })}
             </div>}
             </Split>
         </div>);

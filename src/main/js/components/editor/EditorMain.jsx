@@ -15,6 +15,7 @@ import { MoreMenu } from '../MoreMenu';
 import { Icon } from "@jenkins-cd/react-material-icons";
 import pipelineValidator from '../../services/PipelineValidator';
 import { ValidationMessageList } from './ValidationMessageList';
+import focusOnElement from './focusOnElement';
 
 type Props = {
 };
@@ -114,16 +115,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         const { selectedSteps } = this.state;
         const newStep = pipelineStore.addStep(this.state.selectedStage, this.state.parentStep, step);
         selectedSteps.push(newStep);
-        this.setState({showSelectStep: false, selectedSteps}, e => {
-            const focusFirstField = () => {
-                try {
-                    document.querySelector('.sheet:last-child .editor-step-detail input,.sheet:last-child .editor-step-detail textarea').focus();
-                } catch(e) {
-                    setTimeout(focusFirstField, 500);
-                }
-            };
-            setTimeout(focusFirstField, 200);
-        });
+        this.setState({showSelectStep: false, selectedSteps}, e => focusOnElement('.sheet:last-child .editor-step-detail input,.sheet:last-child .editor-step-detail textarea'));
     }
 
     deleteStep(step: any) {

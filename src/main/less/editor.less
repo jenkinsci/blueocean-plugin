@@ -795,3 +795,27 @@ ul.pipeline-validation-errors {
 .environment-entry {
     margin-top: 8px;
 }
+
+.FormElement.u-error-state > .FormElement-children > .TextInput {
+    position: relative;
+}
+
+.FormElement.u-error-state > .FormElement-children > .TextInput:after,
+.FormElement.u-error-state > .FormElement-children > .PasswordInput:after {
+    content: '!';
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    margin-top: -9px;
+    font-size: 16px;
+    color: #fff;
+    background: #d24146;
+    border-radius: 100%;
+    width: 18px;
+    display: inline-block;
+    height: 18px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 17px;
+    font-weight: bold;
+}

@@ -171,8 +171,8 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
                         }
                         {this.state.pipelineErrors && this.state.pipelineErrors[0].location &&
                             <ul className="pipeline-validation-errors">
-                                <li onClick={e => this.state.pipelineErrors.expand = true || this.forceUpdate()}>There were validation errors, please check the editor to correct them</li>
-                                {this.state.pipelineErrors.expand && this.state.pipelineErrors.map(err => <li>{err.error}</li>)}
+                                <li onClick={e => { this.state.pipelineErrors.expand = true; this.forceUpdate(); }}>There were validation errors, please check the editor to correct them</li>
+                                {this.state.pipelineErrors.expand && this.state.pipelineErrors.map(err => <li>{err.location && err.location.join('/')}: {err.error}</li>)}
                             </ul>
                         }
                         <div className="editor-text-area">
