@@ -2,6 +2,9 @@
  * ExtensionStore is responsible for maintaining extension metadata
  * including type/capability info
  */
+
+let iota = 0;
+
 export default class ExtensionStore {
     /**
      *  FIXME this is NOT a constructor, as there's no common way to
@@ -109,6 +112,8 @@ export default class ExtensionStore {
      * @return The version string for the named plugin, or undefined if the plugin is not installed/active.
      */
     getPluginVersion(pluginName) {
+        console.log(`***** getPluginVersion ${this.iota}`);
+
         for(var i = 0; i < this.extensionPointList.length; i++) {
             var pluginMetadata = this.extensionPointList[i];
             if (pluginMetadata.hpiPluginId === pluginName) {
@@ -158,6 +163,10 @@ export default class ExtensionStore {
         if (this.extensionPointList) {
             return;
         }
+
+        this.iota = iota++;
+        console.log(`***** _initExtensionPointList ${this.iota}`);
+
         // We clone the data because we add to it.
         this.extensionPointList = JSON.parse(JSON.stringify(this.extensionData));
         for(var i1 = 0; i1 < this.extensionPointList.length; i1++) {
