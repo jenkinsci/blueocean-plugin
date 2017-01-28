@@ -23,7 +23,7 @@ export const defaultLngDetector = new LngDetector(null, {
 const prefix = urlConfig.getJenkinsRootURL() || '';
 const FALLBACK_LANG = '';
 
-function newPluginXHR(pluginName) {
+function newPluginXHR(pluginName, onLoad) {
     let pluginVersion = store.getPluginVersion(pluginName);
 
     if (!pluginVersion) {
@@ -41,6 +41,9 @@ function newPluginXHR(pluginName) {
             const response = JSON.parse(data);
             if (logger.isDebugEnabled()) {
                 logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
+            }
+            if (typeof onLoad === 'function') {
+                onLoad();
             }
             return response.data;
         },
@@ -93,7 +96,7 @@ const toDefaultNamespace = (pluginName) => {
  * for the "blueocean-dashboard" plugin.
  * @return An i18n instance.
  */
-const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) => {
+const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName), onLoad = undefined) => {
     assertPluginNameDefined(pluginName);
 
     const initOptions = {
@@ -110,7 +113,7 @@ const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) =
         },
     };
 
-    return i18nextInstance(newPluginXHR(pluginName), defaultLngDetector, initOptions);
+    return i18nextInstance(newPluginXHR(pluginName, onLoad), defaultLngDetector, initOptions);
 };
 
 function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
@@ -127,13 +130,16 @@ function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
  * for the "blueocean-dashboard" plugin.
  * @return An i18n Translator instance.
  */
-export default function i18nTranslator(pluginName, namespace) {
+export default function i18nTranslator(pluginName, namespace, onLoad) {
     assertPluginNameDefined(pluginName);
 
     const translatorCacheKey = buildCacheKey(pluginName, namespace);
     let translator = translatorCache[translatorCacheKey];
 
     if (translator) {
+        if (typeof onLoad === 'function') {
+            onLoad();
+        }
         return translator;
     }
 
@@ -144,7 +150,7 @@ export default function i18nTranslator(pluginName, namespace) {
         }
 
         if (!translator) {
-            const I18n = pluginI18next(pluginName, namespace);
+            const I18n = pluginI18next(pluginName, namespace, onLoad);
 
             // Create and cache the translator instance.
             let detectedLang;
