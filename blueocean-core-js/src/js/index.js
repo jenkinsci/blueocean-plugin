@@ -51,7 +51,7 @@ export {
     BlueLogo,
     BlueOceanIcon,
 } from './components/BlueLogo';
-export { ContentPageHeader } from './components/ContentPageHeader';
+export { ContentPageHeader, SiteHeader } from './components/ContentPageHeader';
 export { ResultPageHeader } from './components/ResultPageHeader';
 
 // Create and export the SSE connection that will be shared by other

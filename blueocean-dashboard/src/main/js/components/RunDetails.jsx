@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 import {
     ModalView,
     ModalBody,
@@ -6,9 +6,9 @@ import {
     PageTabsOld,
     TabLink,
 } from '@jenkins-cd/design-language';
-import { i18nTranslator, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator, ReplayButton, RunButton} from '@jenkins-cd/blueocean-core-js';
 
-import { Icon } from '@jenkins-cd/react-material-icons';
+import {Icon} from '@jenkins-cd/react-material-icons';
 
 import {
     buildOrganizationUrl,
@@ -16,17 +16,18 @@ import {
     buildRunDetailsUrl,
     buildClassicConfigUrl,
 } from '../util/UrlUtils';
-import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import { RunDetailsHeader } from './RunDetailsHeader';
-import { RunRecord } from './records';
+import {MULTIBRANCH_PIPELINE} from '../Capabilities';
+import {RunDetailsHeader} from './RunDetailsHeader';
+import {RunRecord} from './records';
+import {FullScreen} from './FullScreen';
 import PageLoading from './PageLoading';
-import { Paths, capable, locationService } from '@jenkins-cd/blueocean-core-js';
-import { observer } from 'mobx-react';
-import { User } from '@jenkins-cd/blueocean-core-js';
+import {Paths, capable, locationService} from '@jenkins-cd/blueocean-core-js';
+import {observer} from 'mobx-react';
+import {User} from '@jenkins-cd/blueocean-core-js';
 
-const { func, object, any, string } = PropTypes;
+const {func, object, any, string} = PropTypes;
 
-const { rest: RestPaths } = Paths;
+const {rest: RestPaths} = Paths;
 
 const classicConfigLink = (pipeline) => {
     let link = null;
@@ -34,7 +35,7 @@ const classicConfigLink = (pipeline) => {
         let url = buildClassicConfigUrl(pipeline);
         link = (
             <a href={url} target="_blank" style={{ height: '24px' }}>
-                <Icon size={24} icon="settings" style={{ fill: '#fff' }} />
+                <Icon size={24} icon="settings" style={{ fill: '#fff' }}/>
             </a>
         );
     }
@@ -43,9 +44,13 @@ const classicConfigLink = (pipeline) => {
 
 const translate = i18nTranslator('blueocean-dashboard');
 
-
 @observer
 class RunDetails extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {isVisible: true};
+    }
 
     componentWillMount() {
         this._fetchRun(this.props, true);
@@ -72,7 +77,7 @@ class RunDetails extends Component {
                 runId: props.params.runId,
             });
 
-            this.context.activityService.fetchActivity(this.href, { useCache: true });
+            this.context.activityService.fetchActivity(this.href, {useCache: true});
             if (storePreviousRoute) {
                 this.opener = locationService.previous;
             }
@@ -81,26 +86,28 @@ class RunDetails extends Component {
 
     _didRunChange(oldParams, newParams) {
         return oldParams.organization !== newParams.organization ||
-                oldParams.pipeline !== newParams.pipeline ||
-                oldParams.branch !== newParams.branch ||
-                oldParams.runId !== newParams.runId;
+            oldParams.pipeline !== newParams.pipeline ||
+            oldParams.branch !== newParams.branch ||
+            oldParams.runId !== newParams.runId;
     }
 
-    navigateToOrganization() {
-        const { organization } = this.props.pipeline;
-        const { location } = this.context;
+    navigateToOrganization = () => {
+        const {organization} = this.props.pipeline;
+        const {location} = this.context;
         const organizationUrl = buildOrganizationUrl(organization);
         location.pathname = organizationUrl;
         this.context.router.push(location);
-    }
-    navigateToPipeline() {
-        const { organization, fullName } = this.props.pipeline;
-        const { location } = this.context;
+    };
+
+    navigateToPipeline = () => {
+        const {organization, fullName} = this.props.pipeline;
+        const {location} = this.context;
         const pipelineUrl = buildPipelineUrl(organization, fullName);
         location.pathname = pipelineUrl;
         this.context.router.push(location);
-    }
-    navigateToChanges() {
+    };
+
+    navigateToChanges = () => {
         const {
             location,
             params: {
@@ -114,7 +121,27 @@ class RunDetails extends Component {
         const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
         location.pathname = changesUrl;
         this.context.router.push(location);
-    }
+    };
+
+    closeButtonClicked = () => {
+        this.setState({isVisible: false});
+    };
+
+    afterClose = () => {
+        const {router, location, params} = this.context;
+        const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
+
+        location.pathname = this.opener || fallbackUrl;
+
+        // reset query
+        /*
+         FIXME: reset query when you go back, we may want to store the whole location object in previous so we have a perfect prev.
+         this.opener would then be location and we the above location = this.opener || {pathname: fallbackUrl]
+         */
+        location.query = null;
+        router.push(location);
+    };
+
     render() {
         const run = this.context.activityService.getActivity(this.href);
         // early out
@@ -123,9 +150,9 @@ class RunDetails extends Component {
             return null;
         }
 
-
-        const { router, location, params } = this.context;
-        const { pipeline, setTitle, t, locale } = this.props;
+        const {router, location, params} = this.context;
+        const {pipeline, setTitle, t, locale} = this.props;
+        const {isVisible} = this.state;
 
         if (!run || !pipeline) {
             return <PageLoading />;
@@ -143,80 +170,66 @@ class RunDetails extends Component {
 
         setTitle(`${currentRun.organization} / ${pipeline.fullName} #${currentRun.id}`);
 
-        const afterClose = () => {
-            const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
-            location.pathname = this.opener || fallbackUrl;
-            // reset query
-            /*
-            FIXME: reset query when you go back, we may want to store the whole location object in previous so we have a perfect prev.
-            this.opener would then be location and we the above location = this.opener || {pathname: fallbackUrl]
-             */
-            location.query = null;
-            router.push(location);
-        };
+        const base = {base: baseUrl};
+
+        const tabs = [
+            <TabLink to="/pipeline" {...base}>{t('rundetail.header.tab.pipeline', {
+                defaultValue: 'Pipeline',
+            })}</TabLink>,
+            <TabLink to="/changes" {...base}>{t('rundetail.header.tab.changes', {
+                defaultValue: 'Changes',
+            })}</TabLink>,
+            <TabLink to="/tests" {...base}>{t('rundetail.header.tab.tests', {
+                defaultValue: 'Tests',
+            })}</TabLink>,
+            <TabLink to="/artifacts" {...base}>{t('rundetail.header.tab.artifacts', {
+                defaultValue: 'Artifacts',
+            })}</TabLink>
+        ];
+
+        const runButton = [
+            <ReplayButton className="dark"
+                          runnable={this.props.pipeline}
+                          latestRun={currentRun}
+                          onNavigation={switchRunDetails}
+                          autoNavigate/>,
+            <RunButton className="dark"
+                       runnable={this.props.pipeline}
+                       latestRun={currentRun}
+                       buttonType="stop-only"/>,
+            classicConfigLink(pipeline)
+        ];
 
         return (
-            <ModalView
-              isVisible
-              transitionClass="expand-in"
-              transitionDuration={150}
-              result={status}
-              {...{ afterClose }}
-            >
-                <ModalHeader>
-                    <div>
-                        <RunDetailsHeader
-                          t={ t }
-                          locale={locale}
-                          pipeline={pipeline}
-                          data={currentRun}
-                          onOrganizationClick={() => this.navigateToOrganization()}
-                          onNameClick={() => this.navigateToPipeline()}
-                          onAuthorsClick={() => this.navigateToChanges()}
-                        />
-                        <PageTabsOld base={baseUrl}>
-                            <TabLink to="/pipeline">{t('rundetail.header.tab.pipeline', {
-                                defaultValue: 'Pipeline',
-                            })}</TabLink>
-                            <TabLink to="/changes">{t('rundetail.header.tab.changes', {
-                                defaultValue: 'Changes',
-                            })}</TabLink>
-                            <TabLink to="/tests">{t('rundetail.header.tab.tests', {
-                                defaultValue: 'Tests',
-                            })}</TabLink>
-                            <TabLink to="/artifacts">{t('rundetail.header.tab.artifacts', {
-                                defaultValue: 'Artifacts',
-                            })}</TabLink>
-                        </PageTabsOld>
+            <FullScreen isVisible={isVisible} afterClose={this.afterClose}>
 
-                        <div className="button-bar">
-                            <ReplayButton
-                              className="dark"
-                              runnable={this.props.pipeline}
-                              latestRun={currentRun}
-                              onNavigation={switchRunDetails}
-                              autoNavigate
-                            />
+                <RunDetailsHeader
+                    t={ t }
+                    locale={locale}
+                    pipeline={pipeline}
+                    data={currentRun}
+                    runButton={runButton}
+                    topNavLinks={tabs}
+                    onOrganizationClick={this.navigateToOrganization}
+                    onNameClick={this.navigateToPipeline}
+                    onAuthorsClick={this.navigateToChanges}
+                    onCloseClick={this.closeButtonClicked}
+                />
 
-                            <RunButton
-                              className="dark"
-                              runnable={this.props.pipeline}
-                              latestRun={currentRun}
-                              buttonType="stop-only"
-                            />
-                            {classicConfigLink(pipeline)}
-                        </div>
-                    </div>
-                </ModalHeader>
-                <ModalBody>
-                    <div>
-                        {run && React.cloneElement(
-                            this.props.children,
-                            { locale: translate.lng, baseUrl, t: translate, result: currentRun, isMultiBranch: this.isMultiBranch, ...this.props }
-                        )}
-                    </div>
-                </ModalBody>
-            </ModalView>
+                <div className="RunDetails-content">
+                    {run && React.cloneElement(
+                        this.props.children,
+                        {
+                            locale: translate.lng,
+                            baseUrl,
+                            t: translate,
+                            result: currentRun,
+                            isMultiBranch: this.isMultiBranch, ...this.props
+                        }
+                    )}
+                </div>
+
+            </FullScreen>
         );
     }
 }

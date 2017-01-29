@@ -46,8 +46,13 @@ export const ResultPageHeader = props => {
     const topNavLinks = _wrap(props.topNavLinks, 'nav');
     const runButton = _wrap(props.runButton, 'div', { className: 'ResultPageHeader-run' });
 
+    const classNames = ['ResultPageHeader'];
+    if (props.className) {
+        classNames.push(props.className);
+    }
+
     return (
-        <BasicHeader className="ResultPageHeader" statusColor={status}>
+        <BasicHeader className={classNames.join(' ')} statusColor={status}>
             <TopNav>
                 <section className="ResultPageHeader-indicator status inverse">
                     <LiveStatusIndicator result={status} startTime={startTime}
@@ -70,6 +75,7 @@ export const ResultPageHeader = props => {
 };
 
 ResultPageHeader.propTypes = {
+    className: PropTypes.string,
     children: PropTypes.node,
     status: PropTypes.string,
     run: PropTypes.object,

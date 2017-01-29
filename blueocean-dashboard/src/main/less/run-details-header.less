@@ -1,10 +1,40 @@
-.run-details-header {
-    h4 {
+.RunDetailsHeader-title,
+.RunDetailsHeader-sources,
+.RunDetailsHeader-authors,
+.RunDetailsHeader-times {
+    a {
+        cursor: pointer;
+    }
+}
+
+.RunDetailsHeader-sources,
+.RunDetailsHeader-authors,
+.RunDetailsHeader-times
+{
+    height:100%;
+    padding-top: 1px;
+
+    div {
+        margin-top: 8px;
+        min-height: 23px;
         display: flex;
         align-items: center;
 
-        .path-link {
-            display: inline-flex;
+        svg+* {
+            margin-left: 2px;
         }
     }
+}
+
+.RunDetailsHeader-sources,
+.RunDetailsHeader-times {
+    flex-basis: 20%;
+}
+
+.RunDetailsHeader-authors {
+    flex-grow: 1;
+}
+
+.RunDetails-content {
+    margin: 21px 42px;
 }
