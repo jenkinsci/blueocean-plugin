@@ -30,7 +30,6 @@
 
 import config from '../config';
 import logging from '../logging';
-import i18nTranslator from './i18n';
 
 const logger = logging.logger('io.jenkins.blueocean.i18n.startup');
 
@@ -44,31 +43,13 @@ export function execute(done, bundleConfig) {
     if (bundleConfig.hpiPluginId) {
         const pluginInfo = config.getPluginInfo(bundleConfig.hpiPluginId);
         if (pluginInfo) {
-            //if (pluginInfo.i18nBundles && pluginInfo.i18nBundles.length > 0) {
-            //    logger.debug(`Plugin ${bundleConfig.hpiPluginId} defines i18n resource bundles that must be loaded:`, pluginInfo.i18nBundles);
-            //    const loadedBundles = [];
-            //    function loadBundle(namespace) {
-            //        const translator = i18nTranslator(bundleConfig.hpiPluginId, namespace, () => {
-            //            if (loadedBundles.indexOf(namespace) === -1) {
-            //                logger.debug(`Loading of resource bundle ${bundleConfig.hpiPluginId}:${namespace} done.`);
-            //                loadedBundles.push(namespace);
-            //                if (loadedBundles.length === pluginInfo.i18nBundles.length) {
-            //                    // All bundles are loaded ... ok for the bundle to execute now (from an i18n pov).
-            //                    logger.debug(`All ${bundleConfig.hpiPluginId} resource bundles loaded.`);
-            //                    done();
-            //                }
-            //            }
-            //        });
-            //        // Call the translator to trigger loading.
-            //        // Don't specify a key.
-            //        translator('xxxx');
-            //    }
-            //    pluginInfo.i18nBundles.forEach((bundleNamespace) => loadBundle(bundleNamespace));
-            //} else {
-            //    logger.debug(`Plugin ${bundleConfig.hpiPluginId} doesn't define any i18n resource bundles.`);
-            //    done();
-            //}
-            done();
+            if (pluginInfo.i18nBundles && pluginInfo.i18nBundles.length > 0) {
+                logger.debug(`Plugin ${bundleConfig.hpiPluginId} defines i18n resource bundles that must be loaded:`, pluginInfo.i18nBundles);
+                done();
+            } else {
+                logger.debug(`Plugin ${bundleConfig.hpiPluginId} doesn't define any i18n resource bundles.`);
+                done();
+            }
         } else {
             logger.warn(`Unexpected error finding pluging info for plugin ${bundleConfig.hpiPluginId}. There should be a preloaded jsExtensions entry.`);
             done();

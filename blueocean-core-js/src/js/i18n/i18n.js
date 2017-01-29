@@ -171,6 +171,7 @@ export default function i18nTranslator(pluginName, namespace, onLoad) {
         if (key) {
             return translator(key, params);
         }
+        return undefined;
     };
 }
 
