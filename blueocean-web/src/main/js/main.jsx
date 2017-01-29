@@ -77,6 +77,7 @@ class App extends Component {
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
                             <Link query={location.query} to="/pipelines">{pipeCaption}</Link>
+                            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.links"/>
                             <AdminLink t={translate} />
                         </nav>
                         <div className="button-bar layout-small inverse">
