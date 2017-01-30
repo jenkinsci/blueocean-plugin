@@ -208,7 +208,16 @@ export default class GithubFlowManager extends FlowManager {
     _loadAllRepositories(organization) {
         this.repositories.replace([]);
 
-        this._loadPagedRepository(organization.name, FIRST_PAGE)
+        let promise = null;
+        const cachedRepos = this._repositoryCache[organization.name];
+
+        if (cachedRepos) {
+            promise = new Promise(resolve => resolve({ repositories: { items: cachedRepos } }));
+        } else {
+            promise = this._loadPagedRepository(organization.name, FIRST_PAGE);
+        }
+
+        promise
             .then(waitAtLeast(MIN_DELAY))
             .then(repos => this._updateRepositories(organization.name, repos, FIRST_PAGE));
     }
@@ -225,7 +234,7 @@ export default class GithubFlowManager extends FlowManager {
         this._repositoryCache[organizationName] = this.repositories.slice();
 
         // if another page is available, keep fetching
-        if (nextPage !== null) {
+        if (!isNaN(parseInt(nextPage))) {
             this._loadPagedRepository(organizationName, nextPage)
                 .then(repos2 => this._updateRepositories(organizationName, repos2, nextPage));
         } else {
