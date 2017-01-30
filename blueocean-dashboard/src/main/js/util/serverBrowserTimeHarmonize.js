@@ -50,7 +50,7 @@ export class TimeManager {
             durationMillis = run.durationInMillis;
         } else {
             logger.debug('running, using timeElapsed for duration');
-            durationMillis = timeElapsed;
+            durationMillis = Math.abs(timeElapsed);
         }
         logger.debug('durationMillis:', durationMillis);
         const harmonized = {
