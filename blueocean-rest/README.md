@@ -1,3 +1,5 @@
+The Blue Ocean REST API is a "private API" designed for the Blue Ocean user interface. It may change without notice at any time.
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*

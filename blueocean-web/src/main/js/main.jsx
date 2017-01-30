@@ -74,6 +74,7 @@ class App extends Component {
 
         const topNavLinks = [
             <Link query={location.query} to="/pipelines">{pipeCaption}</Link>,
+			 <Extensions.Renderer extensionPoint="jenkins.blueocean.top.links"/>,
             <AdminLink t={translate} />,
         ];
 
