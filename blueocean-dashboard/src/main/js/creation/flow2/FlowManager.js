@@ -185,7 +185,6 @@ export default class FlowManager {
     _setupInitialStep() {
         const initial = this.getInitialStep();
         this.renderStep(initial);
-        // this.activeSteps.replace([initial]);
     }
 
     @action

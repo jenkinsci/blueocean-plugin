@@ -23,9 +23,6 @@ const SSE_TIMEOUT_DELAY = 1000 * 30;
 export default class GithubFlowManager extends FlowManager {
 
     @observable
-    status = null;
-
-    @observable
     organizations = [];
 
     @observable
@@ -218,11 +215,6 @@ export default class GithubFlowManager extends FlowManager {
 
     _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
         return this._creationApi.listRepositories(this._credentialId, organizationName, pageNumber, pageSize);
-    }
-
-    @action
-    _setStatus(status) {
-        this.status = status;
     }
 
     @action

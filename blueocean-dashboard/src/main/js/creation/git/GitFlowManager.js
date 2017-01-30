@@ -1,5 +1,5 @@
 import React from 'react';
-import { action, computed, observable } from 'mobx';
+import { action, computed } from 'mobx';
 import { Promise } from 'es6-promise';
 
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
@@ -19,9 +19,6 @@ const SYSTEM_SSH_DESCRIPTION = 'Master SSH Key for Git Creation';
  * Impl of FlowManager for git creation flow.
  */
 export default class GitFlowManager extends FlowManager {
-
-    @observable
-    creationStatus = null;
 
     @computed
     get isConnectEnabled() {
@@ -157,11 +154,6 @@ export default class GitFlowManager extends FlowManager {
 
         return this._createApi.createPipeline(this.repositoryUrl, this.credentialId, this.pipelineName)
             .then(pipeline => this._createPipelineSuccess(pipeline), error => this._createPipelineError(error));
-    }
-
-    @action
-    _setStatus(status) {
-        this.creationStatus = status;
     }
 
     @action
