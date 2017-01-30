@@ -20,6 +20,7 @@
               data-rooturl="${rootURL}"
               data-resurl="${resURL}"
               data-appurl="${rootURL}/${it.urlBase}"
+              data-servertime="${it.now}"
               data-adjuncturl="${rootURL}/${j.getAdjuncts('').rootURL}">
 
             <title>Jenkins Blue Ocean</title>
