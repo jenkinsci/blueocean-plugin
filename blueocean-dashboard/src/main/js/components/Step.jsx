@@ -128,7 +128,6 @@ export default class Node extends Component {
           isInputStep = false,
           isFocused = false,
         } = node;
-        logger.warn('69', node);
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl, fetchAll })] : null;
         const getLogForNode = () => {
@@ -157,9 +156,13 @@ export default class Node extends Component {
             startTime,
             isRunning: isRunning(),
         });
-        // logger.debug('step - run.startTime:', node.startTime);
-        // logger.debug('step - startTime:', startTime);
-        logger.warn('step - durationMillis:', this.durationMillis, durationMillis);
+        logger.debug('step - time:', {
+            responseDuration: durationMillis,
+            durationInMillis,
+            endTime,
+            startTime,
+            isRunning: isRunning(),
+        });
         const logProps = {
             ...this.props,
             url,

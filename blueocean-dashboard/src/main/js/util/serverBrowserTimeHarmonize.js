@@ -15,7 +15,7 @@ export class TimeManager {
     }
 
     harmonizeTimes(run, skewMillis) {
-        logger.warn('skewMillis', skewMillis);
+        logger.debug('skewMillis', skewMillis);
         if (!run.startTime) {
             logger.error('not found any startTime, seems that a component should not have called this me');
             return {};
