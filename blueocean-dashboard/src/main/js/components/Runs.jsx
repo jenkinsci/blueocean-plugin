@@ -14,6 +14,7 @@ import { CellRow, CellLink } from './CellLink';
 import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
 const timeManager = new TimeManager();
+const logger = logging.logger('io.jenkins.blueocean.dashboard');
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
  */
