@@ -1,7 +1,7 @@
 /**
  * Valid statuses for GithubFlowManager.
  */
-const status = {
+const state = {
     PENDING_LOADING_CREDS: 'pending_loading_creds',
     STEP_ACCESS_TOKEN: 'step_access_token',
     PENDING_VALIDATE_ACCESS_TOKEN: 'pending_validate_access_token',
@@ -20,23 +20,23 @@ const status = {
     STEP_COMPLETE_SUCCESS: 'step_complete_success',
 
     values: () => [
-        status.PENDING_LOADING_CREDS,
-        status.STEP_ACCESS_TOKEN,
-        status.PENDING_VALIDATE_ACCESS_TOKEN,
-        status.PENDING_LOADING_ORGANIZATIONS,
-        status.STEP_CHOOSE_ORGANIZATION,
-        status.STEP_CHOOSE_DISCOVER,
-        status.STEP_ALREADY_DISCOVER,
-        status.PENDING_LOADING_REPOSITORIES,
-        status.STEP_CONFIRM_DISCOVER,
-        status.STEP_CHOOSE_REPOSITORY,
-        status.PENDING_CREATION_SAVING,
-        status.STEP_COMPLETE_SAVING_ERROR,
-        status.PENDING_CREATION_EVENTS,
-        status.STEP_COMPLETE_EVENT_ERROR,
-        status.STEP_COMPLETE_EVENT_TIMEOUT,
-        status.STEP_COMPLETE_SUCCESS,
+        state.PENDING_LOADING_CREDS,
+        state.STEP_ACCESS_TOKEN,
+        state.PENDING_VALIDATE_ACCESS_TOKEN,
+        state.PENDING_LOADING_ORGANIZATIONS,
+        state.STEP_CHOOSE_ORGANIZATION,
+        state.STEP_CHOOSE_DISCOVER,
+        state.STEP_ALREADY_DISCOVER,
+        state.PENDING_LOADING_REPOSITORIES,
+        state.STEP_CONFIRM_DISCOVER,
+        state.STEP_CHOOSE_REPOSITORY,
+        state.PENDING_CREATION_SAVING,
+        state.STEP_COMPLETE_SAVING_ERROR,
+        state.PENDING_CREATION_EVENTS,
+        state.STEP_COMPLETE_EVENT_ERROR,
+        state.STEP_COMPLETE_EVENT_TIMEOUT,
+        state.STEP_COMPLETE_SUCCESS,
     ],
 };
 
-export default status;
+export default state;

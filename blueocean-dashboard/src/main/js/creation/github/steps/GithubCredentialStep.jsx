@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
-import STATUS from '../GithubCreationStatus';
+import STATE from '../GithubCreationState';
 
 const GITHUB_URL = 'https://help.github.com/articles/creating-an-access-token-for-command-line-use/';
 
@@ -64,7 +64,7 @@ export default class GithubCredentialsStep extends React.Component {
 
         const title = 'Connect to Github';
         const disabled = this.state.success;
-        const buttonDisabled = flowManager.status === STATUS.PENDING_VALIDATE_ACCESS_TOKEN;
+        const buttonDisabled = flowManager.stateId === STATE.PENDING_VALIDATE_ACCESS_TOKEN;
 
         return (
             <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} title={title}>

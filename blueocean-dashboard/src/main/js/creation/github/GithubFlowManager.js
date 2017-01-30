@@ -5,7 +5,7 @@ import { sseService } from '@jenkins-cd/blueocean-core-js';
 import waitAtLeast from '../flow2/waitAtLeast';
 
 import FlowManager from '../flow2/FlowManager';
-import STATUS from './GithubCreationStatus';
+import STATE from './GithubCreationState';
 import GithubAlreadyDiscoverStep from './steps/GithubAlreadyDiscoverStep';
 import GithubLoadingStep from './steps/GithubLoadingStep';
 import GithubCredentialsStep from './steps/GithubCredentialStep';
@@ -65,12 +65,20 @@ export default class GithubFlowManager extends FlowManager {
         this._credentialsApi = credentialsApi;
     }
 
+    getStates() {
+        return STATE.values();
+    }
+
     getInitialStep() {
-        return <GithubLoadingStep />;
+        return {
+            stateId: STATE.PENDING_LOADING_CREDS,
+            stepElement: <GithubLoadingStep />,
+        };
     }
 
     onInitialized() {
         this.findExistingCredential();
+        this.setPlaceholders('Complete');
     }
 
     destroy() {
@@ -97,9 +105,13 @@ export default class GithubFlowManager extends FlowManager {
     _afterInitialStep(credential) {
         if (credential && credential.credentialId) {
             this._credentialId = credential.credentialId;
+            this.changeState(STATE.PENDING_LOADING_ORGANIZATIONS);
             this.listOrganizations();
         } else {
-            this.replaceCurrentStep(<GithubCredentialsStep />);
+            this.renderStep({
+                stateId: STATE.STEP_ACCESS_TOKEN,
+                stepElement: <GithubCredentialsStep />,
+            });
         }
     }
 
@@ -115,7 +127,12 @@ export default class GithubFlowManager extends FlowManager {
     _createTokenSuccess(cred) {
         this._credentialId = cred.credentialId;
 
-        this.pushStep(<GithubLoadingStep />);
+        this.renderStep({
+            stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
+            stepElement: <GithubLoadingStep />,
+            afterStateId: STATE.STEP_ACCESS_TOKEN,
+        });
+
         this.listOrganizations();
 
         return {
@@ -141,28 +158,43 @@ export default class GithubFlowManager extends FlowManager {
     _updateOrganizations(organizations) {
         this.organizations = organizations;
 
-        this.replaceCurrentStep(<GithubOrgListStep />);
-        this.setPendingSteps([
-            'Complete',
-        ]);
+        const afterStateId = this.isStateAdded(STATE.STEP_ACCESS_TOKEN) ?
+            STATE.STEP_ACCESS_TOKEN : null;
+
+        this.renderStep({
+            stateId: STATE.STEP_CHOOSE_ORGANIZATION,
+            stepElement: <GithubOrgListStep />,
+            afterStateId,
+        });
     }
 
     @action
     selectOrganization(organization) {
         this.selectedOrganization = organization;
-        this._setStatus(STATUS.STEP_CHOOSE_DISCOVER);
-        this.pushStep(<GithubChooseDiscoverStep />);
+
+        this.renderStep({
+            stateId: STATE.STEP_CHOOSE_DISCOVER,
+            stepElement: <GithubChooseDiscoverStep />,
+            afterStateId: STATE.STEP_CHOOSE_ORGANIZATION,
+        });
     }
 
     selectDiscover(discover) {
         this._discoverSelection = discover;
 
         if (this.selectedOrganization.autoDiscover && discover) {
-            this._setStatus(STATUS.STEP_ALREADY_DISCOVER);
-            this.pushStep(<GithubAlreadyDiscoverStep />);
+            this.renderStep({
+                stateId: STATE.STEP_ALREADY_DISCOVER,
+                stepElement: <GithubAlreadyDiscoverStep />,
+                afterStateId: STATE.STEP_CHOOSE_DISCOVER,
+            });
         } else {
             this._loadAllRepositories(this.selectedOrganization);
-            this.pushStep(<GithubLoadingStep />);
+            this.renderStep({
+                stateId: STATE.PENDING_LOADING_REPOSITORIES,
+                stepElement: <GithubLoadingStep />,
+                afterStateId: STATE.STEP_CHOOSE_DISCOVER,
+            });
         }
     }
 
@@ -182,8 +214,6 @@ export default class GithubFlowManager extends FlowManager {
         this._loadPagedRepository(organization.name, FIRST_PAGE)
             .then(waitAtLeast(MIN_DELAY))
             .then(repos => this._updateRepositories(organization.name, repos, FIRST_PAGE));
-
-        this._setStatus(STATUS.PENDING_LOADING_REPOSITORIES);
     }
 
     _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
@@ -208,11 +238,17 @@ export default class GithubFlowManager extends FlowManager {
                 .then(repos2 => this._updateRepositories(organizationName, repos2, nextPage));
         } else {
             if (this._discoverSelection) {
-                this.replaceCurrentStep(<GithubConfirmDiscoverStep />);
-                this._setStatus(STATUS.STEP_CONFIRM_DISCOVER);
+                this.renderStep({
+                    stateId: STATE.STEP_CONFIRM_DISCOVER,
+                    stepElement: <GithubConfirmDiscoverStep />,
+                    afterStateId: STATE.STEP_CHOOSE_DISCOVER,
+                });
             } else {
-                this.replaceCurrentStep(<GithubRepositoryStep />);
-                this._setStatus(STATUS.STEP_CHOOSE_REPOSITORY);
+                this.renderStep({
+                    stateId: STATE.STEP_CHOOSE_REPOSITORY,
+                    stepElement: <GithubRepositoryStep />,
+                    afterStateId: STATE.STEP_CHOOSE_DISCOVER,
+                });
             }
         }
     }
@@ -243,10 +279,18 @@ export default class GithubFlowManager extends FlowManager {
      * @param repoNames
      * @private
      */
+    @action
     _saveOrgFolder(repoNames = []) {
-        this._setStatus(STATUS.PENDING_CREATION_SAVING);
-        this.pushStep(<GithubCompleteStep />);
-        this.setPendingSteps();
+        const afterStateId = this.isStateAdded(STATE.STEP_CHOOSE_REPOSITORY) ?
+            STATE.STEP_CHOOSE_REPOSITORY : STATE.STEP_CONFIRM_DISCOVER;
+
+        this.renderStep({
+            stateId: STATE.PENDING_CREATION_SAVING,
+            stepElement: <GithubCompleteStep />,
+            afterStateId,
+        });
+
+        this.setPlaceholders();
 
         const shouldCreate = !this.selectedOrganization.jenkinsOrganizationPipeline;
         const promise = shouldCreate ?
@@ -260,7 +304,7 @@ export default class GithubFlowManager extends FlowManager {
 
     @action
     _saveOrgFolderSuccess(orgFolder) {
-        this._setStatus(STATUS.STEP_COMPLETE_SUCCESS);
+        this.changeState(STATE.STEP_COMPLETE_SUCCESS);
         this.savedOrgFolder = orgFolder;
         this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
         this._sseTimeoutId = setTimeout(() => {
@@ -269,7 +313,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _saveOrgFolderFailure() {
-        this._setStatus(STATUS.STEP_COMPLETE_SAVING_ERROR);
+        this.changeState(STATE.STEP_COMPLETE_SAVING_ERROR);
     }
 
     _onSseEvent(event) {
@@ -278,10 +322,10 @@ export default class GithubFlowManager extends FlowManager {
                 // TODO: investigate why in some cases we seem to receive this event but without 'job_multibranch_indexing' props
                 // these fields might not be populated in the event of RateLimitExceededException
                 if (event.job_multibranch_indexing_result === 'SUCCESS') {
-                    this._setStatus(STATUS.STEP_COMPLETE_SUCCESS);
+                    this.changeState(STATE.STEP_COMPLETE_SUCCESS);
                     this._cleanupListeners();
                 } else if (event.job_multibranch_indexing_result === 'FAILURE') {
-                    this._setStatus(STATUS.STEP_COMPLETE_EVENT_ERROR);
+                    this.changeState(STATE.STEP_COMPLETE_EVENT_ERROR);
                     this._cleanupListeners();
                 }
             }
@@ -289,7 +333,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _onSseTimeout() {
-        this._setStatus(STATUS.STEP_COMPLETE_EVENT_TIMEOUT);
+        this.changeState(STATE.STEP_COMPLETE_EVENT_TIMEOUT);
         this._cleanupListeners();
     }
 

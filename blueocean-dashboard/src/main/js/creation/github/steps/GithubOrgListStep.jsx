@@ -7,12 +7,12 @@ import FlowStep from '../../flow2/FlowStep';
 
 function OrgRenderer(props) {
     const { listItem } = props;
-    const { name, avatar } = listItem;
+    const { name, avatar, jenkinsOrganizationPipeline, autoDiscover } = listItem;
 
     return (
         <div className="org-list-item">
             <img className="avatar" width="30" height="30" src={`${avatar}&s=50`} />
-            <span>{name}</span>
+            <span>{name} - exists? {jenkinsOrganizationPipeline.toString()}, autoDiscover? {autoDiscover !== undefined && autoDiscover.toString()}</span>
         </div>
     );
 }
