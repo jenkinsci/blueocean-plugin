@@ -9,9 +9,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.52-tfbeta2",
-      "from": "@jenkins-cd/js-builder@0.0.52-tfbeta2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.52-tfbeta2.tgz",
+      "version": "0.0.52-tfbeta3",
+      "from": "@jenkins-cd/js-builder@0.0.52-tfbeta3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.52-tfbeta3.tgz",
       "dev": true
     },
     "@jenkins-cd/js-modules": {
@@ -3082,9 +3082,9 @@
       "dev": true
     },
     "ignore": {
-      "version": "3.2.0",
+      "version": "3.2.2",
       "from": "ignore@>=3.1.2 <4.0.0",
-      "resolved": "https://registry.npmjs.org/ignore/-/ignore-3.2.0.tgz",
+      "resolved": "https://registry.npmjs.org/ignore/-/ignore-3.2.2.tgz",
       "dev": true
     },
     "imurmurhash": {
