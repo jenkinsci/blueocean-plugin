@@ -43,19 +43,10 @@ export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabNam
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
 
-/*
- * helper to clean the path replace(/%2F/g, '%252F')
- * @param input
- *
- * XXX: This was used where encodeURIComponent() should have been used. If it has not other uses,
- *      it should perhaps be removed.
- */
-export const uriString = (input) => encodeURIComponent(input).replace(/%2F/g, '%252F');
-
 /**
  * Double encode name, feature/test#1 is encoded as feature%252Ftest%25231
  */
-export const doubleUriEncode = (input) => escape(encodeURIComponent(input));
+export const doubleUriEncode = (input) => encodeURIComponent(encodeURIComponent(input));
 
 // general fetchAllTrigger
 export const fetchAllSuffix = '?start=0';
