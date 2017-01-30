@@ -85,13 +85,14 @@ class App extends Component {
 
         return (
             <div className="Site">
-
                 <SiteHeader topNavLinks={topNavLinks} userComponents={userComponents}/>
 
                 <main className="Site-content">
                     {this.props.children /* Set by react-router */ }
                 </main>
                 <footer className="Site-footer">
+                    {/* FIXME: jenkins.logo.top is being used to force CSS loading */}
+                    <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                     <DevelopmentFooter />
                 </footer>
                 <ToastDrawer />
