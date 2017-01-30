@@ -29,9 +29,9 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.55-tfbeta2",
+    "@jenkins-cd/blueocean-core-js": "0.0.55-tfbeta3",
     "@jenkins-cd/design-language": "0.0.105",
-    "@jenkins-cd/js-extensions": "0.0.33-tfbeta2",
+    "@jenkins-cd/js-extensions": "0.0.33-tfbeta3",
     "@jenkins-cd/js-modules": "0.0.8",
     "history": "2.0.2",
     "immutable": "3.8.1",
