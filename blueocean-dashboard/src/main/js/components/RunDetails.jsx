@@ -201,7 +201,7 @@ class RunDetails extends Component {
         ];
 
         return (
-            <FullScreen isVisible={isVisible} afterClose={this.afterClose}>
+            <FullScreen isVisible={isVisible} afterClose={this.afterClose} onDismiss={this.closeButtonClicked}>
 
                 <RunDetailsHeader
                     t={ t }

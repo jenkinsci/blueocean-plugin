@@ -11,7 +11,7 @@ const outerStyles = {
     left: 0,
     top: 0,
     bottom: 0,
-    right: 0 ,
+    right: 0,
     zIndex: 75
 };
 
@@ -22,6 +22,7 @@ const defaultContainerStyles = {
 };
 
 export class FullScreen extends Component {
+
     constructor(props) {
         super(props);
 
@@ -48,13 +49,33 @@ export class FullScreen extends Component {
         }
     }
 
+    keyPressed = (event) => {
+        const {onDismiss} = this.props;
+
+        if (onDismiss && event.keyCode === 27) {
+            onDismiss();
+        }
+    };
+
+    componentDidMount() {
+        document.addEventListener("keyup", this.keyPressed, false);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keyup", this.keyPressed, false);
+        if (this.transitionTimeout) {
+            clearTimeout(this.transitionTimeout);
+            this.transitionTimeout = undefined;
+        }
+    }
+
     render() {
 
         /*
-            The top div (FullScreen) escapes the containing document flow, the inner one (FullScreen-contents)
-            wraps props.children in a single node for the sake of the animation, and defaults to width/height: 100%
-            and background: white
-        */
+         The top div (FullScreen) escapes the containing document flow, the inner one (FullScreen-contents)
+         wraps props.children in a single node for the sake of the animation, and defaults to width/height: 100%
+         and background: white
+         */
 
         const {children, style, isVisible} = this.props;
 
@@ -92,7 +113,8 @@ FullScreen.propTypes = {
     isVisible: PropTypes.bool,
     children: PropTypes.node,
     style: PropTypes.object,
-    afterClose: PropTypes.func,
+    afterClose: PropTypes.func, // Animation has finished, after owner sets visible false
+    onDismiss: PropTypes.func, // Currently means "user pressed esc"
 };
 
 FullScreen.defaultProps = {
