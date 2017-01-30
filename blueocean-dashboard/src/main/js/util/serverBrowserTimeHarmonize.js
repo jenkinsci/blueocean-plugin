@@ -26,9 +26,9 @@ export class TimeManager {
         const serverStartTime = moment(run.startTime);
     // sync server start date to local time via the skewMillis
         if (skewMillis < 0) {
-            serverStartTime.subtract({ milliseconds: skewMillis * -1 });
+            serverStartTime.add({ milliseconds: Math.abs(skewMillis) });
         } else {
-            serverStartTime.add({ milliseconds: skewMillis });
+            serverStartTime.subtract({ milliseconds: skewMillis });
         }
     // export the harmonized start time
         const startTime = serverStartTime.toJSON();
@@ -40,9 +40,9 @@ export class TimeManager {
         if (run.endTime) { // sync server end date to local time via the skewMillis
             const serverEndTime = moment(run.endTime);
             if (skewMillis < 0) {
-                serverEndTime.subtract({ milliseconds: skewMillis * -1 });
+                serverEndTime.add({ milliseconds: Math.abs(skewMillis) });
             } else {
-                serverEndTime.add({ milliseconds: skewMillis });
+                serverEndTime.subtract({ milliseconds: skewMillis });
             }
             endTime = serverEndTime.toJSON();
         }
