@@ -124,6 +124,22 @@ describe('UrlUtils', () => {
         });
     });
 
+    describe('double encode branch name in nodeBaseUrl', () => {
+        const testData = {
+            _appURLBase: '/some/thing',
+            name: 'xxx',
+            branch: 'feature/test#1',
+            runId: 7,
+            isMultiBranch: true
+        };
+        it('should build the url multibranch', () => {
+            const url = calculateNodeBaseUrl(testData);
+
+            assert.equal(url, `${testData._appURLBase}/rest/organizations/jenkins/` +
+                `pipelines/${testData.name}/branches/feature%252Ftest%25231/runs/${testData.runId}/nodes/`);
+        });
+    });
+
     describe('build classicConfigUrl', () => {
 
         const testData = {
