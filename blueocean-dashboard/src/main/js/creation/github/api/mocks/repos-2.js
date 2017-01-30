@@ -1,3 +1,4 @@
+/* eslint-disable */
 export default {
     "_class": "io.jenkins.blueocean.blueocean_github_pipeline.GithubRespositoryContainer",
     "_links": {

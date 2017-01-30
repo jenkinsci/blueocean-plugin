@@ -8,6 +8,8 @@ import repos3 from './repos-3';
 import creationCreateSuccess from './creation-create-onerepo-success';
 import creationUpdateSuccess from './creation-update-onerepo-success';
 
+/* eslint-disable no-unused-vars */
+
 export class GithubCreationApi extends ApiMock {
 
     listOrganizations(credentialId) {

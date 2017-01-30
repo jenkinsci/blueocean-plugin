@@ -5,6 +5,8 @@ import credentialMissing from './credential-missing';
 import validateSuccess from './validate-success';
 import validateInvalid from './validate-invalid';
 
+/* eslint-disable no-unused-vars */
+
 export class GithubCredentialsApi extends ApiMock {
 
     findExistingCredential() {
