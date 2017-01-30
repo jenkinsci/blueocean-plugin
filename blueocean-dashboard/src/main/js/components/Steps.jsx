@@ -12,14 +12,24 @@ export default class Nodes extends Component {
             model,
             nodesBaseUrl,
         } = nodeInformation;
+        const { logs, fetchLog, followAlong, url, location, router, t, locale } = this.props;
         return (<div>
             {
               model.map((item, index) =>
                 <Step
-                  key={`${index}${item.id}`}
-                  node={item}
-                  nodesBaseUrl={nodesBaseUrl}
-                  {...this.props}
+                  {...{
+                      key: `${index}${item.id}`,
+                      node: item,
+                      logs,
+                      nodesBaseUrl,
+                      fetchLog,
+                      followAlong,
+                      url,
+                      location,
+                      router,
+                      t,
+                      locale,
+                  }}
                 />)
             }
         </div>);
@@ -28,4 +38,14 @@ export default class Nodes extends Component {
 
 Nodes.propTypes = {
     nodeInformation: PropTypes.object.isRequired,
+    node: PropTypes.object.isRequired,
+    followAlong: PropTypes.bool,
+    logs: PropTypes.object,
+    location: PropTypes.object,
+    fetchLog: PropTypes.func,
+    nodesBaseUrl: PropTypes.string,
+    router: PropTypes.shape,
+    url: PropTypes.string,
+    locale: PropTypes.object,
+    t: PropTypes.func,
 };
