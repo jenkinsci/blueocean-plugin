@@ -7,7 +7,7 @@ import LogConsole from './LogConsole';
 import InputStep from './InputStep';
 import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.Step');
 const timeManager = new TimeManager();
 export default class Node extends Component {
     constructor(props) {
@@ -156,7 +156,7 @@ export default class Node extends Component {
             startTime,
             isRunning: isRunning(),
         });
-        logger.debug('step - time:', {
+        logger.debug('time:', {
             responseDuration: durationMillis,
             durationInMillis,
             endTime,

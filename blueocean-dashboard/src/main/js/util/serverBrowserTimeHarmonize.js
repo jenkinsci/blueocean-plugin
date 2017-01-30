@@ -14,31 +14,31 @@ export class TimeManager {
         return moment();
     }
 
-    harmonizeTimes(run, skewMillis) {
+    harmonizeTimes(props, skewMillis) {
         logger.debug('skewMillis', skewMillis);
-        if (!run.startTime) {
+        if (!props.startTime) {
             logger.error('not found any startTime, seems that a component should not have called this me');
             return {};
         }
-    // What time is it now on the client
+        // What time is it now on the client
         const clientTime = this.currentTime();
-    // what is the start time of the server
-        const serverStartTime = moment(run.startTime);
-    // sync server start date to local time via the skewMillis
+        // what is the start time of the server
+        const serverStartTime = moment(props.startTime);
+        // sync server start date to local time via the skewMillis
         if (skewMillis < 0) {
             serverStartTime.add({ milliseconds: Math.abs(skewMillis) });
         } else {
             serverStartTime.subtract({ milliseconds: skewMillis });
         }
-    // export the harmonized start time
+        // export the harmonized start time
         const startTime = serverStartTime.toJSON();
-    // how long has passed from the start to now in milliseconds
+        // how long has passed from the start to now in milliseconds
         const timeElapsed = clientTime.diff(serverStartTime, 'milliseconds');
-    // assume we do not have an end date
+        // assume we do not have an end date
         let endTime = null;
         let durationMillis = 0;
-        if (run.endTime) { // sync server end date to local time via the skewMillis
-            const serverEndTime = moment(run.endTime);
+        if (props.endTime) { // sync server end date to local time via the skewMillis
+            const serverEndTime = moment(props.endTime);
             if (skewMillis < 0) {
                 serverEndTime.add({ milliseconds: Math.abs(skewMillis) });
             } else {
@@ -46,8 +46,8 @@ export class TimeManager {
             }
             endTime = serverEndTime.toJSON();
         }
-        if (run.endTime || !run.isRunning) { // sync server end date to local time via the skewMillis
-            durationMillis = run.durationInMillis;
+        if (props.endTime || !props.isRunning) { // sync server end date to local time via the skewMillis
+            durationMillis = props.durationInMillis;
         } else {
             logger.debug('running, using timeElapsed for duration');
             durationMillis = Math.abs(timeElapsed);

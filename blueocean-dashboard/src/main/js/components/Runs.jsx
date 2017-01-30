@@ -14,7 +14,7 @@ import { CellRow, CellLink } from './CellLink';
 import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
 const timeManager = new TimeManager();
-const logger = logging.logger('io.jenkins.blueocean.dashboard');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
  */
@@ -41,7 +41,7 @@ export default class Runs extends Component {
             endTime,
             startTime,
         } = timeManager.harmonizeTimes(run, skewMillis);
-        logger.debug('runs - time:', {
+        logger.debug('time:', {
             durationMillis,
             endTime,
             startTime,

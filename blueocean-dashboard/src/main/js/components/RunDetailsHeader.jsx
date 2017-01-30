@@ -7,7 +7,7 @@ import { ExpandablePath, ReadableDate, LiveStatusIndicator, TimeDuration } from 
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetailsPipeline');
 const timeManager = new TimeManager();
 
 class RunDetailsHeader extends Component {
@@ -63,7 +63,7 @@ class RunDetailsHeader extends Component {
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
         }, skewMillis);
-        logger.debug('rundetails times:', { startTime, endTime, durationMillis });
+        logger.debug('timeq:', { startTime, endTime, durationMillis });
         const onAuthorsClick = () => this.handleAuthorsClick();
         return (
         <div className="pipeline-result run-details-header">

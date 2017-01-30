@@ -10,7 +10,7 @@ export default class Config {
         this._rootURL = options.rootURL || '';
         this._resourceURL = options.resourceURL || '';
         this._adjunctURL = options.adjunctURL || '';
-        this._serverBrowserTimeSkewMillis = options.timeOffset || '';
+        this._serverBrowserTimeSkewMillis = options.serverBrowserTimeSkewMillis || '';
     }
 
     getAppURLBase() {
