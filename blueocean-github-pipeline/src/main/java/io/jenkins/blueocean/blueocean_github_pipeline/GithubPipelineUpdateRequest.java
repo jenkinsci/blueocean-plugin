@@ -2,12 +2,15 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import hudson.model.Cause;
 import hudson.model.Item;
+import hudson.security.ACL;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineUpdateRequest;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMNavigator;
+import org.acegisecurity.Authentication;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -29,6 +32,13 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
     @Nonnull
     @Override
     public BluePipeline update(BluePipeline pipeline) throws IOException {
+        ACL acl = Jenkins.getInstance().getACL();
+        Authentication a = Jenkins.getAuthentication();
+        if(!acl.hasPermission(a, Item.CONFIGURE)){
+            throw new ServiceException.ForbiddenException(
+                    String.format("Failed to update Git pipeline: %s. User %s doesn't have Job configure permission", pipeline.getName(), a.getName()));
+        }
+
         Item item = Jenkins.getInstance().getItemByFullName(pipeline.getFullName());
         if(item instanceof OrganizationFolder){
             OrganizationFolder folder = (OrganizationFolder) item;
