@@ -155,6 +155,9 @@ function transformToJSX() {
 
             jsxFileContent += "    Extension.store._registerComponentInstance('" + extension.extensionPoint + "', '" + maven.getArtifactId() + "', '" + extension.component + "', " + extension.importAs + ");\n";
         }
+
+        jsxFileContent += "    Extension.store._onPluginComponentRegistrationComplete('" + maven.getArtifactId() + "');\n";
+
         jsxFileContent += "});";
 
         fs.writeFileSync(jsxFilePath, jsxFileContent);

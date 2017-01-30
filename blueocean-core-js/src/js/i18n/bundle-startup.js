@@ -50,11 +50,11 @@ export function execute(done, bundleConfig) {
                 const loadBundle = (namespace) => {
                     const translator = i18nTranslator(bundleConfig.hpiPluginId, namespace, () => {
                         if (loadedBundles.indexOf(namespace) === -1) {
-                            logger.debug(`Loading of resource bundle ${bundleConfig.hpiPluginId}:${namespace} done.`);
+                            logger.debug(`Loading of i18n resource bundle "${bundleConfig.hpiPluginId}:${namespace}" done.`);
                             loadedBundles.push(namespace);
                             if (loadedBundles.length === pluginInfo.i18nBundles.length) {
                                 // All bundles are loaded ... ok for the bundle to execute now (from an i18n pov).
-                                logger.debug(`All ${bundleConfig.hpiPluginId} resource bundles loaded.`);
+                                logger.log(`All i18n "${bundleConfig.hpiPluginId}" resource bundles loaded.`, pluginInfo.i18nBundles);
                                 done();
                             }
                         }
@@ -65,7 +65,7 @@ export function execute(done, bundleConfig) {
                 };
                 pluginInfo.i18nBundles.forEach((bundleNamespace) => loadBundle(bundleNamespace));
             } else {
-                logger.debug(`Plugin ${bundleConfig.hpiPluginId} doesn't define any i18n resource bundles.`);
+                logger.debug(`Plugin "${bundleConfig.hpiPluginId}" doesn't define any i18n resource bundles.`);
                 done();
             }
         } else {

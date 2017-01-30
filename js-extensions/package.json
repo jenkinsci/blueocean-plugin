@@ -23,6 +23,7 @@
     "@jenkins-cd/js-builder": "0.0.52-tfbeta4",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/js-test": "1.2.3",
+    "@jenkins-cd/logging": "^0.0.6",
     "babel-cli": "6.10.1",
     "babel-core": "^6.7.6",
     "babel-eslint": "^6.0.2",
@@ -45,6 +46,7 @@
     "envify": "3.4.1"
   },
   "peerDependencies": {
+    "@jenkins-cd/logging": "^0.0.6",
     "react": "^0.14.7 || ^15.0.0",
     "react-dom": "^0.14.7 || ^15.0.0"
   }
