@@ -1,4 +1,5 @@
-exports.initialize = function (oncomplete) {
+
+export function execute(done, bundleConfig) {
     // Get the extension list metadata from Jenkins.
     // Might want to do some flux fancy-pants stuff for this.
     const appRoot = document.getElementsByTagName("head")[0].getAttribute("data-appurl");
@@ -12,5 +13,7 @@ exports.initialize = function (oncomplete) {
         }
     });
 
-    oncomplete();
-};
+    // Bootstrap the i18n resources too...
+    const i18nBootstrap = require('@jenkins-cd/blueocean-core-js/dist/js/i18n/bundle-startup');
+    i18nBootstrap.execute(done, bundleConfig);
+}
