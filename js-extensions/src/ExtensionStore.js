@@ -3,6 +3,10 @@
  * including type/capability info
  */
 
+import * as logging from '@jenkins-cd/logging';
+
+const logger = logging.logger('io.jenkins.blueocean.jsextensions.ExtensionStore');
+
 export default class ExtensionStore {
     /**
      *  FIXME this is NOT a constructor, as there's no common way to
@@ -55,6 +59,13 @@ export default class ExtensionStore {
             return;
         }
         throw new Error(`Unable to locate plugin for ${extensionPointId} / ${pluginId} / ${component}`);
+    }
+
+    /**
+     * On plugin component registration complete
+     */
+    _onPluginComponentRegistrationComplete(pluginId) {
+        logger.log('All js-extensions for plugin "%s" are now registered.', pluginId);
     }
 
     /**
@@ -182,9 +193,12 @@ export default class ExtensionStore {
     _loadBundles(extensionPointId, onload) {
         var extensionPointMetadatas = this.extensionPoints[extensionPointId];
         if (extensionPointMetadatas && extensionPointMetadatas.loaded) {
+            logger.debug('Bundles for extension point "%s" already loaded.', extensionPointId);
             onload(extensionPointMetadatas);
             return;
         }
+
+        logger.debug('Bundles for extension point "%s" not yet loaded. Initiating async load.', extensionPointId);
 
         extensionPointMetadatas = this.extensionPoints[extensionPointId] = this.extensionPoints[extensionPointId] || [];
 
@@ -202,8 +216,10 @@ export default class ExtensionStore {
             if (!pluginMetadata.loadCountMonitors) {
                 pluginMetadata.loadCountMonitors = [];
                 pluginMetadata.loadCountMonitors.push(loadCountMonitor);
+                logger.debug('Initiating js-extensions bundle loading for plugin "%s". Triggered by extensionPointId "%s".', pluginMetadata.hpiPluginId, extensionPointId);
                 jsModules.importModule(pluginMetadata.hpiPluginId + ':jenkins-js-extension')
                     .onFulfilled(() => {
+                        logger.log('js-extensions bundle for plugin "%s" loaded.', pluginMetadata.hpiPluginId);
                         pluginMetadata.bundleLoaded = true;
                         for (var i = 0; i < pluginMetadata.loadCountMonitors.length; i++) {
                             pluginMetadata.loadCountMonitors[i].dec();
