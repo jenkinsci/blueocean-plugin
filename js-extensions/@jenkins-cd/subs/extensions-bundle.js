@@ -90,6 +90,11 @@ function transformToJSON() {
 
     paths.mkdirp('target/classes');
     return exports.yamlToJSON(jsExtensionsYAMLFile, jsonFile, function(json) {
+        if (!json) {
+            json = {
+                extensions: []
+            };
+        }
         if (maven.isHPI()) {
             json.hpiPluginId = maven.getArtifactId();
         }
