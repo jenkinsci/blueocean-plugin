@@ -4,9 +4,11 @@ import moment from 'moment';
 
 const TimeManager = new timeManager();
 const runs = [{
+  isRunning: true,
   startTime: "2017-01-26T10:28:34.755+0100",
   durationInMillis: 0,
 }, {
+  isRunning: true,
   startTime: "2017-01-26T12:24:42.557+0100",
   durationInMillis: 0,
 }, {
@@ -24,8 +26,8 @@ describe("Logic to test the sync of time between server and client", () => {
       endTime,
       startTime,
     } = TimeManager.harmonizeTimes(runs[0], skewMillis);
-    assert.equal(durationMillis, 25722948);
-    assert.equal(startTime, "2017-01-26T07:29:56.378Z");
+    assert.equal(durationMillis, 11486194);
+    assert.equal(startTime, "2017-01-26T11:27:13.132Z");
     assert.equal(endTime, null);
   }),
     it('Client GMT+9 running job - pause state', () => {
@@ -36,8 +38,8 @@ describe("Logic to test the sync of time between server and client", () => {
         endTime,
         startTime,
       } = TimeManager.harmonizeTimes(runs[1], skewMillis);
-      assert.equal(durationMillis, 18329831);
-      assert.equal(startTime, "2017-01-26T09:26:03.290Z");
+      assert.equal(durationMillis, 4091297);
+      assert.equal(startTime, "2017-01-26T13:23:21.824Z");
       assert.equal(endTime, null);
     }),
     it('Client GMT+9 end job', () => {
@@ -49,8 +51,8 @@ describe("Logic to test the sync of time between server and client", () => {
         startTime,
       } = TimeManager.harmonizeTimes(runs[2], skewMillis);
       assert.equal(durationMillis, 6940382);
-      assert.equal(endTime, "2017-01-26T09:25:36.418Z");
-      assert.equal(startTime, "2017-01-26T09:28:34.752Z");
+      assert.equal(endTime, "2017-01-26T13:22:53.856Z");
+      assert.equal(startTime, "2017-01-26T13:25:52.190Z");
     })
 
 });
