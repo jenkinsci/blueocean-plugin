@@ -49,6 +49,7 @@ builder.bundle('src/main/js/blueocean.js')
     .less('src/main/less/blueocean.less')
     .onStartup('@jenkins-cd/blueocean-core-js/dist/js/i18n/bundle-startup')
     .export("@jenkins-cd/blueocean-core-js")
+    .export('@jenkins-cd/blueocean-core-js/dist/js/i18n/bundle-startup') // remove once JENKINS-39646 fixes back-door bundle module leakage
     .export("@jenkins-cd/design-language")
     .export("@jenkins-cd/js-extensions")
     .export('react')
