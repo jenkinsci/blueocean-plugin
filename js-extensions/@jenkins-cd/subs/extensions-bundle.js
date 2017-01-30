@@ -16,20 +16,33 @@ var jsExtensionsYAMLFile = findExtensionsYAMLFile();
 
 exports.bundle = function() {
     try {
+        paths.mkdirp('target/classes');
+
         if (jsExtensionsYAMLFile) {
             // Transform the jenkins-js-extensions.yaml file + enrich with some info
             var extensionsJSON = transformToJSON();
             // Generate a jenkins-js-extensions.jsx from the jenkins-js-extensions.yaml.
             var jsxFile = transformToJSX();
-            // Generate a bundle for the extensions.
-            createBundle(jsxFile);
-
-            if (!extensionsJSON.i18nBundles) {
-                extensionsJSON.i18nBundles = findI18nBundles();
+            if (jsxFile) {
+                // Generate a bundle for the extensions.
+                createBundle(jsxFile);
             }
-
-            return extensionsJSON;
+        } else {
+            extensionsJSON = {};
         }
+
+        if (maven.isHPI()) {
+            extensionsJSON.hpiPluginId = maven.getArtifactId();
+        }
+
+        if (!extensionsJSON.i18nBundles) {
+            extensionsJSON.i18nBundles = findI18nBundles();
+        }
+        if (!extensionsJSON.extensions) {
+            extensionsJSON.extensions = [];
+        }
+
+        return extensionsJSON;
     } catch (e) {
         logger.logError(e);
     }
@@ -88,15 +101,11 @@ function findExtensionsYAMLFile() {
 function transformToJSON() {
     assertHasJenkinsJsExtensionsDependency('Your project defines a jenkins-js-extensions.yaml file\n\t- Path: ' + jsExtensionsYAMLFile);
 
-    paths.mkdirp('target/classes');
     return exports.yamlToJSON(jsExtensionsYAMLFile, jsonFile, function(json) {
         if (!json) {
             json = {
                 extensions: []
             };
-        }
-        if (maven.isHPI()) {
-            json.hpiPluginId = maven.getArtifactId();
         }
         return json;
     });
