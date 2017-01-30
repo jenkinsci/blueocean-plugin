@@ -93,10 +93,10 @@ export class DashboardCards extends Component {
           message={t('dashboardCard.input.required', { defaultValue: 'Input required' })}
           cards={pausedCards}
         />) : null;
-        const favoriteCardsStack = (<StackOutput
+        const favoriteCardsStack = favoriteCards.size > 0 ? (<StackOutput
           message={t('dashboardCard.input.favorite', { defaultValue: 'Favorites' })}
           cards={favoriteCards}
-        />);
+        />) : null;
 
         return (
             <FavoritesProvider store={this.props.store}>
