@@ -4,9 +4,6 @@ import Extensions from '@jenkins-cd/js-extensions';
 import {
     ExpandablePath,
     Page,
-    PageHeader,
-    Title,
-    PageTabsOld,
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';

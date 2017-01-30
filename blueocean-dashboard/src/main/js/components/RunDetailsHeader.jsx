@@ -2,10 +2,10 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import { ExpandablePath, ReadableDate, LiveStatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
+import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import moment from 'moment';
-import {ResultPageHeader} from '@jenkins-cd/blueocean-core-js';
+import { ResultPageHeader } from '@jenkins-cd/blueocean-core-js';
 
 class RunDetailsHeader extends Component {
 
@@ -23,7 +23,7 @@ class RunDetailsHeader extends Component {
             runButton,
         } = this.props;
 
-        const {fullDisplayName} = pipeline;
+        const { fullDisplayName } = pipeline;
         const changeSet = run.changeSet;
         const status = run.getComputedResult().toLowerCase();
         const durationMillis = run.isRunning() ?
@@ -70,7 +70,7 @@ class RunDetailsHeader extends Component {
 
         const durationDetails = (
             <div>
-                <Icon size={20} icon="timelapse" style={{ fill: '#fff' }}/>
+                <Icon size={20} icon="timelapse" style={{ fill: '#fff' }} />
                 <TimeDuration
                     millis={durationMillis}
                     liveUpdate={run.isRunning()}
@@ -84,7 +84,7 @@ class RunDetailsHeader extends Component {
 
         const endTimeDetails = (
             <div>
-                <Icon size={20} icon="access_time" style={{ fill: '#fff' }}/>
+                <Icon size={20} icon="access_time" style={{ fill: '#fff' }} />
                 <ReadableDate
                     date={run.endTime}
                     liveUpdate
@@ -101,7 +101,8 @@ class RunDetailsHeader extends Component {
                               onCloseClick={onCloseClick}
                               className="RunDetailsHeader"
                               topNavLinks={topNavLinks}
-                              runButton={runButton}>
+                              runButton={runButton}
+            >
                 <div className="RunDetailsHeader-sources">
                     { branchSourceDetails }
                     { commitSourceDetails }
@@ -111,7 +112,7 @@ class RunDetailsHeader extends Component {
                     { endTimeDetails }
                 </div>
                 <div className="RunDetailsHeader-authors">
-                    <ChangeSetToAuthors changeSet={changeSet} onAuthorsClick={onAuthorsClick} t={t}/>
+                    <ChangeSetToAuthors changeSet={changeSet} onAuthorsClick={onAuthorsClick} t={t} />
                 </div>
             </ResultPageHeader>
         );

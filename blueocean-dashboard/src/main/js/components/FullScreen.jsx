@@ -1,42 +1,41 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
-const transitionClass = "expand-in";
+const transitionClass = 'expand-in';
 const transitionDuration = 150;
 
 // FIXME: Move styles to css once this is bedded down and moved to JDL
 const outerStyles = {
-    position: "fixed",
+    position: 'fixed',
     left: 0,
     top: 0,
     bottom: 0,
     right: 0,
-    zIndex: 75
+    zIndex: 75,
 };
 
 const defaultContainerStyles = {
-    background: "white",
-    width: "100%",
-    height: "100%"
+    background: 'white',
+    width: '100%',
+    height: '100%',
 };
 
 export class FullScreen extends Component {
 
     constructor(props) {
         super(props);
-
-        // If nothing set, default to true
-        const isVisible = "isVisible" in props ? props.isVisible : true;
-
         this.transitionTimeout = undefined;
     }
 
+    componentDidMount() {
+        document.addEventListener('keyup', this.keyPressed, false);
+    }
+
     componentWillReceiveProps(newProps) {
+        const { isVisible } = newProps;
 
-        const {isVisible} = newProps;
-
-        if (isVisible != this.props.isVisible) {
+        if (isVisible !== this.props.isVisible) {
             clearTimeout(this.transitionTimeout);
 
             this.transitionTimeout = setTimeout(() => {
@@ -49,35 +48,30 @@ export class FullScreen extends Component {
         }
     }
 
-    keyPressed = (event) => {
-        const {onDismiss} = this.props;
-
-        if (onDismiss && event.keyCode === 27) {
-            onDismiss();
-        }
-    };
-
-    componentDidMount() {
-        document.addEventListener("keyup", this.keyPressed, false);
-    }
-
     componentWillUnmount() {
-        document.removeEventListener("keyup", this.keyPressed, false);
+        document.removeEventListener('keyup', this.keyPressed, false);
         if (this.transitionTimeout) {
             clearTimeout(this.transitionTimeout);
             this.transitionTimeout = undefined;
         }
     }
 
-    render() {
+    keyPressed = (event) => {
+        const { onDismiss } = this.props;
 
+        if (onDismiss && event.keyCode === 27) {
+            onDismiss();
+        }
+    };
+
+    render() {
         /*
          The top div (FullScreen) escapes the containing document flow, the inner one (FullScreen-contents)
          wraps props.children in a single node for the sake of the animation, and defaults to width/height: 100%
          and background: white
          */
 
-        const {children, style, isVisible} = this.props;
+        const { children, style, isVisible } = this.props;
 
         // If transitionTimeout not null, we're still fading in/out
         if (!isVisible && !this.transitionTimeout) {
@@ -85,7 +79,7 @@ export class FullScreen extends Component {
         }
 
         // We apply any styles that are passed in to the div that wraps the children.
-        const containerStyles = {...defaultContainerStyles, ...style};
+        const containerStyles = { ...defaultContainerStyles, ...style };
 
         const wrappedChildren = isVisible && (
                 <div className="FullScreen-contents" style={containerStyles}>
@@ -102,7 +96,7 @@ export class FullScreen extends Component {
                     transitionEnterTimeout={transitionDuration}
                     transitionLeaveTimeout={transitionDuration}
                 >
-                    { wrappedChildren  }
+                    { wrappedChildren }
                 </ReactCSSTransitionGroup>
             </div>
         );
@@ -118,5 +112,5 @@ FullScreen.propTypes = {
 };
 
 FullScreen.defaultProps = {
-    isVisible: true
+    isVisible: true,
 };
