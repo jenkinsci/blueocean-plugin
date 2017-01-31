@@ -48,6 +48,7 @@ exports.install = function(builder) {
             .import('@jenkins-cd/js-extensions@any')
             .import('@jenkins-cd/design-language@any')
             .import("@jenkins-cd/blueocean-core-js@any")
+            .import('@jenkins-cd/blueocean-core-js/dist/js/i18n/bundle-startup@any') // remove once JENKINS-39646 fixes back-door bundle module leakage
             .import('react@any', {
                 aliases: ['react/lib/React'] // in case a module requires react through the back door
             })
