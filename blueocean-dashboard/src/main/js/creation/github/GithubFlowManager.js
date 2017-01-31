@@ -9,6 +9,7 @@ import STATE from './GithubCreationState';
 import GithubAlreadyDiscoverStep from './steps/GithubAlreadyDiscoverStep';
 import GithubLoadingStep from './steps/GithubLoadingStep';
 import GithubCredentialsStep from './steps/GithubCredentialStep';
+import GithubInvalidOrgFolderStep from './steps/GithubInvalidOrgFolderStep';
 import GithubOrgListStep from './steps/GithubOrgListStep';
 import GithubChooseDiscoverStep from './steps/GithubChooseDiscoverStep';
 import GithubConfirmDiscoverStep from './steps/GithubConfirmDiscoverStep';
@@ -29,11 +30,24 @@ export default class GithubFlowManager extends FlowManager {
     repositories = [];
 
     @computed get selectableRepositories() {
-        return this.repositories ? this.repositories.filter(repo => !repo.pipelineCreated) : [];
+        if (this.repositories && this.existingOrgFolder) {
+            return this.repositories.filter(repo => {
+                return this.existingOrgFolder.pipelines.indexOf(repo.name) === -1;
+            });
+        }
+
+        return [];
     }
 
     @observable
     selectedOrganization = null;
+
+    @observable
+    existingOrgFolder = null;
+
+    @computed get existingAutoDiscover() {
+        return this.existingOrgFolder && this.existingOrgFolder.requestedRepos && this.existingOrgFolder.requestedRepos.length === 0;
+    }
 
     @observable
     selectedRepository = null;
@@ -169,17 +183,50 @@ export default class GithubFlowManager extends FlowManager {
     selectOrganization(organization) {
         this.selectedOrganization = organization;
 
+        this._creationApi.findExistingOrgFolder(this.selectedOrganization)
+            .then(waitAtLeast(MIN_DELAY))
+            .then(result => this._findExistingOrgFolderResult(result))
+            .catch(error => console.log(error));
+
         this.renderStep({
-            stateId: STATE.STEP_CHOOSE_DISCOVER,
-            stepElement: <GithubChooseDiscoverStep />,
+            stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
+            stepElement: <GithubLoadingStep />,
             afterStateId: STATE.STEP_CHOOSE_ORGANIZATION,
         });
+    }
+
+    @action
+    _findExistingOrgFolderResult(result) {
+        const { isFound, isOrgFolder, orgFolder } = result;
+
+        if (isFound && isOrgFolder) {
+            this.existingOrgFolder = orgFolder;
+
+            this.renderStep({
+                stateId: STATE.STEP_CHOOSE_DISCOVER,
+                stepElement: <GithubChooseDiscoverStep />,
+                afterStateId: STATE.STEP_CHOOSE_ORGANIZATION,
+            });
+        } else if (!result.isFound) {
+            this.renderStep({
+                stateId: STATE.STEP_CHOOSE_DISCOVER,
+                stepElement: <GithubChooseDiscoverStep />,
+                afterStateId: STATE.STEP_CHOOSE_ORGANIZATION,
+            });
+        } else {
+            this.renderStep({
+                stateId: STATE.STEP_INVALID_ORGFOLDER,
+                stepElement: <GithubInvalidOrgFolderStep />,
+                afterStateId: STATE.STEP_CHOOSE_ORGANIZATION,
+            });
+            this.setPlaceholders();
+        }
     }
 
     selectDiscover(discover) {
         this._discoverSelection = discover;
 
-        if (this.selectedOrganization.autoDiscover && discover) {
+        if (this.existingAutoDiscover && discover) {
             this.renderStep({
                 stateId: STATE.STEP_ALREADY_DISCOVER,
                 stepElement: <GithubAlreadyDiscoverStep />,
@@ -233,8 +280,9 @@ export default class GithubFlowManager extends FlowManager {
         this.repositories.push(...items);
         this._repositoryCache[organizationName] = this.repositories.slice();
 
-        // if another page is available, keep fetching
-        if (!isNaN(parseInt(nextPage))) {
+        const morePages = !isNaN(parseInt(nextPage, 10));
+
+        if (morePages) {
             this._loadPagedRepository(organizationName, nextPage)
                 .then(repos2 => this._updateRepositories(organizationName, repos2, nextPage));
         } else {
@@ -266,11 +314,8 @@ export default class GithubFlowManager extends FlowManager {
      * @private
      */
     _getFullRepoNameList() {
-        const allRepos = this._repositoryCache[this.selectedOrganization.name];
-        const existingPipelines = allRepos.filter(repo => repo.pipelineCreated);
-        const repoNames = existingPipelines.map(repo => repo.name);
-        repoNames.push(this.selectedRepository.name);
-        return repoNames;
+        const existingPipelines = this.existingOrgFolder && this.existingOrgFolder.requestedRepos.slice();
+        return [].concat(existingPipelines, this.selectedRepository.name);
     }
 
     /**
@@ -293,10 +338,9 @@ export default class GithubFlowManager extends FlowManager {
 
         this.setPlaceholders();
 
-        const shouldCreate = !this.selectedOrganization.jenkinsOrganizationPipeline;
-        const promise = shouldCreate ?
+        const promise = !this.existingOrgFolder ?
             this._creationApi.createOrgFolder(this._credentialId, this.selectedOrganization, repoNames) :
-            this._creationApi.updateOrgFolder(this._credentialId, this.selectedOrganization, repoNames);
+            this._creationApi.updateOrgFolder(this._credentialId, this.existingOrgFolder, repoNames);
 
         promise
             .then(waitAtLeast(500))
@@ -305,7 +349,7 @@ export default class GithubFlowManager extends FlowManager {
 
     @action
     _saveOrgFolderSuccess(orgFolder) {
-        this.changeState(STATE.STEP_COMPLETE_SUCCESS);
+        this.changeState(STATE.PENDING_CREATION_EVENTS);
         this.savedOrgFolder = orgFolder;
         this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
         this._sseTimeoutId = setTimeout(() => {

@@ -1,12 +1,13 @@
 import { Utils } from '@jenkins-cd/blueocean-core-js';
 import { ApiMock } from './ApiMock';
 
+import creationCreateSuccess from './creation-create-onerepo-success';
+import creationUpdateSuccess from './creation-update-onerepo-success';
 import organizations from './organizations';
+import orgfolderSuccess from './orgfolder-success';
 import repos1 from './repos-1';
 import repos2 from './repos-2';
 import repos3 from './repos-3';
-import creationCreateSuccess from './creation-create-onerepo-success';
-import creationUpdateSuccess from './creation-update-onerepo-success';
 
 /* eslint-disable no-unused-vars */
 
@@ -14,17 +15,6 @@ export class GithubCreationApi extends ApiMock {
 
     listOrganizations(credentialId) {
         const cloned = Utils.clone(organizations);
-
-        for (const org of cloned) {
-            if (org.jenkinsOrganizationPipeline) {
-                if (this._hasUrlKey('auto-discover=true')) {
-                    org.autoDiscover = true;
-                } else if (this._hasUrlKey('auto-discover=false')) {
-                    org.autoDiscover = false;
-                }
-            }
-        }
-
         return this._delayedResolve(cloned);
     }
 
@@ -40,24 +30,45 @@ export class GithubCreationApi extends ApiMock {
         }
 
         repoData = Utils.clone(repoData);
-
-        for (let index = 0; index < repoData.repositories.items.length; index++) {
-            const repo = repoData.repositories.items[index];
-            repo.pipelineCreated = false;
-
-            if (this._hasUrlKey('pipeline-created=true') && index % 2 === 0) {
-                repo.pipelineCreated = true;
-            }
-        }
-
         return this._delayedResolve(repoData);
     }
 
+    findExistingOrgFolder(organization) {
+        if (this._hasUrlKey('orgfolder-exists=true')) {
+            const orgFolder = Utils.clone(orgfolderSuccess);
+
+            if (this._hasUrlKey('single-repo=true')) {
+                orgFolder.requestedRepos = orgFolder.pipelines;
+            }
+
+            return this._delayedResolve({
+                isFound: true,
+                isOrgFolder: true,
+                orgFolder,
+            });
+        } else if (this._hasUrlKey('orgfolder-invalid=true')) {
+            return this._delayedResolve({
+                isFound: true,
+                isOrgFolder: false,
+            });
+        }
+
+        // by default, the org folder doesn't exist
+        // this puts the flow into 'create' mode
+        return this._delayedResolve({
+            isFound: false,
+            isOrgFolder: false,
+        });
+    }
+
+
     createOrgFolder(credentialId, organization, repoNames = []) {
+        console.log('createOrgFolder called with', ...arguments);
         return this._delayedResolve(creationCreateSuccess);
     }
 
-    updateOrgFolder(credentialId, organization, repoNames = []) {
+    updateOrgFolder(credentialId, orgFolder, repoNames = []) {
+        console.log('updateOrgFolder called with', ...arguments);
         return this._delayedResolve(creationUpdateSuccess);
     }
 

@@ -22,12 +22,17 @@ export default class GithubChooseDiscoverStep extends React.Component {
     }
 
     render() {
+        // const { flowManager } = this.props;
         const title = 'Do you want to create a Pipeline for one repository or automatically discover?';
+        // const existing = flowManager.existingAutoDiscover ? 'This organization is already set to "Automatically Discover."' : '';
         const option1Class = this.state.discover === false ? 'u-selected' : '';
         const option2Class = this.state.discover === true ? 'u-selected' : '';
+        // const option2Class = this.state.discover === true || existing ? 'u-selected' : '';
 
         return (
             <FlowStep {...this.props} className="github-choose-discover-step" title={title}>
+                { /* existing && <p className="instructions">{existing}</p> */ }
+
                 <div className="toggle layout-large">
                     <button className={`monochrome ${option1Class}`} onClick={() => this.selectDiscover(false)}>
                         <h1 className="title">Just one repository</h1>

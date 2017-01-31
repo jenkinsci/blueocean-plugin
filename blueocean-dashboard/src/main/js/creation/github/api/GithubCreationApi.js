@@ -1,4 +1,4 @@
-import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, capable, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
 
 export class GithubCreationApi {
 
@@ -11,22 +11,7 @@ export class GithubCreationApi {
         const orgsUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github/organizations/?credentialId=${credentialId}`, false);
 
         return this._fetch(orgsUrl)
-            .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
-            .then(orgs => this.__addHalHrefs(orgs));
-    }
-
-    // TODO: temp method to add HAL href, for testing only
-    __addHalHrefs(organizations) {
-        return organizations.map(organization => {
-            const org = organization;
-
-            org._links.orgfolder = {
-                _class: 'io.jenkins.blueocean.rest.hal.Link',
-                href: `/blue/rest/organizations/jenkins/pipelines/${organization.name}/`,
-            };
-
-            return org;
-        });
+            .then(orgs => capabilityAugmenter.augmentCapabilities(orgs));
     }
 
     listRepositories(credentialId, organizationName, pageNumber = 1, pageSize = 100) {
@@ -37,6 +22,34 @@ export class GithubCreationApi {
 
         return this._fetch(reposUrl)
             .then(response => capabilityAugmenter.augmentCapabilities(response));
+    }
+
+    findExistingOrgFolder(organization) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const orgFolderUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/${organization.name}`);
+        return this._fetch(orgFolderUrl)
+            .then(response => capabilityAugmenter.augmentCapabilities(response))
+            .then(
+                data => this._findExistingOrgFolderSuccess(data),
+                error => this._findExistingOrgFolderFailure(error),
+            );
+    }
+
+    _findExistingOrgFolderSuccess(orgFolder) {
+        const isOrgFolder = capable(orgFolder, 'jenkins.branch.OrganizationFolder');
+
+        return {
+            isFound: true,
+            isOrgFolder,
+            orgFolder,
+        };
+    }
+
+    _findExistingOrgFolderFailure(error) {
+        return {
+            isFound: false,
+            isOrgFolder: false,
+        };
     }
 
     createOrgFolder(credentialId, organization, repoNames = []) {
@@ -59,13 +72,13 @@ export class GithubCreationApi {
             .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
     }
 
-    updateOrgFolder(credentialId, organization, repoNames = []) {
+    updateOrgFolder(credentialId, orgFolder, repoNames = []) {
         const path = UrlConfig.getJenkinsRootURL();
-        const { href } = organization._links.orgfolder;
+        const { href } = orgFolder._links.self;
         const updateUrl = Utils.cleanSlashes(`${path}/${href}`);
 
         const requestBody = this._buildRequestBody(
-            false, credentialId, organization.name, organization.name, repoNames,
+            false, credentialId, orgFolder.name, orgFolder.name, repoNames,
         );
 
         const fetchOptions = {

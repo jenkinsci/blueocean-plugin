@@ -12,7 +12,6 @@ export default [{
         }
     },
     "avatar": "https://avatars.githubusercontent.com/u/107424?v=3&s=50",
-    "jenkinsOrganizationPipeline": false,
     "name": "jenkinsci"
 }, {
     "_class": "io.jenkins.blueocean.blueocean_github_pipeline.GithubUserOrganization",
@@ -27,7 +26,6 @@ export default [{
         }
     },
     "avatar": "https://avatars.githubusercontent.com/u/143466?v=3&s=50",
-    "jenkinsOrganizationPipeline": true,
     "name": "cliffmeyers"
 }, {
     "_class": "io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganization",
@@ -42,6 +40,5 @@ export default [{
         }
     },
     "avatar": "https://avatars.githubusercontent.com/u/235526?v=3&s=50",
-    "jenkinsOrganizationPipeline": false,
     "name": "cloudbees"
 }]
