@@ -39,7 +39,7 @@ function checkProject(pathToProject) {
     const packageJsonPath = buildPath(`${resolvedPath}/package.json`);
     const shrinkwrapJsonPath = buildPath(`${resolvedPath}/npm-shrinkwrap.json`);
 
-    const packages = require(packageJsonPath);    
+    const packages = require(packageJsonPath);
     const packageDeps = packages.dependencies;
     const packageDevDeps = packages.devDependencies;
 
@@ -67,7 +67,7 @@ function checkImpreciseDependencies(dependencies) {
     const badDeps = [];    
     Object.keys(dependencies).forEach(name => {
         const version = dependencies[name];
-        
+
         if (!PRECISE_VERSION_CHARS_PATTERN.test(version)) {
             badDeps.push(`${name}@${version}`);
         }
