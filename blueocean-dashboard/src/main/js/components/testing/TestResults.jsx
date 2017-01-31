@@ -106,7 +106,6 @@ export default class TestResult extends Component {
                         0: testResults.passCount,
                         defaultValue: 'Nice one! All {0} tests for this pipeline are passing.',
                     })}</p>
-                    <p>{translation('rundetail.tests.results.passing.msg', { defaultValue: 'How\'s the serenity?' })}</p>
                 </EmptyStateView>
             );
         } else {
