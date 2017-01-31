@@ -343,11 +343,23 @@ public class GithubScm extends Scm {
                         Jenkins.getAuthentication(),
                         URIRequirementBuilder.fromUri(scm.getUri()).build()),
                 CredentialsMatchers.allOf(CredentialsMatchers.withId(scm.getId()),
-                        CredentialsMatchers.anyOf(CredentialsMatchers.instanceOf(StandardUsernamePasswordCredentials.class)))
+                        CredentialsMatchers.withScope(CredentialsScope.USER))
         );
     }
 
-    private static @CheckForNull StandardUsernamePasswordCredentials findUsernamePasswordCredential(String id){
+    static StandardUsernamePasswordCredentials findUsernamePasswordCredential(String uri, String credentialId){
+        return CredentialsMatchers.firstOrNull(
+                CredentialsProvider.lookupCredentials(
+                        StandardUsernamePasswordCredentials.class,
+                        Jenkins.getInstance(),
+                        Jenkins.getAuthentication(),
+                        URIRequirementBuilder.fromUri(uri).build()),
+                CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId),
+                        CredentialsMatchers.withScope(CredentialsScope.USER))
+        );
+    }
+
+    static @CheckForNull StandardUsernamePasswordCredentials findUsernamePasswordCredential(@Nonnull String id){
         if(User.current() == null){
             throw new ServiceException.UnauthorizedException("No authenticated user found. Please login");
         }
@@ -358,7 +370,7 @@ public class GithubScm extends Scm {
                         Jenkins.getAuthentication(),
                         Collections.<DomainRequirement>emptyList()),
                 CredentialsMatchers.allOf(CredentialsMatchers.withId(id),
-                        CredentialsMatchers.anyOf(CredentialsMatchers.instanceOf(StandardUsernamePasswordCredentials.class)))
+                        CredentialsMatchers.withScope(CredentialsScope.USER))
         );
     }
 
