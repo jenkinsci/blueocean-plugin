@@ -4,8 +4,8 @@
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
       "version": "0.0.55-tfbeta4",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.55-tfbeta4",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.55-tfbeta4.tgz",
+      "from": "../blueocean-core-js",
+      "resolved": "file:../blueocean-core-js",
       "dependencies": {
         "@jenkins-cd/design-language": {
           "version": "0.0.102",
@@ -36,15 +36,15 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.52-tfbeta4",
-      "from": "@jenkins-cd/js-builder@0.0.52-tfbeta4",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.52-tfbeta4.tgz",
+      "version": "0.0.52-tfbeta5",
+      "from": "@jenkins-cd/js-builder@0.0.52-tfbeta5",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.52-tfbeta5.tgz",
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
       "version": "0.0.33-tfbeta4",
-      "from": "@jenkins-cd/js-extensions@0.0.33-tfbeta4",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.33-tfbeta4.tgz"
+      "from": "../js-extensions",
+      "resolved": "file:../js-extensions"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",

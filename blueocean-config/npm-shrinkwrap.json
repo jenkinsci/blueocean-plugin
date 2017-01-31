@@ -9,9 +9,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.52-tfbeta4",
-      "from": "@jenkins-cd/js-builder@0.0.52-tfbeta4",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.52-tfbeta4.tgz",
+      "version": "0.0.52-tfbeta5",
+      "from": "@jenkins-cd/js-builder@0.0.52-tfbeta5",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.52-tfbeta5.tgz",
       "dev": true
     },
     "@jenkins-cd/js-modules": {
@@ -294,9 +294,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@^3.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
@@ -384,9 +384,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@^3.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
@@ -552,9 +552,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@^3.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
@@ -688,9 +688,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@>=3.0.0 <4.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
@@ -752,9 +752,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@^3.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
@@ -816,9 +816,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@^3.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
@@ -992,9 +992,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@^3.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
@@ -1056,9 +1056,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@^3.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
@@ -1120,9 +1120,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@^3.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
@@ -1184,9 +1184,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@^3.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
@@ -1268,9 +1268,9 @@
           "dev": true
         },
         "js-tokens": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "from": "js-tokens@^3.0.0",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.0.tgz",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.1.tgz",
           "dev": true
         },
         "regenerator-runtime": {
