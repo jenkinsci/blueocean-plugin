@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.0.0-b19-SNAPSHOT</version>
+  <version>1.0.0-b21-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -217,8 +217,13 @@
         <!-- 3rd party dependencies -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pubsub-light</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sse-gateway</artifactId>
-            <version>1.13</version>
+            <version>1.15</version>
         </dependency>
 
         <dependency>

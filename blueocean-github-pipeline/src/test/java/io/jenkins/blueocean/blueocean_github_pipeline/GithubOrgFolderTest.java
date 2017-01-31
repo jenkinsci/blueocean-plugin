@@ -24,4 +24,25 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
         Assert.assertEquals("jenkinsci", resp.get("name"));
         Assert.assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
     }
+
+    @Test
+    public void orgUpdateTest(){
+        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
+                ImmutableMap.of("name", "jenkinsci",
+                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("config",
+                                ImmutableMap.of("repos", ImmutableList.of("stapler")))
+                ), 201);
+
+        Assert.assertEquals("jenkinsci", resp.get("name"));
+        Assert.assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
+
+        put("/organizations/jenkins/pipelines/jenkinsci/",
+                ImmutableMap.of("name", "jenkinsci",
+                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineUpdateRequest",
+                        "scmConfig", ImmutableMap.of("config",
+                                ImmutableMap.of("repos", ImmutableList.of("stapler")))
+                ), 200);
+
+    }
 }

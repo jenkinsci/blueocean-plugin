@@ -43,11 +43,10 @@ export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabNam
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
 
-/*
- * helper to clean the path replace(/%2F/g, '%252F')
- * @param input
+/**
+ * Double encode name, feature/test#1 is encoded as feature%252Ftest%25231
  */
-export const uriString = (input) => encodeURIComponent(input).replace(/%2F/g, '%252F');
+export const doubleUriEncode = (input) => encodeURIComponent(encodeURIComponent(input));
 
 // general fetchAllTrigger
 export const fetchAllSuffix = '?start=0';
@@ -112,7 +111,7 @@ export function calculateNodeBaseUrl(config) {
         `${_appURLBase}/rest/organizations/jenkins/` +
         `pipelines/${name}`;
     if (isMultiBranch) {
-        return `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/nodes/`;
+        return `${baseUrl}/branches/${doubleUriEncode(branch)}/runs/${runId}/nodes/`;
     }
     return `${baseUrl}/runs/${runId}/nodes/`;
 }
@@ -129,7 +128,7 @@ export function calculateStepsBaseUrl(config) {
         `${_appURLBase}/rest/organizations/jenkins/` +
         `pipelines/${name}`;
     if (isMultiBranch) {
-        baseUrl = `${baseUrl}/branches/${uriString(branch)}`;
+        baseUrl = `${baseUrl}/branches/${doubleUriEncode(branch)}`;
     }
     if (node && node !== null) {
         return `${baseUrl}/runs/${runId}/nodes/${node}/steps/`;
@@ -148,7 +147,7 @@ export function calculateRunLogURLObject(config) {
     let url;
     let fileName;
     if (isMultiBranch) {
-        url = `${baseUrl}/branches/${uriString(branch)}/runs/${runId}/log/`;
+        url = `${baseUrl}/branches/${doubleUriEncode(branch)}/runs/${runId}/log/`;
         fileName = `${branch}-${runId}.txt`;
     } else {
         url = `${baseUrl}/runs/${runId}/log/`;
