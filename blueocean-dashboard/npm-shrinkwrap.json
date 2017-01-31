@@ -31,9 +31,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.52-tfbeta5",
-      "from": "@jenkins-cd/js-builder@0.0.52-tfbeta5",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.52-tfbeta5.tgz",
+      "version": "0.0.52",
+      "from": "@jenkins-cd/js-builder@0.0.52",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.52.tgz",
       "dev": true,
       "dependencies": {
         "underscore.string": {
