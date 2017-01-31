@@ -60,7 +60,7 @@ export function execute(done, bundleConfig) {
                         }
                     });
                     // Call the translator to trigger loading.
-                    // Don't specify a key.
+                    // Any random key is fine ... just needs to trigger the loading.
                     translator('xxxx');
                 };
                 pluginInfo.i18nBundles.forEach((bundleNamespace) => loadBundle(bundleNamespace));
