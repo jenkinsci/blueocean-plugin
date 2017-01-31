@@ -123,13 +123,13 @@ export class LogConsole extends Component {
         // const logUrl =`?start=0#${prefix || ''}log-${0}`
         const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
 
-        return (<div className="log-body">
+        return (<div className="log-wrapper">
             { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
                 <Progress />
             </div>}
 
 
-            { !isLoading && <pre>
+            { !isLoading && <div className="log-body"><pre>
                 { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
                     <a
                       target="_blank"
@@ -156,7 +156,7 @@ export class LogConsole extends Component {
                         <span className="line">{line}</span>
                     </div>
                 </p>)}
-            </pre> }
+            </pre></div> }
 
         </div>);
     }
