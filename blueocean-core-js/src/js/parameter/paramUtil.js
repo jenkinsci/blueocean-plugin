@@ -31,7 +31,5 @@ export const removeMarkupTags = function (markupText) {
     if (typeof markupText !== 'string') {
         throw new Error('Invalid arg type for "markupText". Must be a string.');
     }
-    const p = document.createElement('p');
-    p.innerHTML = markupText;
-    return p.textContent;
+    return markupText.replace(/<[^>]*>/g, '');
 };
