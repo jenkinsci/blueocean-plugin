@@ -199,7 +199,17 @@ function findI18nBundles() {
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
                 if (propertiesFileMatcher.test(file)) {
-                    // Strip off the different parts we don't want. It might be that
+                    // We're only interested in adding the "basename" for a given resource bundle.
+                    // So when we have a bundle with multiple variants (language, country etc) as
+                    // shown below, we are only interested in the name "base" bundle file i.e.
+                    // "Messages.properties" in the case of this example.
+                    //
+                    //  ├── Messages_de.properties
+                    //  ├── Messages_es.properties
+                    //  ├── Messages_fr.properties
+                    //  └── Messages.properties    (base)
+                    //
+                    // So, we strip off the different parts we don't want. It might be that
                     // resource bundle basenames can have underscores in them according
                     // to specs (I didn't find a ref one way or the other), but trying to match
                     // language/country/variant codes exactly and strip them off is going to
