@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.51",
+    "@jenkins-cd/js-builder": "0.0.52-tfbeta5",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
     "babel-core": "6.17.0",
@@ -35,9 +35,9 @@
     "react-addons-test-utils": "15.3.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.54",
+    "@jenkins-cd/blueocean-core-js": "0.0.55-tfbeta5",
     "@jenkins-cd/design-language": "0.0.105",
-    "@jenkins-cd/js-extensions": "0.0.32",
+    "@jenkins-cd/js-extensions": "0.0.33-tfbeta5",
     "@jenkins-cd/js-modules": "0.0.8",
     "immutable": "3.8.1",
     "keymirror": "0.1.1",
