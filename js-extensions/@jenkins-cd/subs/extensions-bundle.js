@@ -201,7 +201,7 @@ function findI18nBundles() {
                 if (propertiesFileMatcher.test(file)) {
                     // We're only interested in adding the "basename" for a given resource bundle.
                     // So when we have a bundle with multiple variants (language, country etc) as
-                    // shown below, we are only interested in the name "base" bundle file i.e.
+                    // shown below, we are only interested in the name of the "base" bundle file i.e.
                     // "Messages.properties" in the case of this example.
                     //
                     //  ├── Messages_de.properties
