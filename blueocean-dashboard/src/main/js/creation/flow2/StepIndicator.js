@@ -3,7 +3,7 @@ import { StatusIndicator } from '@jenkins-cd/design-language';
 import status from './FlowStepStatus';
 
 /**
- * Visual indicator that displays a workflow step as either completed, active or incomplete state.
+ * Visual indicator that displays a workflow step as either completed, active, incomplete or error state.
  * Can show partial completion via 'percentage' prop.
  */
 export default function StepIndicator(props) {
@@ -15,6 +15,8 @@ export default function StepIndicator(props) {
         newProps.percentage = props.percentage;
     } else if (props.status === status.COMPLETE) {
         newProps.result = 'success';
+    } else if (props.status === status.ERROR) {
+        newProps.result = 'failure';
     } else {
         newProps.result = 'not_built';
     }
