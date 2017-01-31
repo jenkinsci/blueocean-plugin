@@ -30,10 +30,11 @@ export default class GithubFlowManager extends FlowManager {
     repositories = [];
 
     @computed get selectableRepositories() {
+        // return repositories that are not already created as pipelines
         if (this.repositories && this.existingOrgFolder) {
-            return this.repositories.filter(repo => {
-                return this.existingOrgFolder.pipelines.indexOf(repo.name) === -1;
-            });
+            return this.repositories.filter(repo => (
+                this.existingOrgFolder.pipelines.indexOf(repo.name) === -1
+            ));
         }
 
         return [];
@@ -343,7 +344,7 @@ export default class GithubFlowManager extends FlowManager {
             this._creationApi.updateOrgFolder(this._credentialId, this.existingOrgFolder, repoNames);
 
         promise
-            .then(waitAtLeast(500))
+            .then(waitAtLeast(MIN_DELAY * 2))
             .then(r => this._saveOrgFolderSuccess(r), e => this._saveOrgFolderFailure(e));
     }
 
