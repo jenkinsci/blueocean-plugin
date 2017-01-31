@@ -45,7 +45,7 @@ import java.util.Set;
  * @author Stephen Connoly
  * @author Vivek Pandey
  */
-@Extension(optional = true)
+@Extension(ordinal = 99999)
 public class BlueOceanCredentialsProvider extends CredentialsProvider {
     private static final String DISPLAY_NAME = "BlueOcean Folder Credentials";
 
@@ -148,7 +148,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             return this;
         }
 
-        @Extension(optional = true)
+        @Extension
         public static class DescriptorImpl extends AbstractFolderPropertyDescriptor {
         }
 
