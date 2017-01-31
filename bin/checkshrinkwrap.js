@@ -94,7 +94,7 @@ function checkDuplicateDependencies(depList1, depList2) {
 function validateShrinkwrapResolve(shrinkwrap) {
   
   Object.keys(shrinkwrap.dependencies).forEach(name => {
-    if (shrinkwrap.dependencies[name].from.startsWith("..")) {
+    if (shrinkwrap.dependencies[name].from.startsWith("..") || shrinkwrap.dependencies[name].resolved.startsWith("file:")) {
         console.error(`Bad shrinkwrap resolution: 'from' or 'resolved' refer to a project relative path not absolute URI from:${shrinkwrap.dependencies[name].from} resolved:${shrinkwrap.dependencies[name].resolved} in ${name}`);
         process.exit(1);
     }
