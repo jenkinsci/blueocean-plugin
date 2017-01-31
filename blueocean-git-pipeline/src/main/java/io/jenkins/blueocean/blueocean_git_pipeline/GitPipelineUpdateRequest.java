@@ -3,7 +3,9 @@ package io.jenkins.blueocean.blueocean_git_pipeline;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Item;
+import hudson.security.ACL;
 import hudson.util.PersistedList;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineUpdateRequest;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
@@ -11,6 +13,7 @@ import jenkins.branch.BranchSource;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
+import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.CheckForNull;
@@ -35,6 +38,12 @@ public class GitPipelineUpdateRequest extends BluePipelineUpdateRequest {
         Item item = Jenkins.getInstance().getItemByFullName(pipeline.getFullName());
 
         if(item instanceof MultiBranchProject){
+            ACL acl = Jenkins.getInstance().getACL();
+            Authentication a = Jenkins.getAuthentication();
+            if(!acl.hasPermission(a, Item.CONFIGURE)){
+                throw new ServiceException.ForbiddenException(
+                        String.format("Failed to update Git pipeline: %s. User %s doesn't have Job configure permission", pipeline.getName(), a.getName()));
+            }
             MultiBranchProject mbp = (MultiBranchProject) item;
 
             BranchSource branchSource = getGitScmSource(mbp);
