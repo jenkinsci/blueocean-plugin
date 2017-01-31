@@ -19,7 +19,7 @@ export class GithubCreationApi extends ApiMock {
     }
 
     listRepositories(credentialId, organizationName, pageNumber = 1, pageSize = 100) {
-        let repoData = [];
+        let repoData = null;
 
         if (pageNumber === 2) {
             repoData = repos2;
@@ -30,6 +30,15 @@ export class GithubCreationApi extends ApiMock {
         }
 
         repoData = Utils.clone(repoData);
+
+        if (this._hasUrlKey('no-repos=true')) {
+            repoData.repositories.items = [];
+            repoData.repositories.nextPage = null;
+        } else if (this._hasUrlKey('no-selectable-repos=true')) {
+            repoData.repositories.items = repoData.repositories.items.slice(0, 2);
+            repoData.repositories.nextPage = null;
+        }
+
         return this._delayedResolve(repoData);
     }
 

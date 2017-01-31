@@ -267,7 +267,8 @@ export default class GithubFlowManager extends FlowManager {
 
         promise
             .then(waitAtLeast(MIN_DELAY))
-            .then(repos => this._updateRepositories(organization.name, repos, FIRST_PAGE));
+            .then(repos => this._updateRepositories(organization.name, repos, FIRST_PAGE))
+            .catch(error => console.log(error));
     }
 
     _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
