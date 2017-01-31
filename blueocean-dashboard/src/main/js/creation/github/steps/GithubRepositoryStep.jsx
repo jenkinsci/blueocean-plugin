@@ -48,8 +48,8 @@ export default class GithubRepositoryStep extends React.Component {
                 { flowManager.repositories.length > 0 && flowManager.selectableRepositories.length === 0 &&
                 <div className="container">
                     <p className="instructions">
-                        It appears that all {flowManager.repositories.length} repositories in the organization
-                        "{flowManager.selectedOrganization.name}" already have pipelines created.
+                        All {flowManager.repositories.length} discovered repositories in the organization
+                        "{flowManager.selectedOrganization.name}" already have Pipelines.
                     </p>
 
                     <button onClick={() => this._exit()}>Exit</button>
