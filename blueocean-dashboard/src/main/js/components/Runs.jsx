@@ -3,16 +3,18 @@ import {
     CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
 }
     from '@jenkins-cd/design-language';
-import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
-
+import { logging, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 
 import Extensions from '@jenkins-cd/js-extensions';
-import moment from 'moment';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import { CellRow, CellLink } from './CellLink';
 
+import { TimeManager } from '../util/serverBrowserTimeHarmonize';
+
+const timeManager = new TimeManager();
+const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
  */
@@ -31,10 +33,20 @@ export default class Runs extends Component {
         const { run, changeset, pipeline, t, locale } = this.props;
 
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
-        const running = resultRun === 'RUNNING';
-        const durationMillis = !running ?
-            run.durationInMillis :
-            moment().diff(moment(run.startTime));
+        const isRunning = () => run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
+        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
+        // the time when we started the run harmonized with offset
+        const {
+            durationMillis,
+            endTime,
+            startTime,
+        } = timeManager.harmonizeTimes(run, skewMillis);
+        logger.debug('time:', {
+            durationMillis,
+            endTime,
+            startTime,
+            isRunning: isRunning(),
+        });
 
         const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
 
@@ -43,11 +55,10 @@ export default class Runs extends Component {
             router.push(location);
         };
 
-
         return (
         <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
             <CellLink>
-                <LiveStatusIndicator result={resultRun} startTime={run.startTime}
+                <LiveStatusIndicator result={resultRun} startTime={startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
                 />
             </CellLink>
@@ -60,15 +71,17 @@ export default class Runs extends Component {
             <CellLink>
                 <TimeDuration
                   millis={durationMillis}
-                  liveUpdate={running}
+                  updatePeriod={1000}
+                  liveUpdate={isRunning()}
                   locale={locale}
+                  displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
                   liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
                   hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
                 />
             </CellLink>
             <CellLink>
                 <ReadableDate
-                  date={run.endTime}
+                  date={endTime}
                   liveUpdate
                   locale={locale}
                   shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
@@ -105,6 +118,7 @@ Runs.propTypes = {
     t: func,
 };
 Runs.contextTypes = {
+    config: object.isRequired,
     router: object.isRequired, // From react-router
     location: object,
 };

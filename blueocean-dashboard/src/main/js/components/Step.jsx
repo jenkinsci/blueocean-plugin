@@ -1,21 +1,36 @@
 import React, { Component, PropTypes } from 'react';
 import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
+import { logging } from '@jenkins-cd/blueocean-core-js';
 import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 import InputStep from './InputStep';
+import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard.Step');
+const timeManager = new TimeManager();
 export default class Node extends Component {
     constructor(props) {
         super(props);
         const node = this.expandAnchor(props);
         this.state = { isFocused: node.isFocused };
     }
-
     componentWillMount() {
         const { nodesBaseUrl, fetchLog } = this.props;
         const { config = {} } = this.context;
         const node = this.expandAnchor(this.props);
+        const {
+          durationInMillis,
+          state,
+          startTime,
+        } = node;
+        const { durationMillis } = this.durationHarmonize({
+            durationInMillis,
+            startTime,
+            isRunning: state === 'RUNNING' || state === 'PAUSED',
+        });
+        this.durationMillis = durationMillis;
+
         if (node && node.isFocused) {
             const fetchAll = node.fetchAll;
             const mergedConfig = { ...config, node, nodesBaseUrl, fetchAll };
@@ -66,6 +81,11 @@ export default class Node extends Component {
             clearTimeout(this.timeout);
         }
     }
+    durationHarmonize(node) {
+        const skewMillis = this.context.config ? this.context.config.getServerBrowserTimeSkewMillis() : 0;
+        // the time when we started the run harmonized with offset
+        return timeManager.harmonizeTimes({ ...node }, skewMillis);
+    }
     /*
      * Calculate whether we need to expand the step due to linking.
      * When we trigger a log-0 that means we want to see the full log
@@ -99,14 +119,15 @@ export default class Node extends Component {
         const {
           fetchAll,
           title,
-          durationInMillis,
           result,
           id,
           state,
+          durationInMillis,
+          endTime,
+          startTime,
           isInputStep = false,
           isFocused = false,
         } = node;
-
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl, fetchAll })] : null;
         const getLogForNode = () => {
@@ -124,11 +145,24 @@ export default class Node extends Component {
                 router.push(location);
             }
         };
-        const runResult = resultRun.toLowerCase();
         const scrollToBottom =
-            resultRun.toLowerCase() === 'failure'
-            || (resultRun.toLowerCase() === 'running' && followAlong)
+            resultRun === 'FAILURE'
+            || (resultRun === 'RUNNING' && followAlong)
         ;
+        const isRunning = () => resultRun === 'RUNNING' || resultRun === 'PAUSED';
+        const { durationMillis } = this.durationHarmonize({
+            durationInMillis,
+            endTime,
+            startTime,
+            isRunning: isRunning(),
+        });
+        logger.debug('time:', {
+            responseDuration: durationMillis,
+            durationInMillis,
+            endTime,
+            startTime,
+            isRunning: isRunning(),
+        });
         const logProps = {
             ...this.props,
             url,
@@ -158,8 +192,8 @@ export default class Node extends Component {
             children = <span>&nbsp;</span>;
         }
         const time = (<TimeDuration
-          millis={durationInMillis}
-          liveUpdate={resultRun.toLowerCase() === 'running' || resultRun.toLowerCase() === 'paused'}
+          millis={isRunning() ? this.durationMillis : durationMillis }
+          liveUpdate={isRunning()}
           updatePeriod={1000}
           locale={locale}
           displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
@@ -171,7 +205,7 @@ export default class Node extends Component {
             <ResultItem {...{
                 extraInfo: time,
                 key: id,
-                result: runResult,
+                result: resultRun.toLowerCase(),
                 expanded: isFocused,
                 label: title,
                 onCollapse: removeFocus,
@@ -182,6 +216,7 @@ export default class Node extends Component {
             </ResultItem>
       </div>);
     }
+
 }
 
 const { object, func, string, bool, shape } = PropTypes;
@@ -196,4 +231,8 @@ Node.propTypes = {
     url: string,
     locale: object,
     t: func,
+};
+
+Node.contextTypes = {
+    config: object.isRequired,
 };

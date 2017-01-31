@@ -10,6 +10,7 @@ export default class Config {
         this._rootURL = options.rootURL || '';
         this._resourceURL = options.resourceURL || '';
         this._adjunctURL = options.adjunctURL || '';
+        this._serverBrowserTimeSkewMillis = options.serverBrowserTimeSkewMillis || '';
     }
 
     getAppURLBase() {
@@ -26,5 +27,9 @@ export default class Config {
 
     getAdjunctURL() {
         return this._adjunctURL;
+    }
+
+    getServerBrowserTimeSkewMillis() {
+        return this._serverBrowserTimeSkewMillis;
     }
 }
