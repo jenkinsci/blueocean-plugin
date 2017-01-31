@@ -18,7 +18,7 @@ export class GithubCredentialsApi extends ApiMock {
     }
 
     createAccessToken(accessToken) {
-        if (this._hasUrlKey('validate=invalid')) {
+        if (this._hasUrlKey('validate=invalid') && accessToken !== 'peekaboo') {
             return this._delayedReject(validateInvalid);
         }
 
