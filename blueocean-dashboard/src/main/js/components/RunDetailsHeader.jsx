@@ -8,18 +8,15 @@ import ChangeSetToAuthors from './ChangeSetToAuthors';
 import {TimeManager} from '../util/serverBrowserTimeHarmonize';
 import {ResultPageHeader} from '@jenkins-cd/blueocean-core-js';
 
-//FIXME: Remove these consts
-const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetailsPipeline');
-const timeManager = new TimeManager();
-
 class RunDetailsHeader extends Component {
 
     componentWillMount() {
+        console.log("componentWillMount()"); // TODO: REMOVE
         const {data: run} = this.props;
         const isRunning = () => run.isRunning() || run.isPaused() || run.isQueued();
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
-        const {durationMillis} = timeManager.harmonizeTimes({
+        const {durationMillis} = RunDetailsHeader.timeManager.harmonizeTimes({
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
             isRunning: isRunning(),
@@ -28,6 +25,8 @@ class RunDetailsHeader extends Component {
     }
 
     render() {
+        console.log("RENDER()"); // TODO: REMOVE
+
         const {
             data: run,
             pipeline,
@@ -54,12 +53,12 @@ class RunDetailsHeader extends Component {
             durationMillis,
             endTime,
             startTime,
-        } = timeManager.harmonizeTimes({
+        } = RunDetailsHeader.timeManager.harmonizeTimes({
             endTime: run.endTime,
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
         }, skewMillis);
-        logger.debug('timeq:', {startTime, endTime, durationMillis});
+        RunDetailsHeader.logger.debug('timeq:', {startTime, endTime, durationMillis});
 
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
@@ -154,6 +153,9 @@ class RunDetailsHeader extends Component {
         );
     }
 }
+
+RunDetailsHeader.logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetailsPipeline');
+RunDetailsHeader.timeManager = new TimeManager();
 
 RunDetailsHeader.propTypes = {
     data: PropTypes.object.isRequired,

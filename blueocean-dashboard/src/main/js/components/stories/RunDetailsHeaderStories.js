@@ -9,6 +9,7 @@ import {
     Progress,
     TabLink,
 } from '@jenkins-cd/design-language';
+import WithContext from '@jenkins-cd/design-language/dist/js/stories/WithContext';
 
 import {RunDetailsHeader} from '../RunDetailsHeader';
 
@@ -34,6 +35,24 @@ const strings = {
 
 const t = (key) => strings[key] || key;
 
+const ctx = {
+    config: {
+        getServerBrowserTimeSkewMillis: () => {
+            return 0;
+        }
+    }
+};
+
+RunDetailsHeader.logger = {
+    debug: (...rest) => {
+        console.debug(...rest);
+    }
+};
+
+RunDetailsHeader.timeManager = {
+    harmonizeTimes: obj => obj
+};
+
 storiesOf('Run Details Header', module)
     .add('Some changes', someChanges)
     .add('Lots of changes', lotsaChanges)
@@ -49,26 +68,31 @@ function someChanges() {
     ];
 
     return (
-        <RunDetailsHeader
-            locale="en"
-            t={t}
-            pipeline={pipeline}
-            data={currentRun}
-            onOrganizationClick={ action('button-click')}
-            onNameClick={ action('button-click')}
-            onAuthorsClick={ action('button-click')}
-            topNavLinks={topNavLinks}/>
+        <WithContext context={ctx}>
+            <RunDetailsHeader
+                locale="en"
+                t={t}
+                pipeline={pipeline}
+                data={currentRun}
+                onOrganizationClick={ action('button-click')}
+                onNameClick={ action('button-click')}
+                onAuthorsClick={ action('button-click')}
+                topNavLinks={topNavLinks}/>
+        </WithContext>
     );
 }
 
 function lotsaChanges() {
+
     return (
-        <RunDetailsHeader t={t}
-                          locale="en"
-                          pipeline={pipeline}
-                          data={currentRunLong}
-                          onOrganizationClick={ action('button-click')}
-                          onNameClick={ action('button-click')}
-                          onAuthorsClick={ action('button-click')}/>
+        <WithContext context={ctx}>
+            <RunDetailsHeader t={t}
+                              locale="en"
+                              pipeline={pipeline}
+                              data={currentRunLong}
+                              onOrganizationClick={ action('button-click')}
+                              onNameClick={ action('button-click')}
+                              onAuthorsClick={ action('button-click')}/>
+        </WithContext>
     )
 }
