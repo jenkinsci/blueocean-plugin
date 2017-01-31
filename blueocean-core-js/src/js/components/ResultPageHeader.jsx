@@ -28,9 +28,10 @@ CloseButton.propTypes = {
 export const ResultPageHeader = props => {
     const {
         status = 'unknown',
-        run,
         title,
         onCloseClick,
+        startTime,
+        estimatedDurationInMillis,
     } = props;
 
     const closeClicked = () => {
@@ -38,9 +39,6 @@ export const ResultPageHeader = props => {
             onCloseClick();
         }
     };
-
-    const startTime = run && run.startTime || null;
-    const estimatedDurationInMillis = run && run.estimatedDurationInMillis || null;
 
     const titleComp = _wrap(title, 'div', { className: 'ResultPageHeader-title u-flex-grow' });
     const topNavLinks = _wrap(props.topNavLinks, 'nav');
@@ -78,9 +76,10 @@ ResultPageHeader.propTypes = {
     className: PropTypes.string,
     children: PropTypes.node,
     status: PropTypes.string,
-    run: PropTypes.object,
     onCloseClick: PropTypes.func,
     title: PropTypes.node,
     topNavLinks: PropTypes.node,
     runButton: PropTypes.node,
+    startTime: PropTypes.string,
+    estimatedDurationInMillis: PropTypes.number,
 };
