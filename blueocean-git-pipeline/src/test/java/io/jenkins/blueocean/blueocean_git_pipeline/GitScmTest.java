@@ -21,9 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Vivek Pandey
@@ -240,6 +238,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         assertEquals(errors.get(0).get("field"), "scmConfig");
         assertEquals(errors.get(0).get("code"), "MISSING");
+        assertNull(Jenkins.getInstance().getItem("demo"));
     }
 
     @Test
@@ -255,6 +254,8 @@ public class GitScmTest extends PipelineBaseTest {
 
         assertEquals(errors.get(0).get("field"), "scmConfig.uri");
         assertEquals(errors.get(0).get("code"), "MISSING");
+        assertNull(Jenkins.getInstance().getItem("demo"));
+
     }
 
 
@@ -273,13 +274,38 @@ public class GitScmTest extends PipelineBaseTest {
         resp = post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
                 ), 400);
-        List<Map> errors = (List<Map>) resp.get("errors");
+        List<Map<String,String>> errors = (List<Map<String,String>>) resp.get("errors");
 
-        assertEquals(errors.get(0).get("field"), "name");
-        assertEquals(errors.get(0).get("code"), "ALREADY_EXISTS");
+        boolean nameFound = false;
+        boolean credentialIdFound = false;
+        for(Map<String,String> error:errors){
+            if(error.get("field").equals("name")){
+                nameFound = true;
+                assertEquals(error.get("code"), "ALREADY_EXISTS");
+            }else if(error.get("field").equals("scmConfig.credentialId")){
+                credentialIdFound = true;
+                assertEquals(error.get("code"), "NOT_FOUND");
+            }
+        }
+        assertTrue(nameFound);
+        assertTrue(credentialIdFound);
+    }
 
+    @Test
+    public void shouldFailOnValidation5(){
+
+        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
+                ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
+                ), 400);
+        List<Map<String,String>> errors = (List<Map<String,String>>) resp.get("errors");
+
+        assertEquals("scmConfig.credentialId", errors.get(0).get("field"));
+        assertEquals("NOT_FOUND", errors.get(0).get("code"));
+        assertNull(Jenkins.getInstance().getItem("demo"));
     }
 
     private String createMbp(){

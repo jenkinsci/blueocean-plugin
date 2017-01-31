@@ -80,10 +80,10 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 try {
                     item.delete();
                 } catch (InterruptedException e) {
-                    throw new ServiceException.UnexpectedErrorException("Invalid credentialId: " + credentialId + ". Failure during cleaing up folder: " + item.getName() + ". Error: " + e.getMessage(), e);
+                    throw new ServiceException.UnexpectedErrorException("No Credentials instance found for credentialId: " + credentialId + ". Failure during cleaing up folder: " + item.getName() + ". Error: " + e.getMessage(), e);
                 }
                 throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline")
-                        .add(new ErrorMessage.Error("credentialId", ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Invalid credentialId")));
+                        .add(new ErrorMessage.Error("credentialId", ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(), "No Credentials instance found for credentialId: "+credentialId)));
 
             }
         }
