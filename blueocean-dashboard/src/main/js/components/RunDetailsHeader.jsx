@@ -1,22 +1,21 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
-import {Icon} from '@jenkins-cd/react-material-icons';
-import {logging} from '@jenkins-cd/blueocean-core-js';
-import {ExpandablePath, ReadableDate, TimeDuration} from '@jenkins-cd/design-language';
+import React, { Component, PropTypes } from 'react';
+import { Icon } from '@jenkins-cd/react-material-icons';
+import { logging } from '@jenkins-cd/blueocean-core-js';
+import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
-import {TimeManager} from '../util/serverBrowserTimeHarmonize';
-import {ResultPageHeader} from '@jenkins-cd/blueocean-core-js';
+import { TimeManager } from '../util/serverBrowserTimeHarmonize';
+import { ResultPageHeader } from '@jenkins-cd/blueocean-core-js';
 
 class RunDetailsHeader extends Component {
 
     componentWillMount() {
-        console.log("componentWillMount()"); // TODO: REMOVE
-        const {data: run} = this.props;
+        const { data: run } = this.props;
         const isRunning = () => run.isRunning() || run.isPaused() || run.isQueued();
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
-        const {durationMillis} = RunDetailsHeader.timeManager.harmonizeTimes({
+        const { durationMillis } = RunDetailsHeader.timeManager.harmonizeTimes({
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
             isRunning: isRunning(),
@@ -25,8 +24,6 @@ class RunDetailsHeader extends Component {
     }
 
     render() {
-        console.log("RENDER()"); // TODO: REMOVE
-
         const {
             data: run,
             pipeline,
@@ -40,10 +37,10 @@ class RunDetailsHeader extends Component {
             runButton,
         } = this.props;
 
-        const {fullDisplayName} = pipeline;
+        const { fullDisplayName } = pipeline;
         const changeSet = run.changeSet;
         const status = run.getComputedResult().toLowerCase();
-        const estimatedDurationInMillis = run.estimatedDurationInMillis; 
+        const estimatedDurationInMillis = run.estimatedDurationInMillis;
 
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
@@ -58,85 +55,85 @@ class RunDetailsHeader extends Component {
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
         }, skewMillis);
-        RunDetailsHeader.logger.debug('timeq:', {startTime, endTime, durationMillis});
+        RunDetailsHeader.logger.debug('timeq:', { startTime, endTime, durationMillis });
 
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
 
         // Messages
-        const branchLabel = t('rundetail.header.branch', {defaultValue: 'Branch'});
-        const commitLabel = t('rundetail.header.commit', {defaultValue: 'Commit'});
+        const branchLabel = t('rundetail.header.branch', { defaultValue: 'Branch' });
+        const commitLabel = t('rundetail.header.commit', { defaultValue: 'Commit' });
         const durationDisplayFormat = t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' });
-        const durationFormat = t('common.date.duration.format', {defaultValue: 'm[ minutes] s[ seconds]'});
-        const durationHintFormat = t('common.date.duration.hint.format', {defaultValue: 'M [month], d [days], h[h], m[m], s[s]'});
-        const dateFormatShort = t('common.date.readable.short', {defaultValue: 'MMM DD h:mma Z'});
-        const dateFormatLong = t('common.date.readable.long', {defaultValue: 'MMM DD YYYY h:mma Z'});
+        const durationFormat = t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' });
+        const durationHintFormat = t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' });
+        const dateFormatShort = t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' });
+        const dateFormatLong = t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' });
 
         // Sub-trees
         const title = (
             <h1 className="RunDetailsHeader-title">
-                <a onClick={onOrganizationClick}>{run.organization}</a>
+                <a onClick={ onOrganizationClick }>{ run.organization }</a>
                 <span>&nbsp;/&nbsp;</span>
-                <a className="path-link" onClick={onNameClick}>
-                    <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20}/>
+                <a className="path-link" onClick={ onNameClick }>
+                    <ExpandablePath path={ fullDisplayName } hideFirst className="dark-theme" iconSize={ 20 } />
                 </a>
-                <span>#{run.id}</span>
+                <span>#{ run.id }</span>
             </h1>
         );
 
         const branchSourceDetails = (
             <div>
-                <label>{branchLabel}:</label>
-                <span>{displayName}</span>
+                <label>{ branchLabel }:</label>
+                <span>{ displayName }</span>
             </div>
         );
 
         const commitSourceDetails = run.commitId && (
                 <div>
-                    <label>{commitLabel}:</label>
+                    <label>{ commitLabel }:</label>
                     <span className="commit">
-                         {run.commitId.substring(0, 7)}
+                         { run.commitId.substring(0, 7) }
                     </span>
                 </div>
             );
 
         const durationDetails = (
             <div>
-                <Icon size={20} icon="timelapse" style={{ fill: '#fff' }}/>
+                <Icon size={ 20 } icon="timelapse" style={ { fill: '#fff' } } />
                 <TimeDuration
-                    millis={isRunning() ? this.durationMillis : durationMillis}
-                    liveUpdate={isRunning()}
-                    updatePeriod={1000}
-                    locale={locale}
-                    displayFormat={durationDisplayFormat}
-                    liveFormat={durationFormat}
-                    hintFormat={durationHintFormat}
+                    millis={ isRunning() ? this.durationMillis : durationMillis }
+                    liveUpdate={ isRunning() }
+                    updatePeriod={ 1000 }
+                    locale={ locale }
+                    displayFormat={ durationDisplayFormat }
+                    liveFormat={ durationFormat }
+                    hintFormat={ durationHintFormat }
                 />
             </div>
         );
 
         const endTimeDetails = (
             <div>
-                <Icon size={20} icon="access_time" style={{ fill: '#fff' }}/>
+                <Icon size={ 20 } icon="access_time" style={ { fill: '#fff' } } />
                 <ReadableDate
-                    date={endTime}
+                    date={ endTime }
                     liveUpdate
-                    locale={locale}
-                    shortFormat={dateFormatShort}
-                    longFormat={dateFormatLong}
+                    locale={ locale }
+                    shortFormat={ dateFormatShort }
+                    longFormat={ dateFormatLong }
                 />
             </div>
         );
 
         return (
-            <ResultPageHeader startTime={startTime}
-                              estimatedDurationInMillis={estimatedDurationInMillis}
-                              title={title}
-                              status={status}
-                              onCloseClick={onCloseClick}
+            <ResultPageHeader startTime={ startTime }
+                              estimatedDurationInMillis={ estimatedDurationInMillis }
+                              title={ title }
+                              status={ status }
+                              onCloseClick={ onCloseClick }
                               className="RunDetailsHeader"
-                              topNavLinks={topNavLinks}
-                              runButton={runButton}
+                              topNavLinks={ topNavLinks }
+                              runButton={ runButton }
             >
                 <div className="RunDetailsHeader-sources">
                     { branchSourceDetails }
@@ -147,7 +144,7 @@ class RunDetailsHeader extends Component {
                     { endTimeDetails }
                 </div>
                 <div className="RunDetailsHeader-authors">
-                    <ChangeSetToAuthors changeSet={changeSet} onAuthorsClick={onAuthorsClick} t={t}/>
+                    <ChangeSetToAuthors changeSet={ changeSet } onAuthorsClick={ onAuthorsClick } t={ t } />
                 </div>
             </ResultPageHeader>
         );
@@ -175,4 +172,4 @@ RunDetailsHeader.contextTypes = {
     config: PropTypes.object.isRequired,
 };
 
-export {RunDetailsHeader};
+export { RunDetailsHeader };
