@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Vivek Pandey
@@ -31,8 +33,10 @@ class GitUtils {
      *
      * @param uri git repo uri
      * @param credentials credential to use when accessing git
+     * @return list of Errors. Empty list means success.
      */
-    static void validateCredentials(@Nonnull String uri, @Nullable StandardUsernameCredentials credentials) throws GitException{
+    static List<ErrorMessage.Error> validateCredentials(@Nonnull String uri, @Nullable StandardUsernameCredentials credentials) throws GitException{
+        List<ErrorMessage.Error> errors = new ArrayList<>();
         Git git = new Git(TaskListener.NULL, new EnvVars());
         try {
             GitClient gitClient = git.getClient();
@@ -52,16 +56,16 @@ class GitUtils {
                 //      org.eclipse.jgit.transport.HttpTransport.connect() throws TransportException with error code 'not authorized'
                 //      appended to the message.
                 if(e instanceof IllegalStateException || e.getMessage().endsWith("not authorized")){
-                    throw new ServiceException.ForbiddenException(new ErrorMessage(403, "Failed to create Git pipeline")
-                            .add(new ErrorMessage.Error("scmConfig.credentialId",
+                    errors.add(new ErrorMessage.Error("scmConfig.credentialId",
                                     ErrorMessage.Error.ErrorCodes.INVALID.toString(),
-                                    "Invalid credentialId: " + credentials.getId())), e);
+                                    "Invalid credentialId: " + credentials.getId()));
                 }
-                throw e; // throw GitException so that later on it can be reported as 400 error
-            } else{
-                throw new GitException(e);
+            }else{
+                errors.add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                        e.getMessage()));
             }
         }
+        return errors;
     }
 
     static StandardUsernameCredentials getCredentials(ItemGroup owner, String uri, String credentialId){

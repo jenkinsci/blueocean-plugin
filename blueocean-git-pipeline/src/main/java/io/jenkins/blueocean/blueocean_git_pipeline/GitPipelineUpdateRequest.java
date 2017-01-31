@@ -4,7 +4,6 @@ import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Item;
-import hudson.plugins.git.GitException;
 import hudson.security.ACL;
 import hudson.util.PersistedList;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -86,13 +85,7 @@ public class GitPipelineUpdateRequest extends BluePipelineUpdateRequest {
             }
 
             if(sourceUri != null) {
-                try {
-                    GitUtils.validateCredentials(sourceUri, credentials);
-                }catch (GitException e){
-                    logger.error("Error validating git request: "+e.getMessage(), e);
-                    errors.add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.INVALID.toString(),
-                                    e.getMessage()));
-                }
+                errors.addAll(GitUtils.validateCredentials(sourceUri, credentials));
             }
             credentialId = scmConfig.getCredentialId() == null ? "" : scmConfig.getCredentialId();
 

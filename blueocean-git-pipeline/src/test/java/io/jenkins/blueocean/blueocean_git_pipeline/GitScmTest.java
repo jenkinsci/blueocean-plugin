@@ -65,7 +65,7 @@ public class GitScmTest extends PipelineBaseTest {
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
                                 "credentialId", credentialId)
-                ), 403);
+                ), 400);
 
     }
 
@@ -97,7 +97,7 @@ public class GitScmTest extends PipelineBaseTest {
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
                                 "credentialId", credentialId)
-                ), 403);
+                ), 400);
 
     }
 
@@ -145,7 +145,7 @@ public class GitScmTest extends PipelineBaseTest {
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineUpdateRequest",
                         "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
                                 "credentialId", credentialId)
-                ), 403);
+                ), 400);
 
     }
 
@@ -178,7 +178,7 @@ public class GitScmTest extends PipelineBaseTest {
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineUpdateRequest",
                         "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
                                 "credentialId", credentialId)
-                ), 403);
+                ), 400);
 
     }
 

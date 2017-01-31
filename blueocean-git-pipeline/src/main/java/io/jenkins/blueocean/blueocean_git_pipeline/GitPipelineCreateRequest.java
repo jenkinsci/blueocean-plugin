@@ -4,7 +4,6 @@ import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.model.Cause;
 import hudson.model.Failure;
 import hudson.model.TopLevelItem;
-import hudson.plugins.git.GitException;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -81,22 +80,16 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
         if (sourceUri == null) {
             errors.add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "uri is required"));
         }else {
-            try {
-                StandardUsernameCredentials credentials = null;
-                if(scmConfig.getCredentialId() != null){
-                    credentials = GitUtils.getCredentials(Jenkins.getInstance(), sourceUri, scmConfig.getCredentialId());
-                    if (credentials == null) {
-                        errors.add(new ErrorMessage.Error("scmConfig.credentialId",
-                                        ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
-                                        String.format("credentialId: %s not found", scmConfig.getCredentialId())));
-                    }
+            StandardUsernameCredentials credentials = null;
+            if(scmConfig.getCredentialId() != null){
+                credentials = GitUtils.getCredentials(Jenkins.getInstance(), sourceUri, scmConfig.getCredentialId());
+                if (credentials == null) {
+                    errors.add(new ErrorMessage.Error("scmConfig.credentialId",
+                                    ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
+                                    String.format("credentialId: %s not found", scmConfig.getCredentialId())));
                 }
-                GitUtils.validateCredentials(sourceUri, credentials);
-            } catch (GitException e) {
-                logger.error("Error validating credential: " + e.getMessage(), e);
-                errors.add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.INVALID.toString(),
-                        e.getMessage()));
             }
+            errors.addAll(GitUtils.validateCredentials(sourceUri, credentials));
         }
 
         try {
