@@ -1,8 +1,8 @@
 import { assert } from 'chai';
 
-import { removeMarkupTags } from '../../../src/js/parameter/paramUtil';
+import { removeMarkupTags } from '../../src/js/stringUtil';
 
-describe('paramUtil', () => {
+describe('stringUtil', () => {
     it('removeMarkupTags', () => {
         // Tag with content
         assert.equal(removeMarkupTags(

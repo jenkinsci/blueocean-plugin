@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Dropdown, FormElement, RadioButtonGroup } from '@jenkins-cd/design-language';
 import { propTypes } from '../commonProptypes';
-import { removeMarkupTags } from '../paramUtil';
+import { removeMarkupTags } from '../../stringUtil';
 
 export class Choice extends Component {
 
@@ -25,7 +25,8 @@ export class Choice extends Component {
             name,
             onChange,
         };
-        return (<FormElement title={ name }>
+        const cleanName = removeMarkupTags(name);
+        return (<FormElement title={ cleanName }>
             <div className="Choice">
                 { React.createElement(uxChoice, { ...options }) }
                 { description && <div className="inputDescription">{removeMarkupTags(description)}</div> }
