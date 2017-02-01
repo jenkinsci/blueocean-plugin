@@ -9,7 +9,7 @@ import repos1 from './repos-1';
 import repos2 from './repos-2';
 import repos3 from './repos-3';
 
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars, prefer-rest-params */
 
 export class GithubCreationApi extends ApiMock {
 

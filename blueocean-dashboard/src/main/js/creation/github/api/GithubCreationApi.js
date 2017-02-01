@@ -45,7 +45,7 @@ export class GithubCreationApi {
         };
     }
 
-    _findExistingOrgFolderFailure(error) {
+    _findExistingOrgFolderFailure() {
         return {
             isFound: false,
             isOrgFolder: false,
