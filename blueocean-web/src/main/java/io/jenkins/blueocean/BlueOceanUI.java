@@ -61,4 +61,8 @@ public class BlueOceanUI {
     public List<BluePageDecorator> getPageDecorators(){
         return BluePageDecorator.all();
     }
+
+    public long getNow() {
+         return System.currentTimeMillis();
+    }
 }

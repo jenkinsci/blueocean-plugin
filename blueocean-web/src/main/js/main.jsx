@@ -77,6 +77,7 @@ class App extends Component {
                         <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                         <nav>
                             <Link query={location.query} to="/pipelines">{pipeCaption}</Link>
+                            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.links"/>
                             <AdminLink t={translate} />
                         </nav>
                         <div className="button-bar layout-small inverse">
@@ -144,13 +145,14 @@ function startApp(routes, stores) {
     const rootURL = headElement.getAttribute("data-rooturl");
     const resourceURL = headElement.getAttribute("data-resurl");
     const adjunctURL = headElement.getAttribute("data-adjuncturl");
-
-    // Stash urls in our module-local var, so that App can put them on context.
+    const serverBrowserTimeSkewMillis = headElement.getAttribute("data-servertime") - Date.now();
+    // Stash urls in our module-local qwqvar, so that App can put them on context.
     config = new Config({
         appURLBase,
         rootURL,
         resourceURL,
-        adjunctURL
+        adjunctURL,
+        serverBrowserTimeSkewMillis,
     });
 
     // Using this non-default history because it allows us to specify the base url for the app
