@@ -35,6 +35,7 @@ export class GithubCreationApi extends ApiMock {
             repoData.repositories.items = [];
             repoData.repositories.nextPage = null;
         } else if (this._hasUrlKey('no-selectable-repos=true')) {
+            // trim down the data so it matches what's in org folder's "requestedRepos"
             repoData.repositories.items = repoData.repositories.items.slice(0, 2);
             repoData.repositories.nextPage = null;
         }

@@ -13,7 +13,7 @@ export default class GithubConfirmDiscoverStep extends React.Component {
     render() {
         const { flowManager } = this.props;
         const title = 'Create Pipelines';
-        const buttonLabel = `Create ${flowManager.selectableRepositories.length} Pipelines`;
+        const buttonLabel = 'Create Pipelines';
 
         return (
             <FlowStep {...this.props} className="github-confirm-discover-step" title={title}>

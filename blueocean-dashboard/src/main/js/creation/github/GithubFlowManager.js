@@ -30,14 +30,18 @@ export default class GithubFlowManager extends FlowManager {
     repositories = [];
 
     @computed get selectableRepositories() {
-        // return repositories that are not already created as pipelines
-        if (this.repositories && this.existingOrgFolder) {
-            return this.repositories.filter(repo => (
-                this.existingOrgFolder.pipelines.indexOf(repo.name) === -1
-            ));
+        if (!this.repositories) {
+            return [];
         }
 
-        return [];
+        if (!this.existingOrgFolder || !this.existingOrgFolder.pipelines) {
+            return this.repositories;
+        }
+
+        // return repositories that are not already created as pipelines
+        return this.repositories.filter(repo => (
+            this.existingOrgFolder.pipelines.indexOf(repo.name) === -1
+        ));
     }
 
     @observable
