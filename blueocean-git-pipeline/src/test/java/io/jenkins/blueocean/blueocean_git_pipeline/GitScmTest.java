@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.google.common.collect.ImmutableMap;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
@@ -9,6 +10,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -26,14 +28,17 @@ public class GitScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void simpleOrgTest(){
-
-        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
-            ImmutableMap.of("name", "demo",
-                    "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                    "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
-                ), 201);
-
+    public void simpleOrgTest() throws IOException, UnirestException {
+        login();
+        Map resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                ))
+                .build(Map.class);
 
         Assert.assertEquals("demo", resp.get("name"));
     }
@@ -71,11 +76,16 @@ public class GitScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void simpleOrgShouldFailOnValidation3(){
-        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
-                ImmutableMap.of("name", "demo",
+    public void simpleOrgShouldFailOnValidation3() throws IOException, UnirestException {
+        login();
+        Map resp = new RequestBuilder(baseUrl)
+                .status(400)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of()), 400);
+                        "scmConfig", ImmutableMap.of()))
+                .build(Map.class);
 
         Assert.assertEquals(resp.get("code"), 400);
 
@@ -87,22 +97,32 @@ public class GitScmTest extends PipelineBaseTest {
 
 
     @Test
-    public void simpleOrgShouldFailOnValidation4(){
+    public void simpleOrgShouldFailOnValidation4() throws IOException, UnirestException {
+        login();
 
-        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
-                ImmutableMap.of("name", "demo",
+        Map resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
-                ), 201);
+                ))
+                .build(Map.class);
 
 
         Assert.assertEquals("demo", resp.get("name"));
 
-        resp = post("/organizations/jenkins/pipelines/",
-                ImmutableMap.of("name", "demo",
+        resp = new RequestBuilder(baseUrl)
+                .status(400)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
-                ), 400);
+                ))
+                .build(Map.class);
+
         List<Map> errors = (List<Map>) resp.get("errors");
 
         Assert.assertEquals(errors.get(0).get("field"), "name");
