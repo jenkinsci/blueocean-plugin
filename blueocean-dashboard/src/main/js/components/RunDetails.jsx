@@ -134,7 +134,7 @@ class RunDetails extends Component {
         }
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
-        logger.warn('params', params.organization, params.pipeline, params.branch, params.runId);
+        logger.debug('params', params.organization, params.pipeline, params.branch, params.runId);
         const currentRun = new RunRecord(run);
         const status = currentRun.getComputedResult() || '';
         const computedTitle = `${currentRun.organization} / ${pipeline.fullName} / ${params.pipeline === params.branch ? '' : `${params.branch} / `} #${currentRun.id}`;
