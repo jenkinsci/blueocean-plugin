@@ -21,6 +21,7 @@ import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.security.Permission;
 import hudson.util.ListBoxModel;
+import io.jenkins.blueocean.rest.impl.pipeline.Messages;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
@@ -47,8 +48,6 @@ import java.util.Set;
  */
 @Extension(ordinal = 99999)
 public class BlueOceanCredentialsProvider extends CredentialsProvider {
-    private static final String DISPLAY_NAME = "BlueOcean Folder Credentials";
-
     @Nonnull
     @Override
     public <C extends Credentials> List<C> getCredentials(@Nonnull Class<C> type, @Nullable ItemGroup itemGroup,
@@ -91,7 +90,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         if (itemGroup instanceof AbstractFolder) {
             FolderPropertyImpl prop = (FolderPropertyImpl) ((AbstractFolder) itemGroup).getProperties().get(FolderPropertyImpl.class);
             if (prop != null) {
-                result.add(DISPLAY_NAME, prop.getId());
+                result.add(Messages.BlueOceanCredentialsProvider_DisplayName(), prop.getId());
             }
 
         }
@@ -101,7 +100,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
     @Override
     @Nonnull
     public String getDisplayName() {
-        return DISPLAY_NAME;
+        return Messages.BlueOceanCredentialsProvider_DisplayName();
     }
 
     @Override
@@ -194,7 +193,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
              */
             @Override
             public String getDisplayName() {
-                return DISPLAY_NAME;
+                return Messages.BlueOceanCredentialsProvider_DisplayName();
             }
 
             @Override
