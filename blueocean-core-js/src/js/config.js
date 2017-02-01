@@ -22,6 +22,10 @@ export default {
         return this.getSecurityConfig().loginUrl;
     },
 
+    getPluginInfo(pluginId) {
+        return blueocean.jsExtensions.find((pluginInfo) => pluginInfo.hpiPluginId === pluginId);
+    },
+
     /**
      * Set a new "jenkinsConfig" object.
      * Useful for testing in a headless environment.

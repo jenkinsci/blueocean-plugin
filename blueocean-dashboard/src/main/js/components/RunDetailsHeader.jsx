@@ -2,11 +2,27 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
+import { logging } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, LiveStatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
-import moment from 'moment';
+import { TimeManager } from '../util/serverBrowserTimeHarmonize';
+
+const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetailsPipeline');
+const timeManager = new TimeManager();
 
 class RunDetailsHeader extends Component {
+    componentWillMount() {
+        const { data: run } = this.props;
+        const isRunning = () => run.isRunning() || run.isPaused() || run.isQueued();
+        // we need to make sure that we calculate with the correct time offset
+        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
+        const { durationMillis } = timeManager.harmonizeTimes({
+            startTime: run.startTime,
+            durationInMillis: run.durationInMillis,
+            isRunning: isRunning(),
+        }, skewMillis);
+        this.durationMillis = durationMillis;
+    }
     handleAuthorsClick() {
         if (this.props.onAuthorsClick) {
             this.props.onAuthorsClick();
@@ -34,13 +50,25 @@ class RunDetailsHeader extends Component {
         // FIXME-FLOW: Remove the ":any" cast after completion of https://github.com/facebook/flow/issues/1059
         const changeSet = run.changeSet;
         const status = run.getComputedResult();
-        const durationMillis = run.isRunning() ?
-            moment().diff(moment(run.startTime)) : run.durationInMillis;
+        // we need to make sure that we calculate with the correct time offset
+        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
+        // the time when we started the run harmonized with offset
+        const isRunning = () => run.isRunning() || run.isPaused();
+        const {
+            durationMillis,
+            endTime,
+            startTime,
+        } = timeManager.harmonizeTimes({
+            endTime: run.endTime,
+            startTime: run.startTime,
+            durationInMillis: run.durationInMillis,
+        }, skewMillis);
+        logger.debug('timeq:', { startTime, endTime, durationMillis });
         const onAuthorsClick = () => this.handleAuthorsClick();
         return (
         <div className="pipeline-result run-details-header">
             <section className="status inverse">
-                <LiveStatusIndicator result={status} startTime={run.startTime}
+                <LiveStatusIndicator result={status} startTime={startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
                   noBackground
                 />
@@ -80,10 +108,11 @@ class RunDetailsHeader extends Component {
                             }}
                             />
                             <TimeDuration
-                              millis={durationMillis}
-                              liveUpdate={run.isRunning()}
+                              millis={isRunning() ? this.durationMillis : durationMillis}
+                              liveUpdate={isRunning()}
                               updatePeriod={1000}
                               locale={locale}
+                              displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
                               liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
                               hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
                             />
@@ -96,7 +125,7 @@ class RunDetailsHeader extends Component {
                             }}
                             />
                             <ReadableDate
-                              date={run.endTime}
+                              date={endTime}
                               liveUpdate
                               locale={locale}
                               shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
@@ -121,6 +150,10 @@ RunDetailsHeader.propTypes = {
     onAuthorsClick: func,
     t: func,
     locale: string,
+};
+
+RunDetailsHeader.contextTypes = {
+    config: object.isRequired,
 };
 
 export { RunDetailsHeader };
