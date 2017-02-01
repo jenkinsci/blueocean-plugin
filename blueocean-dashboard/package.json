@@ -2,7 +2,7 @@
   "name": "blueocean-dashboard",
   "version": "0.0.1",
   "scripts": {
-    "start-storybook": "start-storybook --static-dir ./target,./node_modules/@jenkins-cd/design-language/dist/assets/,./node_modules/@jenkins-cd/blueocean-core-js/dist/assets/",
+    "start-storybook": "start-storybook --static-dir ./target,./node_modules/@jenkins-cd/design-language/dist/assets/",
     "storybook": "npm run start-storybook -- -p 9001",
     "storybook:port": "npm run start-storybook -- -p ",
     "lint": "jjsbuilder --tasks lint",
@@ -39,7 +39,7 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.55-jm-b",
+    "@jenkins-cd/blueocean-core-js": "0.0.57",
     "@jenkins-cd/design-language": "0.0.105",
     "@jenkins-cd/js-extensions": "0.0.33",
     "@jenkins-cd/js-modules": "0.0.8",
