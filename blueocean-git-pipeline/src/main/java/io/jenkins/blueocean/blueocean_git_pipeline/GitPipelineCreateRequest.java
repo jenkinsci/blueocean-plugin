@@ -15,6 +15,7 @@ import jenkins.branch.BranchSource;
 import jenkins.branch.MultiBranchProjectDescriptor;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -59,14 +60,13 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
         if (item instanceof WorkflowMultiBranchProject) {
             WorkflowMultiBranchProject project = (WorkflowMultiBranchProject) item;
 
-            if(scmConfig.getCredentialId() != null) {
+            if(!StringUtils.isNotBlank(scmConfig.getCredentialId())) {
                 project.addProperty(
                         new BlueOceanCredentialsProvider.FolderPropertyImpl(authenticatedUser.getId(),
                                 scmConfig.getCredentialId()));
             }
 
-            //XXX: set credentialId to empty string if null or we get NPE later on
-            String credentialId = scmConfig.getCredentialId() == null ? "" : scmConfig.getCredentialId();
+            String credentialId = StringUtils.defaultString(scmConfig.getCredentialId());
 
             project.getSourcesList().add(new BranchSource(new GitSCMSource(null, sourceUri, credentialId, "*", "", false)));
             project.scheduleBuild(new Cause.UserIdCause());
