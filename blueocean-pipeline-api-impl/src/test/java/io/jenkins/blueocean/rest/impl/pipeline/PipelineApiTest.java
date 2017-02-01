@@ -69,6 +69,44 @@ public class PipelineApiTest extends PipelineBaseTest {
 
     }
 
+    @Test
+    public void getPipelineRunAbortedStepTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition("" +
+            "node {" +
+            "   stage ('Build1'); " +
+            "   sleep 60 " +
+            "   stage ('Test1'); " +
+            "   echo ('Testing'); " +
+            "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
+        Map r=null;
+
+        for (int i = 0; i < 10; i++) {
+            r = request().put("/organizations/jenkins/pipelines/pipeline1/runs/1/stop")
+                .build(Map.class);
+            if(((String) r.get("state")).equalsIgnoreCase("FINISHED"))
+                continue;
+            Thread.sleep(1000);
+        }
+        Assert.assertEquals(r.get("state"), "FINISHED");
+        Assert.assertEquals(r.get("result"), "ABORTED");
+
+        j.assertBuildStatus(Result.ABORTED, b1);
+
+        List l = request().get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps").build(List.class);
+
+        boolean aborted = false;
+
+        for(Object step: l) {
+           aborted = "ABORTED".equalsIgnoreCase(((String) ((Map) step).get("result")));
+        }
+
+        Assert.assertTrue(aborted);
+    }
+
     //TODO: Fix test - see JENKINS-38319
     //@Test
     public void getPipelineRunblockingStopTest() throws Exception {
