@@ -13,14 +13,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
-import hudson.tasks.Mailer;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import jenkins.branch.OrganizationFolder;
-import jenkins.model.Jenkins;
-import org.acegisecurity.adapters.PrincipalAcegiUserToken;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.userdetails.UserDetails;
 import org.jenkinsci.plugins.github_branch_source.Connector;
 import org.junit.Assert;
 import org.junit.Test;
@@ -124,21 +119,5 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
         //it must not be found
         c = Connector.lookupScanCredentials(organizationFolder, null, credential.getId());
         assertNull(c);
-    }
-
-
-    private User login() throws IOException {
-        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-
-        hudson.model.User bob = j.jenkins.getUser("bob");
-
-        bob.setFullName("Bob Smith");
-        bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
-
-
-        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
-
-        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
-        return bob;
     }
 }

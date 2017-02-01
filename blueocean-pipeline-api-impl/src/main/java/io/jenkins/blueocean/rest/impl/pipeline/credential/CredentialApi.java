@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline.credential;
 import com.cloudbees.plugins.credentials.CredentialsStoreAction;
 import com.cloudbees.plugins.credentials.common.IdCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
+import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
@@ -32,6 +33,8 @@ public class CredentialApi extends Resource {
 
     private  final CredentialsStoreAction credentialStoreAction;
     private  final Reachable parent;
+    public static final String DOMAIN_NAME = "blueocean-domain";
+
 
     public CredentialApi(CredentialsStoreAction ca, Reachable parent) {
         this.credentialStoreAction = ca;
@@ -43,6 +46,40 @@ public class CredentialApi extends Resource {
     public String getStore(){
         return credentialStoreAction.getUrlName();
     }
+
+    @POST
+    @WebMethod(name = "")
+    public CreateResponse create(@JsonBody JSONObject body, StaplerRequest request) throws IOException {
+
+        User authenticatedUser =  User.current();
+        if(authenticatedUser == null){
+            throw new ServiceException.UnauthorizedException("No authenticated user found");
+        }
+
+        JSONObject jsonObject = body.getJSONObject("credentials");
+        final IdCredentials credentials = request.bindJSON(IdCredentials.class, jsonObject);
+
+        String domainName = DOMAIN_NAME;
+
+        if(jsonObject.get("domain") != null && jsonObject.get("domain") instanceof  String){
+            domainName = (String) jsonObject.get("domain");
+        }
+
+        CredentialsUtils.createCredentialsInUserStore(credentials, authenticatedUser, domainName, null);
+
+        CredentialsStoreAction.DomainWrapper domainWrapper = credentialStoreAction.getDomain(domainName);
+
+        if(domainWrapper != null){
+            return new CreateResponse(
+                    new CredentialApi.Credential(
+                            domainWrapper.getCredential(credentials.getId()),
+                            getLink().rel("domains").rel(domainName).rel("credentials")));
+        }
+
+        //this should never happen
+        throw new ServiceException.UnexpectedErrorException("Unexpected error, failed to create credential");
+    }
+
 
     @Navigable
     public Container<CredentialDomain> getDomains(){

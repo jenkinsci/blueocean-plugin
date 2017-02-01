@@ -7,11 +7,6 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
-import com.cloudbees.plugins.credentials.domains.DomainSpecification;
-import com.cloudbees.plugins.credentials.domains.HostnamePortSpecification;
-import com.cloudbees.plugins.credentials.domains.HostnameSpecification;
-import com.cloudbees.plugins.credentials.domains.PathSpecification;
-import com.cloudbees.plugins.credentials.domains.SchemeSpecification;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.google.common.collect.ImmutableMap;
@@ -22,6 +17,7 @@ import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
@@ -70,7 +66,7 @@ public class GithubScm extends Scm {
     private static final String USER_EMAIL_SCOPE = "user:email";
     private static final String USER_SCOPE = "user";
     private static final String REPO_SCOPE = "repo";
-    private static final String DOMAIN_NAME="github-domain";
+    private static final String DOMAIN_NAME="blueocean-github-domain";
 
     private final Link self;
 
@@ -235,57 +231,14 @@ public class GithubScm extends Scm {
             final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, "github", "Github Access Token", user.getLogin(), accessToken);
 
 
-            CredentialsStore store=null;
-            for(CredentialsStore s: CredentialsProvider.lookupStores(authenticatedUser)){
-                if(s.hasPermission(CredentialsProvider.CREATE) && s.hasPermission(CredentialsProvider.UPDATE)){
-                    store = s;
-                    break;
-                }
-            }
-
-            if(store == null){
-                throw new ServiceException.ForbiddenException(String.format("Logged in user: %s doesn't have writable credentials store", authenticatedUser.getId()));
-            }
-
-            Domain domain = store.getDomainByName(DOMAIN_NAME);
-            if(domain == null){
-                java.net.URI uri = new URI(getUri());
-
-                List<DomainSpecification> domainSpecifications = new ArrayList<>();
-
-                // XXX: UriRequirementBuilder.fromUri() maps "" path to "/", so need to take care of it here
-                String path = uri.getRawPath() == null ? null : (uri.getRawPath().trim().isEmpty() ? "/" : uri.getRawPath());
-                domainSpecifications.add(new PathSpecification(path, "", false));
-                if(uri.getPort() != -1){
-                    domainSpecifications.add(new HostnamePortSpecification(uri.getHost()+":"+uri.getPort(), null));
-                }else{
-                    domainSpecifications.add(new HostnameSpecification(uri.getHost(),null));
-                }
-                domainSpecifications.add(new SchemeSpecification(uri.getScheme()));
-
-                boolean result = store.addDomain(new Domain(DOMAIN_NAME,
-                        "Github Domain to store personal access token",
-                        domainSpecifications
-                ));
-                if(!result){
-                    throw new ServiceException.BadRequestExpception("Github accessToken is valid but no valid credential domain found and could not be created");
-                }
-                domain = store.getDomainByName(DOMAIN_NAME);
-                if(domain == null){
-                    throw new ServiceException.BadRequestExpception("Github accessToken is valid but no valid credential domain found and could not be created");
-                }
-            }
-
-            if(githubCredential == null){
-                if(!store.addCredentials(domain, credential)){
-                    throw new ServiceException.UnexpectedErrorException("Failed to add credential to domain");
-                }
-
+            if(githubCredential == null) {
+                CredentialsUtils.createCredentialsInUserStore(
+                        credential, authenticatedUser, DOMAIN_NAME, new URI(getUri()));
             }else{
-                if(!store.updateCredentials(domain, githubCredential, credential)){
-                    throw new ServiceException.UnexpectedErrorException("Failed to update credential to domain");
-                }
+                CredentialsUtils.updateCredentialsInUserStore(
+                        githubCredential, credential, authenticatedUser, DOMAIN_NAME, new URI(getUri()));
             }
+
             return createResponse(credential.getId());
 
         } catch (IOException | URISyntaxException e) {

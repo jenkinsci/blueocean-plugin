@@ -12,9 +12,14 @@ import com.mashape.unirest.request.HttpRequestWithBody;
 import hudson.Util;
 import hudson.model.Job;
 import hudson.model.Run;
+import hudson.model.User;
+import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
+import org.acegisecurity.adapters.PrincipalAcegiUserToken;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -585,6 +590,21 @@ public abstract class PipelineBaseTest{
             fail(name + " project not found");
         }
         return p;
+    }
+
+    protected User login() throws IOException {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        hudson.model.User bob = j.jenkins.getUser("bob");
+
+        bob.setFullName("Bob Smith");
+        bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
+
+
+        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+        return bob;
     }
 
 }
