@@ -20,9 +20,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.105",
-      "from": "@jenkins-cd/design-language@0.0.105",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.105.tgz"
+      "version": "0.0.108",
+      "from": "@jenkins-cd/design-language@0.0.108",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.108.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
