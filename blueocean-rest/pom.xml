@@ -27,7 +27,6 @@
       <dependency>
           <groupId>io.jenkins.blueocean.rest.annotation</groupId>
           <artifactId>capability-annotation</artifactId>
-          <version>1.2</version>
       </dependency>
   </dependencies>
 </project>
