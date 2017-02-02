@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
 import { i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
-import { TimeManager as timeManager } from '../util/serverBrowserTimeHarmonize';
+import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
-const TimeManager = new timeManager();
+const timeManager = new TimeManager();
 const { array, any, func, object, string } = PropTypes;
 const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelineRunGraph');
 const translate = i18nTranslator('blueocean-dashboard');
@@ -22,18 +22,17 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
     }
     logger.debug('jenkinsNode', jenkinsNode);
     const isRunning = () => {
-      switch (jenkinsNode.state) {
+        switch (jenkinsNode.state) {
         case 'RUNNING':
         case 'PAUSED':
         case 'QUEUED':
             return true;
-            break;
         default:
             return false;
-      }
+        }
     };
-    const {durationInMillis, startTime } = jenkinsNode;
-    const { durationMillis } = TimeManager.harmonizeTimes({
+    const { durationInMillis, startTime } = jenkinsNode;
+    const { durationMillis } = timeManager.harmonizeTimes({
         isRunning: isRunning(),
         durationInMillis,
         startTime,
@@ -66,7 +65,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         state = 'not_built';
         completePercent = 0;
     }
-    const i18nDuration = TimeManager.format(durationInMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
+    const i18nDuration = TimeManager.format(durationMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
 
     const title = translate(`common.state.${state}`, { 0: i18nDuration });
 
@@ -79,7 +78,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         title,
     };
     logger.debug('converted node', converted);
-  return converted;
+    return converted;
 }
 
 /**
