@@ -145,20 +145,22 @@ public class JenkinsJSExtensions {
                         }
 
                         List<Map> extensions = (List<Map>) extensionData.get(PLUGIN_EXT);
-                        for (Map extension : extensions) {
-                            try {
-                                String type = (String) extension.get("type");
-                                if (type != null) {
-                                    BlueExtensionClassContainer extensionClassContainer
-                                        = Jenkins.getInstance().getExtensionList(BlueExtensionClassContainer.class).get(0);
-                                    Map classInfo = (Map) mergeObjects(extensionClassContainer.get(type));
-                                    List classInfoClasses = (List) classInfo.get("_classes");
-                                    classInfoClasses.add(0, type);
-                                    extension.put("_class", type);
-                                    extension.put("_classes", classInfoClasses);
+                        if (extensions != null) {
+                            for (Map extension : extensions) {
+                                try {
+                                    String type = (String) extension.get("type");
+                                    if (type != null) {
+                                        BlueExtensionClassContainer extensionClassContainer
+                                            = Jenkins.getInstance().getExtensionList(BlueExtensionClassContainer.class).get(0);
+                                        Map classInfo = (Map) mergeObjects(extensionClassContainer.get(type));
+                                        List classInfoClasses = (List) classInfo.get("_classes");
+                                        classInfoClasses.add(0, type);
+                                        extension.put("_class", type);
+                                        extension.put("_classes", classInfoClasses);
+                                    }
+                                } catch (Exception e) {
+                                    LOGGER.error("An error occurred when attempting to read type information from jenkins-js-extension.json from: " + dataRes, e);
                                 }
-                            } catch (Exception e) {
-                                LOGGER.error("An error occurred when attempting to read type information from jenkins-js-extension.json from: " + dataRes, e);
                             }
                         }
 
