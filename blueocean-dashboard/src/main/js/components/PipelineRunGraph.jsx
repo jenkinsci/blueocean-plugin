@@ -1,7 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
+import { logging } from '@jenkins-cd/blueocean-core-js';
+import { TimeManager as timeManager } from '../util/serverBrowserTimeHarmonize';
 
+const TimeManager = new timeManager();
 const { array, any, func, object, string } = PropTypes;
+const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelineRunGraph');
 
 
 function badNode(jenkinsNode) {
@@ -16,7 +20,25 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         || !jenkinsNode.id) {
         throw badNode(jenkinsNode);
     }
-
+    logger.warn('jenkinsNode', jenkinsNode);
+    const isRunning = () => {
+      switch (jenkinsNode.state) {
+        case 'RUNNING':
+        case 'PAUSED':
+        case 'QUEUED':
+            return true;
+            break;
+        default:
+            return false;
+      }
+    };
+    const {durationInMillis, startTime } = jenkinsNode;
+    const { durationMillis } = TimeManager.harmonizeTimes({
+        isRunning: isRunning(),
+        durationInMillis,
+        startTime,
+    });
+    const title = durationInMillis;
     let completePercent = 0;
     let state = 'unknown';
 
@@ -46,13 +68,16 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         completePercent = 0;
     }
 
-    return {
+    const converted = {
         name: jenkinsNode.displayName,
         children: [],
         state,
         completePercent,
         id: jenkinsNode.id,
+        title,
     };
+    logger.warn('converted node', converted);
+  return converted;
 }
 
 /**
@@ -197,3 +222,4 @@ PipelineRunGraph.propTypes = {
     callback: func,
     t: func,
 };
+
