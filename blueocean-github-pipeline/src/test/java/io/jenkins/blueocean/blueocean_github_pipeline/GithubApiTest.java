@@ -1,12 +1,8 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.CredentialsStore;
-import com.cloudbees.plugins.credentials.UserCredentialsProvider;
-import com.cloudbees.plugins.credentials.domains.Domain;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import hudson.ExtensionList;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
@@ -15,6 +11,7 @@ import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,16 +33,6 @@ public class GithubApiTest extends PipelineBaseTest{
         bob.setFullName("Bob Smith");
         bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
 
-
-        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
-
-        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
-
-        UserCredentialsProvider userCredentialsProvider = ExtensionList.lookup(CredentialsProvider.class).get(UserCredentialsProvider.class);
-        CredentialsStore userCredentialsProviderStore = userCredentialsProvider.getStore(bob);
-        userCredentialsProviderStore.addDomain(new Domain("domain1", null, null));
-
-
         //check credentialId of this SCM, should be null
         Map r = new RequestBuilder(baseUrl)
                 .status(200)
@@ -63,7 +50,7 @@ public class GithubApiTest extends PipelineBaseTest{
                 .put("/organizations/jenkins/scm/github/validate/")
                 .build(Map.class);
 
-        Assert.assertEquals("github", r.get("credentialId"));
+        Assert.assertEquals("github-bob", r.get("credentialId"));
 
         //now that there is github credentials setup, calling scm api to get credential should simply return that.
         r = new RequestBuilder(baseUrl)
@@ -71,7 +58,7 @@ public class GithubApiTest extends PipelineBaseTest{
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .get("/organizations/jenkins/scm/github/")
                 .build(Map.class);
-        Assert.assertEquals("github", r.get("credentialId"));
+        Assert.assertEquals("github-bob", r.get("credentialId"));
     }
 
     //@Test
@@ -96,7 +83,7 @@ public class GithubApiTest extends PipelineBaseTest{
                 .build(Map.class);
 
 
-        Assert.assertEquals("github",r.get("credentialId"));
+        Assert.assertEquals("github-bob",r.get("credentialId"));
         String credentialId = (String) r.get("credentialId");
 
 
@@ -132,5 +119,62 @@ public class GithubApiTest extends PipelineBaseTest{
 
 
         //TODO: add more tests once there is test githuhb account
+    }
+
+    @Test
+    public void shouldFailOnInvalidCredentials() throws Exception{
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        hudson.model.User bob = j.jenkins.getUser("bob");
+
+        bob.setFullName("Bob Smith");
+        bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
+
+        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+
+        Map<String,Object> pipeline = post("/organizations/jenkins/pipelines/",
+                ImmutableMap.of("name", "jenkinsci",
+                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("config",
+                                ImmutableMap.of("repos", ImmutableList.of("stapler")), "credentialId", "abcd")
+                ), 400);
+
+    }
+
+//    @Test
+    public void shouldSucceedWithValidCredential() throws Exception{
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        hudson.model.User bob = j.jenkins.getUser("bob");
+
+        bob.setFullName("Bob Smith");
+        bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
+
+        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+
+
+        //check credentialId of this SCM, should be null
+        Map r = new RequestBuilder(baseUrl)
+                .data(ImmutableMap.of("accessToken", "..."))
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .put("/organizations/jenkins/scm/github/validate/")
+                .build(Map.class);
+
+
+        Assert.assertEquals("github-bob",r.get("credentialId"));
+
+
+        Map<String,Object> pipeline = post("/organizations/jenkins/pipelines/",
+                ImmutableMap.of("name", "jenkinsci",
+                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("config",
+                                ImmutableMap.of("repos", ImmutableList.of("stapler")), "credentialId", "github-bob")
+                ), 201);
+
+        Assert.assertEquals("jenkinsci", pipeline.get("name"));
+        Assert.assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", pipeline.get("_class"));
     }
 }

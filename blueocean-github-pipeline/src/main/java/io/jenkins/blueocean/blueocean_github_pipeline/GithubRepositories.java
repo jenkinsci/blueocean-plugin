@@ -2,13 +2,11 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.collect.Lists;
-import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
-import org.apache.commons.io.IOUtils;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -60,7 +58,7 @@ public class GithubRepositories extends ScmRepositories {
             connection = GithubScm.connect(String.format("%s/repos?per_page=%s&page=%s",
                     orgUrl,
                     pageSize, pageNumber), accessToken);
-            this.repositories = JsonConverter.toJava(IOUtils.toString(connection.getInputStream()), GHRepository[].class);
+            this.repositories = GithubScm.getResponse(connection, GHRepository[].class);
 
             String link = connection.getHeaderField("Link");
 
