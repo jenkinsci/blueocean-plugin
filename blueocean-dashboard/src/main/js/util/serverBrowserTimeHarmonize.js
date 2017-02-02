@@ -14,6 +14,10 @@ export class TimeManager {
         return moment();
     }
 
+    format(millis, hintFormat) {
+        return moment.duration(millis).format(hintFormat);
+    }
+
     harmonizeTimes(props, skewMillis) {
         logger.debug('skewMillis', skewMillis);
         if (!props.startTime) {

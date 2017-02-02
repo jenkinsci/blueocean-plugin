@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
 import { TimeManager as timeManager } from '../util/serverBrowserTimeHarmonize';
 
 const TimeManager = new timeManager();
 const { array, any, func, object, string } = PropTypes;
 const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelineRunGraph');
-
+const translate = i18nTranslator('blueocean-dashboard');
 
 function badNode(jenkinsNode) {
     // eslint-disable-next-line
@@ -38,7 +38,6 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         durationInMillis,
         startTime,
     });
-    const title = durationInMillis;
     let completePercent = 0;
     let state = 'unknown';
 
@@ -67,6 +66,9 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         state = 'not_built';
         completePercent = 0;
     }
+    const i18nDuration = TimeManager.format(durationInMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
+
+    const title = translate(`common.pager.${state}`, { 0: i18nDuration });
 
     const converted = {
         name: jenkinsNode.displayName,
@@ -220,6 +222,5 @@ PipelineRunGraph.propTypes = {
     node: any,
     selectedStage: object,
     callback: func,
-    t: func,
 };
 
