@@ -294,7 +294,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-organization-folder</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
         </dependency>
 
         <!-- Other -->
