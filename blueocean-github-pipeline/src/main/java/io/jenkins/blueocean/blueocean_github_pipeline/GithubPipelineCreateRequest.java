@@ -9,18 +9,22 @@ import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreateRequestImpl;
 import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -49,7 +53,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         StringBuilder sb = new StringBuilder();
 
         if (scmConfig != null) {
-            apiUrl = scmConfig.getUri();
+            apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GithubScm.DEFAULT_API_URI);
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
@@ -74,8 +78,11 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
             if (item instanceof OrganizationFolder) {
                 if(credentialId != null) {
                     validateCredentialId(credentialId, (AbstractFolder) item);
+
                     ((OrganizationFolder) item)
-                            .addProperty(new BlueOceanCredentialsProvider.FolderPropertyImpl(authenticatedUser.getId(), credentialId));
+                            .addProperty(
+                                    new BlueOceanCredentialsProvider.FolderPropertyImpl(
+                                            authenticatedUser.getId(), credentialId, GithubCredentialsDomain(apiUrl)));
                 }
                 GitHubSCMNavigator gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
                 if (sb.length() > 0) {
@@ -88,7 +95,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 organizationFolder.scheduleBuild(new Cause.UserIdCause());
                 return new GithubOrganizationFolder(organizationFolder, parent.getLink());
             }
-        }catch (Exception e){
+        } catch (Exception e){
             if(e instanceof ServiceException){
                 throw e;
             }
@@ -108,17 +115,41 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         return null;
     }
 
+    private String GithubCredentialsDomain(String apiUri) {
+        URI uri = null;
+        try {
+            uri = new URI(apiUri);
+        } catch (URISyntaxException e) {
+            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create pipeline")
+                    .add(new ErrorMessage.Error("scmConfig.uri",
+                            ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Invalid github API URI: "+e.getMessage())), e);
+        }
+        String path = StringUtils.defaultIfBlank(uri.getPath(), "/");
+        boolean githubEnterprise = false;
+        if(path.startsWith(GithubEnterpriseScm.DEFAULT_ENTERPRISE_API_SUFFIX)){
+            githubEnterprise = true;
+        }
+        if(githubEnterprise){
+            return GithubEnterpriseScm.DOMAIN_NAME;
+        }
+        return GithubScm.DOMAIN_NAME;
+    }
+
      static void validateCredentialId(String credentialId, AbstractFolder item) throws IOException {
         if (credentialId != null && !credentialId.trim().isEmpty()) {
-            Credentials credentials = GithubScm.findUsernamePasswordCredential(credentialId);
+            Credentials credentials = CredentialsUtils.findCredential(credentialId, Credentials.class);
             if (credentials == null) {
                 try {
                     item.delete();
                 } catch (InterruptedException e) {
-                    throw new ServiceException.UnexpectedErrorException("Invalid credentialId: " + credentialId + ". Failure during cleaing up folder: " + item.getName() + ". Error: " + e.getMessage(), e);
+                    throw new ServiceException.UnexpectedErrorException("Invalid credentialId: " +
+                            credentialId + ". Failure during cleaning up folder: " + item.getName() + ". Error: " +
+                            e.getMessage(), e);
                 }
                 throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline")
-                        .add(new ErrorMessage.Error("credentialId", ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Invalid credentialId")));
+                        .add(new ErrorMessage.Error("scmConfig.credentialId",
+                                ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                                "Invalid credentialId")));
 
             }
         }

@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
+import com.cloudbees.plugins.credentials.domains.Domain;
 import hudson.model.Cause;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
@@ -8,6 +9,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreateRequestImpl;
@@ -60,10 +62,18 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
         if (item instanceof WorkflowMultiBranchProject) {
             WorkflowMultiBranchProject project = (WorkflowMultiBranchProject) item;
 
-            if(!StringUtils.isNotBlank(scmConfig.getCredentialId())) {
+            if(StringUtils.isNotBlank(scmConfig.getCredentialId())) {
+                Domain domain = CredentialsUtils.findDomain(scmConfig.getCredentialId(), authenticatedUser);
+                if(domain == null){
+                    throw new ServiceException.BadRequestExpception(
+                            new ErrorMessage(400, "Failed to create pipeline")
+                                    .add(new ErrorMessage.Error("scm.credentialId",
+                                            ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                                            "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
+                }
                 project.addProperty(
                         new BlueOceanCredentialsProvider.FolderPropertyImpl(authenticatedUser.getId(),
-                                scmConfig.getCredentialId()));
+                                scmConfig.getCredentialId(), domain.getName()));
             }
 
             String credentialId = StringUtils.defaultString(scmConfig.getCredentialId());

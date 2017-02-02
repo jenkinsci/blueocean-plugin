@@ -22,7 +22,6 @@ import hudson.model.User;
 import hudson.security.Permission;
 import hudson.util.ListBoxModel;
 import io.jenkins.blueocean.rest.impl.pipeline.Messages;
-import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -32,6 +31,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -50,30 +50,30 @@ import java.util.Set;
 public class BlueOceanCredentialsProvider extends CredentialsProvider {
     @Nonnull
     @Override
+    @SuppressWarnings("unchecked")
     public <C extends Credentials> List<C> getCredentials(@Nonnull Class<C> type, @Nullable ItemGroup itemGroup,
                                                           @Nullable Authentication authentication) {
         if (itemGroup instanceof AbstractFolder) {
-            return getCredentials(type, (AbstractFolder)itemGroup);
+            return (List<C>) getCredentials((AbstractFolder)itemGroup);
         }
         return Collections.emptyList();
     }
 
-    private static <C extends Credentials> List<C> getCredentials(Class<C> type, AbstractFolder folder){
-        FolderPropertyImpl prop = (FolderPropertyImpl)folder.getProperties().get(FolderPropertyImpl.class);
+    private static  List<Credentials> getCredentials(@Nonnull AbstractFolder folder){
+        return getCredentials((FolderPropertyImpl)folder.getProperties().get(FolderPropertyImpl.class));
+    }
+
+    private static  List<Credentials> getCredentials(@Nullable FolderPropertyImpl prop){
         if (prop != null) {
             User user = User.get(prop.getUser(), false, Collections.emptyMap());
             if(user != null){
-                Authentication auth = user.impersonate();
-                return CredentialsMatchers.filter(
-                        CredentialsProvider.lookupCredentials(
-                                type,
-                                Jenkins.getInstance(),
-                                auth,
-                                Collections.<DomainRequirement>emptyList()
-                        ),
-                        CredentialsMatchers.allOf(CredentialsMatchers.withId(prop.getId()),
-                                CredentialsMatchers.withScope(CredentialsScope.USER))
-                );
+                for (CredentialsStore store: CredentialsProvider.lookupStores(user)) {
+                    Domain domain = store.getDomainByName(prop.getDomain());
+                    if(domain != null){
+                        return CredentialsMatchers.filter(store.getCredentials(domain),
+                                CredentialsMatchers.allOf(CredentialsMatchers.withId(prop.getId())));
+                    }
+                }
             }
         }
         return Collections.emptyList();
@@ -114,7 +114,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
     @Override
     public Set<CredentialsScope> getScopes(ModelObject object) {
         if(isApplicable(object)){
-            return ImmutableSet.of(CredentialsScope.USER);
+            return ImmutableSet.of(CredentialsScope.GLOBAL);
         }
         return Collections.emptySet();
     }
@@ -127,11 +127,13 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
     public static class FolderPropertyImpl extends AbstractFolderProperty<AbstractFolder<TopLevelItem>> {
         private final String user;
         private final String id;
+        private final String domain;
 
         @DataBoundConstructor
-        public FolderPropertyImpl(@Nonnull String user, @Nonnull String id) {
+        public FolderPropertyImpl(@Nonnull String user, @Nonnull String id, @Nonnull String domain) {
             this.user = user;
             this.id = id;
+            this.domain = domain;
         }
 
         public @Nonnull String getUser() {
@@ -140,6 +142,10 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
 
         public @Nonnull String getId() {
             return id;
+        }
+
+        public @Nonnull String getDomain() {
+            return domain;
         }
 
         @Override
@@ -215,8 +221,20 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             @Nonnull
             @Override
             public List<Domain> getDomains() {
-                //XXX: how to get domain from given Credentials object? Maybe attach domain name to AbstractFolder?
-                return Collections.emptyList();
+                FolderPropertyImpl prop = (FolderPropertyImpl) abstractFolder.getProperties().get(FolderPropertyImpl.class);
+                List<Domain> domains = new ArrayList<>();
+                if(prop != null){
+                    User user = User.get(prop.getUser(), false, Collections.emptyMap());
+                    if(user != null) {
+                        for (CredentialsStore store : CredentialsProvider.lookupStores(user)) {
+                            Domain domain = store.getDomainByName(prop.getDomain());
+                            if(domain != null) {
+                                domains.add(domain);
+                            }
+                        }
+                    }
+                }
+                return domains;
             }
 
             @Nullable
@@ -233,13 +251,21 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
 
             @Override
             public boolean hasPermission(@Nonnull Authentication a, @Nonnull Permission permission) {
+                // its read only so for all permissions other than READ, we return false
+                if(permission != Permission.READ){
+                    return false;
+                }
                 return abstractFolder.getACL().hasPermission(a,permission);
             }
 
             @Nonnull
             @Override
             public List<Credentials> getCredentials(@Nonnull Domain domain) {
-                return BlueOceanCredentialsProvider.getCredentials(Credentials.class, abstractFolder);
+                FolderPropertyImpl prop = (FolderPropertyImpl)abstractFolder.getProperties().get(FolderPropertyImpl.class);
+                if(prop == null || !prop.getDomain().equals(domain.getName())){
+                    return Collections.emptyList();
+                }
+                return BlueOceanCredentialsProvider.getCredentials(prop);
             }
 
             @Override

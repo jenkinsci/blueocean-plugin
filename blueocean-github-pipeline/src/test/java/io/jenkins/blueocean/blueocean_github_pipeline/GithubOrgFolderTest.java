@@ -101,7 +101,7 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
 
         //create org folder and attach user and credential id to it
         OrganizationFolder organizationFolder = j.createProject(OrganizationFolder.class, "demo");
-        AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId());
+        AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId(), "github-domain");
         organizationFolder.addProperty(prop);
 
         // lookup for created credential id in system store, it should resolve to previously created user store credential
