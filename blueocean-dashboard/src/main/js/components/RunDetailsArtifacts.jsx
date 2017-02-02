@@ -112,7 +112,7 @@ export default class RunDetailsArtifacts extends Component {
             return (
                 <tr key={artifact.url}>
                     <td>
-                        <a target="_blank" title={t('rundetail.artifacts.button.open', { defaultValue: 'Download the artifact' })} href={`${UrlConfig.getJenkinsRootURL()}${artifact.url}`}>
+                        <a target="_blank" title={t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' })} href={`${UrlConfig.getJenkinsRootURL()}${artifact.url}`}>
                             {artifact.path}
                         </a>
                     </td>
