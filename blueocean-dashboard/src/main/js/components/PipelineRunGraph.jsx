@@ -65,7 +65,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         state = 'not_built';
         completePercent = 0;
     }
-    const i18nDuration = TimeManager.format(durationMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
+    const i18nDuration = timeManager.format(durationMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
 
     const title = translate(`common.state.${state}`, { 0: i18nDuration });
 
