@@ -111,7 +111,11 @@ export default class RunDetailsArtifacts extends Component {
             logger.debug('artifact - url:', artifact.url, 'artifact - fileName:', fileName);
             return (
                 <tr key={artifact.url}>
-                    <td>{artifact.path}</td>
+                    <td>
+                        <a target="_blank" title={t('rundetail.artifacts.button.open', { defaultValue: 'Download the artifact' })} href={`${UrlConfig.getJenkinsRootURL()}${artifact.url}`}>
+                            {artifact.path}
+                        </a>
+                    </td>
                     <td>
                         <FileSize bytes={artifact.size} />
                     </td>
