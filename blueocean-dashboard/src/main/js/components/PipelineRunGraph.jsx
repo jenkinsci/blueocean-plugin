@@ -68,7 +68,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
     }
     const i18nDuration = TimeManager.format(durationInMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
 
-    const title = translate(`common.pager.${state}`, { 0: i18nDuration });
+    const title = translate(`common.state.${state}`, { 0: i18nDuration });
 
     const converted = {
         name: jenkinsNode.displayName,
