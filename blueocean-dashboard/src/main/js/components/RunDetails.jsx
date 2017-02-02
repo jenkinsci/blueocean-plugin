@@ -6,7 +6,7 @@ import {
     PageTabsOld,
     TabLink,
 } from '@jenkins-cd/design-language';
-import { i18nTranslator, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ReplayButton, RunButton, logging } from '@jenkins-cd/blueocean-core-js';
 
 import { Icon } from '@jenkins-cd/react-material-icons';
 
@@ -27,6 +27,7 @@ import { User } from '@jenkins-cd/blueocean-core-js';
 const { func, object, any, string } = PropTypes;
 
 const { rest: RestPaths } = Paths;
+const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetails');
 
 const classicConfigLink = (pipeline) => {
     let link = null;
@@ -128,20 +129,22 @@ class RunDetails extends Component {
         const { pipeline, setTitle, t, locale } = this.props;
 
         if (!run || !pipeline) {
+            this.props.setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
             return <PageLoading />;
         }
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
-
+        logger.debug('params', params.organization, params.pipeline, params.branch, params.runId);
         const currentRun = new RunRecord(run);
         const status = currentRun.getComputedResult() || '';
+        const computedTitle = `${currentRun.organization} / ${pipeline.fullName} / ${params.pipeline === params.branch ? '' : `${params.branch} / `} #${currentRun.id}`;
+        setTitle(computedTitle);
 
         const switchRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
 
-        setTitle(`${currentRun.organization} / ${pipeline.fullName} #${currentRun.id}`);
 
         const afterClose = () => {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);

@@ -1,4 +1,3 @@
-
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
@@ -7,6 +6,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
+import { documentTitle } from './DocumentTitle';
 
 import { observer } from 'mobx-react';
 
@@ -17,12 +17,6 @@ const translate = i18nTranslator('blueocean-dashboard');
 export class Pipelines extends Component {
     componentWillMount() {
         this._initPager(this.props);
-    }
-
-    componentDidMount() {
-        // TODO: re-enable this
-        // const { organization = 'Jenkins' } = this.context.params;
-        // this.props.setTitle(organization);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -40,7 +34,13 @@ export class Pipelines extends Component {
 
     render() {
         const pipelines = this.pager.data;
-        const { organization, location = {} } = this.context.params;
+        const { organization = 'Jenkins', location = {} } = this.context.params;
+
+        if (!pipelines || this.pager.pending) {
+            this.props.setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
+        } else {
+            this.props.setTitle(organization);
+        }
 
         const orgLink = organization ?
             <Link
@@ -129,4 +129,4 @@ Pipelines.propTypes = {
     setTitle: func,
 };
 
-export default Pipelines;
+export default documentTitle(Pipelines);
