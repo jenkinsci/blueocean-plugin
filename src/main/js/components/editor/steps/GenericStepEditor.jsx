@@ -11,6 +11,7 @@ const allPropertyEditors = [
     require('../../properties/DecimalPropertyInput').default,
     require('../../properties/StringPropertyInput').default,
     require('../../properties/ListPropertyInput').default,
+    require('../../properties/TimeUnitPropertyInput').default,
 ];
 
 const propertyEditorsByName = {
@@ -70,7 +71,7 @@ export default class GenericStepEditorPanel extends Component<DefaultProps, Prop
                         return React.createElement(propTypeEditor, { step: step, type: p, propName: p.name, onChange: () => this.updateStepData() });
                     }
                     return (
-                        <FormElement title={p.capitalizedName + p.isRequired ? '*' : ''} errorMessage={!step.isNew && !step.data[p.name] && (p.capitalizedName + ' is required')}>
+                        <FormElement title={p.capitalizedName + (p.isRequired ? '*' : '')} errorMessage={!step.pristine && !step.data[p.name] && (p.capitalizedName + ' is required')}>
                             <TextInput key={p.name} defaultValue={step.data[p.name]} onChange={val => { step.data[p.name] = val; this.updateStepData(); }} />
                         </FormElement>
                     );

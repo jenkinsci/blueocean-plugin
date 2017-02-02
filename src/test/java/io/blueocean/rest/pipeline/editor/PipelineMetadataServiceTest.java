@@ -71,7 +71,7 @@ public class PipelineMetadataServiceTest {
 
         assertTrue(m.getHasSingleRequiredParameter());
 
-        assertEquals(3, m.getParameters().size());
+        assertEquals(7, m.getParameters().size()); // was 3 now 7...
     }
 
     @Test

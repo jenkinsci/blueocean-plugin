@@ -68,8 +68,21 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                         </div>
                     </div>);
             } else {
-                // TODO: we know there will be a validation error in this case, show
+                // we know there will be a validation error in this case, show
                 // something indicating the user needs a step in a stage
+                return (
+                    <div className="editor-step missing">
+                        <div className="editor-step-main">
+                            <div className="editor-step-content">
+                                <ChildStepIcon/>
+                                <div className="editor-step-title">
+                                    <span className="editor-step-summary">
+                                        There are no steps, at least one is required.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>);
             }
         }
         

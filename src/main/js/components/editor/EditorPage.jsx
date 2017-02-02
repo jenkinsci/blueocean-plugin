@@ -100,6 +100,10 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
                 pipelineStore.setPipeline(internal);
             } else {
                 this.setState({pipelineErrors: err});
+                if(err[0].location) {
+                    // revalidate in case something missed it (e.g. create an empty stage then load/save)
+                    pipelineValidator.validate();
+                }
             }
         });
     }
@@ -152,13 +156,15 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
                         buttons={<div><button onClick={e => this.updateStateFromPipelineScript(this.refs.pipelineScript.value)}>Update</button></div>}>
                         {!localStorage.getItem('pipeline-editor-usage-blurb-accept') &&
                         <div className="load-save-usage-blurb">
-                            Your current pipeline will automatically be converted to a&nbsp;
-                            <a target="_blank" href="https://github.com/jenkinsci/pipeline-config-plugin/wiki/Getting-Started">Pipeline Model
-                            Definiton</a> script when you open this dialog. To use it, just copy the script somewhere
-                            Jenkins can use, such as a&nbsp;
-                            <a target="_blank" href="https://jenkins-ci.org/content/pipeline-code-multibranch-workflows-jenkins">Jenkinsfile for a Multibranch project</a>.
-                            You may also paste a valid Pipeline
-                            Model Definition script below and click <em>Update</em> to load it in the editor.
+                            This is your pipeline as text, you can copy it 
+                            and put it in a Jenkinsfile for your project, 
+                            for example in a&nbsp;<a target="_blank" href="https://jenkins-ci.org/content/pipeline-code-multibranch-workflows-jenkins">multibranch project</a>. 
+
+                            You can also paste your own&nbsp;<a target="_blank" href="https://github.com/jenkinsci/pipeline-config-plugin/wiki/Getting-Started">Declarative Pipeline</a>&nbsp;script
+                            in this text box, and press 'Update' to edit it visually. 
+                            Pressing 'Load/Save' will bring you back here with your changes. 
+
+                            You can read more about&nbsp;<a target="_blank" href="https://github.com/jenkinsci/pipeline-config-plugin/wiki/Getting-Started">Declarative Pipelines here</a>. 
                             <div>
                                 <button className="btn-secondary" onClick={e => localStorage.setItem('pipeline-editor-usage-blurb-accept', true) || this.forceUpdate()}>Got it!</button>
                             </div>

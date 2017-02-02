@@ -1,7 +1,7 @@
 # Extensions in this plugin
 extensions:
-  - component: NewPipelineButton
-    extensionPoint: jenkins.pipeline.create.action
+  - component: PipelineEditorLink
+    extensionPoint: jenkins.blueocean.top.links
   - component: EditorRoutes
     extensionPoint: jenkins.main.routes
   - component: components/editor/EditorCSS #Self-implemented, currently required to make the css load

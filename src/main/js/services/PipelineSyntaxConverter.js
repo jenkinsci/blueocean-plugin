@@ -77,12 +77,27 @@ function restoreUnknownSections(internal: any, out: any) {
     }
 }
 
-function stripIdsFromList(list: any): any {
-    return list.map(o => {
-        const v = clone(o);
-        delete v.id;
-        return v;
-    });
+function removeExtraMarkers(list: any): any {
+    if (list instanceof Object) {
+        if (!list.map) {
+            const v = clone(list);
+            // Get rid of the extra UI markers
+            delete v.id;
+            delete v.pristine;
+            delete v.validationErrors;
+            return v;
+        }
+            
+        return list.map(o => {
+            const v = clone(o);
+            // Get rid of the extra UI markers
+            delete v.id;
+            delete v.pristine;
+            delete v.validationErrors;
+            return v;
+        });
+    }
+    return list;
 }
 
 function convertEnvironmentToInternal(environment: any[]): any[] {
@@ -268,11 +283,11 @@ export function convertStageToJson(stage: StageInfo): PipelineStage {
     // an agent for each parallel branch, with nested stages and/or execution
     // graph order, this will go away in favor of a different mechanism...
     if (stage.agent && stage.agent && stage.agent.type != 'none') {
-        out.agent = stage.agent;
+        out.agent = removeExtraMarkers(stage.agent);
     }
 
     if (stage.environment && stage.environment.length) {
-        out.environment = stripIdsFromList(stage.environment);
+        out.environment = removeExtraMarkers(stage.environment);
     }
 
     if (stage.children && stage.children.length > 0) {
@@ -308,14 +323,14 @@ export function convertStageToJson(stage: StageInfo): PipelineStage {
 export function convertInternalModelToJson(pipeline: PipelineInfo): PipelineJsonContainer {
     const out: PipelineJsonContainer = {
         pipeline: {
-            agent: pipeline.agent,
+            agent: removeExtraMarkers(pipeline.agent),
             stages: [],
         },
     };
     const outPipeline = out.pipeline;
 
     if (pipeline.environment && pipeline.environment.length) {
-        outPipeline.environment = stripIdsFromList(pipeline.environment);
+        outPipeline.environment = removeExtraMarkers(pipeline.environment);
     }
 
     restoreUnknownSections(pipeline, outPipeline);

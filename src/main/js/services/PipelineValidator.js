@@ -10,6 +10,22 @@ import debounce from 'lodash.debounce';
 
 const validationTimeout = 500;
 
+function _addErrorsForStagesWithoutSteps(node) {
+    const parent = pipelineStore.findParentStage(node);
+    if (!node.children || !node.children.length) {
+        if (parent && (!node.steps || !node.steps.length)) {
+            const message = 'At least one step is required';
+            if (node.validationErrors) {
+                node.validationErrors[0] = message;
+            } else {
+                node.validationErrors = [ message ];
+            }
+        }
+    } else {
+        node.children.map(child => _addErrorsForStagesWithoutSteps(child));
+    }
+}
+
 export class PipelineValidator {
     lastPipelineValidated: string;
 
@@ -150,7 +166,7 @@ export class PipelineValidator {
         if (validation.result == 'failure') {
             for (const error of validation.errors) {
                 const node = this.findNodeFromPath(pipeline, error.location);
-                if (node) {
+                if (node && !node.pristine) {
                     if (!node.validationErrors) {
                         node.validationErrors = [ error.error ];
                     } else {
@@ -159,6 +175,8 @@ export class PipelineValidator {
                 }
             }
         }
+
+        _addErrorsForStagesWithoutSteps(pipeline);
     }
 
     clearValidationMarkers(node: Object, visited: any[] = []): void {
@@ -177,10 +195,29 @@ export class PipelineValidator {
         }
     }
 
+    hasPristineEdits(node: Object, visited: any[] = []) {
+        if (visited.indexOf(node) >= 0) {
+            return false;
+        }
+        visited.push(node);
+        if (node.pristine) {
+            return true;
+        }
+        for (const key of Object.keys(node)) {
+            const val = node[key];
+            if (val instanceof Object) {
+                if(this.hasPristineEdits(val, visited)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     validateNow() {
         const pipeline = pipelineStore.pipeline;
         const json = JSON.stringify(convertInternalModelToJson(pipeline));
-        this.lastPipelineValidated = json;
+        this.lastPipelineValidated = json + (this.hasPristineEdits(pipeline) ? '.' : '');
         this.validatePipeline(pipeline, validationResult => {
             this.applyValidationMarkers(pipeline, validationResult);
             pipelineStore.setPipeline(pipeline); // notify listeners to re-render

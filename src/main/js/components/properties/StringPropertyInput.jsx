@@ -6,7 +6,7 @@ export default class StringPropertyInput extends React.Component {
         const { type: p, step } = this.props;
         return (
             <FormElement title={p.capitalizedName + (p.isRequired ? '*' : '')}
-                errorMessage={!step.isNew && p.isRequired && !step.data[p.name] && (p.capitalizedName + ' is required')}>
+                errorMessage={!step.pristine && p.isRequired && !step.data[p.name] && (p.capitalizedName + ' is required')}>
                 <TextInput defaultValue={step.data[this.props.propName]}
                     onChange={val => { step.data[this.props.propName] = val; this.props.onChange(step); }}/>
             </FormElement>

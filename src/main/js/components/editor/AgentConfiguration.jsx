@@ -18,10 +18,25 @@ type Props = {
 type State = {
     agents: ?any,
     selectedAgent: PipelineAgent,
-    isNew: ?boolean,
+    pristine: ?boolean,
 };
 
 type DefaultProps = typeof AgentConfiguration.defaultProps;
+
+function agentConfigParamFilter(agent) {
+    return (param) => {
+        switch(agent.type) {
+            case 'docker':
+                return ['image', 'args'].indexOf(param.name) >= 0;
+            case 'dockerfile':
+                return ['filename'].indexOf(param.name) >= 0;
+            case 'label':
+                return ['label'].indexOf(param.name) >= 0;
+            default:
+                return false;
+        }
+    };
+}
 
 export class AgentConfiguration extends Component<DefaultProps, Props, State> {
     props:Props;
@@ -91,14 +106,14 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
             type: agent.symbol, // agent is metadata
             arguments: [],
         };
-        this.setState({ selectedAgent: selectedAgent, isNew: true });
+        this.setState({ selectedAgent: selectedAgent, pristine: true });
         this.props.onChange(selectedAgent);
         focusOnElement('.agent-select .required input');
     }
 
     render() {
         const { node } = this.props;
-        const { agents, selectedAgent, isNew } = this.state;
+        const { agents, selectedAgent, pristine } = this.state;
 
         if (!agents) {
             return null;
@@ -123,17 +138,17 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
                 onChange={agent => this.onAgentChanged(agent)} />
             <Split>
             {selectedAgent && selectedAgentMetadata && <div className="agent-parameters">
-                {selectedAgentMetadata.parameters.map(param => {
+                {selectedAgentMetadata.parameters.filter(agentConfigParamFilter(selectedAgent)).map(param => {
                     const val = this.getRealOrEmptyArg(param.name).value.value;
                     return (<div className="agent-param">
                         <label key={selectedAgent.type + '/' + param.name}>
-                            <div>{param.capitalizedName} {param.isRequired?'*':''}</div>
+                            <div>{param.capitalizedName}{param.isRequired ? '*' : ''}</div>
                             <div>
-                                <InputText hasError={param.isRequired && !isNew && !val}
+                                <InputText hasError={param.isRequired && !pristine && !val}
                                     isRequired={param.isRequired}
                                     defaultValue={val}
-                                    onChange={val => { this.setAgentValue(param.name, val); param.isRequired && this.setState({ isNew: false }); }}
-                                    onBlur={e => param.isRequired && this.setState({ isNew: false })} />
+                                    onChange={val => { this.setAgentValue(param.name, val); param.isRequired && this.setState({ pristine: false }); }}
+                                    onBlur={e => param.isRequired && this.setState({ pristine: false })} />
                             </div>
                         </label>
                     </div>);

@@ -35,6 +35,22 @@ function ConfigPanel({className, children}) {
     </div>);
 }
 
+function cleanPristine(node, visited = []) {
+    if (visited.indexOf(node) >= 0) {
+        return;
+    }
+    visited.push(node);
+    if (node.pristine) {
+        delete node.pristine;
+    }
+    for (const key of Object.keys(node)) {
+        const val = node[key];
+        if (val instanceof Object) {
+            cleanPristine(val, visited);
+        }
+    }
+}
+
 export class EditorMain extends Component<DefaultProps, Props, State> {
 
     static defaultProps = {};
@@ -60,6 +76,11 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
     }
 
     doUpdate() {
+        for (const step of this.state.selectedSteps) {
+            if (!pipelineStore.findStageByStep(step)) {
+                this.setState({selectedSteps: []});
+            }
+        }
         if (this.state.selectedStage && !pipelineStore.findParentStage(this.state.selectedStage)) {
             this.setState({selectedStage: null});
         } else {
@@ -87,6 +108,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
             selectedSteps: [],
             showSelectStep: false,
         });
+        pipelineValidator.validate();
     }
 
     openSelectStepDialog(parentStep: ?StepInfo = null) {
@@ -108,14 +130,20 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
     }
 
     stepDataChanged(newStep:any) {
+        if (newStep.pristine) {
+            return;
+        }
         this.forceUpdate();
+        pipelineValidator.validate();
     }
 
     addStep(step: any) {
         const { selectedSteps } = this.state;
         const newStep = pipelineStore.addStep(this.state.selectedStage, this.state.parentStep, step);
+        newStep.pristine = true;
         selectedSteps.push(newStep);
         this.setState({showSelectStep: false, selectedSteps}, e => focusOnElement('.sheet:last-child .editor-step-detail input,.sheet:last-child .editor-step-detail textarea'));
+        pipelineValidator.validate();
     }
 
     deleteStep(step: any) {
@@ -123,6 +151,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         pipelineStore.deleteStep(step);
         selectedSteps.pop(); // FIXME
         this.setState({selectedSteps});
+        pipelineValidator.validate();
     }
 
     deleteStageClicked(e:HTMLEvent) {
@@ -133,6 +162,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         if (selectedStage) {
             pipelineStore.deleteStage(selectedStage);
         }
+        pipelineValidator.validate();
     }
 
     render() {
@@ -189,7 +219,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
             const stepConfigPanel = (<EditorStepDetails className="editor-config-panel step"
                     step={step} key={step.id}
                     onDataChange={newValue => this.stepDataChanged(newValue)}
-                    onClose={e => pipelineValidator.validate() || this.selectedStepChanged(null, parentStep)}
+                    onClose={e => cleanPristine(step) || pipelineValidator.validate() || this.selectedStepChanged(null, parentStep)}
                     openSelectStepDialog={step => this.openSelectStepDialog(step)}
                     selectedStepChanged={step => this.selectedStepChanged(step, parentStep)}
                     title={<h4>

@@ -14,7 +14,7 @@ const pageStyles = {
 /**
  This is basically adapted from the Storybooks entry, for the purposes of connecting a demo into the main appendEvent
  */
-export class EditorDemo extends Component {
+export class EditorPreview extends Component {
     constructor() {
         super();
     }
@@ -28,4 +28,4 @@ export class EditorDemo extends Component {
     }
 }
 
-export default EditorDemo;
+export default EditorPreview;

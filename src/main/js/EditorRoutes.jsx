@@ -2,8 +2,8 @@
 
 import { Route, Redirect, IndexRoute, IndexRedirect } from 'react-router';
 import React from 'react';
-import { EditorDemo } from './components/EditorDemo';
+import { EditorPreview } from './components/EditorPreview';
 
 export default (
-    <Route path="/pipeline-editor-demo" component={EditorDemo}/>
+    <Route path="/pipelines/pipeline-editor-preview" component={EditorPreview}/>
 );
