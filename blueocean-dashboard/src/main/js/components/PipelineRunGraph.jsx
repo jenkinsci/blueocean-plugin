@@ -20,7 +20,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         || !jenkinsNode.id) {
         throw badNode(jenkinsNode);
     }
-    logger.warn('jenkinsNode', jenkinsNode);
+    logger.debug('jenkinsNode', jenkinsNode);
     const isRunning = () => {
       switch (jenkinsNode.state) {
         case 'RUNNING':
@@ -78,7 +78,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         id: jenkinsNode.id,
         title,
     };
-    logger.warn('converted node', converted);
+    logger.debug('converted node', converted);
   return converted;
 }
 
