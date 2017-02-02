@@ -75,14 +75,14 @@ export class ReplayButton extends Component {
         const outerClassNames = outerClass.split(' ');
         const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'btn inverse' : '';
 
-        const isFailed = isRunFinished(this.props.latestRun);
+        const isFinished = isRunFinished(this.props.latestRun);
         const isPipeline = capable(this.props.runnable, PIPELINE_CAPABILITIES);
         const hasPermission = permit(this.props.runnable).start();
 
         const replayLabel = 'Re-run';
 
 
-        if (!isFailed || !isPipeline || !hasPermission) {
+        if (!isFinished || !isPipeline || !hasPermission) {
             return null;
         }
 
