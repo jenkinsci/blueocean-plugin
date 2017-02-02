@@ -63,7 +63,7 @@ class RunDetailsHeader extends Component {
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
         }, skewMillis);
-        logger.debug('timeq:', { startTime, endTime, durationMillis });
+        logger.debug('time', { startTime, endTime, durationMillis });
         const onAuthorsClick = () => this.handleAuthorsClick();
         return (
         <div className="pipeline-result run-details-header">
