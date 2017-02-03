@@ -55,11 +55,17 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
                         .key("loginUrl").value(jenkins.getSecurityRealm() == SecurityRealm.NO_AUTHENTICATION ? null : jenkins.getSecurityRealm().getLoginUrl())
                         .key("authorizationStrategy").object()
                             .key("allowAnonymousRead").value(allowAnonymousRead)
-                            .endObject()
-                        .key("enableJWT").value(BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
                         .endObject()
+                        .key("enableJWT").value(BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
                     .endObject()
-                .endObject();
+                .endObject()
+                // Environment properties. If more "env" vars are added, we could just iterate the
+                // system props and add any starting with "blueocean.". However, lets not do that
+                // unless there are more than a few.
+                .key("env").object()
+                    .key("organizations.enabled").value(Boolean.getBoolean("blueocean.organizations.enabled"))
+                .endObject()
+            .endObject();
 
         return writer.toString();
     }

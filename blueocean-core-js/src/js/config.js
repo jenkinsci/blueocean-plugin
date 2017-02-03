@@ -4,6 +4,7 @@
 import { blueocean } from './scopes';
 
 const config = blueocean.config || {};
+const env = config.env || {};
 
 export default {
     getJenkinsConfig() {
@@ -24,6 +25,10 @@ export default {
 
     getPluginInfo(pluginId) {
         return blueocean.jsExtensions.find((pluginInfo) => pluginInfo.hpiPluginId === pluginId);
+    },
+
+    getEnvProperty(name, defaultValue) {
+        return (env[name] || defaultValue);
     },
 
     /**
