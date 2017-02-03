@@ -2,12 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import {
     CommitHash,
     ReadableDate,
-    LiveStatusIndicator,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
 import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
+import { LiveStatusIndicator } from './LiveStatusIndicator';
 import { CellRow, CellLink } from './CellLink';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';

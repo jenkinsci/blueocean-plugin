@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { LiveStatusIndicator, ReadableDate } from '@jenkins-cd/design-language';
+import { ReadableDate } from '@jenkins-cd/design-language';
 import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { CellRow, CellLink } from './CellLink';
+import { LiveStatusIndicator } from './LiveStatusIndicator';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
@@ -32,14 +33,14 @@ export default class PullRequest extends Component {
         }
 
         const { router, location } = this.context;
-       
+
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
 
         const { latestRun, pullRequest, name } = pr;
-   
+
         if (!latestRun) {
             return noRun(pr, openRunDetails, t);
         }
@@ -48,7 +49,7 @@ export default class PullRequest extends Component {
         const { fullName, organization } = contextPipeline;
         const runDetailsUrl = buildRunDetailsUrl(organization, fullName, decodeURIComponent(latestRun.pipeline), latestRun.id, 'pipeline');
 
-       
+
         return (
             <CellRow linkUrl={runDetailsUrl} id={`${name}-${latestRun.id}`}>
                 <CellLink>

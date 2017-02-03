@@ -1,12 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
+    CommitHash, ReadableDate, TimeDuration,
 }
     from '@jenkins-cd/design-language';
 import { logging, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
-import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
-
 import Extensions from '@jenkins-cd/js-extensions';
+
+import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
+import { LiveStatusIndicator } from './LiveStatusIndicator';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import { CellRow, CellLink } from './CellLink';
