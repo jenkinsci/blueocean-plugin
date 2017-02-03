@@ -6,7 +6,6 @@ import Extensions from '@jenkins-cd/js-extensions';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
-import { documentTitle } from './DocumentTitle';
 
 import { observer } from 'mobx-react';
 
@@ -34,13 +33,7 @@ export class Pipelines extends Component {
 
     render() {
         const pipelines = this.pager.data;
-        const { organization = 'Jenkins', location = {} } = this.context.params;
-
-        if (!pipelines || this.pager.pending) {
-            this.props.setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
-        } else {
-            this.props.setTitle(organization);
-        }
+        const { organization, location = {} } = this.context.params;
 
         const orgLink = organization ?
             <Link
@@ -129,4 +122,4 @@ Pipelines.propTypes = {
     setTitle: func,
 };
 
-export default documentTitle(Pipelines);
+export default Pipelines;
