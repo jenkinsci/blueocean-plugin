@@ -14,7 +14,7 @@ function badNode(jenkinsNode) {
     return new Error('convertJenkinsNodeDetails: malformed / missing Jenkins run node.');
 }
 
-function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
+function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     if (!jenkinsNode
         || !jenkinsNode.displayName
         || !jenkinsNode.id) {
@@ -33,7 +33,6 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
     };
     const { durationInMillis, startTime } = jenkinsNode;
     // we need to make sure that we calculate with the correct time offset
-    const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
     const { durationMillis } = timeManager.harmonizeTimes({
         isRunning: isRunning(),
         durationInMillis,
@@ -91,7 +90,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
  * still pending or simply weren't executed due to logic or early-abort
  * (either failure or intervention)
  */
-export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted) {
+export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     if (!jenkinsGraph || !jenkinsGraph.length) {
         return [];
     }
@@ -103,7 +102,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted) {
 
     // Convert the basic details of nodes, and index them by id
     jenkinsGraph.forEach(jenkinsNode => {
-        const convertedNode = convertJenkinsNodeDetails(jenkinsNode, isCompleted);
+        const convertedNode = convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis);
         const { id } = convertedNode;
 
         firstNode = firstNode || convertedNode;
@@ -162,8 +161,8 @@ export default class PipelineRunGraph extends Component {
     processData(newData, run) {
         this.lastData = newData;
         const isCompleted = run.state.toUpperCase() === 'FINISHED';
-
-        const convertedGraph = convertJenkinsNodeGraph(newData, isCompleted);
+        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
+        const convertedGraph = convertJenkinsNodeGraph(newData, isCompleted, skewMillis);
 
         this.setState({
             graphNodes: convertedGraph,
