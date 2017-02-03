@@ -23,12 +23,10 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>metrics</artifactId>
-            <version>3.0.9</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>variant</artifactId>
-            <version>1.0</version>
         </dependency>
 
         <!-- test scope deps -->

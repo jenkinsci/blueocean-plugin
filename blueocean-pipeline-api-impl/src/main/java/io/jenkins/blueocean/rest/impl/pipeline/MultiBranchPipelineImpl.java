@@ -16,6 +16,7 @@ import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
+import io.jenkins.blueocean.rest.model.BlueIcon;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -34,12 +35,11 @@ import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.actions.ChangeRequestAction;
+import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -75,7 +75,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
-        Job job = FavoriteUtil.resolveDefaultBranch(mbp);
+        Job job = PrimaryBranch.resolve(mbp);
+        if (job == null) {
+            throw new ServiceException.BadRequestExpception("no default branch to favorite");
+        }
         FavoriteUtil.toggle(favoriteAction, job);
         return new FavoriteImpl(new BranchImpl(job,getLink().rel("branches")), getLink().rel("favorite"));
     }
@@ -151,59 +154,9 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Integer getWeatherScore(){
-        /**
-         * TODO: this code need cleanup once MultiBranchProject exposes default branch. At present
-         *
-         * At present we look for master as primary branch, if not found we find the latest build across all branches and
-         * return its score.
-         *
-         * If there are no builds taken place 0 score is returned.
-         */
-
-        Job j = mbp.getItem("master");
-        if(j == null) {
-            j = mbp.getItem("production");
-            /**
-             * If there are no master or production branch then we return weather score of
-             *
-             * - Sort latest build of all branches in ascending order
-             * - Return the latest
-             *
-             */
-            if(j == null){
-                Collection<Job>  jbs = mbp.getAllJobs();
-                if(jbs.size() > 0){
-                    Job[] jobs = jbs.toArray(new Job[jbs.size()]);
-                    Arrays.sort(jobs, new Comparator<Job>() {
-                        @Override
-                        public int compare(Job o1, Job o2) {
-                            long t1 = 0;
-                            if(o1.getLastBuild() != null){
-                                t1 = o1.getLastBuild().getTimeInMillis() + o1.getLastBuild().getDuration();
-                            }
-
-                            long t2 = 0;
-                            if(o2.getLastBuild() != null){
-                                t2 = o2.getLastBuild().getTimeInMillis() + o2.getLastBuild().getDuration();
-                            }
-
-                            if(t1<2){
-                                return -1;
-                            }else if(t1 > t2){
-                                return 1;
-                            }else{
-                                return 0;
-                            }
-                        }
-                    });
-
-                    return jobs[jobs.length - 1].getBuildHealth().getScore();
-                }
-            }
-        }
-        return j == null ? 0 : j.getBuildHealth().getScore();
+        Job j = PrimaryBranch.resolve(mbp);
+        return j == null ? 100 : j.getBuildHealth().getScore();
     }
 
     @Override
@@ -266,8 +219,8 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         return counter;
     }
     private boolean isPullRequest(Job job) {
-        SCMHead head = SCMHead.HeadByItem.findHead(job);
-        return head != null && head.getAction(ChangeRequestAction.class) != null;
+        // TODO probably want to be using SCMHeadCategory instances to categorize them instead of hard-coding for PRs
+        return SCMHead.HeadByItem.findHead(job) instanceof ChangeRequestSCMHead;
     }
 
 
@@ -438,7 +391,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         public BlueFavorite resolve(Item item, Reachable parent) {
             if(item instanceof MultiBranchProject){
                 MultiBranchProject project = (MultiBranchProject) item;
-                Job job = FavoriteUtil.resolveDefaultBranch(project);
+                Job job = PrimaryBranch.resolve(project);
                 if(job != null){
                     Resource resource = BluePipelineFactory.resolve(job);
                     Link l = LinkResolver.resolveLink(project);
@@ -479,6 +432,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public List<Object> getParameters() {
+        return null;
+    }
+
+    @Override
+    public BlueIcon getIcon() {
         return null;
     }
 }
