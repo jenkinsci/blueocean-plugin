@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-  Blue Ocean Pipeline Editor
+  The Blue Ocean Pipeline Editor is the simplest way for anyone wanting to get started with creating Pipelines in Jenkins
 </div>

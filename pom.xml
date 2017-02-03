@@ -9,10 +9,14 @@
         <version>2.17</version>
     </parent>
 
-    <name>Jenkins BlueOcean Pipeline Editor</name>
+    <name>Blue Ocean Pipeline Editor</name>
+    <description>
+        The Blue Ocean Pipeline Editor is the simplest way for anyone wanting to get started with creating Pipelines in Jenkins
+    </description>
+    
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-pipeline-editor</artifactId>
-    <version>1.0-alpha-5-SNAPSHOT</version>
+    <version>0.1-preview-1-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <properties>
@@ -22,7 +26,7 @@
         <node.version>6.2.1</node.version>
         <npm.version>3.9.3</npm.version>
         <blueocean.version>1.0.0-b21</blueocean.version>
-        <declarative.version>0.9.1</declarative.version>
+        <declarative.version>1.0</declarative.version>
     </properties>
 
     <url>https://wiki.jenkins-ci.org/display/JENKINS/BlueOcean+Pipeline+Editor+Plugin</url>

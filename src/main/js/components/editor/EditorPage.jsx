@@ -158,13 +158,13 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
                         <div className="load-save-usage-blurb">
                             This is your pipeline as text, you can copy it 
                             and put it in a Jenkinsfile for your project, 
-                            for example in a&nbsp;<a target="_blank" href="https://jenkins-ci.org/content/pipeline-code-multibranch-workflows-jenkins">multibranch project</a>. 
+                            for example in a&nbsp;<a target="_blank" href="http://jenkins.io/doc/book/pipeline/multibranch/">multibranch project</a>. 
 
-                            You can also paste your own&nbsp;<a target="_blank" href="https://github.com/jenkinsci/pipeline-config-plugin/wiki/Getting-Started">Declarative Pipeline</a>&nbsp;script
+                            You can also paste your own&nbsp;<a target="_blank" href="http://jenkins.io/doc/book/pipeline/">Declarative Pipeline</a>&nbsp;script
                             in this text box, and press 'Update' to edit it visually. 
                             Pressing 'Load/Save' will bring you back here with your changes. 
 
-                            You can read more about&nbsp;<a target="_blank" href="https://github.com/jenkinsci/pipeline-config-plugin/wiki/Getting-Started">Declarative Pipelines here</a>. 
+                            You can read more about&nbsp;<a target="_blank" href="http://jenkins.io/doc/book/pipeline/">Declarative Pipelines here</a>. 
                             <div>
                                 <button className="btn-secondary" onClick={e => localStorage.setItem('pipeline-editor-usage-blurb-accept', true) || this.forceUpdate()}>Got it!</button>
                             </div>
