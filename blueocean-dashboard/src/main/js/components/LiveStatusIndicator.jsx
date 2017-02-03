@@ -49,7 +49,7 @@ export class LiveStatusIndicator extends Component {
         const i18nDuration = timeManager.format(durationMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
 
         logger.warn('times', { thisDuration: this.durationMillis, i18nDuration, durationMillis });
-        const title = translate(`common.state.${result}`, { 0: i18nDuration });
+        const title = translate(`common.state.${result.toLowerCase()}`, { 0: i18nDuration });
 
         return (
             <div title={title}>
