@@ -32,11 +32,13 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         }
     };
     const { durationInMillis, startTime } = jenkinsNode;
+    // we need to make sure that we calculate with the correct time offset
+    const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
     const { durationMillis } = timeManager.harmonizeTimes({
         isRunning: isRunning(),
         durationInMillis,
         startTime,
-    });
+    }, skewMillis);
     let completePercent = 0;
     let state = 'unknown';
 
@@ -223,3 +225,7 @@ PipelineRunGraph.propTypes = {
     callback: func,
 };
 
+
+PipelineRunGraph.contextTypes = {
+    config: object.isRequired,
+};

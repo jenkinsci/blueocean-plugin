@@ -18,7 +18,17 @@ export class TimeManager {
         return moment.duration(millis).format(hintFormat);
     }
 
-    harmonizeTimes(props, skewMillis) {
+    /**
+     *
+     * @param props
+     * @param skewMillis
+     * @returns {
+            durationMillis,
+            endTime,
+            startTime,
+        }
+     */
+    harmonizeTimes(props, skewMillis = 0) {
         logger.debug('skewMillis', skewMillis);
         if (!props.startTime) {
             logger.error('not found any startTime, seems that a component should not have called this me');
