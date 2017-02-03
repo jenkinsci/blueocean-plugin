@@ -34,8 +34,6 @@ import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
-import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.json.JsonBody;
 
@@ -47,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.impl.pipeline.PipelineJobFilters.isPullRequest;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MULTI_BRANCH_PROJECT;
 
 /**
@@ -217,10 +216,6 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         }
 
         return counter;
-    }
-    private boolean isPullRequest(Job job) {
-        // TODO probably want to be using SCMHeadCategory instances to categorize them instead of hard-coding for PRs
-        return SCMHead.HeadByItem.findHead(job) instanceof ChangeRequestSCMHead;
     }
 
 

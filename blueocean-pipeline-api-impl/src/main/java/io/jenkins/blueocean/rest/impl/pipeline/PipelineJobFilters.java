@@ -1,11 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.google.common.base.Predicate;
-
 import hudson.Extension;
 import hudson.model.Item;
 import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
@@ -14,7 +10,7 @@ import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 
 public class PipelineJobFilters {
-    private static boolean isPullRequest(Item item) {
+    public static boolean isPullRequest(Item item) {
         // TODO probably want to be using SCMHeadCategory instances to categorize them instead of hard-coding for PRs
         return SCMHead.HeadByItem.findHead(item) instanceof ChangeRequestSCMHead;
     }
@@ -24,11 +20,8 @@ public class PipelineJobFilters {
         private final Predicate<Item> filter = new Predicate<Item>() {
             @Override
             public boolean apply(Item job) {
-                if (Folder.class.equals(job.getClass()) // some subclasses are fine
-                        || job instanceof OrganizationFolder) {
-                    return false;
-                }
-                return true;
+                // some subclasses are fine
+                return !(Folder.class.equals(job.getClass()) || job instanceof OrganizationFolder);
             }
         };
         @Override
@@ -46,10 +39,7 @@ public class PipelineJobFilters {
         private final Predicate<Item> filter = new Predicate<Item>() {
             @Override
             public boolean apply(Item job) {
-                if (!isPullRequest(job)) {
-                    return true;
-                }
-                return false;
+                return !isPullRequest(job);
             }
         };
         @Override
@@ -67,10 +57,7 @@ public class PipelineJobFilters {
         private final Predicate<Item> filter = new Predicate<Item>() {
             @Override
             public boolean apply(Item job) {
-                if (isPullRequest(job)) {
-                    return true;
-                }
-                return false;
+                return isPullRequest(job);
             }
         };
         @Override
