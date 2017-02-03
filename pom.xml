@@ -443,11 +443,12 @@
             <version>1.19</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- github pulls token-macro 1.11 that doesn't get resolved -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>token-macro</artifactId>
             <version>2.0</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <!--
