@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator as LiveStatusIndicatorJdl } from '@jenkins-cd/design-language';
 import { i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
 import { TimeManager } from '../util/serverBrowserTimeHarmonize';
@@ -9,9 +9,9 @@ const t = i18nTranslator('blueocean-dashboard');
 const timeManager = new TimeManager();
 const logger = logging.logger('io.jenkins.blueocean.dashboard.LiveStatusIndicator');
 
-export class LiveStatusIndicator extends  Component {
+export class LiveStatusIndicator extends Component {
     render() {
-        const title = "FIXME: duration";
+        const title = 'FIXME: duration';
         return (
             <div title={title}>
                 <LiveStatusIndicatorJdl { ... this.props } />
