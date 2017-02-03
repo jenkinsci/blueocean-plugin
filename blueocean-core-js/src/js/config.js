@@ -28,7 +28,11 @@ export default {
     },
 
     getEnvProperty(name, defaultValue) {
-        return (env[name] || defaultValue);
+        const value = env[name];
+        if (value !== undefined) {
+            return value;
+        }
+        return defaultValue;
     },
 
     /**
