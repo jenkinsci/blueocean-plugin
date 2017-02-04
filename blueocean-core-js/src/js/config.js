@@ -35,6 +35,10 @@ export default {
         return defaultValue;
     },
 
+    showOrg() {
+        return this.getEnvProperty('organizations.enabled', false);
+    },
+
     /**
      * Set a new "jenkinsConfig" object.
      * Useful for testing in a headless environment.
