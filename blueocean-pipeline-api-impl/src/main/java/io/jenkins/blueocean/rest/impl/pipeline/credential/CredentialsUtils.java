@@ -30,12 +30,14 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Credentials utility
+ *
  * @author Vivek Pandey
  */
 public class CredentialsUtils {
 
     public static void createCredentialsInUserStore(@Nonnull Credentials credential, @Nonnull User user,
-                                                    @Nonnull String domainName, @Nullable URI uri)
+                                                    @Nonnull String domainName, @Nonnull List<DomainSpecification> domainSpecifications)
             throws IOException {
         CredentialsStore store= findUserStoreFirstOrNull(user);
 
@@ -43,7 +45,7 @@ public class CredentialsUtils {
             throw new ServiceException.ForbiddenException(String.format("Logged in user: %s doesn't have writable credentials store", user.getId()));
         }
 
-        Domain domain = findOrCreateDomain(store, domainName, uri);
+        Domain domain = findOrCreateDomain(store, domainName, domainSpecifications);
 
         if(!store.addCredentials(domain, credential)){
             throw new ServiceException.UnexpectedErrorException("Failed to add credential to domain");
@@ -53,15 +55,16 @@ public class CredentialsUtils {
 
     public static void updateCredentialsInUserStore(@Nonnull Credentials current, @Nonnull Credentials replacement,
                                                     @Nonnull User user,
-                                                    @Nonnull String domainName, @Nullable URI uri)
+                                                    @Nonnull String domainName, @Nonnull List<DomainSpecification> domainSpecifications)
             throws IOException {
         CredentialsStore store= findUserStoreFirstOrNull(user);
 
         if(store == null){
-            throw new ServiceException.ForbiddenException(String.format("Logged in user: %s doesn't have writable credentials store", user.getId()));
+            throw new ServiceException.ForbiddenException(String.format("Logged in user: %s doesn't have writable credentials store",
+                    user.getId()));
         }
 
-        Domain domain = findOrCreateDomain(store, domainName, uri);
+        Domain domain = findOrCreateDomain(store, domainName, domainSpecifications);
 
         if(!store.updateCredentials(domain, current, replacement)){
             throw new ServiceException.UnexpectedErrorException("Failed to update credential to domain");
@@ -154,21 +157,22 @@ public class CredentialsUtils {
         return domainSpecifications;
     }
 
-    private static @Nonnull Domain findOrCreateDomain(@Nonnull CredentialsStore store, @Nonnull String domainName, @Nullable URI uri) throws IOException {
+    private static @Nonnull Domain findOrCreateDomain(@Nonnull CredentialsStore store,
+                                                      @Nonnull String domainName,
+                                                      @Nonnull List<DomainSpecification> domainSpecifications)
+            throws IOException {
 
         Domain domain = store.getDomainByName(domainName);
         if (domain == null) { //create new one
-            List<DomainSpecification> domainSpecifications = generateDomainSpecifications(uri);
             boolean result = store.addDomain(new Domain(domainName,
-                    "Github Domain to store personal access token",
-                    domainSpecifications
-            ));
+                    "Github Domain to store personal access token", domainSpecifications)
+            );
             if (!result) {
                 throw new ServiceException.BadRequestExpception("Failed to create credential domain: " + domainName);
             }
             domain = store.getDomainByName(domainName);
             if (domain == null) {
-                throw new ServiceException.UnexpectedErrorException(String.format("Domain %s created but not found"));
+                throw new ServiceException.UnexpectedErrorException("Domain %s created but not found");
             }
         }
         return domain;

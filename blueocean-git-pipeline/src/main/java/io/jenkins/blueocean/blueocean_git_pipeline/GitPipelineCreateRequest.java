@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import com.google.common.collect.ImmutableList;
 import hudson.model.Cause;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
@@ -9,6 +11,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
@@ -73,7 +76,9 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
                 }
                 project.addProperty(
                         new BlueOceanCredentialsProvider.FolderPropertyImpl(authenticatedUser.getId(),
-                                scmConfig.getCredentialId(), domain.getName()));
+                                scmConfig.getCredentialId(), domain.getName(),
+                                ImmutableList.<DomainRequirement>of(
+                                        new BlueOceanDomainRequirement())));
             }
 
             String credentialId = StringUtils.defaultString(scmConfig.getCredentialId());

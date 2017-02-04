@@ -2,7 +2,9 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.User;
@@ -11,6 +13,7 @@ import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
@@ -36,8 +39,6 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -227,15 +228,17 @@ public class GithubScm extends Scm {
 
             if(githubCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(
-                        credential, authenticatedUser, getCredentialDomainName(), new URI(getUri()));
+                        credential, authenticatedUser, getCredentialDomainName(),
+                        ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
             }else{
                 CredentialsUtils.updateCredentialsInUserStore(
-                        githubCredential, credential, authenticatedUser, getCredentialDomainName(), new URI(getUri()));
+                        githubCredential, credential, authenticatedUser, getCredentialDomainName(),
+                        ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
             }
 
             return createResponse(credential.getId());
 
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(e.getMessage());
         }
     }

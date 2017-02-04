@@ -3,6 +3,8 @@ package io.jenkins.blueocean.rest.impl.pipeline.credential;
 import com.cloudbees.plugins.credentials.CredentialsStoreAction;
 import com.cloudbees.plugins.credentials.common.IdCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
+import com.cloudbees.plugins.credentials.domains.DomainSpecification;
+import com.google.common.collect.ImmutableList;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
@@ -65,7 +67,8 @@ public class CredentialApi extends Resource {
             domainName = (String) jsonObject.get("domain");
         }
 
-        CredentialsUtils.createCredentialsInUserStore(credentials, authenticatedUser, domainName, null);
+        CredentialsUtils.createCredentialsInUserStore(credentials, authenticatedUser, domainName,
+                ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
 
         CredentialsStoreAction.DomainWrapper domainWrapper = credentialStoreAction.getDomain(domainName);
 
@@ -168,6 +171,7 @@ public class CredentialApi extends Resource {
 
         @POST
         @WebMethod(name = "")
+        @Deprecated
         public CreateResponse create(@JsonBody JSONObject body, StaplerRequest request) throws IOException {
 
             final IdCredentials credentials = request.bindJSON(IdCredentials.class, body.getJSONObject("credentials"));

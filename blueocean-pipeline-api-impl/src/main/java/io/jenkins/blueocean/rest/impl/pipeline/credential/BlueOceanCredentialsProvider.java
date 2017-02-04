@@ -75,7 +75,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                     context = ACL.impersonate(user.impersonate());
                     for (CredentialsStore store : CredentialsProvider.lookupStores(user)) {
                         Domain domain = store.getDomainByName(prop.getDomain());
-                        if (domain != null) {
+                        if (domain != null && domain.test(prop.getDomainRequirements())) {
                             return CredentialsMatchers.filter(store.getCredentials(domain),
                                     CredentialsMatchers.allOf(CredentialsMatchers.withId(prop.getId())));
                         }
@@ -139,12 +139,15 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         private final String user;
         private final String id;
         private final String domain;
+        private final List<DomainRequirement> domainRequirements;
 
         @DataBoundConstructor
-        public FolderPropertyImpl(@Nonnull String user, @Nonnull String id, @Nonnull String domain) {
+        public FolderPropertyImpl(@Nonnull String user, @Nonnull String id, @Nonnull String domain,
+                                  @Nonnull List<DomainRequirement> domainRequirements) {
             this.user = user;
             this.id = id;
             this.domain = domain;
+            this.domainRequirements = domainRequirements;
         }
 
         public @Nonnull String getUser() {
@@ -157,6 +160,10 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
 
         public @Nonnull String getDomain() {
             return domain;
+        }
+
+        public @Nonnull List<DomainRequirement> getDomainRequirements() {
+            return domainRequirements;
         }
 
         @Override
@@ -291,7 +298,8 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             }
 
             @Override
-            public boolean updateCredentials(@Nonnull Domain domain, @Nonnull Credentials current, @Nonnull Credentials replacement) throws IOException {
+            public boolean updateCredentials(@Nonnull Domain domain, @Nonnull Credentials current,
+                                             @Nonnull Credentials replacement) throws IOException {
                 throw new UnsupportedOperationException("Not supported");
             }
         }
