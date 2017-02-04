@@ -437,12 +437,6 @@
             <version>2.1.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>junit</artifactId>
-            <version>1.19</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- github pulls token-macro 1.11 that doesn't get resolved -->
         <dependency>
