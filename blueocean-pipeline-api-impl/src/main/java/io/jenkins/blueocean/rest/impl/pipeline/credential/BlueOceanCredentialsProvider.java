@@ -19,11 +19,14 @@ import hudson.model.ItemGroup;
 import hudson.model.ModelObject;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
+import hudson.security.ACL;
 import hudson.security.Permission;
 import hudson.util.ListBoxModel;
 import io.jenkins.blueocean.rest.impl.pipeline.Messages;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -67,11 +70,19 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         if (prop != null) {
             User user = User.get(prop.getUser(), false, Collections.emptyMap());
             if(user != null){
-                for (CredentialsStore store: CredentialsProvider.lookupStores(user)) {
-                    Domain domain = store.getDomainByName(prop.getDomain());
-                    if(domain != null){
-                        return CredentialsMatchers.filter(store.getCredentials(domain),
-                                CredentialsMatchers.allOf(CredentialsMatchers.withId(prop.getId())));
+                SecurityContext context = null;
+                try {
+                    context = ACL.impersonate(user.impersonate());
+                    for (CredentialsStore store : CredentialsProvider.lookupStores(user)) {
+                        Domain domain = store.getDomainByName(prop.getDomain());
+                        if (domain != null) {
+                            return CredentialsMatchers.filter(store.getCredentials(domain),
+                                    CredentialsMatchers.allOf(CredentialsMatchers.withId(prop.getId())));
+                        }
+                    }
+                }finally {
+                    if(context != null){
+                        SecurityContextHolder.setContext(context);
                     }
                 }
             }
@@ -252,7 +263,8 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             @Override
             public boolean hasPermission(@Nonnull Authentication a, @Nonnull Permission permission) {
                 // its read only so for all permissions other than READ, we return false
-                if(permission != Permission.READ){
+                if(permission == CREATE || permission == DELETE ||
+                        permission == MANAGE_DOMAINS || permission == UPDATE){
                     return false;
                 }
                 return abstractFolder.getACL().hasPermission(a,permission);
