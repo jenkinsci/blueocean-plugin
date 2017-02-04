@@ -4,10 +4,10 @@ import { Icon } from '@jenkins-cd/react-material-icons';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
-import { UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { UrlConfig, logging } from '@jenkins-cd/blueocean-core-js';
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
 const { func, object, string } = PropTypes;
-
 const ZipFileDownload = (props) => {
     const { zipFile, t } = props;
     if (!zipFile) {
@@ -105,23 +105,34 @@ export default class RunDetailsArtifacts extends Component {
 
         const style = { fill: '#4a4a4a' };
 
+        const artifactsRendered = artifacts.map(artifact => {
+            const urlArray = artifact.url.split('/');
+            const fileName = urlArray[urlArray.length - 1];
+            logger.debug('artifact - url:', artifact.url, 'artifact - fileName:', fileName);
+            return (
+                <tr key={artifact.url}>
+                    <td>
+                        <a target="_blank" title={t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' })} href={`${UrlConfig.getJenkinsRootURL()}${artifact.url}`}>
+                            {artifact.path}
+                        </a>
+                    </td>
+                    <td>
+                        <FileSize bytes={artifact.size} />
+                    </td>
+                    <td className="download">
+                        <a target="_blank" download={fileName} title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })} href={`${UrlConfig.getJenkinsRootURL()}${artifact.url}`}>
+                            <Icon style={style} icon="file_download" />
+                        </a>
+                    </td>
+                </tr>
+            );
+        });
+
         return (
             <div>
                 <ArtifactListingLimited artifacts={artifacts} t={t} />
                 <Table headers={headers} className="artifacts-table">
-                    { artifacts.map(artifact => (
-                        <tr key={artifact.url}>
-                            <td>{artifact.path}</td>
-                            <td>
-                                <FileSize bytes={artifact.size} />
-                            </td>
-                            <td className="download">
-                                <a target="_blank" title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })} href={`${UrlConfig.getJenkinsRootURL()}${artifact.url}`}>
-                                    <Icon style={style} icon="file_download" />
-                                </a>
-                            </td>
-                        </tr>
-                    ))}
+                    { artifactsRendered }
                     <td colSpan="3"></td>
                 </Table>
                <ZipFileDownload zipFile={zipFile} t={t} />

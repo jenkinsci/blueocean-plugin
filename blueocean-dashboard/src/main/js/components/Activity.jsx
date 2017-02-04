@@ -54,7 +54,7 @@ export class Activity extends Component {
     render() {
         const { pipeline, t, locale } = this.props;
         const runs = this.pager.data;
-        if (!pipeline || this.pager.pending) {
+        if (!pipeline) {
             return null;
         }
 

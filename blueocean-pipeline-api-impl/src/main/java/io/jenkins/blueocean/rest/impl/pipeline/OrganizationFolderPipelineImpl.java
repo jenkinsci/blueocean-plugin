@@ -2,9 +2,11 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Item;
 import hudson.model.Queue;
+import io.jenkins.blueocean.commons.ServiceException.UnexpectedErrorException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueIcon;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
@@ -14,9 +16,15 @@ import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.metadata.AvatarMetadataAction;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 /**
  * BlueOcean abstraction of {@link OrganizationFolder}
@@ -32,9 +40,10 @@ public class OrganizationFolderPipelineImpl extends PipelineFolderImpl {
 
     }
 
-    @Exported
-    public String getIcon() {
-        return folder.getIcon().getImageOf("32x32");
+    @Override
+    public BlueIcon getIcon() {
+        final AvatarMetadataAction action = folder.getAction(AvatarMetadataAction.class);
+        return action != null ? new OrganizationIcon(action, getLink()) : null;
     }
 
     @Navigable
@@ -107,5 +116,38 @@ public class OrganizationFolderPipelineImpl extends PipelineFolderImpl {
                 };
             }
         };
+    }
+
+
+    public static class OrganizationIcon extends BlueIcon {
+
+        private final AvatarMetadataAction action;
+        private final Link parent;
+
+        public OrganizationIcon(AvatarMetadataAction action, Link parent) {
+            this.action = action;
+            this.parent = parent;
+        }
+
+        @Override
+        public void getUrl() {
+            StaplerRequest req = Stapler.getCurrentRequest();
+            String s = req.getParameter("s");
+            if (s == null) {
+                s = Integer.toString(DEFAULT_ICON_SIZE);
+            }
+            StaplerResponse resp = Stapler.getCurrentResponse();
+            try {
+                resp.setHeader("Cache-Control", "max-age=" + TimeUnit.DAYS.toDays(7));
+                resp.sendRedirect(action.getAvatarImageOf(s));
+            } catch (IOException e) {
+                throw new UnexpectedErrorException("Could not provide icon", e);
+            }
+        }
+
+        @Override
+        public Link getLink() {
+            return parent.rel("icon");
+        }
     }
 }
