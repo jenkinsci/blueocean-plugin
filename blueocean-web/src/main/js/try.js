@@ -17,7 +17,7 @@ function aHref(tryBlueOceanUrl) {
 
 function configureJenkinsUrl() {
     var tryBlueOcean = $('<span id="open-blueocean-in-context" class="try-blueocean header-callout">Open Blue Ocean</span>');
-    var tryBlueOceanClickHandler = function() {
+    var tryBlueOceanClickHandler = function () {
         // Remove the click handler, preventing it from picking up clicks
         // on the the popup (below).
         tryBlueOcean.off();
@@ -28,14 +28,14 @@ function configureJenkinsUrl() {
             top: tryBlueOcean.outerHeight() + 10,
             right: (0 - (popup.outerWidth()/2 - tryBlueOcean.outerWidth()/2))
         });
-        popup.click(function(event) {
+        popup.click((event) => {
             event.stopPropagation();
             popup.remove();
             tryBlueOcean.click(tryBlueOceanClickHandler);
         });
 
         // if the link is clicked on
-        $('a', popup).click(function() {
+        $('a', popup).click(() => {
             event.stopPropagation();
             popup.empty();
             popup.append('<h3>Redirecting to System Configuration</h3><h3>Please wait ...</h3>');
