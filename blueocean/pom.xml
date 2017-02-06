@@ -80,7 +80,6 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
-            <version>0.6</version>
         </dependency>
 
         <!-- Test deps -->
