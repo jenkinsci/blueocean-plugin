@@ -91,6 +91,16 @@ h6 {
 main {
 }
 
+// Content-page body and header sizing / padding
+.u-content-page-sizing {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
 // creates a series of classes to allow reuse of common brand colors
 // .status-color(haze, purple, fuchsia) yields:
 //  .haze-bg         --> background-color: purple;
@@ -538,18 +548,6 @@ code.hash {
     flex-grow: 1;
 }
 
-.content-width {
-    min-width: 70rem;
-    margin-left: 100px;
-    margin-right: 100px;
-
-    @media screen and (max-width: 1000px) {
-        width: 80%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-}
-
 .global-header {
     position: relative;
     font-size: 1.5rem;
@@ -597,7 +595,7 @@ code.hash {
 }
 
 .sub-header nav.page-title {
-    .content-width;
+     .u-content-page-sizing;
     color: white;
     display: flex;
     height: 6rem;
@@ -622,7 +620,7 @@ code.hash {
 }
 
 .sub-header nav.page-tabs {
-    .content-width;
+     .u-content-page-sizing;
 }
 
 .page-tabs a {
@@ -668,8 +666,9 @@ code.hash {
 }
 
 main article {
-    .content-width;
-    padding: 1rem 0;
+    .u-content-page-sizing;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 .container-fluid {

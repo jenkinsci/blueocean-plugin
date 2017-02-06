@@ -1,6 +1,6 @@
 // @flow
 
-import React, { PropTypes } from 'react';
+import React, {PropTypes} from 'react';
 
 type Props = {
     className?: string,
@@ -19,7 +19,9 @@ export const TopNav = (props: Props) => {
 
     return (
         <div className={classNames.join(' ')} style={style}>
-            {props.children}
+            <div className="Header-topNav-inner">
+                {props.children}
+            </div>
         </div>
     );
 };
