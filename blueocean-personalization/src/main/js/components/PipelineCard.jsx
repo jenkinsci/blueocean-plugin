@@ -160,7 +160,7 @@ export class PipelineCard extends Component {
         if (AppConfig.showOrg()) {
             displayPath = `${organization}/${fullDisplayName}`;
         } else {
-            displayPath = `${fullDisplayName}`;
+            displayPath = fullDisplayName;
         }
 
         return (
