@@ -30,6 +30,8 @@ export Paths from './paths/index';
 import { Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler, LocationService } from './services/index';
 export { Pager, PagerService, PipelineService, SSEService, ActivityService };
 
+import * as stringUtil from './stringUtil';
+export { stringUtil as StringUtil };
 
 export Fullscreen from './Fullscreen';
 export NotFound from './NotFound';
