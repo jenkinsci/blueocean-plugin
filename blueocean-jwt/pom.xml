@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.0.0-b21-SNAPSHOT</version>
+    <version>1.0.0-b23-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-jwt</artifactId>
@@ -18,7 +18,6 @@
       <dependency>
           <groupId>org.bitbucket.b_c</groupId>
           <artifactId>jose4j</artifactId>
-          <version>0.5.1</version>
       </dependency>
       <dependency>
           <groupId>${project.groupId}</groupId>

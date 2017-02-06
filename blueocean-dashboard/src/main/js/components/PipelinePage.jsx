@@ -71,7 +71,11 @@ export class PipelinePage extends Component {
             return <NotFound />;
         }
 
-        setTitle(`${organization} / ${name}`);
+        if (isReady) {
+            setTitle(`${organization} / ${name}`);
+        } else {
+            setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
+        }
 
         const baseUrl = buildPipelineUrl(organization, fullName);
 

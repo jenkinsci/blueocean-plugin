@@ -3,8 +3,8 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ABSTRACT_FOLDER;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_FOLDER;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ABSTRACT_FOLDER;
 
 /**
  * Folder  has pipelines, could also hold another BluePipelineFolders.
@@ -99,5 +99,6 @@ public abstract class BluePipelineFolder extends BluePipeline {
         return null;
     }
 
-
+    @Exported(skipNull = true)
+    public abstract BlueIcon getIcon();
 }

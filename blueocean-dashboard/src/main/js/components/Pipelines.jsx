@@ -18,12 +18,6 @@ export class Pipelines extends Component {
         this._initPager(this.props);
     }
 
-    componentDidMount() {
-        // TODO: re-enable this
-        // const { organization = 'Jenkins' } = this.context.params;
-        // this.props.setTitle(organization);
-    }
-
     componentWillReceiveProps(nextProps) {
         this._initPager(nextProps);
     }
