@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { TimeManager } from './TimeHarmonizer';
+import { TimeManager } from '../utils/serverBrowserTimeHarmonize';
 import logging from '../logging';
 import i18nTranslator from '../i18n/i18n';
 
