@@ -10,7 +10,7 @@ export class String extends Component {
         const cleanName = removeMarkupTags(name);
         return (<FormElement title={ cleanName }>
             <div className="String">
-                <TextInput {...{ defaultValue: value, cleanName, onChange }} />
+                <TextInput {...{ defaultValue: value, name: cleanName, onChange }} />
                 { description && <div className="inputDescription">{removeMarkupTags(description)}</div> }
             </div>
         </FormElement>);
