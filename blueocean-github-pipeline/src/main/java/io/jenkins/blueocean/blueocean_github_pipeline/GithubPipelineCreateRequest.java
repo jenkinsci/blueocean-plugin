@@ -2,8 +2,6 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.plugins.credentials.Credentials;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
-import com.google.common.collect.ImmutableList;
 import hudson.model.Cause;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
@@ -11,7 +9,6 @@ import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
@@ -86,9 +83,8 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                             .addProperty(
                                     new BlueOceanCredentialsProvider.FolderPropertyImpl(
                                             authenticatedUser.getId(), credentialId,
-                                            GithubCredentialsDomain(apiUrl),
-                                            ImmutableList.<DomainRequirement>of(
-                                                    new BlueOceanDomainRequirement())));
+                                            GithubCredentialsDomain(apiUrl)
+                                    ));
                 }
                 GitHubSCMNavigator gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
                 if (sb.length() > 0) {

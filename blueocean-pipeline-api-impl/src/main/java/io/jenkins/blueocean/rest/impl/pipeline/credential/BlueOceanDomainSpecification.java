@@ -17,9 +17,7 @@ public class BlueOceanDomainSpecification extends DomainSpecification {
     @Override
     public Result test(@Nonnull DomainRequirement scope) {
         if(scope instanceof BlueOceanDomainRequirement){
-            if(((BlueOceanDomainRequirement)scope).getValue().equals(DOMAIN_SPECIFICATION)){
-                return Result.POSITIVE;
-            }
+            return Result.POSITIVE;
         }
         return Result.NEGATIVE;
     }

@@ -11,7 +11,4 @@ import static io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomain
  */
 public class BlueOceanDomainRequirement extends DomainRequirement {
 
-    public String getValue() {
-        return DOMAIN_SPECIFICATION;
-    }
 }

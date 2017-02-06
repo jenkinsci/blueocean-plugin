@@ -7,7 +7,6 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.google.common.collect.ImmutableList;
@@ -16,7 +15,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import jenkins.branch.OrganizationFolder;
 import org.jenkinsci.plugins.github_branch_source.Connector;
 import org.junit.Assert;
@@ -103,8 +101,9 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
 
         //create org folder and attach user and credential id to it
         OrganizationFolder organizationFolder = j.createProject(OrganizationFolder.class, "demo");
-        AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId(), "github-domain",
-                ImmutableList.<DomainRequirement>of(new BlueOceanDomainRequirement()));
+        AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId(), "github-domain"
+
+        );
         organizationFolder.addProperty(prop);
 
         // lookup for created credential id in system store, it should resolve to previously created user store credential

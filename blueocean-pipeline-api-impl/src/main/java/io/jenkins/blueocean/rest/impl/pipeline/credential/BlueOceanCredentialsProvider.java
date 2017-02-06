@@ -14,7 +14,10 @@ import com.cloudbees.plugins.credentials.common.IdCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.google.common.collect.ImmutableSet;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
+import hudson.model.Describable;
+import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.ModelObject;
 import hudson.model.TopLevelItem;
@@ -39,6 +42,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.*;
+
 /**
  * {@link CredentialsProvider} to serve credentials stored in user store.
  *
@@ -51,43 +56,48 @@ import java.util.Set;
  */
 @Extension(ordinal = 99999)
 public class BlueOceanCredentialsProvider extends CredentialsProvider {
-    @Nonnull
+    private static final BlueOceanDomainRequirement PROXY_REQUIREMENT = new BlueOceanDomainRequirement();
+
+    @NonNull
     @Override
-    @SuppressWarnings("unchecked")
-    public <C extends Credentials> List<C> getCredentials(@Nonnull Class<C> type, @Nullable ItemGroup itemGroup,
-                                                          @Nullable Authentication authentication) {
-        if (itemGroup instanceof AbstractFolder) {
-            return (List<C>) getCredentials((AbstractFolder)itemGroup);
-        }
-        return Collections.emptyList();
+    public <C extends Credentials> List<C> getCredentials(@NonNull Class<C> type,
+                                                          @edu.umd.cs.findbugs.annotations.Nullable ItemGroup itemGroup,
+                                                          @edu.umd.cs.findbugs.annotations.Nullable
+                                                              Authentication authentication) {
+        return getCredentials(type, itemGroup, authentication, Collections.<DomainRequirement>emptyList());
     }
 
-    private static  List<Credentials> getCredentials(@Nonnull AbstractFolder folder){
-        return getCredentials((FolderPropertyImpl)folder.getProperties().get(FolderPropertyImpl.class));
-    }
-
-    private static  List<Credentials> getCredentials(@Nullable FolderPropertyImpl prop){
-        if (prop != null) {
-            User user = User.get(prop.getUser(), false, Collections.emptyMap());
-            if(user != null){
-                SecurityContext context = null;
-                try {
-                    context = ACL.impersonate(user.impersonate());
-                    for (CredentialsStore store : CredentialsProvider.lookupStores(user)) {
-                        Domain domain = store.getDomainByName(prop.getDomain());
-                        if (domain != null && domain.test(prop.getDomainRequirements())) {
-                            return CredentialsMatchers.filter(store.getCredentials(domain),
-                                    CredentialsMatchers.allOf(CredentialsMatchers.withId(prop.getId())));
+    @NonNull
+    public <C extends Credentials> List<C> getCredentials(@NonNull final Class<C> type,
+                                                          @edu.umd.cs.findbugs.annotations.Nullable ItemGroup itemGroup,
+                                                          @edu.umd.cs.findbugs.annotations.Nullable
+                                                              Authentication authentication,
+                                                          @NonNull List<DomainRequirement> domainRequirements) {
+        final List<C> result = new ArrayList<>();
+        final FolderPropertyImpl prop = propertyOf(itemGroup);
+        if (prop != null && prop.domain.test(domainRequirements)) {
+            final User proxyUser = User.get(prop.getUser(), false, Collections.emptyMap());
+            Authentication proxyAuth = proxyUser == null ? null : proxyUser.impersonate();
+            if (proxyAuth != null) {
+                ACL.impersonate(proxyAuth, new Runnable() {
+                    @Override
+                    public void run() {
+                        for (CredentialsStore s : CredentialsProvider.lookupStores(proxyUser)) {
+                            for (Domain d : s.getDomains()) {
+                                if (d.test(PROXY_REQUIREMENT)) {
+                                    for (Credentials c : filter(s.getCredentials(d), withId(prop.getId()))) {
+                                        if (type.isInstance(c)) {
+                                            result.add((C) c);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                }finally {
-                    if(context != null){
-                        SecurityContextHolder.setContext(context);
-                    }
-                }
+                });
             }
         }
-        return Collections.emptyList();
+        return result;
     }
 
     @Nonnull
@@ -98,12 +108,9 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                                                                    @Nonnull List<DomainRequirement> domainRequirements,
                                                                    @Nonnull CredentialsMatcher matcher) {
         ListBoxModel result = new ListBoxModel();
-        if (itemGroup instanceof AbstractFolder) {
-            FolderPropertyImpl prop = (FolderPropertyImpl) ((AbstractFolder) itemGroup).getProperties().get(FolderPropertyImpl.class);
-            if (prop != null) {
-                result.add(Messages.BlueOceanCredentialsProvider_DisplayName(), prop.getId());
-            }
-
+        FolderPropertyImpl prop = propertyOf(itemGroup);
+        if (prop != null && prop.domain.test(domainRequirements)) {
+            result.add(Messages.BlueOceanCredentialsProvider_DisplayName(), prop.getId());
         }
         return result;
     }
@@ -116,18 +123,13 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
 
     @Override
     public CredentialsStore getStore(@CheckForNull ModelObject object) {
-        if(isApplicable(object)) {
-            return new FolderPropertyImpl.StoreImpl((AbstractFolder) object);
-        }
-        return null;
+        FolderPropertyImpl property = propertyOf(object);
+        return property != null ? property.getStore() : null;
     }
 
     @Override
     public Set<CredentialsScope> getScopes(ModelObject object) {
-        if(isApplicable(object)){
-            return ImmutableSet.of(CredentialsScope.GLOBAL);
-        }
-        return Collections.emptySet();
+        return Collections.singleton(CredentialsScope.GLOBAL);
     }
 
     private boolean isApplicable(ModelObject object){
@@ -135,19 +137,32 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                 ((AbstractFolder)object).getProperties().get(FolderPropertyImpl.class) != null;
     }
 
+    private static FolderPropertyImpl propertyOf(ModelObject object) {
+        if (object instanceof AbstractFolder) {
+            return ((AbstractFolder<?>)object).getProperties().get(FolderPropertyImpl.class);
+        }
+        return null;
+    }
+
     public static class FolderPropertyImpl extends AbstractFolderProperty<AbstractFolder<TopLevelItem>> {
+        private final Domain domain;
         private final String user;
         private final String id;
-        private final String domain;
-        private final List<DomainRequirement> domainRequirements;
+        private transient StoreImpl store;
 
         @DataBoundConstructor
-        public FolderPropertyImpl(@Nonnull String user, @Nonnull String id, @Nonnull String domain,
-                                  @Nonnull List<DomainRequirement> domainRequirements) {
+        public FolderPropertyImpl(@Nonnull String user, @Nonnull String id, @Nonnull Domain domain) {
             this.user = user;
             this.id = id;
             this.domain = domain;
-            this.domainRequirements = domainRequirements;
+        }
+
+        public StoreImpl getStore() {
+            if (store == null) {
+                // idempotent, don't care about synchronization as they are all the same anyway
+                store = new StoreImpl();
+            }
+            return store;
         }
 
         public @Nonnull String getUser() {
@@ -158,12 +173,8 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             return id;
         }
 
-        public @Nonnull String getDomain() {
+        public @Nonnull Domain getDomain() {
             return domain;
-        }
-
-        public @Nonnull List<DomainRequirement> getDomainRequirements() {
-            return domainRequirements;
         }
 
         @Override
@@ -226,33 +237,18 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             }
         }
 
-        public static class StoreImpl extends CredentialsStore{
-            private final AbstractFolder abstractFolder;
+        public class StoreImpl extends CredentialsStore{
             private final CredentialsStoreAction storeAction;
 
-            StoreImpl(AbstractFolder abstractFolder) {
+            StoreImpl() {
                 super(BlueOceanCredentialsProvider.class);
-                this.abstractFolder = abstractFolder;
                 this.storeAction = new CredentialsStoreActionImpl(this);
             }
 
             @Nonnull
             @Override
             public List<Domain> getDomains() {
-                FolderPropertyImpl prop = (FolderPropertyImpl) abstractFolder.getProperties().get(FolderPropertyImpl.class);
-                List<Domain> domains = new ArrayList<>();
-                if(prop != null){
-                    User user = User.get(prop.getUser(), false, Collections.emptyMap());
-                    if(user != null) {
-                        for (CredentialsStore store : CredentialsProvider.lookupStores(user)) {
-                            Domain domain = store.getDomainByName(prop.getDomain());
-                            if(domain != null) {
-                                domains.add(domain);
-                            }
-                        }
-                    }
-                }
-                return domains;
+                return Collections.singletonList(domain);
             }
 
             @Nullable
@@ -264,7 +260,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             @Nonnull
             @Override
             public ModelObject getContext() {
-                return abstractFolder;
+                return owner;
             }
 
             @Override
@@ -274,17 +270,32 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                         permission == MANAGE_DOMAINS || permission == UPDATE){
                     return false;
                 }
-                return abstractFolder.getACL().hasPermission(a,permission);
+                return owner.getACL().hasPermission(a,permission);
             }
 
             @Nonnull
             @Override
             public List<Credentials> getCredentials(@Nonnull Domain domain) {
-                FolderPropertyImpl prop = (FolderPropertyImpl)abstractFolder.getProperties().get(FolderPropertyImpl.class);
-                if(prop == null || !prop.getDomain().equals(domain.getName())){
-                    return Collections.emptyList();
+                final List<Credentials> result = new ArrayList<>(1);
+                if (domain.equals(FolderPropertyImpl.this.domain)) {
+                    final User proxyUser = User.get(getUser(), false, Collections.emptyMap());
+                    Authentication proxyAuth = proxyUser == null ? null : proxyUser.impersonate();
+                    if (proxyAuth != null) {
+                        ACL.impersonate(proxyAuth, new Runnable() {
+                            @Override
+                            public void run() {
+                                for (CredentialsStore s : CredentialsProvider.lookupStores(proxyUser)) {
+                                    for (Domain d : s.getDomains()) {
+                                        if (d.test(PROXY_REQUIREMENT)) {
+                                            result.addAll(filter(s.getCredentials(d), withId(getId())));
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
-                return BlueOceanCredentialsProvider.getCredentials(prop);
+                return result;
             }
 
             @Override
