@@ -3,15 +3,13 @@ import {
     CommitHash, ReadableDate, TimeDuration,
 }
     from '@jenkins-cd/design-language';
-import { logging, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { logging, ReplayButton, RunButton, LiveStatusIndicator, TimeHarmonizer as timeHarmonizer } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
-import LiveStatusIndicator from './LiveStatusIndicator';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import { CellRow, CellLink } from './CellLink';
-import { TimeHarmonizer as timeHarmonizer } from './TimeHarmonizer';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
@@ -22,18 +20,7 @@ export class Runs extends Component {
         super(props);
         this.state = { isVisible: false };
     }
-/*
-    componentWillMount() {
-        const { run } = this.props;
-        logger.warn('argh');
-        this.props.init({
-            result: run.state,
-            startTime: run.startTime,
-            durationInMillis: run.durationInMillis,
-            endTime: run.endTime,
-        })
-    }
-*/
+
     render() {
         // early out
         if (!this.props.run || !this.props.pipeline) {

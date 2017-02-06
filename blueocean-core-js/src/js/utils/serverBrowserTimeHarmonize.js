@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import logging from '../logging';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.harmonizeTimes');
 /**

@@ -2,11 +2,9 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { LiveStatusIndicator, logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
-import LiveStatusIndicator from './LiveStatusIndicator';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
-import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetailsPipeline');
 const timeManager = new TimeManager();

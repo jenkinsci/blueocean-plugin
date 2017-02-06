@@ -1,19 +1,19 @@
 import React, { Component, PropTypes } from 'react';
-import { i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
-import { TimeManager } from '../util/serverBrowserTimeHarmonize';
+import { TimeManager } from '../index';
+import logging from '../logging';
+import i18nTranslator from '../i18n/i18n';
 
 const translate = i18nTranslator('blueocean-dashboard');
 const timeManager = new TimeManager();
-const logger = logging.logger('io.jenkins.blueocean.dashboard.TimeHarmonizer');
+const logger = logging.logger('io.jenkins.blueocean.core.TimeHarmonizer');
 
 export const TimeHarmonizer = ComposedComponent => {
     class NewComponent extends Component {
         constructor(props, context) {
             super(props, context);
             logger.warn(props, context);
-            const { result, startTime } = this.props;
+            const { startTime } = this.props;
             this.skewMillis = this.context && this.context.config ? this.context.config.getServerBrowserTimeSkewMillis() : 0;
-            
             this.durationMillis = startTime ? this.getTimes(props).durationMillis : 0;
             this.getI18nTitle = this.getI18nTitle.bind(this);
             this.getDuration = this.getDuration.bind(this);

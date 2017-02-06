@@ -43,6 +43,7 @@
     "jsonwebtoken": "7.1.9",
     "mobx": "2.6.0",
     "mobx-utils": "1.1.2",
+    "moment": "2.15.1",
     "pem-jwk": "1.5.1",
     "react-router": "3.0.0"
   },
