@@ -5594,9 +5594,9 @@
       "dev": true
     },
     "moment": {
-      "version": "2.16.0",
+      "version": "2.15.1",
       "from": "moment@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.16.0.tgz"
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.15.1.tgz"
     },
     "moment-duration-format": {
       "version": "1.3.0",
