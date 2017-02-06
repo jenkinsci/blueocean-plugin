@@ -59,12 +59,12 @@ describe('PipelineCard', () => {
         assert.isOk(replayButton.text());
     });
 
-    it('renders no "rerun" button after success', () => {
+    it('renders "rerun" button after success', () => {
         item.latestRun.result = 'SUCCESS';
         const wrapper = shallowRenderCard();
         const replayButton = wrapper.find('ReplayButton').shallow();
 
-        assert.isNotOk(replayButton.text());
+        assert.isOk(replayButton.text());
     });
 
     it('renders a "run" button when successful', () => {
