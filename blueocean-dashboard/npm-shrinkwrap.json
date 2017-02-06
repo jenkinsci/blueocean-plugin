@@ -3,15 +3,10 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.57-jm-a",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.57-jm-a",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.57-jm-a.tgz",
+      "version": "0.0.57-jm-c",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.57-jm-c",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.57-jm-c.tgz",
       "dependencies": {
-        "@jenkins-cd/design-language": {
-          "version": "0.0.102",
-          "from": "@jenkins-cd/design-language@0.0.102",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.102.tgz"
-        },
         "react-router": {
           "version": "3.0.0",
           "from": "react-router@3.0.0",
@@ -20,9 +15,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.108",
-      "from": "@jenkins-cd/design-language@0.0.108",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.108.tgz"
+      "version": "0.0.109-unpublished-jm-b",
+      "from": "@jenkins-cd/design-language@0.0.109-unpublished-jm-b",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.109-unpublished-jm-b.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
