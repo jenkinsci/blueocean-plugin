@@ -3,7 +3,7 @@ import { ReadableDate } from '@jenkins-cd/design-language';
 import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { CellRow, CellLink } from './CellLink';
-import { LiveStatusIndicator } from './LiveStatusIndicator';
+import LiveStatusIndicator from './LiveStatusIndicator';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
@@ -53,7 +53,10 @@ export default class PullRequest extends Component {
         return (
             <CellRow linkUrl={runDetailsUrl} id={`${name}-${latestRun.id}`}>
                 <CellLink>
-                    <LiveStatusIndicator result={result} startTime={latestRun.startTime}
+                    <LiveStatusIndicator
+                      duration={latestRun.durationInMillis}
+                      result={result}
+                      startTime={latestRun.startTime}
                       estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
                 </CellLink>

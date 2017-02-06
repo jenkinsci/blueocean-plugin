@@ -4,7 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
-import { LiveStatusIndicator } from './LiveStatusIndicator';
+import LiveStatusIndicator from './LiveStatusIndicator';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
@@ -69,7 +69,10 @@ class RunDetailsHeader extends Component {
         return (
         <div className="pipeline-result run-details-header">
             <section className="status inverse">
-                <LiveStatusIndicator result={status} startTime={startTime}
+                <LiveStatusIndicator
+                  duration={run.durationInMillis}
+                  result={status}
+                  startTime={startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
                   noBackground
                 />

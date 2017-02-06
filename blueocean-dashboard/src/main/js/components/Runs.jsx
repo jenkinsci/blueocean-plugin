@@ -59,7 +59,10 @@ export default class Runs extends Component {
         return (
         <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
             <CellLink>
-                <LiveStatusIndicator result={resultRun} startTime={startTime}
+                <LiveStatusIndicator
+                  duration={durationMillis}
+                  result={resultRun}
+                  startTime={startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
                 />
             </CellLink>

@@ -7,7 +7,7 @@ import {
 import { RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
-import { LiveStatusIndicator } from './LiveStatusIndicator';
+import LiveStatusIndicator from './LiveStatusIndicator';
 import { CellRow, CellLink } from './CellLink';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
@@ -67,8 +67,11 @@ export default class Branches extends Component {
                     <WeatherIcon score={branch.weatherScore} />
                 </CellLink>
                 <CellLink>
-                    <LiveStatusIndicator result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
-                      startTime={latestRun.startTime} estimatedDuration={latestRun.estimatedDurationInMillis}
+                    <LiveStatusIndicator
+                      duration={latestRun.durationInMillis}
+                      result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
+                      startTime={latestRun.startTime}
+                      estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
                 </CellLink>
                 <CellLink>{cleanBranchName}</CellLink>
