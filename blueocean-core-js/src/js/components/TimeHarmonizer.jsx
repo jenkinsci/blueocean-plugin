@@ -3,7 +3,7 @@ import { TimeManager } from '../utils/serverBrowserTimeHarmonize';
 import logging from '../logging';
 import i18nTranslator from '../i18n/i18n';
 
-const translate = i18nTranslator('blueocean-dashboard');
+const translate = i18nTranslator('blueocean-web');
 const timeManager = new TimeManager();
 const logger = logging.logger('io.jenkins.blueocean.core.TimeHarmonizer');
 
