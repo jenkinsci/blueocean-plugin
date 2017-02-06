@@ -11,21 +11,25 @@ export const TimeHarmonizer = ComposedComponent => {
         constructor(props, context) {
             super(props, context);
             logger.warn(props, context);
-            const { result } = this.props;
+            const { result, startTime } = this.props;
             this.skewMillis = this.context && this.context.config ? this.context.config.getServerBrowserTimeSkewMillis() : 0;
-            this.durationMillis = this.getDuration(result);
+            
+            this.durationMillis = startTime ? this.getTimes(props).durationMillis : 0;
             this.getI18nTitle = this.getI18nTitle.bind(this);
             this.getDuration = this.getDuration.bind(this);
             this.getTimes = this.getTimes.bind(this);
         }
 
         getDuration(result) {
-            const durationMillis = this.isRunningFunction(result)() ? this.durationMillis : this.getTimes().duration;
+            const durationMillis = this.isRunningFunction(result)() ? this.durationMillis : this.getTimes().durationMillis;
             return durationMillis;
         }
 
         getTimes(props = this.props) {
             const { result, startTime, durationInMillis, endTime } = props;
+            if (!startTime) {
+                return {};
+            }
             // we need to make sure that we calculate with the correct time offset
             const harmonizeTimes = timeManager.harmonizeTimes({
                 startTime,
@@ -71,6 +75,7 @@ export const TimeHarmonizer = ComposedComponent => {
               getDuration={this.getDuration}
               getI18nTitle={this.getI18nTitle}
               isRunning={this.isRunning}
+              init={this.init}
             />);
         }
     }

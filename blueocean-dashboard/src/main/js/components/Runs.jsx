@@ -22,6 +22,18 @@ export class Runs extends Component {
         super(props);
         this.state = { isVisible: false };
     }
+/*
+    componentWillMount() {
+        const { run } = this.props;
+        logger.warn('argh');
+        this.props.init({
+            result: run.state,
+            startTime: run.startTime,
+            durationInMillis: run.durationInMillis,
+            endTime: run.endTime,
+        })
+    }
+*/
     render() {
         // early out
         if (!this.props.run || !this.props.pipeline) {
@@ -39,11 +51,12 @@ export class Runs extends Component {
             startTime,
         } = getTimes({
             result: resultRun,
-            durationInMillis: run.durationMillis,
+            durationInMillis: run.durationInMillis,
             startTime: run.startTime,
             endTime: run.endTime,
         });
-        logger.debug('time:', {
+        logger.warn('time:', {
+            runDuration: run,
             durationMillis,
             endTime,
             startTime,
@@ -61,7 +74,7 @@ export class Runs extends Component {
         <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
             <CellLink>
                 <LiveStatusIndicator
-                  duration={durationMillis}
+                  durationInMillis={durationMillis}
                   result={resultRun}
                   startTime={startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
