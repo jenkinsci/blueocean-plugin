@@ -28,8 +28,8 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.102",
-    "@jenkins-cd/js-extensions": "0.0.33",
+    "@jenkins-cd/design-language": "0.0.107",
+    "@jenkins-cd/js-extensions": "0.0.32",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/react-material-icons": "1.0.0",
