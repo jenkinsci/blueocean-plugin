@@ -22,7 +22,7 @@ export const TimeHarmonizer = ComposedComponent => {
         }
 
         getDuration() {
-            return this.getTimes().duration;
+            return this.getTimes().durationMillis;
         }
 
         getTimes() {
