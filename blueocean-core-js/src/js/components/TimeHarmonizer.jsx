@@ -75,7 +75,6 @@ export const TimeHarmonizer = ComposedComponent => {
               getDuration={this.getDuration}
               getI18nTitle={this.getI18nTitle}
               isRunning={this.isRunning}
-              init={this.init}
             />);
         }
     }
