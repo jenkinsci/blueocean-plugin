@@ -21,13 +21,6 @@ import { observable, action } from 'mobx';
 const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelinePage');
 
 const RestPaths = Paths.rest;
-/**
- * returns true if the pipeline is defined and has branchNames
- */
-export function pipelineBranchesUnsupported(pipeline) {
-    return (pipeline && !pipeline.branchNames) ||
-      (pipeline && !pipeline.branchNames.length);
-}
 
 const classicConfigLink = (pipeline) => {
     let link = null;
@@ -74,7 +67,11 @@ export class PipelinePage extends Component {
             return <NotFound />;
         }
 
-        setTitle(`${organization} / ${name}`);
+        if (isReady) {
+            setTitle(`${organization} / ${name}`);
+        } else {
+            setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
+        }
 
         const baseUrl = buildPipelineUrl(organization, fullName);
         return (

@@ -1,4 +1,3 @@
-
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
@@ -17,12 +16,6 @@ const translate = i18nTranslator('blueocean-dashboard');
 export class Pipelines extends Component {
     componentWillMount() {
         this._initPager(this.props);
-    }
-
-    componentDidMount() {
-        // TODO: re-enable this
-        // const { organization = 'Jenkins' } = this.context.params;
-        // this.props.setTitle(organization);
     }
 
     componentWillReceiveProps(nextProps) {

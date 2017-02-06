@@ -149,7 +149,7 @@ const contextNoData = {
       activityService: {
         activityPager() {
           return {
-            data: undefined,
+            data: [],
             pending: true,
           }
         }
@@ -177,8 +177,9 @@ describe("Activity", () => {
   });
 
   it("does not render without data", () => {
-    const wrapper =  shallow(<Activity pipeline={pipeline} capabilities={capabilities}/>, { context: contextNoData}).node;
-    assert.isNull(wrapper);
+    const wrapper =  shallow(<Activity pipeline={pipeline}  t={ ()=>{} } capabilities={capabilities}/>, { context: contextNoData});
+    assert.equal(wrapper.find('Runs').length, 0)
+  
   });
 });
 

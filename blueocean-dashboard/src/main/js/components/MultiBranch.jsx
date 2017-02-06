@@ -4,7 +4,6 @@ import Markdown from 'react-remarkable';
 import Branches from './Branches';
 
 import PageLoading from './PageLoading';
-import { pipelineBranchesUnsupported } from './PipelinePage';
 import { capable } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
@@ -47,7 +46,7 @@ NotSupported.propTypes = {
 @observer
 export class MultiBranch extends Component {
     componentWillMount() {
-        if (this.props.pipeline && this.context.params && !pipelineBranchesUnsupported(this.props.pipeline)) {
+        if (this.props.pipeline && this.context.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
             const { organization, pipeline } = this.context.params;
             this.pager = this.context.pipelineService.branchPager(organization, pipeline);
         }
@@ -55,7 +54,7 @@ export class MultiBranch extends Component {
 
     render() {
         const { t, locale, pipeline } = this.props;
-
+        
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
             return (<NotSupported t={t} />);
         }
@@ -63,7 +62,7 @@ export class MultiBranch extends Component {
         const branches = this.pager.data;
 
         if (!this.pager.pending && !branches.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} />);
+            return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
         }
 
         const head = 'pipelinedetail.branches.header';
