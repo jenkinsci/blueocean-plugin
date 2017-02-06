@@ -5,22 +5,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 const transitionClass = 'expand-in';
 const transitionDuration = 150;
 
-// FIXME: Move styles to css once this is bedded down and moved to JDL
-const outerStyles = {
-    position: 'fixed',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    right: 0,
-    zIndex: 75,
-};
-
-const defaultContainerStyles = {
-    background: 'white',
-    width: '100%',
-    height: '100%',
-    overflow: 'auto',
-};
+// FIXME: Move this component to JDL, and replace all instances of the *other* fullscreen component with this.
 
 export class FullScreen extends Component {
 
@@ -79,17 +64,14 @@ export class FullScreen extends Component {
             return null;
         }
 
-        // We apply any styles that are passed in to the div that wraps the children.
-        const containerStyles = { ...defaultContainerStyles, ...style };
-
         const wrappedChildren = isVisible && (
-                <div className="FullScreen-contents" style={containerStyles}>
+                <div className="FullScreen-contents" style={style}>
                     {children}
                 </div>
             );
 
         return (
-            <div className="FullScreen" style={outerStyles}>
+            <div className="FullScreen">
                 <ReactCSSTransitionGroup
                     transitionName={transitionClass}
                     transitionAppear
