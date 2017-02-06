@@ -131,11 +131,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                             ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Invalid github API URI: "+e.getMessage())), e);
         }
         String path = StringUtils.defaultIfBlank(uri.getPath(), "/");
-        boolean githubEnterprise = false;
         if(path.startsWith(GithubEnterpriseScm.DEFAULT_ENTERPRISE_API_SUFFIX)){
-            githubEnterprise = true;
-        }
-        if(githubEnterprise){
             return GithubEnterpriseScm.DOMAIN_NAME;
         }
         return GithubScm.DOMAIN_NAME;
