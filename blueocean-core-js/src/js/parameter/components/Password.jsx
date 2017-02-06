@@ -13,7 +13,7 @@ export class Password extends Component {
         const cleanName = removeMarkupTags(name);
         return (<FormElement title={ cleanName }>
             <div className="Password">
-                <PasswordInput {...{ defaultValue: value, cleanName, onChange }} />
+                <PasswordInput {...{ defaultValue: value, name: cleanName, onChange }} />
                 { description && <div className="inputDescription">{removeMarkupTags(description)}</div> }
             </div>
             {/* { debugging }*/}
