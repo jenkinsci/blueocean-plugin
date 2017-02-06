@@ -8,7 +8,13 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.TimeHarmonizer');
 
 export const TimeHarmonizer = ComposedComponent => {
     class NewComponent extends Component {
+        constructor(props, context) {
+            super(props, context);
+            logger.warn(props, context);
+            this.getI18nTitle = this.getI18nTitle.bind(this);
+        }
         componentWillMount() {
+            logger.warn(this.props);
             this.durationMillis = this.getDuration();
         }
 

@@ -7,7 +7,7 @@ import { logging, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js'
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
-import { LiveStatusIndicator } from './LiveStatusIndicator';
+import LiveStatusIndicator from './LiveStatusIndicator';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import { CellRow, CellLink } from './CellLink';
