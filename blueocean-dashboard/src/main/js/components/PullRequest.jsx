@@ -54,7 +54,7 @@ export default class PullRequest extends Component {
             <CellRow linkUrl={runDetailsUrl} id={`${name}-${latestRun.id}`}>
                 <CellLink>
                     <LiveStatusIndicator
-                      duration={latestRun.durationInMillis}
+                      durationInMillis={latestRun.durationInMillis}
                       result={result}
                       startTime={latestRun.startTime}
                       estimatedDuration={latestRun.estimatedDurationInMillis}

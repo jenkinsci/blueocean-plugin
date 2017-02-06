@@ -70,7 +70,7 @@ class RunDetailsHeader extends Component {
         <div className="pipeline-result run-details-header">
             <section className="status inverse">
                 <LiveStatusIndicator
-                  duration={run.durationInMillis}
+                  durationInMillis={run.durationInMillis}
                   result={status}
                   startTime={startTime}
                   estimatedDuration={run.estimatedDurationInMillis}

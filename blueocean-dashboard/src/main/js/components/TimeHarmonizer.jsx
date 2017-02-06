@@ -11,26 +11,26 @@ export const TimeHarmonizer = ComposedComponent => {
         constructor(props, context) {
             super(props, context);
             logger.warn(props, context);
+            const { result } = this.props;
             this.skewMillis = this.context && this.context.config ? this.context.config.getServerBrowserTimeSkewMillis() : 0;
+            this.durationMillis = this.getDuration(result);
             this.getI18nTitle = this.getI18nTitle.bind(this);
             this.getDuration = this.getDuration.bind(this);
             this.getTimes = this.getTimes.bind(this);
         }
 
-        componentWillMount() {
-            this.durationMillis = this.getDuration();
+        getDuration(result) {
+            const durationMillis = this.isRunningFunction(result)() ? this.durationMillis : this.getTimes().duration;
+            return durationMillis;
         }
 
-        getDuration() {
-            return this.getTimes().durationMillis;
-        }
-
-        getTimes() {
-            const { result, startTime, duration } = this.props;
+        getTimes(props = this.props) {
+            const { result, startTime, durationInMillis, endTime } = props;
             // we need to make sure that we calculate with the correct time offset
             const harmonizeTimes = timeManager.harmonizeTimes({
                 startTime,
-                durationInMillis: duration,
+                endTime,
+                durationInMillis,
                 isRunning: this.isRunningFunction(result)(),
             }, this.skewMillis);
             logger.warn('Returning object', harmonizeTimes);
@@ -38,7 +38,7 @@ export const TimeHarmonizer = ComposedComponent => {
         }
 
         getI18nTitle(result) {
-            const durationMillis = this.isRunningFunction(result)() ? this.durationMillis : this.getDuration();
+            const durationMillis = this.getDuration(result);
             const i18nDuration = timeManager
               .format(durationMillis,
                 translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
@@ -78,7 +78,8 @@ export const TimeHarmonizer = ComposedComponent => {
     NewComponent.propTypes = {
         result: PropTypes.string,
         startTime: PropTypes.string,
-        duration: PropTypes.number,
+        endTime: PropTypes.string,
+        durationInMillis: PropTypes.number,
     };
 
     NewComponent.contextTypes = {

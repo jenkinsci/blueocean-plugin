@@ -11,15 +11,13 @@ import LiveStatusIndicator from './LiveStatusIndicator';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import { CellRow, CellLink } from './CellLink';
+import { TimeHarmonizer as timeHarmonizer } from './TimeHarmonizer';
 
-import { TimeManager } from '../util/serverBrowserTimeHarmonize';
-
-const timeManager = new TimeManager();
 const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
  */
-export default class Runs extends Component {
+export class Runs extends Component {
     constructor(props) {
         super(props);
         this.state = { isVisible: false };
@@ -31,17 +29,20 @@ export default class Runs extends Component {
         }
         const { router, location } = this.context;
 
-        const { run, changeset, pipeline, t, locale } = this.props;
+        const { run, changeset, pipeline, t, locale, getTimes } = this.props;
 
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const isRunning = () => run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
-        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
-        // the time when we started the run harmonized with offset
         const {
             durationMillis,
             endTime,
             startTime,
-        } = timeManager.harmonizeTimes(run, skewMillis);
+        } = getTimes({
+            result: resultRun,
+            durationInMillis: run.durationMillis,
+            startTime: run.startTime,
+            endTime: run.endTime,
+        });
         logger.debug('time:', {
             durationMillis,
             endTime,
@@ -120,9 +121,12 @@ Runs.propTypes = {
     locale: string,
     changeset: object.isRequired,
     t: func,
+    getTimes: func,
 };
 Runs.contextTypes = {
     config: object.isRequired,
     router: object.isRequired, // From react-router
     location: object,
 };
+
+export default timeHarmonizer(Runs);

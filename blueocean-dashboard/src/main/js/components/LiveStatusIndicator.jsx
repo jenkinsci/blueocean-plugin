@@ -28,12 +28,8 @@ LiveStatusIndicator.propTypes = {
     noBackground: PropTypes.bool,
     startTime: PropTypes.string,
     estimatedDuration: PropTypes.number,
-    duration: PropTypes.number,
+    durationInMillis: PropTypes.number,
     getI18nTitle: PropTypes.func,
-};
-
-LiveStatusIndicator.contextTypes = {
-    config: PropTypes.object.isRequired,
 };
 
 export default timeHarmonizer(LiveStatusIndicator);

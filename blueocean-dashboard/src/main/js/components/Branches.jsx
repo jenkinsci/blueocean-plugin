@@ -68,7 +68,7 @@ export default class Branches extends Component {
                 </CellLink>
                 <CellLink>
                     <LiveStatusIndicator
-                      duration={latestRun.durationInMillis}
+                      durationInMillis={latestRun.durationInMillis}
                       result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
                       startTime={latestRun.startTime}
                       estimatedDuration={latestRun.estimatedDurationInMillis}
