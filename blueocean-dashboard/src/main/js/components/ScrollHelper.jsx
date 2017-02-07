@@ -15,7 +15,7 @@ import React, { Component } from 'react';
 export const scrollHelper = ComposedComponent => class extends Component {
     // Find the modal view container and adopt the scrollTop to focus the end
     scrollBottom() {
-        const nodes = document.getElementsByClassName('content');
+        const nodes = document.getElementsByClassName('FullScreen-contents');
         const element = nodes[0];
         if (element) {
             element.scrollTop = element.scrollHeight - element.clientHeight;
