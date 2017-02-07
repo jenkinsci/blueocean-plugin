@@ -4,7 +4,7 @@
 import { blueocean } from './scopes';
 
 const config = blueocean.config || {};
-const env = config.env || {};
+const features = config.features || {};
 
 export default {
     getJenkinsConfig() {
@@ -27,16 +27,19 @@ export default {
         return blueocean.jsExtensions.find((pluginInfo) => pluginInfo.hpiPluginId === pluginId);
     },
 
-    getEnvProperty(name, defaultValue) {
-        const value = env[name];
-        if (value !== undefined) {
+    isFeatureEnabled(name, defaultValue) {
+        const value = features[name];
+        if (typeof value === 'boolean') {
             return value;
         }
-        return defaultValue;
+        if (typeof defaultValue === 'boolean') {
+            return defaultValue;
+        }
+        return false;
     },
 
     showOrg() {
-        return this.getEnvProperty('organizations.enabled', false);
+        return this.isFeatureEnabled('organizations.enabled', false);
     },
 
     /**
