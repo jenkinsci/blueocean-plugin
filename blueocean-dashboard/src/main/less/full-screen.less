@@ -1,0 +1,27 @@
+
+// FIXME: Move this to JDL along with the component
+
+.FullScreen {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 75;
+}
+
+// Remove the max width constraints from headers in full-screen / dialog mode
+.FullScreen-contents {
+
+    background: white;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+
+    .Header-topNav-inner,
+    .Header-details {
+        max-width:none;
+        padding-left: 42px;
+        padding-right: 42px;
+    }
+}

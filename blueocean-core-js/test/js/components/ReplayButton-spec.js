@@ -51,8 +51,8 @@ describe('ReplayButton', () => {
             const wrapper = shallow(<ReplayButton runnable={pipeline} latestRun={pipeline.latestRun} />);
 
             assert.isOk(wrapper);
-            assert.equal(wrapper.find('.replay-button-component').length, 0);
-            assert.equal(wrapper.find('.replay-button').length, 0);
+            assert.equal(wrapper.find('.replay-button-component').length, 1);
+            assert.equal(wrapper.find('.replay-button').length, 1);
         });
 
         it('does not render when permissions are invalid', () => {

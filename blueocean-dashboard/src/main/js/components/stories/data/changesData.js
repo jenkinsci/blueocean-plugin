@@ -1,19 +1,6 @@
 /* eslint-disable */
-import React from 'react';
-import { storiesOf, action } from '@kadira/storybook';
-import {
-    ModalView,
-    ModalBody,
-    ModalHeader,
-    PageTabs,
-    Progress,
-    TabLink,
-} from '@jenkins-cd/design-language';
-import { RunDetailsHeader } from '../RunDetailsHeader';
 
-import { RunRecord } from '../records';
-
-const changeSet = [{
+export const changeSet = [{
     _class: 'io.jenkins.blueocean.service.embedded.rest.ChangeSetResource',
     _links: {
         self: {
@@ -24,7 +11,7 @@ const changeSet = [{
     affectedPaths: ['test'],
     author: {
         _class: 'io.jenkins.blueocean.service.embedded.rest.UserImpl',
-        _links: { self: { _class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/' } },
+        _links: {self: {_class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/'}},
         email: null,
         fullName: 'sophia',
         id: 'thorleoso',
@@ -44,7 +31,7 @@ const changeSet = [{
     affectedPaths: ['test'],
     author: {
         _class: 'io.jenkins.blueocean.service.embedded.rest.UserImpl',
-        _links: { self: { _class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/' } },
+        _links: {self: {_class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/'}},
         email: null,
         fullName: 'hannah ',
         id: 'thorhannah',
@@ -64,7 +51,7 @@ const changeSet = [{
     affectedPaths: ['test'],
     author: {
         _class: 'io.jenkins.blueocean.service.embedded.rest.UserImpl',
-        _links: { self: { _class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/' } },
+        _links: {self: {_class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/'}},
         email: null,
         fullName: 'sophia Thor leo',
         id: 'thorleoso',
@@ -84,7 +71,7 @@ const changeSet = [{
     affectedPaths: ['test'],
     author: {
         _class: 'io.jenkins.blueocean.service.embedded.rest.UserImpl',
-        _links: { self: { _class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/' } },
+        _links: {self: {_class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/'}},
         email: null,
         fullName: 'hannah Thor Ler',
         id: 'thorhannah',
@@ -104,7 +91,7 @@ const changeSet = [{
     affectedPaths: ['test'],
     author: {
         _class: 'io.jenkins.blueocean.service.embedded.rest.UserImpl',
-        _links: { self: { _class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/' } },
+        _links: {self: {_class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/'}},
         email: null,
         fullName: 'Thor leo',
         id: 'thorleo',
@@ -124,7 +111,7 @@ const changeSet = [{
     affectedPaths: ['test'],
     author: {
         _class: 'io.jenkins.blueocean.service.embedded.rest.UserImpl',
-        _links: { self: { _class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/' } },
+        _links: {self: {_class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/'}},
         email: null,
         fullName: 'Thor Ler',
         id: 'thor',
@@ -144,7 +131,7 @@ const changeSet = [{
     affectedPaths: ['test'],
     author: {
         _class: 'io.jenkins.blueocean.service.embedded.rest.UserImpl',
-        _links: { self: { _class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/' } },
+        _links: {self: {_class: 'io.jenkins.blueocean.rest.hal.Link', href: '/blue/rest/users/thorsten/'}},
         email: null,
         fullName: 'Thorsten Scherler',
         id: 'thorsten',
@@ -155,7 +142,7 @@ const changeSet = [{
     url: 'https://github.com/scherler/testCommitBlueOcean/commit/1d9cbb3efe30924abcbfc88292c906f5bab5f0ca',
 }];
 
-const currentRunRaw = {
+export const currentRunRaw = {
     _class: 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl',
     _links: {
         nodes: {
@@ -244,7 +231,7 @@ const currentRunRaw = {
         },
         lastBuiltRevision: {
             'SHA1': '1d9cbb3efe30924abcbfc88292c906f5bab5f0ca',
-            branch: [{ 'SHA1': '1d9cbb3efe30924abcbfc88292c906f5bab5f0ca', name: 'refs/remotes/origin/master' }],
+            branch: [{'SHA1': '1d9cbb3efe30924abcbfc88292c906f5bab5f0ca', name: 'refs/remotes/origin/master'}],
         },
         remoteUrls: ['https://github.com/scherler/testCommitBlueOcean.git'],
         scmName: '',
@@ -262,7 +249,7 @@ const currentRunRaw = {
         urlName: 'tagBuild',
     }, {
         _class: 'io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl',
-        _links: { self: null },
+        _links: {self: null},
         _class: 'org.jenkinsci.plugins.workflow.steps.scm.MultiSCMRevisionState',
         urlName: null,
     }, {
@@ -304,7 +291,7 @@ const currentRunRaw = {
             },
         },
         _class: 'org.jenkinsci.plugins.workflow.job.views.FlowGraphAction',
-        nodes: [{ _class: 'org.jenkinsci.plugins.workflow.graph.FlowStartNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode' }, { _class: 'org.jenkinsci.plugins.workflow.graph.FlowEndNode' }],
+        nodes: [{_class: 'org.jenkinsci.plugins.workflow.graph.FlowStartNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode'}, {_class: 'org.jenkinsci.plugins.workflow.graph.FlowEndNode'}],
         urlName: 'flowGraph',
     }, {
         _class: 'io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl',
@@ -342,7 +329,8 @@ const currentRunRaw = {
     type: 'WorkflowRun',
     commitId: '1d9cbb3efe30924abcbfc88292c906f5bab5f0ca',
 };
-const pipeline = {
+
+export const pipeline = {
     _class: 'io.jenkins.blueocean.rest.impl.pipeline.PipelineImpl',
     _links: {
         activities: {
@@ -506,7 +494,7 @@ const pipeline = {
             },
             lastBuiltRevision: {
                 'SHA1': '1d9cbb3efe30924abcbfc88292c906f5bab5f0ca',
-                branch: [{ 'SHA1': '1d9cbb3efe30924abcbfc88292c906f5bab5f0ca', name: 'refs/remotes/origin/master' }],
+                branch: [{'SHA1': '1d9cbb3efe30924abcbfc88292c906f5bab5f0ca', name: 'refs/remotes/origin/master'}],
             },
             remoteUrls: ['https://github.com/scherler/testCommitBlueOcean.git'],
             scmName: '',
@@ -524,7 +512,7 @@ const pipeline = {
             urlName: 'tagBuild',
         }, {
             _class: 'io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl',
-            _links: { self: null },
+            _links: {self: null},
             _class: 'org.jenkinsci.plugins.workflow.steps.scm.MultiSCMRevisionState',
             urlName: null,
         }, {
@@ -566,7 +554,7 @@ const pipeline = {
                 },
             },
             _class: 'org.jenkinsci.plugins.workflow.job.views.FlowGraphAction',
-            nodes: [{ _class: 'org.jenkinsci.plugins.workflow.graph.FlowStartNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode' }, { _class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode' }, { _class: 'org.jenkinsci.plugins.workflow.graph.FlowEndNode' }],
+            nodes: [{_class: 'org.jenkinsci.plugins.workflow.graph.FlowStartNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode'}, {_class: 'org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode'}, {_class: 'org.jenkinsci.plugins.workflow.graph.FlowEndNode'}],
             urlName: 'flowGraph',
         }, {
             _class: 'io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl',
@@ -657,57 +645,8 @@ const pipeline = {
     },
     name: 'commits',
     organization: 'jenkins',
-    permissions: { create: true, read: true, start: true, stop: true },
+    permissions: {create: true, read: true, start: true, stop: true},
     weatherScore: 60,
 };
-const baseRun = new RunRecord(currentRunRaw);
-const currentRun = baseRun.set('changeSet', changeSet.slice(0, 1));
-const currentRunLong = baseRun.set('changeSet', changeSet.slice(0, 5));
-const status = currentRun.getComputedResult() || '';
-const t = (key) => key;
-storiesOf('modal header', module)
-    .add('some changes', () => (
-        <ModalView
-          isVisible
-          transitionClass="expand-in"
-          transitionDuration={150}
-          result={status}
-        >
-            <ModalHeader>
-                <div>
-                    <RunDetailsHeader
-                      locale="de"
-                      t={t}
-                      pipeline={pipeline}
-                      data={currentRun}
-                      onOrganizationClick={ action('button-click')}
-                      onNameClick={ action('button-click')}
-                      onAuthorsClick={ action('button-click')}
-                    />
-                </div>
-            </ModalHeader>
-        </ModalView>
-    ))
-    .add('lots of changes - verflow', () => (
-        <ModalView
-          isVisible
-          transitionClass="expand-in"
-          transitionDuration={150}
-          result={status}
-        >
-            <ModalHeader>
-                <div>
-                    <RunDetailsHeader
-                      t={t}
-                      locale="de"
-                      pipeline={pipeline}
-                      data={currentRunLong}
-                      onOrganizationClick={ action('button-click')}
-                      onNameClick={ action('button-click')}
-                      onAuthorsClick={ action('button-click')}
-                    />
-                </div>
-            </ModalHeader>
-        </ModalView>
-    ))
-;
+
+

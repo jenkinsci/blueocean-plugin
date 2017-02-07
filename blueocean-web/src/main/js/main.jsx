@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';
@@ -67,28 +67,33 @@ class App extends Component {
     render() {
         const { location } = this.context;
 
-        var pipeCaption = translate('pipelines', {
+        
+        const pipeCaption = translate('pipelines', {
             defaultValue: 'Pipelines',
         });
+
+        const topNavLinks = [
+            <Link query={location.query} to="/pipelines">{pipeCaption}</Link>,
+            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.links"/>,
+            <AdminLink t={translate} />,
+        ];
+
+        const userComponents = [
+            <div className="button-bar layout-small inverse">
+                { loginOrLogout(translate) }
+            </div>
+        ];
+
         return (
             <div className="Site">
-                <header className="Site-header">
-                    <div className="global-header">
-                        <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
-                        <nav>
-                            <Link query={location.query} to="/pipelines">{pipeCaption}</Link>
-                            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.links"/>
-                            <AdminLink t={translate} />
-                        </nav>
-                        <div className="button-bar layout-small inverse">
-                            { loginOrLogout(translate) }
-                        </div>
-                    </div>
-                </header>
+                <SiteHeader topNavLinks={topNavLinks} userComponents={userComponents}/>
+
                 <main className="Site-content">
                     {this.props.children /* Set by react-router */ }
                 </main>
                 <footer className="Site-footer">
+                    {/* FIXME: jenkins.logo.top is being used to force CSS loading */}
+                    <Extensions.Renderer extensionPoint="jenkins.logo.top"/>
                     <DevelopmentFooter />
                 </footer>
                 <ToastDrawer />

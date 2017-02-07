@@ -19,9 +19,8 @@ const CAPABILITY_MULTIBRANCH_BRANCH = 'io.jenkins.blueocean.rest.model.BlueBranc
 const CAPABILITY_SIMPLE_PIPELINE = 'org.jenkinsci.plugins.workflow.job.WorkflowJob';
 const PIPELINE_CAPABILITIES = [CAPABILITY_SIMPLE_PIPELINE, CAPABILITY_MULTIBRANCH_PIPELINE, CAPABILITY_MULTIBRANCH_BRANCH];
 
-function isRunFailed(run) {
-    const failureResults = ['FAILURE', 'ABORTED'];
-    return !!(run && run.result && failureResults.indexOf(run.result.toUpperCase()) !== -1);
+function isRunFinished(run) {
+    return !!(run && run.state === 'FINISHED');
 }
 
 /**
@@ -38,7 +37,7 @@ export class ReplayButton extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const statusChanged = isRunFailed(this.props.latestRun) !== isRunFailed(nextProps.latestRun);
+        const statusChanged = isRunFinished(this.props.latestRun) !== isRunFinished(nextProps.latestRun);
 
         if (statusChanged) {
             this.setState({
@@ -76,15 +75,17 @@ export class ReplayButton extends Component {
         const outerClassNames = outerClass.split(' ');
         const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'btn inverse' : '';
 
-        const isFailed = isRunFailed(this.props.latestRun);
+        const isFinished = isRunFinished(this.props.latestRun);
         const isPipeline = capable(this.props.runnable, PIPELINE_CAPABILITIES);
         const hasPermission = permit(this.props.runnable).start();
 
         const replayLabel = 'Re-run';
 
-        if (!isFailed || !isPipeline || !hasPermission) {
+
+        if (!isFinished || !isPipeline || !hasPermission) {
             return null;
         }
+
 
         return (
             <div className={`replay-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
