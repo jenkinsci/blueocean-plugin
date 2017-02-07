@@ -6,4 +6,4 @@ ext.store.init({
     },
 });
 
-require('./ContentPageHeaderStories'); // TODO: Split this into two
+require('./ContentPageHeaderStories');

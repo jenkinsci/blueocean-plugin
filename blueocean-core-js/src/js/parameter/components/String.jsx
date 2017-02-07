@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { TextInput, FormElement } from '@jenkins-cd/design-language';
 import { propTypes } from '../commonProptypes';
+import { removeMarkupTags } from '../../stringUtil';
 
 export class String extends Component {
 
     render() {
         const { defaultParameterValue: { value }, description, name, onChange } = this.props;
-        return (<FormElement title={ name }>
+        const cleanName = removeMarkupTags(name);
+        return (<FormElement title={ cleanName }>
             <div className="String">
-                <TextInput {...{ defaultValue: value, name, onChange }} />
-                { description && <div className="inputDescription">{description}</div> }
+                <TextInput {...{ defaultValue: value, name: cleanName, onChange }} />
+                { description && <div className="inputDescription">{removeMarkupTags(description)}</div> }
             </div>
         </FormElement>);
     }

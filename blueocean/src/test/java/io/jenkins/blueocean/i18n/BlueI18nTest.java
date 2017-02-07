@@ -125,13 +125,13 @@ public class BlueI18nTest extends BaseTest {
 
     @Test
     public void test_browser_cacheable() {
-        PluginWrapper plugin = BlueI18n.getPlugin("cloudbees-folder");
+        PluginWrapper plugin = BlueI18n.getPlugin("git");
         if (plugin == null) {
             // Skip. See waitForPluginLoaded() above.
             return;
         }
         String version = plugin.getVersion();
-        BlueI18n.BundleParams bundleParams = BlueI18n.getBundleParameters(String.format("cloudbees-folder/%s/pluginx.bundle", version));
+        BlueI18n.BundleParams bundleParams = BlueI18n.getBundleParameters(String.format("git/%s/pluginx.bundle", version));
 
         // Should be cacheable because the installed version matches the requested version + the
         // version is a release version (not a SNAPSHOT version).

@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.57",
+  "version": "0.0.60-jm-a",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.102",
+    "@jenkins-cd/design-language": "0.0.109",
     "@jenkins-cd/js-extensions": "0.0.33",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/logging": "0.0.6",
@@ -44,7 +44,7 @@
     "mobx": "2.6.0",
     "mobx-utils": "1.1.2",
     "pem-jwk": "1.5.1",
-    "react-router": "3.0.0"
+    "react-router": "2.3.0"
   },
   "peerDependencies": {
     "react": "^15.1.0",
