@@ -5,7 +5,6 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
 import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
 import com.cloudbees.plugins.credentials.Credentials;
 import com.cloudbees.plugins.credentials.CredentialsMatcher;
-import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.CredentialsStore;
@@ -13,11 +12,7 @@ import com.cloudbees.plugins.credentials.CredentialsStoreAction;
 import com.cloudbees.plugins.credentials.common.IdCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
-import com.google.common.collect.ImmutableSet;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.model.Describable;
-import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.ModelObject;
 import hudson.model.TopLevelItem;
@@ -28,8 +23,6 @@ import hudson.util.ListBoxModel;
 import io.jenkins.blueocean.rest.impl.pipeline.Messages;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -42,7 +35,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static com.cloudbees.plugins.credentials.CredentialsMatchers.*;
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.filter;
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.withId;
 
 /**
  * {@link CredentialsProvider} to serve credentials stored in user store.
@@ -58,21 +52,21 @@ import static com.cloudbees.plugins.credentials.CredentialsMatchers.*;
 public class BlueOceanCredentialsProvider extends CredentialsProvider {
     private static final BlueOceanDomainRequirement PROXY_REQUIREMENT = new BlueOceanDomainRequirement();
 
-    @NonNull
+    @Nonnull
     @Override
-    public <C extends Credentials> List<C> getCredentials(@NonNull Class<C> type,
-                                                          @edu.umd.cs.findbugs.annotations.Nullable ItemGroup itemGroup,
-                                                          @edu.umd.cs.findbugs.annotations.Nullable
+    public <C extends Credentials> List<C> getCredentials(@Nonnull Class<C> type,
+                                                          @Nonnull ItemGroup itemGroup,
+                                                          @Nonnull
                                                               Authentication authentication) {
         return getCredentials(type, itemGroup, authentication, Collections.<DomainRequirement>emptyList());
     }
 
-    @NonNull
-    public <C extends Credentials> List<C> getCredentials(@NonNull final Class<C> type,
-                                                          @edu.umd.cs.findbugs.annotations.Nullable ItemGroup itemGroup,
-                                                          @edu.umd.cs.findbugs.annotations.Nullable
+    @Nonnull
+    public <C extends Credentials> List<C> getCredentials(@Nonnull final Class<C> type,
+                                                          @Nullable ItemGroup itemGroup,
+                                                          @Nullable
                                                               Authentication authentication,
-                                                          @NonNull List<DomainRequirement> domainRequirements) {
+                                                          @Nonnull List<DomainRequirement> domainRequirements) {
         final List<C> result = new ArrayList<>();
         final FolderPropertyImpl prop = propertyOf(itemGroup);
         if (prop != null && prop.domain.test(domainRequirements)) {
@@ -314,5 +308,16 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                 throw new UnsupportedOperationException("Not supported");
             }
         }
+    }
+
+    /**
+     * Creates a domain specific to {@link BlueOceanCredentialsProvider}
+     *
+     * @param uri repo URL
+     * @return {@link Domain} instance
+     */
+    public static @Nonnull Domain createDomain(@Nonnull String uri){
+        return new Domain("blueocean-folder-credential-domain", Messages.BlueOceanCredentialsProvider_DomainDescription(),
+                CredentialsUtils.generateDomainSpecifications(uri));
     }
 }

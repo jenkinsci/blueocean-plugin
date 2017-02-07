@@ -2,6 +2,8 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.plugins.credentials.Credentials;
+import com.cloudbees.plugins.credentials.domains.Domain;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import hudson.model.Cause;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
@@ -79,12 +81,24 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 if(credentialId != null) {
                     validateCredentialId(credentialId, (AbstractFolder) item);
 
-                    ((OrganizationFolder) item)
-                            .addProperty(
-                                    new BlueOceanCredentialsProvider.FolderPropertyImpl(
-                                            authenticatedUser.getId(), credentialId,
-                                            GithubCredentialsDomain(apiUrl)
-                                    ));
+                    //Find domain attached to this credentialId, if present check if it's BlueOcean specific domain then
+                    //add the properties otherwise simply use it
+                    Domain domain = CredentialsUtils.findDomain(credentialId, authenticatedUser);
+                    if(domain == null){ //this should not happen since validateCredentialId found the credential
+                        throw new ServiceException.BadRequestExpception(
+                                new ErrorMessage(400, "Failed to create pipeline")
+                                        .add(new ErrorMessage.Error("scm.credentialId",
+                                                ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                                                "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
+                    }
+                    if(domain.test(new DomainRequirement())) {
+                        ((OrganizationFolder) item)
+                                .addProperty(
+                                        new BlueOceanCredentialsProvider.FolderPropertyImpl(
+                                                authenticatedUser.getId(), credentialId,
+                                                BlueOceanCredentialsProvider.createDomain(apiUrl)
+                                        ));
+                    }
                 }
                 GitHubSCMNavigator gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
                 if (sb.length() > 0) {
@@ -98,9 +112,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 return new GithubOrganizationFolder(organizationFolder, parent.getLink());
             }
         } catch (Exception e){
-            if(e instanceof ServiceException){
-                throw e;
-            }
             String msg = String.format("Error creating pipeline %s: %s",getName(),e.getMessage());
             logger.error(msg, e);
             if(item != null) {
@@ -111,6 +122,9 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                     throw new ServiceException.UnexpectedErrorException("Error cleaning up pipeline " + getName() + " due to error: " + e.getMessage(), e);
 
                 }
+            }
+            if(e instanceof ServiceException){
+                throw e;
             }
             throw new ServiceException.UnexpectedErrorException(msg, e);
         }

@@ -15,7 +15,11 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import jenkins.branch.OrganizationFolder;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.github_branch_source.Connector;
 import org.junit.Assert;
 import org.junit.Test;
@@ -89,25 +93,35 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 break;
             }
         }
+
+        assertNotNull(store);
         store.addDomain(new Domain("github-domain",
                 "Github Domain to store personal access token",
-                Collections.<DomainSpecification>emptyList()
-        ));
+                Collections.<DomainSpecification>singletonList(new BlueOceanDomainSpecification())));
+
+
         Domain domain = store.getDomainByName("github-domain");
         StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                 "github", "Github Access Token", user.getId(), "12345");
         store.addCredentials(domain, credential);
 
+        //create another credentials with same id in system store with different description
+        for(CredentialsStore s: CredentialsProvider.lookupStores(Jenkins.getInstance())){
+            s.addCredentials(Domain.global(), new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
+                    "github", "System Github Access Token", user.getId(), "12345"));
+        }
 
         //create org folder and attach user and credential id to it
         OrganizationFolder organizationFolder = j.createProject(OrganizationFolder.class, "demo");
-        AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId(), "github-domain"
+        AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId(),
+                BlueOceanCredentialsProvider.createDomain("https://api.github.com"));
 
-        );
         organizationFolder.addProperty(prop);
 
         // lookup for created credential id in system store, it should resolve to previously created user store credential
-        StandardCredentials c = Connector.lookupScanCredentials(organizationFolder, null, credential.getId());
+        StandardCredentials c = Connector.lookupScanCredentials(organizationFolder, "https://api.github.com", credential.getId());
+        assertEquals("Github Access Token", c.getDescription());
+
         assertNotNull(c);
         assertTrue(c instanceof StandardUsernamePasswordCredentials);
         StandardUsernamePasswordCredentials usernamePasswordCredentials = (StandardUsernamePasswordCredentials) c;
@@ -115,11 +129,16 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
         assertEquals(credential.getPassword().getPlainText(),usernamePasswordCredentials.getPassword().getPlainText());
         assertEquals(credential.getUsername(),usernamePasswordCredentials.getUsername());
 
+        //check the domain
+        Domain d = CredentialsUtils.findDomain(credential.getId(), user);
+        assertNotNull(d);
+        assertTrue(d.test(new BlueOceanDomainRequirement()));
+
         //now remove this property
         organizationFolder.getProperties().remove(prop);
 
-        //it must not be found
+        //it must resolve to system credential
         c = Connector.lookupScanCredentials(organizationFolder, null, credential.getId());
-        assertNull(c);
+        assertEquals("System Github Access Token", c.getDescription());
     }
 }

@@ -1,9 +1,6 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
-import com.cloudbees.plugins.credentials.domains.DomainSpecification;
-import com.google.common.collect.ImmutableList;
 import hudson.model.Cause;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
@@ -17,7 +14,6 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreateRequestImpl;
-import java.util.Collections;
 import jenkins.branch.BranchSource;
 import jenkins.branch.MultiBranchProjectDescriptor;
 import jenkins.model.Jenkins;
@@ -76,10 +72,12 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
                                             ErrorMessage.Error.ErrorCodes.INVALID.toString(),
                                             "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
                 }
-                project.addProperty(
-                        new BlueOceanCredentialsProvider.FolderPropertyImpl(authenticatedUser.getId(),
-                                scmConfig.getCredentialId(), new Domain("blue-ocean-proxy", "Blue Ocean Proxy domain", /** TODO insert specification here **/
-                            Collections.<DomainSpecification>emptyList())));
+                if(domain.test(new BlueOceanDomainRequirement())) { //this is blueocean specific domain
+                    project.addProperty(
+                            new BlueOceanCredentialsProvider.FolderPropertyImpl(authenticatedUser.getId(),
+                                    scmConfig.getCredentialId(),
+                                    BlueOceanCredentialsProvider.createDomain(sourceUri)));
+                }
             }
 
             String credentialId = StringUtils.defaultString(scmConfig.getCredentialId());

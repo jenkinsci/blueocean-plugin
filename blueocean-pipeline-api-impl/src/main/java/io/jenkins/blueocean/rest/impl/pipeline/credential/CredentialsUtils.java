@@ -19,12 +19,14 @@ import com.google.common.collect.Iterables;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -92,6 +94,21 @@ public class CredentialsUtils {
         return null;
     }
 
+    /**
+     * Get all domains this user has access to
+     */
+    public static @Nonnull Iterable<Domain> getUserDomains(@Nonnull User user){
+        List<Domain> domains = new ArrayList<>();
+        for(final CredentialsStore store: findUserStores(user)) {
+            domains.addAll(store.getDomains());
+        }
+        for(final CredentialsStore store: CredentialsProvider.lookupStores(Jenkins.getInstance())){
+            domains.addAll(store.getDomains());
+        }
+        return domains;
+    }
+
+
     public static @CheckForNull <C extends Credentials> C  findCredential(@Nonnull String id, @Nonnull Class<C> type){
         if(User.current() == null){
             throw new ServiceException.UnauthorizedException("No authenticated user found. Please login");
@@ -128,33 +145,46 @@ public class CredentialsUtils {
     }
 
     private static @CheckForNull Iterable<CredentialsStore> findUserStores(User user){
-        return Iterables.filter(CredentialsProvider.lookupStores(user), new Predicate<CredentialsStore>() {
-            @Override
-            public boolean apply(@Nullable CredentialsStore s) {
-                return s!= null && s.hasPermission(CredentialsProvider.CREATE) && s.hasPermission(CredentialsProvider.UPDATE);
-            }
-        });
+        List<CredentialsStore> stores = new ArrayList<>();
+
+        //First user store
+        for (CredentialsStore store : CredentialsProvider.lookupStores(user)) {
+            stores.add(store);
+        }
+
+        //then system store
+        for (CredentialsStore store : CredentialsProvider.lookupStores(Jenkins.getInstance())) {
+            stores.add(store);
+        }
+        return stores;
 
     }
 
-    private static List<DomainSpecification> generateDomainSpecifications(@Nullable URI uri){
-        if (uri == null) {
+    public static List<DomainSpecification> generateDomainSpecifications(@Nullable String  uriStr){
+        if (StringUtils.isBlank(uriStr)) {
             return Collections.emptyList();
         }
 
         List<DomainSpecification> domainSpecifications = new ArrayList<>();
+        try {
+            URI uri = new URI(uriStr);
 
-        // XXX: UriRequirementBuilder.fromUri() maps "" path to "/", so need to take care of it here
-        String path = uri.getRawPath() == null ? null : (uri.getRawPath().trim().isEmpty() ? "/" : uri.getRawPath());
+            // XXX: UriRequirementBuilder.fromUri() maps "" path to "/", so need to take care of it here
+            String path = uri.getRawPath() == null ? null : (uri.getRawPath().trim().isEmpty() ? "/" : uri.getRawPath());
 
-        domainSpecifications.add(new PathSpecification(path, "", false));
-        if (uri.getPort() != -1) {
-            domainSpecifications.add(new HostnamePortSpecification(uri.getHost() + ":" + uri.getPort(), null));
-        } else {
-            domainSpecifications.add(new HostnameSpecification(uri.getHost(), null));
+            domainSpecifications.add(new PathSpecification(path, "", false));
+            if (uri.getPort() != -1) {
+                domainSpecifications.add(new HostnamePortSpecification(uri.getHost() + ":" + uri.getPort(), null));
+            } else {
+                domainSpecifications.add(new HostnameSpecification(uri.getHost(), null));
+            }
+            domainSpecifications.add(new SchemeSpecification(uri.getScheme()));
+        } catch (URISyntaxException e) {
+            // TODO: handle git repo of form: [user@]host.xz:path/to/repo.git/, when URIRequirementBuilder.fromUri() supports it
+            //       for now, we are returning empty list to match with  URIRequirementBuilder.fromUri()
+            return domainSpecifications;
         }
-        domainSpecifications.add(new SchemeSpecification(uri.getScheme()));
-        return domainSpecifications;
+        return Collections.emptyList();
     }
 
     private static @Nonnull Domain findOrCreateDomain(@Nonnull CredentialsStore store,
@@ -165,7 +195,7 @@ public class CredentialsUtils {
         Domain domain = store.getDomainByName(domainName);
         if (domain == null) { //create new one
             boolean result = store.addDomain(new Domain(domainName,
-                    "Github Domain to store personal access token", domainSpecifications)
+                    domainName+" to store credentials by BlueOcean", domainSpecifications)
             );
             if (!result) {
                 throw new ServiceException.BadRequestExpception("Failed to create credential domain: " + domainName);
