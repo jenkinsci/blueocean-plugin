@@ -3,31 +3,21 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.60",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.60",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.60.tgz",
+      "version": "0.0.60-jm-a",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.60-jm-a",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.60-jm-a.tgz",
       "dependencies": {
         "@jenkins-cd/design-language": {
-          "version": "0.0.102",
-          "from": "@jenkins-cd/design-language@0.0.102",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.102.tgz"
-        },
-        "history": {
-          "version": "3.2.1",
-          "from": "history@>=3.0.0 <4.0.0",
-          "resolved": "https://registry.npmjs.org/history/-/history-3.2.1.tgz"
-        },
-        "react-router": {
-          "version": "3.0.0",
-          "from": "react-router@3.0.0",
-          "resolved": "https://registry.npmjs.org/react-router/-/react-router-3.0.0.tgz"
+          "version": "0.0.109",
+          "from": "@jenkins-cd/design-language@0.0.109",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.109.tgz"
         }
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.107",
-      "from": "@jenkins-cd/design-language@0.0.107",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.107.tgz"
+      "version": "0.0.109",
+      "from": "@jenkins-cd/design-language@0.0.109",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.109.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -4263,11 +4253,6 @@
       "dev": true,
       "optional": true
     },
-    "query-string": {
-      "version": "4.3.1",
-      "from": "query-string@>=4.2.2 <5.0.0",
-      "resolved": "https://registry.npmjs.org/query-string/-/query-string-4.3.1.tgz"
-    },
     "querystring": {
       "version": "0.2.0",
       "from": "querystring@0.2.0",
@@ -5453,11 +5438,6 @@
       "from": "vm-browserify@>=0.0.1 <0.1.0",
       "resolved": "https://registry.npmjs.org/vm-browserify/-/vm-browserify-0.0.4.tgz",
       "dev": true
-    },
-    "warning": {
-      "version": "3.0.0",
-      "from": "warning@>=3.0.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/warning/-/warning-3.0.0.tgz"
     },
     "whatwg-fetch": {
       "version": "2.0.1",
