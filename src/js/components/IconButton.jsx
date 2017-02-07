@@ -72,12 +72,14 @@ export function IconButton(props:Props) {
             style={style}
             onClick={_onClick}
         >
-            { icon &&
-            <span className="IconButton-icon">{icon}</span>
-            }
-            { label &&
-            <span className="IconButton-text">{label}</span>
-            }
+            <div className="IconButton-wrapper">
+                { icon &&
+                <span className="IconButton-icon">{icon}</span>
+                }
+                { label &&
+                <span className="IconButton-text">{label}</span>
+                }
+            </div>
         </button>
     );
 }

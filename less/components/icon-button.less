@@ -1,7 +1,10 @@
 button.IconButton {
     .IconButton-medium;
-    display: inline-flex;
-    align-items: center;
+
+    .IconButton-wrapper {
+        display: flex;
+        align-items: center;
+    }
 
     // prevent excess vertical space which throws off alignment
     .IconButton-icon > * {
