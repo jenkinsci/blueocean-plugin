@@ -59,11 +59,11 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
                         .key("enableJWT").value(BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
                     .endObject()
                 .endObject()
-                // Environment properties. If more "env" vars are added, we could just iterate the
-                // system props and add any starting with "blueocean.". However, lets not do that
+                // If more "features" vars are added, we could just iterate the system props
+                // and add any starting with "blueocean.features.". However, lets not do that
                 // unless there are more than a few.
-                .key("env").object()
-                    .key("organizations.enabled").value(Boolean.getBoolean("blueocean.organizations.enabled"))
+                .key("features").object()
+                    .key("organizations.enabled").value(Boolean.getBoolean("blueocean.features.organizations.enabled"))
                 .endObject()
             .endObject();
 
