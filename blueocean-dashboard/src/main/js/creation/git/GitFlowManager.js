@@ -73,7 +73,7 @@ export default class GitFlowManager extends FlowManager {
     }
 
     createWithSSHKeyCredential(repositoryUrl, sshKey) {
-        this.changeState(STATE.CREATE_CREDS);
+        this._showCreateCredsStep();
 
         return this._credentialsApi.saveSSHKeyCredential(sshKey)
             .then(({ credentialId }) => (
@@ -83,7 +83,7 @@ export default class GitFlowManager extends FlowManager {
     }
 
     createWithUsernamePasswordCredential(repositoryUrl, username, password) {
-        this.changeState(STATE.CREATE_CREDS);
+        this._showCreateCredsStep();
 
         return this._credentialsApi.saveUsernamePasswordCredential(username, password)
             .then(({ credentialId }) => (
@@ -99,6 +99,8 @@ export default class GitFlowManager extends FlowManager {
         }
 
         // if it wasn't, then we need to create the cred, then use it in the creation
+        this._showCreateCredsStep();
+
         return this._credentialsApi.saveSystemSSHCredential(SYSTEM_SSH_ID, SYSTEM_SSH_DESCRIPTION)
             .then(({ credentialId }) => (
                     this.createPipeline(repositoryUrl, credentialId)
@@ -139,6 +141,14 @@ export default class GitFlowManager extends FlowManager {
         // remove 'system ssh' from the main list
         return credentialList
             .filter(item => item.id !== SYSTEM_SSH_ID);
+    }
+
+    _showCreateCredsStep() {
+        this.renderStep({
+            stateId: STATE.CREATE_CREDS,
+            stepElement: <GitCompletedStep />,
+            afterStateId: STATE.STEP_CONNECT,
+        });
     }
 
     _initiateCreatePipeline() {
