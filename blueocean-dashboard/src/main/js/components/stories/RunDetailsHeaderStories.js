@@ -10,17 +10,15 @@ import {
     TabLink,
 } from '@jenkins-cd/design-language';
 import WithContext from '@jenkins-cd/design-language/dist/js/stories/WithContext';
-
 import {RunDetailsHeader} from '../RunDetailsHeader';
-
 import {RunRecord} from '../records';
 
-import {changeSet, currentRunRaw, pipeline} from './data/changesData';
+import {testData} from './data/changesData';
 
-const baseRun = new RunRecord(currentRunRaw);
-const currentRun = baseRun.set('changeSet', changeSet.slice(0, 1));
-const currentRunLong = baseRun.set('changeSet', changeSet.slice(0, 5));
-const status = currentRun.getComputedResult() || '';
+const runJSON = JSON.stringify(testData.run);
+const temp = JSON.parse(runJSON);
+// temp.changeSet = new ChangeSetRecord(temp.changeSet);
+const run = new RunRecord(temp);
 
 const strings = {
     "common.date.duration.format": "m[ minutes] s[ seconds]",
@@ -54,11 +52,10 @@ RunDetailsHeader.timeManager = {
 };
 
 storiesOf('Run Details Header', module)
-    .add('Some changes', someChanges)
-    .add('Lots of changes', lotsaChanges)
+    .add('Basic', basic)
 ;
 
-function someChanges() {
+function basic() {
 
     const topNavLinks = [
         <a href="#" className="selected">Pipeline</a>,
@@ -72,27 +69,12 @@ function someChanges() {
             <RunDetailsHeader
                 locale="en"
                 t={t}
-                pipeline={pipeline}
-                data={currentRun}
+                pipeline={testData.pipeline}
+                data={run}
                 onOrganizationClick={ action('button-click')}
                 onNameClick={ action('button-click')}
                 onAuthorsClick={ action('button-click')}
                 topNavLinks={topNavLinks}/>
         </WithContext>
     );
-}
-
-function lotsaChanges() {
-
-    return (
-        <WithContext context={ctx}>
-            <RunDetailsHeader t={t}
-                              locale="en"
-                              pipeline={pipeline}
-                              data={currentRunLong}
-                              onOrganizationClick={ action('button-click')}
-                              onNameClick={ action('button-click')}
-                              onAuthorsClick={ action('button-click')}/>
-        </WithContext>
-    )
 }
