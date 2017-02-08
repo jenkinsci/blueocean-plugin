@@ -7,7 +7,7 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { i18nTranslator, NotFound, User, Paths, ContentPageHeader, logging } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, NotFound, User, Paths, ContentPageHeader, logging, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
@@ -82,8 +82,8 @@ export class PipelinePage extends Component {
                 <ContentPageHeader pageTabBase={baseUrl} pageTabLinks={pageTabLinks}>
                     <WeatherIcon score={pipeline.weatherScore} />
                     <h1>
-                        <Link to={orgUrl} query={location.query}>{organization}</Link>
-                        <span>&nbsp;/&nbsp;</span>
+                        {AppConfig.showOrg() && <span><Link to={orgUrl} query={location.query}>{organization}</Link>
+                            <span>&nbsp;/&nbsp;</span></span>}
                             <Link to={activityUrl} query={location.query}>
                                 <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
                             </Link>
