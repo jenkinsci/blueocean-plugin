@@ -63,11 +63,23 @@
         "displayName": "Banana is Unstable",
         "edges": [
             {
-                "id": "33"
+                "id": "150"
             }
         ],
         "id": "129",
         "result": "UNSTABLE",
+        "startTime": "2016-05-02T16:06:29.942+1000",
+        "state": "FINISHED"
+    },
+    {
+        "displayName": "Banana is Aborted",
+        "edges": [
+            {
+                "id": "33"
+            }
+        ],
+        "id": "150",
+        "result": "ABORTED",
         "startTime": "2016-05-02T16:06:29.942+1000",
         "state": "FINISHED"
     },
