@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.60-jm-a",
+  "version": "0.0.61-kz-1",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -9,6 +9,7 @@
     "storybook:port": "npm run start-storybook -- -p ",
     "flow": "flow",
     "gulp": "gulp",
+    "bundle:watch": "gulp watch",
     "test": "gulp test",
     "prepublish": "gulp"
   },
