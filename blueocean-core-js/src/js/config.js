@@ -4,6 +4,7 @@
 import { blueocean } from './scopes';
 
 const config = blueocean.config || {};
+const features = config.features || {};
 
 export default {
     getJenkinsConfig() {
@@ -24,6 +25,21 @@ export default {
 
     getPluginInfo(pluginId) {
         return blueocean.jsExtensions.find((pluginInfo) => pluginInfo.hpiPluginId === pluginId);
+    },
+
+    isFeatureEnabled(name, defaultValue) {
+        const value = features[name];
+        if (typeof value === 'boolean') {
+            return value;
+        }
+        if (typeof defaultValue === 'boolean') {
+            return defaultValue;
+        }
+        return false;
+    },
+
+    showOrg() {
+        return this.isFeatureEnabled('organizations.enabled', false);
     },
 
     /**

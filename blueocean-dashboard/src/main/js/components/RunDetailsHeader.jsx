@@ -2,7 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import { logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
+import { logging, TimeManager, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { ResultPageHeader } from '@jenkins-cd/blueocean-core-js';
@@ -71,8 +71,8 @@ class RunDetailsHeader extends Component {
         // Sub-trees
         const title = (
             <h1 className="RunDetailsHeader-title">
-                <a onClick={ onOrganizationClick }>{ run.organization }</a>
-                <span>&nbsp;/&nbsp;</span>
+                {AppConfig.showOrg() && <span><a onClick={ onOrganizationClick }>{ run.organization }</a>
+                <span>&nbsp;/&nbsp;</span></span>}
                 <a className="path-link" onClick={ onNameClick }>
                     <ExpandablePath path={ fullDisplayName } hideFirst className="dark-theme" iconSize={ 20 } />
                 </a>

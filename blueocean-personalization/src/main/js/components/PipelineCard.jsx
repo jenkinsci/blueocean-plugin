@@ -3,9 +3,8 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { capable, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
+import { capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, Favorite } from '@jenkins-cd/design-language';
-import { RunButton, ReplayButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -156,6 +155,13 @@ export class PipelineCard extends Component {
         const activityUrl = `/organizations/${encodeURIComponent(organization)}/` +
         `${encodeURIComponent(names.fullName)}/activity`;
 
+        let displayPath;
+        if (AppConfig.showOrg()) {
+            displayPath = `${organization}/${fullDisplayName}`;
+        } else {
+            displayPath = fullDisplayName;
+        }
+
         return (
             <div className={`pipeline-card ${bgClass}`} onClick={() => this._navigateToRunDetails()}>
                 <LiveStatusIndicator
@@ -165,7 +171,7 @@ export class PipelineCard extends Component {
 
                 <span className="name">
                     <Link to={activityUrl} onClick={(event) => stopProp(event)}>
-                        <ExpandablePath path={`${organization}/${fullDisplayName}`} className="dark-theme" />
+                        <ExpandablePath path={displayPath} className="dark-theme" />
                     </Link>
                 </span>
 

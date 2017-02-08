@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, Table } from '@jenkins-cd/design-language';
-import { i18nTranslator, ContentPageHeader } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ContentPageHeader, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
@@ -88,7 +88,7 @@ export class Pipelines extends Component {
                                     <PipelineRowItem
                                         t={ translate }
                                         key={ key } pipeline={ pipeline }
-                                        showOrganization={ !organization }
+                                        showOrganization={ AppConfig.showOrg() }
                                     />
                                 );
                             })
