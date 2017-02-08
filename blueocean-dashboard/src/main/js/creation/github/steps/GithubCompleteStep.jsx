@@ -36,8 +36,7 @@ export default class GithubCompleteStep extends React.Component {
 
     _getError(state) {
         return state === STATE.STEP_COMPLETE_SAVING_ERROR ||
-                state === STATE.STEP_COMPLETE_EVENT_ERROR ||
-                state === STATE.STEP_COMPLETE_EVENT_TIMEOUT;
+                state === STATE.STEP_COMPLETE_EVENT_ERROR;
     }
 
     _getContent(state) {
