@@ -19,17 +19,17 @@ export class Choice extends Component {
     render() {
         const { defaultParameterValue: { value }, description, name, choices, onChange } = this.props;
         const uxChoice = this.radioOrDropDown(choices);
+        const cleanName = removeMarkupTags(name);
+        const cleanDescription = removeMarkupTags(description);
         const options = {
             defaultOption: value,
             options: choices,
-            name,
+            name: cleanName,
             onChange,
         };
-        const cleanName = removeMarkupTags(name);
-        return (<FormElement title={ cleanName }>
+        return (<FormElement title={ cleanDescription }>
             <div className="Choice">
                 { React.createElement(uxChoice, { ...options }) }
-                { description && <div className="inputDescription">{removeMarkupTags(description)}</div> }
             </div>
         </FormElement>);
     }
