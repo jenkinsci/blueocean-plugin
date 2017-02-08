@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import LogConsoleView from './LogConsoleView';
-import { sseConnection } from '@jenkins-cd/blueocean-core-js';
+import { sseConnection, logging } from '@jenkins-cd/blueocean-core-js';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
@@ -22,8 +22,9 @@ import {
 import { calculateLogView, calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl, calculateFetchAll } from '../util/UrlUtils';
 import { calculateNode } from '../util/KaraokeHelper';
 
-
 const { string, object, any, func } = PropTypes;
+const loggerSee = logging.logger('io.jenkins.blueocean.karaoke.sse');
+const logger = logging.logger('io.jenkins.blueocean.karaoke');
 
 // FIXME: needs to use i18n for translations
 const QueuedState = () => (
@@ -159,6 +160,7 @@ export class RunDetailsPipeline extends Component {
             // we turn on refetch so we always fetch a new Node result
             const refetch = true;
             const refetchNodes = () => {
+                logger.debug(`re-fetching from server`);
                 delete this.mergedConfig.node;
                 fetchNodes({ ...this.mergedConfig, refetch });
             };
@@ -177,6 +179,7 @@ export class RunDetailsPipeline extends Component {
                 }
             case 'pipeline_step':
                 {
+                    loggerSee.debug('event', event);
                     // we are not using an early out for the events since we want to refresh the node if we finished
                     if (this.state.followAlong) { // if we do it means we want karaoke
                         let parallel = true;// JENKINS-37962 FIXME the problem is with new syntax that is not reporting satge_id
@@ -230,6 +233,7 @@ export class RunDetailsPipeline extends Component {
                 }
             default:
                 {
+                    loggerSee.debug(`event has arrived and not handled. Event:`, event);
                     // console.log(event);
                 }
             }
@@ -377,6 +381,9 @@ export class RunDetailsPipeline extends Component {
 
         const shouldShowCV = (!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView;
         const shouldShowEmptyState = !isPipelineQueued && hasResultsForSteps && noSteps;
+        if (nodes && nodes[nodeKey]) {
+            logger.debug(`with key: ${nodeKey}\n`, nodes[nodeKey].model[1]);
+        }
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
