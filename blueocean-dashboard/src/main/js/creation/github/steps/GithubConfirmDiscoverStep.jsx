@@ -14,10 +14,11 @@ export default class GithubConfirmDiscoverStep extends React.Component {
         const { flowManager } = this.props;
         const title = 'Create Pipelines';
         const buttonLabel = 'Create Pipelines';
+        const showWarning = flowManager.existingOrgFolder && !flowManager.existingAutoDiscover;
 
         return (
             <FlowStep {...this.props} className="github-confirm-discover-step" title={title}>
-                { flowManager.existingAutoDiscover &&
+                { !showWarning &&
                 <p className="instructions">
                     When this option is selected, Jenkins will actively search for new repositories
                     in {flowManager.selectedOrganization.name} that contain Jenkinsfiles and
@@ -25,7 +26,7 @@ export default class GithubConfirmDiscoverStep extends React.Component {
                 </p>
                 }
 
-                { !flowManager.existingAutoDiscover &&
+                { showWarning &&
                 <div>
                     <p className="instructions">
                         By changing "{flowManager.selectedOrganization.name}" to "Automatically discover",
