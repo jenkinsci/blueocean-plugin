@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { Page, Table } from '@jenkins-cd/design-language';
 import { i18nTranslator, ContentPageHeader, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
+import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
@@ -50,6 +51,7 @@ export class Pipelines extends Component {
             translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' }),
             { label: '', className: 'actions-col' },
         ];
+        this.props.setTitle('Jenkins Blue Ocean');
         return (
             <Page>
                 <ContentPageHeader>
@@ -121,4 +123,4 @@ Pipelines.propTypes = {
     setTitle: func,
 };
 
-export default Pipelines;
+export default documentTitle(Pipelines);
