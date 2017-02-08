@@ -17,15 +17,29 @@ export default class GithubConfirmDiscoverStep extends React.Component {
 
         return (
             <FlowStep {...this.props} className="github-confirm-discover-step" title={title}>
+                { flowManager.existingAutoDiscover &&
+                <p className="instructions">
+                    When this option is selected, Jenkins will actively search for new repositories
+                    in {flowManager.selectedOrganization.name} that contain Jenkinsfiles and
+                    create Pipelines for them.
+                </p>
+                }
+
+                { !flowManager.existingAutoDiscover &&
                 <div>
                     <p className="instructions">
-                        When this option is selected, Jenkins will actively search for new repositories
-                        in {flowManager.selectedOrganization.name} that contain Jenkinsfiles and
-                        create Pipelines for them.
+                        By changing "{flowManager.selectedOrganization.name}" to "Automatically discover",
+                        the current {flowManager.existingPipelineCount} pipelines will be preserved.
                     </p>
 
-                    <button onClick={() => this.confirmDiscover()}>{buttonLabel}</button>
+                    <p className="instructions">
+                        Jenkins will actively search for new repositories that contain Jenkinsfiles and
+                        create Pipelines for them.
+                    </p>
                 </div>
+                }
+
+                <button onClick={() => this.confirmDiscover()}>{buttonLabel}</button>
             </FlowStep>
         );
     }

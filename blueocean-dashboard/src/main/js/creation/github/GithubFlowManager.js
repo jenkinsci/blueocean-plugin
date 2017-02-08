@@ -54,6 +54,10 @@ export default class GithubFlowManager extends FlowManager {
         return this.existingOrgFolder && this.existingOrgFolder.requestedRepos && this.existingOrgFolder.requestedRepos.length === 0;
     }
 
+    @computed get existingPipelineCount() {
+        return this.existingOrgFolder && this.existingOrgFolder.pipelines && this.existingOrgFolder.pipelines.length || 0;
+    }
+
     @observable
     selectedRepository = null;
 
