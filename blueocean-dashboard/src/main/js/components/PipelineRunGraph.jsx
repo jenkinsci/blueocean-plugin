@@ -32,6 +32,9 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
     } else if (jenkinsNode.result === 'UNSTABLE') {
         state = 'unstable';
         completePercent = 100;
+    } else if (jenkinsNode.result === 'ABORTED') {
+        state = 'aborted';
+        completePercent = 100;
     } else if (jenkinsNode.state === 'RUNNING') {
         state = 'running';
         completePercent = 50;
@@ -40,7 +43,6 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         state = 'queued';
         completePercent = 0;
     } else if (jenkinsNode.state === 'NOT_BUILT'
-        || jenkinsNode.state === 'ABORTED'
         || jenkinsNode.state == null) {
         state = 'not_built';
         completePercent = 0;
