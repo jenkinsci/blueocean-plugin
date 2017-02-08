@@ -13,11 +13,12 @@ export default class GithubConfirmDiscoverStep extends React.Component {
     render() {
         const { flowManager } = this.props;
         const title = 'Create Pipelines';
+        const disabled = flowManager.stepsDisabled;
         const buttonLabel = 'Create Pipelines';
         const showWarning = flowManager.existingOrgFolder && !flowManager.existingAutoDiscover;
 
         return (
-            <FlowStep {...this.props} className="github-confirm-discover-step" title={title}>
+            <FlowStep {...this.props} className="github-confirm-discover-step" title={title} disabled={disabled}>
                 { !showWarning &&
                 <p className="instructions">
                     When this option is selected, Jenkins will actively search for new repositories

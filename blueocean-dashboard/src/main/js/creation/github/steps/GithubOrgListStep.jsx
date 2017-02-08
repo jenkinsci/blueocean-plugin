@@ -32,9 +32,10 @@ export default class GithubOrgListStep extends React.Component {
     render() {
         const { flowManager } = this.props;
         const title = 'In which Github organization are your repositories located?';
+        const disabled = flowManager.stepsDisabled;
 
         return (
-            <FlowStep {...this.props} className="github-org-list-step layout-large" title={title}>
+            <FlowStep {...this.props} className="github-org-list-step layout-large" title={title} disabled={disabled}>
                 <List
                   className="org-list"
                   data={flowManager.organizations}

@@ -21,11 +21,12 @@ export default class GithubRepositoryStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
-        const buttonDisabled = !flowManager.selectedRepository;
         const title = 'Choose a repository';
+        const disabled = flowManager.stepsDisabled;
+        const buttonDisabled = !flowManager.selectedRepository;
 
         return (
-            <FlowStep {...this.props} className="github-repo-list-step" title={title}>
+            <FlowStep {...this.props} className="github-repo-list-step" title={title} disabled={disabled}>
                 { flowManager.selectableRepositories.length > 0 &&
                 <div className="container">
                     <List

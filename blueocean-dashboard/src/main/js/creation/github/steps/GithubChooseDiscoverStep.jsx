@@ -15,22 +15,33 @@ export default class GithubChooseDiscoverStep extends React.Component {
     }
 
     selectDiscover(discover) {
+        const { flowManager } = this.props;
+
+        // need to explicitly suppress this as click handlers for buttons w/ nested HTML
+        // are still triggered even when step's fieldset is disabled
+        if (flowManager.stepsDisabled) {
+            return;
+        }
+
         this.setState({
             discover,
         });
-        this.props.flowManager.selectDiscover(discover);
+
+        flowManager.selectDiscover(discover);
     }
 
     render() {
-        // const { flowManager } = this.props;
+        const { flowManager } = this.props;
         const title = 'Do you want to create a Pipeline for one repository or automatically discover?';
+        const disabled = flowManager.stepsDisabled;
+
         // const existing = flowManager.existingAutoDiscover ? 'This organization is already set to "Automatically Discover."' : '';
         const option1Class = this.state.discover === false ? 'u-selected' : '';
         const option2Class = this.state.discover === true ? 'u-selected' : '';
         // const option2Class = this.state.discover === true || existing ? 'u-selected' : '';
 
         return (
-            <FlowStep {...this.props} className="github-choose-discover-step" title={title}>
+            <FlowStep {...this.props} className="github-choose-discover-step" title={title} disabled={disabled}>
                 { /* existing && <p className="instructions">{existing}</p> */ }
 
                 <div className="toggle layout-large">

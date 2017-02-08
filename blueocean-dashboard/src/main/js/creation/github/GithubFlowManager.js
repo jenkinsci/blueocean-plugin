@@ -67,6 +67,15 @@ export default class GithubFlowManager extends FlowManager {
     @observable
     selectedAutoDiscover = null;
 
+    @computed get stepsDisabled() {
+        return this.stateId === STATE.PENDING_CREATION_SAVING ||
+            this.stateId === STATE.STEP_COMPLETE_SAVING_ERROR ||
+            this.stateId === STATE.PENDING_CREATION_EVENTS ||
+            this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
+            this.stateId === STATE.STEP_COMPLETE_EVENT_TIMEOUT ||
+            this.stateId === STATE.STEP_COMPLETE_SUCCESS;
+    }
+
     _repositoryCache = {};
 
     _credentialId = null;
