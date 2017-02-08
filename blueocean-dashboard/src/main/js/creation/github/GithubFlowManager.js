@@ -51,7 +51,7 @@ export default class GithubFlowManager extends FlowManager {
     existingOrgFolder = null;
 
     @computed get existingAutoDiscover() {
-        return this.existingOrgFolder && this.existingOrgFolder.requestedRepos && this.existingOrgFolder.requestedRepos.length === 0;
+        return this.existingOrgFolder && this.existingOrgFolder.repoAutoDiscover;
     }
 
     @computed get existingPipelineCount() {
@@ -335,7 +335,7 @@ export default class GithubFlowManager extends FlowManager {
      * @private
      */
     _getFullRepoNameList() {
-        const existingPipelines = this.existingOrgFolder && this.existingOrgFolder.requestedRepos.slice();
+        const existingPipelines = this.existingOrgFolder && this.existingOrgFolder.pipelines || [];
         return [].concat(existingPipelines, this.selectedRepository.name);
     }
 

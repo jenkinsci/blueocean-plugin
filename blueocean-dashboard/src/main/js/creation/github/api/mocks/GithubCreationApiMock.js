@@ -35,7 +35,7 @@ export class GithubCreationApi extends ApiMock {
             repoData.repositories.items = [];
             repoData.repositories.nextPage = null;
         } else if (this._hasUrlKey('no-selectable-repos=true')) {
-            // trim down the data so it matches what's in org folder's "requestedRepos"
+            // trim down the data so it matches what's in org folder's "pipelines"
             repoData.repositories.items = repoData.repositories.items.slice(0, 2);
             repoData.repositories.nextPage = null;
         }
@@ -48,7 +48,7 @@ export class GithubCreationApi extends ApiMock {
             const orgFolder = Utils.clone(orgfolderSuccess);
 
             if (this._hasUrlKey('single-repo=true')) {
-                orgFolder.requestedRepos = orgFolder.pipelines;
+                orgFolder.repoAutoDiscover = false;
             }
 
             return this._delayedResolve({

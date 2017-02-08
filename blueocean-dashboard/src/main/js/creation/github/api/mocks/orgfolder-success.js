@@ -44,7 +44,7 @@ export default {
     "numberOfFolders": 0,
     "numberOfPipelines": 0,
     "icon": "https://avatars.githubusercontent.com/u/143466?v=3&s=32",
-    "requestedRepos": [],
+    "repoAutoDiscover": true,
     "pipelines": ["blog-examples", "blueocean-plugin"],
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.OrganizationFolderRunImpl",
