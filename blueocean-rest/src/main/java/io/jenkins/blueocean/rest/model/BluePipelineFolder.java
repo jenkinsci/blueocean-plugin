@@ -22,8 +22,9 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ABSTRACT
 public abstract class BluePipelineFolder extends BluePipeline {
 
     private static final String NUMBER_OF_PIPELINES = "numberOfPipelines";
-
     private static final String NUMBER_OF_FOLDERS = "numberOfFolders";
+    private static final String PIPELINE_NAMES = "pipelineNames";
+    private static final String PIPELINE_FOLDER_NAMES = "pipelineFolderNames" ;
 
     /**
      * @return Gives pipeline container
@@ -101,4 +102,10 @@ public abstract class BluePipelineFolder extends BluePipeline {
 
     @Exported(skipNull = true)
     public abstract BlueIcon getIcon();
+
+    /**
+     * Returns pipeline folder names present in this folder.
+     */
+    @Exported(name=PIPELINE_FOLDER_NAMES)
+    public abstract Iterable<String> getPipelineFolderNames();
 }
