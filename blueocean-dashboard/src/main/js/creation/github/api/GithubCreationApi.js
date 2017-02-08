@@ -36,7 +36,9 @@ export class GithubCreationApi {
     }
 
     _findExistingOrgFolderSuccess(orgFolder) {
-        const isOrgFolder = capable(orgFolder, 'jenkins.branch.OrganizationFolder');
+        // TODO: remove second class after JENKINS-41403 is implemented
+        const isOrgFolder = capable(orgFolder, 'jenkins.branch.OrganizationFolder') ||
+                capable(orgFolder, 'io.jenkins.blueocean.rest.impl.pipeline.OrganizationFolderPipelineImpl');
 
         return {
             isFound: true,
