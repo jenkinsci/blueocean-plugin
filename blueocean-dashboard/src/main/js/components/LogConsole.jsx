@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Progress } from '@jenkins-cd/design-language';
 import { scrollHelper } from './ScrollHelper';
-// JENKINS-37925 needs that
-// import { fetchAllSuffix as suffix } from '../util/UrlUtils';
+import { fetchAllSuffix as suffix } from '../util/UrlUtils';
 
 const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
@@ -123,7 +122,7 @@ export class LogConsole extends Component {
         // const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
         // JENKINS-41717 reverts above again
         // fulllog within steps are triggered by
-        const logUrl = `?start=0#${prefix || ''}log-${0}`;
+        const logUrl = `${suffix}#${prefix || ''}log-${0}`;
 
         return (<div className="log-wrapper">
             { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
