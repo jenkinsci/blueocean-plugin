@@ -15,9 +15,9 @@
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.110-kz-2",
-      "from": "@jenkins-cd/design-language@0.0.110-kz-2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.110-kz-2.tgz"
+      "version": "0.0.110",
+      "from": "@jenkins-cd/design-language@0.0.110",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.110.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
