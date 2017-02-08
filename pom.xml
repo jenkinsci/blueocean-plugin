@@ -353,7 +353,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pubsub-light</artifactId>
-            <version>1.6</version>
+            <version>1.7-20170208.204136-1</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
