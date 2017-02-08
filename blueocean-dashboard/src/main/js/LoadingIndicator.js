@@ -43,7 +43,10 @@ export default {
     },
 
     hide() {
-        loadingCount--;
+        if (loadingCount > 0) {
+            loadingCount--;
+        }
+
         if (loadingCount === 0) {
             // stop the loading animation
             clearTimeouts();
