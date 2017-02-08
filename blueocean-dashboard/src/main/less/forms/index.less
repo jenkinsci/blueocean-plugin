@@ -16,11 +16,20 @@
             padding-bottom: 10px;
         }
 
+        * > .FormElement {
+            margin-top: 20px;
+        }
+
+        * > .FormElement:first-child {
+            margin-top: 0px;
+        }
+
+        * > .FormElement-heading {
+            margin-bottom: 12px;
+            box-shadow: 0 2px 0 0 rgba(73, 73, 73, 0.15);
+        }
         .form-element,
         .FormElement{
-            padding-top: 5px;
-            padding-bottom: 5px;
-
             .Checkbox, .Choice {
                 padding-top: 5px;
             }
@@ -54,9 +63,18 @@
 
     * > .Dialog {
         min-width: 450px;
-
-        * > .FormElemet-heading {
-            margin-bottom: 7px;
+        * > .FormElement {
+            margin-top: 20px;
         }
+
+        * > .FormElement:first-child {
+            margin-top: 0px;
+        }
+
+        * > .FormElement-heading {
+            margin-bottom: 12px;
+            box-shadow: 0 2px 0 0 rgba(73, 73, 73, 0.15);
+        }
+
     }
 }
