@@ -2,10 +2,9 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
-import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 import { ResultPageHeader } from '@jenkins-cd/blueocean-core-js';
 
 class RunDetailsHeader extends Component {

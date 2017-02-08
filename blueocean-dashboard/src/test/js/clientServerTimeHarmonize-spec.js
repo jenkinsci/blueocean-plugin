@@ -1,4 +1,4 @@
-import {TimeManager as timeManager} from '../../main/js/util/serverBrowserTimeHarmonize';
+import {TimeManager as timeManager} from '@jenkins-cd/blueocean-core-js';
 import {assert} from 'chai';
 import moment from 'moment';
 
