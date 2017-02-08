@@ -64,9 +64,10 @@ export default class GithubFlowManager extends FlowManager {
     @observable
     savedOrgFolder = null;
 
-    _repositoryCache = {};
+    @observable
+    selectedAutoDiscover = null;
 
-    _discoverSelection = null;
+    _repositoryCache = {};
 
     _credentialId = null;
 
@@ -232,8 +233,9 @@ export default class GithubFlowManager extends FlowManager {
         }
     }
 
+    @action
     selectDiscover(discover) {
-        this._discoverSelection = discover;
+        this.selectedAutoDiscover = discover;
 
         if (this.existingAutoDiscover && discover) {
             this.renderStep({
@@ -296,7 +298,7 @@ export default class GithubFlowManager extends FlowManager {
             this._loadPagedRepository(organizationName, nextPage)
                 .then(repos2 => this._updateRepositories(organizationName, repos2, nextPage));
         } else {
-            if (this._discoverSelection) {
+            if (this.selectedAutoDiscover) {
                 this.renderStep({
                     stateId: STATE.STEP_CONFIRM_DISCOVER,
                     stepElement: <GithubConfirmDiscoverStep />,

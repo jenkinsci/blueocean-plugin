@@ -11,15 +11,15 @@ export default class GithubCompleteStep extends React.Component {
         this.props.flowManager.completeFlow({ url: '/pipelines' });
     }
 
-    _getTitle(state) {
+    _getTitle(state, autoDiscover) {
         if (state === STATE.PENDING_CREATION_SAVING) {
-            return 'Saving Organization...';
+            return autoDiscover ? 'Saving Organization...' : 'Creating Pipeline...';
         } else if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
             return 'Error Saving Organization';
         } else if (state === STATE.PENDING_CREATION_EVENTS) {
-            return 'Creating Pipelines...';
+            return autoDiscover ? 'Creating Pipelines...' : 'Creating Pipeline...';
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
-            return 'Error Creating Pipelines';
+            return autoDiscover ? 'Error Creating Pipelines' : 'Error Creating Pipeline';
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
             return 'Pipeline Creation Still Pending';
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
@@ -45,7 +45,7 @@ export default class GithubCompleteStep extends React.Component {
         let showLink = false;
 
         if (state === STATE.PENDING_CREATION_SAVING) {
-            copy = 'Saving Organization...';
+            copy = 'Please wait while your settings are saved.';
         } else if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
             copy = 'An error occurrred while saving this pipeline.';
         } else if (state === STATE.PENDING_CREATION_EVENTS) {
@@ -76,7 +76,7 @@ export default class GithubCompleteStep extends React.Component {
         const { flowManager } = this.props;
         const loading = this._getLoading(flowManager.stateId);
         const error = this._getError(flowManager.stateId);
-        const title = this._getTitle(flowManager.stateId);
+        const title = this._getTitle(flowManager.stateId, flowManager.selectedAutoDiscover);
         const content = this._getContent(flowManager.stateId);
 
         return (
