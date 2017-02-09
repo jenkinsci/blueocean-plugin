@@ -4,51 +4,50 @@ import { List } from '../components';
 
 storiesOf('List', module)
     .add('general', () => <General />)
-    .add('renderers', () => <RendererOptions />)
+    .add('renderers', () => <Renderers />)
     .add('keyboard & focus', () => <KeyboardFocus />)
+    .add('constraining', () => <Constraining />)
+    .add('disabled', () => <Disabled />)
     .add('callbacks', () => <Callbacks />)
 ;
 
-const style = {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+const simpleData = ['A', 'B', 'C', 'D', 'EFGHIJKLMNOPQRSTUV', 'W', 'X', 'Y', 'Z'];
+
+const container = {
     padding: 10,
+    maxWidth: 300,
 };
 
-const simpleData = ['A', 'B', 'C', 'DEFGHIJKLMNOPQRSTUVW', 'X', 'Y', 'Z'];
+const list = {
+    maxHeight: 200,
+};
 
 
 function General() {
-    const style = {
-        padding: 10,
-    };
-
     return (
         <div>
-            <div style={style}>
-                <p>Default</p>
+            <div style={container}>
+                <p>Default w/ max height set</p>
+
+                <List data={simpleData} style={list} />
+            </div>
+
+            <div style={container}>
+                <p>with defaultStyles=false</p>
+
+                <List data={simpleData} style={list} defaultStyles={false} />
+            </div>
+
+            <div style={container}>
+                <p>with defaultSelection</p>
+
+                <List data={simpleData} style={list} defaultSelection="C" />
+            </div>
+
+            <div style={container}>
+                <p>Default w/ no height</p>
 
                 <List data={simpleData} />
-            </div>
-
-            <div style={style}>
-                <p>No Default Styles</p>
-
-                <List data={simpleData} defaultStyles={false} />
-            </div>
-
-            <div style={style}>
-                <p>Default Value</p>
-
-                <List data={simpleData} defaultSelection="C" />
-            </div>
-
-            <div style={style}>
-                <p>Truncation</p>
-
-                <List data={simpleData} style={{maxWidth: 150, maxHeight: 150}} />
             </div>
         </div>
     );
@@ -65,26 +64,21 @@ function Renderer1(props) {
 }
 
 
-function RendererOptions() {
-    const style = {
-        display: 'flex',
-        justifyContent: 'space-around',
-    };
-
+function Renderers() {
     /* eslint-disable react/prop-types */
     return (
-        <div style={style}>
-            <div>
+        <div>
+            <div style={container}>
                 <p>inline renderer w/ default styles</p>
 
-                <List data={simpleData}>
+                <List data={simpleData} style={list}>
                     {React.createElement((props) => (<div>#{props.listIndex} - {props.listItem}</div>))}
                 </List>
             </div>
-            <div>
+            <div style={container}>
                 <p>custom renderer w/ no styles</p>
 
-                <List data={simpleData} defaultStyles={false}>
+                <List data={simpleData} style={list} defaultStyles={false}>
                     <Renderer1 />
                 </List>
             </div>
@@ -95,26 +89,114 @@ function RendererOptions() {
 
 function KeyboardFocus() {
     const buttonStyle = { margin: 10, flexShrink: 0 };
+    const outer = {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        padding: 10,
+        height: 400,
+    };
 
     return (
-        <div style={{...style, height: 300}}>
-            <p>This Layout is useful for demonstrating keyboard accessibility and focus behavior.</p>
+        <div style={outer}>
+            <p>This layout is useful for demonstrating keyboard accessibility and focus behavior.</p>
 
             <button style={buttonStyle}>Test 1</button>
 
-            <List data={simpleData} />
+            <List data={simpleData} style={{...list, maxWidth: 300}} />
 
             <button style={buttonStyle}>Test 2</button>
         </div>
     );
 }
 
+const WIDTH = 200;
+const HEIGHT = 250;
+
+function Constraining() {
+    const outer = { display: 'flex' };
+    const inner = { width: WIDTH + 50, padding: 10 };
+    const title = { height: 50 };
+
+    const constrain = {maxWidth: WIDTH, maxHeight: HEIGHT};
+    const explicit = {width: WIDTH, height: HEIGHT};
+
+
+    return (
+        <div>
+            <div style={outer}>
+                <div style={inner}>
+                    <p style={title}>width / height directly on List</p>
+
+                    <List data={simpleData} style={explicit} />
+                </div>
+
+                <div style={inner}>
+                    <p style={title}>maxWidth / maxHeight directly on List</p>
+
+                    <List data={simpleData} style={constrain} />
+                </div>
+
+                <div style={inner}>
+                    <p style={title}>List anchored to parent via absolute positioning</p>
+
+                    <div style={{...constrain, height: HEIGHT, position: 'relative'}}>
+                        <List data={simpleData} style={{position: 'absolute', top: 0, bottom: 0}} />
+                    </div>
+                </div>
+
+                <div style={inner}>
+                    <p style={title}>maxWidth / maxHeight on parent container (flexbox)</p>
+
+                    <div style={{...constrain, display: 'flex'}}>
+                        <List data={simpleData} />
+                    </div>
+                </div>
+            </div>
+            <div style={outer}>
+                <div style={inner}>
+                    <p style={title}>maxWidth / maxHeight on parent container (not flexbox)</p>
+
+                    <div style={constrain}>
+                        <List data={simpleData} />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function Disabled() {
+    return (
+        <div>
+            <div style={container}>
+                <p>props.disabled = true</p>
+
+                <List data={simpleData} style={list} disabled />
+            </div>
+            <div style={container}>
+                <p>nested in fieldset.disabled=true</p>
+
+                <fieldset disabled="disabled">
+                    <List data={simpleData} style={list} />
+                </fieldset>
+            </div>
+        </div>
+    );
+}
+
+
 function Callbacks() {
     return (
-        <div style={style}>
+        <div style={container}>
             <p>onItemSelect</p>
 
-            <List data={simpleData} onItemSelect={(index, item) => console.log(index, item)} />
+            <List
+                data={simpleData}
+                style={list}
+                onItemSelect={(index, item) => console.log(index, item)}
+            />
         </div>
     );
 }
