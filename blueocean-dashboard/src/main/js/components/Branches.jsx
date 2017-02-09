@@ -2,10 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import {
     CommitHash,
     ReadableDate,
-    LiveStatusIndicator,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import { CellRow, CellLink } from './CellLink';
@@ -67,8 +66,11 @@ export default class Branches extends Component {
                     <WeatherIcon score={branch.weatherScore} />
                 </CellLink>
                 <CellLink>
-                    <LiveStatusIndicator result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
-                      startTime={latestRun.startTime} estimatedDuration={latestRun.estimatedDurationInMillis}
+                    <LiveStatusIndicator
+                      durationInMillis={latestRun.durationInMillis}
+                      result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
+                      startTime={latestRun.startTime}
+                      estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
                 </CellLink>
                 <CellLink>{cleanBranchName}</CellLink>
