@@ -34,13 +34,13 @@ export default class GithubFlowManager extends FlowManager {
             return [];
         }
 
-        if (!this.existingOrgFolder || !this.existingOrgFolder.pipelines) {
+        if (!this.existingOrgFolder || !this.existingOrgFolder.pipelineFolderNames) {
             return this.repositories;
         }
 
         // return repositories that are not already created as pipelines
         return this.repositories.filter(repo => (
-            this.existingOrgFolder.pipelines.indexOf(repo.name) === -1
+            this.existingOrgFolder.pipelineFolderNames.indexOf(repo.name) === -1
         ));
     }
 
@@ -51,11 +51,11 @@ export default class GithubFlowManager extends FlowManager {
     existingOrgFolder = null;
 
     @computed get existingAutoDiscover() {
-        return this.existingOrgFolder && this.existingOrgFolder.repoAutoDiscover;
+        return this.existingOrgFolder && this.existingOrgFolder.scanAllRepos;
     }
 
     @computed get existingPipelineCount() {
-        return this.existingOrgFolder && this.existingOrgFolder.pipelines && this.existingOrgFolder.pipelines.length || 0;
+        return this.existingOrgFolder && this.existingOrgFolder.pipelineFolderNames && this.existingOrgFolder.pipelineFolderNames.length || 0;
     }
 
     @observable
@@ -335,7 +335,7 @@ export default class GithubFlowManager extends FlowManager {
      * @private
      */
     _getFullRepoNameList() {
-        const existingPipelines = this.existingOrgFolder && this.existingOrgFolder.pipelines || [];
+        const existingPipelines = this.existingOrgFolder && this.existingOrgFolder.pipelineFolderNames || [];
         return [].concat(existingPipelines, this.selectedRepository.name);
     }
 
