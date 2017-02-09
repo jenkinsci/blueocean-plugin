@@ -5,6 +5,7 @@
     "react/jsx-indent-props": 0,
     "no-unused-vars": [2, {"varsIgnorePattern": "^React$"}],
     "max-len": [1, 160, 4],
+    "prefer-template": 1,
     "experimentalDecorators": 0
   }
 }

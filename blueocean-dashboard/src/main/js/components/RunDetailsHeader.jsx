@@ -41,18 +41,18 @@ class RunDetailsHeader extends Component {
         const status = run.getComputedResult().toLowerCase();
         const estimatedDurationInMillis = run.estimatedDurationInMillis;
 
+        const durationMillis = run.durationInMillis; // Duration does not skew :)
+
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
         // the time when we started the run harmonized with offset
         const isRunning = () => run.isRunning() || run.isPaused();
         const {
-            durationMillis,
             endTime,
             startTime,
         } = RunDetailsHeader.timeManager.harmonizeTimes({
             endTime: run.endTime,
             startTime: run.startTime,
-            durationInMillis: run.durationInMillis,
         }, skewMillis);
         RunDetailsHeader.logger.debug('timeq:', { startTime, endTime, durationMillis });
 
@@ -76,29 +76,30 @@ class RunDetailsHeader extends Component {
                 <a className="path-link" onClick={ onNameClick }>
                     <ExpandablePath path={ fullDisplayName } hideFirst className="dark-theme" iconSize={ 20 } />
                 </a>
-                <span>#{ run.id }</span>
+                <span>&nbsp;#{ run.id }</span>
             </h1>
         );
 
         const branchSourceDetails = (
-            <div>
+            <div className="u-label-value" title={branchLabel + ': ' + displayName}>
                 <label>{ branchLabel }:</label>
                 <span>{ displayName }</span>
             </div>
         );
 
-        const commitSourceDetails = run.commitId && (
-                <div>
-                    <label>{ commitLabel }:</label>
-                    <span className="commit">
-                         { run.commitId.substring(0, 7) }
-                    </span>
-                </div>
-            );
+        const commitIdString = run.commitId || 'N/A';
+        const commitSourceDetails = (
+            <div className="u-label-value" title={commitLabel + ': ' + commitIdString}>
+                <label>{ commitLabel }:</label>
+                <span className="commit">
+                     { commitIdString.substring(0, 7) }
+                </span>
+            </div>
+        );
 
         const durationDetails = (
             <div>
-                <Icon size={ 20 } icon="timelapse" style={ { fill: '#fff' } } />
+                <Icon size={ 16 } icon="timelapse" style={ { fill: '#fff' } } />
                 <TimeDuration
                     millis={ isRunning() ? this.durationMillis : durationMillis }
                     liveUpdate={ isRunning() }
@@ -113,7 +114,7 @@ class RunDetailsHeader extends Component {
 
         const endTimeDetails = (
             <div>
-                <Icon size={ 20 } icon="access_time" style={ { fill: '#fff' } } />
+                <Icon size={ 16 } icon="access_time" style={ { fill: '#fff' } } />
                 <ReadableDate
                     date={ endTime }
                     liveUpdate
