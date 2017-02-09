@@ -1,11 +1,8 @@
 import React from 'react';
 import ScmProvider from '../ScmProvider';
 
-// import { GithubCreationApi } from './api/GithubCreationApi';
-// import { GithubCredentialsApi } from './api/GithubCredentialsApi';
-
-import { GithubCreationApi } from './api/mocks/GithubCreationApiMock';
-import { GithubCredentialsApi } from './api/mocks/GithubCredentialsApiMock';
+import { GithubCreationApi } from './api/GithubCreationApi';
+import { GithubCredentialsApi } from './api/GithubCredentialsApi';
 
 import GithubDefaultOption from './GithubDefaultOption';
 import GithubFlowManager from './GithubFlowManager';
