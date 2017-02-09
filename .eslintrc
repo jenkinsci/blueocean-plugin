@@ -40,6 +40,7 @@
     "react/react-in-jsx-scope": 2,
     "react/self-closing-comp": 2,
     "react/wrap-multilines": 2,
+    "react/jsx-indent-props": 0,
     "quotes": [0, "single"],
     "space-before-function-paren": [2, {
       "anonymous": "always",
