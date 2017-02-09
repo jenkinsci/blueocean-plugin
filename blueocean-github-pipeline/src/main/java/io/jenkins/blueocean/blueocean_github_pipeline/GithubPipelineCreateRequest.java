@@ -17,6 +17,7 @@ import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,6 +44,8 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         String credentialId = null;
         StringBuilder sb = new StringBuilder();
 
+        final List<String> requestedRepos = new ArrayList<>();
+
         if (scmConfig != null) {
             apiUrl = scmConfig.getUri();
             if (scmConfig.getConfig().get("orgName") instanceof String) {
@@ -52,6 +55,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
             if (scmConfig != null && scmConfig.getConfig().get("repos") instanceof List) {
                 for (String r : (List<String>) scmConfig.getConfig().get("repos")) {
                     sb.append(String.format("(%s\\b)?", r));
+                    requestedRepos.add(r);
                 }
             }
         }
@@ -64,7 +68,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
             }
             validateCredentialId(credentialId, (OrganizationFolder) item, gitHubSCMNavigator);
 
-            // cick of github scan build
+            // start github scan run
             OrganizationFolder organizationFolder = (OrganizationFolder) item;
             organizationFolder.getNavigators().replace(gitHubSCMNavigator);
             organizationFolder.scheduleBuild(new Cause.UserIdCause());
