@@ -21,6 +21,7 @@ import hudson.security.ACL;
 import hudson.security.Permission;
 import hudson.util.ListBoxModel;
 import io.jenkins.blueocean.rest.impl.pipeline.Messages;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -94,6 +95,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         return result;
     }
 
+
     @Nonnull
     @Override
     public <C extends IdCredentials> ListBoxModel getCredentialIds(@Nonnull Class<C> type,
@@ -133,7 +135,17 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
 
     private static FolderPropertyImpl propertyOf(ModelObject object) {
         if (object instanceof AbstractFolder) {
-            return ((AbstractFolder<?>)object).getProperties().get(FolderPropertyImpl.class);
+            FolderPropertyImpl prop = ((AbstractFolder<?>)object).getProperties().get(FolderPropertyImpl.class);
+
+            if(prop == null){
+                ItemGroup parent = ((AbstractFolder)object).getParent();
+                if(parent instanceof Jenkins){
+                    return null;
+                }
+                return propertyOf(parent);
+            }else{
+                return prop;
+            }
         }
         return null;
     }
