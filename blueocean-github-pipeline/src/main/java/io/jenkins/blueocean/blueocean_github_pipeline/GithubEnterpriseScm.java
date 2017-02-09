@@ -1,11 +1,15 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import hudson.Extension;
+import io.jenkins.blueocean.commons.ErrorMessage;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 
 import javax.annotation.Nonnull;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author Vivek Pandey
@@ -32,7 +36,13 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @Override
     public String getCredentialDomainName() {
-        return DOMAIN_NAME;
+        java.net.URI uri;
+        try {
+            uri = new URI(getUri());
+        } catch (URISyntaxException e) {
+            throw new ServiceException.UnexpectedErrorException(new ErrorMessage(400, "Invalid Github Enterprise URI: "+getUri()));
+        }
+        return DOMAIN_NAME + "-" + uri.getHost();
     }
 
     @Extension
@@ -41,7 +51,7 @@ public class GithubEnterpriseScm extends GithubScm {
         @Override
         public Scm getScm(String id, Reachable parent) {
             if(id.equals(ID)){
-                return new GithubScm(parent);
+                return new GithubEnterpriseScm(parent);
             }
             return null;
         }
@@ -49,7 +59,7 @@ public class GithubEnterpriseScm extends GithubScm {
         @Nonnull
         @Override
         public Scm getScm(Reachable parent) {
-            return new GithubScm(parent);
+            return new GithubEnterpriseScm(parent);
         }
     }
 

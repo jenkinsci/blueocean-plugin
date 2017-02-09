@@ -9,10 +9,12 @@ import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.tasks.Mailer;
+import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
@@ -39,6 +41,8 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,7 +91,7 @@ public class GithubScm extends Scm {
 
     @Override
     public String getCredentialId(){
-        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), getUri(), StandardUsernamePasswordCredentials.class);
+        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
         if(githubCredential != null){
             return githubCredential.getId();
         }
@@ -101,7 +105,7 @@ public class GithubScm extends Scm {
         String credentialId = getCredentialIdFromRequest(request);
 
         User authenticatedUser = getAuthenticatedUser();
-        final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class);
+        final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
 
         if(credential == null){
             throw new ServiceException.BadRequestExpception(String.format("Credential id: %s not found for user %s", credentialId, authenticatedUser.getId()));
@@ -221,18 +225,18 @@ public class GithubScm extends Scm {
 
 
             //Now we know the token is valid. Lets find credential
-            StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), getUri(), StandardUsernamePasswordCredentials.class);
+            StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
 
             final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, "github", "Github Access Token", user.getLogin(), accessToken);
 
 
             if(githubCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(
-                        credential, authenticatedUser, getCredentialDomainName(),
+                        credential, authenticatedUser, getCredentialsDomainName(getUri()),
                         ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
             }else{
                 CredentialsUtils.updateCredentialsInUserStore(
-                        githubCredential, credential, authenticatedUser, getCredentialDomainName(),
+                        githubCredential, credential, authenticatedUser, getCredentialsDomainName(getUri()),
                         ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
             }
 
@@ -299,5 +303,19 @@ public class GithubScm extends Scm {
             throw new ServiceException.UnauthorizedException("No logged in user found");
         }
         return authenticatedUser;
+    }
+
+    private String getCredentialsDomainName(String apiUri) {
+        java.net.URI uri;
+        try {
+            uri = new URI(apiUri);
+        } catch (URISyntaxException e) {
+            throw new ServiceException.UnexpectedErrorException(new ErrorMessage(400, "Invalid URI: "+apiUri));
+        }
+        String domainName = getCredentialDomainName();
+        if(this instanceof GithubEnterpriseScm){
+            return domainName + "-" + uri.getHost();
+        }
+        return domainName;
     }
 }

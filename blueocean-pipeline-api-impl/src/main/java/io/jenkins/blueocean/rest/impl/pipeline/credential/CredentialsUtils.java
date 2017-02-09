@@ -12,7 +12,6 @@ import com.cloudbees.plugins.credentials.domains.HostnamePortSpecification;
 import com.cloudbees.plugins.credentials.domains.HostnameSpecification;
 import com.cloudbees.plugins.credentials.domains.PathSpecification;
 import com.cloudbees.plugins.credentials.domains.SchemeSpecification;
-import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -108,29 +107,13 @@ public class CredentialsUtils {
         return domains;
     }
 
-
-    public static @CheckForNull <C extends Credentials> C  findCredential(@Nonnull String id, @Nonnull Class<C> type){
-        if(User.current() == null){
-            throw new ServiceException.UnauthorizedException("No authenticated user found. Please login");
-        }
-
+    public static @CheckForNull <C extends Credentials> C findCredential(@Nonnull String credentialId, @Nonnull Class<C> type, @Nonnull DomainRequirement... domainRequirements){
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                         type,
                         Jenkins.getInstance(),
                         Jenkins.getAuthentication(),
-                        Collections.<DomainRequirement>emptyList()),
-                CredentialsMatchers.allOf(CredentialsMatchers.withId(id))
-        );
-    }
-
-    public static @CheckForNull <C extends Credentials> C findCredential(@Nonnull String credentialId, @Nullable String uri, @Nonnull Class<C> type){
-        return CredentialsMatchers.firstOrNull(
-                CredentialsProvider.lookupCredentials(
-                        type,
-                        Jenkins.getInstance(),
-                        Jenkins.getAuthentication(),
-                        URIRequirementBuilder.fromUri(uri).build()),
+                        domainRequirements),
                 CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId))
         );
     }
