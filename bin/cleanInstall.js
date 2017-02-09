@@ -97,10 +97,10 @@ function deleteFolderRecursive(path) {
 }
 function install(packages, callback) {
     console.log('installing ', packages);
-    let command = 'npm prune; npm install; npm install ' + packages + ' --save -E;';
+    let command = 'npm prune && npm install && npm install ' + packages + ' --save -E';
     console.log('Adding mvn clean install to the command?', process.argv[3] === 'mvn')
     if (process.argv[3] === 'mvn') {
-        command += 'mvn clean install -DskipTests';
+        command += ' && mvn clean install -DskipTests';
     }
     const child = exec(command,
         function (error, stdout, stderr) {
