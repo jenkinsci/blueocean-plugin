@@ -1,7 +1,7 @@
 /**
  * Valid statuses for GitFlowManager.
  */
-const status = {
+const state = {
     STEP_CONNECT: 'step_connect',
     CREATE_CREDS: 'create_creds',
     CREATE_PIPELINE: 'create_pipeline',
@@ -9,12 +9,12 @@ const status = {
     COMPLETE: 'complete',
 
     values: () => [
-        status.STEP_CONNECT,
-        status.CREATE_CREDS,
-        status.CREATE_PIPELINE,
-        status.STEP_RENAME,
-        status.COMPLETE,
+        state.STEP_CONNECT,
+        state.CREATE_CREDS,
+        state.CREATE_PIPELINE,
+        state.STEP_RENAME,
+        state.COMPLETE,
     ],
 };
 
-export default status;
+export default state;
