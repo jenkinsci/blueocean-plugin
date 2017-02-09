@@ -13,6 +13,7 @@ import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
@@ -87,7 +88,7 @@ public class GithubScm extends Scm {
 
     @Override
     public String getCredentialId(){
-        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), getUri(), StandardUsernamePasswordCredentials.class);
+        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
         if(githubCredential != null){
             return githubCredential.getId();
         }
@@ -101,7 +102,7 @@ public class GithubScm extends Scm {
         String credentialId = getCredentialIdFromRequest(request);
 
         User authenticatedUser = getAuthenticatedUser();
-        final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class);
+        final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
 
         if(credential == null){
             throw new ServiceException.BadRequestExpception(String.format("Credential id: %s not found for user %s", credentialId, authenticatedUser.getId()));
@@ -221,7 +222,7 @@ public class GithubScm extends Scm {
 
 
             //Now we know the token is valid. Lets find credential
-            StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), getUri(), StandardUsernamePasswordCredentials.class);
+            StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
 
             final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, "github", "Github Access Token", user.getLogin(), accessToken);
 
