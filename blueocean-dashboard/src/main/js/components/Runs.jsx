@@ -1,28 +1,26 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
+    CommitHash, ReadableDate, TimeDuration,
 }
     from '@jenkins-cd/design-language';
-import { logging, ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
-import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
-
+import { logging, ReplayButton, RunButton, LiveStatusIndicator, TimeHarmonizer as timeHarmonizer } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
+
+import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import { CellRow, CellLink } from './CellLink';
 
-import { TimeManager } from '../util/serverBrowserTimeHarmonize';
-
-const timeManager = new TimeManager();
 const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
  */
-export default class Runs extends Component {
+export class Runs extends Component {
     constructor(props) {
         super(props);
         this.state = { isVisible: false };
     }
+
     render() {
         // early out
         if (!this.props.run || !this.props.pipeline) {
@@ -30,18 +28,22 @@ export default class Runs extends Component {
         }
         const { router, location } = this.context;
 
-        const { run, changeset, pipeline, t, locale } = this.props;
+        const { run, changeset, pipeline, t, locale, getTimes } = this.props;
 
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const isRunning = () => run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
-        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
-        // the time when we started the run harmonized with offset
         const {
             durationMillis,
             endTime,
             startTime,
-        } = timeManager.harmonizeTimes(run, skewMillis);
-        logger.debug('time:', {
+        } = getTimes({
+            result: resultRun,
+            durationInMillis: run.durationInMillis,
+            startTime: run.startTime,
+            endTime: run.endTime,
+        });
+        logger.warn('time:', {
+            runDuration: run,
             durationMillis,
             endTime,
             startTime,
@@ -58,7 +60,10 @@ export default class Runs extends Component {
         return (
         <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
             <CellLink>
-                <LiveStatusIndicator result={resultRun} startTime={startTime}
+                <LiveStatusIndicator
+                  durationInMillis={durationMillis}
+                  result={resultRun}
+                  startTime={startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
                 />
             </CellLink>
@@ -116,9 +121,12 @@ Runs.propTypes = {
     locale: string,
     changeset: object.isRequired,
     t: func,
+    getTimes: func,
 };
 Runs.contextTypes = {
     config: object.isRequired,
     router: object.isRequired, // From react-router
     location: object,
 };
+
+export default timeHarmonizer(Runs);
