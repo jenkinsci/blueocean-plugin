@@ -3,21 +3,21 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.61-jm-a",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.61-jm-a",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.61-jm-a.tgz",
+      "version": "0.0.62-duration",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.62-duration",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.62-duration.tgz",
       "dependencies": {
         "@jenkins-cd/design-language": {
-          "version": "0.0.111",
-          "from": "@jenkins-cd/design-language@0.0.111",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.111.tgz"
+          "version": "0.0.110",
+          "from": "@jenkins-cd/design-language@0.0.110",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.110.tgz"
         }
       }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.111",
-      "from": "@jenkins-cd/design-language@0.0.111",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.111.tgz"
+      "version": "0.0.111-unpublishedDuration",
+      "from": "@jenkins-cd/design-language@0.0.111-unpublishedDuration",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.111-unpublishedDuration.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
