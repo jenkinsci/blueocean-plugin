@@ -5,7 +5,7 @@ import { TimeManager, i18nTranslator, logging } from '@jenkins-cd/blueocean-core
 const timeManager = new TimeManager();
 const { array, any, func, object, string } = PropTypes;
 const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelineRunGraph');
-const translate = i18nTranslator('blueocean-dashboard');
+const translate = i18nTranslator('blueocean-web');
 
 function badNode(jenkinsNode) {
     // eslint-disable-next-line
