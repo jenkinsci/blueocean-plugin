@@ -59,7 +59,7 @@ export default class GitRenameStep extends React.Component {
         }
 
         return (
-            <FlowStep className="git-step-rename" {...this.props} title={t('creation.git.step2.title')} disabled={disabled}>
+            <FlowStep {...this.props} className="git-step-rename" title={t('creation.git.step2.title')} disabled={disabled}>
                 <FormElement title={headingText}>
                     <TextInput
                       className="text-pipeline"

@@ -11,13 +11,27 @@ function clone(object) {
     return JSON.parse(JSON.stringify(object));
 }
 
+const context = {
+    params: {},
+    config: {
+        getServerBrowserTimeSkewMillis: () => 0
+    },
+    activityService: {
+        activityPager() {
+            return {
+                data: data
+            }
+        }
+    }
+};
+
 describe('PipelineCard', () => {
     let item;
     let favorite;
 
     function shallowRenderCard() {
         return shallow(
-            <PipelineCard runnable={item} favorite={favorite} />
+            <PipelineCard runnable={item} favorite={favorite} />, context
         );
     }
 
@@ -31,7 +45,7 @@ describe('PipelineCard', () => {
 
     it('renders without error for empty props', () => {
         const wrapper = shallow(
-            <PipelineCard />
+            <PipelineCard />, context
         );
 
         assert.isOk(wrapper);
@@ -41,7 +55,7 @@ describe('PipelineCard', () => {
         item.latestRun.result = 'SUCCESS';
         const wrapper = shallowRenderCard();
 
-        assert.equal(wrapper.find('LiveStatusIndicator').length, 1);
+        assert.equal(wrapper.find('NewComponent').length, 1);
         assert.equal(wrapper.find('.name').length, 1);
         assert.equal(wrapper.find('.name').text(), '<Link />');
         assert.equal(wrapper.find('.branch').length, 1);
