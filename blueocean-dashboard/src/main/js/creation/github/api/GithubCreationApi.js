@@ -101,10 +101,10 @@ export class GithubCreationApi {
             'GithubPipelineUpdateRequest';
 
         return {
-            credentialId,
             name: itemName,
             $class: `io.jenkins.blueocean.blueocean_github_pipeline.${className}`,
             scmConfig: {
+                credentialId,
                 uri: 'https://api.github.com', // optional for github! required for enterprise where it should be http://ghe.acme.com/api/v3
                 config: {
                     orgName: organizationName,
