@@ -1,13 +1,15 @@
 package io.jenkins.blueocean.rest.impl.pipeline.credential;
 
-import com.cloudbees.plugins.credentials.CredentialsStoreAction;
-import com.cloudbees.plugins.credentials.ViewCredentialsAction;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.CredentialsStore;
 import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.model.User;
+import io.jenkins.blueocean.rest.OrganizationRoute;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.OrganizationRoute;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.ArrayList;
@@ -59,11 +61,20 @@ public class CredentialContainer extends Container<CredentialApi> implements Org
     @Override
     public Iterator<CredentialApi> iterator() {
         List<CredentialApi> apis = new ArrayList<>();
-        for(ViewCredentialsAction action: ExtensionList.lookup(ViewCredentialsAction.class)){
-            for(CredentialsStoreAction c:action.getStoreActions()){
-                apis.add(new CredentialApi(c, this));
+        User user = User.current();
+        if(user != null){
+            for(CredentialsStore store: CredentialsProvider.lookupStores(user)){
+                if(store.getStoreAction() != null) {
+                    apis.add(new CredentialApi(store.getStoreAction(), this));
+                }
             }
-        };
+        }else{
+            for(CredentialsStore store: CredentialsProvider.lookupStores(Jenkins.getInstance())){
+                if(store.getStoreAction() != null) {
+                    apis.add(new CredentialApi(store.getStoreAction(), this));
+                }
+            }
+        }
         return apis.iterator();
     }
 

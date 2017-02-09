@@ -11,8 +11,10 @@ import javax.annotation.Nonnull;
  * @author Vivek Pandey
  */
 public class GithubEnterpriseScm extends GithubScm {
-    private static final String DEFAULT_ENTERPRISE_API_SUFFIX = "/api/v3";
-    private static final String ID = "github-enterprise";
+    static final String DEFAULT_ENTERPRISE_API_SUFFIX = "/api/v3";
+    static final String ID = "github-enterprise";
+    static final String DOMAIN_NAME="blueocean-github-enterprise-domain";
+
 
     public GithubEnterpriseScm(Reachable parent) {
         super(parent);
@@ -26,6 +28,11 @@ public class GithubEnterpriseScm extends GithubScm {
     @Override
     public @Nonnull String getUri() {
         return super.getUri()+DEFAULT_ENTERPRISE_API_SUFFIX;
+    }
+
+    @Override
+    public String getCredentialDomainName() {
+        return DOMAIN_NAME;
     }
 
     @Extension
