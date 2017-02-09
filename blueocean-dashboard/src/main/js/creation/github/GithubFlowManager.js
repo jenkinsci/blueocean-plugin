@@ -383,17 +383,20 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _onSseEvent(event) {
-        if (event.blueocean_job_rest_url.indexOf(this.savedOrgFolder._links.self.href) === 0) {
-            if (event.jenkins_event === 'job_run_queue_task_complete') {
-                // TODO: investigate why in some cases we seem to receive this event but without 'job_multibranch_indexing' props
-                // these fields might not be populated in the event of RateLimitExceededException
-                if (event.job_multibranch_indexing_result === 'SUCCESS') {
-                    this.changeState(STATE.STEP_COMPLETE_SUCCESS);
-                    this._cleanupListeners();
-                } else if (event.job_multibranch_indexing_result === 'FAILURE') {
-                    this.changeState(STATE.STEP_COMPLETE_EVENT_ERROR);
-                    this._cleanupListeners();
-                }
+        if (event.jenkins_event !== 'job_run_queue_task_complete') {
+            return;
+        }
+
+        if (event.blueocean_job_rest_url === this.savedOrgFolder._links.self.href) {
+            // TODO: investigate why in some cases we seem to receive this event but without 'job_multibranch_indexing' props
+            // may be missing from the actual org folder item
+            // these fields might not be populated in the event of RateLimitExceededException
+            if (event.job_multibranch_indexing_result === 'SUCCESS') {
+                this.changeState(STATE.STEP_COMPLETE_SUCCESS);
+                this._cleanupListeners();
+            } else if (event.job_multibranch_indexing_result === 'FAILURE') {
+                this.changeState(STATE.STEP_COMPLETE_EVENT_ERROR);
+                this._cleanupListeners();
             }
         }
     }
