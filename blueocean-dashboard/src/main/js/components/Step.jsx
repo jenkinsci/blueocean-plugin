@@ -1,11 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
 import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
 import InputStep from './InputStep';
-import { TimeManager } from '../util/serverBrowserTimeHarmonize';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.Step');
 const timeManager = new TimeManager();

@@ -17,7 +17,7 @@ export default function GitDefaultOption(props) {
 
     return (
         <div>
-            <IconButton className="monochrome" label="Git" onClick={onSelect}>
+            <IconButton className="git-creation monochrome" label="Git" onClick={onSelect}>
                 <GitIcon />
             </IconButton>
         </div>

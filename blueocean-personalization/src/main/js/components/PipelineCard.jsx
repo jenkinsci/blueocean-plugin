@@ -3,9 +3,8 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { capable, UrlBuilder, AppConfig } from '@jenkins-cd/blueocean-core-js';
-import { ExpandablePath, Favorite, LiveStatusIndicator } from '@jenkins-cd/design-language';
-import { RunButton, ReplayButton } from '@jenkins-cd/blueocean-core-js';
+import { capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
+import { ExpandablePath, Favorite } from '@jenkins-cd/design-language';
 
 const stopProp = (event) => {
     event.stopPropagation();

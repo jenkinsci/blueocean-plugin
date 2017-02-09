@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import logging from '../logging';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.harmonizeTimes');
 /**
@@ -14,7 +14,21 @@ export class TimeManager {
         return moment();
     }
 
-    harmonizeTimes(props, skewMillis) {
+    format(millis, hintFormat) {
+        return moment.duration(millis).format(hintFormat);
+    }
+
+    /**
+     *
+     * @param props
+     * @param skewMillis
+     * @returns {
+            durationMillis,
+            endTime,
+            startTime,
+        }
+     */
+    harmonizeTimes(props, skewMillis = 0) {
         logger.debug('skewMillis', skewMillis);
         if (!props.startTime) {
             logger.error('not found any startTime, seems that a component should not have called this me');
