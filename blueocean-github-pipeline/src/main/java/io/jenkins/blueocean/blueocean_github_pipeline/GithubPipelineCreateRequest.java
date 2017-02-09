@@ -3,7 +3,6 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.plugins.credentials.Credentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import hudson.model.Cause;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
@@ -11,6 +10,7 @@ import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
@@ -25,8 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -91,7 +89,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                                                 ErrorMessage.Error.ErrorCodes.INVALID.toString(),
                                                 "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
                     }
-                    if(domain.test(new DomainRequirement())) {
+                    if(domain.test(new BlueOceanDomainRequirement())) {
                         ((OrganizationFolder) item)
                                 .addProperty(
                                         new BlueOceanCredentialsProvider.FolderPropertyImpl(
@@ -131,25 +129,9 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         return null;
     }
 
-    private String GithubCredentialsDomain(String apiUri) {
-        URI uri;
-        try {
-            uri = new URI(apiUri);
-        } catch (URISyntaxException e) {
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create pipeline")
-                    .add(new ErrorMessage.Error("scmConfig.uri",
-                            ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Invalid github API URI: "+e.getMessage())), e);
-        }
-        String path = StringUtils.defaultIfBlank(uri.getPath(), "/");
-        if(path.startsWith(GithubEnterpriseScm.DEFAULT_ENTERPRISE_API_SUFFIX)){
-            return GithubEnterpriseScm.DOMAIN_NAME;
-        }
-        return GithubScm.DOMAIN_NAME;
-    }
-
      static void validateCredentialId(String credentialId, AbstractFolder item) throws IOException {
         if (credentialId != null && !credentialId.trim().isEmpty()) {
-            Credentials credentials = CredentialsUtils.findCredential(credentialId, Credentials.class);
+            Credentials credentials = CredentialsUtils.findCredential(credentialId, Credentials.class, new BlueOceanDomainRequirement());
             if (credentials == null) {
                 try {
                     item.delete();

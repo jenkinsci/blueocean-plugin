@@ -107,22 +107,6 @@ public class CredentialsUtils {
         return domains;
     }
 
-
-    public static @CheckForNull <C extends Credentials> C  findCredential(@Nonnull String id, @Nonnull Class<C> type){
-        if(User.current() == null){
-            throw new ServiceException.UnauthorizedException("No authenticated user found. Please login");
-        }
-
-        return CredentialsMatchers.firstOrNull(
-                CredentialsProvider.lookupCredentials(
-                        type,
-                        Jenkins.getInstance(),
-                        Jenkins.getAuthentication(),
-                        Collections.<DomainRequirement>emptyList()),
-                CredentialsMatchers.allOf(CredentialsMatchers.withId(id))
-        );
-    }
-
     public static @CheckForNull <C extends Credentials> C findCredential(@Nonnull String credentialId, @Nonnull Class<C> type, @Nonnull DomainRequirement... domainRequirements){
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(

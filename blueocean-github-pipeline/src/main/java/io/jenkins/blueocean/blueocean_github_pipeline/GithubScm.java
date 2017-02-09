@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.tasks.Mailer;
+import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -40,6 +41,8 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -229,11 +232,11 @@ public class GithubScm extends Scm {
 
             if(githubCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(
-                        credential, authenticatedUser, getCredentialDomainName(),
+                        credential, authenticatedUser, getCredentialsDomainName(getUri()),
                         ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
             }else{
                 CredentialsUtils.updateCredentialsInUserStore(
-                        githubCredential, credential, authenticatedUser, getCredentialDomainName(),
+                        githubCredential, credential, authenticatedUser, getCredentialsDomainName(getUri()),
                         ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
             }
 
@@ -300,5 +303,19 @@ public class GithubScm extends Scm {
             throw new ServiceException.UnauthorizedException("No logged in user found");
         }
         return authenticatedUser;
+    }
+
+    private String getCredentialsDomainName(String apiUri) {
+        java.net.URI uri;
+        try {
+            uri = new URI(apiUri);
+        } catch (URISyntaxException e) {
+            throw new ServiceException.UnexpectedErrorException(new ErrorMessage(400, "Invalid URI: "+apiUri));
+        }
+        String domainName = getCredentialDomainName();
+        if(this instanceof GithubEnterpriseScm){
+            return domainName + "-" + uri.getHost();
+        }
+        return domainName;
     }
 }
