@@ -29,7 +29,7 @@
             box-shadow: 0 2px 0 0 rgba(73, 73, 73, 0.15);
         }
         .form-element,
-        .FormElement{
+        .FormElement {
             .Checkbox, .Choice {
                 padding-top: 5px;
             }
@@ -39,30 +39,38 @@
                 white-space: pre-wrap;
             }
 
-            * > .input,
-            * > .PasswordInput-control,
-            * > .TextInput-control,
-            * > .TextArea-control {
-                min-width: 490px;
-            }
-
             .Choice .RadioButtonGroup label {
                 padding-bottom: 5px;
             }
         }
-        .inputControl button{
+        .inputControl button {
+            margin-top: 24px;
             margin-right: 8px;
         }
     }
 
 }
+
 .inputParameters {
     .ModalContainer {
         z-index: 1;
     }
 
     * > .Dialog {
+
+        .Dialog-header {
+            h3 {
+                margin-top: 16px;
+                font-weight: 500;
+            }
+        }
+
+        .Dialog-content-margin {
+            margin: 24px 32px 16px 32px;
+        }
+
         min-width: 450px;
+
         * > .FormElement {
             margin-top: 20px;
         }
@@ -76,5 +84,13 @@
             box-shadow: 0 2px 0 0 rgba(73, 73, 73, 0.15);
         }
 
+    }
+}
+.FormElement-heading {
+    padding-bottom: 0;
+}
+.FormElement-children {
+    div.FullWidth {
+        width: 100%;
     }
 }

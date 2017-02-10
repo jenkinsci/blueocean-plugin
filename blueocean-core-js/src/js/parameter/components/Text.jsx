@@ -9,7 +9,7 @@ export class Text extends Component {
         const cleanName = removeMarkupTags(name);
         const cleanDescription = removeMarkupTags(description);
         return (<FormElement title={ cleanDescription }>
-            <div className="Text">
+            <div className="Text FullWidth">
                 <TextArea {...{ defaultValue: value, name: cleanName, onChange }} />
             </div>
         </FormElement>);

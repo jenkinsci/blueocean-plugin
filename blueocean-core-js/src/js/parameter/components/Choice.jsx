@@ -27,8 +27,12 @@ export class Choice extends Component {
             name: cleanName,
             onChange,
         };
+        let className = 'Choice';
+        if (choices.length > 6) {
+            className += ' FullWidth';
+        }
         return (<FormElement title={ cleanDescription }>
-            <div className="Choice">
+            <div className={className}>
                 { React.createElement(uxChoice, { ...options }) }
             </div>
         </FormElement>);
