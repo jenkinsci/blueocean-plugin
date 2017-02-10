@@ -339,7 +339,7 @@ export default class GithubFlowManager extends FlowManager {
      */
     _getFullRepoNameList() {
         const existingPipelines = this.existingOrgFolder && this.existingOrgFolder.pipelineFolderNames || [];
-        return [].concat(existingPipelines, this.selectedRepository.name);
+        return existingPipelines.concat(this.selectedRepository.name);
     }
 
     /**
