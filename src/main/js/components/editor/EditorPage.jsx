@@ -140,7 +140,7 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
         let {title = "Create Pipeline", style} = this.props;
 
         return (
-            <div className="editor-page-outer" style={style}>
+            <div className="pipeline-editor" style={style}>
                 <div className="editor-page-header">
                     <h3>{ title }</h3>
                     <div className="editor-page-header-controls">

@@ -18,149 +18,7 @@
 
 // TODO: Make these ^^^ use the JDL variables
 
-//--[ Common stuff ]----------------------------------------------------------------------------------------------------
-
-.editor-delete-btn {
-    color: @warning-color;
-    border-color: @warning-color;
-
-    &:hover {
-        color:@warning-color;
-        border-color: @warning-color;
-    }
-
-    &[disabled], &[disabled]:hover {
-        opacity:0.2;
-    }
-}
-
-.editor-button-bar {
-    padding: 4px 0;
-    width: 100%;
-    margin: 16px 0;
-    > button {
-        width: 100%;
-    }
-}
-
-.editor-step .editor-button-bar {
-    padding: 4px 2px 4px 28px;
-    width: 100%;
-    background: @hr-color;
-    position: relative;
-
-    &.arrow-up:before {
-        content: '';
-        display: inline-block;
-        position: absolute;
-        border: 8px solid #cdcdcd;
-        border-left-color: transparent;
-        width: 0;
-        height: 0;
-        border-right-color: transparent;
-        border-top: 0;
-        left: 8px;
-        bottom: 0px;
-    }
-
-}
-
-//--[ Outer Editor Component ]------------------------------------------------------------------------------------------
-
-.editor-main {
-    display: flex;
-    flex-wrap: nowrap;
-    flex-direction:column;
-    //align-items: stretch;
-    width:100%;
-    height:100%;
-    flex-grow:1;
-    position: relative;
-    padding-right: 360px;
-}
-
-.editor-main-graph {
-    display:flex;
-    flex-grow: 10;
-    flex-shrink: 0;
-    flex-basis: 50%;
-    background: @top-bg;
-    border-bottom: solid 1px @hr-color;
-    align-items: flex-start;
-    overflow:auto;
-}
-
-.editor-main-selection-title {
-    display:flex;
-    flex-grow: 0;
-    flex-shrink: 4;
-    flex-basis: 8.5rem;
-    align-items: center;
-
-    h4 {
-        margin: 0 2rem;
-        font-size:20px;
-        top:-3px;
-        flex-grow:1;
-    }
-
-    .editor-button-bar {
-        flex-grow: 0;
-        width: auto;
-        margin: 0 2rem;
-        padding: 0;
-    }
-}
-
-.editor-main-stage-details {
-    display: flex;
-    flex-grow: 10;
-    flex-shrink: 4;
-    flex-basis: 50%;
-    overflow-x: auto;
-
-    &.editor-details-placeholder {
-        align-items: center;
-        justify-content: center;
-    }
-
-    .empty-state-container {
-        width: 70rem;
-        text-align: center;
-
-        p {
-            font-size: 14pt;
-        }
-
-        .empty-state-content {
-            max-width: none;
-        }
-    }
-}
-
-.editor-main-step-list {
-    //min-height: 5em;
-    width: 50%;
-    border-right: solid 1px @hr-color;
-    padding-left:2rem;
-}
-
-.editor-main-step-details {
-    //min-height: 5em;
-    width: 50%;
-}
-
-.editor-main-step-list p,
-.editor-main-step-details p {
-    text-align: center;
-}
-
-//--[ "Dialog" page styles ]--------------------------------------------------------------------------------------------
-
-// TODO: Fix the storybooks in blueocean-dashboard, then using that fix the JDL styles for dialogs and...
-// TODO: ... things using said styles, remove this stuff from here.
-
-.editor-page-outer {
+.pipeline-editor {
     display:flex;
     flex-direction: column;
     width:100%;
@@ -174,648 +32,787 @@
     background-color: #fff;
     border-radius: 2px;
     z-index: 100;
-}
 
-.editor-page-header {
-    flex-grow: 1;
-    width:100%;
-    background: @brand-color;
-    color: white;
-    min-height: 80px;
-    display:flex;
-    align-items: center;
-}
+    //--[ Common stuff ]----------------------------------------------------------------------------------------------------
 
-.editor-page-header h3 {
-    margin:1em;
-    position:relative;
-    font-size:20px;
-    top:-3px;
-    flex-grow:1;
-}
+    .editor-delete-btn {
+        color: @warning-color;
+        border-color: @warning-color;
 
-.editor-page-header-controls {
-    flex-grow: 0;
-    margin: 1em;
-}
+        &:hover {
+            color:@warning-color;
+            border-color: @warning-color;
+        }
 
-.editor-page-header-controls button {
-    margin:0.5em;
-}
-
-//--[ Pipeline Graph ]--------------------------------------------------------------------------------------------------
-
-.editor-graph-node {
-    fill: none;
-    stroke: @brand-grey-lite;
-    transition: stroke .25s, fill .25s;
-}
-
-.editor-graph-nodegroup .editor-graph-node {
-    fill: #fff;
-}
-
-.editor-graph-nodegroup.selected .editor-graph-node {
-    stroke: @brand-color;
-}
-
-.pipeline-selection-highlight {
-    fill: @brand-color;
-    stroke: @brand-color;
-}
-
-.editor-graph-nodegroup.errors .editor-graph-node {
-    stroke: @error-highlight;
-}
-
-.editor-graph-nodegroup.selected.errors .editor-graph-node {
-    stroke: @error-highlight;
-}
-
-.editor-graph-nodegroup.errors line {
-    stroke: @error-highlight;
-}
-
-.editor-graph-nodegroup.selected.errors line {
-    stroke: #fff;
-}
-
-.editor-graph-nodegroup.errors text {
-    font-size: 24px;
-    font-weight: bold;
-    font-family: monospace;
-    fill: @error-highlight;
-}
-
-.editor-graph-nodegroup.errors .pipeline-selection-highlight {
-    fill: @error-highlight;
-    stroke: @error-highlight;
-}
-
-.pipeline-connector.placeholder {
-    stroke: #eae9e9;
-}
-
-.pipeline-big-label.errors, .pipeline-small-label.errors {
-    color: @error-highlight;
-}
-
-.editor-add-node-placeholder {
-    fill: @brand-color;
-}
-
-.result-status-glyph polygon {
-    fill: #cbcbcb;
-}
-
-.editor-add-node-placeholder {
-    fill: #fff;
-    stroke: #cbcbcb;
-}
-
-.start-node {
-    fill: #cdcdcd;
-}
-
-//--[ Steps List ]------------------------------------------------------------------------------------------------------
-
-.editor-steps {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    button.add svg {
-        fill: #fff;
-        vertical-align: middle;
-        margin-right: 5px;
-        margin-top: -2px;
+        &[disabled], &[disabled]:hover {
+            opacity:0.2;
+        }
     }
-}
 
-.editor-step {
-    width: 100%;
-    display: flex;
-    background: @editor-background;
-    position: relative;
+    .editor-button-bar {
+        padding: 4px 0;
+        width: 100%;
+        margin: 16px 0;
+        > button {
+            width: 100%;
+        }
+    }
 
-    &.errors {
-        > div > .editor-step-content:after {
-            border: 1px solid @error-highlight;
-            position: absolute;
+    .editor-step .editor-button-bar {
+        padding: 4px 2px 4px 28px;
+        width: 100%;
+        background: @hr-color;
+        position: relative;
+
+        &.arrow-up:before {
             content: '';
-            top: -1px; // cover the bottom border from above
-            right: 0;
-            bottom: 0;
-            left: 0;
-            cursor: pointer;
+            display: inline-block;
+            position: absolute;
+            border: 8px solid #cdcdcd;
+            border-left-color: transparent;
+            width: 0;
+            height: 0;
+            border-right-color: transparent;
+            border-top: 0;
+            left: 8px;
+            bottom: 0px;
         }
 
-        &:first-child .editor-step-content:after {
-            top: 0;
+    }
+
+    //--[ Outer Editor Component ]------------------------------------------------------------------------------------------
+
+    .editor-main {
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction:column;
+        //align-items: stretch;
+        width:100%;
+        height:100%;
+        flex-grow:1;
+        position: relative;
+        padding-right: 360px;
+    }
+
+    .editor-main-graph {
+        display:flex;
+        flex-grow: 10;
+        flex-shrink: 0;
+        flex-basis: 50%;
+        background: @top-bg;
+        border-bottom: solid 1px @hr-color;
+        align-items: flex-start;
+        overflow:auto;
+    }
+
+    .editor-main-selection-title {
+        display:flex;
+        flex-grow: 0;
+        flex-shrink: 4;
+        flex-basis: 8.5rem;
+        align-items: center;
+
+        h4 {
+            margin: 0 2rem;
+            font-size:20px;
+            top:-3px;
+            flex-grow:1;
+        }
+
+        .editor-button-bar {
+            flex-grow: 0;
+            width: auto;
+            margin: 0 2rem;
+            padding: 0;
         }
     }
-}
 
-.editor-step-errors {
-    color: @error-highlight;
-}
+    .editor-main-stage-details {
+        display: flex;
+        flex-grow: 10;
+        flex-shrink: 4;
+        flex-basis: 50%;
+        overflow-x: auto;
 
-.editor-step-grab {
-    background: @grab-color;
-    display: flex;
-    align-items: center;
-    cursor: -webkit-grab;
-    cursor: grab;
-}
+        &.editor-details-placeholder {
+            align-items: center;
+            justify-content: center;
+        }
 
-.editor-step-main {
-    width: 100%;
-    border: 1px solid @hr-color;
-    border-width: 0 1px;
-}
+        .empty-state-container {
+            width: 70rem;
+            text-align: center;
 
-.editor-step.selected > .editor-step-main {
-    background: @selection-color;
-}
+            p {
+                font-size: 14pt;
+            }
 
-.editor-step-content {
-    padding: 11px 16px;
-    cursor: pointer;
-    position: relative;
-    border-bottom: 1px solid @hr-color;
-
-    &:hover, &:active, &:focus {
-        background: @light-blue-bg;
+            .empty-state-content {
+                max-width: none;
+            }
+        }
     }
-}
 
-.editor-step .editor-step .editor-step-main { // nested steps
-    border-right: 0;
-    position: relative;
-}
-
-.editor-step.nested .editor-step-main { // child steps
-    border-left-width: 24px;
-    position: relative;
-}
-
-.editor-steps > .editor-step.missing .editor-step-content { // top-level 'no children' step
-    cursor: default;
-    &:hover, &:active, &:focus {
-        background: #fff;
+    .editor-main-step-list {
+        //min-height: 5em;
+        width: 50%;
+        border-right: solid 1px @hr-color;
+        padding-left:2rem;
     }
-}
 
-.editor-step-detail section + section {
-    margin-top: 16px;
-}
-
-.editor-step-label {
-    display: block;
-    font-weight: bold;
-    font-size: 110%;
-    padding-top: 0.3rem;
-    padding-bottom: 0.3rem;
-}
-
-.editor-step-summary {
-    display: block;
-    color: @hr-color;
-    font-size: 14px;
-    max-height: 35px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: pre;
-}
-
-.editor-nested-steps {
-    width: 100%;
-}
-
-// updated editor steps in the config panel
-.editor-steps > .editor-step:first-child > .editor-step-main {
-    border-top: solid 1px @hr-color;
-}
-
-.editor-step-grab {
-    display: none;
-}
-
-
-//--[ Step Details ]----------------------------------------------------------------------------------------------------
-
-.editor-step-detail {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 296px;
-}
-
-textarea.editor-step-detail-script {
-    min-width: 500px;
-    min-height: 400px;
-}
-
-.editor-step-detail-script {
-    margin-top:1em;
-    flex-grow:1;
-    border: solid 1px @brand-color;
-    padding:0.5em;
-    min-height: 4em;
-    font-family: @font-family-monospace;
-    white-space: nowrap;
-}
-
-.editor-step-detail-label {
-    font-size:16px;
-    font-family: @font-family-header;
-}
-
-// sheets
-.editor-config-panel.global {
-    width: 296px;
-
-    > div {
-        margin-top: 20px;
+    .editor-main-step-details {
+        //min-height: 5em;
+        width: 50%;
     }
-}
 
-.editor-config-panel.stage {
-    width: 296px;
-}
+    .editor-main-step-list p,
+    .editor-main-step-details p {
+        text-align: center;
+    }
 
-.editor-config-panel.step {
-    width: 296px;
-}
+    //--[ "Dialog" page styles ]--------------------------------------------------------------------------------------------
 
-.editor-step-child-icon {
-    position: absolute;
-    left: -20px;
-    top: 50%;
-    margin-top: -7px;
-    
-    svg {
+    .editor-page-header {
+        flex-grow: 1;
+        width:100%;
+        background: @brand-color;
+        color: white;
+        min-height: 80px;
+        display:flex;
+        align-items: center;
+    }
+
+    .editor-page-header h3 {
+        margin:1em;
+        position:relative;
+        font-size:20px;
+        top:-3px;
+        flex-grow:1;
+    }
+
+    .editor-page-header-controls {
+        flex-grow: 0;
+        margin: 1em;
+    }
+
+    .editor-page-header-controls button {
+        margin:0.5em;
+    }
+
+    //--[ Pipeline Graph ]--------------------------------------------------------------------------------------------------
+
+    .editor-graph-node {
+        fill: none;
+        stroke: @brand-grey-lite;
+        transition: stroke .25s, fill .25s;
+    }
+
+    .editor-graph-nodegroup .editor-graph-node {
         fill: #fff;
     }
-}
 
-.editor-steps > .editor-step:first-child > .editor-step-main > div > .editor-step-child-icon {
-    margin-top: -8px;
-}
-
-.sheet-container {
-    .sheet {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        background: #f8f8f8;
-        padding: 32px;
-        overflow: auto;
-
-        + .sheet {
-            box-shadow: -2px 0px 8px rgba(0, 0, 0, 0.20);
-        }
-        .sheet-header {
-            position: relative;
-            margin-bottom: 22px;
-
-            h4, input {
-                border-bottom: 1px solid #cdd7e3;
-                padding: 8px 30px 8px 1px;
-            }
-
-            .back-from-sheet {
-                + h4, + div > input {
-                    padding: 8px 30px 8px 31px;
-                }
-            }
-
-            input {
-                font-size: 18px;
-                background: transparent;
-                border: 0;
-                border-bottom: 1px solid #cdd7e3;
-                color: #4a4a4a;
-                width: 100%;
-
-                &:focus {
-                    outline: none;
-                    border-bottom-color: @brand-color;
-                }
-            }
-
-            input[type=text], .Dropdown-button {
-                border-color: @hr-color;
-            }
-        }
-        .back-from-sheet {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            margin-top: -13px;
-            cursor: pointer;
-
-            svg {
-                fill: #c3cfd7;
-            }
-
-            &:hover svg {
-                fill: #4a4a4a;
-            }
-        }
-        
-        &-enter {
-            right: -60px;
-            opacity: 0;
-            z-index: 2;
-            &-active {
-                transition: all 500ms;
-                transition-timing-function: cubic-bezier(0.025, 1.125, 0.100, 0.970);
-                right: 0;
-                opacity: 1;
-            }
-            // when another entering sheet is present, don't scroll it
-            + .sheet-leave-active {
-                margin-left: 0;
-                left: auto;
-                opacity: 1;
-                box-shadow: -0 0px 0 rgba(0, 0, 0, 0.00);
-            }
-        }
-        &-leave {
-            right: 0;
-            opacity: 1;
-            z-index: 1;
-            &-active {
-                transition: all 200ms;
-                transition-timing-function: cubic-bezier(0.805, 0.050, 0.955, 0.290); // very slow leaving
-                right: -32px;
-                opacity: 0;
-            }
-        }
+    .editor-graph-nodegroup.selected .editor-graph-node {
+        stroke: @brand-color;
     }
-}
 
-.more-menu {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    margin-top: -11px;
-    cursor: pointer;
+    .pipeline-selection-highlight {
+        fill: @brand-color;
+        stroke: @brand-color;
+    }
 
-    svg {
+    .editor-graph-nodegroup.errors .editor-graph-node {
+        stroke: @error-highlight;
+    }
+
+    .editor-graph-nodegroup.selected.errors .editor-graph-node {
+        stroke: @error-highlight;
+    }
+
+    .editor-graph-nodegroup.errors line {
+        stroke: @error-highlight;
+    }
+
+    .editor-graph-nodegroup.selected.errors line {
+        stroke: #fff;
+    }
+
+    .editor-graph-nodegroup.errors text {
+        font-size: 24px;
+        font-weight: bold;
+        font-family: monospace;
+        fill: @error-highlight;
+    }
+
+    .editor-graph-nodegroup.errors .pipeline-selection-highlight {
+        fill: @error-highlight;
+        stroke: @error-highlight;
+    }
+
+    .pipeline-connector.placeholder {
+        stroke: #eae9e9;
+    }
+
+    .pipeline-big-label.errors, .pipeline-small-label.errors {
+        color: @error-highlight;
+    }
+
+    .editor-add-node-placeholder {
         fill: @brand-color;
     }
 
-    .menu-dropdown {
-        position: absolute;
-        right: 0;
-        top: 100%;
-        margin-top: 7px;
-        background: #fff;
-        display: inline-block;
-        padding: 4px 0;
-        border-radius: 3px;
-        box-shadow: 0 0 6px rgba(0,0,0,0.25);
-        font-size: 14px;
-        z-index: 2;
+    .result-status-glyph polygon {
+        fill: #cbcbcb;
+    }
 
-        > a {
-            display: block;
-            padding: 5px 18px;
-            color: #444;
+    .editor-add-node-placeholder {
+        fill: #fff;
+        stroke: #cbcbcb;
+    }
 
-            &:hover, &:focus, &:active {
-                background: @light-blue-bg;
-                text-decoration: none;
+    .start-node {
+        fill: #cdcdcd;
+    }
+
+    //--[ Steps List ]------------------------------------------------------------------------------------------------------
+
+    .editor-steps {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        button.add svg {
+            fill: #fff;
+            vertical-align: middle;
+            margin-right: 5px;
+            margin-top: -2px;
+        }
+    }
+
+    .editor-step {
+        width: 100%;
+        display: flex;
+        background: @editor-background;
+        position: relative;
+
+        &.errors {
+            > div > .editor-step-content:after {
+                border: 1px solid @error-highlight;
+                position: absolute;
+                content: '';
+                top: -1px; // cover the bottom border from above
+                right: 0;
+                bottom: 0;
+                left: 0;
+                cursor: pointer;
+            }
+
+            &:first-child .editor-step-content:after {
+                top: 0;
             }
         }
     }
-}
 
-//--[ Step Select Dialog ]----------------------------------------------------------------------------------------------------
+    .editor-step-errors {
+        color: @error-highlight;
+    }
 
-.editor-step-selector {
-    width: 296px;
+    .editor-step-grab {
+        background: @grab-color;
+        display: flex;
+        align-items: center;
+        cursor: -webkit-grab;
+        cursor: grab;
+    }
 
-    > div {
-        border: 1px solid #cdcdcd;
-        border-top: 0;
-        background: #fff;
-        padding: 10px 16px;
-        font-size: 16px;
+    .editor-step-main {
+        width: 100%;
+        border: 1px solid @hr-color;
+        border-width: 0 1px;
+    }
+
+    .editor-step.selected > .editor-step-main {
+        background: @selection-color;
+    }
+
+    .editor-step-content {
+        padding: 11px 16px;
         cursor: pointer;
-
-        &:first-child {
-            border-top: 1px solid #cdcdcd;
-        }
+        position: relative;
+        border-bottom: 1px solid @hr-color;
 
         &:hover, &:active, &:focus {
             background: @light-blue-bg;
         }
     }
-}
 
-.editor-step-search {
-    position: relative;
-    margin: -32px 0 4px 0;
-
-    > svg {
-        position: absolute;
-        top: 50%;
-        left: 3px;
-        margin-top: -5px;
-    }
-    > input {
-        width: 100%;
-        padding: 22px 13px 8px 31px;
+    .editor-step .editor-step .editor-step-main { // nested steps
+        border-right: 0;
         position: relative;
+    }
+
+    .editor-step.nested .editor-step-main { // child steps
+        border-left-width: 24px;
+        position: relative;
+    }
+
+    .editor-steps > .editor-step.missing .editor-step-content { // top-level 'no children' step
+        cursor: default;
+        &:hover, &:active, &:focus {
+            background: #fff;
+        }
+    }
+
+    .editor-step-detail section + section {
+        margin-top: 16px;
+    }
+
+    .editor-step-label {
         display: block;
-        background: transparent;
-        border: 0;
-        font-size: 1.2em;
+        font-weight: bold;
+        font-size: 110%;
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+    }
+
+    .editor-step-summary {
+        display: block;
+        color: @hr-color;
+        font-size: 14px;
+        max-height: 35px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: pre;
+    }
+
+    .editor-nested-steps {
+        width: 100%;
+    }
+
+    // updated editor steps in the config panel
+    .editor-steps > .editor-step:first-child > .editor-step-main {
+        border-top: solid 1px @hr-color;
+    }
+
+    .editor-step-grab {
+        display: none;
+    }
+
+
+    //--[ Step Details ]----------------------------------------------------------------------------------------------------
+
+    .editor-step-detail {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 296px;
+    }
+
+    textarea.editor-step-detail-script {
+        min-width: 500px;
+        min-height: 400px;
+    }
+
+    .editor-step-detail-script {
+        margin-top:1em;
+        flex-grow:1;
+        border: solid 1px @brand-color;
+        padding:0.5em;
+        min-height: 4em;
+        font-family: @font-family-monospace;
+        white-space: nowrap;
+    }
+
+    .editor-step-detail-label {
+        font-size:16px;
+        font-family: @font-family-header;
+    }
+
+    // sheets
+    .editor-config-panel.global {
+        width: 296px;
+
+        > div {
+            margin-top: 20px;
+        }
+    }
+
+    .editor-config-panel.stage {
+        width: 296px;
+    }
+
+    .editor-config-panel.step {
+        width: 296px;
+    }
+
+    .editor-step-child-icon {
+        position: absolute;
+        left: -20px;
+        top: 50%;
+        margin-top: -7px;
         
-        .placeholder({
-            color: #888;
-            font-style: italic;
-        });
-        &:focus {
-            border-color: #4a90e2;
-            border-radius: 0px;
-            outline: none;
-            margin: 0;
-        }
-    }
-}
-
-.placeholder(@rules) {
-    &::-webkit-input-placeholder {
-        @rules();
-    }
-
-    &:-moz-placeholder { /* Firefox 18- */
-        @rules();
-    }
-
-    &::-moz-placeholder {  /* Firefox 19+ */
-        @rules();
-    }
-
-    &:-ms-input-placeholder {  
-        @rules();
-    }
-}
-
-.pipeline-editor-form {
-    .form-item {
-        .form-label {
-            display: block;
-            font-size: 1.1em;
-            margin: 1em 0 .3em 0;
-        }
-        .form-input {
-            display: block;
-        }
-    }
-}
-
-.editor-pipeline-dialog {
-    width: 690px;
-}
-
-.load-save-usage-blurb {
-    padding: 16px;
-    margin: 0 0 30px 0;
-    background: @light-blue-bg;
-
-    > div {
-        margin-top: 12px;
-        text-align: right;
-    }
-}
-
-.pipeline-editor-form > div {
-    margin-top: .75em;
-}
-
-.split {
-    display: table-row;
-    .split-child {
-        display: table-cell;
-        width: 50%;
-    }
-}
-
-ul.pipeline-validation-errors {
-    margin: -1em 0 1.2em 0;
-    color: @error-highlight;
-    background: #fff4f4;
-    padding: 16px;
-    border-radius: 3px;
-    border: 1px solid lighten(@error-highlight, 25%);
-    margin-top: 10px;
-    list-style: none;
-
-    > li + li {
-        margin-top: 4px;
-    }
-}
-
-.editor-text-area textarea {
-    font: 13px monospace;
-}
-
-.editor-config-panel h5 {
-    margin: .2em 0 .8em 0;
-    border-bottom: 1px solid rgba(204, 215, 227, 0.5);
-    padding: .3em 0;
-}
-
-.environment-entry .split-child + .split-child {
-    padding-left: 10px;
-}
-
-.agent-parameters {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    margin: 0 -5px;
-
-    .agent-param {
-        flex: 0 0 50%;
-        padding: 0 5px;
-
-        label > div:first-child {
-            margin: 6px 0 0 1px;
-        }
-    }
-}
-
-.environment-add-delete-icon {
-    cursor: pointer;
-    vertical-align: middle;
-    background: transparent;
-    display: inline-block;
-    border: 0;
-    padding: 0;
-    margin: 0;
-
-    &:hover, &:focus {
-        background: transparent;
-        border: 0;
-        box-shadow: none;
-    }
-
-    &.add {
-        circle {
-            fill: #a5c8f1;
-        }
-
-        .result-status-glyph polygon {
+        svg {
             fill: #fff;
         }
     }
 
-    &.delete circle {
-        fill: #e8818d;
+    .editor-steps > .editor-step:first-child > .editor-step-main > div > .editor-step-child-icon {
+        margin-top: -8px;
     }
 
-    // FIXME hover/focus styles beyond just color
-    &:hover, &:focus {
-        &.add circle {
-            fill: darken(#a5c8f1, 20%); //#4a90e2;
+    .sheet-container {
+        .sheet {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background: #f8f8f8;
+            padding: 32px;
+            overflow: auto;
+
+            + .sheet {
+                box-shadow: -2px 0px 8px rgba(0, 0, 0, 0.20);
+            }
+            .sheet-header {
+                position: relative;
+                margin-bottom: 22px;
+
+                h4, input {
+                    border-bottom: 1px solid #cdd7e3;
+                    padding: 8px 30px 8px 1px;
+                }
+
+                .back-from-sheet {
+                    + h4, + div > input {
+                        padding: 8px 30px 8px 31px;
+                    }
+                }
+
+                input {
+                    font-size: 18px;
+                    background: transparent;
+                    border: 0;
+                    border-bottom: 1px solid #cdd7e3;
+                    color: #4a4a4a;
+                    width: 100%;
+
+                    &:focus {
+                        outline: none;
+                        border-bottom-color: @brand-color;
+                    }
+                }
+
+                input[type=text], .Dropdown-button {
+                    border-color: @hr-color;
+                }
+            }
+            .back-from-sheet {
+                position: absolute;
+                left: 0;
+                top: 50%;
+                margin-top: -13px;
+                cursor: pointer;
+
+                svg {
+                    fill: #c3cfd7;
+                }
+
+                &:hover svg {
+                    fill: #4a4a4a;
+                }
+            }
+            
+            &-enter {
+                right: -60px;
+                opacity: 0;
+                z-index: 2;
+                &-active {
+                    transition: all 500ms;
+                    transition-timing-function: cubic-bezier(0.025, 1.125, 0.100, 0.970);
+                    right: 0;
+                    opacity: 1;
+                }
+                // when another entering sheet is present, don't scroll it
+                + .sheet-leave-active {
+                    margin-left: 0;
+                    left: auto;
+                    opacity: 1;
+                    box-shadow: -0 0px 0 rgba(0, 0, 0, 0.00);
+                }
+            }
+            &-leave {
+                right: 0;
+                opacity: 1;
+                z-index: 1;
+                &-active {
+                    transition: all 200ms;
+                    transition-timing-function: cubic-bezier(0.805, 0.050, 0.955, 0.290); // very slow leaving
+                    right: -32px;
+                    opacity: 0;
+                }
+            }
         }
+    }
+
+    .more-menu {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        margin-top: -11px;
+        cursor: pointer;
+
+        svg {
+            fill: @brand-color;
+        }
+
+        .menu-dropdown {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 7px;
+            background: #fff;
+            display: inline-block;
+            padding: 4px 0;
+            border-radius: 3px;
+            box-shadow: 0 0 6px rgba(0,0,0,0.25);
+            font-size: 14px;
+            z-index: 2;
+
+            > a {
+                display: block;
+                padding: 5px 18px;
+                color: #444;
+
+                &:hover, &:focus, &:active {
+                    background: @light-blue-bg;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+
+    //--[ Step Select Dialog ]----------------------------------------------------------------------------------------------------
+
+    .editor-step-selector {
+        width: 296px;
+
+        > div {
+            border: 1px solid #cdcdcd;
+            border-top: 0;
+            background: #fff;
+            padding: 10px 16px;
+            font-size: 16px;
+            cursor: pointer;
+
+            &:first-child {
+                border-top: 1px solid #cdcdcd;
+            }
+
+            &:hover, &:active, &:focus {
+                background: @light-blue-bg;
+            }
+        }
+    }
+
+    .editor-step-search {
+        position: relative;
+        margin: -32px 0 4px 0;
+
+        > svg {
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            margin-top: -5px;
+        }
+        > input {
+            width: 100%;
+            padding: 22px 13px 8px 31px;
+            position: relative;
+            display: block;
+            background: transparent;
+            border: 0;
+            font-size: 1.2em;
+            
+            .placeholder({
+                color: #888;
+                font-style: italic;
+            });
+            &:focus {
+                border-color: #4a90e2;
+                border-radius: 0px;
+                outline: none;
+                margin: 0;
+            }
+        }
+    }
+
+    .placeholder(@rules) {
+        &::-webkit-input-placeholder {
+            @rules();
+        }
+
+        &:-moz-placeholder { /* Firefox 18- */
+            @rules();
+        }
+
+        &::-moz-placeholder {  /* Firefox 19+ */
+            @rules();
+        }
+
+        &:-ms-input-placeholder {  
+            @rules();
+        }
+    }
+
+    .pipeline-editor-form {
+        .form-item {
+            .form-label {
+                display: block;
+                font-size: 1.1em;
+                margin: 1em 0 .3em 0;
+            }
+            .form-input {
+                display: block;
+            }
+        }
+    }
+
+    .editor-pipeline-dialog {
+        width: 690px;
+    }
+
+    .load-save-usage-blurb {
+        padding: 16px;
+        margin: 0 0 30px 0;
+        background: @light-blue-bg;
+
+        > div {
+            margin-top: 12px;
+            text-align: right;
+        }
+    }
+
+    .pipeline-editor-form > div {
+        margin-top: .75em;
+    }
+
+    .split {
+        display: table-row;
+        .split-child {
+            display: table-cell;
+            width: 50%;
+        }
+    }
+
+    ul.pipeline-validation-errors {
+        margin: -1em 0 1.2em 0;
+        color: @error-highlight;
+        background: #fff4f4;
+        padding: 16px;
+        border-radius: 3px;
+        border: 1px solid lighten(@error-highlight, 25%);
+        margin-top: 10px;
+        list-style: none;
+
+        > li + li {
+            margin-top: 4px;
+        }
+    }
+
+    .editor-text-area textarea {
+        font: 13px monospace;
+    }
+
+    .editor-config-panel h5 {
+        margin: .2em 0 .8em 0;
+        border-bottom: 1px solid rgba(204, 215, 227, 0.5);
+        padding: .3em 0;
+    }
+
+    .environment-entry .split-child + .split-child {
+        padding-left: 10px;
+    }
+
+    .agent-parameters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        margin: 0 -5px;
+
+        .agent-param {
+            flex: 0 0 50%;
+            padding: 0 5px;
+
+            label > div:first-child {
+                margin: 6px 0 0 1px;
+            }
+        }
+    }
+
+    .environment-add-delete-icon {
+        cursor: pointer;
+        vertical-align: middle;
+        background: transparent;
+        display: inline-block;
+        border: 0;
+        padding: 0;
+        margin: 0;
+
+        &:hover, &:focus {
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+        }
+
+        &.add {
+            circle {
+                fill: #a5c8f1;
+            }
+
+            .result-status-glyph polygon {
+                fill: #fff;
+            }
+        }
+
         &.delete circle {
-            fill: darken(#e8818d, 20%); //#d65766
+            fill: #e8818d;
+        }
+
+        // FIXME hover/focus styles beyond just color
+        &:hover, &:focus {
+            &.add circle {
+                fill: darken(#a5c8f1, 20%); //#4a90e2;
+            }
+            &.delete circle {
+                fill: darken(#e8818d, 20%); //#d65766
+            }
         }
     }
-}
 
-.environment-entry {
-    margin-top: 8px;
-}
+    .environment-entry {
+        margin-top: 8px;
+    }
 
-.FormElement.u-error-state > .FormElement-children > .TextInput {
-    position: relative;
-}
+    .FormElement.u-error-state > .FormElement-children > .TextInput {
+        position: relative;
+    }
 
-.FormElement.u-error-state > .FormElement-children > .TextInput:after,
-.FormElement.u-error-state > .FormElement-children > .PasswordInput:after {
-    content: '!';
-    position: absolute;
-    right: 6px;
-    top: 50%;
-    margin-top: -9px;
-    font-size: 16px;
-    color: #fff;
-    background: #d24146;
-    border-radius: 100%;
-    width: 18px;
-    display: inline-block;
-    height: 18px;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 17px;
-    font-weight: bold;
+    .FormElement.u-error-state > .FormElement-children > .TextInput:after,
+    .FormElement.u-error-state > .FormElement-children > .PasswordInput:after {
+        content: '!';
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        margin-top: -9px;
+        font-size: 16px;
+        color: #fff;
+        background: #d24146;
+        border-radius: 100%;
+        width: 18px;
+        display: inline-block;
+        height: 18px;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 17px;
+        font-weight: bold;
+    }
 }

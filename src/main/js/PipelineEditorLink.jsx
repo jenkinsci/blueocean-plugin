@@ -6,7 +6,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 
 function PipelineEditorLink() {
     return (
-        <Link className="pipeline-editor" to="/pipelines/pipeline-editor-preview">
+        <Link className="pipeline-editor-link" to="/pipelines/pipeline-editor-preview">
             <Extensions.Renderer extensionPoint="pipeline.editor.css"/>
             Pipeline Editor
         </Link>
