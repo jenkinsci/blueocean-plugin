@@ -14,6 +14,9 @@ import com.cloudbees.plugins.credentials.domains.PathSpecification;
 import com.cloudbees.plugins.credentials.domains.SchemeSpecification;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.User;
@@ -59,6 +62,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
 /**
  * @author Vivek Pandey
  */
@@ -73,6 +79,12 @@ public class GithubScm extends Scm {
     private static final String DOMAIN_NAME="github-domain";
 
     private final Link self;
+
+    static final ObjectMapper om = new ObjectMapper();
+    static {
+        om.setVisibilityChecker(new VisibilityChecker.Std(NONE, NONE, NONE, NONE, ANY));
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     public GithubScm(Reachable parent) {
         this.self = parent.getLink().rel("github");
@@ -217,7 +229,7 @@ public class GithubScm extends Scm {
             }
 
             String data = IOUtils.toString(connection.getInputStream());
-            GHUser user = JsonConverter.toJava(data, GHUser.class);
+            GHUser user = GithubScm.om.readValue(data, GHUser.class);
 
             if(user.getEmail() != null){
                 Mailer.UserProperty p = authenticatedUser.getProperty(Mailer.UserProperty.class);
