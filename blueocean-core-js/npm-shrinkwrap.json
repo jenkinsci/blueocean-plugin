@@ -15,8 +15,8 @@
     },
     "@jenkins-cd/js-extensions": {
       "version": "0.0.33",
-      "from": "../js-extensions",
-      "resolved": "file:../js-extensions"
+      "from": "@jenkins-cd/js-extensions@0.0.33",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.33.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
