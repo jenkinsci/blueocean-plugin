@@ -28,6 +28,7 @@ import hudson.model.Item;
 import hudson.model.Queue;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.MultiBranchProject.BranchIndexing;
+import jenkins.branch.OrganizationFolder;
 import org.jenkinsci.plugins.pubsub.EventProps;
 import org.jenkinsci.plugins.pubsub.Events;
 import org.jenkinsci.plugins.pubsub.JobChannelMessage;
@@ -49,35 +50,55 @@ public class MultiBranchProjectEnricher extends MessageEnricher {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
             Item jobChannelItem = jobChannelMessage.getJobChannelItem();
 
-            if (jobChannelItem instanceof MultiBranchProject) {
+            Enum indexingStatus;
+            Enum indexingResult;
+
+            if (jobChannelItem instanceof OrganizationFolder) {
+                indexingStatus = OrgFolder.job_orgfolder_indexing_status;
+                indexingResult = OrgFolder.job_orgfolder_indexing_result;
+            } else if (jobChannelItem instanceof MultiBranchProject) {
                 jobChannelMessage.set(EventProps.Job.job_ismultibranch, "true");
+                indexingStatus = EventProps.Job.job_multibranch_indexing_status;
+                indexingResult = EventProps.Job.job_multibranch_indexing_result;
+            } else {
+                // don't enrich if not org folder or multibranch
+                return;
+            }
 
-                if (message instanceof QueueTaskMessage) {
-                    QueueTaskMessage queueTaskMessage = (QueueTaskMessage) message;
-                    Queue.Item queueItem = queueTaskMessage.getQueueItem();
+            if (message instanceof QueueTaskMessage) {
+                QueueTaskMessage queueTaskMessage = (QueueTaskMessage) message;
+                Queue.Item queueItem = queueTaskMessage.getQueueItem();
 
-                    if (queueItem instanceof Queue.LeftItem) {
-                        Queue.LeftItem leftItem = (Queue.LeftItem) queueItem;
-                        if (leftItem.isCancelled()) {
-                            jobChannelMessage.set(EventProps.Job.job_multibranch_indexing_status, "COMPLETE");
-                            jobChannelMessage.set(EventProps.Job.job_multibranch_indexing_result, "CANCELLED");
-                        } else {
-                            if (message.getEventName().equals(Events.JobChannel.job_run_queue_task_complete.name())) {
-                                jobChannelMessage.set(EventProps.Job.job_multibranch_indexing_status, "COMPLETE");
-                                Queue.Executable executable = ((Queue.LeftItem) queueItem).getExecutable();
-                                if (executable instanceof BranchIndexing) {
-                                    BranchIndexing branchIndexing = (BranchIndexing) executable;
-                                    jobChannelMessage.set(EventProps.Job.job_multibranch_indexing_result, branchIndexing.getResult().toString());
-                                }
-                            } else {
-                                jobChannelMessage.set(EventProps.Job.job_multibranch_indexing_status, "INDEXING");
-                            }
-                        }
+                if (queueItem instanceof Queue.LeftItem) {
+                    Queue.LeftItem leftItem = (Queue.LeftItem) queueItem;
+                    if (leftItem.isCancelled()) {
+                        jobChannelMessage.set(indexingStatus, "COMPLETE");
+                        jobChannelMessage.set(indexingResult, "CANCELLED");
                     } else {
-                        jobChannelMessage.set(EventProps.Job.job_multibranch_indexing_status, "INDEXING");
+                        if (message.getEventName().equals(Events.JobChannel.job_run_queue_task_complete.name())) {
+                            jobChannelMessage.set(indexingStatus, "COMPLETE");
+                            Queue.Executable executable = ((Queue.LeftItem) queueItem).getExecutable();
+                            if (executable instanceof BranchIndexing) {
+                                BranchIndexing branchIndexing = (BranchIndexing) executable;
+                                jobChannelMessage.set(indexingResult, branchIndexing.getResult().toString());
+                            } else if (executable instanceof OrganizationFolder.OrganizationScan) {
+                                OrganizationFolder.OrganizationScan orgScan = (OrganizationFolder.OrganizationScan) executable;
+                                jobChannelMessage.set(indexingResult, orgScan.getResult().toString());
+                            }
+                        } else {
+                            jobChannelMessage.set(indexingStatus, "INDEXING");
+                        }
                     }
+                } else {
+                    jobChannelMessage.set(indexingStatus, "INDEXING");
                 }
             }
         }
     }
+}
+
+// TODO: move to pubsub-light's EventProps?
+enum OrgFolder {
+    job_orgfolder_indexing_result,
+    job_orgfolder_indexing_status,
 }
