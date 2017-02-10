@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.commons;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,7 +7,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,12 +60,6 @@ public class JsonConverter{
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.setVisibilityChecker(
-                new VisibilityChecker.Std(JsonAutoDetect.Visibility.NONE,
-                        JsonAutoDetect.Visibility.NONE,
-                        JsonAutoDetect.Visibility.NONE,
-                        JsonAutoDetect.Visibility.NONE,
-                        JsonAutoDetect.Visibility.ANY));
         return mapper;
     }
 }
