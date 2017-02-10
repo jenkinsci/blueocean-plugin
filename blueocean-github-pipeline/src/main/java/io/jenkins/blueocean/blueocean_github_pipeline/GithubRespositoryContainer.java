@@ -24,14 +24,19 @@ public class GithubRespositoryContainer extends ScmRepositoryContainer {
     private final String rootUrl;
     private final String orgId;
     private final String orgUrl;
-
+    private final String repoType;
 
     public GithubRespositoryContainer(Scm scm, String orgUrl, String orgId, StandardUsernamePasswordCredentials credentials, Reachable parent) {
+        this(scm, orgUrl, orgId, "all", credentials, parent);
+    }
+
+    public GithubRespositoryContainer(Scm scm, String orgUrl, String orgId, String repoType, StandardUsernamePasswordCredentials credentials, Reachable parent) {
         this.rootUrl = scm.getUri();
         this.self = parent.getLink().rel("repositories");
         this.credentials = credentials;
         this.orgId = orgId;
         this.orgUrl = orgUrl;
+        this.repoType = repoType;
     }
 
     @Override
@@ -42,6 +47,10 @@ public class GithubRespositoryContainer extends ScmRepositoryContainer {
     @Override
     public ScmRepositories getRepositories() {
         return new GithubRepositories(credentials, orgUrl, this);
+    }
+
+    String getRepoType(){
+        return repoType;
     }
 
     @Override

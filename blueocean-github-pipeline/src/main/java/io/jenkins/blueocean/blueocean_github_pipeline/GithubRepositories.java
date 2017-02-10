@@ -4,7 +4,6 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
@@ -32,12 +31,14 @@ public class GithubRepositories extends ScmRepositories {
     private final Integer lastPage;
     private final int pageSize;
     private final StandardUsernamePasswordCredentials credential;
+    private final GithubRespositoryContainer parent;
 
 
-    public GithubRepositories(StandardUsernamePasswordCredentials credentials, String orgUrl, Reachable parent) {
+    public GithubRepositories(StandardUsernamePasswordCredentials credentials, String orgUrl, GithubRespositoryContainer parent) {
         this.self = parent.getLink().rel("repositories");
         this.accessToken = credentials.getPassword().getPlainText();
         this.credential = credentials;
+        this.parent = parent;
 
         StaplerRequest request = Stapler.getCurrentRequest();
         int pageNumber = 0;
@@ -56,9 +57,10 @@ public class GithubRepositories extends ScmRepositories {
                 pageSize = 100;
             }
 
-            HttpURLConnection connection = null;
-            connection = GithubScm.connect(String.format("%s/repos?per_page=%s&page=%s",
+            HttpURLConnection connection;
+            connection = GithubScm.connect(String.format("%s/repos?type=%s&per_page=%s&page=%s",
                     orgUrl,
+                    parent.getRepoType(),
                     pageSize, pageNumber), accessToken);
             this.repositories = JsonConverter.toJava(IOUtils.toString(connection.getInputStream()), GHRepository[].class);
 
