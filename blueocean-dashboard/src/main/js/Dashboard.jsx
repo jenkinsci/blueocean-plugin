@@ -17,16 +17,16 @@ class Dashboard extends Component {
         this._context.pipelineService = pipelineService;
         this._context.activityService = activityService;
     }
+    getChildContext() {
+        this._context.params = this.props.params;
+        this._context.location = this.props.location;
+        return this._context;
+    }
     componentDidMount() {
         loadingIndicator.setDarkBackground();
     }
     componentWillUnmount() {
         loadingIndicator.setLightBackground();
-    }
-    getChildContext() {
-        this._context.params = this.props.params;
-        this._context.location = this.props.location;
-        return this._context;
     }
 
     render() {
