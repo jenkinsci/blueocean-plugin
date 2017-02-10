@@ -13,36 +13,17 @@
         min-width: 400px;
 
         h3 {
-            padding-bottom: 10px;
+            padding-bottom: 24px;
         }
 
         * > .FormElement {
-            margin-top: 20px;
+            margin-top: 24px;
         }
 
         * > .FormElement:first-child {
             margin-top: 0px;
         }
 
-        * > .FormElement-heading {
-            margin-bottom: 12px;
-            box-shadow: 0 2px 0 0 rgba(73, 73, 73, 0.15);
-        }
-        .form-element,
-        .FormElement {
-            .Checkbox, .Choice {
-                padding-top: 5px;
-            }
-
-            * > .inputDescription {
-                padding-top: 5px;
-                white-space: pre-wrap;
-            }
-
-            .Choice .RadioButtonGroup label {
-                padding-bottom: 5px;
-            }
-        }
         .inputControl button {
             margin-top: 24px;
             margin-right: 8px;
@@ -72,25 +53,29 @@
         min-width: 450px;
 
         * > .FormElement {
-            margin-top: 20px;
+            margin-top: 24px;
         }
 
         * > .FormElement:first-child {
             margin-top: 0px;
         }
-
-        * > .FormElement-heading {
-            margin-bottom: 12px;
-            box-shadow: 0 2px 0 0 rgba(73, 73, 73, 0.15);
-        }
-
     }
 }
-.FormElement-heading {
-    padding-bottom: 0;
+
+.FormElement.underline {
+    .FormElement-heading {
+        box-shadow: 0 2px 0 0 rgba(73, 73, 73, 0.15);
+        margin-bottom: 12px;
+    }
 }
-.FormElement-children {
-    div.FullWidth {
-        width: 100%;
+.FormElement {
+    .FormElement-heading {
+        padding-bottom: 0;
+        margin-bottom: 8px;
+    }
+    .FormElement-children {
+        div.FullWidth {
+            width: 100%;
+        }
     }
 }

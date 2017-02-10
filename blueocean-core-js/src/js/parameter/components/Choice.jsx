@@ -27,14 +27,18 @@ export class Choice extends Component {
             name: cleanName,
             onChange,
         };
+        // css tweaks
         let className = 'Choice';
+        const formProperties = { title: cleanDescription };
         if (choices.length > 6) {
             className += ' FullWidth';
+        } else {
+            className += ' underline';
         }
-        return (<FormElement title={ cleanDescription }>
-            <div className={className}>
-                { React.createElement(uxChoice, { ...options }) }
-            </div>
+        formProperties.className = className;
+
+        return (<FormElement { ...formProperties } >
+            { React.createElement(uxChoice, { ...options }) }
         </FormElement>);
     }
 }
