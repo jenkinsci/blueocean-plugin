@@ -24,9 +24,26 @@ export default class GithubRepositoryStep extends React.Component {
         const title = 'Choose a repository';
         const disabled = flowManager.stepsDisabled;
         const buttonDisabled = !flowManager.selectedRepository;
+        const orgName = flowManager.selectedOrganization.name;
+        const existingPipelineCount = flowManager.existingPipelineCount;
 
         return (
             <FlowStep {...this.props} className="github-repo-list-step" title={title} disabled={disabled}>
+                { flowManager.existingAutoDiscover &&
+                <div>
+                    <p className="instructions">
+                        The organization "{orgName}"is currently set to "Automatically discover."
+                        Changing to "Just one repository" will create one new pipeline and
+                        preserve the existing {existingPipelineCount} pipelines.
+                    </p>
+
+                    <p className="instructions">
+                        Jenkins will no longer actively search for new repositories that contain Jenkinsfiles
+                        and create Pipelines for them.
+                    </p>
+                </div>
+                }
+
                 { flowManager.selectableRepositories.length > 0 &&
                 <div className="container">
                     <List
@@ -50,7 +67,7 @@ export default class GithubRepositoryStep extends React.Component {
                 <div className="container">
                     <p className="instructions">
                         All {flowManager.repositories.length} discovered repositories in the organization
-                        "{flowManager.selectedOrganization.name}" already have Pipelines.
+                        "{orgName}" already have Pipelines.
                     </p>
 
                     <button onClick={() => this._exit()}>Exit</button>
@@ -60,7 +77,7 @@ export default class GithubRepositoryStep extends React.Component {
                 { flowManager.repositories.length === 0 &&
                 <div className="container">
                     <p className="instructions">
-                        The organization "{flowManager.selectedOrganization.name}" has no repositories.
+                        The organization "{orgName}" has no repositories.
 
                         Please pick a different organization or choose "Automatically Discover" instead.
                     </p>
