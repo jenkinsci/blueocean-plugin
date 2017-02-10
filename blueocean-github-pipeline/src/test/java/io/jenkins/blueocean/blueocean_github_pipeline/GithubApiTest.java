@@ -27,7 +27,7 @@ public class GithubApiTest extends PipelineBaseTest {
 
     @BeforeClass
     public static void checkAccessToken() {
-        Assume.assumeTrue("GITHUB_ACCESS_TOKEN env variable not set, ignoring test", accessToken != null);
+        Assume.assumeTrue("GITHUB_ACCESS_TOKEN jvm property not set, ignoring test", accessToken != null);
     }
 
     @Test

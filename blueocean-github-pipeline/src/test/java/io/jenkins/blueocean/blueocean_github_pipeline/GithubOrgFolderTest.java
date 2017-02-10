@@ -22,6 +22,7 @@ import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.github_branch_source.Connector;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -51,6 +52,37 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
         Assert.assertEquals("jenkinsci", resp.get("name"));
         Assert.assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
     }
+
+
+
+    @Test
+    public void createGithubOrgTest() throws IOException, UnirestException {
+        Assume.assumeTrue("Need github accesstoken. Run test with -DGITHUB_ACCESS_TOKEN=... , ignoring test", System.getProperty("GITHUB_ACCESS_TOKEN") != null);
+        User user = login();
+        String accessToken = System.getProperty("GITHUB_ACCESS_TOKEN");
+        Map r = new RequestBuilder(baseUrl)
+                .data(ImmutableMap.of("accessToken", accessToken))
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .put("/organizations/jenkins/scm/github/validate/")
+                .build(Map.class);
+
+        assertEquals("github", r.get("credentialId"));
+        Map resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "vivek",
+                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("config",
+                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")), "credentialId", "github")
+                ))
+                .build(Map.class);
+
+        Assert.assertEquals("vivek", resp.get("name"));
+        Assert.assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
+    }
+
 
     @Test
     public void orgUpdateTest() throws IOException, UnirestException {
