@@ -56,8 +56,8 @@ public class JobIndexingMessageEnricher extends MessageEnricher {
             Enum indexingResult;
 
             if (jobChannelItem instanceof OrganizationFolder) {
-                indexingStatus = OrgFolder.job_orgfolder_indexing_status;
-                indexingResult = OrgFolder.job_orgfolder_indexing_result;
+                indexingStatus = EventProps.Job.job_orgfolder_indexing_status;
+                indexingResult = EventProps.Job.job_orgfolder_indexing_result;
             } else if (jobChannelItem instanceof MultiBranchProject) {
                 jobChannelMessage.set(EventProps.Job.job_ismultibranch, "true");
                 indexingStatus = EventProps.Job.job_multibranch_indexing_status;
@@ -97,10 +97,4 @@ public class JobIndexingMessageEnricher extends MessageEnricher {
             }
         }
     }
-}
-
-// TODO: move to pubsub-light's EventProps?
-enum OrgFolder {
-    job_orgfolder_indexing_result,
-    job_orgfolder_indexing_status,
 }
