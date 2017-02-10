@@ -19,6 +19,10 @@ export default class GithubRepositoryStep extends React.Component {
         this.props.flowManager.completeFlow();
     }
 
+    _sortRepos(a, b) {
+        return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+    }
+
     render() {
         const { flowManager } = this.props;
         const title = 'Choose a repository';
@@ -26,6 +30,7 @@ export default class GithubRepositoryStep extends React.Component {
         const buttonDisabled = !flowManager.selectedRepository;
         const orgName = flowManager.selectedOrganization.name;
         const existingPipelineCount = flowManager.existingPipelineCount;
+        const sortedRepos = flowManager.selectableRepositories.slice().sort(this._sortRepos);
 
         return (
             <FlowStep {...this.props} className="github-repo-list-step" title={title} disabled={disabled}>
@@ -48,7 +53,7 @@ export default class GithubRepositoryStep extends React.Component {
                 <div className="container">
                     <List
                       className="repo-list"
-                      data={flowManager.selectableRepositories}
+                      data={sortedRepos}
                       onItemSelect={(idx, repo) => this.selectRepository(repo)}
                       labelFunction={repo => repo.name}
                     />
