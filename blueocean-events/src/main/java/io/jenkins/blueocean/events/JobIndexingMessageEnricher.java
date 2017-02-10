@@ -39,10 +39,12 @@ import org.jenkinsci.plugins.pubsub.QueueTaskMessage;
 import javax.annotation.Nonnull;
 
 /**
+ * MessageEnricher that adds information when MultiBranchProject or OrganizationFolder indexing succeeds or fails.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Extension
-public class MultiBranchProjectEnricher extends MessageEnricher {
+public class JobIndexingMessageEnricher extends MessageEnricher {
 
     @Override
     public void enrich(@Nonnull Message message) {
