@@ -26,11 +26,12 @@ export class DefaultSSEHandler {
             // then a rename for the new one. This is somewhat confusing for us.
             break;
         case 'job_run_queue_buildable':
+            break;
         case 'job_run_queue_enter':
             this.queueEnter(event);
             break;
         case 'job_run_queue_left':
-           // this.props.processJobLeftQueueEvent(eventCopy);
+            this.queueLeft(event);
             break;
         case 'job_run_queue_blocked': {
             break;
@@ -107,7 +108,20 @@ export class DefaultSSEHandler {
         const key = this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name);
         const pager = this.pagerService.getPager({ key });
         if (pager) {
-            pager.insert(self);
+            pager.insert(runSelf);
+        }
+    }
+
+    queueLeft(event) {
+        if (event.job_run_status === 'CANCELLED') {
+            const id = this.activityService.getExpectedBuildNumber(event);
+            const runSelf = `${event.blueocean_job_rest_url}runs/${id}/`;
+            this.activityService.removeItem(runSelf);
+            const key = this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name);
+            const pager = this.pagerService.getPager({ key });
+            if (pager) {
+                pager.remove(runSelf);
+            }
         }
     }
 }

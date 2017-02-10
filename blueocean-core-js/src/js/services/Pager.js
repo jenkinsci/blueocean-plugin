@@ -46,7 +46,7 @@ export class Pager {
      * More pages to fetch.
      */
     @observable hasMore = true;
-   
+
     /**
      * Mobx computed value that creates an array of objects from the list of hrefs stored. If either the
      * bunker changes, or the hrefs change, this is recalculated and will trigger a react reaction.
@@ -88,7 +88,7 @@ export class Pager {
     fetchNextPage() {
         // Get the next page's url.'
         const url = this.pagedUrl(this.currentPage * this.pageSize, this.pageSize + 1);
-        
+
         this.pending = true;
 
         return Fetch.fetchJSON(url)
@@ -99,10 +99,10 @@ export class Pager {
                 // 1 extra item is fetched because need to know if there are more packages. So
                 // slice off the last item, then map all items to just be hrefs.
                 const trimmedHrefs = saved.slice(0, this.pageSize).map(item => item._links.self.href);
-                
+
                 // Append the new Hrefs to the existing ones.
                 this.hrefs = this.hrefs.concat(trimmedHrefs);
-               
+
                 // True if we fetch more items than the page size.
                 this.hasMore = data.length > this.pageSize;
                 this.currentPage = this.currentPage + 1;
@@ -146,6 +146,17 @@ export class Pager {
     @action
     insert(href, pos = 0) {
         this.hrefs.splice(pos, 0, href);
+    }
+
+    /**
+     * Removes an href into the list. This will cause a reaction render for the paged list of data.
+     *
+     * @param {string} href - href of item to remove
+     */
+    @action
+    remove(href) {
+        const idx = this.hrefs.indexOf(href);
+        this.hrefs.splice(idx, 1);
     }
 
     /**
