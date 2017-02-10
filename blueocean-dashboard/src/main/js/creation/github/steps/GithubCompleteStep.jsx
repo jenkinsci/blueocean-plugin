@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
 import FlowStep from '../../flow2/FlowStep';
+import FlowStepStatus from '../../flow2/FlowStepStatus';
 import STATE from '../GithubCreationState';
 
 @observer
@@ -9,6 +10,14 @@ export default class GithubCompleteStep extends React.Component {
 
     finish() {
         this.props.flowManager.completeFlow({ url: '/pipelines' });
+    }
+
+    _getStatus(state, status) {
+        if (state === STATE.STEP_COMPLETE_SUCCESS) {
+            return FlowStepStatus.COMPLETE;
+        }
+
+        return status;
     }
 
     _getTitle(state, autoDiscover) {
@@ -73,13 +82,15 @@ export default class GithubCompleteStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
+        const status = this._getStatus(flowManager.stateId, this.props.status);
         const loading = this._getLoading(flowManager.stateId);
         const error = this._getError(flowManager.stateId);
         const title = this._getTitle(flowManager.stateId, flowManager.selectedAutoDiscover);
         const content = this._getContent(flowManager.stateId, flowManager.pipelineCount);
 
+
         return (
-            <FlowStep {...this.props} className="github-complete-step" title={title} loading={loading} error={error}>
+            <FlowStep {...this.props} className="github-complete-step" title={title} status={status} loading={loading} error={error}>
                 {content}
             </FlowStep>
         );
