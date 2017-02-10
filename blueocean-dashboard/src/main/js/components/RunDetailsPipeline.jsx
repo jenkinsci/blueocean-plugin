@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import LogConsoleView from './LogConsoleView';
-import { sseConnection } from '@jenkins-cd/blueocean-core-js';
+import { sseConnection, logging } from '@jenkins-cd/blueocean-core-js';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
@@ -22,6 +22,7 @@ import {
 import { calculateLogView, calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl, calculateFetchAll } from '../util/UrlUtils';
 import { calculateNode } from '../util/KaraokeHelper';
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetailsPipeline');
 
 const { string, object, any, func } = PropTypes;
 
@@ -377,6 +378,8 @@ export class RunDetailsPipeline extends Component {
 
         const shouldShowCV = (!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView;
         const shouldShowEmptyState = !isPipelineQueued && hasResultsForSteps && noSteps;
+
+        logger.debug('display helper', { shouldShowCV, shouldShowLogHeader, shouldShowEmptyState });
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
@@ -419,6 +422,7 @@ export class RunDetailsPipeline extends Component {
                 { shouldShowCV && <LogConsoleView
                   {
                     ...{
+                        router,
                         title: t('rundetail.pipeline.logs', { defaultValue: 'Logs' }),
                         scrollToBottom,
                         ...this.props,

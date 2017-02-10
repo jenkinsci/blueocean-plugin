@@ -45,7 +45,12 @@ export default class GitCompletedStep extends React.Component {
             percentage = 100;
             title = t('creation.git.step3.title_completed');
             content = (
-                <button onClick={() => this.finish()}>{t('creation.git.step3.button_open')}</button>
+                <button
+                  className="button-open-pipeline"
+                  onClick={() => this.finish()}
+                >
+                    {t('creation.git.step3.button_open')}
+                </button>
             );
             status = StepStatus.COMPLETE;
             break;
@@ -55,7 +60,7 @@ export default class GitCompletedStep extends React.Component {
         }
 
         return (
-            <FlowStep {...this.props} title={title} status={status} percentage={percentage}>
+            <FlowStep {...this.props} className="git-step-completed" title={title} status={status} percentage={percentage}>
                 {content}
             </FlowStep>
         );

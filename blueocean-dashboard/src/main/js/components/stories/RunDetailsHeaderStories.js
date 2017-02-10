@@ -10,19 +10,15 @@ import {
     TabLink,
 } from '@jenkins-cd/design-language';
 import WithContext from '@jenkins-cd/design-language/dist/js/stories/WithContext';
-
 import {RunDetailsHeader} from '../RunDetailsHeader';
-
 import {RunRecord} from '../records';
 
-import {changeSet, currentRunRaw, pipeline} from './data/changesData';
+import {testData} from './data/changesData';
 
-const baseRun = new RunRecord(currentRunRaw);
-const currentRun = baseRun.set('changeSet', changeSet.slice(0, 1));
-const currentRunLong = baseRun.set('changeSet', changeSet.slice(0, 5));
-const status = currentRun.getComputedResult() || '';
+const runJSON = JSON.stringify(testData.run);
 
 const strings = {
+    "common.date.duration.display.format": "M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]",
     "common.date.duration.format": "m[ minutes] s[ seconds]",
     "common.date.duration.hint.format": "M [month], d [days], h[h], m[m], s[s]",
     "common.date.readable.long": "MMM DD YYYY h:mma Z",
@@ -54,11 +50,16 @@ RunDetailsHeader.timeManager = {
 };
 
 storiesOf('Run Details Header', module)
-    .add('Some changes', someChanges)
-    .add('Lots of changes', lotsaChanges)
+    .add('Basic', basic)
+    .add('No Commit', noCommit)
+    .add('Long Branch', longBranch)
+    .add('Aborted', aborted)
 ;
 
-function someChanges() {
+function basic() {
+
+    const temp = JSON.parse(runJSON);
+    const run = new RunRecord(temp);
 
     const topNavLinks = [
         <a href="#" className="selected">Pipeline</a>,
@@ -72,8 +73,8 @@ function someChanges() {
             <RunDetailsHeader
                 locale="en"
                 t={t}
-                pipeline={pipeline}
-                data={currentRun}
+                pipeline={testData.pipeline}
+                data={run}
                 onOrganizationClick={ action('button-click')}
                 onNameClick={ action('button-click')}
                 onAuthorsClick={ action('button-click')}
@@ -82,17 +83,86 @@ function someChanges() {
     );
 }
 
-function lotsaChanges() {
+function noCommit() {
+
+    const temp = JSON.parse(runJSON);
+    temp.commitId = null;
+    const run = new RunRecord(temp);
+
+    const topNavLinks = [
+        <a href="#" className="selected">Pipeline</a>,
+        <a href="#">Changes</a>,
+        <a href="#">Tests</a>,
+        <a href="#">Artifacts</a>,
+    ];
 
     return (
         <WithContext context={ctx}>
-            <RunDetailsHeader t={t}
-                              locale="en"
-                              pipeline={pipeline}
-                              data={currentRunLong}
-                              onOrganizationClick={ action('button-click')}
-                              onNameClick={ action('button-click')}
-                              onAuthorsClick={ action('button-click')}/>
+            <RunDetailsHeader
+                locale="en"
+                t={t}
+                pipeline={testData.pipeline}
+                data={run}
+                onOrganizationClick={ action('button-click')}
+                onNameClick={ action('button-click')}
+                onAuthorsClick={ action('button-click')}
+                topNavLinks={topNavLinks}/>
         </WithContext>
-    )
+    );
+}
+
+function longBranch() {
+
+    const temp = JSON.parse(runJSON);
+    temp.pipeline = "bug/JENKINS-007-license-to-kill-this-long-ass-branch-name";
+    const run = new RunRecord(temp);
+
+    const topNavLinks = [
+        <a href="#" className="selected">Pipeline</a>,
+        <a href="#">Changes</a>,
+        <a href="#">Tests</a>,
+        <a href="#">Artifacts</a>,
+    ];
+
+    return (
+        <WithContext context={ctx}>
+            <RunDetailsHeader
+                locale="en"
+                t={t}
+                pipeline={testData.pipeline}
+                data={run}
+                onOrganizationClick={ action('button-click')}
+                onNameClick={ action('button-click')}
+                onAuthorsClick={ action('button-click')}
+                topNavLinks={topNavLinks}/>
+        </WithContext>
+    );
+}
+
+function aborted() {
+
+    const temp = JSON.parse(runJSON);
+    temp.result = "ABORTED";
+    const run = new RunRecord(temp);
+
+    const topNavLinks = [
+        <a href="#" className="selected">Pipeline</a>,
+        <a href="#">Changes</a>,
+        <a href="#">Tests</a>,
+        <a href="#">Artifacts</a>,
+    ];
+
+    return (
+        <WithContext context={ctx}>
+            <RunDetailsHeader
+                locale="en"
+                t={t}
+                pipeline={testData.pipeline}
+                data={run}
+                onOrganizationClick={ action('button-click')}
+                onNameClick={ action('button-click')}
+                onAuthorsClick={ action('button-click')}
+                topNavLinks={topNavLinks}/>
+        </WithContext>
+    );
 }
