@@ -62,7 +62,7 @@
     var incompatPageUrl = appurl + '/incompatibleie';
     var currentlyOnIncompatPage = (window.location.pathname === incompatPageUrl);
 
-    if (ieVersion.ActingVersion < 11) {
+    if (ieVersion.ActingVersion < 11 && !ieVersion.IsEdge) {
         if (!currentlyOnIncompatPage) {
             // Versions is too old and we're not already on the incompat page.
             // Redirect to the compatibility page.
