@@ -21,7 +21,7 @@ export default class GithubCompleteStep extends React.Component {
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
             return autoDiscover ? 'Error Creating Pipelines' : 'Error Creating Pipeline';
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
-            return 'Pipeline Creation Still Pending';
+            return 'Pipeline Creation Pending...';
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
             return 'Creation Successful!';
         }
@@ -39,7 +39,7 @@ export default class GithubCompleteStep extends React.Component {
                 state === STATE.STEP_COMPLETE_EVENT_ERROR;
     }
 
-    _getContent(state) {
+    _getContent(state, count) {
         let copy = '';
         let showLink = false;
 
@@ -48,7 +48,7 @@ export default class GithubCompleteStep extends React.Component {
         } else if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
             copy = 'An error occurrred while saving this pipeline.';
         } else if (state === STATE.PENDING_CREATION_EVENTS) {
-            copy = 'Saving was successful. Please wait while pipelines are discovered and created.';
+            copy = `Saving was successful. Pipeline creation is in progress. ${count} pipelines have been created.`;
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
             copy = 'An error occurred while discovering pipelines.';
             showLink = true;
@@ -56,7 +56,7 @@ export default class GithubCompleteStep extends React.Component {
             copy = 'Pipelines are still waiting to be created.';
             showLink = true;
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
-            copy = 'Pipelines have started being created.';
+            copy = `Success! ${count} pipelines have been created.`;
             showLink = true;
         }
 
@@ -76,7 +76,7 @@ export default class GithubCompleteStep extends React.Component {
         const loading = this._getLoading(flowManager.stateId);
         const error = this._getError(flowManager.stateId);
         const title = this._getTitle(flowManager.stateId, flowManager.selectedAutoDiscover);
-        const content = this._getContent(flowManager.stateId);
+        const content = this._getContent(flowManager.stateId, flowManager.pipelineCount);
 
         return (
             <FlowStep {...this.props} className="github-complete-step" title={title} loading={loading} error={error}>

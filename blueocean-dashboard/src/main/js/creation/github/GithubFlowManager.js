@@ -67,6 +67,9 @@ export default class GithubFlowManager extends FlowManager {
     @observable
     selectedAutoDiscover = null;
 
+    @observable
+    pipelineCount = 0;
+
     @computed get stepsDisabled() {
         return this.stateId === STATE.PENDING_CREATION_SAVING ||
             this.stateId === STATE.STEP_COMPLETE_SAVING_ERROR ||
@@ -387,18 +390,24 @@ export default class GithubFlowManager extends FlowManager {
             return;
         }
 
-        if (event.blueocean_job_rest_url === this.savedOrgFolder._links.self.href) {
-            // TODO: investigate why in some cases we seem to receive this event but without 'job_multibranch_indexing' props
-            // may be missing from the actual org folder item
-            // these fields might not be populated in the event of RateLimitExceededException
-            if (event.job_multibranch_indexing_result === 'SUCCESS') {
-                this.changeState(STATE.STEP_COMPLETE_SUCCESS);
+        if (event.blueocean_job_rest_url.indexOf(this.savedOrgFolder._links.self.href) === 0) {
+            if (event.job_multibranch_indexing_status === 'COMPLETE' && event.job_multibranch_indexing_result === 'SUCCESS') {
+                this._incrementPipelineCount();
+            } else if (event.job_orgfolder_indexing_status === 'COMPLETE') {
                 this._cleanupListeners();
-            } else if (event.job_multibranch_indexing_result === 'FAILURE') {
-                this.changeState(STATE.STEP_COMPLETE_EVENT_ERROR);
-                this._cleanupListeners();
+
+                if (event.job_orgfolder_indexing_result === 'SUCCESS') {
+                    this.changeState(STATE.STEP_COMPLETE_SUCCESS);
+                } else if (event.job_orgfolder_indexing_result === 'FAILURE') {
+                    this.changeState(STATE.STEP_COMPLETE_EVENT_ERROR);
+                }
             }
         }
+    }
+
+    @action
+    _incrementPipelineCount() {
+        this.pipelineCount++;
     }
 
     _onSseTimeout() {
