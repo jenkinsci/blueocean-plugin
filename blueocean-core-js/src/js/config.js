@@ -7,6 +7,10 @@ const config = blueocean.config || {};
 const features = config.features || {};
 
 export default {
+    getConfig() {
+        return config;
+    },
+
     getJenkinsConfig() {
         return config.jenkinsConfig || {};
     },
