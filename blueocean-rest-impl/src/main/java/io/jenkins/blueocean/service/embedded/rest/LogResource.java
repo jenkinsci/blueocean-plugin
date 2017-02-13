@@ -44,16 +44,9 @@ public class LogResource{
                 rsp.setHeader("Content-Disposition", "attachment; filename=log.txt");
             }
 
-            switch (accept.select("text/plain","text/html")) {
-                case "text/html":
-                    rsp.setContentType("text/html;charset=UTF-8");
-                    rsp.setStatus(HttpServletResponse.SC_OK);
-                    req.setAttribute("html", Boolean.valueOf(true));
-                    break;
-                case "text/plain":
-                    rsp.setContentType("text/plain;charset=UTF-8");
-                    rsp.setStatus(HttpServletResponse.SC_OK);
-            }
+            rsp.setContentType("text/plain;charset=UTF-8");
+            rsp.setStatus(HttpServletResponse.SC_OK);
+
             writeLogs(req, rsp);
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException("Failed to get logText: " + e.getMessage(), e);
