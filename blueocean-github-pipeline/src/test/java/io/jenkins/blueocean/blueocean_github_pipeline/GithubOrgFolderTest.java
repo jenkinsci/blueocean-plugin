@@ -12,6 +12,7 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import hudson.model.TopLevelItem;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
@@ -31,6 +32,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
+
 /**
  * @author Vivek Pandey
  */
@@ -49,8 +51,19 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 ))
                 .build(Map.class);
 
-        Assert.assertEquals("jenkinsci", resp.get("name"));
-        Assert.assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
+        assertEquals("jenkinsci", resp.get("name"));
+        assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
+
+
+        TopLevelItem item = j.getInstance().getItem("jenkinsci");
+        Assert.assertNotNull(item);
+
+        Assert.assertTrue(item instanceof OrganizationFolder);
+
+
+        Map r = get("/organizations/jenkins/pipelines/jenkinsci/");
+        assertEquals("jenkinsci", r.get("name"));
+        assertFalse((Boolean) r.get("scanAllRepos"));
     }
 
 
@@ -99,8 +112,8 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 ))
                 .build(Map.class);
 
-        Assert.assertEquals("jenkinsci", resp.get("name"));
-        Assert.assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
+        assertEquals("jenkinsci", resp.get("name"));
+        assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
 
         new RequestBuilder(baseUrl)
                 .status(200)
