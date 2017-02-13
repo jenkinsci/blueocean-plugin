@@ -74,6 +74,14 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
     public abstract Collection<String> getBranchNames();
 
     /**
+     * MultiBranch pipeline is computed folder, no sub-folders in it
+     */
+    @Override
+    public Iterable<String> getPipelineFolderNames() {
+        return Collections.emptyList();
+    }
+
+    /**
      * @return It gives no-op {@link BlueRunContainer} since Multi-branch is not a build item, does not build on its own
      *
      */

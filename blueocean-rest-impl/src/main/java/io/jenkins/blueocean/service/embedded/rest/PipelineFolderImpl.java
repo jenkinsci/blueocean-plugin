@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import hudson.Extension;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
@@ -18,6 +20,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.json.JsonBody;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -160,5 +163,22 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     @Override
     public BlueIcon getIcon() {
         return null;
+    }
+
+    @Override
+    public Iterable<String> getPipelineFolderNames() {
+        Iterable<BluePipeline> pipelines = getPipelines();
+        if(pipelines != null) {
+            return Iterables.transform(getPipelines(), new Function<BluePipeline, String>() {
+                @Override
+                public String apply(@Nullable BluePipeline input) {
+                    if (input != null && input instanceof BluePipelineFolder) {
+                        return input.getName();
+                    }
+                    return null;
+                }
+            });
+        }
+        return Collections.emptyList();
     }
 }
