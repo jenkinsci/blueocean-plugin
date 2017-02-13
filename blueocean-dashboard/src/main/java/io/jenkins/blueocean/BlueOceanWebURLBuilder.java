@@ -60,14 +60,14 @@ public class BlueOceanWebURLBuilder {
     }
 
     /**
-     * Construct a Blue Ocean web URL for the Jenkins {@link ModelObject}
+     * Get the {@link TryBlueOceanURLs} instance for the {@link ModelObject}
      * associated with the current Stapler request.
      *
-     * @return The most appropriate Blue Ocean web URL for the current classic
+     * @return The {@link TryBlueOceanURLs} instance for the current classic
      * Jenkins page. The URL to the Blue Ocean homepage is returned if a more
      * appropriate URL is not found.
      */
-    public static @Nonnull String toBlueOceanURL() {
+    public static @Nonnull TryBlueOceanURLs getTryBlueOceanURLs() {
         StaplerRequest staplerRequest = Stapler.getCurrentRequest();
         List<Ancestor> list = staplerRequest.getAncestors();
 
@@ -80,13 +80,17 @@ public class BlueOceanWebURLBuilder {
             if (object instanceof ModelObject) {
                 String blueUrl = toBlueOceanURL((ModelObject) object);
                 if (blueUrl != null) {
-                    return blueUrl;
+                    if (object instanceof Item) {
+                        return new TryBlueOceanURLs(blueUrl, ((Item) object).getUrl());
+                    } else {
+                        return new TryBlueOceanURLs(blueUrl);
+                    }
                 }
             }
         }
 
         // Otherwise just return Blue Ocean home.
-        return getBlueHome();
+        return new TryBlueOceanURLs(getBlueHome());
     }
 
     /**
@@ -129,17 +133,7 @@ public class BlueOceanWebURLBuilder {
     }
 
     private static String getBlueHome() {
-        String rootUrl = Jenkins.getInstance().getRootUrl();
-
-        if (rootUrl == null) {
-            throw new IllegalStateException("Unable to determine Jenkins root URL.");
-        }
-
-        if (rootUrl.endsWith("/")) {
-            rootUrl = rootUrl.substring(0, rootUrl.length() - 1);
-        }
-
-        return rootUrl + "/blue";
+        return "blue";
     }
 
     private static BlueOceanModelMapping getPipelineModelMapping(Job job) {
