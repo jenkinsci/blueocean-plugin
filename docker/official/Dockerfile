@@ -1,5 +1,5 @@
 # This image is based off the latest Jenkins LTS
-FROM jenkins:alpine
+FROM jenkins:latest
 
 USER root
 
