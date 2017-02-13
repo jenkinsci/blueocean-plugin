@@ -100,4 +100,5 @@ export default class GithubCompleteStep extends React.Component {
 
 GithubCompleteStep.propTypes = {
     flowManager: PropTypes.object,
+    status: PropTypes.string,
 };
