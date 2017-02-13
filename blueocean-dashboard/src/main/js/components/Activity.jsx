@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import Runs from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import PageLoading from './PageLoading';
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -104,6 +105,7 @@ export class Activity extends Component {
         ];
 
         return (<main>
+            {this.pager.pending && <PageLoading />}
             <article className="activity">
                 { showRunButton &&
                     <RunButton

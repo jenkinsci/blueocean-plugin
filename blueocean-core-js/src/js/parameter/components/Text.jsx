@@ -7,10 +7,10 @@ export class Text extends Component {
     render() {
         const { defaultParameterValue: { value }, description, name, onChange } = this.props;
         const cleanName = removeMarkupTags(name);
-        return (<FormElement title={ cleanName }>
-            <div className="Text">
+        const cleanDescription = removeMarkupTags(description);
+        return (<FormElement title={ cleanDescription }>
+            <div className="Text FullWidth">
                 <TextArea {...{ defaultValue: value, name: cleanName, onChange }} />
-                { description && <div className="inputDescription">{removeMarkupTags(description)}</div> }
             </div>
         </FormElement>);
     }

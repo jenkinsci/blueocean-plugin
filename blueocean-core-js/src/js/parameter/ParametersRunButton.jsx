@@ -115,7 +115,7 @@ export class ParametersRunButton extends Component {
             { this.state.visible &&
                 <div className="inputParameters">
                     <Dialog
-                      buttons={[cancelButton, okButton]}
+                      buttons={[okButton, cancelButton]}
                       onDismiss={this.hide.bind(this)}
                       title={message}
                       className="Dialog--input"
