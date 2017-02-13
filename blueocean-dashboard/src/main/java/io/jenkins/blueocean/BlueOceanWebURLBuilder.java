@@ -85,6 +85,8 @@ public class BlueOceanWebURLBuilder {
                     } else {
                         return new TryBlueOceanURLs(blueUrl);
                     }
+                } else if (object instanceof Item) {
+                    return new TryBlueOceanURLs(getBlueHome(), ((Item) object).getUrl());
                 }
             }
         }
