@@ -69,7 +69,7 @@ export class Pipelines extends Component {
                     </Extensions.Renderer>
                 </ContentPageHeader>
 
-                { !pipelines || this.pager.pending && <PageLoading duration={ 2000 } /> }
+                { !pipelines || this.pager.pending && <PageLoading /> }
 
                 <main>
                     <article>
