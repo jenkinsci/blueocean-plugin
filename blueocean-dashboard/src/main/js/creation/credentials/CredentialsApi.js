@@ -4,8 +4,8 @@ const DOMAIN = 'blueocean-git-domain';
 const SCOPE = 'USER';
 
 function getCredentialsUrl() {
-    const path = UrlConfig.getJenkinsRootURL();
-    return Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/user/`);
+    const path = UrlConfig.getRestBaseURL();
+    return Utils.cleanSlashes(`${path}/organizations/jenkins/credentials/user/`);
 }
 
 
@@ -16,8 +16,8 @@ export class CredentialsApi {
     }
 
     listAllCredentials() {
-        const path = UrlConfig.getJenkinsRootURL();
-        const searchUrl = Utils.cleanSlashes(`${path}/blue/rest/search?q=type:credential`, false);
+        const path = UrlConfig.getRestBaseURL();
+        const searchUrl = Utils.cleanSlashes(`${path}/search?q=type:credential`, false);
 
         return this._fetch(searchUrl)
             .then(data => capabilityAugmenter.augmentCapabilities(data));
