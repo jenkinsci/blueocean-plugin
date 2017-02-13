@@ -34,7 +34,6 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
-import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Ancestor;
@@ -82,6 +81,8 @@ public class BlueOceanWebURLBuilder {
                 if (blueUrl != null) {
                     if (object instanceof Item) {
                         return new TryBlueOceanURLs(blueUrl, ((Item) object).getUrl());
+                    } else if (object instanceof Run) {
+                        return new TryBlueOceanURLs(blueUrl, ((Run) object).getUrl());
                     } else {
                         return new TryBlueOceanURLs(blueUrl);
                     }
