@@ -44,6 +44,6 @@ public class GithubUserOrganization  extends AbstractGithubOrganization{
 
     @Override
     public ScmRepositoryContainer getRepositories() {
-        return new GithubRespositoryContainer(parent, user.getUrl().toString(), getName(), credential,this);
+        return new GithubRespositoryContainer(parent, String.format("%s/user", parent.getUri()), getName(), "owner" ,credential,this);
     }
 }

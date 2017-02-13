@@ -7,6 +7,8 @@ import {
     connect,
     createSelector,
 } from './redux';
+import loadingIndicator from './LoadingIndicator';
+
 class Dashboard extends Component {
 
     constructor(props) {
@@ -19,6 +21,12 @@ class Dashboard extends Component {
         this._context.params = this.props.params;
         this._context.location = this.props.location;
         return this._context;
+    }
+    componentDidMount() {
+        loadingIndicator.setDarkBackground();
+    }
+    componentWillUnmount() {
+        loadingIndicator.setLightBackground();
     }
 
     render() {
