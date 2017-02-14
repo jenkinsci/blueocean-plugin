@@ -7,7 +7,7 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { i18nTranslator, NotFound, User, Paths, ContentPageHeader, logging, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, NotFound, User, Paths, ContentPageHeader, logging, AppConfig, Security } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
@@ -21,7 +21,7 @@ const RestPaths = Paths.rest;
 
 const classicConfigLink = (pipeline) => {
     let link = null;
-    if (!User.current().isAnonymous()) {
+    if (Security.permit(pipeline).configure()) {
         link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
     }
     return link;

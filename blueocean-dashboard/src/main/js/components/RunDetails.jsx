@@ -15,7 +15,7 @@ import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import { FullScreen } from './FullScreen';
 import PageLoading from './PageLoading';
-import { Paths, capable, locationService } from '@jenkins-cd/blueocean-core-js';
+import { Paths, capable, locationService, Security } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { User } from '@jenkins-cd/blueocean-core-js';
 
@@ -26,7 +26,7 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetails');
 
 const classicConfigLink = (pipeline) => {
     let link = null;
-    if (!User.current().isAnonymous()) {
+    if (Security.permit(pipeline).configure()) {
         let url = buildClassicConfigUrl(pipeline);
         link = (
             <a href={ url } target="_blank" style={ { height: '24px' } }>
