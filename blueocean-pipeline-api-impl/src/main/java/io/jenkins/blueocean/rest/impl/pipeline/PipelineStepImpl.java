@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Vivek Pandey
@@ -178,13 +179,13 @@ public class PipelineStepImpl extends BluePipelineStep {
                     " have an InputAction.");
         }
 
-        InputStepExecution execution = inputAction.getExecution(id);
-        if (execution == null) {
-            throw new ServiceException.BadRequestExpception(
-                    String.format("Error processing Input Submit request. This Run instance does not" +
-                    " have an Input with an id of '%s'.", id));
-        }
         try {
+            InputStepExecution execution = inputAction.getExecution(id);
+            if (execution == null) {
+                throw new ServiceException.BadRequestExpception(
+                        String.format("Error processing Input Submit request. This Run instance does not" +
+                        " have an Input with an id of '%s'.", id));
+            }
             //if abort, abort and return
             if(body.get(ABORT_ELEMENT) != null && body.getBoolean(ABORT_ELEMENT)){
                 return execution.doAbort();
@@ -200,7 +201,7 @@ public class PipelineStepImpl extends BluePipelineStep {
                 listener.onStepContinue(execution.getInput(), run);
             }
             return response;
-        } catch (IOException | InterruptedException | ServletException e) {
+        } catch (IOException | InterruptedException | TimeoutException e) {
             throw new ServiceException.UnexpectedErrorException("Error processing Input Submit request."+e.getMessage());
         }
     }
@@ -219,6 +220,7 @@ public class PipelineStepImpl extends BluePipelineStep {
     private Object parseValue(InputStepExecution execution, JSONArray parameters, StaplerRequest request) throws IOException, InterruptedException {
         Map<String, Object> mapResult = new HashMap<String, Object>();
 
+        InputStep input = execution.getInput();
         for(Object o: parameters){
             JSONObject p = (JSONObject) o;
             String name = (String) p.get(NAME_ELEMENT);
@@ -228,7 +230,7 @@ public class PipelineStepImpl extends BluePipelineStep {
             }
 
             ParameterDefinition d=null;
-            for (ParameterDefinition def : execution.getInput().getParameters()) {
+            for (ParameterDefinition def : input.getParameters()) {
                 if (def.getName().equals(name))
                     d = def;
             }
@@ -240,6 +242,12 @@ public class PipelineStepImpl extends BluePipelineStep {
                 continue;
             }
             mapResult.put(name, convert(name, v));
+        }
+        // If a destination value is specified, push the submitter to it.
+        String valueName = input.getSubmitterParameter();
+        if (valueName != null && !valueName.isEmpty()) {
+            Authentication a = Jenkins.getAuthentication();
+            mapResult.put(valueName, a.getName());
         }
         switch (mapResult.size()) {
             case 0:
