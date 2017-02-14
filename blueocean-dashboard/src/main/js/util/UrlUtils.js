@@ -27,6 +27,14 @@ export const buildClassicConfigUrl = (pipeline) => {
     return null;
 };
 
+export const buildClassicInputUrl = (pipeline, runNumber) => {
+    if (pipeline && pipeline.fullName) {
+        const jenkinsUrl = require('../config').getJenkinsRootURL();
+        return `${jenkinsUrl}/job/${pipeline.fullName.split('/').join('/job/')}/${runNumber}/input/`;
+    }
+    return null;
+};
+
 
 /**
  * Build a root-relative URL to the run details screen.

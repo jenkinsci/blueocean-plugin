@@ -47,6 +47,7 @@ export {
     String,
     Text,
     Password,
+    supportedInputTypesMapping,
     ParametersRender,
 } from './parameter';
 export {
