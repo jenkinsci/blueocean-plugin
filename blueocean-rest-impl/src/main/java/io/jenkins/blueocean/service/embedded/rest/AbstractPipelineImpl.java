@@ -304,6 +304,7 @@ public class AbstractPipelineImpl extends BluePipeline {
     public static Map<String, Boolean> getPermissions(AbstractItem item){
         return ImmutableMap.of(
             BluePipeline.CREATE_PERMISSION, item.getACL().hasPermission(Item.CREATE),
+            BluePipeline.CONFIGURE_PERMISSION, item.getACL().hasPermission(Item.CONFIGURE),
             BluePipeline.READ_PERMISSION, item.getACL().hasPermission(Item.READ),
             BluePipeline.START_PERMISSION, item.getACL().hasPermission(Item.BUILD),
             BluePipeline.STOP_PERMISSION, item.getACL().hasPermission(Item.CANCEL)
