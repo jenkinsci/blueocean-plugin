@@ -3,7 +3,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 import com.google.common.collect.ImmutableMap;
 import hudson.model.Item;
 import hudson.model.User;
-import hudson.security.ACL;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -16,10 +15,8 @@ import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserPermission;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -55,7 +52,7 @@ public class UserImpl extends BlueUser {
     @Override
     public String getEmail() {
         String name = Jenkins.getAuthentication().getName();
-        if(name.equals("anonymous") || user.getId().equals("anonymous")){
+        if(isAnonymous(name)){
             return null;
         }else{
             User user = User.get(name, false, Collections.EMPTY_MAP);
@@ -87,34 +84,22 @@ public class UserImpl extends BlueUser {
     public BlueUserPermission getPermission() {
         Authentication authentication = Jenkins.getAuthentication();
         String name = authentication.getName();
-        final boolean[] ad = new boolean[1];
-        final Map<String,Boolean> pipelinePermission = new HashMap<>();
-
-        if(name.equals(user.getId())){
-            ad[0] = isAdmin();
-            pipelinePermission.putAll(getPipelinePermissions());
-        }else if(!name.equals(user.getId()) && Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
-            // authenticated user is different from requested user and authenticated user is admin,
-            // we will let it impersonate requested user
-            try {
-                ACL.impersonate(user.impersonate(), new Runnable() {
-                    @Override
-                    public void run() {
-                        ad[0] = isAdmin();
-                        pipelinePermission.putAll(getPipelinePermissions());
-                    }
-                });
-            }catch (UsernameNotFoundException e){
-                return null;
-            }
-        }else{ //different than the logged in user and logged in user is not admin
+        if(isAnonymous(name)){
             return null;
         }
+
+        User user = User.get(name, false, Collections.EMPTY_MAP);
+        if(user == null){
+            return null;
+        }
+
+        final boolean admin = isAdmin();
+        final Map<String,Boolean> pipelinePermission = getPipelinePermissions();
 
         return new BlueUserPermission() {
             @Override
             public boolean isAdministration() {
-                return ad[0];
+                return admin;
             }
 
             @Override
@@ -138,8 +123,13 @@ public class UserImpl extends BlueUser {
                 BluePipeline.CREATE_PERMISSION, Jenkins.getInstance().hasPermission(Item.CREATE),
                 BluePipeline.READ_PERMISSION, Jenkins.getInstance().hasPermission(Item.READ),
                 BluePipeline.START_PERMISSION, Jenkins.getInstance().hasPermission(Item.BUILD),
-                BluePipeline.STOP_PERMISSION, Jenkins.getInstance().hasPermission(Item.CANCEL)
+                BluePipeline.STOP_PERMISSION, Jenkins.getInstance().hasPermission(Item.CANCEL),
+                BluePipeline.CONFIGURE_PERMISSION, Jenkins.getInstance().hasPermission(Item.CONFIGURE)
         );
+    }
+
+    private boolean isAnonymous(String name){
+        return name.equals("anonymous") || user.getId().equals("anonymous");
     }
 
 }

@@ -302,6 +302,7 @@ public class ProfileApiTest extends BaseTest{
         assertEquals(true, pipelinePerm.get("create"));
         assertEquals(true, pipelinePerm.get("read"));
         assertEquals(true, pipelinePerm.get("stop"));
+        assertEquals(true, pipelinePerm.get("configure"));
     }
 
 
