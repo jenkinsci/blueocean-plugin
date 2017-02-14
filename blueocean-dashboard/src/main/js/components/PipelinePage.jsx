@@ -4,13 +4,10 @@ import Extensions from '@jenkins-cd/js-extensions';
 import {
     ExpandablePath,
     Page,
-    PageHeader,
-    Title,
-    PageTabsOld,
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { i18nTranslator, NotFound, User, Paths } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, NotFound, User, Paths, ContentPageHeader, logging, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
@@ -18,14 +15,9 @@ import { documentTitle } from './DocumentTitle';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelinePage');
+
 const RestPaths = Paths.rest;
-/**
- * returns true if the pipeline is defined and has branchNames
- */
-export function pipelineBranchesUnsupported(pipeline) {
-    return (pipeline && !pipeline.branchNames) ||
-      (pipeline && !pipeline.branchNames.length);
-}
 
 const classicConfigLink = (pipeline) => {
     let link = null;
@@ -68,46 +60,54 @@ export class PipelinePage extends Component {
         const isReady = !!pipeline;
 
         if (!pipeline && this.error) {
+            logger.log(`Error finding pipeline page for ${fullName}.`, this.error);
             return <NotFound />;
         }
 
-        setTitle(`${organization} / ${name}`);
+        if (isReady) {
+            setTitle(`${organization} / ${name}`);
+        } else {
+            setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
+        }
 
         const baseUrl = buildPipelineUrl(organization, fullName);
-        return (
-            <Page>
-                <PageHeader>
-                    {!isReady && <PageLoading duration={2000} />}
-                    {!isReady &&
-                    <Title>
-                        <h1><Link to={orgUrl}>{organization}</Link>
-                        <span> / </span></h1>
-                    </Title>}
-                    {isReady &&
-                    <Title>
-                        <WeatherIcon score={pipeline.weatherScore} size="large" />
-                        <h1>
-                            <Link to={orgUrl} query={location.query}>{organization}</Link>
-                            <span>&nbsp;/&nbsp;</span>
+
+        const pageTabLinks = [
+            <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>,
+            <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' }) }</TabLink>,
+            <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>,
+        ];
+
+        const pageHeader = isReady ? (
+                <ContentPageHeader pageTabBase={baseUrl} pageTabLinks={pageTabLinks}>
+                    <WeatherIcon score={pipeline.weatherScore} />
+                    <h1>
+                        {AppConfig.showOrg() && <span><Link to={orgUrl} query={location.query}>{organization}</Link>
+                            <span>&nbsp;/&nbsp;</span></span>}
                             <Link to={activityUrl} query={location.query}>
                                 <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
                             </Link>
-                        </h1>
-                        <Extensions.Renderer
-                          extensionPoint="jenkins.pipeline.detail.header.action"
-                          store={this.context.store}
-                          pipeline={pipeline}
-                        />
-                        {classicConfigLink(pipeline)}
-                    </Title>
-                    }
+                    </h1>
+                    <Extensions.Renderer
+                        extensionPoint="jenkins.pipeline.detail.header.action"
+                        store={this.context.store}
+                        pipeline={pipeline}
+                    />
+                    {classicConfigLink(pipeline)}
+                </ContentPageHeader>
+            ) : (
+                <ContentPageHeader pageTabBase={baseUrl} pageTabLinks={pageTabLinks}>
+                    <h1>
+                        <Link to={orgUrl}>{organization}</Link>
+                        <span> / </span>
+                    </h1>
+                </ContentPageHeader>
+            );
 
-                    <PageTabsOld base={baseUrl}>
-                        <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>
-                        <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' }) }</TabLink>
-                        <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>
-                    </PageTabsOld>
-                </PageHeader>
+        return (
+            <Page>
+                { pageHeader }
+                {!isReady && <PageLoading duration={2000} />}
                 {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: translate.lng })}
             </Page>
         );

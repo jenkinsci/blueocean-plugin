@@ -2,6 +2,7 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import hudson.model.Cause;
 import hudson.model.Item;
+import hudson.model.User;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -39,6 +40,10 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
                     String.format("Failed to update Git pipeline: %s. User %s doesn't have Job configure permission", pipeline.getName(), a.getName()));
         }
 
+        User user = User.current();
+        if(user == null){
+            throw new ServiceException.UnauthorizedException("User is not authenticated");
+        }
         Item item = Jenkins.getInstance().getItemByFullName(pipeline.getFullName());
         if(item instanceof OrganizationFolder){
             OrganizationFolder folder = (OrganizationFolder) item;
@@ -49,9 +54,8 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
                 folder.getNavigators().replace(gitHubSCMNavigator);
                 folder.scheduleBuild(new Cause.UserIdCause());
             }
-            return pipeline;
         }
-        return null;
+        return pipeline;
     }
 
     @SuppressWarnings("unchecked")
@@ -82,7 +86,7 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
                 }
                 GitHubSCMNavigator gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
 
-                GithubPipelineCreateRequest.validateCredentialId(credentialId, folder, gitHubSCMNavigator);
+                GithubPipelineCreateRequest.validateCredentialId(credentialId, folder);
 
                 if (scmConfig != null && scmConfig.getConfig().get("repos") instanceof List) {
                     for (String r : (List<String>) scmConfig.getConfig().get("repos")) {

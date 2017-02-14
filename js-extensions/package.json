@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/js-extensions",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "description": "Jenkins Extension Store",
   "main": "index.js",
   "files": [
@@ -20,9 +20,10 @@
   "license": "MIT",
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.51",
+    "@jenkins-cd/js-builder": "0.0.52",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/js-test": "1.2.3",
+    "@jenkins-cd/logging": "0.0.6",
     "babel-cli": "6.10.1",
     "babel-core": "^6.7.6",
     "babel-eslint": "^6.0.2",
@@ -41,10 +42,11 @@
     "react-dom": "^0.14.7 || ^15.0.0"
   },
   "dependencies": {
-    "js-yaml": "^3.6.0",
-    "envify": "3.4.1"
+    "envify": "3.4.1",
+    "js-yaml": "^3.6.0"
   },
   "peerDependencies": {
+    "@jenkins-cd/logging": "0.0.6",
     "react": "^0.14.7 || ^15.0.0",
     "react-dom": "^0.14.7 || ^15.0.0"
   }

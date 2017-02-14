@@ -4,6 +4,7 @@ import {
     ParameterService,
     ParametersRender,
     ParameterApi as parameterApi,
+    StringUtil,
 } from '@jenkins-cd/blueocean-core-js';
 /**
  * Simple helper to stop stopPropagation
@@ -97,16 +98,16 @@ export default class InputStep extends Component {
 
         return (<div className="inputStep">
             <div className="inputBody">
-                <h3>{message}</h3>
+                <h3>{StringUtil.removeMarkupTags(message)}</h3>
                 <ParametersRender
                   parameters={parameters}
                   onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
                 />
                 <div onClick={(event => stopProp(event))} className="inputControl">
-                    { cancelButton }
                     <button title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
                         <span className="button-label">{ok}</span>
                     </button>
+                    { cancelButton }
                 </div>
             </div>
         </div>);

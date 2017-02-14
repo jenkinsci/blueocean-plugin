@@ -11,13 +11,27 @@ function clone(object) {
     return JSON.parse(JSON.stringify(object));
 }
 
+const context = {
+    params: {},
+    config: {
+        getServerBrowserTimeSkewMillis: () => 0
+    },
+    activityService: {
+        activityPager() {
+            return {
+                data: data
+            }
+        }
+    }
+};
+
 describe('PipelineCard', () => {
     let item;
     let favorite;
 
     function shallowRenderCard() {
         return shallow(
-            <PipelineCard runnable={item} favorite={favorite} />
+            <PipelineCard runnable={item} favorite={favorite} />, context
         );
     }
 
@@ -31,7 +45,7 @@ describe('PipelineCard', () => {
 
     it('renders without error for empty props', () => {
         const wrapper = shallow(
-            <PipelineCard />
+            <PipelineCard />, context
         );
 
         assert.isOk(wrapper);
@@ -41,7 +55,7 @@ describe('PipelineCard', () => {
         item.latestRun.result = 'SUCCESS';
         const wrapper = shallowRenderCard();
 
-        assert.equal(wrapper.find('LiveStatusIndicator').length, 1);
+        assert.equal(wrapper.find('NewComponent').length, 1);
         assert.equal(wrapper.find('.name').length, 1);
         assert.equal(wrapper.find('.name').text(), '<Link />');
         assert.equal(wrapper.find('.branch').length, 1);
@@ -59,12 +73,12 @@ describe('PipelineCard', () => {
         assert.isOk(replayButton.text());
     });
 
-    it('renders no "rerun" button after success', () => {
+    it('renders "rerun" button after success', () => {
         item.latestRun.result = 'SUCCESS';
         const wrapper = shallowRenderCard();
         const replayButton = wrapper.find('ReplayButton').shallow();
 
-        assert.isNotOk(replayButton.text());
+        assert.isOk(replayButton.text());
     });
 
     it('renders a "run" button when successful', () => {

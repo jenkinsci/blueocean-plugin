@@ -320,6 +320,7 @@ export default class GitConnectStep extends React.Component {
                 </FormElement>
 
                 <button
+                  className="button-create-pipeline"
                   onClick={() => this._beginCreation()}
                   disabled={this.state.createButtonDisabled}
                 >

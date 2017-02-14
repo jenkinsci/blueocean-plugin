@@ -23,7 +23,7 @@ function invokeInstall(err, result) {
     console.log('version: ' + result.version);
     // const lib = '@jenkins-cd/design-language';
     // const version = '0.0.79-unpublishedthor1';
-    async.mapSeries(directories, function (elem, callback) {
+    async.map(directories, function (elem, callback) {
         console.log('Current element', elem);
         removeAndInstall(elem, result.package,  result.version, callback);
     }, function (err, result) {
@@ -97,7 +97,12 @@ function deleteFolderRecursive(path) {
 }
 function install(packages, callback) {
     console.log('installing ', packages);
-    const child = exec('npm prune; npm install; npm install ' + packages + ' --save -E; mvn clean install -DskipTests',
+    let command = 'npm prune && npm install && npm install ' + packages + ' --save -E';
+    console.log('Adding mvn clean install to the command?', process.argv[3] === 'mvn')
+    if (process.argv[3] === 'mvn') {
+        command += ' && mvn clean install -DskipTests';
+    }
+    const child = exec(command,
         function (error, stdout, stderr) {
             if (error !== null) {
                 callback(error);

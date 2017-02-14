@@ -5,8 +5,10 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.ImmutableMap;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.ExtensionList;
 import hudson.model.Item;
+import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import jenkins.branch.MultiBranchProject;
@@ -114,9 +116,8 @@ public class GitScmTest extends PipelineBaseTest {
 
 
     @Test
-    public void shouldGetForbiddenForBadCredentialIdOnUpdate1() throws IOException {
-
-        String mbp = createMbp();
+    public void shouldGetForbiddenForBadCredentialIdOnUpdate1() throws IOException, UnirestException {
+        String mbp = createMbp(login());
 
 
         SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
@@ -151,9 +152,8 @@ public class GitScmTest extends PipelineBaseTest {
 
 
     @Test
-    public void shouldGetForbiddenForBadCredentialIdOnUpdate2() throws IOException {
-
-        String mbp = createMbp();
+    public void shouldGetForbiddenForBadCredentialIdOnUpdate2() throws IOException, UnirestException {
+        String mbp = createMbp(login());
         SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
         CredentialsStore systemStore = system.getStore(j.getInstance());
         systemStore.addDomain(new Domain("domain1", null, null));
@@ -183,27 +183,34 @@ public class GitScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void shouldGetBadRequestForBadGitUriOnUpdate() throws IOException {
+    public void shouldGetBadRequestForBadGitUriOnUpdate() throws IOException, UnirestException {
+        User user = login();
+        String mbp = createMbp(user);
 
-        String mbp = createMbp();
-        put("/organizations/jenkins/pipelines/"+mbp+"/",
-                ImmutableMap.of("name", mbp,
+        new RequestBuilder(baseUrl)
+                .status(400)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .put("/organizations/jenkins/pipelines/" + mbp + "/")
+                .data(ImmutableMap.of("name", mbp,
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineUpdateRequest",
                         "scmConfig", ImmutableMap.of("uri", "/sdsd/sdsd/sdsd")
-                ), 400);
-
+                ))
+                .build(Map.class);
     }
 
 
     @Test
-    public void shouldCreateGitMbp(){
-
-        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
-            ImmutableMap.of("name", "demo",
-                    "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                    "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
-                ), 201);
-
+    public void shouldCreateGitMbp() throws IOException, UnirestException {
+        login();
+        Map resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                ))
+                .build(Map.class);
 
         assertEquals("demo", resp.get("name"));
     }
@@ -242,11 +249,16 @@ public class GitScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void shouldFailOnValidation3(){
-        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
-                ImmutableMap.of("name", "demo",
+    public void shouldFailOnValidation3() throws IOException, UnirestException {
+        login();
+        Map resp = new RequestBuilder(baseUrl)
+                .status(400)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of()), 400);
+                        "scmConfig", ImmutableMap.of()))
+                .build(Map.class);
 
         assertEquals(resp.get("code"), 400);
 
@@ -260,22 +272,30 @@ public class GitScmTest extends PipelineBaseTest {
 
 
     @Test
-    public void shouldFailOnValidation4(){
+    public void shouldFailOnValidation4() throws IOException, UnirestException {
+        login();
 
-        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
-                ImmutableMap.of("name", "demo",
+        Map resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
-                ), 201);
+                ))
+                .build(Map.class);
 
 
         assertEquals("demo", resp.get("name"));
 
-        resp = post("/organizations/jenkins/pipelines/",
-                ImmutableMap.of("name", "demo",
+        resp = new RequestBuilder(baseUrl)
+                .status(400)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
-                ), 400);
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(),
+                                "credentialId", "sdsdsd"))).build(Map.class);
         List<Map<String,String>> errors = (List<Map<String,String>>) resp.get("errors");
 
         boolean nameFound = false;
@@ -308,13 +328,14 @@ public class GitScmTest extends PipelineBaseTest {
         assertNull(Jenkins.getInstance().getItem("demo"));
     }
 
-    private String createMbp(){
-        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
-                ImmutableMap.of("name", "demo",
+    private String createMbp(User user) throws UnirestException {
+        Map<String,Object> resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
-                ), 201);
-
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl()))).build(Map.class);
 
         assertEquals("demo", resp.get("name"));
         Item item = Jenkins.getInstance().getItem("demo");
