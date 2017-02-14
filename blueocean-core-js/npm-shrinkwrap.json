@@ -3,9 +3,9 @@
   "version": "0.0.67",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.114-unpublishedAlert",
-      "from": "@jenkins-cd/design-language@0.0.114-unpublishedAlert",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.114-unpublishedAlert.tgz"
+      "version": "0.0.114-unpublishedAlert1",
+      "from": "@jenkins-cd/design-language@0.0.114-unpublishedAlert1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.114-unpublishedAlert1.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",

@@ -3,21 +3,14 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.67",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.67",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.67.tgz",
-      "dependencies": {
-        "@jenkins-cd/design-language": {
-          "version": "0.0.112",
-          "from": "@jenkins-cd/design-language@0.0.112",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.112.tgz"
-        }
-      }
+      "version": "0.0.68-input4",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.68-input4",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.68-input4.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.114-unpublishedAlert",
-      "from": "@jenkins-cd/design-language@0.0.114-unpublishedAlert",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.114-unpublishedAlert.tgz"
+      "version": "0.0.114-unpublishedAlert1",
+      "from": "@jenkins-cd/design-language@0.0.114-unpublishedAlert1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.114-unpublishedAlert1.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
