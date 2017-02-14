@@ -17,7 +17,6 @@ import { FullScreen } from './FullScreen';
 import PageLoading from './PageLoading';
 import { Paths, capable, locationService, Security } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
-import { User } from '@jenkins-cd/blueocean-core-js';
 
 const { func, object, any, string } = PropTypes;
 
