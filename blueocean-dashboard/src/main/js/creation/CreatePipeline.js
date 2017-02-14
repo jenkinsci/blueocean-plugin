@@ -27,6 +27,12 @@ export default class CreatePipeline extends React.Component {
         loadingIndicator.hide();
     }
 
+    componentWillUnmount() {
+        if (this.state.selectedProvider) {
+            this.state.selectedProvider.destroyFlowManager();
+        }
+    }
+
     _onSelection(selectedProvider) {
         if (this.state.selectedProvider) {
             this.state.selectedProvider.destroyFlowManager();

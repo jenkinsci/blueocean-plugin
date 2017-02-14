@@ -24,7 +24,8 @@ export default class ScmProvider {
     }
 
     /**
-     * Called when the creation flow is about to end. Perform cleanup here.
+     * Called when the related creation flow is about to exit.
+     * Similar to React's componentWillUnmount, perform cleanup of event listeners, timers, etc.
      */
     destroyFlowManager() {
         throw new Error('must implement destroyFlowManager');
