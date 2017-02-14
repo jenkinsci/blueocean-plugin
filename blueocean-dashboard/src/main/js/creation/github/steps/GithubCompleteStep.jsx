@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
+import { buildPipelineUrl } from '../../../util/UrlUtils';
+
 import FlowStep from '../../flow2/FlowStep';
 import FlowStepStatus from '../../flow2/FlowStepStatus';
 import STATE from '../GithubCreationState';
@@ -8,8 +10,15 @@ import STATE from '../GithubCreationState';
 @observer
 export default class GithubCompleteStep extends React.Component {
 
-    finish() {
+    navigateDashboard() {
         this.props.flowManager.completeFlow({ url: '/pipelines' });
+    }
+
+    navigatePipeline() {
+        const { savedPipeline } = this.props.flowManager;
+        const { organization, fullName } = savedPipeline;
+        const url = buildPipelineUrl(organization, fullName, 'activity');
+        this.props.flowManager.completeFlow({ url });
     }
 
     _getStatus(state, status) {
@@ -48,9 +57,10 @@ export default class GithubCompleteStep extends React.Component {
                 state === STATE.STEP_COMPLETE_EVENT_ERROR;
     }
 
-    _getContent(state, count) {
+    _getContent(state, autoDiscover, count) {
         let copy = '';
-        let showLink = false;
+        let showDashboardLink = false;
+        let showPipelineLink = false;
 
         if (state === STATE.PENDING_CREATION_SAVING) {
             copy = 'Please wait while your settings are saved.';
@@ -60,22 +70,39 @@ export default class GithubCompleteStep extends React.Component {
             copy = `Saving was successful. Pipeline creation is in progress. ${count} pipelines have been created.`;
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
             copy = 'An error occurred while discovering pipelines.';
-            showLink = true;
+            showDashboardLink = true;
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
             copy = 'Pipelines are still waiting to be created.';
-            showLink = true;
+            showDashboardLink = true;
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
             copy = `Success! ${count} pipelines have been created.`;
-            showLink = true;
+
+            if (autoDiscover) {
+                showDashboardLink = true;
+            } else {
+                showPipelineLink = true;
+            }
         }
 
         return (
             <div>
                 <p className="instructions">{copy}</p>
 
-                { showLink && <p>You may now return to the Dashboard to check for new pipelines.</p> }
+                { showDashboardLink &&
+                <div>
+                    <p>You may now return to the Dashboard to check for new pipelines.</p>
 
-                { showLink && <button onClick={() => this.finish()}>Dashboard</button> }
+                    <button onClick={() => this.navigateDashboard()}>Dashboard</button>
+                </div>
+                }
+
+                { showPipelineLink &&
+                <div>
+                    <p>You may now view your created pipeline.</p>
+
+                    <button onClick={() => this.navigatePipeline()}>View Pipeline</button>
+                </div>
+                }
             </div>
         );
     }
@@ -86,8 +113,7 @@ export default class GithubCompleteStep extends React.Component {
         const loading = this._getLoading(flowManager.stateId);
         const error = this._getError(flowManager.stateId);
         const title = this._getTitle(flowManager.stateId, flowManager.selectedAutoDiscover);
-        const content = this._getContent(flowManager.stateId, flowManager.pipelineCount);
-
+        const content = this._getContent(flowManager.stateId, flowManager.selectedAutoDiscover, flowManager.pipelineCount);
 
         return (
             <FlowStep {...this.props} className="github-complete-step" title={title} status={status} loading={loading} error={error}>

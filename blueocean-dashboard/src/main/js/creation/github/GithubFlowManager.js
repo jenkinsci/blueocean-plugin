@@ -1,6 +1,7 @@
 import React from 'react';
 import { action, computed, observable } from 'mobx';
 import { sseService } from '@jenkins-cd/blueocean-core-js';
+import { logging } from '@jenkins-cd/blueocean-core-js';
 
 import waitAtLeast from '../flow2/waitAtLeast';
 
@@ -16,10 +17,11 @@ import GithubConfirmDiscoverStep from './steps/GithubConfirmDiscoverStep';
 import GithubRepositoryStep from './steps/GithubRepositoryStep';
 import GithubCompleteStep from './steps/GithubCompleteStep';
 
+const LOGGER = logging.logger('io.jenkins.blueocean.github-pipeline.GithubFlowManager');
 const MIN_DELAY = 500;
 const FIRST_PAGE = 1;
 const PAGE_SIZE = 100;
-const SSE_TIMEOUT_DELAY = 1000 * 30;
+const SSE_TIMEOUT_DELAY = 1000 * 60;
 
 export default class GithubFlowManager extends FlowManager {
 
@@ -62,9 +64,6 @@ export default class GithubFlowManager extends FlowManager {
     selectedRepository = null;
 
     @observable
-    savedOrgFolder = null;
-
-    @observable
     selectedAutoDiscover = null;
 
     @observable
@@ -78,6 +77,10 @@ export default class GithubFlowManager extends FlowManager {
             this.stateId === STATE.STEP_COMPLETE_EVENT_TIMEOUT ||
             this.stateId === STATE.STEP_COMPLETE_SUCCESS;
     }
+
+    savedOrgFolder = null;
+
+    savedPipeline = null;
 
     _repositoryCache = {};
 
@@ -116,17 +119,6 @@ export default class GithubFlowManager extends FlowManager {
 
     destroy() {
         this._cleanupListeners();
-    }
-
-    _cleanupListeners() {
-        if (this._sseSubscribeId) {
-            sseService.removeHandler(this._sseSubscribeId);
-            this._sseSubscribeId = null;
-        }
-        if (this._sseTimeoutId) {
-            clearTimeout(this._sseTimeoutId);
-            this._sseTimeoutId = null;
-        }
     }
 
     findExistingCredential() {
@@ -362,6 +354,8 @@ export default class GithubFlowManager extends FlowManager {
 
         this.setPlaceholders();
 
+        this._initListeners();
+
         const promise = !this.existingOrgFolder ?
             this._creationApi.createOrgFolder(this._credentialId, this.selectedOrganization, repoNames) :
             this._creationApi.updateOrgFolder(this._credentialId, this.existingOrgFolder, repoNames);
@@ -375,35 +369,74 @@ export default class GithubFlowManager extends FlowManager {
     _saveOrgFolderSuccess(orgFolder) {
         this.changeState(STATE.PENDING_CREATION_EVENTS);
         this.savedOrgFolder = orgFolder;
-        this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
-        this._sseTimeoutId = setTimeout(() => {
-            this._onSseTimeout();
-        }, SSE_TIMEOUT_DELAY);
     }
 
     _saveOrgFolderFailure() {
         this.changeState(STATE.STEP_COMPLETE_SAVING_ERROR);
     }
 
+    _initListeners() {
+        this._cleanupListeners();
+
+        this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
+        this._sseTimeoutId = setTimeout(() => {
+            this._onSseTimeout();
+        }, SSE_TIMEOUT_DELAY);
+    }
+
+    _cleanupListeners() {
+        if (this._sseSubscribeId) {
+            sseService.removeHandler(this._sseSubscribeId);
+            this._sseSubscribeId = null;
+        }
+        if (this._sseTimeoutId) {
+            clearTimeout(this._sseTimeoutId);
+            this._sseTimeoutId = null;
+        }
+    }
+
     _onSseEvent(event) {
-        if (event.jenkins_event !== 'job_run_queue_task_complete') {
+        // if the org folder hasn't been saved yet
+        // or the event is not related to the org folder (or one of its children)
+        // then we are not interested in this event: bail
+        if (!this.savedOrgFolder || event.blueocean_job_rest_url.indexOf(this.savedOrgFolder._links.self.href) !== 0) {
             return;
         }
 
-        if (event.blueocean_job_rest_url.indexOf(this.savedOrgFolder._links.self.href) === 0) {
-            if (event.job_multibranch_indexing_status === 'COMPLETE' && event.job_multibranch_indexing_result === 'SUCCESS') {
-                this._incrementPipelineCount();
-            } else if (event.job_orgfolder_indexing_status === 'COMPLETE') {
-                this._cleanupListeners();
+        if (event.job_orgfolder_indexing_result === 'FAILURE') {
+            this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
+        }
 
-                if (event.job_orgfolder_indexing_result === 'SUCCESS') {
-                    this.changeState(STATE.STEP_COMPLETE_SUCCESS);
-                } else if (event.job_orgfolder_indexing_result === 'FAILURE') {
-                    this.changeState(STATE.STEP_COMPLETE_EVENT_ERROR);
-                }
-            }
+        if (this.selectedAutoDiscover && event.job_multibranch_indexing_result === 'SUCCESS') {
+            this._incrementPipelineCount();
+        }
+
+        if (this.selectedAutoDiscover && event.job_orgfolder_indexing_result === 'SUCCESS') {
+            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+        }
+
+        const repoName = event.blueocean_job_pipeline_name.split('/').pop();
+
+        if (!this.selectedAutoDiscover && event.job_multibranch_indexing_result === 'SUCCESS' && this.selectedRepository.name === repoName) {
+            this.savedPipeline = {
+                organization: event.jenkins_org,
+                fullName: event.job_name,
+            };
+            this._incrementPipelineCount();
+            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+        }
+
+        if (LOGGER.isDebugEnabled()) {
+            this._logEvent(event);
         }
     }
+
+    _finishListening(stateId) {
+        LOGGER.debug('finishListening', stateId);
+        this.changeState(stateId);
+        this._cleanupListeners();
+    }
+
 
     @action
     _incrementPipelineCount() {
@@ -413,6 +446,16 @@ export default class GithubFlowManager extends FlowManager {
     _onSseTimeout() {
         this.changeState(STATE.STEP_COMPLETE_EVENT_TIMEOUT);
         this._cleanupListeners();
+    }
+
+    _logEvent(event) {
+        if (event.job_orgfolder_indexing_result === 'SUCCESS' || event.job_orgfolder_indexing_result === 'FAILURE') {
+            LOGGER.debug(`indexing for ${event.blueocean_job_pipeline_name} finished: ${event.job_orgfolder_indexing_result}`);
+        } else if (event.job_multibranch_indexing_result === 'SUCCESS' || event.job_multibranch_indexing_result === 'FAILURE') {
+            LOGGER.debug(`indexing for ${event.blueocean_job_pipeline_name} finished: ${event.job_multibranch_indexing_result}`);
+        } else if (event.jenkins_event === 'job_crud_created') {
+            // LOGGER.debug(`created branch: ${event.job_name}`);
+        }
     }
 
 }
