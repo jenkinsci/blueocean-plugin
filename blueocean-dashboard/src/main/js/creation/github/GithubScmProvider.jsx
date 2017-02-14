@@ -10,31 +10,23 @@ import GithubFlowManager from './GithubFlowManager';
 export default class GithubScmProvider extends ScmProvider {
 
     manager = null;
-    _creationApi = null;
-    _credentialsApi = null;
-
-    constructor() {
-        super();
-
-        this._creationApi = new GithubCreationApi();
-        this._credentialsApi = new GithubCredentialsApi();
-
-        this.manager = new GithubFlowManager(
-            this._creationApi, this._credentialsApi
-        );
-    }
 
     getDefaultOption() {
         return <GithubDefaultOption />;
     }
 
     getFlowManager() {
+        const creationApi = new GithubCreationApi();
+        const credentialsApi = new GithubCredentialsApi();
+
+        this.manager = new GithubFlowManager(creationApi, credentialsApi);
         return this.manager;
     }
 
     destroyFlowManager() {
         if (this.manager) {
             this.manager.destroy();
+            this.manager = null;
         }
     }
 }
