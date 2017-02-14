@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import StepStatus from './FlowStepStatus';
+import Status from './FlowStepStatus';
 
 /**
  * Used to create a multi-step workflow with one or more FlowStep children.
@@ -14,12 +14,12 @@ export default class MultiStepFlow extends React.Component {
             <div className={`multi-step-flow-component ${extraClass}`}>
                 { React.Children.map(this.props.children, (child, index) => {
                     const { activeIndex } = this.props;
-                    let status = StepStatus.INCOMPLETE;
+                    let status = Status.INCOMPLETE;
 
                     if (index < activeIndex) {
-                        status = StepStatus.COMPLETE;
+                        status = Status.COMPLETE;
                     } else if (index === activeIndex) {
-                        status = StepStatus.ACTIVE;
+                        status = Status.ACTIVE;
                     }
 
                     const isLastStep = index === this.props.children.length - 1;

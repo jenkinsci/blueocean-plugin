@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import VerticalStep from './VerticalStep';
-import STATUS from './FlowStepStatus';
+import Status from './FlowStepStatus';
 
 /**
  * Visual/logic component that defines an individual step of a multi-step workflow.
@@ -9,7 +9,7 @@ import STATUS from './FlowStepStatus';
  */
 export default function FlowStep(props) {
     const percentage = props.loading ? 101 : props.percentage;
-    const status = props.error ? STATUS.ERROR : props.status;
+    const status = props.error ? Status.ERROR : props.status;
 
     return (
         <VerticalStep
@@ -20,7 +20,7 @@ export default function FlowStep(props) {
         >
             <h1>{props.title}</h1>
             {
-                props.status !== STATUS.INCOMPLETE &&
+                props.status !== Status.INCOMPLETE &&
                 <fieldset disabled={props.disabled}>
                     {props.children}
                 </fieldset>

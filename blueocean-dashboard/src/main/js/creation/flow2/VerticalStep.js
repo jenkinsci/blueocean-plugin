@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import StepIndicator from './StepIndicator';
-import STATUS from './FlowStepStatus';
+import Status from './FlowStepStatus';
 
 /**
  * Visual component that displays a progress indicator along with its children.
@@ -28,7 +28,7 @@ VerticalStep.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
     isLastStep: PropTypes.bool,
-    status: PropTypes.oneOf(STATUS.values()),
+    status: PropTypes.oneOf(Status.values()),
     percentage: PropTypes.number,
 };
 

@@ -1,7 +1,9 @@
+import { Enum } from '../flow2/Enum';
+
 /**
- * Valid statuses for GithubFlowManager.
+ * Valid stateId's for GithubFlowManager.
  */
-const state = {
+const GithubCreationState = new Enum({
     PENDING_LOADING_CREDS: 'pending_loading_creds',
     STEP_ACCESS_TOKEN: 'step_access_token',
     PENDING_VALIDATE_ACCESS_TOKEN: 'pending_validate_access_token',
@@ -20,27 +22,6 @@ const state = {
     STEP_COMPLETE_EVENT_ERROR: 'step_complete_event_error',
     STEP_COMPLETE_EVENT_TIMEOUT: 'step_complete_event_timeout',
     STEP_COMPLETE_SUCCESS: 'step_complete_success',
+});
 
-    values: () => [
-        state.PENDING_LOADING_CREDS,
-        state.STEP_ACCESS_TOKEN,
-        state.PENDING_VALIDATE_ACCESS_TOKEN,
-        state.PENDING_LOADING_ORGANIZATIONS,
-        state.STEP_CHOOSE_ORGANIZATION,
-        state.PENDING_LOADING_ORGFOLDER,
-        state.STEP_INVALID_ORGFOLDER,
-        state.STEP_CHOOSE_DISCOVER,
-        state.STEP_ALREADY_DISCOVER,
-        state.PENDING_LOADING_REPOSITORIES,
-        state.STEP_CONFIRM_DISCOVER,
-        state.STEP_CHOOSE_REPOSITORY,
-        state.PENDING_CREATION_SAVING,
-        state.STEP_COMPLETE_SAVING_ERROR,
-        state.PENDING_CREATION_EVENTS,
-        state.STEP_COMPLETE_EVENT_ERROR,
-        state.STEP_COMPLETE_EVENT_TIMEOUT,
-        state.STEP_COMPLETE_SUCCESS,
-    ],
-};
-
-export default state;
+export default GithubCreationState;
