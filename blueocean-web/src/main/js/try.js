@@ -9,13 +9,17 @@ $(document).ready(() => {
         var blueUrl = contextUrlDiv.attr('data-context-url');
         var classicUrl = contextUrlDiv.attr('data-classic-url');
         if (classicUrl) {
-            tryBlueOceanUrl = window.location.href.replace(classicUrl, blueUrl);
-        } else {
-            tryBlueOceanUrl = `./blue`;
+            var indexOfContext = window.location.href.indexOf(classicUrl);
+            if (indexOfContext !== -1) {
+                tryBlueOceanUrl = window.location.href.substring(0, indexOfContext) + blueUrl;
+            }
         }
-    } else {
+    }
+
+    if (!tryBlueOceanUrl) {
         tryBlueOceanUrl = `./blue`;
     }
+
     tryBlueOcean.attr('href', tryBlueOceanUrl);
 
     $('#page-head #header').append(tryBlueOcean);
