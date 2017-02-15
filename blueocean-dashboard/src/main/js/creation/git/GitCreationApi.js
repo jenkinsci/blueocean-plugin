@@ -11,8 +11,8 @@ export default class GitCreationApi {
     }
 
     createPipeline(repositoryUrl, credentialId, name) {
-        const path = UrlConfig.getJenkinsRootURL();
-        const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines`);
+        const path = UrlConfig.getRestBaseURL();
+        const createUrl = Utils.cleanSlashes(`${path}/organizations/jenkins/pipelines`);
 
         const requestBody = {
             name,
@@ -35,8 +35,8 @@ export default class GitCreationApi {
     }
 
     checkPipelineNameAvailable(name) {
-        const path = UrlConfig.getJenkinsRootURL();
-        const checkUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/${name}`);
+        const path = UrlConfig.getRestBaseURL();
+        const checkUrl = Utils.cleanSlashes(`${path}/organizations/jenkins/pipelines/${name}`);
 
         const fetchOptions = {
             method: 'GET',
