@@ -142,7 +142,7 @@ export class ParametersRunButton extends Component {
             const alertCaption = (<Markdown>
                 {t('inputParameter.error.message', {
                     0: classicBuildUrl,
-                    defaultValue: 'This pipeline uses input types that are unsupported. Use [Jenkins Classic]({0}) to resolve parametrized build'
+                    defaultValue: 'This pipeline uses input types that are unsupported. Use [Jenkins Classic]({0}) to resolve parametrized build',
                 })}
             </Markdown>);
             const alertTitle = t('inputParameter.error.title', { defaultValue: 'Error' });
