@@ -81,7 +81,7 @@ export class ReplayButton extends Component {
         const isPipeline = capable(this.props.runnable, PIPELINE_CAPABILITIES);
         const hasPermission = permit(this.props.runnable).start();
 
-        const replayLabel = translate('re-run', { defaultValue: 'Re-run', });
+        const replayLabel = translate('re-run', { defaultValue: 'Re-run' });
 
         if (!isFinished || !isPipeline || !hasPermission) {
             return null;
