@@ -41,9 +41,6 @@ public abstract class BluePipeline extends Resource {
     /** Create pipeline */
     public static final String CREATE_PERMISSION = "create";
 
-    /** Configure pipeline */
-    public static final String CONFIGURE_PERMISSION = "configure";
-
     /** Read pipeline permission */
     public static final String READ_PERMISSION = "read";
 
