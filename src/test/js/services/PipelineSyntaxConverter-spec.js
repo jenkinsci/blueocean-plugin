@@ -233,10 +233,10 @@ describe('Pipeline Syntax Converter', () => {
                                 "value": "someBatScript"
                             }
                         }],
-                        "stageUnknownSection": {
-                            "someStageKey": "someStageValue",
-                        }
-                    }]
+                    }],
+                    "stageUnknownSection": {
+                        "someStageKey": "someStageValue",
+                    }
                 }],
                 "someUnkownSection": {
                     "someKey": "someValue",
@@ -252,7 +252,6 @@ describe('Pipeline Syntax Converter', () => {
         assert(out.pipeline.someUnkownSection, "Unknown section not restored");
         assert(out.pipeline.
             stages[0].
-            branches[0].
             stageUnknownSection, "Stage unknown section not restored");
     });
 

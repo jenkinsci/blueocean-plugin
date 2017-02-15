@@ -2,6 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Dialog } from '@jenkins-cd/design-language';
+import { ContentPageHeader } from '@jenkins-cd/blueocean-core-js';
 import pipelineStore from '../../services/PipelineStore';
 import { convertInternalModelToJson, convertJsonToPipeline, convertPipelineToJson, convertJsonToInternalModel } from '../../services/PipelineSyntaxConverter';
 import type { PipelineInfo } from '../../services/PipelineStore';
@@ -14,7 +15,6 @@ const PIPELINE_KEY = 'jenkins.pipeline.editor.workingCopy';
 type Props = {
     title?: string,
     children: Component<*,*,*>[],
-    style?: ?Object,
 };
 
 type State = {
@@ -34,7 +34,6 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
     static propTypes = {
         title: PropTypes.string,
         children: PropTypes.array,
-        style: PropTypes.object,
     };
 
     pipelineUpdated: Function;
@@ -137,18 +136,21 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
 
     render() {
 
-        let {title = "Create Pipeline", style} = this.props;
+        let {title = "Create Pipeline"} = this.props;
 
         return (
-            <div className="pipeline-editor" style={style}>
-                <div className="editor-page-header">
-                    <h3>{ title }</h3>
+            <div className="pipeline-editor">
+                <ContentPageHeader>
+                    <div className="u-flex-grow">
+                        <h1>{ title }</h1>
+                    </div>
                     <div className="editor-page-header-controls">
                         {false && <button disabled={this.currentHistoryIndex <= 0} className="btn-secondary inverse" onClick={() => this.undo()}>Undo</button>}
                         <button className="btn-secondary inverse" onClick={() => this.newPipeline()}>New</button>
                         <button className="btn inverse" onClick={() => this.showPipelineScriptDialog()}>Load/Save</button>
                     </div>
-                </div>
+                </ContentPageHeader>
+
                 {this.props.children}
                 {this.state.showPipelineScript &&
                     <Dialog className="editor-pipeline-dialog" onDismiss={() => this.setState({showPipelineScript: false})}

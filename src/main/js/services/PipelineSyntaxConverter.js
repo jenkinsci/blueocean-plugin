@@ -145,6 +145,8 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
         topStageInfo.agent = topStage.agent;
         topStageInfo.environment = convertEnvironmentToInternal(topStage.environment);
 
+        captureUnknownSections(topStage, topStageInfo, 'name', 'steps', 'environment', 'agent');
+
         out.children.push(topStageInfo);
 
         for (let j = 0; j < topStage.branches.length; j++) {
@@ -166,8 +168,6 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
                 topStageInfo.children.push(stage);
             }
 
-            captureUnknownSections(b, stage, 'name', 'steps', 'environment', 'agent');
-    
             for (let stepIndex = 0; stepIndex < b.steps.length; stepIndex++) {
                 const s = b.steps[stepIndex];
                 const step = convertStepFromJson(s);
@@ -290,6 +290,8 @@ export function convertStageToJson(stage: StageInfo): PipelineStage {
         out.environment = removeExtraMarkers(stage.environment);
     }
 
+    restoreUnknownSections(stage, out);
+
     if (stage.children && stage.children.length > 0) {
         // parallel
         out.branches = [];
@@ -301,8 +303,6 @@ export function convertStageToJson(stage: StageInfo): PipelineStage {
                 steps: convertStepsToJson(child.steps),
             };
 
-            restoreUnknownSections(child, outStage);
-
             out.branches.push(outStage);
         }
     } else {
@@ -313,8 +313,6 @@ export function convertStageToJson(stage: StageInfo): PipelineStage {
         };
 
         out.branches = [ outBranch ];
-
-        restoreUnknownSections(stage, outBranch);
     }
 
     return out;
