@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Gives steps inside
@@ -182,16 +183,16 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             InputStep inputStep=null;
             if(PipelineNodeUtil.isPausedForInputStep((StepAtomNode) atomNode, inputAction)){
                 status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
-                for(InputStepExecution execution: inputAction.getExecutions()){
-                    try {
-                        FlowNode node = execution.getContext().get(FlowNode.class);
-                        if(node != null && node.equals(atomNode)){
-                            inputStep = execution.getInput();
-                            break;
-                        }
-                    } catch (IOException | InterruptedException e) {
-                        logger.error("Error getting FlowNode from execution context: "+e.getMessage(), e);
+                try {
+                    for(InputStepExecution execution: inputAction.getExecutions()){
+                            FlowNode node = execution.getContext().get(FlowNode.class);
+                            if(node != null && node.equals(atomNode)){
+                                inputStep = execution.getInput();
+                                break;
+                            }
                     }
+                } catch (IOException | InterruptedException | TimeoutException e) {
+                    logger.error("Error getting FlowNode from execution context: "+e.getMessage(), e);
                 }
             }else{
                  status = new NodeRunStatus(atomNode);

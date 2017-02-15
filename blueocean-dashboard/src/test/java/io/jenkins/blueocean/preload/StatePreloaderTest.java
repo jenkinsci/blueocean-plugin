@@ -51,7 +51,7 @@ public class StatePreloaderTest extends BaseTest {
         // Lets request the activity page for that project. The page should
         // contain some prefetched javascript for the pipeline
         // details + the runs on the page
-        String projectBlueUrl = BlueOceanWebURLBuilder.toBlueOceanURL(freestyleProject);
+        String projectBlueUrl = j.jenkins.getRootUrl() + BlueOceanWebURLBuilder.toBlueOceanURL(freestyleProject);
         Document doc = Jsoup.connect(projectBlueUrl + "/activity/").get();
         String script = doc.select("head script").toString();
 

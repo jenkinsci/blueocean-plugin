@@ -200,7 +200,7 @@ public class PipelineApiTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        HttpResponse<String> response = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0", 200,HttpResponse.class);
+        HttpResponse<String> response = get("/organizations/jenkins/pipelines/pipeline1/runs/"+b1.getId()+"/log?start=0", 200,"text/html",HttpResponse.class);
         AcceptHeader acceptHeader = new AcceptHeader(response.getHeaders().getFirst("Content-Type"));
         Assert.assertNotNull(acceptHeader.select("text/plain"));
 

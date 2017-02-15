@@ -20,6 +20,7 @@ const permit = (subject) => {
 
     return {
         read: () => checkPermissions('read'),
+        configure: () => checkPermissions('configure'),
         create: () => checkPermissions('create'),
         start: () => checkPermissions('start'),
         stop: () => checkPermissions('stop'),
