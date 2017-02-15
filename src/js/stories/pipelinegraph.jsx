@@ -7,6 +7,7 @@ const validResultValues = StatusIndicator.validResultValues;
 
 storiesOf('PipelineGraph', module)
     .add('Mixed', renderMultiParallelPipeline)
+    .add('Long names', renderLongNames)
     .add('Duplicate Names', renderWithDuplicateNames)
     .add('Fat', renderFlatPipelineFat)
     .add('Legend', renderFlatPipeline)
@@ -181,6 +182,29 @@ function renderMultiParallelPipeline() {
             makeNode("Firefox", [], validResultValues.success),
             makeNode("Edge", [], validResultValues.failure),
             makeNode("Safari", [], validResultValues.running, 60),
+            makeNode("Chrome", [], validResultValues.running, 120)
+        ]),
+        makeNode("Dev"),
+        makeNode("Staging"),
+        makeNode("Production")
+    ];
+
+    return <div><PipelineGraph stages={stages} selectedStage={stages[0]}/></div>;
+}
+
+function renderLongNames() {
+
+    const stages = [
+        makeNode("Build something with a long and descriptive name that takes up a shitload of space", [], validResultValues.success),
+        makeNode("Test", [
+            makeNode("JUnit", [], validResultValues.success),
+            makeNode("DBUnit", [], validResultValues.success),
+            makeNode("Jasmine", [], validResultValues.success)
+        ]),
+        makeNode("Browser Tests", [
+            makeNode("Firefox", [], validResultValues.success),
+            makeNode("Das komputermaschine ist nicht auf mittengraben unt die gerfingerpoken. Watchen das blinkenlights.", [], validResultValues.failure),
+            makeNode("RubberbabybuggybumpersbetyoudidntknowIwasgoingtodothat", [], validResultValues.running, 60),
             makeNode("Chrome", [], validResultValues.running, 120)
         ]),
         makeNode("Dev"),

@@ -29,3 +29,4 @@ require('./typography.jsx');
 require('./progressBarStories');
 require('./PopoverStories');
 require('./DialogStories');
+require('./LabelStories');

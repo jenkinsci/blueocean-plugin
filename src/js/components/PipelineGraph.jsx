@@ -3,8 +3,11 @@
 import React, { Component, PropTypes } from 'react';
 import {getGroupForResult, decodeResultValue} from './status/StatusIndicator';
 import {strokeWidth as nodeStrokeWidth} from './status/SvgSpinner';
+import {TruncatingLabel} from './TruncatingLabel';
 
 import type {Result} from './status/StatusIndicator';
+
+const ypStart = 55;
 
 // Dimensions used for layout, px
 export const defaultLayout = {
@@ -13,8 +16,8 @@ export const defaultLayout = {
     nodeRadius: 12,
     curveRadius: 12,
     connectorStrokeWidth: 3.5,
-    labelOffsetV: 25,
-    smallLabelOffsetV: 20
+    labelOffsetV: 20,
+    smallLabelOffsetV: 15
 };
 
 // Typedefs
@@ -139,8 +142,6 @@ export class PipelineGraph extends Component {
     }
 
     stagesUpdated(newStages: Array<StageInfo> = []) {
-        // FIXME: Should we calculate based on expected text size guesstimate?
-        const ypStart = 50;
 
         const { nodeSpacingH, nodeSpacingV } = this.state.layout;
 
@@ -227,22 +228,27 @@ export class PipelineGraph extends Component {
 
     renderBigLabel(details: LabelInfo) {
 
-        const { nodeSpacingH, labelOffsetV } = this.state.layout;
+        const {
+            nodeSpacingH,
+            labelOffsetV,
+            connectorStrokeWidth
+        } = this.state.layout;
 
-        const labelWidth = nodeSpacingH;
-        const labelOffsetH = Math.floor(labelWidth * -0.5);
+        const labelWidth = nodeSpacingH - connectorStrokeWidth * 2;
+        const labelHeight = ypStart - labelOffsetV;
+        const labelOffsetH = Math.floor(labelWidth / -2);
 
         // These are about layout more than appearance, so they should probably remain inline
         const bigLabelStyle = {
             position: "absolute",
             width: labelWidth,
+            maxHeight: labelHeight + "px",
             textAlign: "center",
-            marginLeft: labelOffsetH,
-            marginBottom: labelOffsetV
+            marginLeft: labelOffsetH
         };
 
         const x = details.x;
-        const bottom = this.state.measuredHeight - details.y;
+        const bottom = this.state.measuredHeight - details.y + labelOffsetV;
 
         const style = Object.assign({}, bigLabelStyle, {
             bottom: bottom + "px",
@@ -257,44 +263,51 @@ export class PipelineGraph extends Component {
             classNames.push("selected");
         }
 
-        return <div className={classNames.join(" ")} style={style} key={key}>{details.text}</div>;
+        return <TruncatingLabel className={classNames.join(" ")} style={style} key={key}>{details.text}</TruncatingLabel>;
     }
 
     renderSmallLabel(details: LabelInfo) {
 
         const {
             nodeSpacingH,
+            nodeSpacingV,
             curveRadius,
+            connectorStrokeWidth,
+            nodeRadius,
             smallLabelOffsetV } = this.state.layout;
 
-        const smallLabelWidth = nodeSpacingH - (2 * curveRadius); // Fit between lines
+        const smallLabelWidth = Math.floor(nodeSpacingH - (2 * curveRadius) - (2 * connectorStrokeWidth)); // Fit between lines
+        const smallLabelHeight = Math.floor(nodeSpacingV - smallLabelOffsetV - nodeRadius - nodeStrokeWidth);
         const smallLabelOffsetH = Math.floor(smallLabelWidth * -0.5);
 
         // These are about layout more than appearance, so they should probably remain inline
         const smallLabelStyle = {
             position: "absolute",
             width: smallLabelWidth,
+            maxHeight: smallLabelHeight,
             textAlign: "center",
-            marginLeft: smallLabelOffsetH,
-            marginTop: smallLabelOffsetV
         };
 
-        const x = details.x;
-        const top = details.y;
+        const x = details.x + smallLabelOffsetH;
+        const top = details.y + smallLabelOffsetV;
 
         const style = Object.assign({}, smallLabelStyle, {
             top: top,
             left: x
         });
 
-        const key = details.stage.id + '-big';
+        if (details.text.indexOf('komp')!==-1) {
+            console.log(JSON.stringify(style,null,4));
+        }
+
+        const key = details.stage.id + '-small';
 
         const classNames = ["pipeline-small-label"];
         if (this.stageIsSelected(details.stage)) {
             classNames.push("selected");
         }
 
-        return <div className={classNames.join(" ")} style={style} key={key}>{details.text}</div>;
+        return <TruncatingLabel className={classNames.join(" ")} style={style} key={key}>{details.text}</TruncatingLabel>;
     }
 
     renderConnection(connection: ConnectionInfo) {
