@@ -1,5 +1,14 @@
 import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
 
+const DOMAIN = 'blueocean-git-domain';
+const SCOPE = 'USER';
+
+function getCredentialsUrl() {
+    const path = UrlConfig.getRestBaseURL();
+    return Utils.cleanSlashes(`${path}/organizations/jenkins/credentials/user/`);
+}
+
+
 export class CredentialsApi {
 
     constructor(fetch) {
@@ -7,22 +16,22 @@ export class CredentialsApi {
     }
 
     listAllCredentials() {
-        const path = UrlConfig.getJenkinsRootURL();
-        const searchUrl = Utils.cleanSlashes(`${path}/blue/rest/search?q=type:credential`, false);
+        const path = UrlConfig.getRestBaseURL();
+        const searchUrl = Utils.cleanSlashes(`${path}/search?q=type:credential`, false);
 
         return this._fetch(searchUrl)
             .then(data => capabilityAugmenter.augmentCapabilities(data));
     }
 
     saveUsernamePasswordCredential(username, password) {
-        const path = UrlConfig.getJenkinsRootURL();
-        const requestUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
+        const requestUrl = getCredentialsUrl();
 
         const requestBody = {
             credentials: {
                 $class: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl',
                 'stapler-class': 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl',
-                scope: null,
+                scope: SCOPE,
+                domain: DOMAIN,
                 username,
                 password,
                 description: null,
@@ -41,13 +50,13 @@ export class CredentialsApi {
     }
 
     saveSSHKeyCredential(privateKey) {
-        const path = UrlConfig.getJenkinsRootURL();
-        const requestUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
+        const requestUrl = getCredentialsUrl();
 
         const requestBody = {
             credentials: {
                 $class: 'com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey',
-                scope: null,
+                scope: SCOPE,
+                domain: DOMAIN,
                 username: null,
                 passphrase: null,
                 description: null,
@@ -70,15 +79,15 @@ export class CredentialsApi {
     }
 
     saveSystemSSHCredential(id, description) {
-        const path = UrlConfig.getJenkinsRootURL();
-        const requestUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/credentials/system/domains/_/credentials/`);
+        const requestUrl = getCredentialsUrl();
 
         const requestBody = {
             credentials: {
                 $class: 'com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey',
                 id,
                 description,
-                scope: null,
+                scope: SCOPE,
+                domain: DOMAIN,
                 username: null,
                 passphrase: null,
                 privateKeySource: {
