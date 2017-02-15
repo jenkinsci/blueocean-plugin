@@ -123,7 +123,7 @@ public class BlueOceanWebURLBuilderTest {
     }
 
     private void assertURL(String expected, String actual) throws IOException {
-        Assert.assertEquals(jenkinsRule.getURL().toString() + expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
     @Before
