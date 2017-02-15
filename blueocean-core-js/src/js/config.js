@@ -9,22 +9,22 @@ const features = config.features || {};
 
 export default {
     loadUrls() {
-        // headless escape
-        if (!document) {
-            return '/jenkins';
+        try {
+            const headElement = document.getElementsByTagName('head')[0];
+
+            // Look up where the Blue Ocean app is hosted
+            config.blueoceanAppURL = headElement.getAttribute('data-appurl');
+
+            if (typeof config.blueoceanAppURL !== 'string') {
+                config.blueoceanAppURL = '/';
+            }
+
+            config.jenkinsRootURL = headElement.getAttribute('data-rooturl');
+            config.isLoaded = true;
+        } catch (e) {
+            // headless escape
+            config.jenkinsRootURL = '/jenkins';
         }
-        const headElement = document.getElementsByTagName('head')[0];
-
-        // Look up where the Blue Ocean app is hosted
-        config.blueoceanAppURL = headElement.getAttribute('data-appurl');
-
-        if (typeof config.blueoceanAppURL !== 'string') {
-            config.blueoceanAppURL = '/';
-        }
-
-        config.jenkinsRootURL = headElement.getAttribute('data-rooturl');
-        config.isLoaded = true;
-        return config.jenkinsRootURL;
     },
 
     getConfig() {
@@ -68,9 +68,9 @@ export default {
 
     getJenkinsRootURL() {
         if (!config.isLoaded) {
-            return this.loadUrls();
+            this.loadUrls();
         }
-        return config.jenkinsRootURL;
+        return config.jenkinsRootURL || '/jenkins';
     },
 
     getRestRoot() {

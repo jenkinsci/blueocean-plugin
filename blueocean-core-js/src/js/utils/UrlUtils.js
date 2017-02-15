@@ -212,7 +212,7 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
     const pipelineName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
     const organizationName = organization ||
         (typeof pipeline === 'object' ? pipeline.organization : '');
-    const jenkinsUrl = require('../config').getJenkinsRootURL();
+    const jenkinsUrl = AppConfig.getJenkinsRootURL();
     let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
     if (pipelineName) {
         // pipelineName might include a folder path, don't encode it
