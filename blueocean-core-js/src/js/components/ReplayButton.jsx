@@ -7,8 +7,10 @@ import { Icon } from '@jenkins-cd/react-material-icons';
 
 import { capable, RunApi as runApi, ToastUtils } from '../index';
 import Security from '../security';
+import i18nTranslator from '../i18n/i18n';
 
 const { permit } = Security;
+const translate = i18nTranslator('blueocean-web');
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -79,8 +81,7 @@ export class ReplayButton extends Component {
         const isPipeline = capable(this.props.runnable, PIPELINE_CAPABILITIES);
         const hasPermission = permit(this.props.runnable).start();
 
-        const replayLabel = 'Re-run';
-
+        const replayLabel = translate('re-run', { defaultValue: 'Re-run', });
 
         if (!isFinished || !isPipeline || !hasPermission) {
             return null;
