@@ -73,6 +73,12 @@
             <artifactId>credentials</artifactId>
         </dependency>
 
+        <!-- Needed for input step submitterParameter -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pipeline-input-step</artifactId>
+        </dependency>
+
         <!-- Not needed by blueocean runtime but adds to blueocean experience -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

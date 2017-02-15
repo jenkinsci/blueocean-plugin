@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import moment from 'moment';
 // The following import target will be generate on build time, do not edit
 import revisionInfo from '../../../target/classes/io/jenkins/blueocean/revisionInfo';
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 export class DevelopmentFooter extends Component {
     render() {
@@ -12,11 +13,20 @@ export class DevelopmentFooter extends Component {
              // inspecting HTTP response headers
             return null;
         }
+
+        let includeBranch = true;
+
+        if(!revisionInfo.branch.includes('(no branch)')) {
+            includeBranch = false;
+        }
         return (
           <div className="development-footer">
-              <span>Built at {moment(revisionInfo.timestamp).format('Do MMMM YYYY hh:mm A')}&nbsp;</span>
-              <span> &#183; {revisionInfo.branch}&nbsp;</span>
-              <span> &#183; {revisionInfo.sha.substring(0,7)} </span>
+              <span> {AppConfig.getConfig().version}&nbsp;</span>
+              <span> &#183; Core {AppConfig.getJenkinsConfig().version}&nbsp;</span>
+              <span> &#183; {revisionInfo.sha.substring(0,7)}&nbsp; </span>
+              { includeBranch && <span> &#183; {revisionInfo.branch}&nbsp;</span> }
+              <span> &#183; {moment(revisionInfo.timestamp).format('Do MMMM YYYY hh:mm A')}</span>
+              
           </div>
         );
     }

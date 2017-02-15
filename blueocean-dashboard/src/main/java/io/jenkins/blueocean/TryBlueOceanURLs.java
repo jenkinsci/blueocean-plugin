@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2016, CloudBees, Inc.
+ * Copyright (c) 2017, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,23 +23,36 @@
  */
 package io.jenkins.blueocean;
 
-import hudson.Extension;
-import hudson.model.PageDecorator;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 /**
- * Stapler page decorator for decorating classic Jenkins pages with visual
- * prompts to the user that will hopefully entice/remind them into giving
- * Blue ocean a try.
- *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-@Extension
 @Restricted(NoExternalUse.class)
-public class TryBlueOceanPageDecorator extends PageDecorator {
+public class TryBlueOceanURLs {
 
-    public TryBlueOceanURLs getTryBlueOceanURLs() {
-        return BlueOceanWebURLBuilder.getTryBlueOceanURLs();
+    private final String blueOceanURL;
+    private final String classicURL;
+
+    TryBlueOceanURLs(@Nonnull String blueOceanURL) {
+        this.blueOceanURL = blueOceanURL;
+        this.classicURL = null;
+    }
+
+    TryBlueOceanURLs(@Nonnull String blueOceanURL, @Nonnull String classicURL) {
+        this.blueOceanURL = blueOceanURL;
+        this.classicURL = classicURL;
+    }
+
+    public @Nonnull String getBlueOceanURL() {
+        return blueOceanURL;
+    }
+
+    public @CheckForNull String getClassicURL() {
+        return classicURL;
     }
 }
