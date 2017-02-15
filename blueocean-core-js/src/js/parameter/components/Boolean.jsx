@@ -7,8 +7,9 @@ export class Boolean extends Component {
     render() {
         const { defaultParameterValue: { value }, description, name, onChange } = this.props;
         const cleanName = removeMarkupTags(name);
-        return (<FormElement title={ cleanName }>
-            <Checkbox {...{ checked: value, label: removeMarkupTags(description), name: cleanName, onToggle: onChange }} />
+        const cleanDescription = removeMarkupTags(description);
+        return (<FormElement title={ cleanDescription } className="underline">
+            <Checkbox {...{ checked: value, name: cleanName, label: cleanName, onToggle: onChange }} />
         </FormElement>);
     }
 }

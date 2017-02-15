@@ -7,11 +7,11 @@ export class String extends Component {
 
     render() {
         const { defaultParameterValue: { value }, description, name, onChange } = this.props;
+        const cleanDescription = removeMarkupTags(description);
         const cleanName = removeMarkupTags(name);
-        return (<FormElement title={ cleanName }>
-            <div className="String">
+        return (<FormElement title={ cleanDescription }>
+            <div className="String FullWidth">
                 <TextInput {...{ defaultValue: value, name: cleanName, onChange }} />
-                { description && <div className="inputDescription">{removeMarkupTags(description)}</div> }
             </div>
         </FormElement>);
     }

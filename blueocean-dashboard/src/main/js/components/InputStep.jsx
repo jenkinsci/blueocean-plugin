@@ -104,10 +104,10 @@ export default class InputStep extends Component {
                   onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
                 />
                 <div onClick={(event => stopProp(event))} className="inputControl">
-                    { cancelButton }
                     <button title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
                         <span className="button-label">{ok}</span>
                     </button>
+                    { cancelButton }
                 </div>
             </div>
         </div>);

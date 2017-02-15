@@ -35,9 +35,10 @@ export default {
             clearTimeouts();
             // use a short timeout so fast connections aren't seeing
             // flashes of the progress bar all the time
-            setLoaderClass('go', 250); // these times need to match the index.jelly CSS definitions
-            setLoaderClass('long', 1250);
-            setLoaderClass('longer', 6250);
+            const delay = 1000;
+            setLoaderClass('go', delay); // these times need to match the index.jelly CSS definitions
+            setLoaderClass('long', delay + 1000);
+            setLoaderClass('longer', delay + 6000);
         }
         loadingCount++;
     },

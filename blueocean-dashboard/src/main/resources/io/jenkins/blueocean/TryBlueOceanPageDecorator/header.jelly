@@ -4,6 +4,7 @@
   The following Stapler adjunct adds the "Try Blue Ocean JavaScript bundle to
   every page in "classic" Jenkins.
   -->
-  <div id="blueocean-context-url" data-context-url="${it.getBlueOceanURL()}" />
+  <j:set var="tryURLs" value="${it.tryBlueOceanURLs}"/>
+  <div id="blueocean-context-url" data-context-url="${tryURLs.blueOceanURL}" data-classic-url="${tryURLs.classicURL}" />
   <st:adjunct includes="io.jenkins.blueocean.try"/>
 </j:jelly>

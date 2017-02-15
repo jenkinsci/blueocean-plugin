@@ -23,7 +23,7 @@ function invokeInstall(err, result) {
     console.log('version: ' + result.version);
     // const lib = '@jenkins-cd/design-language';
     // const version = '0.0.79-unpublishedthor1';
-    async.mapSeries(directories, function (elem, callback) {
+    async.map(directories, function (elem, callback) {
         console.log('Current element', elem);
         removeAndInstall(elem, result.package,  result.version, callback);
     }, function (err, result) {
