@@ -4,7 +4,7 @@ import {
     buildOrganizationUrl, buildPipelineUrl, buildRunDetailsUrl,
     calculateRunLogURLObject, calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl,
     buildClassicConfigUrl,
-} from '../../main/js/util/UrlUtils';
+} from '@jenkins-cd/blueocean-core-js';
 
 describe('UrlUtils', () => {
     describe('buildOrganizationUrl', () => {

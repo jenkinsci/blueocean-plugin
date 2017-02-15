@@ -11,7 +11,7 @@ export default {
     loadUrls() {
         // headless escape
         if (!document) {
-            return null;
+            return '/jenkins';
         }
         const headElement = document.getElementsByTagName('head')[0];
 
@@ -68,7 +68,7 @@ export default {
 
     getJenkinsRootURL() {
         if (!config.isLoaded) {
-            this.loadUrls();
+            return this.loadUrls();
         }
         return config.jenkinsRootURL;
     },

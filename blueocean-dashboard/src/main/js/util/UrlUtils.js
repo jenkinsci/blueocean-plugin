@@ -14,6 +14,7 @@ export {
     calculateLogUrl,
     calculateNodeBaseUrl,
     calculateStepsBaseUrl,
+    calculateRunLogURLObject,
     paginateUrl,
     endSlash,
     getRestUrl,
