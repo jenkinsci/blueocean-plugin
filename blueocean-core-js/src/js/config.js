@@ -6,7 +6,27 @@ import { blueocean } from './scopes';
 const config = blueocean.config || {};
 const features = config.features || {};
 
+
 export default {
+    loadUrls() {
+        // headless escape
+        if (!document) {
+            return null;
+        }
+        const headElement = document.getElementsByTagName('head')[0];
+
+        // Look up where the Blue Ocean app is hosted
+        config.blueoceanAppURL = headElement.getAttribute('data-appurl');
+
+        if (typeof config.blueoceanAppURL !== 'string') {
+            config.blueoceanAppURL = '/';
+        }
+
+        config.jenkinsRootURL = headElement.getAttribute('data-rooturl');
+        config.isLoaded = true;
+        return config.jenkinsRootURL;
+    },
+
     getConfig() {
         return config;
     },
@@ -46,6 +66,17 @@ export default {
         return this.isFeatureEnabled('organizations.enabled', false);
     },
 
+    getJenkinsRootURL() {
+        if (!config.isLoaded) {
+            this.loadUrls();
+        }
+        return config.jenkinsRootURL;
+    },
+
+    getRestRoot() {
+        return `${config.getJenkinsRootURL()}/blue/rest`;
+    },
+
     /**
      * Set a new "jenkinsConfig" object.
      * Useful for testing in a headless environment.
@@ -56,3 +87,4 @@ export default {
         config.jenkinsConfig = newConfig;
     },
 };
+

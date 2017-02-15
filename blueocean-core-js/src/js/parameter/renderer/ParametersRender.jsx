@@ -10,28 +10,21 @@ const translate = i18nTranslator('blueocean-web');
 
 export function ParametersRender(properties) {
     const { parameters, onChange = () => {} } = properties;
-    let renderedParameters;
-
-    try {
-        renderedParameters = parameters.map((parameter, index) => {
-            const { type } = parameter;
-            const returnValue = supportedInputTypesMapping[type];
-            if (returnValue) {
-                return React.createElement(returnValue, {
-                    ...parameter,
-                    key: index,
-                    onChange: onChange.bind(this, index),
-                });
-            }
-            throw new Error(`Unsupported input type ${type}`);
-        });
-    } catch (e) {
-        const alertCaption = translate('parameter.error.message', { 0: e.message });
+    const renderedParameters = parameters.map((parameter, index) => {
+        const { type } = parameter;
+        const returnValue = supportedInputTypesMapping[type];
+        if (returnValue) {
+            return React.createElement(returnValue, {
+                ...parameter,
+                key: index,
+                onChange: onChange.bind(this, index),
+            });
+        }
+        // error case - returning an error alert
+        const alertCaption = translate('parameter.error.message', { 0: type });
         const alertTitle = translate('parameter.error.title');
         return <Alerts message={alertCaption} type="Error" title={alertTitle} />;
-    }
+    });
 
-    return (<div>
-        { renderedParameters }
-    </div>);
+    return (<div>{ renderedParameters }</div>);
 }

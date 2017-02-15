@@ -6,6 +6,7 @@ import {
     ParametersRender,
     ParameterApi as parameterApi,
     StringUtil,
+    logging,
 } from '@jenkins-cd/blueocean-core-js';
 import { Alerts } from '@jenkins-cd/design-language';
 import Markdown from 'react-remarkable';
@@ -22,6 +23,7 @@ const stopProp = (event) => {
  * Translate function
  */
 const translate = i18nTranslator('blueocean-dashboard');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.InputStep');
 
 /**
  * Creating a "<form/>"less form to submit the input parameters requested by the user in pipeline.
@@ -95,13 +97,14 @@ export default class InputStep extends Component {
             return null;
         }
         const sanity = parameters.filter(parameter => supportedInputTypesMapping[parameter.type] !== undefined);
-        console.log(sanity.length, parameters.length, this.props.classicInputUrl)
-        if(sanity.length !== parameters.length) {
-            const alertCaption = <Markdown>{translate('parameter.error.message', { 0: this.props.classicInputUrl, defaultValue: 'This pipeline uses input types that are unsupported. Use [Jenkins Classic]({0}) to resolve this input step' })}</Markdown>;
-            const alertTitle = translate('parameter.error.title', {defaultValue: 'Error'});
-            return <div className="inputStep">
+        logger.debug("sanity check", sanity.length, parameters.length, this.props.classicInputUrl);
+        if (sanity.length !== parameters.length) {
+            logger.debug("sanity check failed. Returning Alert instead of the form.");
+            const alertCaption = <Markdown>{translate('inputStep.error.message', { 0: this.props.classicInputUrl, defaultValue: 'This pipeline uses input types that are unsupported. Use [Jenkins Classic]({0}) to resolve this input step.' })}</Markdown>;
+            const alertTitle = translate('inputStep.error.title', { defaultValue: 'Error' });
+            return (<div className="inputStep">
                 <Alerts message={alertCaption} type="Error" title={alertTitle} />
-            </div>;
+            </div>);
         }
         const { input: { message, ok } } = this.props.node;
         const cancelCaption = translate('rundetail.input.cancel', { defaultValue: 'Cancel' });
@@ -115,7 +118,7 @@ export default class InputStep extends Component {
                 <ParametersRender
                     parameters={parameters}
                     onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
-                />;
+                />
                 <div onClick={(event => stopProp(event))} className="inputControl">
                     <button title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
                         <span className="button-label">{ok}</span>

@@ -2,7 +2,16 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 
-import { sseConnection, logging } from '@jenkins-cd/blueocean-core-js';
+import {
+    calculateLogView,
+    calculateStepsBaseUrl,
+    calculateRunLogURLObject,
+    calculateNodeBaseUrl,
+    calculateFetchAll,
+    buildClassicInputUrl,
+    sseConnection,
+    logging,
+} from '@jenkins-cd/blueocean-core-js';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
@@ -19,7 +28,6 @@ import {
     createSelector,
 } from '../redux';
 
-import { calculateLogView, calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl, calculateFetchAll, buildClassicInputUrl } from '../util/UrlUtils';
 import { calculateNode } from '../util/KaraokeHelper';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetailsPipeline');
@@ -380,12 +388,12 @@ export class RunDetailsPipeline extends Component {
         const shouldShowEmptyState = !isPipelineQueued && hasResultsForSteps && noSteps;
 
         logger.debug('display helper', { shouldShowCV, shouldShowLogHeader, shouldShowEmptyState });
-        const pipe = {fullName: this.props.pipeline.fullName};
-        if(isMultiBranch){
+        const pipe = { fullName: this.props.pipeline.fullName };
+        if (isMultiBranch) {
             pipe.fullName += `/${params.branch}`;
         }
         const classicInputUrl = buildClassicInputUrl(pipe, run.id);
-        console.log('classic Input url' , classicInputUrl, pipe);
+        logger.debug('classic Input url', classicInputUrl, pipe);
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
