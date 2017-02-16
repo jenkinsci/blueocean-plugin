@@ -60,3 +60,4 @@ export {
     HeaderDetails,
     PageTabs
 } from './header';
+export { Alerts } from './Alerts';
