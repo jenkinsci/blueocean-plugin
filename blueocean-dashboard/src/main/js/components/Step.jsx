@@ -108,7 +108,7 @@ export default class Node extends Component {
     }
 
     render() {
-        const { logs, nodesBaseUrl, fetchLog, followAlong, url, location, router, t, locale } = this.props;
+        const { logs, nodesBaseUrl, fetchLog, followAlong, url, location, router, t, locale, classicInputUrl } = this.props;
         const node = this.expandAnchor(this.props);
         // Early out
         if (!node || !fetchLog) {
@@ -186,7 +186,7 @@ export default class Node extends Component {
         if (log && !isInputStep) {
             children = <LogConsole {...logProps} />;
         } else if (isInputStep) {
-            children = <InputStep node={node} />;
+            children = <InputStep {...{ node, classicInputUrl }} />;
         } else if (!log && hasLogs) {
             children = <span>&nbsp;</span>;
         }
@@ -230,6 +230,7 @@ Node.propTypes = {
     url: string,
     locale: object,
     t: func,
+    classicInputUrl: object,
 };
 
 Node.contextTypes = {

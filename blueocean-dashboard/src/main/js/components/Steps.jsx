@@ -12,7 +12,7 @@ export default class Nodes extends Component {
             model,
             nodesBaseUrl,
         } = nodeInformation;
-        const { logs, fetchLog, followAlong, url, location, router, t, locale } = this.props;
+        const { logs, fetchLog, followAlong, url, location, router, t, locale, classicInputUrl } = this.props;
         return (<div>
             {
               model.map((item, index) =>
@@ -20,6 +20,7 @@ export default class Nodes extends Component {
                   {...{
                       key: `${index}${item.id}`,
                       node: item,
+                      classicInputUrl,
                       logs,
                       nodesBaseUrl,
                       fetchLog,
@@ -47,5 +48,6 @@ Nodes.propTypes = {
     router: PropTypes.shape,
     url: PropTypes.string,
     locale: PropTypes.object,
+    classicInputUrl: PropTypes.object,
     t: PropTypes.func,
 };
