@@ -13,7 +13,8 @@ export const TimeHarmonizer = ComposedComponent => {
             super(props, context);
             logger.warn(props, context);
             const { startTime } = this.props;
-            this.skewMillis = this.context && this.context.config ? this.context.config.getServerBrowserTimeSkewMillis() : 0;
+            this.skewMillis = this.context && this.context.config && this.context.config.getServerBrowserTimeSkewMillis ?
+                this.context.config.getServerBrowserTimeSkewMillis() : 0;
             this.durationMillis = startTime ? this.getTimes(props).durationMillis : 0;
             this.getI18nTitle = this.getI18nTitle.bind(this);
             this.getDuration = this.getDuration.bind(this);
