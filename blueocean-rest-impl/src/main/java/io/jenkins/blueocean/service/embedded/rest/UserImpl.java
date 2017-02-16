@@ -88,8 +88,16 @@ public class UserImpl extends BlueUser {
             return null;
         }
 
-        User user = User.get(name, false, Collections.EMPTY_MAP);
-        if(user == null){
+        User loggedInUser = User.get(name, false, Collections.EMPTY_MAP);
+        if(loggedInUser == null){
+            return null;
+        }
+
+        // If this user is not logged in, we do not show it's permissions
+        // XXX: This is done to avoid impersonation which has performance
+        //      implications, e.g. github oauth plugin might do a network
+        //      round trip to fetch user and authorizations
+        if(!loggedInUser.getId().equals(user.getId())){
             return null;
         }
 

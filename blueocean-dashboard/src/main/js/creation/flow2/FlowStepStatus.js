@@ -1,12 +1,13 @@
+import { Enum } from './Enum';
+
 /**
  * Valid statuses for a FlowStep.
  */
-const status = {
+const FlowStepStatus = new Enum({
     ACTIVE: 'active',
     COMPLETE: 'complete',
     INCOMPLETE: 'incomplete',
+    ERROR: 'error',
+});
 
-    values: () => [status.ACTIVE, status.COMPLETE, status.INCOMPLETE],
-};
-
-export default status;
+export default FlowStepStatus;
