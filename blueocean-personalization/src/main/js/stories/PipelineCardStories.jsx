@@ -45,6 +45,10 @@ class Context extends React.Component {
     }
 }
 
+Context.propTypes = {
+    children: PropTypes.node,
+};
+
 Context.childContextTypes = {
     config: PropTypes.object,
 };
