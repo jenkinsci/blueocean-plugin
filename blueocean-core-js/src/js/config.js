@@ -70,11 +70,11 @@ export default {
         if (!config.isLoaded) {
             this.loadUrls();
         }
-        return config.jenkinsRootURL || '/jenkins';
+        return config.jenkinsRootURL;
     },
 
     getRestRoot() {
-        return `${config.getJenkinsRootURL()}/blue/rest`;
+        return `${this.getJenkinsRootURL()}/blue/rest`;
     },
 
     /**
