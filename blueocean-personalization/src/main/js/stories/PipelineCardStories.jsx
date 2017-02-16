@@ -34,7 +34,9 @@ const pipeline = {
 class Context extends React.Component {
     getChildContext() {
         return {
-            config: {},
+            config: {
+                getServerBrowserTimeSkewMillis: () => 0,
+            },
         };
     }
 
