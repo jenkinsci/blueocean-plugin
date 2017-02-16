@@ -35,8 +35,8 @@
     "react-addons-test-utils": "15.3.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.72-jdl1",
-    "@jenkins-cd/design-language": "0.0.113",
+    "@jenkins-cd/blueocean-core-js": "0.0.71-jm-b",
+    "@jenkins-cd/design-language": "0.0.114",
     "@jenkins-cd/js-extensions": "0.0.33",
     "@jenkins-cd/js-modules": "0.0.8",
     "immutable": "3.8.1",
