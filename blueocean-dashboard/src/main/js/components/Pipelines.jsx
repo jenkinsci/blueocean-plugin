@@ -1,13 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, Table } from '@jenkins-cd/design-language';
-import { i18nTranslator, ContentPageHeader, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
 import PageLoading from './PageLoading';
-
 import { observer } from 'mobx-react';
 
 const translate = i18nTranslator('blueocean-dashboard');
@@ -97,11 +96,7 @@ export class Pipelines extends Component {
                             }
                         </Table>
 
-                        { pipelines &&
-                        <button disabled={ !this.pager.hasMore } className="btn-show-more btn-secondary" onClick={ () => this.pager.fetchNextPage() }>
-                            { this.pager.pending ? translate('common.pager.loading', { defaultValue: 'Loading...' }) : translate('common.pager.more', { defaultValue: 'Show more' }) }
-                        </button>
-                        }
+                        { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>
                 </main>
             </Page>);
