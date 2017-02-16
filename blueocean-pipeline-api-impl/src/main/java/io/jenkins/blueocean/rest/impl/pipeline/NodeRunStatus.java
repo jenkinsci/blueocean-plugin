@@ -1,9 +1,11 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.GenericStatus;
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 
 /**
  * @author Vivek Pandey
@@ -13,8 +15,17 @@ public class NodeRunStatus {
     public final BlueRun.BlueRunState state;
 
     public NodeRunStatus(FlowNode endNode) {
+        Result result = null;
         if (endNode.getError() != null) {
-            this.result = BlueRun.BlueRunResult.FAILURE;
+            if(endNode.getError().getError() != null &&
+                endNode.getError().getError() instanceof FlowInterruptedException) {
+                result = ((FlowInterruptedException) endNode.getError().getError()).getResult();
+            }
+            if(result == null || result != Result.ABORTED) {
+                this.result = BlueRun.BlueRunResult.FAILURE;
+            } else {
+                this.result = BlueRun.BlueRunResult.ABORTED;
+            }
             this.state = endNode.isRunning() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
         }else if (endNode.isRunning()) {
             this.result = BlueRun.BlueRunResult.UNKNOWN;

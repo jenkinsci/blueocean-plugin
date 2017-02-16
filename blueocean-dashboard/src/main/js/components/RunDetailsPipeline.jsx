@@ -2,11 +2,20 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 
-import LogConsoleView from './LogConsoleView';
-import { sseConnection } from '@jenkins-cd/blueocean-core-js';
+import {
+    calculateLogView,
+    calculateStepsBaseUrl,
+    calculateRunLogURLObject,
+    calculateNodeBaseUrl,
+    calculateFetchAll,
+    buildClassicInputUrl,
+    sseConnection,
+    logging,
+} from '@jenkins-cd/blueocean-core-js';
 import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
+import LogConsoleView from './LogConsoleView';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 import {
@@ -19,9 +28,9 @@ import {
     createSelector,
 } from '../redux';
 
-import { calculateLogView, calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl, calculateFetchAll } from '../util/UrlUtils';
 import { calculateNode } from '../util/KaraokeHelper';
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetailsPipeline');
 
 const { string, object, any, func } = PropTypes;
 
@@ -377,6 +386,14 @@ export class RunDetailsPipeline extends Component {
 
         const shouldShowCV = (!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView;
         const shouldShowEmptyState = !isPipelineQueued && hasResultsForSteps && noSteps;
+
+        logger.debug('display helper', { shouldShowCV, shouldShowLogHeader, shouldShowEmptyState });
+        const pipe = { fullName: this.props.pipeline.fullName };
+        if (isMultiBranch) {
+            pipe.fullName += `/${params.branch}`;
+        }
+        const classicInputUrl = buildClassicInputUrl(pipe, run.id);
+        logger.debug('classic Input url', classicInputUrl, pipe);
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
@@ -400,9 +417,10 @@ export class RunDetailsPipeline extends Component {
                 }
                 { hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView && <Steps
                   nodeInformation={currentSteps}
-                  followAlong={followAlong}
-                  router={router}
                   {...{
+                      followAlong,
+                      router,
+                      classicInputUrl,
                       scrollToBottom,
                       ...this.props,
                       ...this.state,
@@ -419,6 +437,7 @@ export class RunDetailsPipeline extends Component {
                 { shouldShowCV && <LogConsoleView
                   {
                     ...{
+                        router,
                         title: t('rundetail.pipeline.logs', { defaultValue: 'Logs' }),
                         scrollToBottom,
                         ...this.props,

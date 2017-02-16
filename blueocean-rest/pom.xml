@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.0.0-b19-SNAPSHOT</version>
+    <version>1.0.0-b24-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-rest</artifactId>
@@ -27,7 +27,6 @@
       <dependency>
           <groupId>io.jenkins.blueocean.rest.annotation</groupId>
           <artifactId>capability-annotation</artifactId>
-          <version>1.2</version>
       </dependency>
   </dependencies>
 </project>

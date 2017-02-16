@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { buildPipelineUrl } from '../../util/UrlUtils';
 import FlowStep from '../flow2/FlowStep';
 import StepStatus from '../flow2/FlowStepStatus';
-import FlowStatus from './GitCreationStatus';
+import STATE from './GitCreationState';
 
 let t = null;
 
@@ -32,20 +32,25 @@ export default class GitCompletedStep extends React.Component {
         let title = 'Completed';
         let content = null;
 
-        switch (this.props.flowManager.creationStatus) {
-        case FlowStatus.CREATE_CREDS:
+        switch (this.props.flowManager.stateId) {
+        case STATE.CREATE_CREDS:
             percentage = 33;
             title = t('creation.git.step3.title_credential_create');
             break;
-        case FlowStatus.CREATE_PIPELINE:
+        case STATE.CREATE_PIPELINE:
             percentage = 67;
             title = t('creation.git.step3.title_pipeline_create');
             break;
-        case FlowStatus.COMPLETE:
+        case STATE.COMPLETE:
             percentage = 100;
             title = t('creation.git.step3.title_completed');
             content = (
-                <button onClick={() => this.finish()}>{t('creation.git.step3.button_open')}</button>
+                <button
+                  className="button-open-pipeline"
+                  onClick={() => this.finish()}
+                >
+                    {t('creation.git.step3.button_open')}
+                </button>
             );
             status = StepStatus.COMPLETE;
             break;
@@ -55,7 +60,7 @@ export default class GitCompletedStep extends React.Component {
         }
 
         return (
-            <FlowStep {...this.props} title={title} status={status} percentage={percentage}>
+            <FlowStep {...this.props} className="git-step-completed" title={title} status={status} percentage={percentage}>
                 {content}
             </FlowStep>
         );

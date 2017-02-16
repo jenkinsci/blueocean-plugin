@@ -32,6 +32,7 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
@@ -303,6 +304,7 @@ public class AbstractPipelineImpl extends BluePipeline {
     public static Map<String, Boolean> getPermissions(AbstractItem item){
         return ImmutableMap.of(
             BluePipeline.CREATE_PERMISSION, item.getACL().hasPermission(Item.CREATE),
+            BluePipeline.CONFIGURE_PERMISSION, item.getACL().hasPermission(Item.CONFIGURE),
             BluePipeline.READ_PERMISSION, item.getACL().hasPermission(Item.READ),
             BluePipeline.START_PERMISSION, item.getACL().hasPermission(Item.BUILD),
             BluePipeline.STOP_PERMISSION, item.getACL().hasPermission(Item.CANCEL)

@@ -14,12 +14,13 @@
         <j:invokeStatic var="j" className="jenkins.model.Jenkins" method="getActiveInstance"/>
         ${h.initPageVariables(context)}
 
-        <j:set var="isMSIE" value="${userAgent.contains('MSIE') || userAgent.contains('Trident')}"/>
+        <j:set var="isMSIE" value="${userAgent.contains('Edge') || userAgent.contains('MSIE') || userAgent.contains('Trident')}"/>
 
         <head lang="${it.lang}"
               data-rooturl="${rootURL}"
               data-resurl="${resURL}"
               data-appurl="${rootURL}/${it.urlBase}"
+              data-servertime="${it.now}"
               data-adjuncturl="${rootURL}/${j.getAdjuncts('').rootURL}">
 
             <title>Jenkins Blue Ocean</title>

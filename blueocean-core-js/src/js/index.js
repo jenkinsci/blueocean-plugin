@@ -30,6 +30,8 @@ export Paths from './paths/index';
 import { Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler, LocationService } from './services/index';
 export { Pager, PagerService, PipelineService, SSEService, ActivityService };
 
+import * as stringUtil from './stringUtil';
+export { stringUtil as StringUtil };
 
 export Fullscreen from './Fullscreen';
 export NotFound from './NotFound';
@@ -45,13 +47,14 @@ export {
     String,
     Text,
     Password,
+    supportedInputTypesMapping,
     ParametersRender,
 } from './parameter';
 export {
     BlueLogo,
     BlueOceanIcon,
 } from './components/BlueLogo';
-export { ContentPageHeader } from './components/ContentPageHeader';
+export { ContentPageHeader, SiteHeader } from './components/ContentPageHeader';
 export { ResultPageHeader } from './components/ResultPageHeader';
 
 // Create and export the SSE connection that will be shared by other
@@ -91,3 +94,32 @@ export const DEBUG = {
     enableMocksForI18n,
     disableMocksForI18n,
 };
+
+export { TimeManager } from './utils/serverBrowserTimeHarmonize';
+
+export { TimeHarmonizer } from './components/TimeHarmonizer';
+import LiveStatusIndicator from './components/LiveStatusIndicator';
+export { LiveStatusIndicator };
+export {
+    buildOrganizationUrl,
+    buildPipelineUrl,
+    rootPath,
+    buildClassicConfigUrl,
+    buildClassicInputUrl,
+    buildClassicBuildUrl,
+    buildRunDetailsUrl,
+    doubleUriEncode,
+    fetchAllSuffix,
+    applyFetchAll,
+    calculateFetchAll,
+    calculateLogView,
+    calculateLogUrl,
+    calculateNodeBaseUrl,
+    calculateStepsBaseUrl,
+    calculateRunLogURLObject,
+    paginateUrl,
+    endSlash,
+    getRestUrl,
+    buildUrl,
+    relativeUrl,
+} from './utils/UrlUtils';

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Dropdown, FormElement, RadioButtonGroup } from '@jenkins-cd/design-language';
 import { propTypes } from '../commonProptypes';
+import { removeMarkupTags } from '../../stringUtil';
 
 export class Choice extends Component {
 
@@ -18,17 +19,26 @@ export class Choice extends Component {
     render() {
         const { defaultParameterValue: { value }, description, name, choices, onChange } = this.props;
         const uxChoice = this.radioOrDropDown(choices);
+        const cleanName = removeMarkupTags(name);
+        const cleanDescription = removeMarkupTags(description);
         const options = {
             defaultOption: value,
             options: choices,
-            name,
+            name: cleanName,
             onChange,
         };
-        return (<FormElement title={ name }>
-            <div className="Choice">
-                { React.createElement(uxChoice, { ...options }) }
-                { description && <div className="inputDescription">{description}</div> }
-            </div>
+        // css tweaks
+        let className = 'Choice';
+        const formProperties = { title: cleanDescription };
+        if (choices.length > 6) {
+            className += ' FullWidth';
+        } else {
+            className += ' underline';
+        }
+        formProperties.className = className;
+
+        return (<FormElement { ...formProperties } >
+            { React.createElement(uxChoice, { ...options }) }
         </FormElement>);
     }
 }

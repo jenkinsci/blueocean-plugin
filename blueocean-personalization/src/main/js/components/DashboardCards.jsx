@@ -67,7 +67,7 @@ export class DashboardCards extends Component {
                   />
               </div>);
               // if we are in paused state fill the pause array and return null
-              if (favorite.item.latestRun.state === 'PAUSED') {
+              if (favorite.item.latestRun && favorite.item.latestRun.state === 'PAUSED') {
                   pausedCards.push(responseElement);
                   return null;
               }
@@ -93,10 +93,10 @@ export class DashboardCards extends Component {
           message={t('dashboardCard.input.required', { defaultValue: 'Input required' })}
           cards={pausedCards}
         />) : null;
-        const favoriteCardsStack = (<StackOutput
+        const favoriteCardsStack = favoriteCards.size > 0 ? (<StackOutput
           message={t('dashboardCard.input.favorite', { defaultValue: 'Favorites' })}
           cards={favoriteCards}
-        />);
+        />) : null;
 
         return (
             <FavoritesProvider store={this.props.store}>

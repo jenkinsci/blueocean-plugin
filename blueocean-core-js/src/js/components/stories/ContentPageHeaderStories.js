@@ -4,6 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import { storiesOf } from '@kadira/storybook';
 import { BlueLogo } from '../BlueLogo';
 import { ContentPageHeader } from '../ContentPageHeader';
+import { SiteHeader } from '../ContentPageHeader';
 import { ResultPageHeader } from '../ResultPageHeader';
 import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
 
@@ -46,11 +47,12 @@ function pageHeaderDashboard() {
     ];
 
     return (
-        <ContentPageHeader topNavLinks={topNavLinks}
-          userComponents={userComponents}
-    >
-            <h1>Dashboard</h1>
-        </ContentPageHeader>
+        <div>
+            <SiteHeader topNavLinks={topNavLinks} userComponents={userComponents}/>
+            <ContentPageHeader>
+                <h1>Dashboard</h1>
+            </ContentPageHeader>
+        </div>
     );
 }
 
@@ -75,13 +77,13 @@ function pageHeaderPipeline() {
     ];
 
     return (
-        <ContentPageHeader topNavLinks={topNavLinks}
-          userComponents={userComponents}
-          pageTabLinks={pageTabLinks}
-    >
-            <WeatherIcon score={100} />
-            <h1>Lorem / Ipsum / Pipelineum</h1>
-        </ContentPageHeader>
+        <div>
+            <SiteHeader topNavLinks={topNavLinks} userComponents={userComponents}/>
+            <ContentPageHeader pageTabLinks={pageTabLinks}>
+                <WeatherIcon score={100} />
+                <h1>Lorem / Ipsum / <a href="#">Pipelineum</a></h1>
+            </ContentPageHeader>
+        </div>
     );
 }
 

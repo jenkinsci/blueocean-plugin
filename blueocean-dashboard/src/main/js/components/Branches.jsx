@@ -2,16 +2,38 @@ import React, { Component, PropTypes } from 'react';
 import {
     CommitHash,
     ReadableDate,
-    LiveStatusIndicator,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { RunButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import { CellRow, CellLink } from './CellLink';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
+function noRun(branch, openRunDetails, t, store) {
+    return (<tr>
+                <td></td>
+                <td></td>
+                <td>{decodeURIComponent(branch.name)}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td className="actions">
+                    <RunButton
+                      className="icon-button"
+                      runnable={branch}
+                      onNavigation={openRunDetails}
+                    />
+                    <Extensions.Renderer
+                      extensionPoint="jenkins.pipeline.branches.list.action"
+                      pipeline={branch }
+                      store={store}
+                      {...t}
+                    />
+                </td>
+            </tr>);
+}
 @observer
 export default class Branches extends Component {
     constructor(props) {
@@ -26,15 +48,16 @@ export default class Branches extends Component {
         }
 
         const { router, location } = this.context;
-        const latestRun = branch.latestRun;
-
-        const cleanBranchName = decodeURIComponent(branch.name);
-        const runDetailsUrl = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
-
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
+        const latestRun = branch.latestRun;
+        if (!latestRun) {
+            return noRun(branch, openRunDetails, t, this.context.store);
+        }
+        const cleanBranchName = decodeURIComponent(branch.name);
+        const runDetailsUrl = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
 
         const { msg } = (latestRun.changeSet && latestRun.changeSet.length > 0) ? (latestRun.changeSet[latestRun.changeSet.length - 1] || {}) : {};
         return (
@@ -43,8 +66,11 @@ export default class Branches extends Component {
                     <WeatherIcon score={branch.weatherScore} />
                 </CellLink>
                 <CellLink>
-                    <LiveStatusIndicator result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
-                      startTime={latestRun.startTime} estimatedDuration={latestRun.estimatedDurationInMillis}
+                    <LiveStatusIndicator
+                      durationInMillis={latestRun.durationInMillis}
+                      result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
+                      startTime={latestRun.startTime}
+                      estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
                 </CellLink>
                 <CellLink>{cleanBranchName}</CellLink>

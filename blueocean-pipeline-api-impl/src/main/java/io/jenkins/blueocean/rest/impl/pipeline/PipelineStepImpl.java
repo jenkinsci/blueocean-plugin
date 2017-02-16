@@ -1,8 +1,10 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.Predicate;
 import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.console.AnnotatedLargeText;
+import hudson.model.Action;
 import hudson.model.FileParameterValue;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
@@ -12,8 +14,8 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.service.embedded.rest.LogAppender;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
+import io.jenkins.blueocean.service.embedded.rest.LogAppender;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
@@ -31,6 +33,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.framework.io.ByteBuffer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.Reader;
@@ -40,6 +43,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Vivek Pandey
@@ -93,7 +97,8 @@ public class PipelineStepImpl extends BluePipelineStep {
     public Object getLog() {
         if(PipelineNodeUtil.isLoggable.apply(node.getNode())){
             if(node.getBlockErrorAction() != null
-                    && node.getBlockErrorAction().getError() != null){
+                    && node.getBlockErrorAction().getError() != null &&
+                    node.getBlockErrorAction().getError().getMessage() != null){
                 return new LogResource(node.getNode().getAction(LogAction.class).getLogText(), new LogAppender() {
                     @Nonnull
                     @Override
@@ -133,7 +138,13 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return ActionProxiesImpl.getActionProxies(node.getNode().getActions(), this);
+        // The LogAction is not @ExportedBean but we want to expose its subgraph
+        return ActionProxiesImpl.getActionProxies(node.getNode().getActions(), new Predicate<Action>() {
+            @Override
+            public boolean apply(@Nullable Action input) {
+                return input instanceof LogAction;
+            }
+        }, this);
     }
 
     @Override
@@ -168,13 +179,13 @@ public class PipelineStepImpl extends BluePipelineStep {
                     " have an InputAction.");
         }
 
-        InputStepExecution execution = inputAction.getExecution(id);
-        if (execution == null) {
-            throw new ServiceException.BadRequestExpception(
-                    String.format("Error processing Input Submit request. This Run instance does not" +
-                    " have an Input with an id of '%s'.", id));
-        }
         try {
+            InputStepExecution execution = inputAction.getExecution(id);
+            if (execution == null) {
+                throw new ServiceException.BadRequestExpception(
+                        String.format("Error processing Input Submit request. This Run instance does not" +
+                        " have an Input with an id of '%s'.", id));
+            }
             //if abort, abort and return
             if(body.get(ABORT_ELEMENT) != null && body.getBoolean(ABORT_ELEMENT)){
                 return execution.doAbort();
@@ -190,7 +201,7 @@ public class PipelineStepImpl extends BluePipelineStep {
                 listener.onStepContinue(execution.getInput(), run);
             }
             return response;
-        } catch (IOException | InterruptedException | ServletException e) {
+        } catch (IOException | InterruptedException | TimeoutException e) {
             throw new ServiceException.UnexpectedErrorException("Error processing Input Submit request."+e.getMessage());
         }
     }
@@ -209,6 +220,7 @@ public class PipelineStepImpl extends BluePipelineStep {
     private Object parseValue(InputStepExecution execution, JSONArray parameters, StaplerRequest request) throws IOException, InterruptedException {
         Map<String, Object> mapResult = new HashMap<String, Object>();
 
+        InputStep input = execution.getInput();
         for(Object o: parameters){
             JSONObject p = (JSONObject) o;
             String name = (String) p.get(NAME_ELEMENT);
@@ -218,7 +230,7 @@ public class PipelineStepImpl extends BluePipelineStep {
             }
 
             ParameterDefinition d=null;
-            for (ParameterDefinition def : execution.getInput().getParameters()) {
+            for (ParameterDefinition def : input.getParameters()) {
                 if (def.getName().equals(name))
                     d = def;
             }
@@ -230,6 +242,12 @@ public class PipelineStepImpl extends BluePipelineStep {
                 continue;
             }
             mapResult.put(name, convert(name, v));
+        }
+        // If a destination value is specified, push the submitter to it.
+        String valueName = input.getSubmitterParameter();
+        if (valueName != null && !valueName.isEmpty()) {
+            Authentication a = Jenkins.getAuthentication();
+            mapResult.put(valueName, a.getName());
         }
         switch (mapResult.size()) {
             case 0:

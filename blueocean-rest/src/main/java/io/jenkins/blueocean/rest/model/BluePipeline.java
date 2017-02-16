@@ -50,6 +50,9 @@ public abstract class BluePipeline extends Resource {
     /** stop pipeline run */
     public static final String STOP_PERMISSION = "stop";
 
+    /** configure pipeline permission */
+    public static final String CONFIGURE_PERMISSION = "configure";
+
     /** build parameters */
     private static final String PARAMETERS = "parameters";
 

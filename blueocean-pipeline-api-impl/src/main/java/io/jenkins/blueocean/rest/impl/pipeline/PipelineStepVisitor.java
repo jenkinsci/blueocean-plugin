@@ -1,8 +1,11 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.collect.ImmutableList;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
+import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
@@ -28,6 +31,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Gives steps inside
@@ -56,6 +61,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     private ArrayDeque<String> stages = new ArrayDeque<>();
     private InputAction inputAction;
     private StepEndNode closestEndNode;
+    private StepStartNode agentNode = null;
 
     private static final Logger logger = LoggerFactory.getLogger(PipelineStepVisitor.class);
 
@@ -104,6 +110,12 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             this.stageStepsCollectionCompleted = false;
             this.inStageScope = true;
         }
+
+        if(endNode instanceof StepStartNode){
+            if(endNode.getDisplayFunctionName().equals("node")){
+                agentNode = (StepStartNode) endNode;
+            }
+        }
         // if we're using marker-based (and not block-scoped) stages, add the last node as part of its contents
         if (!(endNode instanceof BlockEndNode)) {
             atomNode(null, endNode, afterChunk, scanner);
@@ -119,6 +131,27 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
         if(node != null && chunk.getFirstNode().equals(node)){
             stageStepsCollectionCompleted = true;
             inStageScope = false;
+            try {
+                final String cause = PipelineNodeUtil.getCauseOfBlockage(chunk.getFirstNode(), agentNode, run);
+                if(cause != null) {
+                    //Now add a step that indicates bloackage cause
+                    FlowNode step = new AtomNode(chunk.getFirstNode().getExecution(), UUID.randomUUID().toString(), chunk.getFirstNode()) {
+
+                        @Override
+                        protected String getTypeDisplayName() {
+                            return cause;
+                        }
+                    };
+
+                    FlowNodeWrapper stepNode = new FlowNodeWrapper(step, new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED),new TimingInfo(), run);
+                    steps.push(stepNode);
+                    stepMap.put(step.getId(), stepNode);
+                }
+            } catch (IOException | InterruptedException e) {
+                //log the error but don't fail. This is better as in worst case all we will lose is blockage cause of a node.
+                logger.error(String.format("Error trying to get blockage status of pipeline: %s, runId: %s node block: %s. %s"
+                        ,run.getParent().getFullName(), run.getId(), agentNode, e.getMessage()), e);
+            }
         }if(node != null && PipelineNodeUtil.isStage(node) && !inStageScope && !chunk.getFirstNode().equals(node)){
             resetSteps();
         }
@@ -150,16 +183,16 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             InputStep inputStep=null;
             if(PipelineNodeUtil.isPausedForInputStep((StepAtomNode) atomNode, inputAction)){
                 status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
-                for(InputStepExecution execution: inputAction.getExecutions()){
-                    try {
-                        FlowNode node = execution.getContext().get(FlowNode.class);
-                        if(node != null && node.equals(atomNode)){
-                            inputStep = execution.getInput();
-                            break;
-                        }
-                    } catch (IOException | InterruptedException e) {
-                        logger.error("Error getting FlowNode from execution context: "+e.getMessage(), e);
+                try {
+                    for(InputStepExecution execution: inputAction.getExecutions()){
+                            FlowNode node = execution.getContext().get(FlowNode.class);
+                            if(node != null && node.equals(atomNode)){
+                                inputStep = execution.getInput();
+                                break;
+                            }
                     }
+                } catch (IOException | InterruptedException | TimeoutException e) {
+                    logger.error("Error getting FlowNode from execution context: "+e.getMessage(), e);
                 }
             }else{
                  status = new NodeRunStatus(atomNode);

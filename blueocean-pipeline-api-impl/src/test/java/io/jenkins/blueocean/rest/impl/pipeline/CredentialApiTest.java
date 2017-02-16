@@ -9,13 +9,17 @@ import com.cloudbees.plugins.credentials.ViewCredentialsAction;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.google.common.collect.ImmutableMap;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.ExtensionList;
+import hudson.model.User;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Vivek Pandey
@@ -160,6 +164,93 @@ public class CredentialApiTest extends PipelineBaseTest {
                 , 201);
         Assert.assertEquals("Username with password", resp.get("typeName"));
         Assert.assertEquals("domain1", resp.get("domain"));
+    }
+
+    @Test
+    public void createUsingUsernamePasswordInUserStore() throws IOException, UnirestException {
+        User user = login();
+        Map resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .post("/organizations/jenkins/credentials/user/")
+                .data(                ImmutableMap.of("credentials",
+                        new ImmutableMap.Builder<String,Object>()
+                                .put("password", "abcd")
+                                .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                                .put("scope", "USER")
+                                .put("description", "joe desc")
+                                .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                                .put("username", "joe").build()
+                        )
+                )
+                .build(Map.class);
+
+        Assert.assertEquals("Username with password", resp.get("typeName"));
+        Assert.assertEquals("blueocean-domain", resp.get("domain"));
+    }
+
+    @Test
+    public void createSshCredentialUsingDirectSshInUserStore() throws IOException, UnirestException {
+        User user = login();
+
+        Map resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .post("/organizations/jenkins/credentials/user/")
+                .data(                ImmutableMap.of("credentials",
+                        new ImmutableMap.Builder<String,Object>()
+                                .put("privateKeySource", ImmutableMap.of(
+                                        "privateKey", "abcabc1212",
+                                        "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
+                                .put("passphrase", "ssh2")
+                                .put("scope", "USER")
+                                .put("domain","blueocean-git-domain")
+                                .put("description", "ssh2 desc")
+                                .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
+                                .put("username", "ssh2").build()
+                        )
+                )
+                .build(Map.class);
+
+        Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
+        Assert.assertEquals("blueocean-git-domain", resp.get("domain"));
+
+        String credId = (String) resp.get("id");
+
+        assertNotNull(credId);
+
+        String credUri = getHrefFromLinks(resp, "self");
+        resp = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .get(credUri)
+                .build(Map.class);
+
+        Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
+        Assert.assertEquals("blueocean-git-domain", resp.get("domain"));
+    }
+
+    @Test
+    public void createSshCredentialUsingDefaultSshOnMasterInUserStore() throws IOException, UnirestException {
+        User user = login();
+
+        Map resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .post("/organizations/jenkins/credentials/user/")
+                .data(                ImmutableMap.of("credentials",
+                        new ImmutableMap.Builder<String,Object>()
+                                .put("privateKeySource", ImmutableMap.of("stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$UsersPrivateKeySource"))
+                                .put("passphrase", "ssh2")
+                                .put("scope", "USER")
+                                .put("description", "ssh2 desc")
+                                .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
+                                .put("username", "ssh2").build()
+                        )
+                ).build(Map.class);
+
+        Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
+        Assert.assertEquals("blueocean-domain", resp.get("domain"));
     }
 
 }

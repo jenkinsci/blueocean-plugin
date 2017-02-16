@@ -2027,7 +2027,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         if(waitForBuildCount(job1,1, Result.ABORTED)) {
             Map<String, Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/");
             Assert.assertEquals("FINISHED", resp.get("state"));
-            Assert.assertEquals("FAILURE", resp.get("result"));
+            Assert.assertEquals("ABORTED", resp.get("result"));
             Assert.assertEquals("12", resp.get("id"));
         }
     }

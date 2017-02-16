@@ -1,12 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import { Progress } from '@jenkins-cd/design-language';
+import { logging } from '@jenkins-cd/blueocean-core-js';
+
 import { scrollHelper } from './ScrollHelper';
-import { fetchAllSuffix as suffix } from '../util/UrlUtils';
 
 const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
 const RENDER_CHUNK_SIZE = 500;
 const RERENDER_DELAY = 17;
+const logger = logging.logger('io.jenkins.blueocean.dashboard.LogConsole');
 
 
 export class LogConsole extends Component {
@@ -114,28 +116,33 @@ export class LogConsole extends Component {
     }
     render() {
         const { isLoading, lines } = this.state;
-        const { prefix = '', hasMore = false, url, router, location, t } = this.props; // if hasMore true then show link to full log
+        const { prefix = '', hasMore = false, router, location, t } = this.props; // if hasMore true then show link to full log
         if (!lines) {
             return null;
         }
-        // JENKINS-37925
+        // JENKINS-37925 - show more button should open log in new window
+        // const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
+        // JENKINS-41717 reverts above again
         // fulllog within steps are triggered by
-        // const logUrl =`?start=0#${prefix || ''}log-${0}`
-        const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
+        const logUrl = `#${prefix || ''}log-${0}`;
 
-        return (<div className="log-body">
+        return (<div className="log-wrapper">
             { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
                 <Progress />
             </div>}
 
 
-            { !isLoading && <pre>
+            { !isLoading && <div className="log-body"><pre>
                 { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
                     <a
-                      target="_blank"
                       className="btn-link inverse"
                       key={0}
-                      href={logUrl}
+                      onClick={() => {
+                          logger.debug('location', { location, logUrl });
+                          location.query.start = 0;
+                          location.hash = logUrl;
+                          router.push(location);
+                      }}
                     >
                         {t('Show.complete.logs')}
                     </a>
@@ -156,7 +163,7 @@ export class LogConsole extends Component {
                         <span className="line">{line}</span>
                     </div>
                 </p>)}
-            </pre> }
+            </pre></div> }
 
         </div>);
     }

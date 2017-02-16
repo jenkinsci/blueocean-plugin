@@ -1,9 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import { Dialog } from '@jenkins-cd/design-language';
+import { Alerts, Dialog } from '@jenkins-cd/design-language';
+import Markdown from 'react-remarkable';
 
 import {
   ToastUtils,
   RunButtonBase as RunButton,
+  capable,
+  buildClassicBuildUrl,
 } from '../index';
 
 import i18nTranslator from '../i18n/i18n';
@@ -12,13 +15,17 @@ import {
     ParameterService,
     ParametersRender,
     ParameterApi as parameterApi,
+    supportedInputTypesMapping,
 } from './index';
+
+import logging from '../logging';
+const logger = logging.logger('io.jenkins.blueocean.core.ParametersRunButton');
 
 /**
  * Translate function
  */
 const t = i18nTranslator('blueocean-web');
-
+const MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
 /**
  * Creating a "<form/>"less form to submit the build parameters requested by the user for a parametrised job..
  *
@@ -48,6 +55,16 @@ export class ParametersRunButton extends Component {
      */
     componentWillMount() {
         this.createFormState(this.props);
+    }
+    /**
+     * react life cycle mapper to invoke the update of the service
+     */
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.runnable && nextProps.runnable.parameters &&
+            this.props.runnable && this.props.runnable.parameters &&
+            nextProps.runnable.parameters !== this.props.runnable.parameters) {
+            this.parameterService.init(nextProps.runnable.parameters);
+        }
     }
     /**
      * Create some information for form handling
@@ -91,6 +108,7 @@ export class ParametersRunButton extends Component {
 
     render() {
         const { parameters } = this.parameterService;
+
         // Captions
         const message = t('parametrised.pipeline.header', { defaultValue: 'Input required' });
         const ok = t('parametrised.pipeline.submit', { defaultValue: 'Run' });
@@ -110,21 +128,49 @@ export class ParametersRunButton extends Component {
                 this.show();
             };
         }
+        const isMultiBranch = capable(this.props.runnable, MULTIBRANCH_PIPELINE);
+        const pipe = { fullName: this.props.runnable.fullName };
+        if (isMultiBranch) {
+            pipe.fullName += `/${pipe.branch}`;
+        }
+        const classicBuildUrl = buildClassicBuildUrl(pipe);
+        const sanity = parameters.filter(parameter => supportedInputTypesMapping[parameter.type] !== undefined);
+        logger.debug('sane?', sanity.length === parameters.length, 'classicBuildUrl: ', classicBuildUrl);
+        let dialog;
+        if (sanity.length !== parameters.length) {
+            logger.debug('sanity check failed. Returning Alert instead of the form.');
+            const alertCaption = (<Markdown>
+                {t('inputParameter.error.message', {
+                    0: classicBuildUrl,
+                    defaultValue: 'This pipeline uses input types that are unsupported. Use [Jenkins Classic]({0}) to resolve parametrized build',
+                })}
+            </Markdown>);
+            const alertTitle = t('inputParameter.error.title', { defaultValue: 'Error' });
+            dialog = (<Dialog
+                onDismiss={this.hide.bind(this)}
+                title={message}
+                className="Dialog--input"
+            >
+                <Alerts message={alertCaption} type="Error" title={alertTitle} />
+            </Dialog>);
+        } else {
+            dialog = (<Dialog
+                buttons={[okButton, cancelButton]}
+                onDismiss={this.hide.bind(this)}
+                title={message}
+                className="Dialog--input"
+            >
+                <ParametersRender
+                    parameters={parameters}
+                    onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
+                />
+            </Dialog>);
+        }
         return (<div>
             <RunButton {...runButtonProps} />
             { this.state.visible &&
                 <div className="inputParameters">
-                    <Dialog
-                      buttons={[cancelButton, okButton]}
-                      onDismiss={this.hide.bind(this)}
-                      title={message}
-                      className="Dialog--input"
-                    >
-                        <ParametersRender
-                          parameters={parameters}
-                          onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
-                        />
-                    </Dialog>
+                    { dialog }
                 </div>
             }
         </div>);
