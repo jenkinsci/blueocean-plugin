@@ -100,7 +100,7 @@ export default class InputStep extends Component {
         logger.debug('sanity check', sanity.length, parameters.length, this.props.classicInputUrl);
         if (sanity.length !== parameters.length) {
             logger.debug('sanity check failed. Returning Alert instead of the form.');
-            const alertCaption = <Markdown>{translate('inputStep.error.message', { 0: this.props.classicInputUrl, defaultValue: 'This pipeline uses input types that are unsupported. Use [Jenkins Classic]({0}) to resolve this input step.' })}</Markdown>;
+            const alertCaption = <Markdown>{translate('inputSteps.error.message', { 0: this.props.classicInputUrl, defaultValue: 'This pipeline uses input types that are unsupported.  \nUse [Jenkins Classic]({0}) to resolve this input step.' })}</Markdown>;
             const alertTitle = translate('inputStep.error.title', { defaultValue: 'Error' });
             return (<div className="inputStep">
                 <Alerts message={alertCaption} type="Error" title={alertTitle} />
