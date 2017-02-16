@@ -42,7 +42,6 @@ import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestBuilder;
 import org.jvnet.hudson.test.ToolInstallations;
-import org.jvnet.hudson.test.recipes.WithPlugin;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
@@ -432,9 +431,11 @@ public class PipelineApiTest extends BaseTest {
         Jenkins.getInstance().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test2")), new CauseAction(new Cause.UserIdCause()));
 
         List queue = request().get("/organizations/jenkins/pipelines/pipeline1/queue").build(List.class);
-        Assert.assertEquals(queue.size(),2);
-        Assert.assertEquals(((Map) queue.get(0)).get("expectedBuildNumber"), 4);
-        Assert.assertEquals(((Map) queue.get(1)).get("expectedBuildNumber"), 3);
+        Assert.assertEquals(2, queue.size());
+        Assert.assertEquals(4, ((Map) queue.get(0)).get("expectedBuildNumber"));
+        Assert.assertEquals(3, ((Map) queue.get(1)).get("expectedBuildNumber"));
+        Assert.assertEquals("Waiting for next available executor", ((Map) queue.get(0)).get("causeOfBlockage"));
+        Assert.assertEquals("Waiting for next available executor", ((Map) queue.get(1)).get("causeOfBlockage"));
     }
 
     @Test
