@@ -55,7 +55,7 @@ export class KaraokeService extends BunkerService {
     }
 
     setItems(items) {
-        debugger;
+        // debugger;
         this.setItem(items);
     }
 

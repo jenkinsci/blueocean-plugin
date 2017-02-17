@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    logging,
-} from '@jenkins-cd/blueocean-core-js';
+import { logging, } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
+import Extensions from '@jenkins-cd/js-extensions';
+import { FreeStyle} from './karaoke/components/FreeStyle';
+import { Pipeline } from './karaoke/components/Pipeline';
 
 import { KaraokeService } from './karaoke/index';
 
@@ -35,21 +36,30 @@ export class RunDetailsPipeline extends Component {
             logger.debug('abort due to pager pending');
             return null;
         }
+        const { pipeline, params: { branch, runId } } = this.props;
         const run = this.pager.data;
         // logger.warn('this.pager.data', this.pager.data);
         if(this.pager.isFreeStyle){
-            return (
-                <div ref="scrollArea">
-                    Invoke FreeStyleComponent now
-                </div>
-            );
+            return (<FreeStyle {
+                    ...{
+                        extensionPoint: 'jenkins.pipeline.karaoke.freestyle.provider',
+                        pager: this.pager,
+                        pipeline,
+                        branch,
+                        runId,
+                    }
+                } />);
         }
         if(this.pager.isPipeline) {
-            return (
-                <div ref="scrollArea">
-                    Pipe it baby
-                </div>
-            );
+            return (<Pipeline {
+                    ...{
+                        extensionPoint: 'jenkins.pipeline.karaoke.pipeline.provider',
+                        pager: this.pager,
+                        pipeline,
+                        branch,
+                        runId,
+                    }
+            } />);
 
         }
         return (
