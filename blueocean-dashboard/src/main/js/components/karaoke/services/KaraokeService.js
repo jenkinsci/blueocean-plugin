@@ -55,7 +55,7 @@ export class KaraokeService extends BunkerService {
     }
 
     setItems(items) {
-        debugger
+        debugger;
         this.setItem(items);
     }
 
@@ -67,7 +67,7 @@ export class KaraokeService extends BunkerService {
      * @returns {Promise} Promise of fetched data.
      */
     fetchDetails({ useCache } = {}) {
-        logger.warn('debugger')
+        logger.warn('debugger');
         if (useCache && this.hasItem(this.idUrl)) {
             return Promise.resolve(this.getItem(this.idUrl));
         }
@@ -78,7 +78,7 @@ export class KaraokeService extends BunkerService {
                 // Should really have dedupe on methods like these, but for now
                 // just clone data so that we dont modify other instances.
                 const detail = utils.clone(data);
-                logger.warn('debugger')
+                logger.warn('debugger');
                 return this.setItem(detail);
             })
             .catch(err => {

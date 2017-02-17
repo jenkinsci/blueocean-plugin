@@ -62,7 +62,6 @@ export class KaraokeService extends BunkerService {
      * @returns {Promise} Promise of fetched data.
      */
     fetchDetails({ useCache } = {}) {
-
         if (useCache && this.hasItem(this.idUrl)) {
             return Promise.resolve(this.getItem(this.idUrl));
         }

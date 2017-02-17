@@ -87,7 +87,7 @@ export class Pager {
                 const saved = this.bunker.setItem(data);
                 logger.warn('saved data', saved);
                 // Append the new Href to the existing ones.
-                debugger
+                debugger;
                 this.href = saved._links.self.href;
                 this.isFreeStyle = capable(saved, FREESTYLE_JOB);
                 this.isPipeline = capable(saved, PIPELINE_JOB);

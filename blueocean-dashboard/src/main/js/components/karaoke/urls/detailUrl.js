@@ -6,7 +6,7 @@ import {
     capabilityAugmenter,
 } from '@jenkins-cd/blueocean-core-js';
 
-import {MULTIBRANCH_PIPELINE} from '../../../Capabilities';
+import { MULTIBRANCH_PIPELINE } from '../../../Capabilities';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.detailUrl');
 

@@ -1,4 +1,4 @@
-import { Fetch, FetchFunctions, logging,  } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, FetchFunctions, logging } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RestApi');
 
