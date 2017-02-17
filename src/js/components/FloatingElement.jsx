@@ -186,21 +186,31 @@ export class FloatingElement extends Component {
             newTargetWidth = targetNode.offsetWidth;
             newTargetHeight = targetNode.offsetHeight;
 
+            // Calculate total position (only offsetParent chain)
             let node = targetNode;
-
             while (node) {
                 newTargetLeft += node.offsetLeft;
-                newTargetLeft -= node.scrollLeft;
-
                 newTargetTop += node.offsetTop;
-                newTargetTop -= node.scrollTop;
+
                 node = node.offsetParent;
+            }
+
+            // Calculate total scroll offset (can be in any ancestor)
+            node = targetNode.parentElement;
+            while (node) {
+
+                if (node.scrollLeft) {
+                    newTargetLeft -= node.scrollLeft;
+                }
+                if (node.scrollTop) {
+                    newTargetTop -= node.scrollTop;
+                }
+
+                node = node.parentElement;
             }
         }
 
         // Viewport
-        //newViewportWidth = document.body.clientWidth;
-        //newViewportHeight = document.body.clientHeight;
         newViewportWidth = window.innerWidth;
         newViewportHeight = window.innerHeight;
 

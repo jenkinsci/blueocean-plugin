@@ -1,10 +1,11 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import { Dropdown } from '../components';
+import { Dropdown, Dialog } from '../components';
 import Utils from './Utils';
 
 storiesOf('Dropdown', module)
     .add('general', () => <General />)
+    .add('In Dialog', () => <InDialog />)
     .add('labeling', () => <LabelOptions />)
     .add('keyboard & focus', () => <KeyboardFocus />)
     .add('callbacks', () => <Callbacks />)
@@ -30,6 +31,25 @@ function createOptions(text = 'Option', asObject = false) {
     return options;
 }
 
+function InDialog() {
+    return (
+        <div>
+            <p>Background page.</p>
+
+            <Dialog title="Not testing the Dialog">
+                <div style={{maxWidth: '40em'}}>
+                    <p>
+                        Class condimentum augue sapien sed a fermentum purus mi a fusce ridiculus
+                        ultricies vel vivamus vestibulum nullam consequat et suspendisse montes
+                        consectetur enim nam phasellus id faucibus elementum malesuada. Elit
+                        aenean dolor adipiscing duis.
+                    </p>
+                    <General/>
+                </div>
+            </Dialog>
+        </div>
+    );
+}
 
 
 function General() {
