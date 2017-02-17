@@ -415,6 +415,12 @@
             <artifactId>favorite</artifactId>
             <version>2.0.4</version>
         </dependency>
+        <dependency>
+          <groupId>io.jenkins.blueocean</groupId>
+          <artifactId>blueocean-pipeline-editor</artifactId>        
+          <version>0.1-preview-4</version>
+        </dependency>
+        
 
         <!-- Needed for blueocean-display-url plugin -->
         <dependency>
