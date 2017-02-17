@@ -67,7 +67,6 @@ class App extends Component {
     render() {
         const { location } = this.context;
 
-        
         const pipeCaption = translate('pipelines', {
             defaultValue: 'Pipelines',
         });
@@ -84,9 +83,11 @@ class App extends Component {
             </div>
         ];
 
+        const homeURL = config.getAppURLBase();
+
         return (
             <div className="Site">
-                <SiteHeader topNavLinks={topNavLinks} userComponents={userComponents}/>
+                <SiteHeader homeURL={homeURL} topNavLinks={topNavLinks} userComponents={userComponents}/>
 
                 <main className="Site-content">
                     {this.props.children /* Set by react-router */ }
