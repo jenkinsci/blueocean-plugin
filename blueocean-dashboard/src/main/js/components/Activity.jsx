@@ -3,7 +3,7 @@ import {
   EmptyStateView,
   Table,
 } from '@jenkins-cd/design-language';
-import { capable, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 import Runs from './Runs';
@@ -144,9 +144,7 @@ export class Activity extends Component {
                 }
 
                 { runs && runs.length > 0 &&
-                    <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
-                        {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
-                    </button>
+                  <ShowMoreButton pager={this.pager} />
                 }
             </article>
         </main>);
