@@ -23,4 +23,12 @@ export default class ScmProvider {
         throw new Error('must implement getFlowManager');
     }
 
+    /**
+     * Called when the related creation flow is about to exit.
+     * Similar to React's componentWillUnmount, perform cleanup of event listeners, timers, etc.
+     */
+    destroyFlowManager() {
+        throw new Error('must implement destroyFlowManager');
+    }
+
 }

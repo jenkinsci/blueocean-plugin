@@ -43,7 +43,7 @@ export class CreatePipelineStepsRenderer extends React.Component {
     }
 
     hasSteps() {
-        return this.flowManager && this.flowManager.activeSteps && this.flowManager.activeSteps.length;
+        return this.flowManager && this.flowManager.steps && this.flowManager.steps.length;
     }
 
     render() {
@@ -55,19 +55,21 @@ export class CreatePipelineStepsRenderer extends React.Component {
             flowManager: this.flowManager,
         };
 
-        // create Step elements for each "pending" text and
+        const steps = this.flowManager.steps.map(step => step.stepElement);
+
+        // create Step elements for each "placeholder" text and
         // then combine with the actual rendered steps
-        const pendingSteps = this.flowManager.pendingSteps.map(text => (
+        const placeholderSteps = this.flowManager.placeholders.map(text => (
             <FlowStep title={text} />
         ));
 
         const allSteps = [].concat(
-            this.flowManager.activeSteps.slice(),
-            pendingSteps
+            steps,
+            placeholderSteps,
         );
 
         return (
-            <MultiStepFlow activeIndex={this.flowManager.activeIndex}>
+            <MultiStepFlow className="creation-steps" activeIndex={this.flowManager.activeIndex}>
                 {React.Children.map(allSteps, child => (
                     React.cloneElement(child, props)
                 ))}

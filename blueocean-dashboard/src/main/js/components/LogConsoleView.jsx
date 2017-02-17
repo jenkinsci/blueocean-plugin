@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
+import { calculateRunLogURLObject } from '@jenkins-cd/blueocean-core-js';
 import LogConsole from './LogConsole';
 import LogToolbar from './LogToolbar';
-import { calculateRunLogURLObject } from '../util/UrlUtils';
 
 const { bool, string, object, func } = PropTypes;
 
@@ -12,7 +12,7 @@ export default class LogConsoleView extends Component {
 
         // console.log('fetch the log directly')
         const logGeneral = calculateRunLogURLObject(mergedConfig);
-       
+
         // fetchAll indicates whether we want all logs (taking shortcut ...mergedConfig to pass fetchAll)
         fetchLog({ ...logGeneral, ...mergedConfig });
     }

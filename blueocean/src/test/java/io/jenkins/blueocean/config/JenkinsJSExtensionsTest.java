@@ -55,7 +55,7 @@ public class JenkinsJSExtensionsTest extends BaseTest {
             Assert.assertNotNull(extensionPoints);
 
             if ("blueocean-dashboard".equals(pluginId)) {
-                Assert.assertEquals(6, extensionPoints.size());
+                Assert.assertEquals(7, extensionPoints.size());
                 Assert.assertEquals("AdminNavLink", extensionPoints.getJSONObject(0).get("component"));
                 Assert.assertEquals("jenkins.logo.top", extensionPoints.getJSONObject(0).get("extensionPoint"));
             } else if ("blueocean-personalization".equals(pluginId)) {

@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.71-jm-c",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.71-jm-c",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.71-jm-c.tgz"
+      "version": "0.0.73",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.73",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.73.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.114",
-      "from": "@jenkins-cd/design-language@0.0.114",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.114.tgz"
+      "version": "0.0.115",
+      "from": "@jenkins-cd/design-language@0.0.115",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.115.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -272,6 +272,11 @@
       "from": "asynckit@>=0.4.0 <0.5.0",
       "resolved": "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz",
       "dev": true
+    },
+    "autolinker": {
+      "version": "0.15.3",
+      "from": "autolinker@>=0.15.0 <0.16.0",
+      "resolved": "https://registry.npmjs.org/autolinker/-/autolinker-0.15.3.tgz"
     },
     "aws-sign2": {
       "version": "0.5.0",
@@ -4327,6 +4332,11 @@
       "from": "react-redux@4.4.5",
       "resolved": "https://registry.npmjs.org/react-redux/-/react-redux-4.4.5.tgz"
     },
+    "react-remarkable": {
+      "version": "1.1.1",
+      "from": "react-remarkable@1.1.1",
+      "resolved": "https://registry.npmjs.org/react-remarkable/-/react-remarkable-1.1.1.tgz"
+    },
     "react-router": {
       "version": "2.3.0",
       "from": "react-router@2.3.0",
@@ -4457,6 +4467,23 @@
       "from": "regjsparser@>=0.1.4 <0.2.0",
       "resolved": "https://registry.npmjs.org/regjsparser/-/regjsparser-0.1.5.tgz",
       "dev": true
+    },
+    "remarkable": {
+      "version": "1.7.1",
+      "from": "remarkable@>=1.4.1 <2.0.0",
+      "resolved": "https://registry.npmjs.org/remarkable/-/remarkable-1.7.1.tgz",
+      "dependencies": {
+        "argparse": {
+          "version": "0.1.16",
+          "from": "argparse@>=0.1.15 <0.2.0",
+          "resolved": "https://registry.npmjs.org/argparse/-/argparse-0.1.16.tgz"
+        },
+        "underscore.string": {
+          "version": "2.4.0",
+          "from": "underscore.string@>=2.4.0 <2.5.0",
+          "resolved": "https://registry.npmjs.org/underscore.string/-/underscore.string-2.4.0.tgz"
+        }
+      }
     },
     "repeat-element": {
       "version": "1.1.2",
@@ -5226,6 +5253,11 @@
       "from": "unc-path-regex@>=0.1.0 <0.2.0",
       "resolved": "https://registry.npmjs.org/unc-path-regex/-/unc-path-regex-0.1.2.tgz",
       "dev": true
+    },
+    "underscore": {
+      "version": "1.7.0",
+      "from": "underscore@>=1.7.0 <1.8.0",
+      "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.7.0.tgz"
     },
     "underscore.string": {
       "version": "3.3.4",
