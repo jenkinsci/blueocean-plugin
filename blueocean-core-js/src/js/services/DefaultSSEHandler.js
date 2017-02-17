@@ -74,7 +74,7 @@ export class DefaultSSEHandler {
     queueEnter(event) {
         // Ignore the event if there's no branch name. Usually indicates
         // that the event is wrt MBP indexing.
-        if (!event.blueocean_job_branch_name) {
+        if (event.job_ismultibranch && !event.blueocean_job_branch_name) {
             return;
         }
 
