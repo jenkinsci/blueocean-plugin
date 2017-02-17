@@ -40,7 +40,7 @@ export class RunDetailsPipeline extends Component {
         const run = this.pager.data;
         // logger.warn('this.pager.data', this.pager.data);
         if(this.pager.isFreeStyle){
-            return (<FreeStyle {
+            return (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.freestyle.provider',
                         pager: this.pager,
@@ -51,7 +51,7 @@ export class RunDetailsPipeline extends Component {
                 } />);
         }
         if(this.pager.isPipeline) {
-            return (<Pipeline {
+            return (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.pipeline.provider',
                         pager: this.pager,
