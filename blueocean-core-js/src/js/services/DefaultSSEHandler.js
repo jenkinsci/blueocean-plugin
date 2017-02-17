@@ -72,6 +72,12 @@ export class DefaultSSEHandler {
         }
     }
     queueEnter(event) {
+        // Ignore the event if there's no branch name. Usually indicates
+        // that the event is wrt MBP indexing.
+        if (event.job_ismultibranch && !event.blueocean_job_branch_name) {
+            return;
+        }
+
         const queueId = event.job_run_queueId;
         const self = `${event.blueocean_job_rest_url}queue/${queueId}/`;
         const id = this.activityService.getExpectedBuildNumber(event);
