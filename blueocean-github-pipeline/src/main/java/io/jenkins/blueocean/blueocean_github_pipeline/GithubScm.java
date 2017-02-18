@@ -309,7 +309,7 @@ public class GithubScm extends Scm {
         }
     }
 
-    private User getAuthenticatedUser(){
+    static User getAuthenticatedUser(){
         User authenticatedUser = User.current();
         if(authenticatedUser == null){
             throw new ServiceException.UnauthorizedException("No logged in user found");
