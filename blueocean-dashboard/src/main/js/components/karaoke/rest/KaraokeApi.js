@@ -1,4 +1,5 @@
-import { Fetch, FetchFunctions, logging } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, logging } from '@jenkins-cd/blueocean-core-js';
+import { generateDetailUrl } from '../urls/detailUrl';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RestApi');
 
@@ -12,23 +13,25 @@ const fetchOptionsCommon = {
 };
 /**
  * Helper method to clone common fetchOptions
- * @param body - JSON object that we want to sent to the server
  * @returns {*} fetchOptions
  */
-function prepareOptions(body) {
+function prepareOptions() {
     const fetchOptions = Object.assign({}, fetchOptionsCommon);
     return fetchOptions;
 }
 export class KaraokeApi {
 
     /**
-     * Start a run with parameters
-     * @param href - the destination (ends normally with /runs/)
-     * @param parameters - the parameters we want to submit
+     * Get a run with runId and augment the capabilities
+     * @param {object} pipeline Pipeline that this pager belongs to.
+     * @param {string} branch the name of the branch we are requesting
+     * @param {string} runId Run that this pager belongs to.
      * @returns {*} Promise
      */
-    startRunWithParameters(href, parameters) {
-        const fetchOptions = prepareOptions({ parameters });
-        return Fetch.fetchJSON(href, { fetchOptions });
+    getRunWithId(pipeline, branch, runId) {
+        const fetchOptions = prepareOptions();
+        const href = generateDetailUrl(pipeline, branch, runId);
+        return Fetch.fetchJSON(href, { fetchOptions })
+            .then(data => capabilityAugmenter.augmentCapabilities(data));
     }
 }
