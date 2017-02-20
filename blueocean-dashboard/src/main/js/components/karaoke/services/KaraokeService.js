@@ -1,9 +1,7 @@
 import { BunkerService, logging } from '@jenkins-cd/blueocean-core-js';
 import { Pager } from './Pager';
-import { generateDetailUrl } from '../urls/detailUrl';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Service');
-
 /*
  * This class provides karaoke related services.
  *
@@ -23,7 +21,6 @@ export class KaraokeService extends BunkerService {
     pagerKey(pipeline, branch, runId) {
         return `Details/${pipeline.organization}-${pipeline.fullName}-${branch}-${runId}`;
     }
-
     /**
      * Gets the karaoke pager
      *
@@ -41,7 +38,6 @@ export class KaraokeService extends BunkerService {
             lazyPager: () => new Pager(this, pipeline, branch, runId),
         });
     }
-
     /**
      * Gets a detail from the store.
      *
@@ -51,7 +47,6 @@ export class KaraokeService extends BunkerService {
     }
 
     setItems(items) {
-        // debugger;
         this.setItem(items);
     }
 

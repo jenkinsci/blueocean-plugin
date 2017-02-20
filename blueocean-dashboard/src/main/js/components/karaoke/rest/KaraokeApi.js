@@ -1,4 +1,4 @@
-import { capabilityAugmenter, Fetch, logging } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, FetchFunctions, logging } from '@jenkins-cd/blueocean-core-js';
 import { generateDetailUrl } from '../urls/detailUrl';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RestApi');
@@ -31,7 +31,23 @@ export class KaraokeApi {
     getRunWithId(pipeline, branch, runId) {
         const fetchOptions = prepareOptions();
         const href = generateDetailUrl(pipeline, branch, runId);
+        logger.debug('Fetching href', href);
         return Fetch.fetchJSON(href, { fetchOptions })
             .then(data => capabilityAugmenter.augmentCapabilities(data));
+    }
+
+    /**
+     *
+     * @param {string} href The url we want to fetch
+     * @returns {*} Promise
+     */
+    getGeneralLog(href, fullLog) {
+        const fetchOptions = prepareOptions();
+        if (fullLog) {
+            // need to augment the url with ?start=0
+        }
+        logger.debug('Fetching href', href);
+        return Fetch.fetch(href, { fetchOptions })
+            .then(FetchFunctions.checkStatus);
     }
 }

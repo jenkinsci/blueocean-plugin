@@ -3,7 +3,6 @@ import {
     capable,
     doubleUriEncode,
     logging,
-    capabilityAugmenter,
 } from '@jenkins-cd/blueocean-core-js';
 
 import { MULTIBRANCH_PIPELINE } from '../../../Capabilities';

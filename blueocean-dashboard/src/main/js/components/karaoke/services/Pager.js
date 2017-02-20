@@ -1,8 +1,8 @@
-import { observable, action, computed } from 'mobx';
-import { logging, capable } from '@jenkins-cd/blueocean-core-js';
+import { action, computed, observable,  } from 'mobx';
+import { AppConfig, capable, logging, } from '@jenkins-cd/blueocean-core-js';
 
 import { KaraokeApi } from '../index';
-import { FREESTYLE_JOB, PIPELINE_JOB } from '../../../Capabilities';
+import { FREESTYLE_JOB, MULTIBRANCH_PIPELINE, PIPELINE_JOB } from '../../../Capabilities';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager');
 
@@ -18,25 +18,42 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager');
  */
 export class Pager {
     /**
-     * List of deisplayed items hrefs.
+     * The detail pager
      */
     @observable href;
     /**
-     * pager is fetching data.
+     * pager is fetching data. log and detail
+     * @type {boolean}
      */
     @observable pending = false;
+    @observable logPending = false;
     /**
      * Will be set in an error occurs.
+     * @type {object|null}
      */
     @observable error = null;
     /**
-     * The latest page the pager has fetched.
+     * Do we have a free style job?
+     * @type {boolean}
      */
-    @observable currentPage = 0;
-
     @observable isFreeStyle = false;
+    /**
+     * Do we have a pipeline job?
+     * @type {boolean}
+     */
     @observable isPipeline = false;
+    /**
+     * Do we have a multibranch pipeline job?
+     * @type {boolean}
+     */
+    @observable isMultiBranchPipeline = false;
+    /**
+     * What is the general log url?
+     * @type {string}
+     */
     @observable generalLogUrl;
+
+    @observable generalLogFileName;
 
     /**
      * Mobx computed value that creates an object. If either the  bunker changes,
@@ -47,8 +64,20 @@ export class Pager {
      * @type {object}
      */
     @computed
-    get data() {
+    get run() {
         return this.bunker.getItem(this.href);
+    }
+    /**
+     * Mobx computed value that creates an object. If either the  bunker changes,
+     * or the href change, this is recalculated and will trigger a react reaction.
+     *
+     * If item does not exist in bunker, then we just ignore it.
+     * @readonly
+     * @type {object}
+     */
+    @computed
+    get log() {
+        return this.bunker.getItem(this.generalLogUrl);
     }
     /**
      * Creates an instance of Pager and fetches the first page.
@@ -84,10 +113,16 @@ export class Pager {
                 logger.warn('saved data', saved);
                 // Append the new Href to the existing ones.
                 // debugger;
-                this.href = saved._links.self.href;
-                this.generalLogUrl = saved._links.log.href;
+                this.href =  prefixIfNeeded(saved._links.self.href);
+                this.generalLogUrl =  prefixIfNeeded(saved._links.log.href);
                 this.isFreeStyle = capable(saved, FREESTYLE_JOB);
                 this.isPipeline = capable(saved, PIPELINE_JOB);
+                this.isMultiBranchPipeline = capable(this.pipeline, MULTIBRANCH_PIPELINE);
+                if (this.isMultiBranchPipeline) {
+                    this.generalLogFileName = `${this.branch}-${this.runId}.txt`;
+                } else {
+                    this.generalLogFileName = `${this.runId}.txt`;
+                }
                 return this.isPipeline;
             }))
             .then(action('Process post data', isPipeline => {
@@ -96,8 +131,61 @@ export class Pager {
                 }
                 this.pending = false;
             })).catch(err => {
-                console.error('Error fetching page', err);
+                logger.error('Error fetching page', err);
                 action('set error', () => { this.error = err; });
             });
     }
+
+
+    /**
+     * Fetches the detail from the backend and set the data
+     *
+     * @returns {Promise}
+     */
+    @action
+    fetchGeneralLog(fullLog = false) {
+        // while fetching we are pending
+        this.logPending = true;
+        const logData = {
+            _links: {
+                self: {
+                    href: this.generalLogUrl,
+                },
+            },
+        };
+        // get api data and further process it
+        return KaraokeApi.getGeneralLog(this.generalLogUrl, fullLog)
+            .then(response => {
+                // Store item in bunker.
+                // By default only last 150 KB log data is returned in the response.
+                const maxLength = 150000;
+                const contentLength = Number(response.headers.get('X-Text-Size'));
+                const { newStart } = response;
+                // set flag that there are more logs then we deliver
+                let hasMore = contentLength > maxLength;
+                if (fullLog) {
+                    hasMore = false;
+                }
+                logData.hasMore = hasMore;
+                logData.newStart = newStart;
+                return response.text();
+            })
+            .then(action('Process pager data', text => {
+                debugger
+                // log is text and not json, further it does not has _link in the response
+                if (text && !!text.trim())  {
+                    logData.data = text.trim().split('\n');
+                }
+                const saved = this.bunker.setItem(logData);
+                logger.warn('saved data', saved);
+                this.logPending = false;
+            })).catch(err => {
+                logger.error('Error fetching page', err);
+                action('set error', () => { this.error = err; });
+            });
+    }
+}
+
+function prefixIfNeeded(url) {
+    return `${AppConfig.getJenkinsRootURL().replace(/\/$/, "")}${url}`;
 }

@@ -1,10 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { logging, } from '@jenkins-cd/blueocean-core-js';
+import { logging } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import Extensions from '@jenkins-cd/js-extensions';
-import { FreeStyle} from './karaoke/components/FreeStyle';
-import { Pipeline } from './karaoke/components/Pipeline';
-
 import { KaraokeService } from './karaoke/index';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetailsPipeline');
@@ -14,19 +11,20 @@ export class RunDetailsPipeline extends Component {
 
     componentWillMount() {
         if (this.props.params) {
-            this.generateUrl(this.props);
+            this.fetchData(this.props);
         }
     }
 
     componentWillReceiveProps(nextProps) {
+        debugger
         if (nextProps.params) {
-            this.generateUrl(nextProps);
+            this.fetchData(nextProps);
         }
     }
 
-    generateUrl(props) {
+    fetchData(props) {
         const { pipeline, params: { branch, runId } } = props;
-        logger.warn('debugger')
+        logger.warn('debugger');
         this.pager = KaraokeService.karaokePager(pipeline, branch, runId);
     }
 
