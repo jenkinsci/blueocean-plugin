@@ -16,7 +16,6 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        debugger
         if (nextProps.params) {
             this.fetchData(nextProps);
         }
@@ -24,77 +23,61 @@ export class RunDetailsPipeline extends Component {
 
     fetchData(props) {
         const { pipeline, params: { branch, runId } } = props;
-        logger.warn('debugger');
         this.pager = KaraokeService.karaokePager(pipeline, branch, runId);
     }
 
     render() {
-        logger.warn('this.props', this.props);
-        if(this.pager.pending) {
+        if (this.pager.pending) {
             logger.debug('abort due to pager pending');
             return null;
         }
-        const { pipeline, params: { branch, runId } } = this.props;
-        const run = this.pager.data;
-        // logger.warn('this.pager.data', this.pager.data);
-        if(this.pager.isFreeStyle){
+        const { pipeline, params: { branch, runId }, t } = this.props;
+        const { router, location } = this.context;
+        logger.warn('xxx', this.props);
+        const commonProps = {
+            pager: this.pager,
+            pipeline,
+            branch,
+            runId,
+            t,
+            router,
+            location,
+        };
+        if (this.pager.isFreeStyle) {
             return (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.freestyle.provider',
-                        pager: this.pager,
-                        pipeline,
-                        branch,
-                        runId,
+                        ...commonProps,
                     }
-                } />);
+                }
+            />);
         }
-        if(this.pager.isPipeline) {
+        if (this.pager.isPipeline) {
             return (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.pipeline.provider',
-                        pager: this.pager,
-                        pipeline,
-                        branch,
-                        runId,
+                        ...commonProps,
                     }
-            } />);
-
+                }
+            />);
         }
         return (
                 <div ref="scrollArea">
                     DOH type not supported
                 </div>
-            )
+            );
     }
-
 }
 
 RunDetailsPipeline.propTypes = {
     pipeline: PropTypes.object,
-    isMultiBranch: PropTypes.any,
     params: PropTypes.object,
-    result: PropTypes.object,
-    fileName: PropTypes.string,
-    url: PropTypes.string,
-    fetchNodes: PropTypes.func,
-    setNode: PropTypes.func,
-    fetchSteps: PropTypes.func,
-    removeStep: PropTypes.func,
-    removeLogs: PropTypes.func,
-    cleanNodePointer: PropTypes.func,
-    steps: PropTypes.object,
-    nodes: PropTypes.object,
-    nodeReducer: PropTypes.object,
     t: PropTypes.func,
 };
 
 RunDetailsPipeline.contextTypes = {
-    config: PropTypes.object.isRequired,
-    params: PropTypes.object,
-    pipeline: PropTypes.object,
     router: PropTypes.object.isRequired, // From react-router
     location: PropTypes.object.isRequired, // From react-router
 };
-
 
 export default RunDetailsPipeline;

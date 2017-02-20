@@ -19,7 +19,9 @@ export class KaraokeService extends BunkerService {
      * @returns {string} key for [@link PagerService]
      */
     pagerKey(pipeline, branch, runId) {
-        return `Details/${pipeline.organization}-${pipeline.fullName}-${branch}-${runId}`;
+        const key = `Details/${pipeline.organization}-${pipeline.fullName}-${branch}-${runId}`;
+        logger.debug('pagerKey:', key);
+        return key;
     }
     /**
      * Gets the karaoke pager

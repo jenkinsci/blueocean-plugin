@@ -1,10 +1,14 @@
-import { action, computed, observable,  } from 'mobx';
-import { AppConfig, capable, logging, } from '@jenkins-cd/blueocean-core-js';
+import { action, computed, observable } from 'mobx';
+import { AppConfig, capable, logging } from '@jenkins-cd/blueocean-core-js';
 
 import { KaraokeApi } from '../index';
 import { FREESTYLE_JOB, MULTIBRANCH_PIPELINE, PIPELINE_JOB } from '../../../Capabilities';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager');
+
+function prefixIfNeeded(url) {
+    return `${AppConfig.getJenkinsRootURL().replace(/\/$/, '')}${url}`;
+}
 
 /**
  * The pager fetches pages of data from the BlueOcean api. It fetches pages of data, then
@@ -110,11 +114,11 @@ export class Pager {
             .then(action('Process pager data', data => {
                 // Store item in bunker.
                 const saved = this.bunker.setItem(data);
-                logger.warn('saved data', saved);
                 // Append the new Href to the existing ones.
                 // debugger;
-                this.href =  prefixIfNeeded(saved._links.self.href);
-                this.generalLogUrl =  prefixIfNeeded(saved._links.log.href);
+                this.href = prefixIfNeeded(saved._links.self.href);
+                logger.debug('saved data', this.href);
+                this.generalLogUrl = prefixIfNeeded(saved._links.log.href);
                 this.isFreeStyle = capable(saved, FREESTYLE_JOB);
                 this.isPipeline = capable(saved, PIPELINE_JOB);
                 this.isMultiBranchPipeline = capable(this.pipeline, MULTIBRANCH_PIPELINE);
@@ -146,6 +150,7 @@ export class Pager {
     fetchGeneralLog(fullLog = false) {
         // while fetching we are pending
         this.logPending = true;
+        // log is text and not json, further it does not has _link in the response
         const logData = {
             _links: {
                 self: {
@@ -154,7 +159,7 @@ export class Pager {
             },
         };
         // get api data and further process it
-        return KaraokeApi.getGeneralLog(this.generalLogUrl, fullLog)
+        return KaraokeApi.getGeneralLog(this.generalLogUrl, { fullLog })
             .then(response => {
                 // Store item in bunker.
                 // By default only last 150 KB log data is returned in the response.
@@ -171,21 +176,13 @@ export class Pager {
                 return response.text();
             })
             .then(action('Process pager data', text => {
-                debugger
-                // log is text and not json, further it does not has _link in the response
-                if (text && !!text.trim())  {
-                    logData.data = text.trim().split('\n');
-                }
-                const saved = this.bunker.setItem(logData);
-                logger.warn('saved data', saved);
+                logData.data = text;
+                this.bunker.setItem(logData);
+                logger.debug('saved data', this.generalLogUrl);
                 this.logPending = false;
             })).catch(err => {
                 logger.error('Error fetching page', err);
                 action('set error', () => { this.error = err; });
             });
     }
-}
-
-function prefixIfNeeded(url) {
-    return `${AppConfig.getJenkinsRootURL().replace(/\/$/, "")}${url}`;
 }

@@ -41,13 +41,15 @@ export class KaraokeApi {
      * @param {string} href The url we want to fetch
      * @returns {*} Promise
      */
-    getGeneralLog(href, fullLog) {
+    getGeneralLog(href, { fullLog }) {
         const fetchOptions = prepareOptions();
+        let finalHref = href;
         if (fullLog) {
             // need to augment the url with ?start=0
+            finalHref += '?start=0';
         }
-        logger.debug('Fetching href', href);
-        return Fetch.fetch(href, { fetchOptions })
+        logger.debug('Fetching href', finalHref);
+        return Fetch.fetch(finalHref, { fetchOptions })
             .then(FetchFunctions.checkStatus);
     }
 }

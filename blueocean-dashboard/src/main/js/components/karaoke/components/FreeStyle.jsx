@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
-import { KaraokeService } from '../index';
 import LogConsole from '../../LogConsole';
 import LogToolbar from '../../LogToolbar';
 
@@ -16,41 +15,47 @@ export default class FreeStyle extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        debugger
+        debugger;
         if (nextProps.pager) {
             this.fetchData(nextProps);
         }
     }
 
     fetchData(props) {
-        const { pager} = props;
-        logger.warn('debugger');
-        pager.fetchGeneralLog();
+        const { pager, location } = props;
+        const fetchFullLog = location && location.query ? location.query.start === '0' : false;
+        logger.warn('debugger', { pager, location, fetchFullLog });
+        pager.fetchGeneralLog(fetchFullLog);
     }
 
     render() {
         logger.warn('props', this.props.pager.log);
-        const { pager } = this.props;
-        if(pager.logPending) {
+        const { pager, t, router, location } = this.props;
+        if (pager.logPending) {
             logger.debug('abort due to pager pending');
             return null;
         }
-        debugger
-        const logProps = {
-            hasMore: pager.log.hasMore,
-            logArray: pager.log.data,
-            ...this.props,
-            scrollToBottom: false,
-            key: pager.generalLogUrl,
-            t: (value) => value,
-        };
+        let logArray = [];
+        const { data, hasMore } = pager.log;
+        if (data && data.trim) {
+            logArray = data.trim().split('\n');
+        }
         return (<div>
             <LogToolbar
                 fileName={pager.generalLogFileName}
                 url={pager.generalLogUrl}
-                title={`title`}
+                title={t('rundetail.pipeline.logs', { defaultValue: 'Logs' })}
             />
-            <LogConsole {...logProps} />
+            <LogConsole {...{
+                logArray,
+                t,
+                router,
+                location,
+                hasMore,
+                scrollToBottom: false,
+                key: pager.generalLogUrl,
+            }}
+            />
         </div>);
     }
 }
@@ -60,4 +65,7 @@ FreeStyle.propTypes = {
     pipeline: PropTypes.object,
     branch: PropTypes.string,
     runId: PropTypes.string,
+    t: PropTypes.func,
+    router: PropTypes.shape,
+    location: PropTypes.shape,
 };
