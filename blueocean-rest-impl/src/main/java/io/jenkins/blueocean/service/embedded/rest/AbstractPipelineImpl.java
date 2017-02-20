@@ -374,7 +374,12 @@ public class AbstractPipelineImpl extends BluePipeline {
             // encoded. This will be a no-op if the string is not encoded.
             string = URLDecoder.decode(string, "UTF-8");
             // And encode ...
-            return URLEncoder.encode(string, "UTF-8");
+            string = URLEncoder.encode(string, "UTF-8");
+            // The Java URLEncoder encodes spaces as "+", while the javascript
+            // encodeURIComponent function encodes them as "%20". We need to make them
+            // consistent with how it's done in encodeURIComponent, so replace the
+            // "+" with "%20".
+            return string.replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Unexpected exception re-encoding the pipeline name.", e);
         }
