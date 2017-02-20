@@ -14,6 +14,7 @@ import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
+import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
@@ -37,11 +38,7 @@ import org.kohsuke.stapler.verb.DELETE;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -149,7 +146,7 @@ public class AbstractPipelineImpl extends BluePipeline {
         // The name part of the fullName can contain unencoded characters
         // if the Job was programmatically created, causing screwups
         // when mapping those URLs to Blue Ocean web/rest URLs. See JENKINS-41425.
-        return reconstructJobNamePath(job.getName(), job.getFullName(), "/");
+        return BlueUrlTokenizer.reconstructJobNamePath(job.getName(), job.getFullName());
     }
 
     @Override
@@ -189,50 +186,10 @@ public class AbstractPipelineImpl extends BluePipeline {
             // Slight optimization to eliminate multiple calls to reconstructJobNamePath().
             // See AbstractPipelineImpl.getFullName() and how it calls reconstructJobNamePath().
             AbstractPipelineImpl abstractPipeline = (AbstractPipelineImpl) pipeline;
-            return reconstructJobNamePath(abstractPipeline.job.getName(), abstractPipeline.job.getFullName(), "/pipelines/");
+            return BlueUrlTokenizer.reconstructJobNamePath(abstractPipeline.job.getName(), abstractPipeline.job.getFullName(), "/pipelines/");
         } else {
-            return reconstructJobNamePath(pipeline.getName(), pipeline.getFullName(), "/pipelines/");
+            return BlueUrlTokenizer.reconstructJobNamePath(pipeline.getName(), pipeline.getFullName(), "/pipelines/");
         }
-    }
-
-    private static String reconstructJobNamePath(String name, String fullName, String separator){
-        StringBuilder pipelinePath = new StringBuilder();
-        String fullPath;
-        List<String> pathTokens;
-
-        //
-        // The Job "fullName" is typically suffixed with the "name".
-        // The name is NOT part of the path to the job, so lets remove
-        // it from the fullName before we parse and reconstruct the path.
-        // This, along with reencoding of the name, helps us to eliminate
-        // the problems where a Job is programatically created with a name
-        // that's not URL encoded and contains characters that should be
-        // encoded e.g. slashes (see JENKINS-41425).
-        //
-        if (fullName.endsWith(name)) {
-            fullPath = fullName.substring(0, fullName.length() - name.length());
-            pathTokens = new ArrayList<>();
-            pathTokens.addAll(Arrays.asList(fullPath.split("/")));
-            pathTokens.add(urlReencode(name));
-        } else {
-            fullPath = fullName;
-            pathTokens = Arrays.asList(fullPath.split("/"));
-        }
-
-        for (String n : pathTokens) {
-            if (n.length() == 0) {
-                // Ignore empty strings. Can be caused by
-                // leading/trailing slashes.
-                continue;
-            }
-            // Don't add the separator to the start of the path.
-            if(pipelinePath.length() > 0){
-                pipelinePath.append(separator);
-            }
-            pipelinePath.append(n);
-        }
-
-        return pipelinePath.toString();
     }
 
     @Override
@@ -360,28 +317,4 @@ public class AbstractPipelineImpl extends BluePipeline {
         return user != null && Favorites.isFavorite(user, job);
     }
 
-    /**
-     * Re-encode the supplied string.
-     * <p>
-     * Use this on strings that may already be encoded, but are not guaranteed to
-     * be e.g. Job names (see JENKINS-41425).
-     * @param string The string to be re-encoded.
-     * @return The re-encoded string.
-     */
-    private static String urlReencode(String string) {
-        try {
-            // Decode the string in case it's already encoded, or partially
-            // encoded. This will be a no-op if the string is not encoded.
-            string = URLDecoder.decode(string, "UTF-8");
-            // And encode ...
-            string = URLEncoder.encode(string, "UTF-8");
-            // The Java URLEncoder encodes spaces as "+", while the javascript
-            // encodeURIComponent function encodes them as "%20". We need to make them
-            // consistent with how it's done in encodeURIComponent, so replace the
-            // "+" with "%20".
-            return string.replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("Unexpected exception re-encoding the pipeline name.", e);
-        }
-    }
 }

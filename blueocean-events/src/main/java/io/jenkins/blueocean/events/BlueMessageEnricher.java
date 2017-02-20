@@ -26,6 +26,7 @@ package io.jenkins.blueocean.events;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
+import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
@@ -62,9 +63,10 @@ public class BlueMessageEnricher extends MessageEnricher {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
             Item jobChannelItem = jobChannelMessage.getJobChannelItem();
             Link jobUrl = LinkResolver.resolveLink(jobChannelItem);
+            String fullJobName = BlueUrlTokenizer.reconstructJobNamePath(jobChannelItem.getName(), jobChannelItem.getFullName());
 
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
-            jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, jobChannelItem.getFullName());
+            jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, fullJobName);
             if (jobChannelItem instanceof WorkflowJob) {
                 ItemGroup<? extends Item> parent = jobChannelItem.getParent();
                 if (parent instanceof WorkflowMultiBranchProject) {
