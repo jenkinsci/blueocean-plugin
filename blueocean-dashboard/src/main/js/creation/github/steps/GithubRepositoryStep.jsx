@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { List } from '@jenkins-cd/design-language';
+import { FilterableList } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
 
@@ -51,11 +51,12 @@ export default class GithubRepositoryStep extends React.Component {
 
                 { flowManager.selectableRepositories.length > 0 &&
                 <div className="container">
-                    <List
+                    <FilterableList
                       className="repo-list"
                       data={sortedRepos}
                       onItemSelect={(idx, repo) => this.selectRepository(repo)}
                       labelFunction={repo => repo.name}
+                      filterFunction={(text, repo) => repo.name.toLowerCase().indexOf(text) !== -1}
                     />
 
                     <button
