@@ -14,6 +14,7 @@ import { ToastDrawer } from './components/ToastDrawer';
 import { BackendConnectFailure } from './components/BackendConnectFailure';
 import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
+import { Icon } from '@jenkins-cd/react-material-icons';
 useStrict(true);
 
 const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
@@ -81,7 +82,10 @@ class App extends Component {
         ];
 
         const userComponents = [
-            <div className="button-bar layout-small inverse">
+            <div className="user-component icon">
+                <Icon icon="exit_to_app" />
+            </div>,
+            <div className="user-component button-bar layout-small inverse">
                 { loginOrLogout(translate) }
             </div>
         ];
