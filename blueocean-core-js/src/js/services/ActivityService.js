@@ -31,13 +31,13 @@ export class ActivityService extends BunkerService {
      * @param {string} pipeline Pipeline that this pager belongs to.
      * @returns {Pager} Pager for this pipelne.
      */
-    activityPager(organization, pipeline) {
+    activityPager(organization, pipeline, branch) {
         return this.pagerService.getPager({
-            key: this.pagerKey(organization, pipeline),
+            key: this.pagerKey(organization, pipeline) + '-' + branch,
             /**
              * Lazily generate the pager incase its needed.
              */
-            lazyPager: () => new Pager(RestPaths.activities(organization, pipeline), 25, this),
+            lazyPager: () => new Pager(RestPaths.activities(organization, pipeline, branch), 25, this),
         });
     }
 

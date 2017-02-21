@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.75",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.75",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.75.tgz"
+      "version": "0.0.75-kz-1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.75-kz-1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.75-kz-1.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.116",
@@ -2239,6 +2239,11 @@
       "from": "doctrine@>=1.2.2 <2.0.0",
       "resolved": "https://registry.npmjs.org/doctrine/-/doctrine-1.5.0.tgz",
       "dev": true
+    },
+    "dom-scroll-into-view": {
+      "version": "1.0.1",
+      "from": "dom-scroll-into-view@1.0.1",
+      "resolved": "https://registry.npmjs.org/dom-scroll-into-view/-/dom-scroll-into-view-1.0.1.tgz"
     },
     "dom-serializer": {
       "version": "0.1.0",
@@ -6669,6 +6674,11 @@
       "version": "15.3.2",
       "from": "react-addons-update@15.3.2",
       "resolved": "https://registry.npmjs.org/react-addons-update/-/react-addons-update-15.3.2.tgz"
+    },
+    "react-autocomplete": {
+      "version": "1.4.0",
+      "from": "react-autocomplete@latest",
+      "resolved": "https://registry.npmjs.org/react-autocomplete/-/react-autocomplete-1.4.0.tgz"
     },
     "react-dom": {
       "version": "15.3.2",

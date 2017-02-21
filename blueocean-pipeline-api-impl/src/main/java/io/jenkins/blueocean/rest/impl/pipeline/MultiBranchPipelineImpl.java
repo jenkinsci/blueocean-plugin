@@ -34,6 +34,9 @@ import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
+
+import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.json.JsonBody;
 
@@ -247,12 +250,28 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             public Iterator<BlueRun> iterator(int start, int limit) {
                 List<BlueRun> c = new ArrayList<>();
 
-                List<BluePipeline> branches = Lists.newArrayList(getBranches().list());
+                List<BluePipeline> branches;
+                
+                // Check for branch filter
+                StaplerRequest req = Stapler.getCurrentRequest();
+                String branchFilter = null;
+                if (req != null) {
+                    branchFilter = req.getParameter("branch");
+                }
+                
+                if (!StringUtils.isEmpty(branchFilter)) {
+                    BluePipeline pipeline = getBranches().get(branchFilter);
+                    if (pipeline != null) {
+                        branches = Collections.singletonList(pipeline);
+                    } else {
+                        branches = Collections.emptyList();
+                    }
+                } else {
+                    branches = Lists.newArrayList(getBranches().list());
+                    sortBranchesByLatestRun(branches);
+                }
 
-
-                sortBranchesByLatestRun(branches);
-
-                for(final BluePipeline b: getBranches()) {
+                for(final BluePipeline b: branches) {
                     Iterator<BlueRun> it = b.getRuns().iterator(0,MAX_MBP_RUNS_ROWS);
                     int count = 0;
                     Iterators.skip(it, start);
