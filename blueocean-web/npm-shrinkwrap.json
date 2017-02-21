@@ -3,15 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-<<<<<<< HEAD
-      "version": "0.0.75-kz-1",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.75-kz-1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.75-kz-1.tgz"
-=======
-      "version": "0.0.76",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.76",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.76.tgz"
->>>>>>> primary/master
+      "version": "0.0.76-kz-2",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.76-kz-2",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.76-kz-2.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.116",
