@@ -81,9 +81,11 @@ class App extends Component {
             <AdminLink t={translate} />,
         ];
 
+        let classicUrl = UrlConfig.getJenkinsRootURL();
+
         const userComponents = [
             <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
-                <Icon icon="exit_to_app" />
+                <a href={classicUrl}><Icon icon="exit_to_app" /></a>
             </div>,
             <div className="user-component button-bar layout-small inverse">
                 { loginOrLogout(translate) }
