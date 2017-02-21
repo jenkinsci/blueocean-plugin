@@ -14,32 +14,26 @@ export default class FreeStyle extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        debugger;
-        if (nextProps.pager) {
-            this.fetchData(nextProps);
-        }
+    componentWillUnmount() {
+        this.props.pager.clear();
     }
 
     fetchData(props) {
-        const { pager, location } = props;
-        const fetchFullLog = location && location.query ? location.query.start === '0' : false;
-        logger.warn('debugger', { pager, location, fetchFullLog });
-        pager.fetchGeneralLog(fetchFullLog);
+        const { pager, location, followAlong } = props;
+        const pagerLogStart = pager.log ? pager.log.newStart : null;
+        const start = location && location.query ? location.query.start : pagerLogStart;
+        logger.warn('debugger', { pager, location, start });
+        pager.fetchGeneralLog({ start, followAlong });
     }
 
     render() {
-        logger.warn('props', this.props.pager.log);
-        const { pager, t, router, location } = this.props;
+        const { pager, t, router, location, followAlong, scrollToBottom } = this.props;
         if (pager.logPending) {
             logger.debug('abort due to pager pending');
             return null;
         }
-        let logArray = [];
-        const { data, hasMore } = pager.log;
-        if (data && data.trim) {
-            logArray = data.trim().split('\n');
-        }
+        const { data: logArray, hasMore } = pager.log;
+        logger.warn('props', scrollToBottom, this.props.pager.log.newStart, followAlong);
         return (<div>
             <LogToolbar
                 fileName={pager.generalLogFileName}
@@ -47,12 +41,12 @@ export default class FreeStyle extends Component {
                 title={t('rundetail.pipeline.logs', { defaultValue: 'Logs' })}
             />
             <LogConsole {...{
-                logArray,
                 t,
                 router,
                 location,
                 hasMore,
-                scrollToBottom: false,
+                scrollToBottom,
+                logArray,
                 key: pager.generalLogUrl,
             }}
             />
@@ -68,4 +62,6 @@ FreeStyle.propTypes = {
     t: PropTypes.func,
     router: PropTypes.shape,
     location: PropTypes.shape,
+    followAlong: PropTypes.bol,
+    scrollToBottom: PropTypes.bol,
 };

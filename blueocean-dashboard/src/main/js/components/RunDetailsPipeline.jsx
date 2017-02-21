@@ -9,15 +9,15 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetails
 @observer
 export class RunDetailsPipeline extends Component {
 
+    constructor(props) {
+        super(props);
+        // we do not want to follow any builds that are finished
+        this.state = { followAlong: props && props.result && props.result.state !== 'FINISHED' || false };
+    }
+
     componentWillMount() {
         if (this.props.params) {
             this.fetchData(this.props);
-        }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.params) {
-            this.fetchData(nextProps);
         }
     }
 
@@ -33,9 +33,10 @@ export class RunDetailsPipeline extends Component {
         }
         const { pipeline, params: { branch, runId }, t } = this.props;
         const { router, location } = this.context;
-        logger.warn('xxx', this.props);
         const commonProps = {
+            scrollToBottom: this.state.followAlong || (this.pager.run && this.pager.run.result === 'FAILURE'),
             pager: this.pager,
+            followAlong: this.state.followAlong,
             pipeline,
             branch,
             runId,
@@ -43,6 +44,7 @@ export class RunDetailsPipeline extends Component {
             router,
             location,
         };
+        logger.warn('xxx', this.props, commonProps);
         if (this.pager.isFreeStyle) {
             return (<Extensions.Renderer {
                     ...{
@@ -71,6 +73,7 @@ export class RunDetailsPipeline extends Component {
 
 RunDetailsPipeline.propTypes = {
     pipeline: PropTypes.object,
+    result: PropTypes.object,
     params: PropTypes.object,
     t: PropTypes.func,
 };

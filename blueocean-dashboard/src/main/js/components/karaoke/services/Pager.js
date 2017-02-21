@@ -115,7 +115,6 @@ export class Pager {
                 // Store item in bunker.
                 const saved = this.bunker.setItem(data);
                 // Append the new Href to the existing ones.
-                // debugger;
                 this.href = prefixIfNeeded(saved._links.self.href);
                 logger.debug('saved data', this.href);
                 this.generalLogUrl = prefixIfNeeded(saved._links.log.href);
@@ -147,7 +146,8 @@ export class Pager {
      * @returns {Promise}
      */
     @action
-    fetchGeneralLog(fullLog = false) {
+    fetchGeneralLog({ start, followAlong }) {
+        clearTimeout(this.timeout);
         // while fetching we are pending
         this.logPending = true;
         // log is text and not json, further it does not has _link in the response
@@ -159,30 +159,82 @@ export class Pager {
             },
         };
         // get api data and further process it
-        return KaraokeApi.getGeneralLog(this.generalLogUrl, { fullLog })
+        return KaraokeApi.getGeneralLog(this.generalLogUrl, { start })
             .then(response => {
-                // Store item in bunker.
-                // By default only last 150 KB log data is returned in the response.
-                const maxLength = 150000;
-                const contentLength = Number(response.headers.get('X-Text-Size'));
-                const { newStart } = response;
-                // set flag that there are more logs then we deliver
-                let hasMore = contentLength > maxLength;
-                if (fullLog) {
-                    hasMore = false;
-                }
-                logData.hasMore = hasMore;
+                const { newStart, hasMore } = response;
+                logger.warn({ newStart, hasMore });
+                logData.hasMore = start === '0' ? false : hasMore;
                 logData.newStart = newStart;
                 return response.text();
             })
             .then(action('Process pager data', text => {
-                logData.data = text;
+                if (text && text.trim) {
+                    logData.data = text.trim().split('\n');
+                }
+                // Store item in bunker.
                 this.bunker.setItem(logData);
-                logger.debug('saved data', this.generalLogUrl);
+                logger.debug('saved data', this.generalLogUrl, logData.newStart, followAlong);
                 this.logPending = false;
+                if (Number(logData.newStart) > 0 && followAlong) {
+                    // kill current  timeout if any
+                    clearTimeout(this.timeout);
+                    // we need to get mpre input from the log stream
+                    this.timeout = setTimeout(() => {
+                        const props = { start: logData.newStart, followAlong };
+                        logger.warn(props);
+                        this.followGeneralLog(logData);
+                    }, 1000);
+                }
             })).catch(err => {
                 logger.error('Error fetching page', err);
                 action('set error', () => { this.error = err; });
             });
+    }
+
+    /**
+     * Fetches the detail from the backend and set the data
+     *
+     * @returns {Promise}
+     */
+    @action
+    followGeneralLog(logDataOrg) {
+        clearTimeout(this.timeout);
+        const logData = { ...logDataOrg };
+        // update link to trigger adding a new part of the log to the partial object
+        // logData._links.self.href = `${this.generalLogUrl}?start=${logData.newStart}`;
+        // while fetching we are pending
+        this.logPending = true;
+        logger.warn('changed ref', logData._links.self.href);
+        return KaraokeApi.getGeneralLog(this.generalLogUrl, { start: logData.newStart })
+            .then(action('Process pager data following 1', response => {
+                const { newStart, hasMore } = response;
+                logger.warn({ newStart, hasMore });
+                logData.newStart = response.newStart;
+                return response.text();
+            }))
+            .then(action('Process pager data following 2', text => {
+                if (text && text.trim) {
+                    logData.data = logData.data.concat(text.trim().split('\n'));
+                }
+                // Store item in bunker.
+                this.bunker.setItem(logData);
+                logger.debug('saved data', this.generalLogUrl, logData.newStart);
+                this.logPending = false;
+                if (logData.newStart !== null) {
+                    // kill current  timeout if any
+                    // we need to get mpre input from the log stream
+                    this.timeout = setTimeout(() => {
+                        this.followGeneralLog(logData);
+                    }, 1000);
+                }
+            })).catch(err => {
+                logger.error('Error fetching page', err);
+                action('set error', () => { this.error = err; });
+            });
+    }
+
+
+    clear() {
+        clearTimeout(this.timeout);
     }
 }

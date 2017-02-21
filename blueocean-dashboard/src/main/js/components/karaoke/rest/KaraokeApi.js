@@ -19,6 +19,34 @@ function prepareOptions() {
     const fetchOptions = Object.assign({}, fetchOptionsCommon);
     return fetchOptions;
 }
+
+function parseMoreDataHeader(response) {
+    let newStart = null;
+    /*
+     * If X-More-Data is true, then client should repeat the request after some delay.
+     * In the repeated request it should use X-TEXT-SIZE header value with start query parameter.
+     */
+    if (response.headers.get('X-More-Data')) {
+        /*
+         * X-TEXT-SIZE is the byte offset of the raw log file client should use in the next request
+         * as value of start query parameter.
+         */
+        newStart = response.headers.get('X-TEXT-SIZE');
+    }
+    response.newStart = newStart;  // eslint-disable-line
+    return response;
+}
+
+function parseNewStart(response) {
+    // By default only last 150 KB log data is returned in the response.
+    const maxLength = 150000;
+    const contentLength = Number(response.headers.get('X-Text-Size'));
+    // set flag that there are more logs then we deliver
+    const hasMore = contentLength > maxLength;
+    response.hasMore = hasMore; // eslint-disable-line
+    return response;
+}
+
 export class KaraokeApi {
 
     /**
@@ -41,15 +69,13 @@ export class KaraokeApi {
      * @param {string} href The url we want to fetch
      * @returns {*} Promise
      */
-    getGeneralLog(href, { fullLog }) {
+    getGeneralLog(href, { start }) {
         const fetchOptions = prepareOptions();
-        let finalHref = href;
-        if (fullLog) {
-            // need to augment the url with ?start=0
-            finalHref += '?start=0';
-        }
-        logger.debug('Fetching href', finalHref);
+        const finalHref = start ? `${href}?start=${start}` : href;
+        logger.debug('Fetching href', finalHref, start);
         return Fetch.fetch(finalHref, { fetchOptions })
-            .then(FetchFunctions.checkStatus);
+            .then(FetchFunctions.checkStatus)
+            .then(parseMoreDataHeader)
+            .then(parseNewStart);
     }
 }
