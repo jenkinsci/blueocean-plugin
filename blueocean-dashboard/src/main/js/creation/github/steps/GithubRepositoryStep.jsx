@@ -15,6 +15,17 @@ export default class GithubRepositoryStep extends React.Component {
         this.props.flowManager.saveSingleRepo();
     }
 
+    _getLoadingMessage() {
+        const { repositoriesLoading } = this.props.flowManager;
+        const count = this.props.flowManager.repositories.length;
+
+        if (repositoriesLoading) {
+            return `Loading Repositories... ${count} so far.`;
+        }
+
+        return `Loaded ${count} repositories.`;
+    }
+
     _exit() {
         this.props.flowManager.completeFlow();
     }
@@ -31,9 +42,14 @@ export default class GithubRepositoryStep extends React.Component {
         const orgName = flowManager.selectedOrganization.name;
         const existingPipelineCount = flowManager.existingPipelineCount;
         const sortedRepos = flowManager.selectableRepositories.slice().sort(this._sortRepos);
+        const loading = flowManager.repositoriesLoading;
 
         return (
-            <FlowStep {...this.props} className="github-repo-list-step" title={title} disabled={disabled}>
+            <FlowStep {...this.props} className="github-repo-list-step" title={title} loading={loading} disabled={disabled}>
+                <div className="loading-msg">
+                    { this._getLoadingMessage()}
+                </div>
+
                 { flowManager.existingAutoDiscover &&
                 <div>
                     <p className="instructions">
