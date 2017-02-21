@@ -48,7 +48,7 @@ NotSupported.propTypes = {
 export class PullRequests extends Component {
     componentWillMount() {
         if (this.props.pipeline && this.props.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
-            this.pager = this.context.pipelineService.prPager(this.props.params.organization, this.props.params.pipeline);
+            this.augmenter = this.context.pipelineService.prPager(this.props.params.organization, this.props.params.pipeline);
         }
     }
 
@@ -59,13 +59,13 @@ export class PullRequests extends Component {
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
             return (<NotSupported t={t} />);
         }
-        const pullRequests = this.pager.data;
+        const pullRequests = this.augmenter.data;
 
-        if (this.pager.pending) {
+        if (this.augmenter.pending) {
             return <PageLoading />;
         }
 
-        if (!this.pager.pending && !this.pager.data.length) {
+        if (!this.augmenter.pending && !this.augmenter.data.length) {
             return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
         }
 
@@ -88,7 +88,7 @@ export class PullRequests extends Component {
         return (
             <main>
                 <article>
-                    {this.pager.pending && <PageLoading />}
+                    {this.augmenter.pending && <PageLoading />}
                     <Table className="pr-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
                         {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
@@ -101,9 +101,9 @@ export class PullRequests extends Component {
                             />);
                         })}
                     </Table>
-                    {this.pager &&
-                        <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
-                            {this.pager.pending ? 'Loading...' : 'Show More'}
+                    {this.augmenter &&
+                        <button disabled={this.augmenter.pending || !this.augmenter.hasMore} className="btn-show-more btn-secondary" onClick={() => this.augmenter.fetchNextPage()}>
+                            {this.augmenter.pending ? 'Loading...' : 'Show More'}
                         </button>
                     }
                 </article>

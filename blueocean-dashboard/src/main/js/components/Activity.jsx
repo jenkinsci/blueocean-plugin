@@ -48,13 +48,13 @@ export class Activity extends Component {
         if (this.context.params) {
             const organization = this.context.params.organization;
             const pipeline = this.context.params.pipeline;
-            this.pager = this.context.activityService.activityPager(organization, pipeline);
+            this.augmenter = this.context.activityService.activityPager(organization, pipeline);
         }
     }
 
     render() {
         const { pipeline, t, locale } = this.props;
-        const runs = this.pager.data;
+        const runs = this.augmenter.data;
         if (!pipeline) {
             return null;
         }
@@ -66,7 +66,7 @@ export class Activity extends Component {
         // the Branches/PRs tab.
         const showRunButton = !isMultiBranchPipeline;
 
-        if (!this.pager.pending && (!runs || !runs.length)) {
+        if (!this.augmenter.pending && (!runs || !runs.length)) {
             return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
         }
 
@@ -105,7 +105,7 @@ export class Activity extends Component {
         ];
 
         return (<main>
-            {this.pager.pending && <PageLoading />}
+            {this.augmenter.pending && <PageLoading />}
             <article className="activity">
                 { showRunButton &&
                     <RunButton
@@ -144,8 +144,8 @@ export class Activity extends Component {
                 }
 
                 { runs && runs.length > 0 &&
-                    <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
-                        {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
+                    <button disabled={this.augmenter.pending || !this.augmenter.hasMore} className="btn-show-more btn-secondary" onClick={() => this.augmenter.fetchNextPage()}>
+                        {this.augmenter.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
                     </button>
                 }
             </article>

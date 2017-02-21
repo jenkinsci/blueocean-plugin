@@ -28,16 +28,17 @@ export class KaraokeService extends BunkerService {
      *
      * @param {object} pipeline Pipeline that this pager belongs to.
      * @param {string} branch the name of the branch we are requesting
-     * @param {string} runId Run that this pager belongs to.
+     * @param {string} run Run that this pager belongs to.
      * @returns {Pager} Pager for this pipelne.
      */
-    karaokePager(pipeline, branch, runId) {
+    karaokePager(augmenter, followAlong) {
+        const {pipeline, branch, run} = augmenter;
         return this.pagerService.getPager({
-            key: this.pagerKey(pipeline, branch, runId),
+            key: this.pagerKey(pipeline, branch, run.id),
             /**
-             * Lazily generate the pager incase its needed.
+             * Lazily generate the pager in case its needed.
              */
-            lazyPager: () => new Pager(this, pipeline, branch, runId),
+            lazyPager: () => new Pager(this, augmenter, followAlong),
         });
     }
     /**

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
+import { KaraokeService } from '../index';
 import LogConsole from '../../LogConsole';
 import LogToolbar from '../../LogToolbar';
 
@@ -9,35 +10,34 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.FreeStyle'
 @observer
 export default class FreeStyle extends Component {
     componentWillMount() {
-        if (this.props.pager) {
+        if (this.props.augmenter) {
             this.fetchData(this.props);
         }
     }
 
     componentWillUnmount() {
-        this.props.pager.clear();
+        this.props.augmenter.clear();
     }
 
     fetchData(props) {
-        const { pager, location, followAlong } = props;
-        const pagerLogStart = pager.log ? pager.log.newStart : null;
-        const start = location && location.query ? location.query.start : pagerLogStart;
-        logger.warn('debugger', { pager, location, start });
-        pager.fetchGeneralLog({ start, followAlong });
+        const { augmenter, followAlong } = props;
+        //const start = location && location.query ? location.query.start : null;
+        // logger.warn('debugger', { augmenter, location, start });
+        this.pager = KaraokeService.karaokePager(augmenter, followAlong);
     }
 
     render() {
-        const { pager, t, router, location, followAlong, scrollToBottom } = this.props;
-        if (pager.logPending) {
+        const { t, router, location, followAlong, scrollToBottom } = this.props;
+        if (this.pager.pending) {
             logger.debug('abort due to pager pending');
             return null;
         }
-        const { data: logArray, hasMore } = pager.log;
-        logger.warn('props', scrollToBottom, this.props.pager.log.newStart, followAlong);
+        const { data: logArray, hasMore } = this.pager.log;
+        logger.warn('props', scrollToBottom, this.pager.log.newStart, followAlong);
         return (<div>
             <LogToolbar
-                fileName={pager.generalLogFileName}
-                url={pager.generalLogUrl}
+                fileName={this.pager.generalLogFileName}
+                url={this.pager.generalLogUrl}
                 title={t('rundetail.pipeline.logs', { defaultValue: 'Logs' })}
             />
             <LogConsole {...{
@@ -47,7 +47,7 @@ export default class FreeStyle extends Component {
                 hasMore,
                 scrollToBottom,
                 logArray,
-                key: pager.generalLogUrl,
+                key: this.pager.generalLogUrl,
             }}
             />
         </div>);
@@ -55,10 +55,10 @@ export default class FreeStyle extends Component {
 }
 
 FreeStyle.propTypes = {
-    pager: PropTypes.object,
+    augmenter: PropTypes.object,
     pipeline: PropTypes.object,
     branch: PropTypes.string,
-    runId: PropTypes.string,
+    run: PropTypes.object,
     t: PropTypes.func,
     router: PropTypes.shape,
     location: PropTypes.shape,

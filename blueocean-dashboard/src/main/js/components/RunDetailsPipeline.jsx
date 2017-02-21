@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import Extensions from '@jenkins-cd/js-extensions';
-import { KaraokeService } from './karaoke/index';
+import { Augmenter } from './karaoke/services/Augmenter';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetailsPipeline');
 
@@ -17,35 +17,31 @@ export class RunDetailsPipeline extends Component {
 
     componentWillMount() {
         if (this.props.params) {
-            this.fetchData(this.props);
+            this.augment(this.props);
         }
     }
 
-    fetchData(props) {
-        const { pipeline, params: { branch, runId } } = props;
-        this.pager = KaraokeService.karaokePager(pipeline, branch, runId);
+    augment(props) {
+        const { result: run, pipeline, params: { branch } } = props;
+        this.augmenter = new Augmenter(pipeline, branch, run);
     }
 
     render() {
-        if (this.pager.pending) {
-            logger.debug('abort due to pager pending');
-            return null;
-        }
-        const { pipeline, params: { branch, runId }, t } = this.props;
+        const { result: run, pipeline, params: { branch }, t } = this.props;
         const { router, location } = this.context;
         const commonProps = {
-            scrollToBottom: this.state.followAlong || (this.pager.run && this.pager.run.result === 'FAILURE'),
-            pager: this.pager,
+            scrollToBottom: this.state.followAlong || (run && run.result === 'FAILURE'),
+            augmenter: this.augmenter,
             followAlong: this.state.followAlong,
+            t,
+            run,
             pipeline,
             branch,
-            runId,
-            t,
             router,
             location,
         };
         logger.warn('xxx', this.props, commonProps);
-        if (this.pager.isFreeStyle) {
+        if (this.augmenter.isFreeStyle) {
             return (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.freestyle.provider',
@@ -54,7 +50,7 @@ export class RunDetailsPipeline extends Component {
                 }
             />);
         }
-        if (this.pager.isPipeline) {
+        if (this.augmenter.isPipeline) {
             return (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.pipeline.provider',

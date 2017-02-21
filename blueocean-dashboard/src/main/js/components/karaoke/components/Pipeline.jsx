@@ -10,7 +10,7 @@ export default class Pipeline extends Component {
     render() {
         logger.warn('props', this.props);
         return (<div ref="scrollArea">
-            Invoke PipelineComponent now  pager: {this.props.pager.isPipeline}
+            Invoke PipelineComponent now  pager: {this.props.augmenter.isPipeline}
         </div>);
     }
 }
