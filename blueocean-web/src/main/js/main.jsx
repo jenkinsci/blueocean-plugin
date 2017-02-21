@@ -82,7 +82,7 @@ class App extends Component {
         ];
 
         const userComponents = [
-            <div className="user-component icon">
+            <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
                 <Icon icon="exit_to_app" />
             </div>,
             <div className="user-component button-bar layout-small inverse">
