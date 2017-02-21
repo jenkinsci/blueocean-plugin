@@ -1,9 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    TextInput,
-    Dropdown,
-  } from '@jenkins-cd/design-language';
-import { Icon } from '@jenkins-cd/react-material-icons'; 
+import { Icon } from '@jenkins-cd/react-material-icons';
 import Autocomplete from 'react-autocomplete';
 
 /**
@@ -16,18 +12,14 @@ export class ColumnFilter extends Component {
     }
     
     componentWillReceiveProps(newProps) {
-        if (this.state.value != newProps.value) {
+        if (this.state.value !== newProps.value) {
             this.setState({ value: newProps.value });
         }
     }
     
-    clearInput() {
-        this.onChange({type:'select'}, '');
-    }
-    
     onChange(event, value) {
         const { onChange } = this.props;
-        this.setState({value: value});
+        this.setState({ value });
         // only update on enter press or click
         if (event.type === 'select'
             || event.type === 'blur'
@@ -36,13 +28,17 @@ export class ColumnFilter extends Component {
         }
     }
     
+    clearInput() {
+        this.onChange({ type: 'select' }, '');
+    }
+    
     focus(e) {
-        this.setState({focused: true});
+        this.setState({ focused: true });
         e.target.select();
     }
     
     blur() {
-        this.setState({focused: false});
+        this.setState({ focused: false });
     }
     
     // hack due to strange behavior of triggering onChange from autocomplete when
@@ -63,38 +59,37 @@ export class ColumnFilter extends Component {
         const { placeholder, options } = this.props;
         const { value, focused } = this.state;
 
-        const style = {position: 'absolute'};
         return (<div className={`ColumnFilter ${value ? '' : 'empty'} ${focused ? 'focused' : ''}`}>
             <Autocomplete
                 ref="autocomplete"
                 value={value}
                 inputProps={{
-                    className: "autocomplete",
-                    name: "Filter",
+                    className: 'autocomplete',
+                    name: 'Filter',
                     placeholder: focused ? '' : placeholder,
                     onMouseDown: e => this.preventStupidInput(e),
                     onKeyDown: e => this.handleEmptyEnterPressBetter(e),
                     onFocus: e => this.focus(e),
-                    onBlur: e => this.blur(e)}}
+                    onBlur: e => this.blur(e) }}
                 menuStyle={{
                     position: 'fixed',
                     overflow: 'auto',
                     maxHeight: '50%' }}
                 items={options}
-                autoHighlight={true}
+                autoHighlight
                 getItemValue={(item) => item}
-                shouldItemRender={(item,value) => item.toLowerCase().indexOf(value.toLowerCase()) >= 0}
-                onChange={(event, value) => this.setState({ value: value }) || this.onChange(event, value)}
-                onSelect={value => this.setState({ value: value }) || this.onChange({type:'select'}, value)}
-                onMenuVisibilityChange={e => this.setState({visible: !this.state.visible})}
+                shouldItemRender={(item, v) => item.toLowerCase().indexOf(v.toLowerCase()) >= 0}
+                onChange={(event, v) => this.setState({ value: v }) || this.onChange(event, v)}
+                onSelect={v => this.setState({ value: v }) || this.onChange({ type: 'select' }, v)}
+                onMenuVisibilityChange={() => this.setState({ visible: !this.state.visible })}
                 renderItem={(item, selected) => (
                   <div className={selected ? 'item selected' : 'item'} key={item}>{item}</div>
                 )}
-              />
+            />
             <span className="Icon-filter">
                 <Icon icon="filter_list" size={15} />
             </span>
-            <span className="Icon-clear" onClick={e => this.clearInput()}>
+            <span className="Icon-clear" onClick={() => this.clearInput()}>
                 <Icon icon="clear" size={15} />
             </span>
           </div>);

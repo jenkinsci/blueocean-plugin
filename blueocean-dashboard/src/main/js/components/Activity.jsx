@@ -56,7 +56,7 @@ export class Activity extends Component {
     }
     
     componentWillReceiveProps(newProps) {
-        if (this.props.params && this.props.params.branch != newProps.params.branch) {
+        if (this.props.params && this.props.params.branch !== newProps.params.branch) {
             const organization = newProps.params.organization;
             const pipeline = newProps.params.pipeline;
             const branch = newProps.params.branch;
@@ -109,9 +109,10 @@ export class Activity extends Component {
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
         const branchText = t(`${head}.branch`, { defaultValue: 'Branch' });
         
-        const branchFilter = isMultiBranchPipeline && <ColumnFilter placeholder={branchText} value={branch}
-            onChange={branch => this.navigateToBranch(branch)}
-            options={pipeline.branchNames.map(b => decodeURIComponent(b))} />;
+        const branchFilter = isMultiBranchPipeline && (<ColumnFilter placeholder={branchText} value={branch}
+            onChange={b => this.navigateToBranch(b)}
+            options={pipeline.branchNames.map(b => decodeURIComponent(b))}
+        />);
        
         const headers = isMultiBranchPipeline ? [
             status,
@@ -192,6 +193,7 @@ Activity.propTypes = {
     pipeline: object,
     locale: string,
     t: func,
+    params: object,
 };
 
 export default Activity;
