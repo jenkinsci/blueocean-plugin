@@ -109,8 +109,7 @@ export const calculateLogView = function (props) {
 };
 /*
  * helper to calculate log url. When we have a node we get create a special url, otherwise we use the url passed to us
- * @param config {
- * BaseUrl, node, url}
+ * @param config { nodesBaseUrl, node, url}
  */
 export const calculateLogUrl = (config) => {
     let returnUrl = config.url;
