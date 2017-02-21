@@ -12,7 +12,7 @@ import Autocomplete from 'react-autocomplete';
 export class ColumnFilter extends Component {
     constructor(props) {
         super(props);
-        this.state = { value: props.value };
+        this.state = { value: props.value, visible: false };
     }
     
     componentWillReceiveProps(newProps) {
@@ -21,29 +21,19 @@ export class ColumnFilter extends Component {
         }
     }
     
-    onKeyPress(e) {
-        this.setState({ value: e.target.value });
-        setTimeout(x => this.refs.dropDown._openDropdownMenu(e), 10);
+    clearInput() {
+        this.onChange({type:'select'}, '');
     }
     
     onChange(event, value) {
         const { onChange } = this.props;
+        this.setState({value: value});
         // only update on enter press or click
         if (event.type === 'select'
             || event.type === 'blur'
             || (event.type === 'keypress' && event.key === 'Enter')) {
             onChange(value);
         }
-    }
-    
-    completionFilter(item) {
-        if (!this.state.value || !item) {
-            return true;
-        }
-        const str = item instanceof String ? item : item.toString();
-        const out = str.toLowerCase().indexOf(this.state.value.toLowerCase()) >= 0;
-        console.log('testing', str.toLowerCase(), 'against', this.state.value.toLowerCase(), 'and is', out);
-        return out;
     }
     
     focus(e) {
@@ -55,6 +45,20 @@ export class ColumnFilter extends Component {
         this.setState({focused: false});
     }
     
+    // hack due to strange behavior of triggering onChange from autocomplete when
+    // clicking on the input when the dropdown is open and an item is selected
+    preventStupidInput(e) {
+        if (this.state.visible && e.target.tagName && e.target.tagName.toLowerCase() === 'input') {
+            this.refs.autocomplete._ignoreClick = true;
+        }
+    }
+    
+    handleEmptyEnterPressBetter(event) {
+        if (this.state.visible && event.key === 'Enter' && this.state.value === '') {
+            this.clearInput();
+        }
+    }
+    
     render() {
         const { placeholder, options } = this.props;
         const { value, focused } = this.state;
@@ -62,11 +66,14 @@ export class ColumnFilter extends Component {
         const style = {position: 'absolute'};
         return (<div className={`ColumnFilter ${value ? '' : 'empty'} ${focused ? 'focused' : ''}`}>
             <Autocomplete
+                ref="autocomplete"
                 value={value}
                 inputProps={{
                     className: "autocomplete",
                     name: "Filter",
                     placeholder: focused ? '' : placeholder,
+                    onMouseDown: e => this.preventStupidInput(e),
+                    onKeyDown: e => this.handleEmptyEnterPressBetter(e),
                     onFocus: e => this.focus(e),
                     onBlur: e => this.blur(e)}}
                 menuStyle={{
@@ -79,6 +86,7 @@ export class ColumnFilter extends Component {
                 shouldItemRender={(item,value) => item.toLowerCase().indexOf(value.toLowerCase()) >= 0}
                 onChange={(event, value) => this.setState({ value: value }) || this.onChange(event, value)}
                 onSelect={value => this.setState({ value: value }) || this.onChange({type:'select'}, value)}
+                onMenuVisibilityChange={e => this.setState({visible: !this.state.visible})}
                 renderItem={(item, selected) => (
                   <div className={selected ? 'item selected' : 'item'} key={item}>{item}</div>
                 )}
@@ -86,7 +94,7 @@ export class ColumnFilter extends Component {
             <span className="Icon-filter">
                 <Icon icon="filter_list" size={15} />
             </span>
-            <span className="Icon-clear" onClick={e => this.onChange({type:'select'}, '')}>
+            <span className="Icon-clear" onClick={e => this.clearInput()}>
                 <Icon icon="clear" size={15} />
             </span>
           </div>);
