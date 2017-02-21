@@ -26,14 +26,14 @@ export class Pipelines extends Component {
     _initPager(props) {
         const org = props.params.organization;
         if (org) {
-            this.augmenter = this.context.pipelineService.organiztionPipelinesPager(org);
+            this.pager = this.context.pipelineService.organiztionPipelinesPager(org);
         } else {
-            this.augmenter = this.context.pipelineService.allPipelinesPager();
+            this.pager = this.context.pipelineService.allPipelinesPager();
         }
     }
 
     render() {
-        const pipelines = this.augmenter.data;
+        const pipelines = this.pager.data;
         const { organization, location = { } } = this.context.params;
 
         const orgLink = organization ?
@@ -69,7 +69,7 @@ export class Pipelines extends Component {
                     </Extensions.Renderer>
                 </ContentPageHeader>
 
-                { !pipelines || this.augmenter.pending && <PageLoading /> }
+                { !pipelines || this.pager.pending && <PageLoading /> }
 
                 <main>
                     <article>
@@ -98,8 +98,8 @@ export class Pipelines extends Component {
                         </Table>
 
                         { pipelines &&
-                        <button disabled={ !this.augmenter.hasMore } className="btn-show-more btn-secondary" onClick={ () => this.augmenter.fetchNextPage() }>
-                            { this.augmenter.pending ? translate('common.pager.loading', { defaultValue: 'Loading...' }) : translate('common.pager.more', { defaultValue: 'Show more' }) }
+                        <button disabled={ !this.pager.hasMore } className="btn-show-more btn-secondary" onClick={ () => this.pager.fetchNextPage() }>
+                            { this.pager.pending ? translate('common.pager.loading', { defaultValue: 'Loading...' }) : translate('common.pager.more', { defaultValue: 'Show more' }) }
                         </button>
                         }
                     </article>

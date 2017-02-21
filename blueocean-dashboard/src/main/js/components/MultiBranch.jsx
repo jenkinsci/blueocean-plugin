@@ -48,7 +48,7 @@ export class MultiBranch extends Component {
     componentWillMount() {
         if (this.props.pipeline && this.context.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
             const { organization, pipeline } = this.context.params;
-            this.augmenter = this.context.pipelineService.branchPager(organization, pipeline);
+            this.pager = this.context.pipelineService.branchPager(organization, pipeline);
         }
     }
 
@@ -59,9 +59,9 @@ export class MultiBranch extends Component {
             return (<NotSupported t={t} />);
         }
 
-        const branches = this.augmenter.data;
+        const branches = this.pager.data;
 
-        if (!this.augmenter.pending && !branches.length) {
+        if (!this.pager.pending && !branches.length) {
             return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
         }
 
@@ -87,14 +87,14 @@ export class MultiBranch extends Component {
         return (
             <main>
                 <article>
-                    {this.augmenter.pending && <PageLoading />}
+                    {this.pager.pending && <PageLoading />}
 
                     <Table className="multibranch-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
                         {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} t={t} locale={locale} />)}
                     </Table>
-                    {!this.augmenter.pending &&
-                        <button disabled={this.augmenter.pending || !this.augmenter.hasMore} className="btn-show-more btn-secondary" onClick={() => this.augmenter.fetchNextPage()}>
-                             {this.augmenter.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
+                    {!this.pager.pending &&
+                        <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
+                             {this.pager.pending ? t('common.pager.loading', { defaultValue: 'Loading...' }) : t('common.pager.more', { defaultValue: 'Show more' })}
                         </button>
                     }
                 </article>
