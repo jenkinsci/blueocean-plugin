@@ -70,7 +70,7 @@ export default {
         if (!config.isLoaded) {
             this.loadUrls();
         }
-        return config.jenkinsRootURL;
+        return config.jenkinsRootURL || '/jenkins';
     },
 
     getRestRoot() {

@@ -15,14 +15,28 @@ export default class FreeStyle extends Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+
+        if(!nextProps.followAlong && this.props.followAlong) {
+            this.stopKaraoke();
+        }
+        if (nextProps.run.isCompleted() && !nextProps.augmenter.run.isCompleted()) {
+            logger.debug('re-fetching since result changed and we want to display the full log');
+            this.pager.fetchGeneralLog({});
+        }
+    }
+
     componentWillUnmount() {
-        this.props.augmenter.clear();
+        this.stopKaraoke();
+    }
+
+    stopKaraoke() {
+        logger.debug('stopping karaoke mode, by removing the timeouts on the pager.');
+        this.pager.clear();
     }
 
     fetchData(props) {
         const { augmenter, followAlong } = props;
-        //const start = location && location.query ? location.query.start : null;
-        // logger.warn('debugger', { augmenter, location, start });
         this.pager = KaraokeService.karaokePager(augmenter, followAlong);
     }
 
