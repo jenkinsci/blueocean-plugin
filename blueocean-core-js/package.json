@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.75-kz-1",
+  "version": "0.0.76",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -34,7 +34,7 @@
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/react-material-icons": "1.0.0",
-    "@jenkins-cd/sse-gateway": "0.0.18",
+    "@jenkins-cd/sse-gateway": "0.0.19",
     "@jenkins-cd/storage": "0.0.6",
     "es6-promise": "4.0.5",
     "i18next": "3.5.2",

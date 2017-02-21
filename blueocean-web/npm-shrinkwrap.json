@@ -3,9 +3,15 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
+<<<<<<< HEAD
       "version": "0.0.75-kz-1",
       "from": "@jenkins-cd/blueocean-core-js@0.0.75-kz-1",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.75-kz-1.tgz"
+=======
+      "version": "0.0.76",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.76",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.76.tgz"
+>>>>>>> primary/master
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.116",
@@ -45,9 +51,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.18",
-      "from": "@jenkins-cd/sse-gateway@0.0.18",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.18.tgz"
+      "version": "0.0.19",
+      "from": "@jenkins-cd/sse-gateway@0.0.19",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.19.tgz"
     },
     "@jenkins-cd/storage": {
       "version": "0.0.6",

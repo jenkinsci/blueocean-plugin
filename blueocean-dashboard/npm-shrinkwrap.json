@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.75-kz-1",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.75-kz-1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.75-kz-1.tgz"
+      "version": "0.0.76",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.76",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.76.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.116",
@@ -53,9 +53,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.18",
-      "from": "@jenkins-cd/sse-gateway@0.0.18",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.18.tgz"
+      "version": "0.0.19",
+      "from": "@jenkins-cd/sse-gateway@0.0.19",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.19.tgz"
     },
     "@jenkins-cd/storage": {
       "version": "0.0.6",
@@ -2240,11 +2240,6 @@
       "resolved": "https://registry.npmjs.org/doctrine/-/doctrine-1.5.0.tgz",
       "dev": true
     },
-    "dom-scroll-into-view": {
-      "version": "1.0.1",
-      "from": "dom-scroll-into-view@1.0.1",
-      "resolved": "https://registry.npmjs.org/dom-scroll-into-view/-/dom-scroll-into-view-1.0.1.tgz"
-    },
     "dom-serializer": {
       "version": "0.1.0",
       "from": "dom-serializer@>=0.0.0 <1.0.0",
@@ -3456,7 +3451,7 @@
         },
         "mkdirp": {
           "version": "0.5.1",
-          "from": "mkdirp@>=0.5.1 <0.6.0",
+          "from": "mkdirp@>=0.5.0 <0.6.0",
           "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.1.tgz",
           "dev": true
         },
@@ -3476,7 +3471,7 @@
         },
         "nopt": {
           "version": "3.0.6",
-          "from": "nopt@>=3.0.6 <3.1.0",
+          "from": "nopt@>=3.0.1 <3.1.0",
           "resolved": "https://registry.npmjs.org/nopt/-/nopt-3.0.6.tgz",
           "dev": true,
           "optional": true
@@ -3556,7 +3551,7 @@
         },
         "rc": {
           "version": "1.1.6",
-          "from": "rc@>=1.1.6 <1.2.0",
+          "from": "rc@>=1.1.0 <1.2.0",
           "resolved": "https://registry.npmjs.org/rc/-/rc-1.1.6.tgz",
           "dev": true,
           "optional": true,
@@ -3675,7 +3670,7 @@
         },
         "tar": {
           "version": "2.2.1",
-          "from": "tar@>=2.2.1 <2.3.0",
+          "from": "tar@>=2.2.0 <2.3.0",
           "resolved": "https://registry.npmjs.org/tar/-/tar-2.2.1.tgz",
           "dev": true
         },
@@ -6674,11 +6669,6 @@
       "version": "15.3.2",
       "from": "react-addons-update@15.3.2",
       "resolved": "https://registry.npmjs.org/react-addons-update/-/react-addons-update-15.3.2.tgz"
-    },
-    "react-autocomplete": {
-      "version": "1.4.0",
-      "from": "react-autocomplete@latest",
-      "resolved": "https://registry.npmjs.org/react-autocomplete/-/react-autocomplete-1.4.0.tgz"
     },
     "react-dom": {
       "version": "15.3.2",
