@@ -81,7 +81,10 @@ class App extends Component {
             <AdminLink t={translate} />,
         ];
 
-        let classicUrl = UrlConfig.getJenkinsRootURL();
+        let classicUrl = toClassicJobPage();
+        if (!classicUrl) {
+            classicUrl = UrlConfig.getJenkinsRootURL();
+        }
 
         const userComponents = [
             <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
@@ -219,6 +222,37 @@ function startApp(routes, stores) {
             <Router history={history}>{ makeRoutes(routes) }</Router>
         </Provider>
       , rootElement);
+}
+
+/**
+ * Check is the current Blue ocean page a pipeline page and if so,
+ * decode it to the corresponding classic Jenkins Job page.
+ * @returns {string|undefined} The classic job page, or undefined if
+ * it was unable to decode the page URL.
+ */
+function toClassicJobPage() {
+    const currentBlueOceanPageTokens = window.location.pathname.split('/');
+
+    // Remove all path elements up to and including the Jenkins
+    // organization name.
+    let token = currentBlueOceanPageTokens.shift();
+    while(token !== undefined && token !== 'organizations') {
+        token = currentBlueOceanPageTokens.shift();
+    }
+
+    if (currentBlueOceanPageTokens.length > 1) {
+        // The next token is the actual organization name e.g. "jenkins".
+        // Remove that since we don't need it.
+        currentBlueOceanPageTokens.shift();
+
+        // The next token is the "full" job name, URL encoded.
+        const fullJobName = decodeURIComponent(currentBlueOceanPageTokens.shift());
+        const fullJobNameTokens = fullJobName.split('/');
+
+        return UrlConfig.getJenkinsRootURL() + '/job/' + fullJobNameTokens.join('/job/');
+    }
+
+    return undefined;
 }
 
 Extensions.store.getExtensions(['jenkins.main.routes', 'jenkins.main.stores'], (routes = [], stores = []) => {
