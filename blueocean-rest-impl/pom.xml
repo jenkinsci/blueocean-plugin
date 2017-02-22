@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0.0-b24-SNAPSHOT</version>
+        <version>1.0.0-b24</version>
     </parent>
 
     <artifactId>blueocean-rest-impl</artifactId>
