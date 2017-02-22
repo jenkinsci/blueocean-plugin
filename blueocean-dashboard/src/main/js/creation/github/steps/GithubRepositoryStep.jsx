@@ -72,7 +72,7 @@ export default class GithubRepositoryStep extends React.Component {
                       data={sortedRepos}
                       onItemSelect={(idx, repo) => this.selectRepository(repo)}
                       labelFunction={repo => repo.name}
-                      filterFunction={(text, repo) => repo.name.toLowerCase().indexOf(text) !== -1}
+                      filterFunction={(text, repo) => repo.name.toLowerCase().indexOf(text.toLowerCase()) !== -1}
                     />
 
                     <button
