@@ -123,4 +123,5 @@ export {
     getRestUrl,
     buildUrl,
     relativeUrl,
+    toClassicJobPage,
 } from './utils/UrlUtils';
