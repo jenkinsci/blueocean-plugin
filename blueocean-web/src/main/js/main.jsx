@@ -2,7 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
-import { i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader } from '@jenkins-cd/blueocean-core-js';
+import {
+    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader
+} from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';
@@ -14,6 +16,7 @@ import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
 useStrict(true);
 
+const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
 
 let config; // Holder for various app-wide state
 
