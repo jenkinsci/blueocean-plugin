@@ -64,7 +64,7 @@ function isScrolledAboveOrBelow(parent, child) {
  *
  * @property {string} className additional "class" to add to outermost element (alongside "List")
  * @property {array} children React children
- * @property {Object} style React style object
+ * @property {Object} style React style object to be applied to outer element.
  * @property {array} [data] data to render in the list.
  * @property {Function} [labelFunction] converts each object to a string in the default renderer.
  * @property {Function} [keyFunction]

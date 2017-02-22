@@ -8,6 +8,7 @@ require('./ErrorMessageStories');
 require('./ExpandablePathStories');
 require('./FavoriteStories.jsx');
 require('./filesize.jsx');
+require('./FilterableListStories');
 require('./FloatingElementStories');
 require('./FormElementStories');
 require('./ListStories');
