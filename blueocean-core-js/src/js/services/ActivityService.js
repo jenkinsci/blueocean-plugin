@@ -18,10 +18,11 @@ export class ActivityService extends BunkerService {
      *
      * @param {string} organization Jenkins organization that this pager belongs to.
      * @param {string} pipeline Pipeline that this pager belongs to.
+     * @param {string} branch Optional branch that this pager belongs to.
      * @returns {string} key for [@link PagerService]
      */
-    pagerKey(organization, pipeline) {
-        return `Activities/${organization}-${pipeline}`;
+    pagerKey(organization, pipeline, branch) {
+        return `Activities/${organization}-${pipeline}-${branch}`;
     }
 
     /**
@@ -33,7 +34,7 @@ export class ActivityService extends BunkerService {
      */
     activityPager(organization, pipeline, branch) {
         return this.pagerService.getPager({
-            key: this.pagerKey(organization, pipeline) + '-' + branch,
+            key: this.pagerKey(organization, pipeline, branch),
             /**
              * Lazily generate the pager incase its needed.
              */

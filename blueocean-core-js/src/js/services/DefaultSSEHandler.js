@@ -49,20 +49,30 @@ export class DefaultSSEHandler {
         }
     };
 
+    branchPagerKeys(event) {
+        if (!event.blueocean_job_branch_name) {
+            return [this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name)];
+        }
+        return [
+            this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name),
+            this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name, event.blueocean_job_branch_name),
+        ];
+    }
 
     updateJob(event, overrideQueuedState) {
         // const queueId = event.job_run_queueId;
         // const queueSelf = `${event.blueocean_job_rest_url}queue/${queueId}/`;
         const runSelf = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
 
-        const key = this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name);
-        const pager = this.pagerService.getPager({ key });
-        this.activityService.fetchActivity(runSelf, { overrideQueuedState }).then(d => {
-            if (pager && !pager.has(runSelf)) {
-                pager.insert(runSelf);
-            }
-            this.pipelineService.updateLatestRun(d);
-        });
+        for (const key of this.branchPagerKeys(event)) {
+            const pager = this.pagerService.getPager({ key });
+            this.activityService.fetchActivity(runSelf, { overrideQueuedState }).then(d => {
+                if (pager && !pager.has(runSelf)) {
+                    pager.insert(runSelf);
+                }
+                this.pipelineService.updateLatestRun(d);
+            });
+        }
     }
     queueCancel(event) {
         if (event.job_run_status === 'CANCELLED') {
@@ -111,10 +121,12 @@ export class DefaultSSEHandler {
         };
 
         this.activityService.setItem(newRun);
-        const key = this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name);
-        const pager = this.pagerService.getPager({ key });
-        if (pager) {
-            pager.insert(runSelf);
+        
+        for (const key of this.branchPagerKeys(event)) {
+            const pager = this.pagerService.getPager({ key });
+            if (pager) {
+                pager.insert(runSelf);
+            }
         }
     }
 
@@ -123,10 +135,11 @@ export class DefaultSSEHandler {
             const id = this.activityService.getExpectedBuildNumber(event);
             const runSelf = `${event.blueocean_job_rest_url}runs/${id}/`;
             this.activityService.removeItem(runSelf);
-            const key = this.activityService.pagerKey(event.jenkins_org, event.blueocean_job_pipeline_name);
-            const pager = this.pagerService.getPager({ key });
-            if (pager) {
-                pager.remove(runSelf);
+            for (const key of this.branchPagerKeys(event)) {
+                const pager = this.pagerService.getPager({ key });
+                if (pager) {
+                    pager.remove(runSelf);
+                }
             }
         }
     }
