@@ -1,11 +1,22 @@
+input[type="text"] {
+    // remove "x" from IE11
+    &::-ms-clear {
+        display: none;
+    }
+}
+
 .TextInput, .PasswordInput {
     .TextInput-medium;
-    display: inline-block;
-    width: 100%;
+    display: inline-flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    position: relative;
+    background-color: #fff;
 
     .TextInput-control {
         width: 100%;
         color: @text-color;
+        background-color: transparent;
         .control-border;
 
         &:focus {
@@ -18,23 +29,77 @@
             .u-disabled;
         }
     }
+
+    .TextInput-icon {
+        fill: #999;
+        cursor: default;
+    }
 }
+
+
+.icon-rules(@icon-size, @icon-padding) {
+    &.u-icon-left {
+        margin-left: @icon-padding;
+
+        .TextInput-icon.u-icon-left {
+            margin-right: -(@icon-size + @icon-padding);
+        }
+
+        .TextInput-control {
+            padding-left: @icon-size + @icon-padding;
+            margin-right: -(@icon-size - @icon-padding);
+        }
+    }
+
+    &.u-icon-right {
+        .TextInput-icon.u-icon-right {
+            margin-left: -(@icon-size + @icon-padding);
+            margin-right: -2 * @icon-padding;
+        }
+
+        .TextInput-control {
+            padding-right: @icon-size + @icon-padding;
+        }
+    }
+
+    &.u-icon-left.u-icon-right {
+        .TextInput-icon.u-icon-right {
+            margin-left: -2 * @icon-padding;
+            margin-right: -(@icon-size + @icon-padding);
+        }
+    }
+
+    .TextInput-icon, .TextInput-icon .svg-icon {
+        width: @icon-size;
+        height: @icon-size;
+    }
+}
+
 
 // sizing
 
 .TextInput-small {
+    min-width: 175px;
+    .icon-rules(20px, 4px);
+
     .TextInput-control {
         padding: 5px 8px;
     }
 }
 
 .TextInput-medium {
+    min-width: 200px;
+    .icon-rules(24px, 4px);
+
     .TextInput-control {
         padding: 6px 10px;
     }
 }
 
 .TextInput-large {
+    min-width: 235px;
+    .icon-rules(28px, 8px);
+
     .TextInput-control {
         padding: 8px 12px;
     }

@@ -53,16 +53,24 @@ export class TextControl extends React.Component {
     render() {
         return (
             <div className={this.props.className}>
-                { React.cloneElement(
-                    this.props.children,
-                    {
-                        placeholder: this.props.placeholder,
-                        disabled: this.props.disabled,
-                        value: this.state.value,
-                        onChange: e => this._onChange(e),
-                        onBlur: e => this._onBlur(e),
+                { React.Children.map(this.props.children, child => {
+                    // while multiple children can be passed in (icons, etc)
+                    // we only want to pass down props to underlying text control
+                    if (child && (child.type === 'input' || child.type === 'textarea')) {
+                        return React.cloneElement(
+                            child,
+                            {
+                                placeholder: this.props.placeholder,
+                                disabled: this.props.disabled,
+                                value: this.state.value,
+                                onChange: e => this._onChange(e),
+                                onBlur: e => this._onBlur(e),
+                            }
+                        );
                     }
-                ) }
+
+                    return child;
+                } )}
             </div>
         );
     }
