@@ -17,6 +17,7 @@ import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.BlueRunFactory;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
@@ -96,6 +97,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
+    @Navigable
     public BluePipelineNodeContainer getNodes() {
         if (run != null) {
             return new PipelineNodeContainerImpl(run, getLink());
@@ -104,6 +106,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
+    @Navigable
     public BluePipelineStepContainer getSteps() {
         return new PipelineStepContainerImpl(run, getLink());
     }
