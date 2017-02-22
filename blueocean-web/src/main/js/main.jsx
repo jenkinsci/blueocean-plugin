@@ -134,9 +134,12 @@ function makeRoutes(routes) {
         component: App,
     };
 
+    if (LOGGER.isDebugEnabled()) {
+        debugRoutes(appRoutes);
+    }
+
     return React.createElement(Route, routeProps, ...appRoutes);
 }
-
 
 function startApp(routes, stores) {
 
@@ -218,3 +221,44 @@ Extensions.store.getExtensions(['jenkins.main.routes', 'jenkins.main.stores'], (
 
 // Enable page reload.
 require('./reload');
+
+function debugRoutes(appRoutes) {
+    try {
+        const NODE_END_MARKER = 'NODE_END_MARKER';
+        const MAX_ITERATIONS = 500;
+        const routes = appRoutes.slice();
+        // tracks the fully-qualified path as we walk the route tree
+        const pathParts = [];
+        let iterations = 0;
+
+        while (routes.length) {
+            const currentRoute = routes.shift();
+
+            // skip over Redirect, IndexRedirect, etc
+            if (currentRoute && currentRoute.type && currentRoute.type.displayName === 'Route') {
+                const fullPath = [].concat(pathParts, currentRoute.props.path);
+                // this is the fully-qualified route path
+                LOGGER.debug(`route: ${fullPath.join('/')}`);
+
+                if (currentRoute.props.children) {
+                    // when descending into a node we want to augment the fully-qualified path
+                    const path = currentRoute.props.path !== '/' ? currentRoute.props.path : '';
+                    pathParts.push(path);
+                    // add a 'node end' marker at the end so we can shorten the fully-qualified path later
+                    routes.unshift(...currentRoute.props.children, NODE_END_MARKER);
+                }
+            } else if (currentRoute === NODE_END_MARKER) {
+                pathParts.pop();
+            }
+
+            iterations++;
+
+            if (iterations >= MAX_ITERATIONS) {
+                LOGGER.warn(`exceeded max iteration count of ${MAX_ITERATIONS}. aborting route dump!`);
+                break;
+            }
+        }
+    } catch (error) {
+        LOGGER.warn(`error parsing route data: ${error}. aborting route dump!`);
+    }
+}
