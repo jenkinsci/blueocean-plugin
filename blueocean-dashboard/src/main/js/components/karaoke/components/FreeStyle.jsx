@@ -2,8 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { KaraokeService } from '../index';
-import LogConsole from '../../LogConsole';
-import LogToolbar from '../../LogToolbar';
+import LogConsole from './LogConsole';
+import LogToolbar from './LogToolbar';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.FreeStyle');
 
@@ -16,8 +16,7 @@ export default class FreeStyle extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-
-        if(!nextProps.followAlong && this.props.followAlong) {
+        if (!nextProps.followAlong && this.props.followAlong) {
             this.stopKaraoke();
         }
         if (nextProps.run.isCompleted() && !nextProps.augmenter.run.isCompleted()) {
@@ -37,15 +36,15 @@ export default class FreeStyle extends Component {
 
     fetchData(props) {
         const { augmenter, followAlong } = props;
-        this.pager = KaraokeService.karaokePager(augmenter, followAlong);
+        this.pager = KaraokeService.generalLogPager(augmenter, followAlong);
     }
 
     render() {
-        const { t, router, location, followAlong, scrollToBottom } = this.props;
         if (this.pager.pending) {
             logger.debug('abort due to pager pending');
             return null;
         }
+        const { t, router, location, followAlong, scrollToBottom } = this.props;
         const { data: logArray, hasMore } = this.pager.log;
         logger.warn('props', scrollToBottom, this.pager.log.newStart, followAlong);
         return (<div>

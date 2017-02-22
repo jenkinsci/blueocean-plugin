@@ -1,8 +1,7 @@
 import { action, computed, observable } from 'mobx';
-import { AppConfig, capable, logging } from '@jenkins-cd/blueocean-core-js';
+import { logging } from '@jenkins-cd/blueocean-core-js';
 
-import { KaraokeApi } from '../index';
-import { FREESTYLE_JOB, MULTIBRANCH_PIPELINE, PIPELINE_JOB } from '../../../Capabilities';
+import { KaraokeApi } from '../../index';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager');
 
@@ -16,7 +15,7 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager');
  * @export
  * @class Pager
  */
-export class Pager {
+export class GeneralLogPager {
     /**
      * pager is fetching data. log and detail
      * @type {boolean}
@@ -51,7 +50,7 @@ export class Pager {
     constructor(bunker, augmenter, followAlong) {
         this.bunker = bunker;
         this.augmenter = augmenter;
-        this.fetchGeneralLog({followAlong});
+        this.fetchGeneralLog({ followAlong });
     }
 
     /**

@@ -61,6 +61,7 @@ export class KaraokeApi {
         const href = generateDetailUrl(pipeline, branch, runId);
         logger.debug('Fetching href', href);
         return Fetch.fetchJSON(href, { fetchOptions })
+            .then(FetchFunctions.checkStatus)
             .then(data => capabilityAugmenter.augmentCapabilities(data));
     }
 
@@ -78,4 +79,17 @@ export class KaraokeApi {
             .then(parseMoreDataHeader)
             .then(parseNewStart);
     }
+
+    getNodes(href) {
+        const fetchOptions = prepareOptions();
+        logger.debug('Fetching href', href);
+        return Fetch.fetchJSON(href, { fetchOptions })
+            .then(FetchFunctions.checkStatus)
+            .then(data => capabilityAugmenter.augmentCapabilities(data));
+    }
+
+    getSteps(href) {
+        return this.getNodes(href);
+    }
 }
+

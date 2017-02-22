@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Progress } from '@jenkins-cd/design-language';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 
-import { scrollHelper } from './ScrollHelper';
+import { scrollHelper } from '../../ScrollHelper';
 
 const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;

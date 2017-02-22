@@ -29,7 +29,7 @@ export const getNodesInformation = (nodes) => {
     let wasFocused = false; // we only want one node to be focused if any
     let parallelNodes = [];
     let parent;
-    // FIXME: this assumaption is not 100% correct since a job that is in queue would be marked as finished since
+    // FIXME: this assumption is not 100% correct since a job that is in queue would be marked as finished since
     // there will be no running nodes yet!
     const finished = runningNodes.length === 0;
     const error = !(errorNodes.length === 0);
@@ -54,7 +54,7 @@ export const getNodesInformation = (nodes) => {
         }
 
         // FIXME: TS I need to talk to cliffMeyers how we can refactor the following code to use capabilities
-        // the problem I see ATM is that we would need to ask the c-API everytime for each action, whether this
+        // the problem I see ATM is that we would need to ask the c-API every time for each action, whether this
         // action has the capability for logging
         const hasLogs = item.actions ? item.actions
             .filter(action => action._class === 'org.jenkinsci.plugins.workflow.support.actions.LogActionImpl').length > 0

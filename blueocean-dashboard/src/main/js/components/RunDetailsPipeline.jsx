@@ -25,7 +25,7 @@ export class RunDetailsPipeline extends Component {
     }
     componentDidMount() {
         const { result } = this.props;
-         if (!result.isQueued()) {
+        if (!result.isQueued()) {
              // determine scroll area
             const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
             // add both listener, one to the scroll area and another to the whole document
@@ -33,7 +33,7 @@ export class RunDetailsPipeline extends Component {
                 domNode.addEventListener('wheel', this._onScrollHandler, false);
             }
             document.addEventListener('keydown', this._handleKeys, false);
-         }
+        }
     }
     componentWillUnmount() {
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
@@ -77,33 +77,29 @@ export class RunDetailsPipeline extends Component {
             location,
         };
         logger.warn('xxx', this.props, commonProps, this.augmenter.run.isCompleted());
+        let provider;
+        const stepScrollAreaClass = `step-scroll-area ${this.state.followAlong ? 'follow-along-on' : 'follow-along-off'}`;
         if (this.augmenter.isFreeStyle) {
-            return (<div ref="scrollArea">
-                <Extensions.Renderer {
+            provider = (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.freestyle.provider',
                         ...commonProps,
                     }
                 }
-                />
-            </div>);
+                />);
         }
         if (this.augmenter.isPipeline) {
-            return (<div ref="scrollArea">
-                <Extensions.Renderer {
+            provider = (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.pipeline.provider',
                         ...commonProps,
                     }
                 }
-                />
-            </div>);
+                />);
         }
-        return (
-                <div ref="scrollArea">
-                    DOH type not supported
-                </div>
-            );
+        return (<div ref="scrollArea"  className={stepScrollAreaClass} >
+            { provider }
+        </div>);
     }
 }
 

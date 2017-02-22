@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
 import { Icon } from '@jenkins-cd/react-material-icons';
-import { fetchAllSuffix as suffix } from '../util/UrlUtils';
+import { fetchAllSuffix as suffix } from '../../../util/UrlUtils';
 
 const { string } = PropTypes;
 

@@ -16,7 +16,7 @@ import { EmptyStateView } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
 import LogConsoleView from './LogConsoleView';
-import LogToolbar from './LogToolbar';
+import LogToolbar from './karaoke/components/LogToolbar';
 import Steps from './Steps';
 import {
     steps as stepsSelector,

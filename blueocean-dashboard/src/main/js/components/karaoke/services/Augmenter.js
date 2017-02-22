@@ -1,13 +1,9 @@
 import { computed } from 'mobx';
-import { AppConfig, capable, logging } from '@jenkins-cd/blueocean-core-js';
+import { capable } from '@jenkins-cd/blueocean-core-js';
+import { prefixIfNeeded } from '../urls/prefixIfNeeded';
 
 import { FREESTYLE_JOB, MULTIBRANCH_PIPELINE, PIPELINE_JOB } from '../../../Capabilities';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Augmenter');
-
-function prefixIfNeeded(url) {
-    return `${AppConfig.getJenkinsRootURL().replace(/\/$/, '')}${url}`;
-}
 
 /**
  * @export
@@ -18,44 +14,63 @@ export class Augmenter {
      * The detail pager
      */
     @computed get href() {
-        return prefixIfNeeded(this.run._links.self.href)
-    };
+        return prefixIfNeeded(this.run._links.self.href);
+    }
+    /**
+     * What is the general log url?
+     * @type {string}
+     */
+    @computed get generalLogUrl() {
+        return prefixIfNeeded(this.run._links.log.href);
+    }
+    /**
+     * nodes ref or null
+     * @type {string | null}
+     */
+    @computed get nodesUrl() {
+        if (this.run._links.nodes) {
+            return prefixIfNeeded(this.run._links.nodes.href);
+        }
+        return null;
+    }
+    /**
+     * steps ref or null
+     * @type {string | null}
+     */
+    @computed get stepsUrl() {
+        if (this.run._links.steps) {
+            return prefixIfNeeded(this.run._links.steps.href);
+        }
+        return null;
+    }
     /**
      * Do we have a free style job?
      * @type {boolean}
      */
     @computed get isFreeStyle() {
         return capable(this.run, FREESTYLE_JOB);
-    };
+    }
     /**
      * Do we have a pipeline job?
      * @type {boolean}
      */
     @computed get isPipeline() {
         return capable(this.run, PIPELINE_JOB);
-    };
+    }
     /**
      * Do we have a multibranch pipeline job?
      * @type {boolean}
      */
-    @computed get isMultiBranchPipeline(){
+    @computed get isMultiBranchPipeline() {
         return capable(this.pipeline, MULTIBRANCH_PIPELINE);
-    };
-    /**
-     * What is the general log url?
-     * @type {string}
-     */
-    @computed get generalLogUrl() {
-        return prefixIfNeeded(this.run._links.log.href)
-    };
+    }
 
-    @computed get generalLogFileName(){
+    @computed get generalLogFileName() {
         if (this.isMultiBranchPipeline) {
             return `${this.branch}-${this.run.id}.txt`;
-        } else {
-            return `${this.run.id}.txt`;
         }
-    };
+        return `${this.run.id}.txt`;
+    }
     /**
      * Creates an instance of Augmenter
      *
@@ -68,5 +83,4 @@ export class Augmenter {
         this.run = run;
         this.branch = branch;
     }
-
 }

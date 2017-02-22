@@ -1,14 +1,66 @@
 import React, { Component, PropTypes } from 'react';
 import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
 import { logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
-import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
+import { calculateFetchAll, calculateLogUrl } from '../../../util/UrlUtils';
 import LogConsole from './LogConsole';
 import InputStep from './InputStep';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.Step');
 const timeManager = new TimeManager();
-export default class Node extends Component {
+
+export default class Steps extends Component {
+    render() {
+        const { nodeInformation } = this.props;
+        // Early out
+        if (!nodeInformation) {
+            return null;
+        }
+        const {
+            model,
+            nodesBaseUrl,
+        } = nodeInformation;
+        const { logs, fetchLog, followAlong, url, location, router, t, locale, classicInputUrl } = this.props;
+        return (<div>
+            {
+              model.map((item, index) =>
+                <Step
+                  {...{
+                      key: `${index}${item.id}`,
+                      node: item,
+                      classicInputUrl,
+                      logs,
+                      nodesBaseUrl,
+                      fetchLog,
+                      followAlong,
+                      url,
+                      location,
+                      router,
+                      t,
+                      locale,
+                  }}
+                />)
+            }
+        </div>);
+    }
+}
+
+Steps.propTypes = {
+    nodeInformation: PropTypes.object.isRequired,
+    node: PropTypes.object.isRequired,
+    followAlong: PropTypes.bool,
+    logs: PropTypes.object,
+    location: PropTypes.object,
+    fetchLog: PropTypes.func,
+    nodesBaseUrl: PropTypes.string,
+    router: PropTypes.shape,
+    url: PropTypes.string,
+    locale: PropTypes.object,
+    classicInputUrl: PropTypes.object,
+    t: PropTypes.func,
+};
+
+export class Step extends Component {
     constructor(props) {
         super(props);
         const node = this.expandAnchor(props);
@@ -19,9 +71,9 @@ export default class Node extends Component {
         const { config = {} } = this.context;
         const node = this.expandAnchor(this.props);
         const {
-          durationInMillis,
-          state,
-          startTime,
+            durationInMillis,
+            state,
+            startTime,
         } = node;
         const { durationMillis } = this.durationHarmonize({
             durationInMillis,
@@ -88,7 +140,7 @@ export default class Node extends Component {
     /*
      * Calculate whether we need to expand the step due to linking.
      * When we trigger a log-0 that means we want to see the full log
-      */
+     */
     expandAnchor(props) {
         const { node, location: { hash: anchorName } } = props;
         const isFocused = this.state ? this.state.isFocused : node.isFocused;
@@ -116,16 +168,16 @@ export default class Node extends Component {
         }
         const { config = {} } = this.context;
         const {
-          fetchAll,
-          title,
-          result,
-          id,
-          state,
-          durationInMillis,
-          endTime,
-          startTime,
-          isInputStep = false,
-          isFocused = false,
+            fetchAll,
+            title,
+            result,
+            id,
+            state,
+            durationInMillis,
+            endTime,
+            startTime,
+            isInputStep = false,
+            isFocused = false,
         } = node;
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl, fetchAll })] : null;
@@ -145,9 +197,9 @@ export default class Node extends Component {
             }
         };
         const scrollToBottom =
-            resultRun === 'FAILURE'
-            || (resultRun === 'RUNNING' && followAlong)
-        ;
+                resultRun === 'FAILURE'
+                || (resultRun === 'RUNNING' && followAlong)
+            ;
         const isRunning = () => resultRun === 'RUNNING' || resultRun === 'PAUSED';
         const { durationMillis } = this.durationHarmonize({
             durationInMillis,
@@ -191,13 +243,13 @@ export default class Node extends Component {
             children = <span>&nbsp;</span>;
         }
         const time = (<TimeDuration
-          millis={isRunning() ? this.durationMillis : durationMillis }
-          liveUpdate={isRunning()}
-          updatePeriod={1000}
-          locale={locale}
-          displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
-          liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
-          hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+            millis={isRunning() ? this.durationMillis : durationMillis }
+            liveUpdate={isRunning()}
+            updatePeriod={1000}
+            locale={locale}
+            displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
+            liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+            hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
         />);
 
         return (<div className={logConsoleClass}>
@@ -213,13 +265,13 @@ export default class Node extends Component {
             >
                 {children}
             </ResultItem>
-      </div>);
+        </div>);
     }
 
 }
 
 const { object, func, string, bool, shape } = PropTypes;
-Node.propTypes = {
+Step.propTypes = {
     node: object.isRequired,
     followAlong: bool,
     logs: object,
@@ -233,6 +285,6 @@ Node.propTypes = {
     classicInputUrl: object,
 };
 
-Node.contextTypes = {
+Step.contextTypes = {
     config: object.isRequired,
 };
