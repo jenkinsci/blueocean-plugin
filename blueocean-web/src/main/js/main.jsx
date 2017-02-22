@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
 import {
-    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader
+    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader, toClassicJobPage
 } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
@@ -81,8 +81,11 @@ class App extends Component {
             <AdminLink t={translate} />,
         ];
 
-        let classicUrl = toClassicJobPage();
-        if (!classicUrl) {
+        let classicUrl = toClassicJobPage(window.location.pathname);
+        if (classicUrl) {
+            // prepend with the jenkins root url
+            classicUrl = UrlConfig.getJenkinsRootURL() + classicUrl;
+        } else {
             classicUrl = UrlConfig.getJenkinsRootURL();
         }
 
@@ -222,37 +225,6 @@ function startApp(routes, stores) {
             <Router history={history}>{ makeRoutes(routes) }</Router>
         </Provider>
       , rootElement);
-}
-
-/**
- * Check is the current Blue ocean page a pipeline page and if so,
- * decode it to the corresponding classic Jenkins Job page.
- * @returns {string|undefined} The classic job page, or undefined if
- * it was unable to decode the page URL.
- */
-function toClassicJobPage() {
-    const currentBlueOceanPageTokens = window.location.pathname.split('/');
-
-    // Remove all path elements up to and including the Jenkins
-    // organization name.
-    let token = currentBlueOceanPageTokens.shift();
-    while(token !== undefined && token !== 'organizations') {
-        token = currentBlueOceanPageTokens.shift();
-    }
-
-    if (currentBlueOceanPageTokens.length > 1) {
-        // The next token is the actual organization name e.g. "jenkins".
-        // Remove that since we don't need it.
-        currentBlueOceanPageTokens.shift();
-
-        // The next token is the "full" job name, URL encoded.
-        const fullJobName = decodeURIComponent(currentBlueOceanPageTokens.shift());
-        const fullJobNameTokens = fullJobName.split('/');
-
-        return UrlConfig.getJenkinsRootURL() + '/job/' + fullJobNameTokens.join('/job/');
-    }
-
-    return undefined;
 }
 
 Extensions.store.getExtensions(['jenkins.main.routes', 'jenkins.main.stores'], (routes = [], stores = []) => {
