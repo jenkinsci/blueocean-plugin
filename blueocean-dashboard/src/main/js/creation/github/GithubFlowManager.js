@@ -31,6 +31,9 @@ export default class GithubFlowManager extends FlowManager {
     @observable
     repositories = [];
 
+    @observable
+    repositoriesLoading = false;
+
     @computed get selectableRepositories() {
         if (!this.repositories) {
             return [];
@@ -269,6 +272,7 @@ export default class GithubFlowManager extends FlowManager {
     @action
     _loadAllRepositories(organization) {
         this.repositories.replace([]);
+        this.repositoriesLoading = true;
 
         let promise = null;
         const cachedRepos = this._repositoryCache[organization.name];
@@ -281,7 +285,7 @@ export default class GithubFlowManager extends FlowManager {
 
         promise
             .then(waitAtLeast(MIN_DELAY))
-            .then(repos => this._updateRepositories(organization.name, repos, FIRST_PAGE))
+            .then(repos => this._updateRepositories(organization.name, repos))
             .catch(error => console.log(error));
     }
 
@@ -292,29 +296,36 @@ export default class GithubFlowManager extends FlowManager {
     @action
     _updateRepositories(organizationName, repoData) {
         const { items, nextPage } = repoData.repositories;
+        const firstPage = this.repositories.length === 0;
+        const morePages = !isNaN(parseInt(nextPage, 10));
 
         this.repositories.push(...items);
         this._repositoryCache[organizationName] = this.repositories.slice();
-
-        const morePages = !isNaN(parseInt(nextPage, 10));
 
         if (morePages) {
             this._loadPagedRepository(organizationName, nextPage)
                 .then(repos2 => this._updateRepositories(organizationName, repos2, nextPage));
         } else {
-            if (this.selectedAutoDiscover) {
-                this.renderStep({
-                    stateId: STATE.STEP_CONFIRM_DISCOVER,
-                    stepElement: <GithubConfirmDiscoverStep />,
-                    afterStateId: STATE.STEP_CHOOSE_DISCOVER,
-                });
-            } else {
-                this.renderStep({
-                    stateId: STATE.STEP_CHOOSE_REPOSITORY,
-                    stepElement: <GithubRepositoryStep />,
-                    afterStateId: STATE.STEP_CHOOSE_DISCOVER,
-                });
-            }
+            this.repositoriesLoading = false;
+        }
+
+        if (this.selectedAutoDiscover && !morePages) {
+            // wait until all the repos are loaded since we might
+            // need the full list to display some data in confirm messages
+            // TODO: might be able to optimize this to render after first page
+            this.renderStep({
+                stateId: STATE.STEP_CONFIRM_DISCOVER,
+                stepElement: <GithubConfirmDiscoverStep />,
+                afterStateId: STATE.STEP_CHOOSE_DISCOVER,
+            });
+        } else if (!this.selectedAutoDiscover && firstPage) {
+            // render the repo list only once, after the first page comes back
+            // otherwise we'll lose step's internal state
+            this.renderStep({
+                stateId: STATE.STEP_CHOOSE_REPOSITORY,
+                stepElement: <GithubRepositoryStep />,
+                afterStateId: STATE.STEP_CHOOSE_DISCOVER,
+            });
         }
     }
 
