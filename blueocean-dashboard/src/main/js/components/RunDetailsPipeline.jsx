@@ -86,7 +86,7 @@ export class RunDetailsPipeline extends Component {
                         ...commonProps,
                     }
                 }
-                />);
+            />);
         }
         if (this.augmenter.isPipeline) {
             provider = (<Extensions.Renderer {
@@ -95,9 +95,9 @@ export class RunDetailsPipeline extends Component {
                         ...commonProps,
                     }
                 }
-                />);
+            />);
         }
-        return (<div ref="scrollArea"  className={stepScrollAreaClass} >
+        return (<div ref="scrollArea" className={stepScrollAreaClass} >
             { provider }
         </div>);
     }
