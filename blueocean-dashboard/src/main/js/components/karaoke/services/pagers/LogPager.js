@@ -15,7 +15,7 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager');
  * @export
  * @class Pager
  */
-export class GeneralLogPager {
+export class LogPager {
     /**
      * pager is fetching data. log and detail
      * @type {boolean}
@@ -37,7 +37,8 @@ export class GeneralLogPager {
      */
     @computed
     get log() {
-        return this.bunker.getItem(this.augmenter.generalLogUrl);
+        debugger;
+        return this.bunker.getItem(this.augmenter.step.logUrl);
     }
     /**
      * Creates an instance of Pager and fetches the first page.
@@ -50,7 +51,6 @@ export class GeneralLogPager {
     constructor(bunker, augmenter) {
         this.bunker = bunker;
         this.augmenter = augmenter;
-        this.fetchGeneralLog({ followAlong: augmenter.karaoke });
     }
 
     /**
@@ -59,7 +59,8 @@ export class GeneralLogPager {
      * @returns {Promise}
      */
     @action
-    fetchGeneralLog({ start, followAlong }) {
+    fetchLog({ start, followAlong }) {
+        debugger;
         clearTimeout(this.timeout);
         // while fetching we are pending
         this.pending = true;
@@ -67,12 +68,12 @@ export class GeneralLogPager {
         const logData = {
             _links: {
                 self: {
-                    href: this.augmenter.generalLogUrl,
+                    href: this.augmenter.step.logUrl,
                 },
             },
         };
         // get api data and further process it
-        return KaraokeApi.getGeneralLog(this.augmenter.generalLogUrl, { start })
+        return KaraokeApi.getGeneralLog(this.augmenter.step.logUrl, { start })
             .then(response => {
                 const { newStart, hasMore } = response;
                 logger.warn({ newStart, hasMore });
@@ -95,7 +96,7 @@ export class GeneralLogPager {
                     this.timeout = setTimeout(() => {
                         const props = { start: logData.newStart, followAlong };
                         logger.warn(props);
-                        this.followGeneralLog(logData);
+                        this.followLog(logData);
                     }, 1000);
                 }
             })).catch(err => {
@@ -110,7 +111,7 @@ export class GeneralLogPager {
      * @returns {Promise}
      */
     @action
-    followGeneralLog(logDataOrg) {
+    followLog(logDataOrg) {
         clearTimeout(this.timeout);
         const logData = { ...logDataOrg };
         // update link to trigger adding a new part of the log to the partial object
@@ -118,7 +119,7 @@ export class GeneralLogPager {
         // while fetching we are pending
         this.pending = true;
         logger.warn('changed ref', logData._links.self.href);
-        return KaraokeApi.getGeneralLog(this.augmenter.generalLogUrl, { start: logData.newStart })
+        return KaraokeApi.getGeneralLog(this.augmenter.step.logUrl, { start: logData.newStart })
             .then(action('Process pager data following 1', response => {
                 const { newStart, hasMore } = response;
                 logger.warn({ newStart, hasMore });
@@ -137,7 +138,7 @@ export class GeneralLogPager {
                     // kill current  timeout if any
                     // we need to get mpre input from the log stream
                     this.timeout = setTimeout(() => {
-                        this.followGeneralLog(logData);
+                        this.followLog(logData);
                     }, 1000);
                 }
             })).catch(err => {

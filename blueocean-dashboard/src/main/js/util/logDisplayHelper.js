@@ -1,4 +1,5 @@
 import keymirror from 'keymirror';
+import { capable } from '@jenkins-cd/blueocean-core-js';
 
 export const RESULTS = keymirror({
     UNKNOWN: null,
@@ -12,11 +13,15 @@ export const STATES = keymirror({
     FINISHED: null,
 });
 
+function isRunningNode(item) {
+    return item.state === STATES.RUNNING || item.state === STATES.PAUSED;
+}
+
 export const getNodesInformation = (nodes) => {
     // calculation of information about stages
     // nodes in Runing state
     const runningNodes = nodes
-        .filter((item) => (item.state === STATES.RUNNING || item.state === STATES.PAUSED) && (!item.edges || item.edges.length < 2))
+        .filter((item) => isRunningNode(item) && (!item.edges || item.edges.length < 2))
         .map((item) => item.id);
     // nodes with error result
     const errorNodes = nodes
@@ -37,7 +42,7 @@ export const getNodesInformation = (nodes) => {
         const hasFailingNode = item.edges && item.edges.length >= 2 ? item.edges
             .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
         const isFailingNode = errorNodes.indexOf(item.id) > -1;
-        const isRunningNode = runningNodes.indexOf(item.id) > -1;
+        const isRunning = runningNodes.indexOf(item.id) > -1;
 
         /*
          * are we in a node that indicates that we have parallel nodes?
@@ -52,13 +57,9 @@ export const getNodesInformation = (nodes) => {
             // remove the match from the array
             parallelNodes.splice(indexParallel, 1);
         }
-
-        // FIXME: TS I need to talk to cliffMeyers how we can refactor the following code to use capabilities
-        // the problem I see ATM is that we would need to ask the c-API every time for each action, whether this
-        // action has the capability for logging
-        const hasLogs = item.actions ? item.actions
-            .filter(action => action._class === 'org.jenkinsci.plugins.workflow.support.actions.LogActionImpl').length > 0
-            : false;
+        const logActions = item.actions ? item.actions
+            .filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
+        const hasLogs = logActions.length > 0;
         const modelItem = {
             _links: item._links,
             key: index,
@@ -71,8 +72,10 @@ export const getNodesInformation = (nodes) => {
             result: item.result,
             state: item.state,
             hasLogs,
+            logUrl: hasLogs ? logActions[0]._links.self.href : undefined,
             isParallel,
             parent,
+            isRunning,
         };
         // do not set the parent node in parallel, since we already have this information
         if (!isParallel) {
@@ -82,7 +85,7 @@ export const getNodesInformation = (nodes) => {
             modelItem.estimatedDurationInMillis = item.estimatedDurationInMillis;
             modelItem.isMultiBranch = true;
         }
-        if ((isRunningNode || (isFailingNode && !hasFailingNode && finished)) && !wasFocused) {
+        if ((isRunning || (isFailingNode && !hasFailingNode && finished)) && !wasFocused) {
             wasFocused = true;
             modelItem.isFocused = true;
         }

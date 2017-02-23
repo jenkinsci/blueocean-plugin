@@ -52,14 +52,13 @@ export class PipelinePager {
      * Creates an instance of Pager and fetches the first page.
      *
      * @param {BunkerService} bunker - Data store
-     * @param {object} pipeline Pipeline that this pager belongs to.
-     * @param {string} branch the name of the branch we are requesting
-     * @param {string} run Run that this pager belongs to.
+     * @param {object} augmenter augmenter that this pager belongs to.
+     * @param {object} props Properies that this pager belongs to.
      */
-    constructor(bunker, augmenter, followAlong) {
+    constructor(bunker, augmenter, props) {
         this.bunker = bunker;
         this.augmenter = augmenter;
-        this.fetchNodes();
+        this.fetchNodes({ ...props, followAlong: augmenter.karaoke });
     }
 
     /**
@@ -68,7 +67,7 @@ export class PipelinePager {
      * @returns {Promise}
      */
     @action
-    fetchNodes(followAlong = false) {
+    fetchNodes({ followAlong = false, node }) {
         // while fetching we are pending
         this.pending = true;
         // log is text and not json, further it does not has _link in the response
@@ -86,23 +85,28 @@ export class PipelinePager {
                     logger.debug('Seems we do not have any nodes for this run.');
                     // we need now to fetch the steps
                     return this.fetchSteps(followAlong);
-                } else {
-                    // get information about the result
-                    logData.data = getNodesInformation(result);
-                    // calculate which node we need to focus
-                    const focused = logData.data.model.filter((item) => item.isFocused)[0];
-                    // set either the focused node determined by the script or the last node
-                    if (focused) {
-                        this.currentNode = focused;
-                    } else {
-                        this.currentNode = (logData.data.model[logData.data.model.length - 1]);
-                    }
-                    this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
-                    this.bunker.setItem(logData);
-                    this.fetchCurrentStepUrl();
-                    logger.warn('saved data', logData);
                 }
-                this.pending = false;
+                // get information about the result
+                logData.data = getNodesInformation(result);
+                // calculate which node we need to focus
+                this.bunker.setItem(logData);
+                const focused = logData.data.model.filter((item) => {
+                    if (node) {
+                        return item.id === node;
+                    }
+                    return item.isFocused;
+                })[0];
+
+                // set either the focused node determined by the script or the last node
+                if (focused) {
+                    this.currentNode = focused;
+                } else {
+                    const lastNode = (logData.data.model[logData.data.model.length - 1]);
+                    this.currentNode = lastNode;
+                }
+                this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
+                logger.warn('saved data', logData);
+                return this.fetchCurrentStepUrl();
             })).catch(err => {
                 logger.error('Error fetching page', err);
                 action('set error', () => { this.error = err; });
@@ -111,6 +115,7 @@ export class PipelinePager {
 
     @action
     fetchCurrentStepUrl(followAlong) {
+        clearTimeout(this.timeout);
         // while fetching we are pending
         this.pending = true;
         // log is text and not json, further it does not has _link in the response
@@ -127,6 +132,14 @@ export class PipelinePager {
                 logData.data = getNodesInformation(result);
                 this.bunker.setItem(logData);
                 logger.debug('saved data');
+                // we need to get more input from the log stream
+                if (followAlong) {
+                    this.timeout = setTimeout(() => {
+                        const props = { followAlong };
+                        logger.warn(props);
+                        this.fetchCurrentStepUrl(followAlong);
+                    }, 1000);
+                }
                 this.pending = false;
             })).catch(err => {
                 logger.error('Error fetching page', err);
@@ -134,7 +147,7 @@ export class PipelinePager {
             });
     }
     @action
-    fetchSteps(followAlong) {
+    fetchSteps(followAlong = false) {
         clearTimeout(this.timeout);
         // while fetching we are pending
         this.pending = true;
@@ -153,6 +166,14 @@ export class PipelinePager {
                 logData.data = getNodesInformation(result);
                 this.bunker.setItem(logData);
                 logger.debug('saved data');
+                // we need to get more input from the log stream
+                if (followAlong) {
+                    this.timeout = setTimeout(() => {
+                        const props = { followAlong };
+                        logger.warn(props);
+                        this.fetchSteps(followAlong);
+                    }, 1000);
+                }
                 this.pending = false;
             })).catch(err => {
                 logger.error('Error fetching page', err);

@@ -8,7 +8,7 @@ const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
 const RENDER_CHUNK_SIZE = 500;
 const RERENDER_DELAY = 17;
-const logger = logging.logger('io.jenkins.blueocean.dashboard.LogConsole');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.LogConsole');
 
 
 export class LogConsole extends Component {
@@ -118,8 +118,10 @@ export class LogConsole extends Component {
         const { isLoading, lines } = this.state;
         const { prefix = '', hasMore = false, router, location, t } = this.props; // if hasMore true then show link to full log
         if (!lines) {
+            logger.debug('no lines passed');
             return null;
         }
+        logger.warn('render lines length', lines.length);
         // JENKINS-37925 - show more button should open log in new window
         // const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
         // JENKINS-41717 reverts above again

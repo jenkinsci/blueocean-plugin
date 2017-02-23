@@ -16,12 +16,12 @@ export default class FreeStyle extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (!nextProps.followAlong && this.props.followAlong) {
+        if (!nextProps.augmenter.karaoke) {
             this.stopKaraoke();
         }
         if (nextProps.run.isCompleted() && !nextProps.augmenter.run.isCompleted()) {
             logger.debug('re-fetching since result changed and we want to display the full log');
-            this.pager.fetchGeneralLog({});
+            this.pager.fetchGeneralLog({ followAlong: this.props.augmenter.karaoke });
         }
     }
 
@@ -35,8 +35,8 @@ export default class FreeStyle extends Component {
     }
 
     fetchData(props) {
-        const { augmenter, followAlong } = props;
-        this.pager = KaraokeService.generalLogPager(augmenter, followAlong);
+        const { augmenter } = props;
+        this.pager = KaraokeService.generalLogPager(augmenter);
     }
 
     render() {
@@ -44,9 +44,9 @@ export default class FreeStyle extends Component {
             logger.debug('abort due to pager pending');
             return null;
         }
-        const { t, router, location, followAlong, scrollToBottom } = this.props;
+        const { t, router, location, scrollToBottom } = this.props;
         const { data: logArray, hasMore } = this.pager.log;
-        logger.warn('props', scrollToBottom, this.pager.log.newStart, followAlong);
+        logger.warn('props', scrollToBottom, this.pager.log.newStart);
         return (<div>
             <LogToolbar
                 fileName={this.pager.generalLogFileName}
@@ -75,6 +75,5 @@ FreeStyle.propTypes = {
     t: PropTypes.func,
     router: PropTypes.shape,
     location: PropTypes.shape,
-    followAlong: PropTypes.bol,
-    scrollToBottom: PropTypes.bol,
+    scrollToBottom: PropTypes.bool,
 };

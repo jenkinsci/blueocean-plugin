@@ -1,4 +1,4 @@
-import { computed } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { capable } from '@jenkins-cd/blueocean-core-js';
 import { prefixIfNeeded } from '../urls/prefixIfNeeded';
 
@@ -71,16 +71,44 @@ export class Augmenter {
         }
         return `${this.run.id}.txt`;
     }
+
+    @observable karaoke = false;
+    @observable run;
+    @observable branch;
+    @observable pipeline;
+
     /**
      * Creates an instance of Augmenter
      *
      * @param {object} pipeline Pipeline that this pager belongs to.
      * @param {string} branch the name of the branch we are requesting
      * @param {string} run Run that this pager belongs to.
+     * @param {boolean} followAlong should we follow along
      */
-    constructor(pipeline, branch, run) {
-        this.pipeline = pipeline;
+    constructor(pipeline, branch, run, followAlong) {
+        this.setPipeline(pipeline);
+        this.setBranch(branch);
+        this.setKaraoke(followAlong);
+        this.setRun(run);
+    }
+
+    @action
+    setKaraoke(followAlong) {
+        this.karaoke = followAlong;
+    }
+
+    @action
+    setRun(run) {
         this.run = run;
+    }
+
+    @action
+    setPipeline(pipeline) {
+        this.pipeline = pipeline;
+    }
+
+    @action
+    setBranch(branch) {
         this.branch = branch;
     }
 }

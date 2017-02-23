@@ -17,12 +17,15 @@ export default class Pipeline extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (!nextProps.followAlong && this.props.followAlong) {
+        if (!nextProps.augmenter.karaoke) {
             this.stopKaraoke();
         }
         if (nextProps.run.isCompleted() && !nextProps.augmenter.run.isCompleted()) {
             logger.debug('re-fetching since result changed and we want to display the full log');
-            this.pager.fetchGeneralLog({});
+            this.pager.fetchNodes({});
+        }
+        if (nextProps.params.node !== this.props.params.node) {
+            this.pager.fetchNodes({ node: nextProps.params.node });
         }
     }
 
@@ -36,12 +39,12 @@ export default class Pipeline extends Component {
     }
 
     fetchData(props) {
-        const { augmenter, followAlong } = props;
-        this.pager = KaraokeService.pipelinePager(augmenter, followAlong);
+        const { augmenter, params: { node } } = props;
+        this.pager = KaraokeService.pipelinePager(augmenter, { node });
     }
 
     render() {
-        const { t, run, augmenter, branch, pipeline, followAlong, router, scrollToBottom, location } = this.props;
+        const { t, run, augmenter, branch, pipeline, router, scrollToBottom, location } = this.props;
         if (run.isQueued()) {
             const queuedMessage = t('rundetail.pipeline.queued.message', { defaultValue: 'Waiting for run to start' });
             return <QueuedState message={queuedMessage} />;
@@ -73,6 +76,13 @@ export default class Pipeline extends Component {
             // const isParallel = false;//this.isParallel(nodeInfo);
             location.pathname = nextPath;
             logger.debug('redirecting now to:', location.pathname);
+            // see whether we need to update the state
+            if ((nextNode.state === 'FINISHED') && this.props.augmenter.karaoke) {
+                this.props.augmenter.setKaraoke(false);
+            }
+            if (nextNode.state !== 'FINISHED' && !this.props.augmenter.karaoke) {
+                this.props.augmenter.setKaraoke(true);
+            }
             router.push(location);
         };
         //
@@ -98,19 +108,21 @@ export default class Pipeline extends Component {
             { this.pager.steps &&
                 <Steps
                     {...{
+                        augmenter,
                         url: augmenter.generalLogUrl,
                         nodeInformation: this.pager.steps.data,
+                        followAlong: augmenter.karaoke,
                         t,
-                        followAlong,
-                        router,
                         scrollToBottom,
+                        router,
+                        location,
                     }}
                 />
             }
         </div>);
     }
 }
-//nodeInformation: this.pager.steps.data
+// nodeInformation: this.pager.steps.data
 Pipeline.propTypes = {
     augmenter: PropTypes.object,
     pipeline: PropTypes.object,
@@ -119,6 +131,6 @@ Pipeline.propTypes = {
     t: PropTypes.func,
     router: PropTypes.shape,
     location: PropTypes.shape,
-    followAlong: PropTypes.bol,
     scrollToBottom: PropTypes.bol,
+    params: PropTypes.object,
 };

@@ -12,8 +12,6 @@ export class RunDetailsPipeline extends Component {
 
     constructor(props) {
         super(props);
-        // we do not want to follow any builds that are finished
-        this.state = { followAlong: props && props.result && props.result.state !== 'FINISHED' || false };
         this._handleKeys = this._handleKeys.bind(this);
         this._onScrollHandler = this._onScrollHandler.bind(this);
     }
@@ -44,41 +42,42 @@ export class RunDetailsPipeline extends Component {
     }
  // we bail out on arrow_up key
     _handleKeys(event) {
-        if (event.keyCode === 38 && this.state.followAlong) {
+        if (event.keyCode === 38 && this.augmenter.karaoke) {
             logger.debug('stop follow along by key up');
-            this.setState({ followAlong: false });
+            this.augmenter.setKaraoke(false);
         }
     }
     // need to register handler to step out of karaoke mode
     // we bail out on scroll up
     _onScrollHandler(elem) {
-        if (elem.deltaY < 0 && this.state.followAlong) {
+        if (elem.deltaY < 0 && this.augmenter.karaoke) {
             logger.debug('stop follow along by scroll up');
-            this.setState({ followAlong: false });
+            this.augmenter.setKaraoke(false);
         }
     }
     augment(props) {
+        // we do not want to follow any builds that are finished
         const { result: run, pipeline, params: { branch } } = props;
-        this.augmenter = new Augmenter(pipeline, branch, run);
+        const followAlong = props && props.result && props.result.state !== 'FINISHED' || false;
+        this.augmenter = new Augmenter(pipeline, branch, run, followAlong);
     }
 
     render() {
         const { result: run, pipeline, params: { branch }, t } = this.props;
         const { router, location } = this.context;
         const commonProps = {
-            scrollToBottom: this.state.followAlong || (run && run.result === 'FAILURE'),
+            scrollToBottom: this.augmenter.karaoke || (run && run.result === 'FAILURE'),
             augmenter: this.augmenter,
-            followAlong: this.state.followAlong,
             t,
             run,
             pipeline,
             branch,
             router,
             location,
+            params: this.props.params,
         };
-        logger.warn('xxx', this.props, commonProps, this.augmenter.run.isCompleted());
         let provider;
-        const stepScrollAreaClass = `step-scroll-area ${this.state.followAlong ? 'follow-along-on' : 'follow-along-off'}`;
+        const stepScrollAreaClass = `step-scroll-area ${this.augmenter.karaoke ? 'follow-along-on' : 'follow-along-off'}`;
         if (this.augmenter.isFreeStyle) {
             provider = (<Extensions.Renderer {
                     ...{
