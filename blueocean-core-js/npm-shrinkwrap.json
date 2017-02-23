@@ -3,9 +3,9 @@
   "version": "0.0.79-unpublished",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.119",
-      "from": "@jenkins-cd/design-language@0.0.119",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.119.tgz"
+      "version": "0.0.120",
+      "from": "@jenkins-cd/design-language@0.0.120",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.120.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -2738,7 +2738,7 @@
     },
     "flow-bin": {
       "version": "0.34.0",
-      "from": "flow-bin@0.34.0",
+      "from": "flow-bin@>=0.34.0 <0.35.0",
       "resolved": "https://registry.npmjs.org/flow-bin/-/flow-bin-0.34.0.tgz",
       "dev": true
     },
