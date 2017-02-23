@@ -34,6 +34,10 @@ class HttpRequest {
         return new HttpRequest("GET", url);
     }
 
+    public static HttpRequest head(String url){
+        return new HttpRequest("HEAD", url);
+    }
+
     public static HttpRequest post(String url){
         return new HttpRequest("POST", url);
     }
@@ -86,13 +90,15 @@ class HttpRequest {
             if(status > 399) {
                 throw new ServiceException.BadRequestExpception(String.format("%s %s returned error: %s. Error message: %s.", method, url ,status, getErrorResponse(connection)));
             }
-            r = new InputStreamReader(wrapStream(connection.getInputStream(), connection.getContentEncoding()), "UTF-8");
-            String data = IOUtils.toString(r);
-            if (type != null) {
-                try {
-                    return GithubScm.om.readValue(data, type);
-                } catch (JsonMappingException e) {
-                    throw new IOException("Failed to deserialize " + data, e);
+            if(!method.equals("HEAD")) {
+                r = new InputStreamReader(wrapStream(connection.getInputStream(), connection.getContentEncoding()), "UTF-8");
+                String data = IOUtils.toString(r);
+                if (type != null) {
+                    try {
+                        return GithubScm.om.readValue(data, type);
+                    } catch (JsonMappingException e) {
+                        throw new IOException("Failed to deserialize " + data, e);
+                    }
                 }
             }
         }finally {

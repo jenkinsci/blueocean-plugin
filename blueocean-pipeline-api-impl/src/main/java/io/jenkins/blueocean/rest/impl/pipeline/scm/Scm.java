@@ -83,12 +83,12 @@ public abstract class Scm extends Resource {
     /**
      * Save a file to this repository. Creates a new one if it doesn't exist.
      *
-     * @return {@link ScmFile}
+     * @return {@link ScmContent}
      */
     @PUT
     @WebMethod(name="")
     @TreeResponse
-    public ScmFile saveFile(StaplerRequest staplerRequest) throws IOException {
+    public ScmContent saveFile(StaplerRequest staplerRequest) throws IOException {
         JSONObject body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));
         String cls = (String) body.get("$class");
         if(cls == null){
@@ -105,7 +105,7 @@ public abstract class Scm extends Resource {
         return saveFile(request);
     }
 
-    public ScmFile saveFile(ScmSaveFileRequest request) throws IOException {
+    public ScmContent saveFile(ScmSaveFileRequest request) throws IOException {
         return request.save(this);
     }
 

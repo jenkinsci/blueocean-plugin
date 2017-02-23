@@ -87,6 +87,8 @@ The Blue Ocean REST API is a "private API" designed for the Blue Ocean user inte
     - [Get SCM repositories in an organization](#get-scm-repositories-in-an-organization)
       - [Pagination for GitHub repositories](#pagination-for-github-repositories)
     - [Get SCM repository in an organization](#get-scm-repository-in-an-organization)
+    - [Get SCM file content of a pipeline (Multibranch or OrganizationFolder)](#get-scm-file-content-of-a-pipeline-multibranch-or-organizationfolder)
+    - [Save file content to SCM repo](#save-file-content-to-scm-repo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -2187,3 +2189,62 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
   "fullName" : "CloudBees-community/game-of-life"
 }
 ````
+
+### Get SCM file content of a pipeline (Multibranch or OrganizationFolder)
+
+```
+curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/hk/branches/master/scmcontent/?path=Jenkinsfile"
+
+{
+   "encoding" : "base64",
+   "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubScmFileContent",
+   "sha" : "280f3ee9f3171043ddfd06da937fa2d138367979",
+   "path" : "Jenkinsfile",
+   "encodedContent" : "cGlwZWxpbmUgewogICAgYWdlbnQgbGFiZWw6JycKICAgIHN0YWdlcyB7CiAgICAgICAgc3RhZ2UoImRldiIpIHsKICAgICAgICAgIHNoICdlY2hvICJTdGFydCBCdWlsZCInCiAgICAgICAgICBlY2hvICdFbmQgQnVpbGQnCiAgICAgICAgfQogICAgICAgIHN0YWdlKCJ0ZXN0IikgewogICAgICAgICAgICBwYXJhbGxlbCAoCiAgICAgICAgICAgICAgICAiRmlyZWZveCIgOiB7CiAgICAgICAgICAgICAgICAgICAgc2ggImVjaG8gdGVzdGluZyBGRlgiCiAgICAgICAgICAgICAgICAgICAgc2ggImVjaG8gbW9yZSBzdGVwcyIKICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAiQ2hyb21lIiA6IHsKICAgICAgICAgICAgICAgICAgICBzaCAiZWNobyB0ZXN0aW5nIENocm9tZSIKICAgICAgICAgICAgICAgICAgICBzaCAiZWNobyBtb3JlIHN0ZXBzIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICApCiAgICAgICAgfQogICAgICAgIHN0YWdlKCJkZXBsb3kiKSB7CiAgICAgICAgICBzaCAnZWNobyAiU3RhcnQgRGVwbG95IicKICAgICAgICAgIHNoICdlY2hvICJFbmQgRGVwbG95IicKICAgICAgICB9CiAgICB9ICAgIAp9Cg==",
+   "name" : "Jenkinsfile",
+   "repo" : "hellokyoto",
+   "size" : 589,
+   "type" : "file",
+   "owner" : "vivek"
+}
+```
+
+### Save file content to SCM repo
+
+```
+curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/ -d 
+
+'{
+  "$class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubScmSaveFileRequest",
+  "credentialId" : "github",
+  "content" : {
+    "message" : "first commit",
+    "path" : "Jenkinsfile",
+    "owner" : "vivek",
+    "branch" : "test1"
+    "repo" : "test-no-jenkins-file",
+    "sha" : "9e82c4011cd70446a2f44881a6c288c59b4abac0",
+    "base64Data" : "VGVzdDEyMw=="
+  }
+}'
+```
+
+- If file path doesn't exist then a new file will be created
+- If *sha* provided and file path exists then it must match with the sha of existing file, else 400 (Bad Request) error will be 
+  returned.
+- If branch element is not provided file will be saved on default branch (typically maser)
+- If branch element is present and this branch doesn't exist then a new branch will be created off default branch HEAD
+
+Response
+
+```
+{
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubScmFileContent",
+  "name" : "Jenkinsfile2",
+  "owner" : "vivek",
+  "path" : "Jenkinsfile2",
+  "repo" : "test-no-jenkins-file",
+  "sha" : "f13b26341cf403aa7d697bc252908de092ee279d",
+  "type" : "file"
+}
+```

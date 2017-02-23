@@ -8,5 +8,5 @@ import org.kohsuke.stapler.export.ExportedBean;
  * @author Vivek Pandey
  */
 @ExportedBean(defaultVisibility = 999999)
-public abstract class ScmFile{
+public abstract class ScmContent {
 }
