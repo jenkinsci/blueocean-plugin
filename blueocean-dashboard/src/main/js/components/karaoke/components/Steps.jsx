@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
 import { logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
-
+import { QueuedState, NoSteps } from './QueuedState';
 import { calculateFetchAll, calculateLogUrl } from '../../../util/UrlUtils';
 import LogConsole from './LogConsole';
 import InputStep from './InputStep';
@@ -10,6 +10,26 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.Step');
 const timeManager = new TimeManager();
 
 export default class Steps extends Component {
+    render() {
+        const { t } = this.props;
+        const { nodeInformation } = this.props;
+        // Early out
+        if (!nodeInformation) {
+            const queuedMessage = t('rundetail.pipeline.pending.message',
+                { defaultValue: 'Waiting for backend to response' });
+            return <QueuedState message={queuedMessage} />;
+        }
+        const { model } = nodeInformation;
+        if ( model.length === 0) {
+            return (<NoSteps message={t('rundetail.pipeline.nosteps',
+                { defaultValue: 'There are no logs' })} />);
+        }
+        const stepRenderer = model.map((item, index) => <div>{index}</div>);
+        return (<div>{ stepRenderer }</div>);
+    }
+}
+
+export class Nodes extends Component {
     render() {
         const { nodeInformation } = this.props;
         // Early out
@@ -45,7 +65,7 @@ export default class Steps extends Component {
     }
 }
 
-Steps.propTypes = {
+Nodes.propTypes = {
     nodeInformation: PropTypes.object.isRequired,
     node: PropTypes.object.isRequired,
     followAlong: PropTypes.bool,
@@ -60,7 +80,7 @@ Steps.propTypes = {
     t: PropTypes.func,
 };
 
-export class Step extends Component {
+export class Node extends Component {
     constructor(props) {
         super(props);
         const node = this.expandAnchor(props);
@@ -271,7 +291,7 @@ export class Step extends Component {
 }
 
 const { object, func, string, bool, shape } = PropTypes;
-Step.propTypes = {
+Node.propTypes = {
     node: object.isRequired,
     followAlong: bool,
     logs: object,
@@ -285,6 +305,6 @@ Step.propTypes = {
     classicInputUrl: object,
 };
 
-Step.contextTypes = {
+Node.contextTypes = {
     config: object.isRequired,
 };

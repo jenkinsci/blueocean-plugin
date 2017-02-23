@@ -1,27 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { logging } from '@jenkins-cd/blueocean-core-js';
-import { EmptyStateView } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
+import { QueuedState } from './QueuedState';
 import { KaraokeService } from '../index';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pipeline');
-
-// FIXME: needs to use i18n for translations
-const QueuedState = () => (
-    <EmptyStateView tightSpacing>
-        <p>
-            <Icon {...{
-                size: 20,
-                icon: 'timer',
-                style: { fill: '#fff' },
-            }}
-            />
-            <span className="waiting">Waiting for run to start.</span>
-        </p>
-    </EmptyStateView>
-);
 
 @observer
 export default class Pipeline extends Component {
@@ -56,18 +41,39 @@ export default class Pipeline extends Component {
     }
 
     render() {
-        const { t, run, augmenter, branch, pipeline, followAlong, router, scrollToBottom,  } = this.props;
+        const { t, run, augmenter, branch, pipeline, followAlong, router, scrollToBottom, location } = this.props;
         if (run.isQueued()) {
-            return <QueuedState />;
+            const queuedMessage = t('rundetail.pipeline.queued.message', { defaultValue: 'Waiting for run to start' });
+            return <QueuedState message={queuedMessage} />;
         }
         if (this.pager.pending) {
             logger.debug('abort due to pager pending');
-            return null;
+            const queuedMessage = t('rundetail.pipeline.pending.message', { defaultValue: 'Waiting for backend to response' });
+            return <QueuedState message={queuedMessage} />;
         }
         logger.warn('props', this.pager.nodes === undefined);
         // here we decide what to do next if somebody clicks on a flowNode
         const afterClick = (id) => {
             logger.debug('clicked on node with id:', id);
+            const nextNode = this.pager.nodes.data.model.filter((item) => item.id === id)[0];
+            // remove trailing /
+            const pathname = location.pathname.replace(/\/$/, '');
+            let nextPath;
+
+            if (pathname.endsWith('pipeline')) {
+                nextPath = `${pathname}/${id}`;
+            } else {
+                // remove last bits
+                const pathArray = pathname.split('/');
+                pathArray.pop();
+                pathArray.shift();
+                nextPath = `/${pathArray.join('/')}/${id}`;
+            }
+            // check whether we have a parallel node - DO WE WHY
+            // const isParallel = false;//this.isParallel(nodeInfo);
+            location.pathname = nextPath;
+            logger.debug('redirecting now to:', location.pathname);
+            router.push(location);
         };
         //
         return (<div>
@@ -91,21 +97,20 @@ export default class Pipeline extends Component {
             />
             { this.pager.steps &&
                 <Steps
-                    nodeInformation={this.pager.steps.data}
                     {...{
+                        url: augmenter.generalLogUrl,
+                        nodeInformation: this.pager.steps.data,
+                        t,
                         followAlong,
                         router,
                         scrollToBottom,
-                        ...this.props,
-                        ...this.state,
-                        url: augmenter.generalLogUrl,
                     }}
                 />
             }
         </div>);
     }
 }
-
+//nodeInformation: this.pager.steps.data
 Pipeline.propTypes = {
     augmenter: PropTypes.object,
     pipeline: PropTypes.object,
