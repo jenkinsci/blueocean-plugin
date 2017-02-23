@@ -11,7 +11,7 @@ node
 node_modules
 work
 app.properties
-npm-debug.log
+npm-debug.log*
 **/.settings/
 **/.project
 **/.classpath

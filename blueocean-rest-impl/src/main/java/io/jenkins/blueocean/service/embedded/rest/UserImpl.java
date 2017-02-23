@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.google.common.collect.ImmutableMap;
 import hudson.model.Item;
 import hudson.model.User;
@@ -15,6 +16,7 @@ import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserPermission;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.Map;
@@ -26,6 +28,12 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class UserImpl extends BlueUser {
+    private static final String CREDENTIAL_CREATE_PERMISSION = CredentialsProvider.CREATE.name.toLowerCase();
+    private static final String CREDENTIAL_VIEW_PERMISSION = CredentialsProvider.VIEW.name.toLowerCase();
+    private static final String CREDENTIAL_DELETE_PERMISSION = CredentialsProvider.DELETE.name.toLowerCase();
+    private static final String CREDENTIAL_UPDATE_PERMISSION = CredentialsProvider.UPDATE.name.toLowerCase();
+    private static final String CREDENTIAL_MANAGE_DOMAINS_PERMISSION = StringUtils.uncapitalize(CredentialsProvider.MANAGE_DOMAINS.name);
+
     protected final User user;
 
     private final Reachable parent;
@@ -101,18 +109,20 @@ public class UserImpl extends BlueUser {
             return null;
         }
 
-        final boolean admin = isAdmin();
-        final Map<String,Boolean> pipelinePermission = getPipelinePermissions();
-
         return new BlueUserPermission() {
             @Override
             public boolean isAdministration() {
-                return admin;
+                return isAdmin();
             }
 
             @Override
             public Map<String, Boolean> getPipelinePermission() {
-                return pipelinePermission;
+                return UserImpl.this.getPipelinePermissions();
+            }
+
+            @Override
+            public Map<String, Boolean> getCredentialPermission() {
+                return UserImpl.this.getCredentialPermissions();
             }
         };
     }
@@ -133,6 +143,16 @@ public class UserImpl extends BlueUser {
                 BluePipeline.START_PERMISSION, Jenkins.getInstance().hasPermission(Item.BUILD),
                 BluePipeline.STOP_PERMISSION, Jenkins.getInstance().hasPermission(Item.CANCEL),
                 BluePipeline.CONFIGURE_PERMISSION, Jenkins.getInstance().hasPermission(Item.CONFIGURE)
+        );
+    }
+
+    private Map<String, Boolean> getCredentialPermissions(){
+        return ImmutableMap.of(
+                CREDENTIAL_CREATE_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.CREATE),
+                CREDENTIAL_VIEW_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.VIEW),
+                CREDENTIAL_DELETE_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.DELETE),
+                CREDENTIAL_UPDATE_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.UPDATE),
+                CREDENTIAL_MANAGE_DOMAINS_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.MANAGE_DOMAINS)
         );
     }
 

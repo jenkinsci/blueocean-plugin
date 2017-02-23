@@ -39,8 +39,8 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.74",
-    "@jenkins-cd/design-language": "0.0.116",
+    "@jenkins-cd/blueocean-core-js": "0.0.78",
+    "@jenkins-cd/design-language": "0.0.119",
     "@jenkins-cd/js-extensions": "0.0.33",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/react-material-icons": "1.0.0",
@@ -57,6 +57,7 @@
     "react": "15.3.2",
     "react-addons-css-transition-group": "15.3.2",
     "react-addons-update": "15.3.2",
+    "react-autocomplete": "1.4.0",
     "react-dom": "15.3.2",
     "react-i18next": "1.10.1",
     "react-redux": "4.4.5",
