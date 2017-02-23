@@ -5,7 +5,7 @@ import { FormElement, TextInput } from '@jenkins-cd/design-language';
 import FlowStep from '../../flow2/FlowStep';
 import STATE from '../GithubCreationState';
 
-const GITHUB_URL = 'https://help.github.com/articles/creating-an-access-token-for-command-line-use/';
+const GITHUB_URL = 'https://github.com/settings/tokens/new?scopes=repo,read:user,user:email';
 
 // TODO: temporary until we get more structured errors
 const ACCESS_TOKEN_INVALID = /Invalid accessToken/;
@@ -70,7 +70,7 @@ export default class GithubCredentialsStep extends React.Component {
             <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} title={title}>
                 <p className="instructions">
                     Jenkins needs an access key to authorize itself with Github. &nbsp;
-                    <a href={GITHUB_URL} target="_blank">Learn how to create an access key.</a>
+                    <a href={GITHUB_URL} target="_blank">Create an access key here.</a>
                 </p>
 
                 <FormElement errorMessage={this.state.tokenErrorMsg}>
