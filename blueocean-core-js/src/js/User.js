@@ -72,7 +72,7 @@ export class User {
     }
 
     get _class() {
-        return this._blueUser.class;
+        return this._blueUser._class;
     }
 
     get _links() {
