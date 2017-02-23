@@ -2229,11 +2229,11 @@ curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost
 }'
 ```
 
-- If file path doesn't exist then a new file will be created
-- If *sha* provided and file path exists then it must match with the sha of existing file, else 400 (Bad Request) error will be 
-  returned.
-- If branch element is not provided file will be saved on default branch (typically maser)
-- If branch element is present and this branch doesn't exist then a new branch will be created off default branch HEAD
+- If file **path** doesn't exist then a new file will be created
+- If **sha** is provided and file **path** exists then it must match with the sha of existing file, else 400 (Bad Request) error will be returned. 
+- If **sha** matches then the file will be updated with the content provided in the request
+- If **branch** element is not provided file will be saved on default branch (typically maser)
+- If **branch** element is present and this branch doesn't exist then a new branch will be created off default branch HEAD
 
 Response
 
