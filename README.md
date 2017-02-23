@@ -189,3 +189,31 @@ You can chat to folks on #jenkins-ux on freenode (IRC). You can also email the j
 Advanced front end development with react, redux and stuff by @scherler: https://docs.google.com/presentation/d/1dbaYTIGjGT9xX1JnWnaqjMumq94M9nGwljfMQaVtUFc/edit?usp=sharing
 
 Watch @i386 and @jenkinsci on Twitter for frequent updates and news. 
+
+## Upgrading dependencies
+
+If you wish to upgrade dependencies or test an upgrade to something like pipeline (as an example), `pom.xml` in the root of the project should have all the versions specified, a pull request to validate the changes is appreciated. 
+
+If you wanted to see if a new version of a library works with blue ocean: 
+
+* If it isn't published yet, release a beta to the experimental update center
+* Open a pull request with the changes to the `pom.xml` in the root of this project (beta dependencies are fine)
+* Mark the pull request as "needs-review"
+* IF the dependency being upgraded is only released to the experimental update center (ie a beta) please also mark the PR as 'DO NOT MERGE' (once it has been released to the main update center, this can be removed)
+* Check back later for build success (ie unit tests)
+* The Acceptance Test Harness will normally be automatically triggered after a successful PR build, however, it ie best to check it has run: (https://ci.blueocean.io/job/ATH-Jenkinsfile/job/master/) - consult a blue ocean contributor (see below) and they will ensure it has run. This is required for a dependency change.
+* Contact a contributor (see below) to let them know of your proposed change so they can review it and do extra testing
+
+Once the PR is accepted, it will be in use on "dogfood" on ci.blueocean.io/blue - and thus it will be in day to day use almost immediately. If it does bad things, expect to hear about it. 
+
+
+Contacting contributors: 
+
+Gitter is the day to day chat venue used, you can log in with your github identity.
+
+* look for @michaelneale, @kzantow, @vivek or @i386 on gitter https://gitter.im/jenkinsci/blueocean-plugin or #jenkins-ux on freenode
+* Post to the mailing list: https://groups.google.com/forum/#!forum/jenkinsci-ux
+
+
+
+The Acceptance test suite is located here: https://github.com/jenkinsci/blueocean-acceptance-test
