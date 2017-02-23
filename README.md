@@ -199,6 +199,7 @@ If you wanted to see if a new version of a library works with blue ocean:
 * If it isn't published yet, release a beta to the experimental update center
 * Open a pull request with the changes to the `pom.xml` in the root of this project (beta dependencies are fine)
 * Mark the pull request as "needs-review"
+* Make sure to "@mention" people - @i386, @vivek are some good ones to start with in a pull request description
 * IF the dependency being upgraded is only released to the experimental update center (ie a beta) please also mark the PR as 'DO NOT MERGE' (once it has been released to the main update center, this can be removed)
 * Check back later for build success (ie unit tests)
 * The Acceptance Test Harness will normally be automatically triggered after a successful PR build, however, it ie best to check it has run: (https://ci.blueocean.io/job/ATH-Jenkinsfile/job/master/) - consult a blue ocean contributor (see below) and they will ensure it has run. This is required for a dependency change.
