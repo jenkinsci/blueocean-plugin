@@ -7,9 +7,7 @@ input[type="text"] {
 
 .TextInput, .PasswordInput {
     .TextInput-medium;
-    display: inline-flex;
-    flex-flow: row nowrap;
-    align-items: center;
+    display: inline-block;
     position: relative;
     background-color: #fff;
 
@@ -31,47 +29,52 @@ input[type="text"] {
     }
 
     .TextInput-icon {
+        position: absolute;
+        top: 50%;
         fill: #999;
         cursor: default;
     }
 }
 
 
-.icon-rules(@icon-size, @icon-padding) {
-    &.u-icon-left {
-        margin-left: @icon-padding;
+.icon-rules(@icon-size, @icon-padding, @input-padding) {
+    .TextInput-icon {
+        width: @icon-size;
+        height: @icon-size;
+        margin-top: -(@icon-size / 2);
 
+        .svg-icon {
+            width: @icon-size;
+            height: @icon-size;
+        }
+    }
+
+    &.u-icon-left {
         .TextInput-icon.u-icon-left {
-            margin-right: -(@icon-size + @icon-padding);
+            left: @icon-padding;
         }
 
         .TextInput-control {
             padding-left: @icon-size + @icon-padding;
-            margin-right: -(@icon-size - @icon-padding);
+            margin-right: -(@icon-size + @icon-padding) + @input-padding;
         }
     }
 
     &.u-icon-right {
         .TextInput-icon.u-icon-right {
-            margin-left: -(@icon-size + @icon-padding);
-            margin-right: -2 * @icon-padding;
+            right: @icon-padding;
         }
 
         .TextInput-control {
             padding-right: @icon-size + @icon-padding;
+            margin-right: -(@icon-size + @icon-padding) + @input-padding;
         }
     }
 
     &.u-icon-left.u-icon-right {
-        .TextInput-icon.u-icon-right {
-            margin-left: -2 * @icon-padding;
-            margin-right: -(@icon-size + @icon-padding);
+        .TextInput-control {
+            margin-right: 2 * (-(@icon-size + @icon-padding) + @input-padding);
         }
-    }
-
-    .TextInput-icon, .TextInput-icon .svg-icon {
-        width: @icon-size;
-        height: @icon-size;
     }
 }
 
@@ -79,8 +82,7 @@ input[type="text"] {
 // sizing
 
 .TextInput-small {
-    min-width: 175px;
-    .icon-rules(20px, 4px);
+    .icon-rules(20px, 4px, 8px);
 
     .TextInput-control {
         padding: 5px 8px;
@@ -88,8 +90,7 @@ input[type="text"] {
 }
 
 .TextInput-medium {
-    min-width: 200px;
-    .icon-rules(24px, 4px);
+    .icon-rules(24px, 4px, 10px);
 
     .TextInput-control {
         padding: 6px 10px;
@@ -97,8 +98,7 @@ input[type="text"] {
 }
 
 .TextInput-large {
-    min-width: 235px;
-    .icon-rules(28px, 8px);
+    .icon-rules(28px, 6px, 12px);
 
     .TextInput-control {
         padding: 8px 12px;
