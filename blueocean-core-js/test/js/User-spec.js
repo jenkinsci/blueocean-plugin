@@ -10,7 +10,7 @@ import { User } from '../../src/js/User';
 
 
 describe('User', () => {
-    describe('permissions', () => {  
+    describe('permissions', () => {
         it('User has pipeline permissions', () => {
             const user = new User(utils.clone(require('./data/user-1.json')));
             assert.equal(user.id, 'blah');
