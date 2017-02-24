@@ -6,7 +6,7 @@ import { KaraokeService } from '../index';
 import LogConsole from './LogConsole';
 import InputStep from './InputStep';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Steps');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Step');
 const timeManager = new TimeManager();
 
 @observer

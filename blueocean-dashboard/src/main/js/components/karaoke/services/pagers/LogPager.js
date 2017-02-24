@@ -37,7 +37,6 @@ export class LogPager {
      */
     @computed
     get log() {
-        debugger;
         return this.bunker.getItem(this.augmenter.step.logUrl);
     }
     /**
@@ -60,7 +59,6 @@ export class LogPager {
      */
     @action
     fetchLog({ start, followAlong }) {
-        debugger;
         clearTimeout(this.timeout);
         // while fetching we are pending
         this.pending = true;

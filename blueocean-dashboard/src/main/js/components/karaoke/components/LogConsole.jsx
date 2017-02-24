@@ -8,13 +8,14 @@ const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
 const RENDER_CHUNK_SIZE = 500;
 const RERENDER_DELAY = 17;
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.LogConsole');
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.LogConsole');
 
 export class LogConsole extends Component {
 
     constructor(props) {
         super(props);
+        logger.warn('LogConsole');
 
         this.queuedLines = [];
         this.state = {
