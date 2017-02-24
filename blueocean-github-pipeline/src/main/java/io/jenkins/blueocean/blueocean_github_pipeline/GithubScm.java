@@ -33,6 +33,7 @@ import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.HttpConnector;
+import org.kohsuke.github.HttpException;
 import org.kohsuke.github.RateLimitHandler;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
@@ -166,6 +167,16 @@ public class GithubScm extends Scm {
                 }
             };
         } catch (IOException e) {
+            if(e instanceof HttpException) {
+                HttpException ex = (HttpException) e;
+                if (ex.getResponseCode() == 401) {
+                    throw new ServiceException
+                            .PreconditionRequired("Invalid Github accessToken", ex);
+                }else if(ex.getResponseCode() == 403){
+                    throw new ServiceException
+                            .PreconditionRequired("Github accessToken does not have required scopes. Expected scopes 'user:email, repo'", ex);
+                }
+            }
             throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
         }
     }
@@ -196,33 +207,10 @@ public class GithubScm extends Scm {
             throw new ServiceException.BadRequestExpception("accessToken is required");
         }
         try {
-            User authenticatedUser =  User.current();
-            if(authenticatedUser == null){
-                throw new ServiceException.UnauthorizedException("No authenticated user found");
-            }
+            User authenticatedUser =  getAuthenticatedUser();
 
             HttpURLConnection connection = connect(String.format("%s/%s", getUri(), "user"),accessToken);
-
-            //check for user:email or user AND repo scopes
-            String scopesHeader = connection.getHeaderField("X-OAuth-Scopes");
-            if(scopesHeader == null){
-                throw new ServiceException.ForbiddenException("No scopes associated with this token. Expected scopes 'user:email, repo'.");
-            }
-            List<String> scopes = new ArrayList<>();
-            for(String s: scopesHeader.split(",")){
-                scopes.add(s.trim());
-            }
-            List<String> missingScopes = new ArrayList<>();
-            if(!scopes.contains(USER_EMAIL_SCOPE) && !scopes.contains(USER_SCOPE)){
-                missingScopes.add(USER_EMAIL_SCOPE);
-            }
-            if(!scopes.contains(REPO_SCOPE)){
-                missingScopes.add(REPO_SCOPE);
-            }
-            if(!missingScopes.isEmpty()){
-                throw new ServiceException.ForbiddenException("Invalid token, its missing scopes: "+ StringUtils.join(missingScopes, ","));
-            }
-
+            validateAccessTokenScopes(connection);
             String data = IOUtils.toString(connection.getInputStream());
             GHUser user = GithubScm.om.readValue(data, GHUser.class);
 
@@ -269,8 +257,11 @@ public class GithubScm extends Scm {
         connection.connect();
 
         int status = connection.getResponseCode();
-        if(status == 401 || status == 403){
-            throw new ServiceException.ForbiddenException("Invalid accessToken");
+        if(status == 401){
+            throw new ServiceException.PreconditionRequired("Invalid accessToken");
+        }
+        if(status == 403){
+            throw new ServiceException.PreconditionRequired("Github accessToken does not have required scopes. Expected scopes 'user:email, repo'");
         }
         if(status == 404){
             throw new ServiceException.NotFoundException("Not Found");
@@ -280,6 +271,28 @@ public class GithubScm extends Scm {
         }
 
         return connection;
+    }
+
+    private void validateAccessTokenScopes(HttpURLConnection connection) {
+        //check for user:email or user AND repo scopes
+        String scopesHeader = connection.getHeaderField("X-OAuth-Scopes");
+        if(scopesHeader == null){
+            throw new ServiceException.PreconditionRequired("No scopes associated with this token. Expected scopes 'user:email, repo'.");
+        }
+        List<String> scopes = new ArrayList<>();
+        for(String s: scopesHeader.split(",")){
+            scopes.add(s.trim());
+        }
+        List<String> missingScopes = new ArrayList<>();
+        if(!scopes.contains(USER_EMAIL_SCOPE) && !scopes.contains(USER_SCOPE)){
+            missingScopes.add(USER_EMAIL_SCOPE);
+        }
+        if(!scopes.contains(REPO_SCOPE)){
+            missingScopes.add(REPO_SCOPE);
+        }
+        if(!missingScopes.isEmpty()){
+            throw new ServiceException.PreconditionRequired("Invalid token, its missing scopes: "+ StringUtils.join(missingScopes, ","));
+        }
     }
 
     private HttpResponse createResponse(final String credentialId) {
