@@ -17,11 +17,13 @@ import GithubConfirmDiscoverStep from './steps/GithubConfirmDiscoverStep';
 import GithubRepositoryStep from './steps/GithubRepositoryStep';
 import GithubCompleteStep from './steps/GithubCompleteStep';
 
-const LOGGER = logging.logger('io.jenkins.blueocean.github-pipeline.GithubFlowManager');
+const LOGGER = logging.logger('io.jenkins.blueocean.github-pipeline');
 const MIN_DELAY = 500;
 const FIRST_PAGE = 1;
 const PAGE_SIZE = 100;
 const SSE_TIMEOUT_DELAY = 1000 * 60;
+const PIPELINE_CHECK_DELAY = 1000 * 5;
+
 
 export default class GithubFlowManager extends FlowManager {
 
@@ -78,6 +80,7 @@ export default class GithubFlowManager extends FlowManager {
             this.stateId === STATE.PENDING_CREATION_EVENTS ||
             this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
             this.stateId === STATE.STEP_COMPLETE_EVENT_TIMEOUT ||
+            this.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE ||
             this.stateId === STATE.STEP_COMPLETE_SUCCESS;
     }
 
@@ -217,6 +220,7 @@ export default class GithubFlowManager extends FlowManager {
         const { isFound, isOrgFolder, orgFolder } = result;
 
         if (isFound && isOrgFolder) {
+            LOGGER.debug(`selected existing org folder: ${orgFolder.name}`);
             this.existingOrgFolder = orgFolder;
 
             this.renderStep({
@@ -225,6 +229,8 @@ export default class GithubFlowManager extends FlowManager {
                 afterStateId: STATE.STEP_CHOOSE_ORGANIZATION,
             });
         } else if (!result.isFound) {
+            LOGGER.debug('selected new organization');
+
             this.renderStep({
                 stateId: STATE.STEP_CHOOSE_DISCOVER,
                 stepElement: <GithubChooseDiscoverStep />,
@@ -378,16 +384,20 @@ export default class GithubFlowManager extends FlowManager {
 
     @action
     _saveOrgFolderSuccess(orgFolder) {
+        LOGGER.debug(`org folder saved successfully: ${orgFolder.name}`);
         this.changeState(STATE.PENDING_CREATION_EVENTS);
         this.savedOrgFolder = orgFolder;
     }
 
     _saveOrgFolderFailure() {
+        LOGGER.error('org folder save failed!');
         this.changeState(STATE.STEP_COMPLETE_SAVING_ERROR);
     }
 
     _initListeners() {
         this._cleanupListeners();
+
+        LOGGER.debug('listening for org folder and multibranch indexing events...');
 
         this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
         this._sseTimeoutId = setTimeout(() => {
@@ -396,6 +406,10 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _cleanupListeners() {
+        if (this._sseSubscribeId || this._sseTimeoutId) {
+            LOGGER.debug('cleaning up existing SSE listeners');
+        }
+
         if (this._sseSubscribeId) {
             sseService.removeHandler(this._sseSubscribeId);
             this._sseSubscribeId = null;
@@ -414,6 +428,10 @@ export default class GithubFlowManager extends FlowManager {
             return;
         }
 
+        if (LOGGER.isDebugEnabled()) {
+            this._logEvent(event);
+        }
+
         if (event.job_orgfolder_indexing_result === 'FAILURE') {
             this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
         }
@@ -426,19 +444,48 @@ export default class GithubFlowManager extends FlowManager {
             this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
         }
 
-        const repoName = event.blueocean_job_pipeline_name.split('/').pop();
-
-        if (!this.selectedAutoDiscover && event.job_multibranch_indexing_result === 'SUCCESS' && this.selectedRepository.name === repoName) {
-            this.savedPipeline = {
-                organization: event.jenkins_org,
-                fullName: event.job_name,
-            };
-            this._incrementPipelineCount();
-            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+        if (!this.selectedAutoDiscover && event.job_orgfolder_indexing_result === 'SUCCESS') {
+            const pipelineFullName = `${this.selectedOrganization.name}/${this.selectedRepository.name}`;
+            this._checkForSingleRepoCreation(pipelineFullName);
+            this._cleanupListeners();
         }
+    }
 
-        if (LOGGER.isDebugEnabled()) {
-            this._logEvent(event);
+    /**
+     * Complete creation process after an individual pipeline was created.
+     * @param pipeline
+     * @private
+     */
+    _completeSingleRepo(pipeline) {
+        this.savedPipeline = pipeline;
+        LOGGER.info(`creation succeeeded for ${pipeline.fullName}`);
+
+        this._incrementPipelineCount();
+        this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+    }
+
+    /**
+     * Check for creation of a single pipeline within an org folder
+     * @param pipelineName
+     * @private
+     */
+    _checkForSingleRepoCreation(pipelineName) {
+        LOGGER.debug('org folder indexing completed but no pipeline has been created (yet?)');
+        LOGGER.debug(`will check for single repo creation of ${pipelineName} in ${PIPELINE_CHECK_DELAY}ms`);
+
+        setTimeout(() => {
+            this._creationApi.findExistingOrgFolderPipeline(pipelineName)
+                .then(data => this._checkForSingleRepoCreationComplete(data));
+        }, PIPELINE_CHECK_DELAY);
+    }
+
+    _checkForSingleRepoCreationComplete({ isFound, pipeline }) {
+        LOGGER.debug(`check for pipeline complete. created? ${isFound}`);
+
+        if (isFound) {
+            this._completeSingleRepo(pipeline);
+        } else {
+            this._finishListening(STATE.STEP_COMPLETE_MISSING_JENKINSFILE);
         }
     }
 
@@ -455,6 +502,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _onSseTimeout() {
+        LOGGER.debug(`wait for events timed out after ${SSE_TIMEOUT_DELAY}ms`);
         this.changeState(STATE.STEP_COMPLETE_EVENT_TIMEOUT);
         this._cleanupListeners();
     }
