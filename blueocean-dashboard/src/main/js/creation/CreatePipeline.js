@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { Page } from '@jenkins-cd/design-language';
 import { ContentPageHeader, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
+import { ClassicCreationLink } from './ClassicCreationLink';
 import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
 import VerticalStep from './flow2/VerticalStep';
@@ -62,28 +63,32 @@ export default class CreatePipeline extends React.Component {
 
         return (
             <Page>
-                <ContentPageHeader>
-                    <h1>{t('creation.core.header.title')}</h1>
-                </ContentPageHeader>
-                <main className="create-pipeline">
-                    <article className="content-area">
-                        <VerticalStep className="first-step" status={firstStepStatus}>
-                            <h1>{t('creation.core.intro.scm_provider')}</h1>
+                <div className="create-pipeline">
+                    <ContentPageHeader>
+                        <h1>{t('creation.core.header.title')}</h1>
 
-                            <CreatePipelineScmListRenderer
-                                extensionPoint="jenkins.pipeline.create.scm.provider"
-                                onSelection={(provider) => this._onSelection(provider)}
-                            />
-                        </VerticalStep>
+                        <ClassicCreationLink />
+                    </ContentPageHeader>
+                    <main>
+                        <article className="content-area">
+                            <VerticalStep className="first-step" status={firstStepStatus}>
+                                <h1>{t('creation.core.intro.scm_provider')}</h1>
 
-                        <Sandbox>
-                            <CreatePipelineStepsRenderer
-                                selectedProvider={this.state.selectedProvider}
-                                onCompleteFlow={(data) => this._onCompleteFlow(data)}
-                            />
-                        </Sandbox>
-                    </article>
-                </main>
+                                <CreatePipelineScmListRenderer
+                                    extensionPoint="jenkins.pipeline.create.scm.provider"
+                                    onSelection={(provider) => this._onSelection(provider)}
+                                />
+                            </VerticalStep>
+
+                            <Sandbox>
+                                <CreatePipelineStepsRenderer
+                                    selectedProvider={this.state.selectedProvider}
+                                    onCompleteFlow={(data) => this._onCompleteFlow(data)}
+                                />
+                            </Sandbox>
+                        </article>
+                    </main>
+                </div>
             </Page>
         );
     }

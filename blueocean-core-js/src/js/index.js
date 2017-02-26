@@ -35,6 +35,7 @@ export { stringUtil as StringUtil };
 export Fullscreen from './Fullscreen';
 export NotFound from './NotFound';
 
+export { ShowMoreButton } from './components/ShowMoreButton';
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton as RunButtonBase } from './components/RunButton';
 export {

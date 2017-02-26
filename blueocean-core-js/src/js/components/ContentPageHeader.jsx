@@ -26,7 +26,7 @@ export const SiteHeader = props => {
     return (
         <BasicHeader className="ContentPageHeader">
             <TopNav>
-                <BlueLogo />
+                <BlueLogo href={props.homeURL} />
                 <div className="u-flex-grow" />
                 { topNavLinks }
                 { userComponents }
@@ -39,6 +39,7 @@ SiteHeader.propTypes = {
     topNavLinks: PropTypes.node,
     userComponents: PropTypes.node,
     children: PropTypes.node,
+    homeURL: PropTypes.string,
 };
 
 export const ContentPageHeader = props => {

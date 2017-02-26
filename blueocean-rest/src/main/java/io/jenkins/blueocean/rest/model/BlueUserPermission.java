@@ -25,4 +25,8 @@ public abstract class BlueUserPermission {
     /* pipeline or job permission */
     @Exported(name = PIPELINE)
     public abstract Map<String, Boolean> getPipelinePermission();
+
+    /* credential permission */
+    @Exported(name = CREDENTIAL)
+    public abstract Map<String, Boolean> getCredentialPermission();
 }

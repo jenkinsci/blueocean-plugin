@@ -3,14 +3,14 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.73-git",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.73-git",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.73-git.tgz"
+      "version": "0.0.78",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.78",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.78.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.115",
-      "from": "@jenkins-cd/design-language@0.0.115",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.115.tgz"
+      "version": "0.0.119",
+      "from": "@jenkins-cd/design-language@0.0.119",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.119.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -45,9 +45,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.18",
-      "from": "@jenkins-cd/sse-gateway@0.0.18",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.18.tgz"
+      "version": "0.0.19",
+      "from": "@jenkins-cd/sse-gateway@0.0.19",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.19.tgz"
     },
     "@jenkins-cd/storage": {
       "version": "0.0.6",
