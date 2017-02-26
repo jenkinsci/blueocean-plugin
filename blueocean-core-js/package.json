@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.72",
+  "version": "0.0.73-git",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "gulp": "gulp",
     "bundle:watch": "gulp watch",
     "test": "gulp test",
-    "prepublish": "gulp"
+    "prepublish": "npm shrinkwrap --dev && gulp"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
   "contributors": [
