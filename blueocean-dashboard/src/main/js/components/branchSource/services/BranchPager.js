@@ -3,6 +3,7 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 import { GenericApi } from '../../rest/GenericApi';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.BranchPager');
+const genericApi = new GenericApi();
 
 /**
  * The pager fetches pages of data from the BlueOcean api. It fetches pages of data, then
@@ -42,11 +43,10 @@ export class BranchPager {
      * Creates an instance of Pager and fetches the first page.
      *
      * @param {BunkerService} bunker - Data store
-     * @param {object} pipeline Pipeline that this pager belongs to.
-     * @param {string} branch the name of the branch we are requesting
-     * @param {string} run Run that this pager belongs to.
+     * @param {string} url we are requesting
      */
     constructor(bunker, url) {
+        this.bunker = bunker;
         this.url = url;
         this.fetchBranchDetails();
     }
@@ -61,9 +61,9 @@ export class BranchPager {
         // while fetching we are pending
         this.pending = true;
 
-        return GenericApi.getHref(this.url)
+        return genericApi.getHref(this.url)
             .then(action('Process pager data', result => {
-                debugger
+                result._links.self.href = this.url; // eslint-disable-line
                 this.bunker.setItem(result);
                 this.pending = false;
             })).catch(err => {

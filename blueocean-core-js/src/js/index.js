@@ -27,8 +27,9 @@ export AppConfig from './config';
 export Security from './security';
 export Paths from './paths/index';
 
-import { BunkerService, Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler, LocationService } from './services/index';
-export { BunkerService, Pager, PagerService, PipelineService, SSEService, ActivityService };
+import { Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler, LocationService } from './services/index';
+export { Pager, PagerService, PipelineService, SSEService, ActivityService };
+export { BunkerService } from './services/BunkerService';
 import * as stringUtil from './stringUtil';
 export { stringUtil as StringUtil };
 

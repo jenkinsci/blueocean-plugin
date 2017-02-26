@@ -1,8 +1,7 @@
-import { BunkerService, logging } from '@jenkins-cd/blueocean-core-js';
+import { BunkerService } from '@jenkins-cd/blueocean-core-js';
 import { BranchPager } from './BranchPager';
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Service');
 /*
- * This class provides karaoke related services.
+ * This class provides a simple branch service.
  *
  * @export
  * @class BranchService
@@ -12,8 +11,7 @@ export class BranchService extends BunkerService {
     /**
      * Gets the Branch pager
      *
-     * @param {object} pipeline that this pager belongs to.
-     * @param {string} branch the name of the branch we are requesting
+     * @param {string} url we are requesting
      * @returns {Pager} Pager for this pipelne.
      */
     branchPager(url) {

@@ -93,7 +93,7 @@ export class RunRecord extends Record({
     }
 
     getParentUrl() {
-        if(this._links && this._links.parent) {
+        if (this._links && this._links.parent) {
             return this._links.parent.href;
         }
         return null;
