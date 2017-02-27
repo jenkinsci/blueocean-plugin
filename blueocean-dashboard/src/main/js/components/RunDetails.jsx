@@ -43,9 +43,9 @@ const classicConfigLink = (pipeline) => {
 const classicJobRunLink = (pipeline, branch, runId) => {
     let runUrl;
     if (pipeline.branchNames) {
-        runUrl = `${rootPath(pipeline.fullName)}job/${branch}/${runId}`;
+        runUrl = `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
     } else {
-        runUrl = `${rootPath(pipeline.fullName)}${runId}`;
+        runUrl = `${rootPath(pipeline.fullName)}${encodeURIComponent(runId)}`;
     }
     return (
         <a href={ runUrl } style={ { height: '24px' } } title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
