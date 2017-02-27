@@ -13,6 +13,7 @@ const SCROLL_DELAY_MILLIS = 50;
 export default class FlowStep extends React.Component {
 
     componentDidMount() {
+        console.log(this.props.status);
         this._adjustScrolling({}, this.props);
     }
 
@@ -60,13 +61,13 @@ export default class FlowStep extends React.Component {
         const status = props.error ? Status.ERROR : props.status;
 
         return (
-            <div ref={step => this._bindStep(step)}>
-                <VerticalStep
-                    className={props.className}
-                    status={status}
-                    percentage={percentage}
-                    isLastStep={props.isLastStep}
-                >
+            <VerticalStep
+                className={props.className}
+                status={status}
+                percentage={percentage}
+                isLastStep={props.isLastStep}
+            >
+                <div ref={step => this._bindStep(step)}>
                     <h1>{props.title}</h1>
                     {
                         props.status !== Status.INCOMPLETE &&
@@ -74,8 +75,8 @@ export default class FlowStep extends React.Component {
                             {props.children}
                         </fieldset>
                     }
-                </VerticalStep>
-            </div>
+                </div>
+            </VerticalStep>
         );
     }
 }
