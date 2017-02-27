@@ -3,6 +3,7 @@ import { storiesOf } from '@kadira/storybook';
 import { TimeDuration } from '../components/TimeDuration';
 
 storiesOf('TimeDuration', module)
+    .add('<1s', lessThan1s)
     .add('short duration', standard)
     .add('short duration - locale de', standardDe)
     .add('live update', liveUpdate)
@@ -10,6 +11,12 @@ storiesOf('TimeDuration', module)
     .add('long duration, all date parts', complexHint)
     .add('long duration, all date parts - locale de', complexHintDe)
     .add('with custom hint', customHint);
+
+function lessThan1s() {
+    return (
+        <TimeDuration millis={999} />
+    );
+}
 
 function standard() {
     return (

@@ -96,11 +96,16 @@ export class TimeDuration extends Component {
         const millis = parseInt(this.props.millis) + this.state.elapsed;
 
         if (!isNaN(millis)) {
+            if(millis < 1000) {
+                return (
+                    <span title={this.props.hint ? this.props.hint : '<1s'}>&#x3C;1s</span>
+                );
+            }
             const {
                 locale = 'en',
-                displayFormat = 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]',
-                liveFormat = 'm[ minutes] s[ seconds]',
-                hintFormat = 'M [mos], d [days], h[h], m[m], s[s]',
+                displayFormat = 'd[d] h[h] m[m] s[s]',
+                liveFormat = 'd[d] h[h] m[m] s[s]',
+                hintFormat = 'M [months], d [days], h [hours], m [minutes], s [seconds]',
             } = this.props;
             moment.locale(locale);
             // in case we are in live update we are interested in seconds
