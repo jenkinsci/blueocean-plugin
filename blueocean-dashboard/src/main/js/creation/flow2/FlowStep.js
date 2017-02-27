@@ -13,7 +13,6 @@ const SCROLL_DELAY_MILLIS = 50;
 export default class FlowStep extends React.Component {
 
     componentDidMount() {
-        console.log(this.props.status);
         this._adjustScrolling({}, this.props);
     }
 
