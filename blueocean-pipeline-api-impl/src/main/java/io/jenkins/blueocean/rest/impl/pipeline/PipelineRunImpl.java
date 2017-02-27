@@ -50,7 +50,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         super(run, parent);
     }
 
-    @Exported(name = Branch.BRANCH, inline = true, skipNull = true)
+    @Exported(name = Branch.BRANCH, inline = true)
     public Branch getBranch() {
         return Branch.getBranch(run.getParent());
     }
