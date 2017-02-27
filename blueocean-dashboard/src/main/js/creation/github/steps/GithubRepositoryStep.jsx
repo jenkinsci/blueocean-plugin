@@ -92,7 +92,7 @@ export default class GithubRepositoryStep extends React.Component {
                         "{orgName}" already have Pipelines.
                     </p>
 
-                    <button onClick={() => this._exit()}>Exit</button>
+                    <button onClick={() => this._exit()}>Back to Pipelines</button>
                 </div>
                 }
 
@@ -104,7 +104,7 @@ export default class GithubRepositoryStep extends React.Component {
                         Please pick a different organization or choose "Automatically Discover" instead.
                     </p>
 
-                    <button onClick={() => this._exit()}>Exit</button>
+                    <button onClick={() => this._exit()}>Back to Pipelines</button>
                 </div>
                 }
             </FlowStep>
