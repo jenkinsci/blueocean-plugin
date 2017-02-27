@@ -21,6 +21,7 @@ const GithubCreationState = new Enum({
     PENDING_CREATION_EVENTS: 'pending_creation_events',
     STEP_COMPLETE_EVENT_ERROR: 'step_complete_event_error',
     STEP_COMPLETE_EVENT_TIMEOUT: 'step_complete_event_timeout',
+    STEP_COMPLETE_MISSING_JENKINSFILE: 'step_complete_missing_jenkinsfile',
     STEP_COMPLETE_SUCCESS: 'step_complete_success',
 });
 

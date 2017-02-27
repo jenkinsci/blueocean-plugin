@@ -54,6 +54,30 @@ export class GithubCreationApi {
         };
     }
 
+    findExistingOrgFolderPipeline(pipelineName) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const pipelineUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/${pipelineName}`);
+        return this._fetch(pipelineUrl)
+            .then(response => capabilityAugmenter.augmentCapabilities(response))
+            .then(
+                pipeline => this._findExistingOrgFolderPipelineSuccess(pipeline),
+                () => this._findExistingOrgFolderPipelineFailure(),
+            );
+    }
+
+    _findExistingOrgFolderPipelineSuccess(pipeline) {
+        return {
+            isFound: true,
+            pipeline,
+        };
+    }
+
+    _findExistingOrgFolderPipelineFailure() {
+        return {
+            isFound: false,
+        };
+    }
+
     createOrgFolder(credentialId, organization, repoNames = []) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/`);
