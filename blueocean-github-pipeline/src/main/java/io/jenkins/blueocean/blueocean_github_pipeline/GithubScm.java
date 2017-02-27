@@ -193,7 +193,7 @@ public class GithubScm extends Scm {
         return credentialId;
     }
 
-    public static class RateLimitHandlerImpl extends RateLimitHandler{
+    static class RateLimitHandlerImpl extends RateLimitHandler{
         @Override
         public void onError(IOException e, HttpURLConnection httpURLConnection) throws IOException {
             throw new ServiceException.BadRequestExpception("API rate limit reached."+e.getMessage(), e);
@@ -273,7 +273,7 @@ public class GithubScm extends Scm {
         return connection;
     }
 
-    private void validateAccessTokenScopes(HttpURLConnection connection) {
+    static void validateAccessTokenScopes(HttpURLConnection connection) {
         //check for user:email or user AND repo scopes
         String scopesHeader = connection.getHeaderField("X-OAuth-Scopes");
         if(scopesHeader == null){
