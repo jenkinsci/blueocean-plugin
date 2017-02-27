@@ -257,7 +257,7 @@ export function relativeUrl(location, ...args) {
  * it was unable to decode the page URL.
  */
 export function toClassicJobPage(pageUrl, isMultibranch = false) {
-    const pageUrlTokens = pageUrl.split('/');
+    const pageUrlTokens = pageUrl.split('/').filter((token) => typeof token === 'string' && token !== '');
 
     // Remove all path elements up to and including the Jenkins
     // organization name.
