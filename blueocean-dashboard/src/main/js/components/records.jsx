@@ -91,6 +91,13 @@ export class RunRecord extends Record({
         }
         return this.state;
     }
+
+    getParentUrl() {
+        if (this._links && this._links.parent) {
+            return this._links.parent.href;
+        }
+        return null;
+    }
 }
 
 export const PullRequestRecord = Record({

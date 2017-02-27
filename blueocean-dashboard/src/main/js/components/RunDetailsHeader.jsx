@@ -7,6 +7,9 @@ import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-l
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { ResultPageHeader } from '@jenkins-cd/blueocean-core-js';
 
+import { Branch } from './branchSource';
+import { prefixIfNeeded } from './rest/prefixIfNeeded';
+
 class RunDetailsHeader extends Component {
 
     componentWillMount() {
@@ -36,6 +39,9 @@ class RunDetailsHeader extends Component {
             runButton,
         } = this.props;
 
+        // needed for getting infos of the branch
+        const parentUrl = prefixIfNeeded(run.getParentUrl());
+
         const { fullDisplayName } = pipeline;
         const changeSet = run.changeSet;
         const status = run.getComputedResult().toLowerCase();
@@ -54,13 +60,12 @@ class RunDetailsHeader extends Component {
             endTime: run.endTime,
             startTime: run.startTime,
         }, skewMillis);
-        RunDetailsHeader.logger.debug('timeq:', { startTime, endTime, durationMillis });
+        RunDetailsHeader.logger.debug('time', { startTime, endTime, durationMillis });
 
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
 
         // Messages
-        const branchLabel = t('rundetail.header.branch', { defaultValue: 'Branch' });
         const commitLabel = t('rundetail.header.commit', { defaultValue: 'Commit' });
         const durationDisplayFormat = t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' });
         const durationFormat = t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' });
@@ -78,13 +83,6 @@ class RunDetailsHeader extends Component {
                 </a>
                 <span>&nbsp;#{ run.id }</span>
             </h1>
-        );
-
-        const branchSourceDetails = (
-            <div className="u-label-value" title={branchLabel + ': ' + displayName}>
-                <label>{ branchLabel }:</label>
-                <span>{ displayName }</span>
-            </div>
         );
 
         const commitIdString = run.commitId || 'N/A';
@@ -136,7 +134,7 @@ class RunDetailsHeader extends Component {
                               runButton={ runButton }
             >
                 <div className="RunDetailsHeader-sources">
-                    { branchSourceDetails }
+                    <Branch { ...{ url: parentUrl, displayName, t } } />
                     { commitSourceDetails }
                 </div>
                 <div className="RunDetailsHeader-times">
