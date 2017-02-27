@@ -1,5 +1,13 @@
 import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
 
+// TODO: temporary until we get more structured errors
+const INVALID_TOKEN = 'Invalid accessToken';
+const INVALID_SCOPES = 'missing scopes';
+
+
+/**
+ * Handles lookup, validation and creation the Github access token credential.
+ */
 export class GithubCredentialsApi {
 
     constructor(fetch) {
@@ -31,7 +39,28 @@ export class GithubCredentialsApi {
         };
 
         return this._fetch(tokenUrl, { fetchOptions })
-            .then(data => capabilityAugmenter.augmentCapabilities(data));
+            .then(data => capabilityAugmenter.augmentCapabilities(data))
+            .then(
+                token => this._createAccessTokenSuccess(token),
+                error => this._createAccessTokenFailure(error)
+            );
+    }
+
+    _createAccessTokenSuccess(credential) {
+        return {
+            success: true,
+            credential,
+        };
+    }
+
+    _createAccessTokenFailure(error) {
+        const { message } = error.responseBody;
+
+        return {
+            success: false,
+            invalid: message.indexOf(INVALID_TOKEN) !== -1,
+            scopes: message.indexOf(INVALID_SCOPES) !== -1,
+        };
     }
 
 }

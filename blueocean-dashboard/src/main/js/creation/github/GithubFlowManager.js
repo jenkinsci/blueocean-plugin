@@ -6,7 +6,12 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 import waitAtLeast from '../flow2/waitAtLeast';
 
 import FlowManager from '../flow2/FlowManager';
+
 import STATE from './GithubCreationState';
+
+import { GithubAccessTokenManager } from './GithubAccessTokenManager';
+import { ListOrganizationsOutcome } from './api/GithubCreationApi';
+
 import GithubAlreadyDiscoverStep from './steps/GithubAlreadyDiscoverStep';
 import GithubLoadingStep from './steps/GithubLoadingStep';
 import GithubCredentialsStep from './steps/GithubCredentialStep';
@@ -16,6 +21,7 @@ import GithubChooseDiscoverStep from './steps/GithubChooseDiscoverStep';
 import GithubConfirmDiscoverStep from './steps/GithubConfirmDiscoverStep';
 import GithubRepositoryStep from './steps/GithubRepositoryStep';
 import GithubCompleteStep from './steps/GithubCompleteStep';
+import GithubUnknownErrorStep from './steps/GithubUnknownErrorStep';
 
 const LOGGER = logging.logger('io.jenkins.blueocean.github-pipeline');
 const MIN_DELAY = 500;
@@ -26,6 +32,12 @@ const PIPELINE_CHECK_DELAY = 1000 * 5;
 
 
 export default class GithubFlowManager extends FlowManager {
+
+    accessTokenManager = null;
+
+    get credentialId() {
+        return this.accessTokenManager && this.accessTokenManager.credentialId;
+    }
 
     @observable
     organizations = [];
@@ -90,11 +102,7 @@ export default class GithubFlowManager extends FlowManager {
 
     _repositoryCache = {};
 
-    _credentialId = null;
-
     _creationApi = null;
-
-    _credentialsApi = null;
 
     _sseSubscribeId = null;
 
@@ -104,7 +112,7 @@ export default class GithubFlowManager extends FlowManager {
         super();
 
         this._creationApi = creationApi;
-        this._credentialsApi = credentialsApi;
+        this.accessTokenManager = new GithubAccessTokenManager(credentialsApi);
     }
 
     getStates() {
@@ -128,14 +136,13 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     findExistingCredential() {
-        return this._credentialsApi.findExistingCredential()
+        return this.accessTokenManager.findExistingCredential()
             .then(waitAtLeast(MIN_DELAY))
-            .then(credential => this._afterInitialStep(credential));
+            .then(success => this._findExistingCredentialComplete(success));
     }
 
-    _afterInitialStep(credential) {
-        if (credential && credential.credentialId) {
-            this._credentialId = credential.credentialId;
+    _findExistingCredentialComplete(success) {
+        if (success) {
             this.changeState(STATE.PENDING_LOADING_ORGANIZATIONS);
             this.listOrganizations();
         } else {
@@ -147,56 +154,62 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     createAccessToken(token) {
-        return this._credentialsApi.createAccessToken(token)
-            .then(waitAtLeast(MIN_DELAY))
-            .then(
-                cred => this._createTokenSuccess(cred),
-                error => this._createTokenFailure(error),
-            );
+        return this.accessTokenManager.createAccessToken(token)
+            .then(success => this._createTokenComplete(success));
     }
 
-    _createTokenSuccess(cred) {
-        this._credentialId = cred.credentialId;
+    _createTokenComplete(response) {
+        if (response.success) {
+            this.renderStep({
+                stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
+                stepElement: <GithubLoadingStep />,
+                afterStateId: STATE.STEP_ACCESS_TOKEN,
+            });
 
-        this.renderStep({
-            stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
-            stepElement: <GithubLoadingStep />,
-            afterStateId: STATE.STEP_ACCESS_TOKEN,
-        });
-
-        this.listOrganizations();
-
-        return {
-            success: true,
-        };
-    }
-
-    _createTokenFailure(error) {
-        return {
-            success: false,
-            detail: error.responseBody,
-        };
+            this.listOrganizations();
+        }
     }
 
     @action
     listOrganizations() {
-        return this._creationApi.listOrganizations(this._credentialId)
+        this._creationApi.listOrganizations(this.credentialId)
             .then(waitAtLeast(MIN_DELAY))
-            .then(orgs => { this._updateOrganizations(orgs); });
+            .then(orgs => this._listOrganizationsSuccess(orgs));
     }
 
     @action
-    _updateOrganizations(organizations) {
-        this.organizations = organizations;
-
+    _listOrganizationsSuccess(response) {
         const afterStateId = this.isStateAdded(STATE.STEP_ACCESS_TOKEN) ?
             STATE.STEP_ACCESS_TOKEN : null;
 
-        this.renderStep({
-            stateId: STATE.STEP_CHOOSE_ORGANIZATION,
-            stepElement: <GithubOrgListStep />,
-            afterStateId,
-        });
+        if (response.outcome === ListOrganizationsOutcome.SUCCESS) {
+            this.organizations = response.organizations;
+
+            this.renderStep({
+                stateId: STATE.STEP_CHOOSE_ORGANIZATION,
+                stepElement: <GithubOrgListStep />,
+                afterStateId,
+            });
+        } else if (response.outcome === ListOrganizationsOutcome.INVALID_TOKEN_REVOKED) {
+            this.accessTokenManager.markTokenRevoked();
+
+            this.renderStep({
+                stateId: STATE.STEP_ACCESS_TOKEN,
+                stepElement: <GithubCredentialsStep />,
+            });
+        } else if (response.outcome === ListOrganizationsOutcome.INVALID_TOKEN_SCOPES) {
+            this.accessTokenManager.markTokenInvalidScopes();
+
+            this.renderStep({
+                stateId: STATE.STEP_ACCESS_TOKEN,
+                stepElement: <GithubCredentialsStep />,
+            });
+        } else {
+            this.renderStep({
+                stateId: STATE.ERROR_UNKOWN,
+                stepElement: <GithubUnknownErrorStep message={response.error} />,
+            });
+        }
     }
 
     @action
@@ -296,7 +309,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
-        return this._creationApi.listRepositories(this._credentialId, organizationName, pageNumber, pageSize);
+        return this._creationApi.listRepositories(this.credentialId, organizationName, pageNumber, pageSize);
     }
 
     @action
@@ -374,8 +387,8 @@ export default class GithubFlowManager extends FlowManager {
         this._initListeners();
 
         const promise = !this.existingOrgFolder ?
-            this._creationApi.createOrgFolder(this._credentialId, this.selectedOrganization, repoNames) :
-            this._creationApi.updateOrgFolder(this._credentialId, this.existingOrgFolder, repoNames);
+            this._creationApi.createOrgFolder(this.credentialId, this.selectedOrganization, repoNames) :
+            this._creationApi.updateOrgFolder(this.credentialId, this.existingOrgFolder, repoNames);
 
         promise
             .then(waitAtLeast(MIN_DELAY * 2))
