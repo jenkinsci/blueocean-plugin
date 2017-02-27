@@ -65,12 +65,13 @@ export default {
     showOrg() {
         return this.isFeatureEnabled('organizations.enabled', false);
     },
-
+    
     getJenkinsRootURL() {
         if (!config.isLoaded) {
             this.loadUrls();
         }
-        return config.jenkinsRootURL || '/jenkins';
+        const { jenkinsRootURL } = config;
+        return typeof jenkinsRootURL === 'string' ? jenkinsRootURL : '/jenkins';
     },
 
     getRestRoot() {
@@ -87,4 +88,3 @@ export default {
         config.jenkinsConfig = newConfig;
     },
 };
-
