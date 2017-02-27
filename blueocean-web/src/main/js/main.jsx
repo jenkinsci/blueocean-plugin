@@ -89,6 +89,14 @@ class App extends Component {
             classicUrl = UrlConfig.getJenkinsRootURL();
         }
 
+        // Make sure there's a leading slash so that
+        // the url is rooted...
+        if (!classicUrl || classicUrl === '') {
+            classicUrl = '/';
+        } else if (classicUrl.charAt(0) !== '/') {
+            classicUrl = '/' + classicUrl;
+        }
+
         const userComponents = [
             <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
                 <a href={classicUrl}><Icon icon="exit_to_app" /></a>
