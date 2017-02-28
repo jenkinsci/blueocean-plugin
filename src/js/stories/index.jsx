@@ -12,7 +12,6 @@ require('./FilterableListStories');
 require('./FloatingElementStories');
 require('./FormElementStories');
 require('./ListStories');
-require('./modalview.jsx');
 require('./pipelinegraph.jsx');
 require('./pipelineresult.jsx');
 require('./RadioButtonGroupStories');
