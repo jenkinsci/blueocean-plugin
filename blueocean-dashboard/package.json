@@ -39,7 +39,7 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.82-tf-JENKINS-38751-1",
+    "@jenkins-cd/blueocean-core-js": "0.0.82",
     "@jenkins-cd/design-language": "0.0.121",
     "@jenkins-cd/js-extensions": "0.0.33",
     "@jenkins-cd/js-modules": "0.0.8",
