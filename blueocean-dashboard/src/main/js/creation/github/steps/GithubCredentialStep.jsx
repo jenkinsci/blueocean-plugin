@@ -3,13 +3,9 @@ import { observer } from 'mobx-react';
 import { FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
-import STATE from '../GithubCreationState';
+import { GithubAccessTokenState } from '../GithubAccessTokenState';
 
 const GITHUB_URL = 'https://github.com/settings/tokens/new?scopes=repo,read:user,user:email';
-
-// TODO: temporary until we get more structured errors
-const ACCESS_TOKEN_INVALID = /Invalid accessToken/;
-const ACCESS_TOKEN_ERROR_MISSING_SCOPES = /Invalid token, its missing scopes: ([a-z,:]+)/;
 
 
 @observer
@@ -19,7 +15,6 @@ export default class GithubCredentialsStep extends React.Component {
         super(props);
 
         this.state = {
-            success: false,
             accessToken: '',
         };
     }
@@ -31,40 +26,30 @@ export default class GithubCredentialsStep extends React.Component {
     }
 
     _createToken() {
-        this.props.flowManager.createAccessToken(this.state.accessToken)
-            .then(outcome => this._handleCreateToken(outcome));
+        this.props.flowManager.createAccessToken(this.state.accessToken);
     }
 
-    _handleCreateToken(outcome) {
-        const state = {};
-
-        if (!outcome.success) {
-            const regexp1 = new RegExp(ACCESS_TOKEN_INVALID);
-            const regexp2 = new RegExp(ACCESS_TOKEN_ERROR_MISSING_SCOPES);
-
-            if (regexp1.test(outcome.detail.message)) {
-                state.tokenErrorMsg = 'Invalid access token.';
-            } else {
-                const matches = regexp2.exec(outcome.detail.message);
-
-                if (matches.length) {
-                    state.tokenErrorMsg = `Access token is missing required scopes: ${matches[1]}`;
-                }
-            }
-        } else {
-            state.success = true;
-            state.tokenErrorMsg = null;
+    _getErrorMessage(stateId) {
+        if (stateId === GithubAccessTokenState.EXISTING_REVOKED) {
+            return 'The existing access token appears to have been deleted. Please create a new token.';
+        } else if (stateId === GithubAccessTokenState.EXISTING_MISSING_SCOPES) {
+            return 'The existing access token is missing the required scopes. Please create a new token.';
+        } else if (stateId === GithubAccessTokenState.VALIDATION_FAILED_TOKEN) {
+            return 'Invalid access token.';
+        } else if (stateId === GithubAccessTokenState.VALIDATION_FAILED_SCOPES) {
+            return 'Access token must have the following scopes: "repos" and "user:email"';
         }
 
-        this.setState(state);
+        return null;
     }
 
     render() {
-        const { flowManager } = this.props;
-
+        const manager = this.props.flowManager.accessTokenManager;
         const title = 'Connect to Github';
-        const disabled = this.state.success;
-        const buttonDisabled = flowManager.stateId === STATE.PENDING_VALIDATE_ACCESS_TOKEN;
+        const errorMessage = this._getErrorMessage(manager.stateId);
+
+        const disabled = manager.stateId === GithubAccessTokenState.SAVE_SUCCESS;
+        const buttonDisabled = manager.pendingValidation;
 
         return (
             <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} title={title}>
@@ -73,15 +58,11 @@ export default class GithubCredentialsStep extends React.Component {
                     <a href={GITHUB_URL} target="_blank">Create an access key here.</a>
                 </p>
 
-                <FormElement errorMessage={this.state.tokenErrorMsg}>
-                    <TextInput placeholder="123456abcdef" onChange={val => this._tokenChange(val)} />
+                <FormElement errorMessage={errorMessage}>
+                    <TextInput className="text-token" placeholder="Enter access token" onChange={val => this._tokenChange(val)} />
 
                     <button className="button-connect" disabled={buttonDisabled} onClick={() => this._createToken()}>Connect</button>
                 </FormElement>
-
-                { this.state.success &&
-                <div className="msg-success">Token saved successfully!</div>
-                }
             </FlowStep>
         );
     }
