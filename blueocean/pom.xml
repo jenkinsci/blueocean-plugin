@@ -15,6 +15,10 @@
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
     <description>Blue Ocean is a new project that rethinks the user experience of Jenkins. Designed from the ground up for Jenkins Pipeline and compatible with Freestyle jobs, Blue Ocean reduces clutter and increases clarity for every member of your team.</description>
 
+    <properties>
+        <jetty.contextPath>/jenkins</jetty.contextPath>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -81,10 +85,10 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
         </dependency>
-        
+
         <dependency>
           <groupId>io.jenkins.blueocean</groupId>
-          <artifactId>blueocean-pipeline-editor</artifactId>        
+          <artifactId>blueocean-pipeline-editor</artifactId>
         </dependency>
 
 
@@ -171,6 +175,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <webApp  implementation="org.eclipse.jetty.maven.plugin.JettyWebAppContext">
+                        <contextPath>${jetty.contextPath}</contextPath>
+                    </webApp>
+                </configuration>
             </plugin>
         </plugins>
     </build>
