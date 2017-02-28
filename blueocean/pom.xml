@@ -16,7 +16,7 @@
     <description>Blue Ocean is a new project that rethinks the user experience of Jenkins. Designed from the ground up for Jenkins Pipeline and compatible with Freestyle jobs, Blue Ocean reduces clutter and increases clarity for every member of your team.</description>
 
     <properties>
-        <jetty.contextPath>/${project.artifactId}</jetty.contextPath>
+        <jetty.contextPath>/jenkins</jetty.contextPath>
     </properties>
 
     <dependencies>
