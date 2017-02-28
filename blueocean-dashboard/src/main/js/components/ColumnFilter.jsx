@@ -10,13 +10,13 @@ export class ColumnFilter extends Component {
         super(props);
         this.state = { value: props.value, visible: false };
     }
-    
+
     componentWillReceiveProps(newProps) {
         if (this.state.value !== newProps.value) {
             this.setState({ value: newProps.value });
         }
     }
-    
+
     onChange(event, value) {
         const { onChange } = this.props;
         this.setState({ value });
@@ -27,20 +27,20 @@ export class ColumnFilter extends Component {
             onChange(value);
         }
     }
-    
+
     clearInput() {
         this.onChange({ type: 'select' }, '');
     }
-    
+
     focus(e) {
         this.setState({ focused: true });
         e.target.select();
     }
-    
+
     blur() {
         this.setState({ focused: false });
     }
-    
+
     // hack due to strange behavior of triggering onChange from autocomplete when
     // clicking on the input when the dropdown is open and an item is selected
     preventStupidInput(e) {
@@ -48,13 +48,13 @@ export class ColumnFilter extends Component {
             this.refs.autocomplete._ignoreClick = true;
         }
     }
-    
+
     handleEmptyEnterPressBetter(event) {
         if (this.state.visible && event.key === 'Enter' && this.state.value === '') {
             this.clearInput();
         }
     }
-    
+
     render() {
         const { placeholder, options } = this.props;
         const { value, focused } = this.state;
@@ -83,7 +83,7 @@ export class ColumnFilter extends Component {
                 onSelect={v => this.setState({ value: v }) || this.onChange({ type: 'select' }, v)}
                 onMenuVisibilityChange={() => this.setState({ visible: !this.state.visible })}
                 renderItem={(item, selected) => (
-                  <div className={selected ? 'item selected' : 'item'} key={item}>{item}</div>
+                  <div className={selected ? 'item selected' : 'item'} key={item} title={item}>{item}</div>
                 )}
             />
             <span className="Icon-filter">
