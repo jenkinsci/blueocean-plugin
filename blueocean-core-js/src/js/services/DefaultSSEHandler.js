@@ -66,12 +66,18 @@ export class DefaultSSEHandler {
 
         for (const key of this.branchPagerKeys(event)) {
             const pager = this.pagerService.getPager({ key });
-            this.activityService.fetchActivity(runSelf, { overrideQueuedState }).then(d => {
-                if (pager && !pager.has(runSelf)) {
-                    pager.insert(runSelf);
-                }
-                this.pipelineService.updateLatestRun(d);
-            });
+            // If we don't have a pager, then the app in the browser has never visited that
+            // Job, which means there's no need to fetch the data associated with it because
+            // there's nothing in the app that needs to be kept up-to-date. The data will
+            // be fetched when the user visits that job/pipeline.
+            if (pager) {
+                this.activityService.fetchActivity(runSelf, { overrideQueuedState }).then(d => {
+                    if (!pager.has(runSelf)) {
+                        pager.insert(runSelf);
+                    }
+                    this.pipelineService.updateLatestRun(d);
+                });
+            }
         }
     }
     queueCancel(event) {
@@ -121,7 +127,7 @@ export class DefaultSSEHandler {
         };
 
         this.activityService.setItem(newRun);
-        
+
         for (const key of this.branchPagerKeys(event)) {
             const pager = this.pagerService.getPager({ key });
             if (pager) {
