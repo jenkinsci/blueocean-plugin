@@ -252,6 +252,24 @@ public class ServiceException extends RuntimeException implements HttpResponse {
             super(METHOD_NOT_ALLOWED, errorMessage, throwable);
         }
     }
+
+    public static class PreconditionRequired extends ServiceException{
+
+        public PreconditionRequired(String message) {
+            super(PRECONDITION_REQUIRED, message);
+        }
+
+        public PreconditionRequired(String message, Throwable throwable ) {
+            super(PRECONDITION_REQUIRED, message, throwable);
+        }
+
+        public PreconditionRequired(ErrorMessage errorMessage) {
+            super(PRECONDITION_REQUIRED, errorMessage, null);
+        }
+        public PreconditionRequired(ErrorMessage errorMessage, Throwable throwable ) {
+            super(PRECONDITION_REQUIRED, errorMessage, throwable);
+        }
+    }
     public static final int BAD_REQUEST = 400;
     public static final int UNAUTHORIZED = 401;
     public static final int FORBIDDEN = 403;
@@ -260,6 +278,7 @@ public class ServiceException extends RuntimeException implements HttpResponse {
     public static final int UNSUPPORTED_MEDIA_TYPE = 415;
     public static final int CONFLICT = 409;
     public static final int UNPROCESSABLE_ENTITY = 422;
+    public static final int PRECONDITION_REQUIRED = 428;
     public static final int TOO_MANY_REQUESTS = 429;
     public static final int INTERNAL_SERVER_ERROR = 500;
     public static final int NOT_IMPLEMENTED = 501;

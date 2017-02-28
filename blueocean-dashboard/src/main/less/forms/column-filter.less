@@ -1,7 +1,7 @@
 .ColumnFilter {
     position: relative;
     margin: 0 16px 0 0;
-    
+
     &.empty {
         input.autocomplete {
             padding-left: 8px;
@@ -16,11 +16,11 @@
             display: none;
         }
     }
-    
+
     &.focused {
         border-color: #4a90e2;
         box-shadow: 0 0 10px rgba(0,0,0,.25);
-        
+
         .Icon-filter, .Icon-clear {
             svg {
                 fill: #4a90e2;
@@ -30,13 +30,13 @@
             left: 8px;
             right: auto;
         }
-        
+
         input.autocomplete {
             border-color: #4a90e2;
             padding-left: 28px;
             border-radius: 3px 3px 0 0;
         }
-        
+
         &:before {
             content: '';
             display: block;
@@ -49,19 +49,19 @@
             z-index: 1001;
         }
     }
-    
+
     .placeholder(@rules) {
         &::-webkit-input-placeholder { @rules(); }
         &:-moz-placeholder { @rules(); }
         &::-moz-placeholder { @rules(); }
         &:-ms-input-placeholder { @rules(); }
     }
-    
+
     .selection(@rules) {
         &::selection { @rules(); }
         &::-moz-selection { @rules(); }
     }
-    
+
     input.autocomplete {
         line-height: 28px;
         padding: 0 22px 0 28px;
@@ -72,11 +72,11 @@
         color: #4a4a4a;
         outline: none;
         width: 100%;
-        
+
         .selection({
             background: rgba(73, 143, 226, 0.25);
         });
-        
+
         .placeholder({
             opacity: 1;
             color: #4a4a4a;
@@ -90,7 +90,7 @@
         margin-top: -7px;
         fill: #4a90e2;
     }
-    
+
     .Icon-clear {
         position: absolute;
         right: 6px;
@@ -99,7 +99,7 @@
         fill: #4a90e2;
         cursor: pointer;
     }
-    
+
     .item {
         height: 30px;
         vertical-align: middle;
@@ -107,19 +107,21 @@
         line-height: 30px;
         padding: 0 10px;
         cursor: pointer;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
-    
+
     .selected {
         background-color: #e3ebee;
     }
-    
+
     .absolute() { // override the local styles for the drop-down container
         position: absolute;
         top: 100%;
         left: 0;
-        min-width: auto;
+        min-width: 100%;
+        max-width: 200% !important;
         max-height: 20em;
-        width: 100%;
         padding: 0;
     }
 
@@ -130,7 +132,7 @@
         border-radius: 0 0 3px 3px;
         z-index: 1000;
         box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
-        
+
         .absolute() !important; // ick
     }
 }

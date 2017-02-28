@@ -67,6 +67,7 @@ export class RunDetailsTests extends Component {
               testResults={testResults}
               locale={locale}
               t={t}
+              run={this.props.result}
             />
         </div>);
     }

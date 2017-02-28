@@ -6,7 +6,6 @@ import { Enum } from '../flow2/Enum';
 const GithubCreationState = new Enum({
     PENDING_LOADING_CREDS: 'pending_loading_creds',
     STEP_ACCESS_TOKEN: 'step_access_token',
-    PENDING_VALIDATE_ACCESS_TOKEN: 'pending_validate_access_token',
     PENDING_LOADING_ORGANIZATIONS: 'pending_loading_organizations',
     STEP_CHOOSE_ORGANIZATION: 'step_choose_organization',
     PENDING_LOADING_ORGFOLDER: 'pending_loading_orgfolder',
@@ -21,7 +20,9 @@ const GithubCreationState = new Enum({
     PENDING_CREATION_EVENTS: 'pending_creation_events',
     STEP_COMPLETE_EVENT_ERROR: 'step_complete_event_error',
     STEP_COMPLETE_EVENT_TIMEOUT: 'step_complete_event_timeout',
+    STEP_COMPLETE_MISSING_JENKINSFILE: 'step_complete_missing_jenkinsfile',
     STEP_COMPLETE_SUCCESS: 'step_complete_success',
+    ERROR_UNKOWN: 'error_unkown',
 });
 
 export default GithubCreationState;

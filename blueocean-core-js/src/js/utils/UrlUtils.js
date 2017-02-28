@@ -249,3 +249,67 @@ export function buildUrl(...args) {
 export function relativeUrl(location, ...args) {
     return endSlash(location.pathname) + buildUrl.apply(null, args);
 }
+
+/**
+ * Check is the current Blue ocean page a pipeline page and if so,
+ * decode it to the corresponding classic Jenkins Job page.
+ * @returns {string|undefined} The classic job page, or undefined if
+ * it was unable to decode the page URL.
+ */
+export function toClassicJobPage(pageUrl, isMultibranch = false) {
+    const pageUrlTokens = pageUrl.split('/').filter((token) => typeof token === 'string' && token !== '');
+
+    // Remove all path elements up to and including the Jenkins
+    // organization name.
+    let token = pageUrlTokens.shift();
+    while (token !== undefined && token !== 'organizations') {
+        token = pageUrlTokens.shift();
+    }
+
+    if (pageUrlTokens.length > 1) {
+        // The next token is the actual organization name e.g. "jenkins".
+        // Remove that since we don't need it.
+        pageUrlTokens.shift();
+
+        // The next token is the "full" job name, URL encoded.
+        const fullJobName = decodeURIComponent(pageUrlTokens.shift());
+        const fullJobNameTokens = fullJobName.split('/');
+        const classicJobFullName = '/job/' + fullJobNameTokens.join('/job/');
+
+        if (pageUrlTokens.length > 1) {
+            // The next token being "detail" indicates that we're looking
+            // at a branch.
+            if (pageUrlTokens.shift() === 'detail') {
+                // is going to be something like one of:
+                // - detail/[freestyleA/activity]
+                // - detail/[freestyleA/2/pipeline]
+                if (isMultibranch) {
+                    const branchName = pageUrlTokens.shift(); // "freestyleA"
+                    const classicJobBranch = classicJobFullName + '/job/' + branchName;
+
+                    // And if there's more than one token left then we have
+                    // the detail/freestyleA/[2/pipeline] variant. The next
+                    // token is the runId
+                    if (pageUrlTokens.length > 1) {
+                        return classicJobBranch + '/' + pageUrlTokens.shift(); // "2"
+                    }
+
+                    return classicJobBranch;
+                } else if (pageUrlTokens.length > 2) {
+                    // And if there's more than two tokens left then we have
+                    // the detail/[freestyleA/2/pipeline] variant.
+                    // Next token is the branch name - not really a branch name !!
+                    // Ignoring it.
+                    pageUrlTokens.shift(); // "freestyleA"
+                    // And the next token is the runId.
+                    const runId = pageUrlTokens.shift(); // "2"
+                    return classicJobFullName + '/' + runId;
+                }
+            }
+        }
+
+        return classicJobFullName;
+    }
+
+    return undefined;
+}
