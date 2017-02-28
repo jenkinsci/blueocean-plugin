@@ -29,10 +29,16 @@
         display: flex;
         flex-flow: row wrap;
 
-        .provider-button .IconButton {
-            margin-right: 20px;
-            min-width: 220px;
-            height: 56px;
+        .provider-button {
+            .IconButton {
+                margin-right: 20px;
+                min-width: 220px;
+                height: 56px;
+            }
+
+            &:last-child .IconButton {
+                margin-right: 0;
+            }
         }
     }
 
