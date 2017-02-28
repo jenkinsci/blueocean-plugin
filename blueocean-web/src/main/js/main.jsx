@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
 import {
-    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader
+    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader, toClassicJobPage
 } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
@@ -14,6 +14,7 @@ import { ToastDrawer } from './components/ToastDrawer';
 import { BackendConnectFailure } from './components/BackendConnectFailure';
 import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
+import { Icon } from '@jenkins-cd/react-material-icons';
 useStrict(true);
 
 const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
@@ -80,8 +81,27 @@ class App extends Component {
             <AdminLink t={translate} />,
         ];
 
+        let classicUrl = toClassicJobPage(window.location.pathname);
+        if (classicUrl) {
+            // prepend with the jenkins root url
+            classicUrl = UrlConfig.getJenkinsRootURL() + classicUrl;
+        } else {
+            classicUrl = UrlConfig.getJenkinsRootURL();
+        }
+
+        // Make sure there's a leading slash so that
+        // the url is rooted...
+        if (!classicUrl || classicUrl === '') {
+            classicUrl = '/';
+        } else if (classicUrl.charAt(0) !== '/') {
+            classicUrl = '/' + classicUrl;
+        }
+
         const userComponents = [
-            <div className="button-bar layout-small inverse">
+            <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
+                <a className="main_exit_to_app" href={classicUrl}><Icon icon="exit_to_app" /></a>
+            </div>,
+            <div className="user-component button-bar layout-small inverse">
                 { loginOrLogout(translate) }
             </div>
         ];

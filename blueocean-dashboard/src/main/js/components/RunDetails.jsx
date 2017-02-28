@@ -5,6 +5,7 @@ import { i18nTranslator, ReplayButton, RunButton, logging } from '@jenkins-cd/bl
 import { Icon } from '@jenkins-cd/react-material-icons';
 
 import {
+    rootPath,
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
@@ -23,6 +24,9 @@ const { func, object, any, string } = PropTypes;
 const { rest: RestPaths } = Paths;
 const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetails');
 
+const translate = i18nTranslator('blueocean-dashboard');
+const webTranslate = i18nTranslator('blueocean-web');
+
 const classicConfigLink = (pipeline) => {
     let link = null;
     if (Security.permit(pipeline).configure()) {
@@ -36,7 +40,19 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const translate = i18nTranslator('blueocean-dashboard');
+const classicJobRunLink = (pipeline, branch, runId) => {
+    let runUrl;
+    if (pipeline.branchNames) {
+        runUrl = `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
+    } else {
+        runUrl = `${rootPath(pipeline.fullName)}${encodeURIComponent(runId)}`;
+    }
+    return (
+        <a className="rundetails_exit_to_app" href={ runUrl } style={ { height: '24px' } } title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
+            <Icon size={ 24 } icon="exit_to_app" style={ { fill: '#fff' } } />
+        </a>
+    );
+};
 
 @observer
 class RunDetails extends Component {
@@ -195,6 +211,7 @@ class RunDetails extends Component {
                        buttonType="stop-only"
             />,
             classicConfigLink(pipeline),
+            classicJobRunLink(pipeline, params.branch, params.runId),
         ];
 
         return (
