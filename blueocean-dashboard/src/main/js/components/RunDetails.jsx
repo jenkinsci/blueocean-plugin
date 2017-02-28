@@ -48,7 +48,7 @@ const classicJobRunLink = (pipeline, branch, runId) => {
         runUrl = `${rootPath(pipeline.fullName)}${encodeURIComponent(runId)}`;
     }
     return (
-        <a href={ runUrl } style={ { height: '24px' } } title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
+        <a className="exit_to_app" href={ runUrl } style={ { height: '24px' } } title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
             <Icon size={ 24 } icon="exit_to_app" style={ { fill: '#fff' } } />
         </a>
     );

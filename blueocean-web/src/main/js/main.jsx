@@ -99,7 +99,7 @@ class App extends Component {
 
         const userComponents = [
             <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
-                <a href={classicUrl}><Icon icon="exit_to_app" /></a>
+                <a className="exit_to_app" href={classicUrl}><Icon icon="exit_to_app" /></a>
             </div>,
             <div className="user-component button-bar layout-small inverse">
                 { loginOrLogout(translate) }
