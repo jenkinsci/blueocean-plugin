@@ -208,10 +208,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        PipelineNodeGraphBuilder builder = new PipelineNodeGraphBuilder(b1);
-
-        List<FlowNode> stages = builder.getSages();
-        List<FlowNode> parallels = builder.getParallelBranches();
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> stages = getStages(builder);
+        List<FlowNode> parallels = getParallelNodes(builder);;
 
         Assert.assertEquals(4, stages.size());
         Assert.assertEquals(2, parallels.size());
@@ -1505,8 +1504,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        PipelineNodeGraphBuilder graphBuilder = new PipelineNodeGraphBuilder(b1);
-        List<FlowNode> flowNodes = graphBuilder.getAllSteps();
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> flowNodes = getAllSteps(b1);
 
         Map resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/"+flowNodes.get(0).getId()+"/");
 
