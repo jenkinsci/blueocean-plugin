@@ -1289,6 +1289,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
 
         Assert.assertEquals(nodes.size(), resp.size());
+        String unitNodeId = null;
         for(int i=0; i< nodes.size();i++){
             FlowNode n = nodes.get(i);
             Map rn = resp.get(i);
@@ -1296,7 +1297,6 @@ public class PipelineNodeTest extends PipelineBaseTest {
             Assert.assertEquals(getNodeName(n), rn.get("displayName"));
 
             List<Map> edges = (List<Map>) rn.get("edges");
-
 
             if(n.getDisplayName().equals("test")){
                 Assert.assertEquals(parallelNodes.size(), edges.size());
@@ -1307,6 +1307,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 Assert.assertEquals(edges.get(i).get("id"), nodes.get(i+1).getId());
                 Assert.assertEquals("SUCCESS", rn.get("result"));
             }else if(n.getDisplayName().equals("Branch: unit")){
+                unitNodeId = n.getId();
                 Assert.assertEquals(0, edges.size());
                 Assert.assertEquals("FAILURE", rn.get("result"));
             }else{
@@ -1314,6 +1315,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 Assert.assertEquals("SUCCESS", rn.get("result"));
             }
         }
+        assertNotNull(unitNodeId);
+        get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+unitNodeId+"/steps/", List.class);
+        String log = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+unitNodeId+"/log/", String.class);
+        assertNotNull(log);
     }
 
     @Test
