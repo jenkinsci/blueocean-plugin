@@ -100,7 +100,7 @@ export class User {
     }
 
     get isAdministrator() {
-        const permission = this._blueUser._permission || {};
+        const permission = this._blueUser.permission || {};
         return !!permission.administrator;
     }
 
