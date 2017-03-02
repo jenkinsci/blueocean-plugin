@@ -205,4 +205,8 @@ public abstract class BluePipeline extends Resource {
         return request.update(this);
     }
 
+    /**
+     * @return Gives scm resource attached to this pipeline
+     */
+    public abstract BluePipelineScm getScm();
 }

@@ -89,6 +89,8 @@ The Blue Ocean REST API is a "private API" designed for the Blue Ocean user inte
     - [Get SCM repository in an organization](#get-scm-repository-in-an-organization)
     - [Get SCM file content of a pipeline (Multibranch or OrganizationFolder)](#get-scm-file-content-of-a-pipeline-multibranch-or-organizationfolder)
     - [Save file content to SCM repo](#save-file-content-to-scm-repo)
+      - [Save file to an OrganizationFolder](#save-file-to-an-organizationfolder)
+      - [Save file to a MultiBranchProject](#save-file-to-a-multibranchproject)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -2211,17 +2213,18 @@ curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkin
 
 ### Save file content to SCM repo
 
+#### Save file to an OrganizationFolder
+
+SCM owner and credentials are computed from the OrganizationFolder. Request must include **repo** element.
+
 ```
-curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/ -d 
+curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek/scm/content/ -d 
 
 '{
-  "$class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubScmSaveFileRequest",
-  "credentialId" : "github",
   "content" : {
     "message" : "first commit",
     "path" : "Jenkinsfile",
-    "owner" : "vivek",
-    "branch" : "test1"
+    "branch" : "test1",
     "repo" : "test-no-jenkins-file",
     "sha" : "9e82c4011cd70446a2f44881a6c288c59b4abac0",
     "base64Data" : "VGVzdDEyMw=="
@@ -2229,7 +2232,25 @@ curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost
 }'
 ```
 
-- If file **path** doesn't exist then a new file will be created
+#### Save file to a MultiBranchProject
+
+SCM owner, repo and credentials are computed from the MultiBranchProject.
+
+```
+curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek/pipelines/test-no-jenkins-file/scm/content/ -d 
+
+'{
+  "content" : {
+    "message" : "first commit",
+    "path" : "Jenkinsfile",
+    "branch" : "test1",
+    "sha" : "9e82c4011cd70446a2f44881a6c288c59b4abac0",
+    "base64Data" : "VGVzdDEyMw=="
+  }
+}'
+```
+
+- If file **path** doesn't exist in SCM then a new file will be created
 - If **sha** is provided and file **path** exists then it must match with the sha of existing file, else 400 (Bad Request) error will be returned. 
 - If **sha** matches then the file will be updated with the content provided in the request
 - If **branch** element is not provided file will be saved on default branch (typically maser)

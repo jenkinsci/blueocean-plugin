@@ -1,12 +1,13 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContent;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * @author Vivek Pandey
  */
-public class GithubScmFileContent extends ScmContent {
+@ExportedBean
+public class GithubScmFileContent{
     private static final String ENCODED_CONTENT ="encodedContent";
     private static final String ENCODING ="encoding";
 

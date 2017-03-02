@@ -1,16 +1,11 @@
 package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
-import io.jenkins.blueocean.commons.ErrorMessage;
-import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import net.sf.json.JSONObject;
-import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
@@ -18,7 +13,6 @@ import org.kohsuke.stapler.verb.PUT;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * Scm Resource
@@ -46,9 +40,6 @@ public abstract class Scm extends Resource {
     @Exported(name = CREDENTIAL_ID)
     public abstract @CheckForNull String getCredentialId();
 
-    /**
-     * Pageable list of {@link ScmOrganization}s.
-     */
     /**
      * Pageable list of {@link ScmOrganization}s.
      *
@@ -79,34 +70,4 @@ public abstract class Scm extends Resource {
     @PUT
     @WebMethod(name = VALIDATE)
     public abstract @CheckForNull HttpResponse validateAndCreate(@JsonBody JSONObject request);
-
-    /**
-     * Save a file to this repository. Creates a new one if it doesn't exist.
-     *
-     * @return {@link ScmContent}
-     */
-    @PUT
-    @WebMethod(name="")
-    @TreeResponse
-    public ScmContent saveFile(StaplerRequest staplerRequest) throws IOException {
-        JSONObject body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));
-        String cls = (String) body.get("$class");
-        if(cls == null){
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to save file")
-                    .add(new ErrorMessage.Error("$class", ErrorMessage.Error.ErrorCodes.MISSING.toString(),
-                            "$class is required")));
-        }
-        ScmSaveFileRequest request = staplerRequest.bindJSON(ScmSaveFileRequest.class, body);
-        if(request == null){
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to save file")
-                    .add(new ErrorMessage.Error("$class", ErrorMessage.Error.ErrorCodes.INVALID.toString(),
-                            String.format("Invalid $class %s, no binding found", cls))));
-        }
-        return saveFile(request);
-    }
-
-    public ScmContent saveFile(ScmSaveFileRequest request) throws IOException {
-        return request.save(this);
-    }
-
 }
