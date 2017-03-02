@@ -20,7 +20,7 @@ public class InputStepImpl extends BlueInputStep {
     public InputStepImpl(InputStep inputStep, Reachable parent) {
         this.inputStep = inputStep;
         if (inputStep.getId() == null) {
-            // TODO: Why are we resetting the input ID to something random?
+            // Make sure the input step has an ID.
             this.inputStep.setId(UUID.randomUUID().toString().replaceAll("-", ""));
         }
         this.self = parent.getLink().rel("input");
