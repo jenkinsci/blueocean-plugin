@@ -2195,7 +2195,7 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
 ### Get SCM file content of a pipeline (Multibranch or OrganizationFolder)
 
 ```
-curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/hk/branches/master/scmcontent/?path=Jenkinsfile"
+curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/hk/branches/master/scm/content/?path=Jenkinsfile"
 
 {
    "encoding" : "base64",
