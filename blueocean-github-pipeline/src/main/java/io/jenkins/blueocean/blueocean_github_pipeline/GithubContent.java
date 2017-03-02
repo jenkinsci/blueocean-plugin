@@ -72,6 +72,7 @@ public class GithubContent extends ScmContent {
         return message;
     }
 
+    @Exported(name = "base64Data", skipNull = true)
     public String getBase64Data() {
         return base64Data;
     }

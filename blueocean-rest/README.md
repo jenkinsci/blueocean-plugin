@@ -2206,6 +2206,7 @@ curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkin
       "size" : 7,
       "owner" : "vivek",
       "path" : "Jenkinsfile",
+      "base64Data": "VGVzdDEyMw=="
    },
    "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubFile"
 }
