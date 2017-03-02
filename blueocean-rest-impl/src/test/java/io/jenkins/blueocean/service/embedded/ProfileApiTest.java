@@ -307,6 +307,13 @@ public class ProfileApiTest extends BaseTest{
         assertEquals(true, pipelinePerm.get("read"));
         assertEquals(true, pipelinePerm.get("stop"));
         assertEquals(true, pipelinePerm.get("configure"));
+
+        Map credentialPerm = (Map) permission.get("credential");
+        assertEquals(true, credentialPerm.get("create"));
+        assertEquals(true, credentialPerm.get("view"));
+        assertEquals(true, credentialPerm.get("update"));
+        assertEquals(true, credentialPerm.get("manageDomains"));
+        assertEquals(true, credentialPerm.get("delete"));
     }
 
     @Test
