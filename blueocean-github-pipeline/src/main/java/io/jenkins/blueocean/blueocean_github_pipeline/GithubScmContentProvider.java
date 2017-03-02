@@ -40,18 +40,17 @@ public class GithubScmContentProvider extends ScmContentProvider {
         int size = data.length();
 
         String sha = sha(data);
-        data = Base64.encodeBase64String(StringUtils.getBytesUtf8(data));
+        String base64Data = Base64.encodeBase64String(StringUtils.getBytesUtf8(data));
 
-        return new GithubScmFileContent.Builder()
-                .encodedContent(data)
-                .encoding("base64")
+        return new GithubFile(new GithubContent.Builder()
+                .base64Data(base64Data)
                 .name(scmFile.getName())
                 .path(scmFile.getPath())
                 .owner(owner(source))
                 .repo(repo(source))
                 .sha(sha)
                 .size(size)
-                .build();
+                .build());
     }
 
     @Override

@@ -22,10 +22,10 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class GithubScmSaveFileRequest{
-    private final GithubScmContent content;
+    private final GithubContent content;
 
     @DataBoundConstructor
-    public GithubScmSaveFileRequest(GithubScmContent content) {
+    public GithubScmSaveFileRequest(GithubContent content) {
         this.content = content;
     }
 
@@ -35,15 +35,17 @@ public class GithubScmSaveFileRequest{
         if(this.content == null){
             errors.add(new ErrorMessage.Error("content",
                     ErrorMessage.Error.ErrorCodes.MISSING.toString(), "content is required parameter"));
+            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to save file to scm").addAll(errors));
         }else {
             errors.addAll(content.validate());
         }
 
+
         //if no owner given then check if its there in request
-        if(owner == null && content != null){
+        if(owner == null){
             owner = content.getOwner();
         }
-        if(repoName == null && content != null){
+        if(repoName == null){
             repoName = content.getRepo();
         }
 
@@ -66,7 +68,7 @@ public class GithubScmSaveFileRequest{
         try {
             String sha = content.getSha();
             //Lets check if this branch exists, if not then create it
-            if(!StringUtils.isBlank(content.getBranch()) && content.isAutoCreateBranch()){
+            if(!StringUtils.isBlank(content.getBranch()) && (content.isAutoCreateBranch() == null || content.isAutoCreateBranch())){
                 try {
                     HttpRequest.head(String.format("%s/repos/%s/%s/branches/%s",
                             apiUrl,
@@ -93,7 +95,7 @@ public class GithubScmSaveFileRequest{
                     HttpRequest.post(String.format("%s/repos/%s/%s/git/refs",
                             apiUrl,
                             owner,
-                            repo))
+                            repoName))
                             .withAuthorization("token " + accessToken)
                             .withBody(ImmutableMap.of("ref", "refs/heads/" + content.getBranch(),
                                     "sha", branch.getSHA1()))
@@ -105,7 +107,7 @@ public class GithubScmSaveFileRequest{
                         GHContent ghContent = HttpRequest.get(String.format("%s/repos/%s/%s/contents/%s",
                                 apiUrl,
                                 owner,
-                                repo,
+                                repoName,
                                 content.getPath()))
                                 .withAuthorization("token " + accessToken)
                                 .to(GHContent.class);
@@ -149,13 +151,13 @@ public class GithubScmSaveFileRequest{
                 throw new ServiceException.UnexpectedErrorException("Failed to save file: "+content.getPath());
             }
 
-            return new GithubScmFileContent.Builder()
+            return new GithubFile(new GithubContent.Builder()
                     .sha((String)ghContent.get("sha"))
                     .name((String) ghContent.get("name"))
                     .repo(repoName)
                     .owner(owner)
                     .path((String) ghContent.get("path"))
-                    .build();
+                    .build());
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException("Failed to save file: "+e.getMessage(), e);
         }

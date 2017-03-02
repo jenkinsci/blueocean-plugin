@@ -2198,16 +2198,16 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
 curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/hk/branches/master/scm/content/?path=Jenkinsfile"
 
 {
-   "encoding" : "base64",
-   "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubScmFileContent",
-   "sha" : "280f3ee9f3171043ddfd06da937fa2d138367979",
-   "path" : "Jenkinsfile",
-   "encodedContent" : "cGlwZWxpbmUgewogICAgYWdlbnQgbGFiZWw6JycKICAgIHN0YWdlcyB7CiAgICAgICAgc3RhZ2UoImRldiIpIHsKICAgICAgICAgIHNoICdlY2hvICJTdGFydCBCdWlsZCInCiAgICAgICAgICBlY2hvICdFbmQgQnVpbGQnCiAgICAgICAgfQogICAgICAgIHN0YWdlKCJ0ZXN0IikgewogICAgICAgICAgICBwYXJhbGxlbCAoCiAgICAgICAgICAgICAgICAiRmlyZWZveCIgOiB7CiAgICAgICAgICAgICAgICAgICAgc2ggImVjaG8gdGVzdGluZyBGRlgiCiAgICAgICAgICAgICAgICAgICAgc2ggImVjaG8gbW9yZSBzdGVwcyIKICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAiQ2hyb21lIiA6IHsKICAgICAgICAgICAgICAgICAgICBzaCAiZWNobyB0ZXN0aW5nIENocm9tZSIKICAgICAgICAgICAgICAgICAgICBzaCAiZWNobyBtb3JlIHN0ZXBzIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICApCiAgICAgICAgfQogICAgICAgIHN0YWdlKCJkZXBsb3kiKSB7CiAgICAgICAgICBzaCAnZWNobyAiU3RhcnQgRGVwbG95IicKICAgICAgICAgIHNoICdlY2hvICJFbmQgRGVwbG95IicKICAgICAgICB9CiAgICB9ICAgIAp9Cg==",
-   "name" : "Jenkinsfile",
-   "repo" : "hellokyoto",
-   "size" : 589,
-   "type" : "file",
-   "owner" : "vivek"
+   "content" : {
+      "name" : "Jenkinsfile",
+      "sha" : "f13b26341cf403aa7d697bc252908de092ee279d",
+      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubContent",
+      "repo" : "test-no-jenkins-file",
+      "size" : 7,
+      "owner" : "vivek",
+      "path" : "Jenkinsfile",
+   },
+   "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubFile"
 }
 ```
 
@@ -2260,12 +2260,14 @@ Response
 
 ```
 {
-  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubScmFileContent",
-  "name" : "Jenkinsfile2",
-  "owner" : "vivek",
-  "path" : "Jenkinsfile2",
-  "repo" : "test-no-jenkins-file",
-  "sha" : "f13b26341cf403aa7d697bc252908de092ee279d",
-  "type" : "file"
+   "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubFile",
+   "content" : {
+      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubContent",
+      "sha" : "f13b26341cf403aa7d697bc252908de092ee279d",
+      "path" : "Jenkinsfile4",
+      "owner" : "vivek",
+      "repo" : "test-no-jenkins-file",
+      "name" : "Jenkinsfile4"
+   }
 }
 ```
