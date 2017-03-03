@@ -14,7 +14,6 @@ import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceOwner;
 import net.sf.json.JSONObject;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Connector;
@@ -274,11 +273,6 @@ public class GithubScmContentProvider extends ScmContentProvider {
             this.repo = repo;
             this.accessToken = accessToken;
         }
-    }
-
-    //XXX: Hack till JENKINS-42270 gets address
-    private String sha(String data) {
-        return DigestUtils.sha1Hex("blob " + data.length() + "\0" + data);
     }
 }
 
