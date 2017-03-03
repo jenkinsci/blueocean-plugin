@@ -36,6 +36,7 @@ class RunDetailsHeader extends Component {
             onNameClick,
             topNavLinks,
             runButton,
+            isMultiBranch,
         } = this.props;
 
         const { fullDisplayName } = pipeline;
@@ -87,11 +88,15 @@ class RunDetailsHeader extends Component {
         const branchSourceDetails = (
             <div className="u-label-value" title={branchLabel + ': ' + displayName}>
                 <label>{ branchLabel }:</label>
-                <Link to={ branchUrl }>{ displayName }</Link>
+                {isMultiBranch ? (
+                    <Link to={ branchUrl }>{ displayName }</Link>
+                  ) : (
+                    <span>&mdash;</span>
+                  )}
             </div>
         );
 
-        const commitIdString = run.commitId || 'N/A';
+        const commitIdString = run.commitId || '—';
         const commitSourceDetails = (
             <div className="u-label-value" title={commitLabel + ': ' + commitIdString}>
                 <label>{ commitLabel }:</label>
@@ -170,6 +175,7 @@ RunDetailsHeader.propTypes = {
     locale: PropTypes.string,
     topNavLinks: PropTypes.node,
     runButton: PropTypes.node,
+    isMultiBranch: PropTypes.boolean,
 };
 
 RunDetailsHeader.contextTypes = {
