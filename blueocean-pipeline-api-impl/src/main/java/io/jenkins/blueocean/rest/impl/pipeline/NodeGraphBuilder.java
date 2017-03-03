@@ -31,12 +31,12 @@ public interface NodeGraphBuilder {
     /** Create union of last successful run and this partial run */
     List<BluePipelineNode> union(List<FlowNodeWrapper> lastBuildGraph, Link parent);
 
-    /** Factory to give legacy vs bismuth API based DAG builder */
+    /** Factory to give pipeline DAG builder */
+    // At this point we are not exposing NodeGraphBuilder as ExtensionPoint, its more of convenience to allow us
+    // to use alternative implementation in future
     final class NodeGraphBuilderFactory{
-        public static final NodeGraphBuilder getInstance(WorkflowRun run){
-            return Boolean.getBoolean("LEGACY_PIPELINE_NODE_PARSER")
-                ? new PipelineNodeGraphBuilder(run)
-                : new PipelineNodeGraphVisitor(run);
+        public static NodeGraphBuilder getInstance(WorkflowRun run){
+            return new PipelineNodeGraphVisitor(run);
         }
     }
 }
