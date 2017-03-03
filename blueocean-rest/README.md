@@ -87,7 +87,10 @@ The Blue Ocean REST API is a "private API" designed for the Blue Ocean user inte
     - [Get SCM repositories in an organization](#get-scm-repositories-in-an-organization)
       - [Pagination for GitHub repositories](#pagination-for-github-repositories)
     - [Get SCM repository in an organization](#get-scm-repository-in-an-organization)
-    - [Get SCM file content of a pipeline (Multibranch or OrganizationFolder)](#get-scm-file-content-of-a-pipeline-multibranch-or-organizationfolder)
+    - [Get Github file content of a pipeline (Multibranch or OrganizationFolder)](#get-github-file-content-of-a-pipeline-multibranch-or-organizationfolder)
+      - [Get github file content from MBP branch](#get-github-file-content-from-mbp-branch)
+      - [Get github file content from MBP folder](#get-github-file-content-from-mbp-folder)
+      - [Get github file content from org folder](#get-github-file-content-from-org-folder)
     - [Save file content to SCM repo](#save-file-content-to-scm-repo)
       - [Save file to an OrganizationFolder](#save-file-to-an-organizationfolder)
       - [Save file to a MultiBranchProject](#save-file-to-a-multibranchproject)
@@ -2192,11 +2195,44 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
 }
 ````
 
-### Get SCM file content of a pipeline (Multibranch or OrganizationFolder)
+### Get Github file content of a pipeline (Multibranch or OrganizationFolder)
+
+Parameters:
+
+- path
+Required. path to file from repo root. e.g. Jenkinsfile
+
+- repo
+Optional if request is in context of MBP pipeline, required if made in context of organization folder
+
+- branch
+Optional in case request is made in context of MBP pipeline branch. If missing default branch is assumed if scm 
+supports default branch. Required in all other cases.
+
+- type
+Optional. Defaults to file. 
+
+#### Get github file content from MBP branch
 
 ```
-curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/hk/branches/master/scm/content/?path=Jenkinsfile"
+curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek1/pipelines/test-no-jenkins-file/branches/master/scm/content/?path=Jenkinsfile"
+```
 
+#### Get github file content from MBP folder
+
+```
+curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek1/pipelines/test-no-jenkins-file/scm/content/?path=Jenkinsfile&branch=test1"
+```
+
+#### Get github file content from org folder
+
+```
+curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek1/scm/content/?path=Jenkinsfile&repo=test-no-jenkins-file&branch=test1"
+```
+
+Response:
+
+```
 {
    "content" : {
       "name" : "Jenkinsfile",
