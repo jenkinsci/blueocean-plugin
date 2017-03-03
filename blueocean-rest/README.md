@@ -2199,17 +2199,21 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
 
 Parameters:
 
-- path
+- **path**
+
 Required. path to file from repo root. e.g. Jenkinsfile
 
-- repo
+- **repo**
+
 Optional if request is in context of MBP pipeline, required if made in context of organization folder
 
-- branch
+- **branch**
+
 Optional in case request is made in context of MBP pipeline branch. If missing default branch is assumed if scm 
 supports default branch. Required in all other cases.
 
-- type
+- **type**
+
 Optional. Defaults to file. 
 
 #### Get github file content from MBP branch
