@@ -164,7 +164,23 @@ export default function i18nTranslator(pluginName, namespace, onLoad) {
                 logger.log('Translator instance created for "%s". Language detected as "%s".', translatorCacheKey, detectedLang);
             }
 
-            translator = I18n.getFixedT(detectedLang, namespace);
+            const fixedT = I18n.getFixedT(detectedLang, namespace);
+            translator = function (i18nKey, i18nParams) {
+                const normalizedKey = i18nKey.replace(/[\W]/g, '.');
+                let passedParams = i18nParams;
+                if (normalizedKey !== i18nKey) {
+                    if (!passedParams) {
+                        passedParams = {};
+                    }
+                    if (!passedParams.defaultValue) {
+                        passedParams.defaultValue = i18nKey;
+                    }
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(`Normalized i18n key "${i18nKey}" to "${normalizedKey}".`);
+                    }
+                }
+                return fixedT(normalizedKey, passedParams);
+            };
             translatorCache[translatorCacheKey] = translator;
         }
 
