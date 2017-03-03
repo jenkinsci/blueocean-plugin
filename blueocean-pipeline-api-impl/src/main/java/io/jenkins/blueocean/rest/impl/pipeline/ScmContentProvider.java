@@ -3,9 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
-import jenkins.scm.api.SCMFile;
 import jenkins.scm.api.SCMNavigator;
-import jenkins.scm.api.SCMSource;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.CheckForNull;
@@ -18,12 +16,14 @@ import javax.annotation.Nonnull;
  */
 public abstract class ScmContentProvider implements ExtensionPoint{
     /**
-     * Gives content of given {@link SCMFile}.
+     * Gives content of scm file.
      *
-     * @param scmFile file
+     * @param staplerRequest {@link StaplerRequest} request specific to this SCM
+     * @param item {@link Item} in context. e.g.  {@link jenkins.branch.OrganizationFolder}
+     *                         or {@link jenkins.branch.MultiBranchProject}
      * @return scm content
      */
-    public abstract @CheckForNull Object getContent(@Nonnull SCMSource scmSource, @Nonnull SCMFile scmFile);
+    public abstract @CheckForNull Object getContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item);
 
     /**
      * Save content
