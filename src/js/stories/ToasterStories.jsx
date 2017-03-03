@@ -98,4 +98,19 @@ storiesOf('Toaster', module)
         return (
             <ToasterTester toasts={toasts} />
         );
-    });
+    })
+    .add('with caption and error', () => {
+        const toasts = [
+            {
+                id: Math.random() * Math.pow(10,16),
+                style: 'error',
+                caption: 'Favorites Error',
+                text: 'Failed to register favorite'
+            }
+        ];
+
+        return (
+            <ToasterTester toasts={toasts} />
+        );
+    })
+;

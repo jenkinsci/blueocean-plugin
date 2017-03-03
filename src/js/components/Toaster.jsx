@@ -106,7 +106,9 @@ export class Toaster extends Component {
                         return (
                             <Toast
                                 key={key}
+                                caption={toast.caption}
                                 text={toast.text}
+                                style={toast.style}
                                 action={toast.action}
                                 onActionClick={() => this._onActionClick(toast)}
                                 onDismiss={() => this._onDismiss(toast)}

@@ -26,9 +26,13 @@ export class Toast extends Component {
     }
 
     render() {
+        const toastStyle = (this.props.style || 'default');
         return (
-            <div className="toast">
-                <span className="text">{this.props.text}</span>
+            <div className={`toast ${toastStyle}`}>
+                <span className="text">
+                    <Caption text={this.props.caption}/>
+                    {this.props.text}
+                </span>
                 <a className="action" onClick={() => this.onActionClick()}>{this.props.action}</a>
                 <a className="dismiss" onClick={() => this.onDismissClick()}>
                   <Icon {...{
@@ -43,8 +47,20 @@ export class Toast extends Component {
 }
 
 Toast.propTypes = {
+    caption: PropTypes.string,
     text: PropTypes.string,
+    style: PropTypes.string,
     action: PropTypes.string,
     onActionClick: PropTypes.func,
     onDismiss: PropTypes.func,
+};
+
+const Caption = ({ text }) => {
+    if (!text) {
+        return null;
+    }
+    return (<h4 className="caption">{text}</h4>);
+};
+Caption.propTypes = {
+    text: PropTypes.string,
 };

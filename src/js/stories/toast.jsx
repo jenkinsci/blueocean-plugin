@@ -8,7 +8,10 @@ storiesOf('Toast', module)
     .add('no action', scenario3)
     .add('delay of 30s', scenario4)
     .add('handlers', scenario5)
-    .add('within layout', scenario6);
+    .add('within layout', scenario6)
+    .add('success', scenario7)
+    .add('error', scenario8)
+    .add('error with caption', scenario9);
 
 function scenario1() {
     return (
@@ -55,5 +58,23 @@ function scenario6() {
             <Toast text="Run Started" action="Open" />
             <span>Element B</span>
         </div>
+    );
+}
+
+function scenario7() {
+    return (
+        <Toast text="Cool, that worked nicely" style="success" />
+    );
+}
+
+function scenario8() {
+    return (
+        <Toast text="There was an error !!" style="error" />
+    );
+}
+
+function scenario9() {
+    return (
+        <Toast caption="Favoriting Error" text="no default branch to favorite" style="error" />
     );
 }
