@@ -31,15 +31,6 @@ public class BranchContainerImpl extends BluePipelineContainer {
             BranchImpl pipeline1 = (BranchImpl)_pipeline1;
             BranchImpl pipeline2 = (BranchImpl)_pipeline2;
 
-            // If one pipeline isnt the primary there is no need to go further
-            if(pipeline1.getBranch().isPrimary() && !pipeline2.getBranch().isPrimary()) {
-                return -1;
-            }
-
-            if(!pipeline1.getBranch().isPrimary() && pipeline2.getBranch().isPrimary()) {
-                return 1;
-            }
-
             // If One pipeline isnt a favorite there is no need to go further.
             if(pipeline1.isFavorite() && !pipeline2.isFavorite()) {
                 return -1;
