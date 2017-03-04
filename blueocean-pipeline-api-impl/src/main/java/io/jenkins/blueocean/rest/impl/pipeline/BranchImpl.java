@@ -1,13 +1,17 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.cloudbees.hudson.plugins.folder.computed.ComputedFolder;
 import hudson.Extension;
 import hudson.Util;
+import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import jenkins.branch.MultiBranchProject;
@@ -72,6 +76,16 @@ public class BranchImpl extends PipelineImpl {
     @Override
     public Link getLink() {
         return parent.rel(Util.rawEncode(getName()));
+    }
+
+    @Navigable
+    @Override
+    public BluePipelineScm getScm() {
+        if(job instanceof WorkflowJob && job.getParent() instanceof ComputedFolder) {
+            return new ScmResourceImpl((ComputedFolder) job.getParent(), (BuildableItem) job,this);
+        }else{
+            return null;
+        }
     }
 
     @Extension(ordinal = 4)
@@ -163,5 +177,4 @@ public class BranchImpl extends PipelineImpl {
             return author;
         }
     }
-
 }
