@@ -20,7 +20,9 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
 
 /**
  * @author Vivek Pandey
@@ -62,9 +64,6 @@ public class BranchImpl extends PipelineImpl {
     public Branch getBranch() {
         ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
         PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
-        if (om == null && pima == null) {
-            return null;
-        }
         String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
         return new Branch(url, pima != null);
     }
