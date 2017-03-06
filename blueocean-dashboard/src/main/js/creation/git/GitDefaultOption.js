@@ -15,11 +15,11 @@ export default function GitDefaultOption(props) {
         }
     }
 
-    const styles = `git-creation monochrome ${props.isSelected ? 'active' : ''}`;
+    const className = `git-creation monochrome ${props.isSelected ? 'active' : ''}`;
     
     return (
         <div>
-            <IconButton className={styles} label="Git" onClick={onSelect}>
+            <IconButton className={className} label="Git" onClick={onSelect}>
                 <GitIcon />
             </IconButton>
         </div>
