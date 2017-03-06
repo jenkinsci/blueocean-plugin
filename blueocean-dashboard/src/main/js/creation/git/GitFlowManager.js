@@ -3,7 +3,7 @@ import { action, computed } from 'mobx';
 import { Promise } from 'es6-promise';
 import waitAtLeast from '../flow2/waitAtLeast';
 
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
 const translate = i18nTranslator('blueocean-dashboard');
 
 import FlowManager from '../flow2/FlowManager';
@@ -16,6 +16,8 @@ import GitCompletedStep from './GitCompletedStep';
 import GitRenameStep from './steps/GitRenameStep';
 import STATE from './GitCreationState';
 
+
+const LOGGER = logging.logger('io.jenkins.blueocean.git-pipeline');
 const MIN_DELAY = 500;
 const SAVE_DELAY = 1000;
 
@@ -80,7 +82,7 @@ export default class GitFlowManager extends FlowManager {
 
     createPipeline(repositoryUrl, credential) {
         this.repositoryUrl = repositoryUrl;
-        this.credentialId = credential ? credential.credentialId : null;
+        this.credentialId = credential ? credential.id : null;
         this.pipelineName = this._createNameFromRepoUrl(repositoryUrl);
         return this._initiateCreatePipeline();
     }
@@ -124,6 +126,8 @@ export default class GitFlowManager extends FlowManager {
         });
 
         this.setPlaceholders();
+
+        LOGGER.debug('creating pipeline with parameters', this.repositoryUrl, this.credentialId, this.pipelineName);
 
         return this._createApi.createPipeline(this.repositoryUrl, this.credentialId, this.pipelineName)
             .then(waitAtLeast(SAVE_DELAY))
