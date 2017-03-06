@@ -1,10 +1,12 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
+import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Item;
 import hudson.security.ACL;
 import hudson.util.PersistedList;
+import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineUpdateRequest;
@@ -15,15 +17,21 @@ import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.CheckForNull;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Vivek Pandey
  */
 public class GitPipelineUpdateRequest extends BluePipelineUpdateRequest {
+    private static final Logger logger = LoggerFactory.getLogger(GitPipelineUpdateRequest.class);
+
     private final BlueScmConfig scmConfig;
 
     @DataBoundConstructor
@@ -64,7 +72,28 @@ public class GitPipelineUpdateRequest extends BluePipelineUpdateRequest {
 
         if(scmConfig != null){
             sourceUri = scmConfig.getUri();
+            List<ErrorMessage.Error> errors = new ArrayList<>();
+
+            StandardUsernameCredentials credentials = null;
+            if(scmConfig.getCredentialId() != null){
+                credentials = GitUtils.getCredentials(Jenkins.getInstance(), sourceUri, scmConfig.getCredentialId());
+                if (credentials == null) {
+                    errors.add(new ErrorMessage.Error("scmConfig.credentialId",
+                                    ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
+                                    String.format("credentialId: %s not found", scmConfig.getCredentialId())));
+                }
+            }
+
+            if(sourceUri != null) {
+                errors.addAll(GitUtils.validateCredentials(sourceUri, credentials));
+            }
             credentialId = scmConfig.getCredentialId() == null ? "" : scmConfig.getCredentialId();
+
+            if (!errors.isEmpty()){
+                throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline")
+                        .addAll(errors));
+
+            }
         }
 
         PersistedList<BranchSource> sources = mbp.getSourcesList();
