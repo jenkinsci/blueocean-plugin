@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
 import {
-    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader, toClassicJobPage
+    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader, toClassicJobPage, User
 } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
@@ -43,7 +43,9 @@ function loginOrLogout(t) {
 // then show it anyway.
 const AdminLink = (props) => {
     const { t } = props;
-    const showLink = !Security.isSecurityEnabled() || !Security.isAnonymousUser();
+    
+    const user = User.current();
+    const showLink = !Security.isSecurityEnabled() || user && user.isAdministrator;
 
     if (showLink) {
         var adminCaption = t('administration', {

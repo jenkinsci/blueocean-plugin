@@ -228,6 +228,7 @@ class RunDetails extends Component {
                     onNameClick={ this.navigateToPipeline }
                     onAuthorsClick={ this.navigateToChanges }
                     onCloseClick={ this.closeButtonClicked }
+                    isMultiBranch={ this.isMultiBranch }
                 />
 
                 <div className="RunDetails-content">
@@ -269,4 +270,3 @@ RunDetails.propTypes = {
 };
 
 export default RunDetails;
-

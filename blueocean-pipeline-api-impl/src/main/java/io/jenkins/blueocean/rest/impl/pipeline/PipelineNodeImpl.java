@@ -25,7 +25,7 @@ import java.util.List;
  * @see FlowNode
  */
 public class PipelineNodeImpl extends BluePipelineNode {
-    final FlowNodeWrapper node;
+    private final FlowNodeWrapper node;
     private final List<Edge> edges;
     private final Long durationInMillis;
     private final NodeRunStatus status;
@@ -81,13 +81,13 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     /**
-     * No logs for Node as Node by itself doesn't have any log to repot, its steps inside it that has logs
+     * Appended logs of steps.
      *
      * @see BluePipelineStep#getLog()
      */
     @Override
     public Object getLog() {
-        return null;
+        return new NodeLogResource(this);
     }
 
     @Override
@@ -141,6 +141,10 @@ public class PipelineNodeImpl extends BluePipelineNode {
             }
         }
         return edges;
+    }
+
+    FlowNodeWrapper getFlowNodeWrapper(){
+        return node;
     }
 
 }
