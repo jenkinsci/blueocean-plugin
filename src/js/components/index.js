@@ -5,6 +5,13 @@ export { Page } from './page';
 export { TabLink } from './TabLink';
 export { Table, TableDivider } from './Table';
 export {
+    JTable,
+    TableRow,
+    TableCell,
+    TableHeader,
+    TableHeaderRow
+} from './jtable';
+export {
     StatusIndicator,
     SvgSpinner,
     SvgStatus,

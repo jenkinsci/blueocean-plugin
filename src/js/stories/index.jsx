@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 require('./ButtonStories');
 require('./IconButtonStories');
 require('./CheckboxStories');
@@ -19,6 +20,7 @@ require('./readabledate.jsx');
 require('./statusIndicatorStories.jsx');
 require('./liveStatusIndicatorStories');
 require('./TableStories.jsx');
+require('./JTableStories.jsx');
 require('./TextAreaStories');
 require('./TextInputStories');
 require('./timeduration.jsx');

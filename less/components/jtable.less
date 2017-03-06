@@ -1,0 +1,104 @@
+//--------------------------------------------------------------------------
+//
+//  JTable and related components
+//
+//--------------------------------------------------------------------------
+
+//--------------------------------------
+//  Vars / Mixins
+//--------------------------------------
+
+@table-left-right-padding: 24px;
+@table-column-spacing: 32px;
+// !!!IMPORTANT!!! Don't change the above without changing the constants in JTable.jsx to match!
+
+// FIXME: We need to sort out the mess of different colours we've got all over the place
+@table-border-color: #e6eaee;
+@table-header-color: rgba(53, 64, 82, 0.5);
+@table-hover-bg: #fafbfd;
+
+//--------------------------------------
+//  Outer JTable component
+//--------------------------------------
+
+.JTable {
+    border: solid 1px @table-border-color;
+    border-radius: 3px;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    &.u-table-maxwidth {
+        max-width: 1170px;
+    }
+}
+
+//--------------------------------------
+//  Row Components
+//--------------------------------------
+
+.JTable-row {
+    display: flex;
+    flex-direction: row;
+    border-top: solid 1px @table-border-color;
+
+    &:first-child {
+        border-top: none;
+    }
+}
+
+a.JTable-row--href {
+    color: inherit;
+
+    &:hover {
+        color: inherit;
+        text-decoration: inherit;
+    }
+}
+
+.JTable-row--rollOver {
+    cursor: pointer;
+
+    &:hover {
+        background: @table-hover-bg;
+    }
+}
+
+//--------------------------------------
+//  Cell Components
+//--------------------------------------
+
+.JTable-cell {
+
+    min-width: 0; // Otherwise columns will not shrink uniformly
+
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+
+    padding-left: @table-column-spacing / 2;
+    padding-right: @table-column-spacing / 2;
+
+    &:first-child {
+        padding-left: @table-left-right-padding;
+    }
+
+    &:last-child {
+        padding-right: @table-left-right-padding;
+    }
+}
+
+.JTable-cell-contents {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.JTable-header {
+    color: @table-header-color;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight:bold;
+}
