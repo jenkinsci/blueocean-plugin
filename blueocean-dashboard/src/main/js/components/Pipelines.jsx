@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Page, Table, JTable, TableHeaderRow, TableRow, TableCell } from '@jenkins-cd/design-language';
+import { Page, JTable, TableHeaderRow } from '@jenkins-cd/design-language';
 import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { documentTitle } from './DocumentTitle';
@@ -43,10 +43,10 @@ export class Pipelines extends Component {
                 { organization }
             </Link> : '';
 
-        let labelName = translate('home.pipelineslist.header.name', { defaultValue: 'Name' });
-        let labelHealth = translate('home.pipelineslist.header.health', { defaultValue: 'Health' });
-        let labelBranches = translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' });
-        let labelPullReqs = translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' });
+        const labelName = translate('home.pipelineslist.header.name', { defaultValue: 'Name' });
+        const labelHealth = translate('home.pipelineslist.header.health', { defaultValue: 'Health' });
+        const labelBranches = translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' });
+        const labelPullReqs = translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' });
 
         const columns = [ // TODO: resource labels
             JTable.column(640, labelName, true),
@@ -54,14 +54,6 @@ export class Pipelines extends Component {
             JTable.column(70, labelBranches),
             JTable.column(70, labelPullReqs),
             JTable.column(50, ''),
-        ];
-
-        const headers = [
-            { label: labelName, className: 'name-col' },
-            labelHealth,
-            labelBranches,
-            labelPullReqs,
-            { label: '', className: 'actions-col' },
         ];
 
         const pipelineRows = pipelines && pipelines.map(pipeline => {
@@ -106,7 +98,7 @@ export class Pipelines extends Component {
                         />
 
                         <JTable columns={columns}>
-                            <TableHeaderRow/>
+                            <TableHeaderRow />
                             { pipelineRows }
                         </JTable>
 
