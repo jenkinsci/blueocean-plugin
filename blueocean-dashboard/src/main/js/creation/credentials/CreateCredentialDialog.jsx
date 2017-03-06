@@ -235,13 +235,13 @@ export class CreateCredentialDialog extends React.Component {
 
                     { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS &&
                     <FormElement title={t('creation.git.create_credential.username_title')} errorMessage={this.state.usernameErrorMsg}>
-                        <TextInput onChange={val => this._usernameChange(val)} />
+                        <TextInput className="text-username" onChange={val => this._usernameChange(val)} />
                     </FormElement>
                     }
 
                     { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS &&
                     <FormElement title={t('creation.git.create_credential.password_title')} errorMessage={this.state.passwordErrorMsg}>
-                        <PasswordInput onChange={val => this._passwordChange(val)} />
+                        <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
                     </FormElement>
                     }
                 </FormElement>
