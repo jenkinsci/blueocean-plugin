@@ -7,7 +7,9 @@ import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 const translate = i18nTranslator('blueocean-dashboard');
 
 import FlowManager from '../flow2/FlowManager';
+import { CreatePipelineOutcome } from './GitCreationApi';
 import { CredentialsManager } from '../credentials/CredentialsManager';
+import { UnknownErrorStep } from './steps/UnknownErrorStep';
 import { LoadingStep } from './steps/LoadingStep';
 import GitConnectStep from './GitConnectStep';
 import GitCompletedStep from './GitCompletedStep';
@@ -15,6 +17,7 @@ import GitRenameStep from './steps/GitRenameStep';
 import STATE from './GitCreationState';
 
 const MIN_DELAY = 500;
+const SAVE_DELAY = 1000;
 
 
 /**
@@ -27,17 +30,6 @@ export default class GitFlowManager extends FlowManager {
     @computed
     get credentials() {
         return this.credentialsManager.displayedCredentials || [];
-    }
-
-    @computed
-    get isConnectEnabled() {
-        return this.stateId !== STATE.STEP_RENAME &&
-                this.stateId !== STATE.COMPLETE;
-    }
-
-    @computed
-    get isRenameEnabled() {
-        return this.stateId === STATE.STEP_RENAME;
     }
 
     pipelineName = null;
@@ -134,25 +126,34 @@ export default class GitFlowManager extends FlowManager {
         this.setPlaceholders();
 
         return this._createApi.createPipeline(this.repositoryUrl, this.credentialId, this.pipelineName)
-            .then(pipeline => this._createPipelineSuccess(pipeline), error => this._createPipelineError(error));
+            .then(waitAtLeast(SAVE_DELAY))
+            .then(result => this._createPipelineComplete(result));
     }
 
     @action
-    _createPipelineSuccess(pipeline) {
-        this.changeState(STATE.COMPLETE);
-        this.pipeline = pipeline;
-    }
+    _createPipelineComplete(result) {
+        if (result.outcome === CreatePipelineOutcome.SUCCESS) {
+            this.changeState(STATE.COMPLETE);
+            this.pipeline = result.pipeline;
+        } else if (result.outcome === CreatePipelineOutcome.INVALID_NAME) {
+            this.renderStep({
+                stateId: STATE.STEP_RENAME,
+                stepElement: <GitRenameStep pipelineName={this.pipelineName} />,
+                afterStateId: STATE.STEP_CONNECT,
+            });
 
-    @action
-    _createPipelineError() {
-        this.renderStep({
-            stateId: STATE.STEP_RENAME,
-            stepElement: <GitRenameStep pipelineName={this.pipelineName} />,
-            afterStateId: STATE.STEP_CONNECT,
-        });
-        this.setPlaceholders([
-            this.translate('creation.git.step3.title_default'),
-        ]);
+            this.setPlaceholders([
+                this.translate('creation.git.step3.title_completed'),
+            ]);
+        } else if (result.outcome === CreatePipelineOutcome.ERROR) {
+            this.renderStep({
+                stateId: STATE.ERROR,
+                stepElement: <UnknownErrorStep error={result.error} />,
+                afterStateId: STATE.STEP_CONNECT,
+            });
+        }
+
+        // TODO: handle other outcomes for specific errors
     }
 
     _createNameFromRepoUrl(repositoryUrl) {

@@ -5,7 +5,9 @@ import debounce from 'lodash.debounce';
 import { Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../flow2/FlowStep';
+
 import { CreateCredentialDialog } from '../credentials/CreateCredentialDialog';
+import STATE from './GitCreationState';
 import ValidationUtils from '../../util/ValidationUtils';
 
 
@@ -120,7 +122,7 @@ export default class GitConnectStep extends React.Component {
     render() {
         const { flowManager } = this.props;
 
-        const disabled = !this.props.flowManager.isConnectEnabled;
+        const disabled = flowManager.stateId !== STATE.STEP_CONNECT && flowManager.stateId !== STATE.COMPLETE;
 
         return (
             <FlowStep {...this.props} className="git-step-connect" title={t('creation.git.step1.title')} disabled={disabled}>
