@@ -10,7 +10,14 @@ import { ResultPageHeader } from '@jenkins-cd/blueocean-core-js';
 class RunDetailsHeader extends Component {
 
     componentWillMount() {
-        const { data: run } = this.props;
+        this._setDuration(this.props);
+    }
+    componentWillReceiveProps(nextProps) {
+        this._setDuration(nextProps);
+    }
+
+    _setDuration(props) {
+        const { data: run } = props;
         const isRunning = () => run.isRunning() || run.isPaused() || run.isQueued();
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
@@ -21,7 +28,7 @@ class RunDetailsHeader extends Component {
         }, skewMillis);
         this.durationMillis = durationMillis;
     }
-
+    
     render() {
         const {
             data: run,
