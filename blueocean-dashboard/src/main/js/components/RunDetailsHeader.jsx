@@ -6,6 +6,8 @@ import { logging, TimeManager, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { ResultPageHeader } from '@jenkins-cd/blueocean-core-js';
+import { Link } from 'react-router';
+import { buildPipelineUrl } from '../util/UrlUtils';
 
 class RunDetailsHeader extends Component {
 
@@ -80,10 +82,12 @@ class RunDetailsHeader extends Component {
             </h1>
         );
 
+        const branchUrl = `${buildPipelineUrl(run.organization, pipeline.fullName)}/activity/${run.pipeline}`;
+
         const branchSourceDetails = (
             <div className="u-label-value" title={branchLabel + ': ' + displayName}>
                 <label>{ branchLabel }:</label>
-                <span>{ displayName }</span>
+                <Link to={ branchUrl }>{ displayName }</Link>
             </div>
         );
 
