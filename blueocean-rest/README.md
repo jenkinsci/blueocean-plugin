@@ -87,6 +87,13 @@ The Blue Ocean REST API is a "private API" designed for the Blue Ocean user inte
     - [Get SCM repositories in an organization](#get-scm-repositories-in-an-organization)
       - [Pagination for GitHub repositories](#pagination-for-github-repositories)
     - [Get SCM repository in an organization](#get-scm-repository-in-an-organization)
+    - [Get Github file content of a pipeline (Multibranch or OrganizationFolder)](#get-github-file-content-of-a-pipeline-multibranch-or-organizationfolder)
+      - [Get github file content from MBP branch](#get-github-file-content-from-mbp-branch)
+      - [Get github file content from MBP folder](#get-github-file-content-from-mbp-folder)
+      - [Get github file content from org folder](#get-github-file-content-from-org-folder)
+    - [Save file content to SCM repo](#save-file-content-to-scm-repo)
+      - [Save file to an OrganizationFolder](#save-file-to-an-organizationfolder)
+      - [Save file to a MultiBranchProject](#save-file-to-a-multibranchproject)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -2187,3 +2194,121 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
   "fullName" : "CloudBees-community/game-of-life"
 }
 ````
+
+### Get Github file content of a pipeline (Multibranch or OrganizationFolder)
+
+Parameters:
+
+- **path**
+
+Required. path to file from repo root. e.g. Jenkinsfile
+
+- **repo**
+
+Optional if request is in context of MBP pipeline, required if made in context of organization folder
+
+- **branch**
+
+Optional in case request is made in context of MBP pipeline branch. If missing default branch is assumed if scm 
+supports default branch. Required in all other cases.
+
+- **type**
+
+Optional. Defaults to file. 
+
+#### Get github file content from MBP branch
+
+```
+curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek1/pipelines/test-no-jenkins-file/branches/master/scm/content/?path=Jenkinsfile"
+```
+
+#### Get github file content from MBP folder
+
+```
+curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek1/pipelines/test-no-jenkins-file/scm/content/?path=Jenkinsfile&branch=test1"
+```
+
+#### Get github file content from org folder
+
+```
+curl -v -u xxx:yyy "http://127.0.0.1:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek1/scm/content/?path=Jenkinsfile&repo=test-no-jenkins-file&branch=test1"
+```
+
+Response:
+
+```
+{
+   "content" : {
+      "name" : "Jenkinsfile",
+      "sha" : "f13b26341cf403aa7d697bc252908de092ee279d",
+      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubContent",
+      "repo" : "test-no-jenkins-file",
+      "size" : 7,
+      "owner" : "vivek",
+      "path" : "Jenkinsfile",
+      "base64Data": "VGVzdDEyMw=="
+   },
+   "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubFile"
+}
+```
+
+### Save file content to SCM repo
+
+#### Save file to an OrganizationFolder
+
+SCM owner and credentials are computed from the OrganizationFolder. Request must include **repo** element.
+
+```
+curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek/scm/content/ -d 
+
+'{
+  "content" : {
+    "message" : "first commit",
+    "path" : "Jenkinsfile",
+    "branch" : "test1",
+    "repo" : "test-no-jenkins-file",
+    "sha" : "9e82c4011cd70446a2f44881a6c288c59b4abac0",
+    "base64Data" : "VGVzdDEyMw=="
+  }
+}'
+```
+
+#### Save file to a MultiBranchProject
+
+SCM owner, repo and credentials are computed from the MultiBranchProject.
+
+```
+curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek/pipelines/test-no-jenkins-file/scm/content/ -d 
+
+'{
+  "content" : {
+    "message" : "first commit",
+    "path" : "Jenkinsfile",
+    "branch" : "test1",
+    "sha" : "9e82c4011cd70446a2f44881a6c288c59b4abac0",
+    "base64Data" : "VGVzdDEyMw=="
+  }
+}'
+```
+
+- If file **path** doesn't exist in SCM then a new file will be created
+- If **sha** is provided and file **path** exists then it must match with the sha of existing file, else 400 (Bad Request) error will be returned. 
+- If **sha** matches then the file will be updated with the content provided in the request
+- If **branch** element is not provided file will be saved on default branch (typically maser)
+- If **branch** element is present and this branch doesn't exist then a new branch will be created off default branch HEAD
+
+Response
+
+```
+{
+   "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubFile",
+   "content" : {
+      "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubContent",
+      "sha" : "f13b26341cf403aa7d697bc252908de092ee279d",
+      "path" : "Jenkinsfile4",
+      "owner" : "vivek",
+      "repo" : "test-no-jenkins-file",
+      "name" : "Jenkinsfile4"
+   }
+}
+```

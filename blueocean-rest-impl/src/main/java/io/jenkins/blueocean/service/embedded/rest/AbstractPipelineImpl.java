@@ -6,7 +6,6 @@ import com.google.common.collect.Iterators;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.AbstractItem;
-import hudson.model.Action;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
@@ -24,6 +23,7 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
@@ -32,7 +32,6 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
@@ -299,6 +298,11 @@ public class AbstractPipelineImpl extends BluePipeline {
     @Override
     public Map<String, Boolean> getPermissions(){
         return getPermissions(job);
+    }
+
+    @Override
+    public BluePipelineScm getScm() {
+        return null;
     }
 
     public static Map<String, Boolean> getPermissions(AbstractItem item){

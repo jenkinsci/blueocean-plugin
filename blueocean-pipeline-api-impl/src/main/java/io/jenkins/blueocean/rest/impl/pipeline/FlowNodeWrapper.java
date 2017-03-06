@@ -142,8 +142,31 @@ public class FlowNodeWrapper {
         return node.hashCode();
     }
 
-    public ErrorAction getBlockErrorAction() {
+    ErrorAction getBlockErrorAction() {
         return blockErrorAction;
+    }
+
+    boolean hasBlockError(){
+        return blockErrorAction != null
+                && blockErrorAction.getError() != null;
+    }
+
+    String blockError(){
+        if(hasBlockError()){
+            return blockErrorAction.getError().getMessage();
+        }
+        return null;
+    }
+
+    String nodeError(){
+        if(node.getError() != null && node.getError().getError() != null) {
+            return node.getError().getError().getMessage();
+        }
+        return null;
+    }
+
+    boolean isLoggable(){
+        return PipelineNodeUtil.isLoggable.apply(node);
     }
 
     public void setBlockErrorAction(ErrorAction blockErrorAction) {

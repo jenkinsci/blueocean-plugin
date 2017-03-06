@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableList;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;

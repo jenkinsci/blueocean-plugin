@@ -42,9 +42,6 @@ public abstract class Scm extends Resource {
 
     /**
      * Pageable list of {@link ScmOrganization}s.
-     */
-    /**
-     * Pageable list of {@link ScmOrganization}s.
      *
      * Credential Id to use with github must be provided either as credentialId query parameter or as X-CREDENTIAL-NAME http header.
      *
