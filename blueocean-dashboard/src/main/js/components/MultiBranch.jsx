@@ -3,8 +3,7 @@ import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Markdown from 'react-remarkable';
 import Branches from './Branches';
 
-import PageLoading from './PageLoading';
-import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { capable, ShowMoreButton, PageLoading } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 

@@ -3,13 +3,12 @@ import {
   EmptyStateView,
   Table,
 } from '@jenkins-cd/design-language';
-import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { capable, RunButton, ShowMoreButton, PageLoading } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 import Runs from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import PageLoading from './PageLoading';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { ColumnFilter } from './ColumnFilter';
 

@@ -6,6 +6,7 @@ import config from './config';
 import dedupe from './utils/dedupe-calls';
 import urlconfig from './urlconfig';
 import { prefetchdata } from './scopes';
+import loadingIndicator from './loadingIndicator';
 
 const Promise = es6Promise.Promise;
 
@@ -43,6 +44,11 @@ export const FetchFunctions = {
             error.response = response;
             throw error;
         }
+        return response;
+    },
+    
+    stopLoadingIndicator(response) {
+        loadingIndicator.hide();
         return response;
     },
 
@@ -141,17 +147,28 @@ export const FetchFunctions = {
      * @param {function} [options.onSuccess] - Optional callback success function.
      * @param {function} [options.onError] - Optional error callback.
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
+     * @param {boolean} [options.disableDedupe] - Optional flag to disable dedupe for this request.
+     * @param {boolean} [options.disableLoadingIndicator] - Optional flag to disable loading indicator for this request.
      * @returns JSON body
      */
-    rawFetchJSON(url, { onSuccess, onError, fetchOptions, disableDedupe } = {}) {
+    rawFetchJSON(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator } = {}) {
         const request = () => {
             let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
             if (!future) {
+                if (!disableLoadingIndicator) {
+                    loadingIndicator.show();
+                }
+                
                 future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                     .then(FetchFunctions.checkRefreshHeader)
                     .then(FetchFunctions.checkStatus)
                     .then(FetchFunctions.parseJSON, FetchFunctions.parseErrorJson);
+                
+                if (!disableLoadingIndicator) {
+                    future = future.then(FetchFunctions.stopLoadingIndicator, err => { FetchFunctions.stopLoadingIndicator(); throw err; });
+                }
             }
+            
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
             }
@@ -175,16 +192,27 @@ export const FetchFunctions = {
      * @param {function} [options.onSuccess] - Optional callback success function.
      * @param {function} [options.onError] - Optional error callback.
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
+     * @param {boolean} [options.disableDedupe] - Optional flag to disable dedupe for this request.
+     * @param {boolean} [options.disableLoadingIndicator] - Optional flag to disable loading indicator for this request.
      * @returns fetch response
      */
-    rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe } = {}) {
+    rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator } = {}) {
         const request = () => {
             let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
             if (!future) {
+                if (!disableLoadingIndicator) {
+                    loadingIndicator.show();
+                }
+                
                 future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                     .then(FetchFunctions.checkRefreshHeader)
                     .then(FetchFunctions.checkStatus);
+                
+                if (!disableLoadingIndicator) {
+                    future = future.then(FetchFunctions.stopLoadingIndicator, err => { FetchFunctions.stopLoadingIndicator(); throw err; });
+                }
             }
+
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
             }

@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView } from '@jenkins-cd/design-language';
+import { PageLoading } from '@jenkins-cd/blueocean-core-js';
 import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 import Markdown from 'react-remarkable';
 import { actions as selectorActions, testResults as testResultsSelector,
     connect, createSelector } from '../redux';
-import PageLoading from './PageLoading';
 
 /**
  * Displays a list of tests from the supplied build run property.

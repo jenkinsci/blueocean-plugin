@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { TabLink } from '@jenkins-cd/design-language';
 import { i18nTranslator, ReplayButton, RunButton, logging } from '@jenkins-cd/blueocean-core-js';
+import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/react-material-icons';
 
@@ -15,8 +16,7 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import { FullScreen } from './FullScreen';
-import PageLoading from './PageLoading';
-import { Paths, capable, locationService, Security } from '@jenkins-cd/blueocean-core-js';
+import { Paths, capable, locationService, Security, PageLoading } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
 const { func, object, any, string } = PropTypes;
@@ -141,7 +141,7 @@ class RunDetails extends Component {
         const { router, location, params } = this.context;
         const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
 
-        location.pathname = this.opener || fallbackUrl;
+        location.pathname = fallbackUrl;
 
         // reset query
         /*
@@ -149,7 +149,12 @@ class RunDetails extends Component {
          this.opener would then be location and we the above location = this.opener || { pathname: fallbackUrl]
          */
         location.query = null;
-        router.push(location);
+        
+        if (this.opener) {
+            router.goBack();
+        } else {
+            router.push(location);
+        }
     };
 
     render() {
@@ -198,18 +203,19 @@ class RunDetails extends Component {
             }) }</TabLink>,
         ];
 
-        const runButton = [
-            <ReplayButton className="dark"
+        const iconButtons = [
+            <ReplayButton className="icon-button dark"
                           runnable={ this.props.pipeline }
                           latestRun={ currentRun }
                           onNavigation={ switchRunDetails }
                           autoNavigate
             />,
-            <RunButton className="dark"
+            <RunButton className="icon-button dark"
                        runnable={ this.props.pipeline }
                        latestRun={ currentRun }
                        buttonType="stop-only"
             />,
+            <Extensions.Renderer extensionPoint="jenkins.blueocean.rundetails.top.widgets" filter={dataType(currentRun)} pipeline={pipeline} run={currentRun} back={() => this.navigateToPipeline()}/>,
             classicConfigLink(pipeline),
             classicJobRunLink(pipeline, params.branch, params.runId),
         ];
@@ -222,7 +228,7 @@ class RunDetails extends Component {
                     locale={ locale }
                     pipeline={ pipeline }
                     data={ currentRun }
-                    runButton={ runButton }
+                    runButton={ iconButtons }
                     topNavLinks={ tabs }
                     onOrganizationClick={ this.navigateToOrganization }
                     onNameClick={ this.navigateToPipeline }

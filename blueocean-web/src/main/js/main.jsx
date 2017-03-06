@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
 import {
-    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader, toClassicJobPage, User
+    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader, toClassicJobPage, User, loadingIndicator,
 } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
@@ -238,6 +238,7 @@ function startApp(routes, stores) {
 }
 
 Extensions.store.getExtensions(['jenkins.main.routes', 'jenkins.main.stores'], (routes = [], stores = []) => {
+    loadingIndicator.setDarkBackground();
     startApp(routes, stores);
 });
 

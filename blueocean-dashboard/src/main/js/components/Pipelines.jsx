@@ -1,12 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, Table } from '@jenkins-cd/design-language';
-import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton, PageLoading } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
-import PageLoading from './PageLoading';
 import { observer } from 'mobx-react';
 
 const translate = i18nTranslator('blueocean-dashboard');

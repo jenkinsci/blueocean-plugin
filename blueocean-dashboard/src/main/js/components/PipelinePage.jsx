@@ -7,9 +7,8 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { i18nTranslator, NotFound, Paths, ContentPageHeader, logging, AppConfig, Security } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, NotFound, Paths, ContentPageHeader, logging, AppConfig, Security, PageLoading } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import PageLoading from './PageLoading';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
 import { observer } from 'mobx-react';

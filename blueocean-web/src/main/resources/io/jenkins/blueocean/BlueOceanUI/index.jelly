@@ -56,6 +56,7 @@
         <body>
             <div id="loadbar"></div>
             <script>
+                window.isDevelopmentMode = ${it.developmentMode};
                 function lb(c,t){setTimeout(function(){document.getElementById('loadbar').classList.add(c)},t)}
                 lb('go',10);lb('long',1000);lb('longer',6000);
             </script>

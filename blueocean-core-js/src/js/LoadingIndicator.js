@@ -6,6 +6,10 @@
 let loadingCount = 0;
 const timeouts = [];
 
+// use a short timeout so fast connections aren't seeing
+// flashes of the progress bar all the time
+const delay = 350;
+
 /**
  * Remove queued progress additions
  */
@@ -33,9 +37,6 @@ export default {
             // start the loading animation
             document.getElementById('loadbar').classList.remove('complete');
             clearTimeouts();
-            // use a short timeout so fast connections aren't seeing
-            // flashes of the progress bar all the time
-            const delay = 1000;
             setLoaderClass('go', delay); // these times need to match the index.jelly CSS definitions
             setLoaderClass('long', delay + 1000);
             setLoaderClass('longer', delay + 6000);
@@ -67,6 +68,7 @@ export default {
         }
     },
 
+    // TODO should make this a stack to push/pop
     setDarkBackground() {
         document.getElementsByTagName('body')[0].classList.add('loadbar-light');
     },
