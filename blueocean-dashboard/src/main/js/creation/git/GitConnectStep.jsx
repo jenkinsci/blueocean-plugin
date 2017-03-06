@@ -8,30 +8,8 @@ import FlowStep from '../flow2/FlowStep';
 import { CreateCredentialDialog } from '../credentials/CreateCredentialDialog';
 import ValidationUtils from '../../util/ValidationUtils';
 
-let t = null;
 
-const NEW_CREDENTIAL_TYPE = {
-    SSH_KEY: 'SSH_KEY',
-    SYSTEM_SSH: 'SYSTEM_SSH',
-    USER_PASS: 'USER_PASS',
-    values: () => [
-        NEW_CREDENTIAL_TYPE.SSH_KEY,
-        NEW_CREDENTIAL_TYPE.USER_PASS,
-        NEW_CREDENTIAL_TYPE.SYSTEM_SSH,
-    ],
-    toLabel(option) {
-        switch (option) {
-        case NEW_CREDENTIAL_TYPE.SSH_KEY:
-            return t('creation.git.step1.credential_type_ssh_key');
-        case NEW_CREDENTIAL_TYPE.SYSTEM_SSH:
-            return t('creation.git.step1.credential_type_system_ssh');
-        case NEW_CREDENTIAL_TYPE.USER_PASS:
-            return t('creation.git.step1.credential_type_user_pass');
-        default:
-            return '';
-        }
-    },
-};
+let t = null;
 
 // TODO: HACK! adding a method to allow for programmatic change of Dropdown's selectedOption.
 // TODO: needs to be added in the JDL, or handled a little differently via props
