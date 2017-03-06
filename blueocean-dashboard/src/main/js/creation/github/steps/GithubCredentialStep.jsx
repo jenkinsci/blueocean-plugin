@@ -59,7 +59,7 @@ export default class GithubCredentialsStep extends React.Component {
                 </p>
 
                 <FormElement errorMessage={errorMessage}>
-                    <TextInput className="text-token" placeholder="Enter access token" onChange={val => this._tokenChange(val)} />
+                    <TextInput className="text-token" placeholder="Your Github access token" onChange={val => this._tokenChange(val)} />
 
                     <button className="button-connect" disabled={buttonDisabled} onClick={() => this._createToken()}>Connect</button>
                 </FormElement>

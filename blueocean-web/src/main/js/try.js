@@ -16,7 +16,13 @@ $(document).ready(() => {
     }
 
     if (!tryBlueOceanUrl) {
-        tryBlueOceanUrl = `./blue`;
+        // Unable to find a backend Stapler context path for the current page.
+        // Only option left is to assume that the rooturl in the <head>
+        // is accurate. This *might* not be 100% accurate if there's funky
+        // reverse proxying or url rewriting happening on a proxy/intermediary
+        // sitting between Jenkins and the browser/client.
+        var rooturl = $('head').attr('data-rooturl');
+        tryBlueOceanUrl = rooturl + '/blue';
     }
 
     var tryBlueOcean = $('<a id="open-blueocean-in-context" class="try-blueocean header-callout">Open Blue Ocean</a>');

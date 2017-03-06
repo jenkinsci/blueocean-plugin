@@ -15,8 +15,6 @@ import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.TagsAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
-import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
-import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
@@ -28,7 +26,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author Vivek Pandey
@@ -52,28 +49,6 @@ public class PipelineNodeUtil {
             return BlueRun.BlueRunResult.FAILURE;
         }
     }
-
-    @Nonnull
-    public static NodeRunStatus getStatus(@Nonnull WorkflowRun run){
-        FlowExecution execution = run.getExecution();
-        BlueRun.BlueRunResult result;
-        BlueRun.BlueRunState state;
-        if (execution == null) {
-            result = BlueRun.BlueRunResult.NOT_BUILT;
-            state = BlueRun.BlueRunState.QUEUED;
-        } else if (execution.getCauseOfFailure() != null) {
-            result = getStatus(execution.getCauseOfFailure());
-            state = BlueRun.BlueRunState.FINISHED;
-        } else if (execution.isComplete()) {
-            result = BlueRun.BlueRunResult.SUCCESS;
-            state = BlueRun.BlueRunState.FINISHED;
-        } else {
-            result = BlueRun.BlueRunResult.UNKNOWN;
-            state = BlueRun.BlueRunState.RUNNING;
-        }
-        return new NodeRunStatus(result,state);
-    }
-
 
     @Nonnull
     public static String getDisplayName(@Nonnull FlowNode node) {
@@ -211,30 +186,6 @@ public class PipelineNodeUtil {
         }
     };
 
-
-    static boolean isNestedInParallel(@Nonnull List<FlowNode> sortedNodes, @Nonnull FlowNode node){
-        FlowNode p = getClosestEnclosingParallelBranch(sortedNodes,node, node.getParents());
-        return isInBlock(p, getStepEndNode(sortedNodes, p), node);
-    }
-
-
-
-    private static FlowNode getClosestEnclosingParallelBranch(List<FlowNode> sortedNodes, FlowNode node, List<FlowNode> parents){
-        for(FlowNode n: parents){
-            if(isParallelBranch(n)){
-                if(isInBlock(n, getStepEndNode(sortedNodes, n), node)) {
-                    return n;
-                }
-            }
-            return getClosestEnclosingParallelBranch(sortedNodes, node, n.getParents());
-        }
-        return null;
-    }
-
-    public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nonnull WorkflowRun run){
-        return isPausedForInputStep(step, run.getAction(InputAction.class));
-    }
-
     public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nullable InputAction inputAction){
         if(inputAction == null){
             return false;
@@ -243,56 +194,4 @@ public class PipelineNodeUtil {
         return (pauseAction != null && pauseAction.isPaused()
                 && pauseAction.getCause().equals("Input"));
     }
-
-    static FlowNode getStepEndNode(List<FlowNode> sortedNodes, FlowNode startNode){
-        for(int i = sortedNodes.size() - 1; i >=0; i--){
-            FlowNode n = sortedNodes.get(i);
-            if(n instanceof StepEndNode){
-                StepEndNode endNode = (StepEndNode) n;
-                if(endNode.getStartNode().equals(startNode))
-                    return endNode;
-            }
-        }
-        return null;
-    }
-
-    static FlowNode getEndNode(List<FlowNode> sortedNodes, FlowNode startNode){
-        for(int i = sortedNodes.size() - 1; i >=0; i--){
-            FlowNode n = sortedNodes.get(i);
-            if(n instanceof StepAtomNode){
-                StepAtomNode endNode = (StepAtomNode) n;
-                if(endNode.equals(startNode))
-                    return endNode;
-            }
-        }
-        return null;
-    }
-
-    static boolean isInBlock(FlowNode startNode, FlowNode endNode, FlowNode c){
-        return isChildOf(startNode, c) && isChildOf(c, endNode);
-    }
-
-    private static boolean isChildOf(FlowNode parent, FlowNode child){
-        if(child == null){
-            return false;
-        }
-        for(FlowNode p:child.getParents()){
-            if(p.equals(parent)){
-                return true;
-            }
-            return isChildOf(parent, p);
-        }
-        return false;
-    }
-
-    private static boolean isBranchNestedInBranch(FlowNode node){
-        for(FlowNode n: node.getParents()){
-            if(isParallelBranch(node)){
-                return true;
-            }
-            isBranchNestedInBranch(n);
-        }
-        return false;
-    }
-
 }

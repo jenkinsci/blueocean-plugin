@@ -227,7 +227,7 @@ public class GithubScm extends Scm {
             //Now we know the token is valid. Lets find credential
             StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
 
-            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, "github", "Github Access Token", user.getLogin(), accessToken);
+            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, "github", "Github Access Token", authenticatedUser.getId(), accessToken);
 
 
             if(githubCredential == null) {
@@ -322,7 +322,7 @@ public class GithubScm extends Scm {
         }
     }
 
-    private User getAuthenticatedUser(){
+    static User getAuthenticatedUser(){
         User authenticatedUser = User.current();
         if(authenticatedUser == null){
             throw new ServiceException.UnauthorizedException("No logged in user found");
