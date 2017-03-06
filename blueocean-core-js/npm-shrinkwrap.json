@@ -1,11 +1,12 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.85",
+  "version": "0.0.86",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.122",
-      "from": "@jenkins-cd/design-language@0.0.122",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.122.tgz"
+      "version": "0.0.123-unpublished-jm-b",
+      "from": "@jenkins-cd/design-language@0.0.123-unpublished-jm-b",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.123-unpublished-jm-b.tgz",
+      "dev": true
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -363,7 +364,8 @@
     "asap": {
       "version": "2.0.5",
       "from": "asap@>=2.0.3 <2.1.0",
-      "resolved": "https://registry.npmjs.org/asap/-/asap-2.0.5.tgz"
+      "resolved": "https://registry.npmjs.org/asap/-/asap-2.0.5.tgz",
+      "dev": true
     },
     "asn1": {
       "version": "0.2.3",
@@ -1719,7 +1721,8 @@
     "core-js": {
       "version": "1.2.7",
       "from": "core-js@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-1.2.7.tgz"
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-1.2.7.tgz",
+      "dev": true
     },
     "core-util-is": {
       "version": "1.0.2",
@@ -2624,7 +2627,8 @@
     "fbjs": {
       "version": "0.8.9",
       "from": "fbjs@>=0.8.4 <0.9.0",
-      "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.9.tgz"
+      "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.9.tgz",
+      "dev": true
     },
     "fd-slicer": {
       "version": "1.0.1",
@@ -5230,7 +5234,8 @@
     "lodash.debounce": {
       "version": "4.0.8",
       "from": "lodash.debounce@4.0.8",
-      "resolved": "https://registry.npmjs.org/lodash.debounce/-/lodash.debounce-4.0.8.tgz"
+      "resolved": "https://registry.npmjs.org/lodash.debounce/-/lodash.debounce-4.0.8.tgz",
+      "dev": true
     },
     "lodash.deburr": {
       "version": "3.2.0",
@@ -5622,7 +5627,8 @@
     "moment-duration-format": {
       "version": "1.3.0",
       "from": "moment-duration-format@1.3.0",
-      "resolved": "https://registry.npmjs.org/moment-duration-format/-/moment-duration-format-1.3.0.tgz"
+      "resolved": "https://registry.npmjs.org/moment-duration-format/-/moment-duration-format-1.3.0.tgz",
+      "dev": true
     },
     "ms": {
       "version": "0.7.2",
@@ -5766,7 +5772,8 @@
     "object-assign": {
       "version": "4.1.1",
       "from": "object-assign@>=4.1.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz"
+      "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz",
+      "dev": true
     },
     "object-component": {
       "version": "0.0.3",
@@ -6385,7 +6392,8 @@
     "promise": {
       "version": "7.1.1",
       "from": "promise@>=7.1.1 <8.0.0",
-      "resolved": "https://registry.npmjs.org/promise/-/promise-7.1.1.tgz"
+      "resolved": "https://registry.npmjs.org/promise/-/promise-7.1.1.tgz",
+      "dev": true
     },
     "proxy-addr": {
       "version": "1.1.3",
@@ -6461,12 +6469,14 @@
     "react": {
       "version": "15.3.2",
       "from": "react@15.3.2",
-      "resolved": "https://registry.npmjs.org/react/-/react-15.3.2.tgz"
+      "resolved": "https://registry.npmjs.org/react/-/react-15.3.2.tgz",
+      "dev": true
     },
     "react-addons-css-transition-group": {
       "version": "15.3.2",
       "from": "react-addons-css-transition-group@15.3.2",
-      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.3.2.tgz"
+      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.3.2.tgz",
+      "dev": true
     },
     "react-addons-test-utils": {
       "version": "15.3.2",
@@ -6477,7 +6487,8 @@
     "react-dom": {
       "version": "15.3.2",
       "from": "react-dom@15.3.2",
-      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.3.2.tgz"
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.3.2.tgz",
+      "dev": true
     },
     "react-fuzzy": {
       "version": "0.3.3",
@@ -6872,7 +6883,8 @@
     "setimmediate": {
       "version": "1.0.5",
       "from": "setimmediate@>=1.0.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz"
+      "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz",
+      "dev": true
     },
     "setprototypeof": {
       "version": "1.0.2",
@@ -7505,7 +7517,8 @@
     "ua-parser-js": {
       "version": "0.7.12",
       "from": "ua-parser-js@>=0.7.9 <0.8.0",
-      "resolved": "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.12.tgz"
+      "resolved": "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.12.tgz",
+      "dev": true
     },
     "uglify-js": {
       "version": "2.7.5",

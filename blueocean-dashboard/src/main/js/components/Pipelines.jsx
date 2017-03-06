@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Page, Table } from '@jenkins-cd/design-language';
+import { Page, Table, JTable, TableHeaderRow, TableRow, TableCell } from '@jenkins-cd/design-language';
 import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { documentTitle } from './DocumentTitle';
@@ -43,14 +43,40 @@ export class Pipelines extends Component {
                 { organization }
             </Link> : '';
 
+        let labelName = translate('home.pipelineslist.header.name', { defaultValue: 'Name' });
+        let labelHealth = translate('home.pipelineslist.header.health', { defaultValue: 'Health' });
+        let labelBranches = translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' });
+        let labelPullReqs = translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' });
+
+        const columns = [ // TODO: resource labels
+            JTable.column(640, labelName, true),
+            JTable.column(70, labelHealth),
+            JTable.column(70, labelBranches),
+            JTable.column(70, labelPullReqs),
+            JTable.column(50, ''),
+        ];
+
         const headers = [
-            { label: translate('home.pipelineslist.header.name', { defaultValue: 'Name' }), className: 'name-col' },
-            translate('home.pipelineslist.header.health', { defaultValue: 'Health' }),
-            translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' }),
-            translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' }),
+            { label: labelName, className: 'name-col' },
+            labelHealth,
+            labelBranches,
+            labelPullReqs,
             { label: '', className: 'actions-col' },
         ];
+
+        const pipelineRows = pipelines && pipelines.map(pipeline => {
+            const key = pipeline._links.self.href;
+            return (
+                <PipelineRowItem
+                    t={ translate }
+                    key={ key } pipeline={ pipeline }
+                    showOrganization={ AppConfig.showOrg() }
+                />
+            );
+        });
+
         this.props.setTitle('Jenkins Blue Ocean');
+
         return (
             <Page>
                 <ContentPageHeader>
@@ -78,23 +104,11 @@ export class Pipelines extends Component {
                             store={ this.context.store }
                             router={ this.context.router }
                         />
-                        <Table
-                            className="pipelines-table"
-                            headers={ headers }
-                        >
-                            { pipelines &&
-                            pipelines.map(pipeline => {
-                                const key = pipeline._links.self.href;
-                                return (
-                                    <PipelineRowItem
-                                        t={ translate }
-                                        key={ key } pipeline={ pipeline }
-                                        showOrganization={ AppConfig.showOrg() }
-                                    />
-                                );
-                            })
-                            }
-                        </Table>
+
+                        <JTable columns={columns}>
+                            <TableHeaderRow/>
+                            { pipelineRows }
+                        </JTable>
 
                         { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>

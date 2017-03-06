@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { ExpandablePath, WeatherIcon } from '@jenkins-cd/design-language';
+import { ExpandablePath, WeatherIcon, TableRow, TableCell } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { capable, UrlConfig } from '@jenkins-cd/blueocean-core-js';
@@ -20,6 +20,7 @@ function generateRedirectLink(pipeline) {
 
     return null;
 }
+
 export class PipelineRowItem extends Component {
 
     calculateResponse(passing, failing) {
@@ -40,7 +41,7 @@ export class PipelineRowItem extends Component {
     }
 
     render() {
-        const { pipeline, showOrganization } = this.props;
+        const { pipeline, showOrganization, columns } = this.props;
 
         // Early out
         if (!pipeline) {
@@ -89,32 +90,27 @@ export class PipelineRowItem extends Component {
             multiBranchLink = multiBranchLabel;
             pullRequestsLink = multiPrLabel;
         }
-        // FIXME: Visual alignment of the last column
         return (
-            <tr data-name={name} data-organization={organization}>
-                <td>
+            <TableRow data-name={name} data-organization={organization} columns={columns}>
+                <TableCell>
                     {
                         generateRedirectLink(pipeline) ||
                         <Link to={activitiesURL} query={location.query}>
                             <ExpandablePath path={fullDisplayPath} />
                         </Link>
                     }
-                </td>
-                <td><WeatherIcon score={weatherScore} /></td>
-                {
-                    // fixme refactor the next 2 lines and the prior logic
-                    // to create a react component out of it
-                }
-                <td>{multiBranchLink}</td>
-                <td>{pullRequestsLink}</td>
-                <td>
+                </TableCell>
+                <TableCell><WeatherIcon score={weatherScore} /></TableCell>
+                <TableCell>{multiBranchLink}</TableCell>
+                <TableCell>{pullRequestsLink}</TableCell>
+                <TableCell>
                     <Extensions.Renderer
                       extensionPoint="jenkins.pipeline.list.action"
                       store={this.context.store}
                       pipeline={this.props.pipeline}
                     />
-                </td>
-            </tr>
+                </TableCell>
+            </TableRow>
         );
     }
 }
@@ -123,6 +119,7 @@ PipelineRowItem.propTypes = {
     pipeline: PropTypes.object.isRequired,
     showOrganization: PropTypes.bool,
     t: PropTypes.func,
+    columns: PropTypes.object,
 };
 
 PipelineRowItem.contextTypes = {
