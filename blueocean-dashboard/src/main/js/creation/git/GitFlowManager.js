@@ -40,8 +40,6 @@ export default class GitFlowManager extends FlowManager {
         return this.stateId === STATE.STEP_RENAME;
     }
 
-    systemSSHCredential = null;
-
     pipelineName = null;
 
     credentialId = null;

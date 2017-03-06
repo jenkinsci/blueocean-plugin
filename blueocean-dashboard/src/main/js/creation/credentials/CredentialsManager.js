@@ -4,17 +4,14 @@ import waitAtLeast from '../flow2/waitAtLeast';
 
 
 const SAVE_DELAY = 1000;
-// constants used to defined the special 'system ssh' key to ensure it's only created once, then reused.
+// constant used to defined the special 'system ssh' key to ensure it's only created once.
 const SYSTEM_SSH_ID = 'git-ssh-key-master';
-const SYSTEM_SSH_DESCRIPTION = 'Master SSH Key for Git Creation';
 
 
 export class CredentialsManager {
 
     @observable
     credentials = [];
-
-    systemSSHCredential = null;
 
     @computed
     get displayedCredentials() {
@@ -34,26 +31,15 @@ export class CredentialsManager {
     @action
     _listAllCredentialsComplete(result) {
         const creds = result.credentials || [];
-        this._storeSystemSshCredential(creds);
         this.credentials.replace(creds);
         return result;
     }
 
     _filterCredentials(credentialList) {
-        // remove 'system ssh' from the main list
+        // 'system ssh' was removed as an option in JENKINS-42120
+        // leaving in logic to filter it out in case it was created previously
         return credentialList
             .filter(item => item.id !== SYSTEM_SSH_ID);
-    }
-
-    _storeSystemSshCredential(credentialList) {
-        // find the special 'system ssh' credential if it was already created
-        const systemSSH = credentialList
-            .filter(item => item.id === SYSTEM_SSH_ID)
-            .pop();
-
-        if (systemSSH) {
-            this.systemSSHCredential = systemSSH;
-        }
     }
 
     saveSSHKeyCredential(sshKey) {
@@ -76,18 +62,6 @@ export class CredentialsManager {
 
     @action
     _saveUsernamePasswordCredentialSuccess(cred) {
-        this.credentials.push(cred);
-        return cred;
-    }
-
-    saveSystemSSHCredential() {
-        return this._api.saveSystemSSHCredential(SYSTEM_SSH_ID, SYSTEM_SSH_DESCRIPTION)
-            .then(waitAtLeast(SAVE_DELAY))
-            .then(cred => this._saveSystemSSHCredentialSuccess(cred));
-    }
-
-    @action
-    _saveSystemSSHCredentialSuccess(cred) {
         this.credentials.push(cred);
         return cred;
     }

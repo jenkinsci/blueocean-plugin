@@ -9,19 +9,15 @@ let t = null;
 
 const NEW_CREDENTIAL_TYPE = {
     SSH_KEY: 'SSH_KEY',
-    SYSTEM_SSH: 'SYSTEM_SSH',
     USER_PASS: 'USER_PASS',
     values: () => [
         NEW_CREDENTIAL_TYPE.SSH_KEY,
         NEW_CREDENTIAL_TYPE.USER_PASS,
-        NEW_CREDENTIAL_TYPE.SYSTEM_SSH,
     ],
     toLabel(option) {
         switch (option) {
         case NEW_CREDENTIAL_TYPE.SSH_KEY:
             return t('creation.git.create_credential.credential_type_ssh_key');
-        case NEW_CREDENTIAL_TYPE.SYSTEM_SSH:
-            return t('creation.git.create_credential.credential_type_system_ssh');
         case NEW_CREDENTIAL_TYPE.USER_PASS:
             return t('creation.git.create_credential.credential_type_user_pass');
         default:
@@ -128,8 +124,6 @@ export class CreateCredentialDialog extends React.Component {
             promise = manager.saveSSHKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
         } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS) {
             promise = manager.saveUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);
-        } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SYSTEM_SSH) {
-            promise = manager.createWithSystemSSHCredential(this.state.repositoryUrl);
         }
 
         if (promise) {
@@ -147,9 +141,7 @@ export class CreateCredentialDialog extends React.Component {
     _performValidation() {
         let result = true;
 
-        if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SYSTEM_SSH) {
-            return result;
-        } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS) {
+        if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS) {
             if (!this.state.usernameValue) {
                 this.setState({
                     usernameErrorMsg: t('creation.git.create_credential.username_error'),
