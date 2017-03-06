@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
-import { logging } from '@jenkins-cd/blueocean-core-js';
 import { buildPipelineUrl } from '../../../util/UrlUtils';
 
 import FlowStep from '../../flow2/FlowStep';
@@ -9,9 +8,6 @@ import FlowStepStatus from '../../flow2/FlowStepStatus';
 import STATE from '../GithubCreationState';
 
 import Extensions from '@jenkins-cd/js-extensions';
-
-const LOGGER = logging.logger('io.jenkins.blueocean.github-pipeline');
-
 
 @observer
 export default class GithubCompleteStep extends React.Component {
@@ -72,7 +68,7 @@ export default class GithubCompleteStep extends React.Component {
         let showDashboardLink = false;
         let showPipelineLink = false;
         let showCreateLink = false;
-
+        
         if (state === STATE.PENDING_CREATION_SAVING) {
             copy = 'Please wait while your settings are saved.';
         } else if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
@@ -121,7 +117,8 @@ export default class GithubCompleteStep extends React.Component {
                 { showCreateLink &&
                 <div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.missing.jenkinsfile"
-                        organization={'jenkins'} fullName={selectedOrganization.name + '/' + selectedRepository.name} />
+                        organization={'jenkins'} fullName={selectedOrganization.name + '/' + selectedRepository.name}
+                    />
                 </div>
                 }
             </div>

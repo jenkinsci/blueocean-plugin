@@ -215,7 +215,12 @@ class RunDetails extends Component {
                        latestRun={ currentRun }
                        buttonType="stop-only"
             />,
-            <Extensions.Renderer extensionPoint="jenkins.blueocean.rundetails.top.widgets" filter={dataType(currentRun)} pipeline={pipeline} run={currentRun} back={() => this.navigateToPipeline()}/>,
+            <Extensions.Renderer extensionPoint="jenkins.blueocean.rundetails.top.widgets"
+                filter={dataType(currentRun)}
+                pipeline={pipeline}
+                run={currentRun}
+                back={() => this.navigateToPipeline()}
+            />,
             classicConfigLink(pipeline),
             classicJobRunLink(pipeline, params.branch, params.runId),
         ];
