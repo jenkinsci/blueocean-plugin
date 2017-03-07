@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0.0-b25-SNAPSHOT</version>
+        <version>1.0.0-b25</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
@@ -176,7 +176,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <webApp  implementation="org.eclipse.jetty.maven.plugin.JettyWebAppContext">
+                    <webApp implementation="org.eclipse.jetty.maven.plugin.JettyWebAppContext">
                         <contextPath>${jetty.contextPath}</contextPath>
                     </webApp>
                 </configuration>
