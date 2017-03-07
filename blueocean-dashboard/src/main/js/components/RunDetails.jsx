@@ -64,6 +64,7 @@ class RunDetails extends Component {
 
     componentWillMount() {
         this._fetchRun(this.props, true);
+        this.opener = locationService.previous;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -72,11 +73,10 @@ class RunDetails extends Component {
         }
 
         // in some cases the route params might have actually changed (such as 'runId' during a Re-run) so re-fetch
-        // also don't update the 'previous route' otherwise closing the modal will try to navigate back to last run
-        this._fetchRun(nextProps, false);
+        this._fetchRun(nextProps);
     }
 
-    _fetchRun(props, storePreviousRoute) {
+    _fetchRun(props) {
         this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE);
 
         if (this.context.config && this.context.params) {
@@ -88,9 +88,6 @@ class RunDetails extends Component {
             });
 
             this.context.activityService.fetchActivity(this.href, { useCache: true });
-            if (storePreviousRoute) {
-                this.opener = locationService.previous;
-            }
         }
     }
 
@@ -138,22 +135,12 @@ class RunDetails extends Component {
     };
 
     afterClose = () => {
-        const { router, location, params } = this.context;
-        const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
-
-        location.pathname = fallbackUrl;
-
-        // reset query
-        /*
-         FIXME: reset query when you go back, we may want to store the whole location object in previous so we have a perfect prev.
-         this.opener would then be location and we the above location = this.opener || { pathname: fallbackUrl]
-         */
-        location.query = null;
-        
+        const { router, params } = this.context;
         if (this.opener) {
             router.goBack();
         } else {
-            router.push(location);
+            const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
+            router.push(fallbackUrl);
         }
     };
 
