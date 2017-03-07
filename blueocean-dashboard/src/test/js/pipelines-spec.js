@@ -49,7 +49,7 @@ describe('Pipelines', () => {
         });
 
         it('check header to be as expected', () => {
-            assert.equal(wrapper.find('Table').props().headers.length, resultArrayHeaders.length);
+            assert.equal(wrapper.find('JTable').props().columns.length, resultArrayHeaders.length);
         });
 
         it('check rows number to be as expected', () => {
