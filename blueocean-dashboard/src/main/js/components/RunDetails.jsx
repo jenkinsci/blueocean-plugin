@@ -63,7 +63,7 @@ class RunDetails extends Component {
     }
 
     componentWillMount() {
-        this._fetchRun(this.props, true);
+        this._fetchRun(this.props);
         this.opener = locationService.previous;
     }
 

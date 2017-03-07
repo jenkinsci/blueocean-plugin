@@ -61,12 +61,8 @@ export default {
                     // The Element.classList is a read-only property
                     const classList = loadbar.classList;
                     if (classList && classList.length && classList.length > 0) {
-                        const classListAsArray = new Array(classList.length);
-                        for (let i = 0, len = classList.length; i < len; i++) {
-                            classListAsArray[i] = classList[i];
-                        }
                         // remove all items - compatible with older browser
-                        classList.remove.apply(classList, classListAsArray);
+                        classList.remove.apply(classList, [... classList]);
                     }
                 }, 500));
             }
