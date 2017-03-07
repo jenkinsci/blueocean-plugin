@@ -13,7 +13,7 @@ export default function CreatePipelineLink() {
     }
 
     return (
-        <Link to="/create-pipeline" className="btn-new-pipeline btn-link inverse">
+        <Link to="/create-pipeline" className="btn-new-pipeline btn-secondary inverse">
             {t('home.header.button.createpipeline')}
         </Link>
     );

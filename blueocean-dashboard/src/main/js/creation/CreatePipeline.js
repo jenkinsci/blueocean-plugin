@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Page } from '@jenkins-cd/design-language';
-import { ContentPageHeader, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { ContentPageHeader, i18nTranslator, loadingIndicator } from '@jenkins-cd/blueocean-core-js';
 
 import { ClassicCreationLink } from './ClassicCreationLink';
 import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
@@ -9,8 +9,6 @@ import VerticalStep from './flow2/VerticalStep';
 
 import Extensions from '@jenkins-cd/js-extensions';
 const Sandbox = Extensions.SandboxedComponent;
-
-import loadingIndicator from '../LoadingIndicator';
 
 const t = i18nTranslator('blueocean-dashboard');
 

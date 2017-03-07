@@ -97,14 +97,20 @@ function isRemovePersistedBackgroundRoute(prevState, nextState) {
  * Note this must be done early (from top-level onChange handler) and can't wait until a modal/dialog will mount
  * due to the fact react router will have already changed the background context.
  */
-function persistBackgroundOnNavigationChange(prevState, nextState, replace, callback) {
+function persistBackgroundOnNavigationChange(prevState, nextState, replace, callback, delay = 200) {
     if (isPersistBackgroundRoute(prevState, nextState)) {
         persistModalBackground();
     } else if (isRemovePersistedBackgroundRoute(prevState, nextState)) {
         // need to delay this a little to let the route re-render
-        setTimeout(discardPersistedBackground, 200);
+        setTimeout(discardPersistedBackground, delay);
     }
-    callback();
+    if (callback) {
+        callback();
+    }
+}
+
+function onLeaveCheckBackground() {
+    persistBackgroundOnNavigationChange({ params: { runId: true } }, { params: {} }, null, null, 0);
 }
 
 export default (
@@ -117,7 +123,7 @@ export default (
             <Route path=":pipeline/activity(/:branch)" component={Activity} />
             <Route path=":pipeline/pr" component={PullRequests} />
 
-            <Route path=":pipeline/detail/:branch/:runId" component={RunDetails}>
+            <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground}>
                 <IndexRedirect to="pipeline" />
                 <Route path="pipeline" component={RunDetailsPipeline}>
                     <Route path=":node" component={RunDetailsPipeline} />
