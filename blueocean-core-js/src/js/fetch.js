@@ -158,17 +158,16 @@ export const FetchFunctions = {
                 if (!disableLoadingIndicator) {
                     loadingIndicator.show();
                 }
-                
+
                 future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                     .then(FetchFunctions.checkRefreshHeader)
                     .then(FetchFunctions.checkStatus)
                     .then(FetchFunctions.parseJSON, FetchFunctions.parseErrorJson);
-                
+
                 if (!disableLoadingIndicator) {
                     future = future.then(FetchFunctions.stopLoadingIndicator, err => { FetchFunctions.stopLoadingIndicator(); throw err; });
                 }
             }
-            
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
             }
@@ -203,16 +202,14 @@ export const FetchFunctions = {
                 if (!disableLoadingIndicator) {
                     loadingIndicator.show();
                 }
-                
                 future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                     .then(FetchFunctions.checkRefreshHeader)
                     .then(FetchFunctions.checkStatus);
-                
+
                 if (!disableLoadingIndicator) {
                     future = future.then(FetchFunctions.stopLoadingIndicator, err => { FetchFunctions.stopLoadingIndicator(); throw err; });
                 }
             }
-
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
             }
