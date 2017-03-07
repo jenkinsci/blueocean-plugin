@@ -41,7 +41,7 @@ export class Step extends Component {
         logger.warn('arghhhhh');
         let children = null;
         if (log && !isInputStep) {
-            debugger;
+            logger.warn('Updating children')
             children = (<LogConsole {...{
                 t,
                 router,
