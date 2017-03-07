@@ -96,7 +96,7 @@ class RunDetailsHeader extends Component {
             <div className="u-label-value" title={branchLabel + ': ' + displayName}>
                 <label>{ branchLabel }:</label>
                 {isMultiBranch ? (
-                    <Link to={ branchUrl }>{ displayName }</Link>
+                    <span><Link to={ branchUrl }>{ displayName }</Link></span>
                   ) : (
                     <span>&mdash;</span>
                   )}
@@ -182,7 +182,7 @@ RunDetailsHeader.propTypes = {
     locale: PropTypes.string,
     topNavLinks: PropTypes.node,
     runButton: PropTypes.node,
-    isMultiBranch: PropTypes.boolean,
+    isMultiBranch: PropTypes.bool,
 };
 
 RunDetailsHeader.contextTypes = {
