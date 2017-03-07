@@ -14,7 +14,7 @@ import { ToastService } from './ToastService';
 export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
 
 export logging from './logging';
-export loadingIndicator from './loadingIndicator';
+export loadingIndicator from './LoadingIndicator';
 
 export { Fetch, FetchFunctions } from './fetch';
 export UrlBuilder from './UrlBuilder';

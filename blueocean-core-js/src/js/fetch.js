@@ -6,7 +6,7 @@ import config from './config';
 import dedupe from './utils/dedupe-calls';
 import urlconfig from './urlconfig';
 import { prefetchdata } from './scopes';
-import loadingIndicator from './loadingIndicator';
+import loadingIndicator from './LoadingIndicator';
 
 const Promise = es6Promise.Promise;
 
