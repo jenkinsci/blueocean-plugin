@@ -202,6 +202,7 @@ export const FetchFunctions = {
                 if (!disableLoadingIndicator) {
                     loadingIndicator.show();
                 }
+
                 future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                     .then(FetchFunctions.checkRefreshHeader)
                     .then(FetchFunctions.checkStatus);
