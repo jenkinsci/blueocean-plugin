@@ -63,12 +63,12 @@ export default class GithubCompleteStep extends React.Component {
 
     _getContent(state, autoDiscover, repo, count) {
         const { selectedOrganization, selectedRepository } = this.props.flowManager;
-        
+
         let copy = '';
         let showDashboardLink = false;
         let showPipelineLink = false;
         let showCreateLink = false;
-        
+
         if (state === STATE.PENDING_CREATION_SAVING) {
             copy = 'Please wait while your settings are saved.';
         } else if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
