@@ -38,10 +38,10 @@ export default {
             clearTimeouts();
             const loadbar = document.getElementById('loadbar');
             if (loadbar) {
-            	loadbar.classList.remove('complete');
-	            setLoaderClass('go', delay); // these times need to match the index.jelly CSS definitions
-	            setLoaderClass('long', delay + 1000);
-	            setLoaderClass('longer', delay + 6000);
+                loadbar.classList.remove('complete');
+                setLoaderClass('go', delay); // these times need to match the index.jelly CSS definitions
+                setLoaderClass('long', delay + 1000);
+                setLoaderClass('longer', delay + 6000);
             }
         }
         loadingCount++;
