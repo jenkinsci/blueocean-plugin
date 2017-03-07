@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import hudson.model.Cause;
 import hudson.model.Failure;
@@ -111,7 +111,7 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
         if (sourceUri == null) {
             errors.add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "uri is required"));
         }else {
-            StandardUsernameCredentials credentials = null;
+            StandardCredentials credentials = null;
             if(scmConfig.getCredentialId() != null){
                 credentials = GitUtils.getCredentials(Jenkins.getInstance(), sourceUri, scmConfig.getCredentialId());
                 if (credentials == null) {

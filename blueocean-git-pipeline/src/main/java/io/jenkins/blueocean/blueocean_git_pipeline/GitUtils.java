@@ -1,16 +1,15 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.cloudbees.plugins.credentials.CredentialsMatchers;
-import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
-import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.EnvVars;
 import hudson.model.ItemGroup;
 import hudson.model.TaskListener;
 import hudson.plugins.git.GitException;
-import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import org.jenkinsci.plugins.gitclient.Git;
 import org.jenkinsci.plugins.gitclient.GitClient;
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ class GitUtils {
      * @param credentials credential to use when accessing git
      * @return list of Errors. Empty list means success.
      */
-    static List<ErrorMessage.Error> validateCredentials(@Nonnull String uri, @Nullable StandardUsernameCredentials credentials) throws GitException{
+    static List<ErrorMessage.Error> validateCredentials(@Nonnull String uri, @Nullable StandardCredentials credentials) throws GitException{
         List<ErrorMessage.Error> errors = new ArrayList<>();
         Git git = new Git(TaskListener.NULL, new EnvVars());
         try {
@@ -68,12 +67,7 @@ class GitUtils {
         return errors;
     }
 
-    static StandardUsernameCredentials getCredentials(ItemGroup owner, String uri, String credentialId){
-        return CredentialsMatchers
-                .firstOrNull(
-                        CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, owner,
-                                ACL.SYSTEM, URIRequirementBuilder.fromUri(uri).build()),
-                        CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId),
-                                GitClient.CREDENTIALS_MATCHER));
+    static StandardCredentials getCredentials(ItemGroup owner, String uri, String credentialId){
+        return CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
     }
 }

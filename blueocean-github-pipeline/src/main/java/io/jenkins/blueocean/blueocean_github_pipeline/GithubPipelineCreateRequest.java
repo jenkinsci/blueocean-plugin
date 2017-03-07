@@ -135,7 +135,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         if (credentialId != null && !credentialId.trim().isEmpty()) {
             StandardUsernamePasswordCredentials credentials = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
             if (credentials == null) {
-                throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline")
+                throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Github pipeline")
                         .add(new ErrorMessage.Error("scmConfig.credentialId",
                                 ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
                                 "No Credentials instance found for credentialId: "+credentialId)));
