@@ -1,6 +1,8 @@
 package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
+import hudson.Main;
+
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -39,6 +41,13 @@ public class BlueOceanUI {
      */
     public String getUrlBase() {
         return urlBase;
+    }
+    
+    /**
+     * Have some slightly different behavior in development mode
+     */
+    public boolean isDevelopmentMode() {
+        return Main.isDevelopmentMode || System.getProperty("hudson.hpi.run") != null; // TODO why isDevelopmentMode == false
     }
 
     /**
