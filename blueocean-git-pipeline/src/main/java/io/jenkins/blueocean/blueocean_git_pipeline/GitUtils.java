@@ -1,11 +1,15 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import hudson.EnvVars;
 import hudson.model.ItemGroup;
 import hudson.model.TaskListener;
 import hudson.plugins.git.GitException;
+import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
@@ -68,6 +72,16 @@ class GitUtils {
     }
 
     static StandardCredentials getCredentials(ItemGroup owner, String uri, String credentialId){
-        return CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        StandardCredentials standardCredentials =  CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        if(standardCredentials == null){
+            standardCredentials = CredentialsMatchers
+                    .firstOrNull(
+                            CredentialsProvider.lookupCredentials(StandardCredentials.class, owner,
+                                    ACL.SYSTEM, URIRequirementBuilder.fromUri(uri).build()),
+                            CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId),
+                                    GitClient.CREDENTIALS_MATCHER));
+        }
+
+        return standardCredentials;
     }
 }
