@@ -54,7 +54,7 @@ public @interface PagedResponse {
                     }
                     Object[] page = Iterators.toArray(resp.iterator(start, limit), Object.class);
                         String separator = (req.getQueryString() != null) ? "&" : "?";
-                        rsp.setHeader("Link", "<" + req.getRequestURIWithQueryString() + separator + "start=" + (start + limit) + "&limit="+limit + ">; rel=\"next\"");
+                        rsp.setHeader("Link", "<" + req.getRequestURIWithQueryString() + separator + "start=" + start + "&limit="+limit + ">; rel=\"next\"");
 
                     Export.doJson(req, rsp, page);
                 }
