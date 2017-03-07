@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
-import { BasicDialog, DialogContent } from '@jenkins-cd/design-language';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Page } from '@jenkins-cd/design-language';
+import { ContentPageHeader, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
+import { ClassicCreationLink } from './ClassicCreationLink';
 import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
 import VerticalStep from './flow2/VerticalStep';
@@ -9,9 +10,9 @@ import VerticalStep from './flow2/VerticalStep';
 import Extensions from '@jenkins-cd/js-extensions';
 const Sandbox = Extensions.SandboxedComponent;
 
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
-const translate = i18nTranslator('blueocean-dashboard');
-const t = translate;
+import loadingIndicator from '../LoadingIndicator';
+
+const t = i18nTranslator('blueocean-dashboard');
 
 export default class CreatePipeline extends React.Component {
 
@@ -23,7 +24,21 @@ export default class CreatePipeline extends React.Component {
         };
     }
 
+    componentWillMount() {
+        loadingIndicator.hide();
+    }
+
+    componentWillUnmount() {
+        if (this.state.selectedProvider) {
+            this.state.selectedProvider.destroyFlowManager();
+        }
+    }
+
     _onSelection(selectedProvider) {
+        if (this.state.selectedProvider) {
+            this.state.selectedProvider.destroyFlowManager();
+        }
+
         this.setState({
             selectedProvider,
         });
@@ -47,51 +62,39 @@ export default class CreatePipeline extends React.Component {
         const firstStepStatus = this.state.selectedProvider ? 'complete' : 'active';
 
         return (
-            <BasicDialog
-              className="creation-dialog layout-medium"
-              onDismiss={() => this._onExit()}
-              ignoreEscapeKey
-            >
-                <CustomHeader onClose={() => this._onExit()} />
-                <DialogContent>
-                    <VerticalStep className="first-step" status={firstStepStatus}>
-                        <h1>{t('creation.core.intro.scm_provider', { defaultValue: 'Where do you store your code?' })}</h1>
+            <Page>
+                <div className="create-pipeline">
+                    <ContentPageHeader>
+                        <h1>{t('creation.core.header.title')}</h1>
 
-                        <CreatePipelineScmListRenderer
-                          extensionPoint="jenkins.pipeline.create.scm.provider"
-                          onSelection={(provider) => this._onSelection(provider)}
-                        />
-                    </VerticalStep>
+                        <ClassicCreationLink />
+                    </ContentPageHeader>
+                    <main>
+                        <article className="content-area">
+                            <VerticalStep className="first-step" status={firstStepStatus}>
+                                <h1>{t('creation.core.intro.scm_provider')}</h1>
 
-                    <Sandbox>
-                        <CreatePipelineStepsRenderer
-                          selectedProvider={this.state.selectedProvider}
-                          onCompleteFlow={(data) => this._onCompleteFlow(data)}
-                        />
-                    </Sandbox>
-                </DialogContent>
-            </BasicDialog>
+                                <CreatePipelineScmListRenderer
+                                    extensionPoint="jenkins.pipeline.create.scm.provider"
+                                    onSelection={(provider) => this._onSelection(provider)}
+                                    selectedProvider={this.state.selectedProvider}
+                                />
+                            </VerticalStep>
+
+                            <Sandbox>
+                                <CreatePipelineStepsRenderer
+                                    selectedProvider={this.state.selectedProvider}
+                                    onCompleteFlow={(data) => this._onCompleteFlow(data)}
+                                />
+                            </Sandbox>
+                        </article>
+                    </main>
+                </div>
+            </Page>
         );
     }
 }
 
 CreatePipeline.contextTypes = {
     router: PropTypes.object,
-};
-
-function CustomHeader(props) {
-    return (
-        <div className="Dialog-header creation-header">
-            <h3>{t('creation.core.header.title', { defaultValue: 'Create Pipeline' })}</h3>
-            <a className="close-button" href="#" onClick={props.onClose}
-              title={t('creation.core.intro.close', { defaultValue: 'Close' })}
-            >
-                <Icon icon="close" size={42} />
-            </a>
-        </div>
-    );
-}
-
-CustomHeader.propTypes = {
-    onClose: PropTypes.func,
 };

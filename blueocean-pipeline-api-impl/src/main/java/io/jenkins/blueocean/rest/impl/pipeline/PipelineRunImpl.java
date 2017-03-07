@@ -28,8 +28,12 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_RUN;
 
@@ -40,6 +44,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
  */
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
+    private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
     public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);
     }
@@ -62,8 +67,12 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     @Override
     public BlueRunState getStateObj() {
         InputAction inputAction = run.getAction(InputAction.class);
-        if(inputAction != null && inputAction.getExecutions().size() > 0){
-            return BlueRunState.PAUSED;
+        try {
+            if(inputAction != null && inputAction.getExecutions().size() > 0){
+                return BlueRunState.PAUSED;
+            }
+        } catch (InterruptedException | TimeoutException e) {
+            logger.error("Error getting StateObject from execution context: "+e.getMessage(), e);
         }
         return super.getStateObj();
     }

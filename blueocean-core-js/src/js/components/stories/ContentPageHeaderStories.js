@@ -10,6 +10,7 @@ import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
 
 storiesOf('Headers', module)
     .add('Logo', logo)
+    .add('Site Header (link)', siteHeaderLink)
     .add('Dashboard', pageHeaderDashboard)
     .add('Pipeline', pageHeaderPipeline)
     .add('Result', pageHeaderResult)
@@ -83,6 +84,37 @@ function pageHeaderPipeline() {
                 <WeatherIcon score={100} />
                 <h1>Lorem / Ipsum / <a href="#">Pipelineum</a></h1>
             </ContentPageHeader>
+        </div>
+    );
+}
+
+function siteHeaderLink() {
+    const topNavLinks = [
+        <a href="#" className="selected">Pipelines</a>,
+        <a href="#">Applications</a>,
+        <a href="#">Reports</a>,
+        <a href="#">Administration</a>,
+    ];
+
+    const pageTabLinks = [
+        <a href="#" className="selected">Activity</a>,
+        <a href="#">Branches</a>,
+        <a href="#">Pull Requests</a>,
+        <a href="#">Trends</a>,
+    ];
+
+    const userComponents = [
+        <button className="btn-sign-in">Sign in</button>,
+        <button className="btn-sign-up">Sign up</button>,
+    ];
+
+    return (
+        <div>
+            <SiteHeader topNavLinks={topNavLinks} userComponents={userComponents}/>
+            <br/>
+            <SiteHeader topNavLinks={topNavLinks} userComponents={userComponents} homeURL="/"/>
+            <br/>
+            <SiteHeader topNavLinks={topNavLinks} userComponents={userComponents} homeURL="/alpha/bravo"/>
         </div>
     );
 }

@@ -1,17 +1,20 @@
+@stroke-color: #949393;
+
 .vertical-step-component {
     display: flex;
 
     .step-progress {
+        width: 60px;
+        flex-shrink: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-left: 30px;
-        margin-right: 30px;
+        margin-right: 20px;
 
         .step-stroke-top {
             width: 3px;
             height: 5px;
-            background-color: #949393;
+            background-color: @stroke-color;
         }
 
         .step-indicator-component .svgResultStatus {
@@ -21,7 +24,7 @@
         .step-stroke-bottom {
             width: 3px;
             flex-grow: 1;
-            background-color: #949393;
+            background-color: @stroke-color;
         }
     }
 
@@ -31,9 +34,8 @@
         padding-bottom: 30px;
 
         h1 {
-            margin-top: 7px;
+            margin-top: 10px;
             margin-bottom: 15px;
-            font-size: 24px;
             font-weight: normal;
         }
     }
@@ -43,7 +45,7 @@
     }
 
     &.active {
-        .svgResultStatus circle:first-child {
+        .svgResultStatus .progress-spinner.not_built circle:first-child {
             stroke: #3a70b0;
         }
         .step-stroke-bottom {
@@ -59,5 +61,9 @@
     &.last-step .step-stroke-bottom {
         background: transparent;
         border: 0;
+    }
+
+    &.first-step.active .step-stroke-bottom {
+        background: linear-gradient(@stroke-color, #fff);
     }
 }

@@ -1,0 +1,129 @@
+// from the JDL
+@brand-primary:         #4A90E2;
+
+// to the jdl
+
+.List-DefaultRenderer {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+.u-selection-style {
+    border-color: @brand-primary;
+    background-color: lighten(@brand-primary, 37.5%);
+}
+
+
+button.u-selection-style {
+    border-color: @brand-primary;
+    background-color: lighten(@brand-primary, 37.5%);
+}
+
+
+// github styles
+
+.github-org-list-step, .github-repo-list-step {
+    .List .List-Item.List-Item-selected {
+        .u-selection-style;
+    }
+}
+
+.github-credentials-step, .github-choose-discover-step, .github-already-discover-step,
+.github-confirm-discover-step, .github-repo-list-step, .github-complete-step {
+    .instructions {
+        margin-top: 0;
+    }
+}
+
+.github-credentials-step {
+    .text-token {
+        width: 100%;
+    }
+    .button-connect {
+        margin-left: 10px;
+    }
+}
+
+.github-org-list-step {
+    .List.org-list {
+        padding: 0;
+        background-color: transparent;
+        
+        .org-list-item {
+            display: flex;
+            align-items: center;
+            padding: 18px;
+
+            .avatar {
+                margin-right: 18px;
+            }
+        }
+
+        .List-Item.List-Item-selected {
+            .u-selection-style;
+        }
+    }
+}
+
+.github-repo-list-step {
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .loading-msg {
+        margin-bottom: 10px;
+    }
+
+    .repo-list {
+        width: 100%;
+
+        .List {
+            width: 100%;
+            max-height: 210px;
+
+            .List-Item.List-Item-selected {
+                .u-selection-style;
+            }
+        }
+    }
+
+    .button-create {
+        margin-top: 10px;
+        align-self: flex-end;
+    }
+}
+
+// TODO: JDL?
+.toggle {
+    display: flex;
+    flex-flow: column nowrap;
+
+    button {
+        text-align: left;
+        margin-bottom: 10px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+
+        .title, .text {
+            margin: 0;
+        }
+
+        .title {
+            margin-bottom: 10px;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &.u-selected {
+            .u-selection-style;
+        }
+    }
+}

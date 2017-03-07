@@ -50,6 +50,9 @@ public abstract class BluePipeline extends Resource {
     /** stop pipeline run */
     public static final String STOP_PERMISSION = "stop";
 
+    /** configure pipeline permission */
+    public static final String CONFIGURE_PERMISSION = "configure";
+
     /** build parameters */
     private static final String PARAMETERS = "parameters";
 
@@ -202,4 +205,8 @@ public abstract class BluePipeline extends Resource {
         return request.update(this);
     }
 
+    /**
+     * @return Gives scm resource attached to this pipeline
+     */
+    public abstract BluePipelineScm getScm();
 }

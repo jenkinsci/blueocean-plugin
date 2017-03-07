@@ -1,11 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import {
+    supportedInputTypesMapping,
     i18nTranslator,
     ParameterService,
     ParametersRender,
     ParameterApi as parameterApi,
     StringUtil,
+    logging,
 } from '@jenkins-cd/blueocean-core-js';
+import { Alerts } from '@jenkins-cd/design-language';
+import Markdown from 'react-remarkable';
+
 /**
  * Simple helper to stop stopPropagation
  * @param event the event we want to cancel
@@ -18,6 +23,7 @@ const stopProp = (event) => {
  * Translate function
  */
 const translate = i18nTranslator('blueocean-dashboard');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.InputStep');
 
 /**
  * Creating a "<form/>"less form to submit the input parameters requested by the user in pipeline.
@@ -90,6 +96,16 @@ export default class InputStep extends Component {
         if (!parameters) {
             return null;
         }
+        const sanity = parameters.filter(parameter => supportedInputTypesMapping[parameter.type] !== undefined);
+        logger.debug('sanity check', sanity.length, parameters.length, this.props.classicInputUrl);
+        if (sanity.length !== parameters.length) {
+            logger.debug('sanity check failed. Returning Alert instead of the form.');
+            const alertCaption = <Markdown>{translate('inputSteps.error.message', { 0: this.props.classicInputUrl, defaultValue: 'This pipeline uses input types that are unsupported.  \nUse [Jenkins Classic]({0}) to resolve this input step.' })}</Markdown>;
+            const alertTitle = translate('inputStep.error.title', { defaultValue: 'Error' });
+            return (<div className="inputStep">
+                <Alerts message={alertCaption} type="Error" title={alertTitle} />
+            </div>);
+        }
         const { input: { message, ok } } = this.props.node;
         const cancelCaption = translate('rundetail.input.cancel', { defaultValue: 'Cancel' });
         const cancelButton = (<button title={cancelCaption} onClick={() => this.cancelForm()} className="btn btn-secondary inputStepCancel" >
@@ -100,8 +116,8 @@ export default class InputStep extends Component {
             <div className="inputBody">
                 <h3>{StringUtil.removeMarkupTags(message)}</h3>
                 <ParametersRender
-                  parameters={parameters}
-                  onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
+                    parameters={parameters}
+                    onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
                 />
                 <div onClick={(event => stopProp(event))} className="inputControl">
                     <button title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
@@ -118,6 +134,7 @@ const { object, shape } = PropTypes;
 
 InputStep.propTypes = {
     node: shape().isRequired,
+    classicInputUrl: object,
 };
 
 InputStep.contextTypes = {

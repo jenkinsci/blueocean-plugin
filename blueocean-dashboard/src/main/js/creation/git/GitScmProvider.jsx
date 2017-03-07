@@ -20,4 +20,6 @@ export default class GitScmProvider extends ScmProvider {
         return new GitFlowManager(createApi, credentialsApi);
     }
 
+    destroyFlowManager() {}
+
 }

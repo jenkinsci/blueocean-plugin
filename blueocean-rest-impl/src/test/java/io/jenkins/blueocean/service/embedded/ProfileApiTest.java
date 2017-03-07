@@ -7,13 +7,17 @@ import hudson.model.Project;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
+import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import jenkins.model.Jenkins;
+import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -302,8 +306,35 @@ public class ProfileApiTest extends BaseTest{
         assertEquals(true, pipelinePerm.get("create"));
         assertEquals(true, pipelinePerm.get("read"));
         assertEquals(true, pipelinePerm.get("stop"));
+        assertEquals(true, pipelinePerm.get("configure"));
+
+        Map credentialPerm = (Map) permission.get("credential");
+        assertEquals(true, credentialPerm.get("create"));
+        assertEquals(true, credentialPerm.get("view"));
+        assertEquals(true, credentialPerm.get("update"));
+        assertEquals(true, credentialPerm.get("manageDomains"));
+        assertEquals(true, credentialPerm.get("delete"));
     }
 
+    @Test
+    public void testPermissionOfOtherUser() throws IOException {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        hudson.model.User alice = j.jenkins.getUser("alice");
+        alice.setFullName("Alice Cooper");
+        alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
+
+
+        hudson.model.User bob = j.jenkins.getUser("bob");
+        bob.setFullName("Bob Cooper");
+        bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
+
+        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+
+        Assert.assertNull(new UserImpl(alice).getPermission());
+    }
 
     @Test
     public void getAuthenticatedUserShouldFail() throws Exception {

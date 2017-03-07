@@ -8,6 +8,23 @@
     display: flex;
     justify-content: center;
 
+    .Alert {
+        min-width: 400px;
+        .title-div {
+            align-items: flex-start;
+            flex-direction: column;
+
+            .title {
+                padding-left: 16px;
+                padding-top: 14px;
+            }
+            .message {
+                line-height: normal;
+            }
+        }
+    }
+
+
     .inputBody {
         max-width: 400px;
         min-width: 400px;
@@ -47,6 +64,13 @@
         }
 
         .Dialog-content-margin {
+            a {
+                color: #4A90E2;
+            }
+            a:hover {
+                color: #1f69c1;
+                text-decoration: underline;
+            }
             margin: 24px 32px 16px 32px;
         }
 

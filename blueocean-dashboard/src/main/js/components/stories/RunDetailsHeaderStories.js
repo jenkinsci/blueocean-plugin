@@ -51,12 +51,13 @@ RunDetailsHeader.timeManager = {
 
 storiesOf('Run Details Header', module)
     .add('Basic', basic)
+    .add('Multibranch', multibranch)
     .add('No Commit', noCommit)
     .add('Long Branch', longBranch)
     .add('Aborted', aborted)
 ;
 
-function basic() {
+function doBasic(isMultiBranch) {
 
     const temp = JSON.parse(runJSON);
     const run = new RunRecord(temp);
@@ -71,6 +72,7 @@ function basic() {
     return (
         <WithContext context={ctx}>
             <RunDetailsHeader
+                isMultiBranch={isMultiBranch}
                 locale="en"
                 t={t}
                 pipeline={testData.pipeline}
@@ -81,6 +83,14 @@ function basic() {
                 topNavLinks={topNavLinks}/>
         </WithContext>
     );
+}
+
+function basic() {
+    return doBasic(false);
+}
+
+function multibranch() {
+    return doBasic(true);
 }
 
 function noCommit() {
@@ -127,6 +137,7 @@ function longBranch() {
     return (
         <WithContext context={ctx}>
             <RunDetailsHeader
+                isMultiBranch={true}
                 locale="en"
                 t={t}
                 pipeline={testData.pipeline}

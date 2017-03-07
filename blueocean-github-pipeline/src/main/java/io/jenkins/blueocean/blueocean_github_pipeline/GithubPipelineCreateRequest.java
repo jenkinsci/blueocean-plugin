@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
-import com.cloudbees.plugins.credentials.Credentials;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import hudson.model.Cause;
 import hudson.model.TopLevelItem;
@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.List;
 
 /**
@@ -72,13 +73,13 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
 
         TopLevelItem item = null;
         try {
-
+            if(credentialId != null) {
+                validateCredentialId(credentialId, apiUrl);
+            }
             item = create(Jenkins.getInstance(), getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class);
 
             if (item instanceof OrganizationFolder) {
                 if(credentialId != null) {
-                    validateCredentialId(credentialId, (AbstractFolder) item);
-
                     //Find domain attached to this credentialId, if present check if it's BlueOcean specific domain then
                     //add the properties otherwise simply use it
                     Domain domain = CredentialsUtils.findDomain(credentialId, authenticatedUser);
@@ -129,22 +130,41 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         return null;
     }
 
-     static void validateCredentialId(String credentialId, AbstractFolder item) throws IOException {
+
+    static void validateCredentialId(String credentialId,  String apiUrl) throws IOException {
         if (credentialId != null && !credentialId.trim().isEmpty()) {
-            Credentials credentials = CredentialsUtils.findCredential(credentialId, Credentials.class, new BlueOceanDomainRequirement());
+            StandardUsernamePasswordCredentials credentials = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
             if (credentials == null) {
-                try {
-                    item.delete();
-                } catch (InterruptedException e) {
-                    throw new ServiceException.UnexpectedErrorException("Invalid credentialId: " +
-                            credentialId + ". Failure during cleaning up folder: " + item.getName() + ". Error: " +
-                            e.getMessage(), e);
-                }
                 throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline")
-                        .add(new ErrorMessage.Error("credentialId",
+                        .add(new ErrorMessage.Error("scmConfig.credentialId",
                                 ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
                                 "No Credentials instance found for credentialId: "+credentialId)));
+            } else {
+                String accessToken = credentials.getPassword().getPlainText();
+                validateGithubAccessToken(accessToken, apiUrl);
             }
+        }
+    }
+
+    private static void deleteOnError(AbstractFolder item){
+        try {
+            item.delete();
+        } catch (InterruptedException | IOException e) {
+            throw new ServiceException.UnexpectedErrorException("Failure during cleaning up folder: " + item.getName() + ". Error: " +
+                    e.getMessage(), e);
+        }
+
+    }
+
+    private static void validateGithubAccessToken(String accessToken, String apiUrl) throws IOException {
+        try {
+            HttpURLConnection connection =  GithubScm.connect(apiUrl+"/user", accessToken);
+            GithubScm.validateAccessTokenScopes(connection);
+        } catch (Exception e) {
+            if(e instanceof ServiceException){
+                throw e;
+            }
+            throw new ServiceException.UnexpectedErrorException("Failure validating github access token: "+e.getMessage(), e);
         }
     }
 }

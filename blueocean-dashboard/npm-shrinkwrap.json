@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.67",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.67",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.67.tgz"
+      "version": "0.0.86",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.86",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.86.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.112",
-      "from": "@jenkins-cd/design-language@0.0.112",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.112.tgz"
+      "version": "0.0.122",
+      "from": "@jenkins-cd/design-language@0.0.122",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.122.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -53,9 +53,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.18",
-      "from": "@jenkins-cd/sse-gateway@0.0.18",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.18.tgz"
+      "version": "0.0.19",
+      "from": "@jenkins-cd/sse-gateway@0.0.19",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.19.tgz"
     },
     "@jenkins-cd/storage": {
       "version": "0.0.6",
@@ -2240,6 +2240,11 @@
       "resolved": "https://registry.npmjs.org/doctrine/-/doctrine-1.5.0.tgz",
       "dev": true
     },
+    "dom-scroll-into-view": {
+      "version": "1.0.1",
+      "from": "dom-scroll-into-view@1.0.1",
+      "resolved": "https://registry.npmjs.org/dom-scroll-into-view/-/dom-scroll-into-view-1.0.1.tgz"
+    },
     "dom-serializer": {
       "version": "0.1.0",
       "from": "dom-serializer@>=0.0.0 <1.0.0",
@@ -4324,7 +4329,7 @@
     },
     "inherits": {
       "version": "2.0.3",
-      "from": "inherits@>=2.0.0 <3.0.0",
+      "from": "inherits@>=2.0.1 <2.1.0",
       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
     },
     "ini": {
@@ -4698,7 +4703,7 @@
     },
     "js-yaml": {
       "version": "3.7.0",
-      "from": "js-yaml@>=3.6.0 <4.0.0",
+      "from": "js-yaml@>=3.5.1 <4.0.0",
       "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-3.7.0.tgz"
     },
     "jsbn": {
@@ -5616,7 +5621,7 @@
     },
     "minimatch": {
       "version": "3.0.3",
-      "from": "minimatch@>=2.0.0 <3.0.0||>=3.0.0 <4.0.0",
+      "from": "minimatch@>=3.0.2 <4.0.0",
       "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz"
     },
     "minimist": {
@@ -5702,7 +5707,7 @@
     },
     "ms": {
       "version": "0.7.2",
-      "from": "ms@>=0.7.1 <0.8.0",
+      "from": "ms@0.7.2",
       "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.2.tgz"
     },
     "multimatch": {
@@ -5954,7 +5959,7 @@
     },
     "object-assign": {
       "version": "4.1.0",
-      "from": "object-assign@>=4.1.0 <5.0.0",
+      "from": "object-assign@>=4.0.1 <5.0.0",
       "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.0.tgz"
     },
     "object-inspect": {
@@ -6669,6 +6674,11 @@
       "version": "15.3.2",
       "from": "react-addons-update@15.3.2",
       "resolved": "https://registry.npmjs.org/react-addons-update/-/react-addons-update-15.3.2.tgz"
+    },
+    "react-autocomplete": {
+      "version": "1.4.0",
+      "from": "react-autocomplete@latest",
+      "resolved": "https://registry.npmjs.org/react-autocomplete/-/react-autocomplete-1.4.0.tgz"
     },
     "react-dom": {
       "version": "15.3.2",
@@ -7658,7 +7668,7 @@
     },
     "through": {
       "version": "2.3.8",
-      "from": "through@>=2.3.4 <2.4.0",
+      "from": "through@>=2.3.6 <3.0.0",
       "resolved": "https://registry.npmjs.org/through/-/through-2.3.8.tgz"
     },
     "through2": {
@@ -8340,7 +8350,7 @@
     },
     "xtend": {
       "version": "4.0.1",
-      "from": "xtend@>=4.0.1 <5.0.0",
+      "from": "xtend@>=4.0.0 <5.0.0",
       "resolved": "https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz"
     },
     "yargs": {

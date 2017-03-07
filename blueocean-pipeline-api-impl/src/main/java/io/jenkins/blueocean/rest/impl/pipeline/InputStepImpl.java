@@ -19,7 +19,10 @@ public class InputStepImpl extends BlueInputStep {
 
     public InputStepImpl(InputStep inputStep, Reachable parent) {
         this.inputStep = inputStep;
-        this.inputStep.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+        if (inputStep.getId() == null) {
+            // Make sure the input step has an ID.
+            this.inputStep.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+        }
         this.self = parent.getLink().rel("input");
     }
 

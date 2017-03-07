@@ -86,7 +86,7 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
                 }
                 GitHubSCMNavigator gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
 
-                GithubPipelineCreateRequest.validateCredentialId(credentialId, folder);
+                GithubPipelineCreateRequest.validateCredentialId(credentialId, apiUrl);
 
                 if (scmConfig != null && scmConfig.getConfig().get("repos") instanceof List) {
                     for (String r : (List<String>) scmConfig.getConfig().get("repos")) {
