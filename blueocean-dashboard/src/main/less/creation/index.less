@@ -21,21 +21,36 @@
     }
 
     .content-area {
-        width: 700px;
+        padding: 48px 0 0 0;
+        width: 540px;
     }
 
     .scm-provider-list {
         display: flex;
         flex-flow: row wrap;
 
-        .provider-button .IconButton {
-            margin-right: 20px;
-            min-width: 220px;
-            height: 56px;
+        .provider-button {
+            .IconButton {
+                margin-right: 20px;
+                min-width: 220px;
+                height: 56px;
+            }
+
+            &:last-child .IconButton {
+                margin-right: 0;
+            }
         }
     }
 
     .creation-steps .last-step {
         margin-bottom: 100px;
     }
+}
+
+// from the JDL
+@brand-primary:         #4A90E2;
+
+.provider-button button.active {
+    border-color: @brand-primary;
+    background-color: lighten(@brand-primary, 37.5%);
 }
