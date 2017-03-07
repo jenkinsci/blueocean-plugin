@@ -34,12 +34,15 @@ function setLoaderClass(c, t) {
 export default {
     show() {
         if (loadingCount === 0) {
-            // start the loading animation
-            document.getElementById('loadbar').classList.remove('complete');
+            // (re)start the loading animation
             clearTimeouts();
-            setLoaderClass('go', delay); // these times need to match the index.jelly CSS definitions
-            setLoaderClass('long', delay + 1000);
-            setLoaderClass('longer', delay + 6000);
+            const loadbar = document.getElementById('loadbar');
+            if (loadbar) {
+            	loadbar.classList.remove('complete');
+	            setLoaderClass('go', delay); // these times need to match the index.jelly CSS definitions
+	            setLoaderClass('long', delay + 1000);
+	            setLoaderClass('longer', delay + 6000);
+            }
         }
         loadingCount++;
     },
