@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, Table } from '@jenkins-cd/design-language';
-import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton, PageLoading } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
@@ -66,9 +66,6 @@ export class Pipelines extends Component {
                         <CreatePipelineLink />
                     </Extensions.Renderer>
                 </ContentPageHeader>
-
-                { !pipelines || this.pager.pending && <PageLoading /> }
-
                 <main>
                     <article>
                         { /* TODO: need to adjust Extensions to make store available */ }

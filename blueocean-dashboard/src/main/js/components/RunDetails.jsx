@@ -16,7 +16,7 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import { FullScreen } from './FullScreen';
-import { Paths, capable, locationService, Security, PageLoading } from '@jenkins-cd/blueocean-core-js';
+import { Paths, capable, locationService, Security } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
 const { func, object, any, string } = PropTypes;
@@ -171,7 +171,7 @@ class RunDetails extends Component {
 
         if (!run || !pipeline) {
             this.props.setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
-            return <PageLoading />;
+            return null;
         }
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);

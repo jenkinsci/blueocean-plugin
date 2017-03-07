@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView } from '@jenkins-cd/design-language';
-import { PageLoading } from '@jenkins-cd/blueocean-core-js';
 import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 import Markdown from 'react-remarkable';
 import { actions as selectorActions, testResults as testResultsSelector,
@@ -24,7 +23,7 @@ export class RunDetailsTests extends Component {
         const { testResults, t, locale } = this.props;
 
         if (!testResults || testResults.$pending) {
-            return <PageLoading />;
+            return null;
         }
 
         if (testResults.$failed) {

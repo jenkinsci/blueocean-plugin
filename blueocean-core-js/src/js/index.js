@@ -40,7 +40,6 @@ export NotFound from './NotFound';
 export { ShowMoreButton } from './components/ShowMoreButton';
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton as RunButtonBase } from './components/RunButton';
-export PageLoading from './components/PageLoading';
 export {
     ParametersRunButton as RunButton,
     ParameterService,

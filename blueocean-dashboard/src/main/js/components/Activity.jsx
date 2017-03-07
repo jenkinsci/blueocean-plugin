@@ -3,7 +3,7 @@ import {
   EmptyStateView,
   Table,
 } from '@jenkins-cd/design-language';
-import { capable, RunButton, ShowMoreButton, PageLoading } from '@jenkins-cd/blueocean-core-js';
+import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 import Runs from './Runs';
@@ -133,7 +133,6 @@ export class Activity extends Component {
         ];
 
         return (<main>
-            {this.pager.pending && <PageLoading />}
             <article className="activity">
                 { showRunButton &&
                     <RunButton

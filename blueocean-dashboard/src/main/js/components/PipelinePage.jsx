@@ -7,7 +7,7 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { i18nTranslator, NotFound, Paths, ContentPageHeader, logging, AppConfig, Security, PageLoading } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, NotFound, Paths, ContentPageHeader, logging, AppConfig, Security } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
@@ -106,7 +106,6 @@ export class PipelinePage extends Component {
         return (
             <Page>
                 { pageHeader }
-                {!isReady && <PageLoading duration={2000} />}
                 {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: translate.lng })}
             </Page>
         );
