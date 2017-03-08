@@ -82,7 +82,26 @@ public class PipelineApiTest extends BaseTest {
 
         String link = response.getHeaders().get("Link").get(0);
 
-        assertEquals("</jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/?start=0&limit=100>; rel=\"next\"", link);
+        assertEquals("</jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/?start=100&limit=100>; rel=\"next\"", link);
+
+        response = Unirest.get(getBaseUrl("/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter1=no-folders&start=0&limit=26"))
+                .header("Accept-Encoding","")
+                .header("Authorization", "Bearer "+jwtToken)
+                .asString();
+
+        link = response.getHeaders().get("Link").get(0);
+
+        assertEquals("</jenkins/blue/rest/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter1=no-folders&start=26&limit=26>; rel=\"next\"", link);
+
+
+        response = Unirest.get(getBaseUrl("/organizations/jenkins/pipelines/folder1/pipelines/?start=10&limit=10&foo=bar"))
+                .header("Accept-Encoding","")
+                .header("Authorization", "Bearer "+jwtToken)
+                .asString();
+
+        link = response.getHeaders().get("Link").get(0);
+
+        assertEquals("</jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/?foo=bar&start=20&limit=10>; rel=\"next\"", link);
     }
 
     @Test
