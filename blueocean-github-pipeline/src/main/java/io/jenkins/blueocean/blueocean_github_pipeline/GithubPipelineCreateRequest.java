@@ -8,8 +8,6 @@ import hudson.model.Cause;
 import hudson.model.Item;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
-import hudson.plugins.git.GitSCM;
-import hudson.scm.SCM;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -22,11 +20,9 @@ import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreateRequestI
 import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
-import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.SCMHeadEvent;
 import jenkins.scm.api.SCMNavigator;
-import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
+import jenkins.scm.api.SCMSourceEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
@@ -37,10 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -125,7 +118,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 organizationFolder.getNavigators().replace(gitHubSCMNavigator);
 
                 if(repos.size() == 1){
-                    SCMHeadEvent.fireNow(new SCMHeadEventImpl(repos.get(0), orgName, item));
+                    SCMSourceEvent.fireNow(new SCMSourceEventImpl(repos.get(0), item, apiUrl, gitHubSCMNavigator));
                 }else {
                     organizationFolder.scheduleBuild(new Cause.UserIdCause());
                 }
@@ -190,52 +183,27 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         }
     }
 
-    private static class SCMHeadEventImpl extends SCMHeadEvent<Object> {
+    private class SCMSourceEventImpl extends SCMSourceEvent<Object>{
         private final String repoName;
-        private final String owner;
         private final Item project;
+        private final GitHubSCMNavigator navigator;
 
-        public SCMHeadEventImpl(String repoName, String owner, Item project) {
-            super(Type.CREATED, new Object());
+        public SCMSourceEventImpl(String repoName, Item project, String origin, GitHubSCMNavigator navigator) {
+            super(Type.CREATED, new Object(), origin);
             this.repoName = repoName;
-            this.owner = owner;
-            this.project = project;
-        }
-
-
-        @NonNull
-        @Override
-        public Map<SCMHead, SCMRevision> heads(@NonNull SCMSource source) {
-            if(source instanceof GitHubSCMSource){
-                if(((GitHubSCMSource)source).getRepository().equals(getSourceName()) &&
-                        source.getOwner() instanceof OrganizationFolder && source.getOwner().getFullName().equals(project.getFullName())){
-                    SCMHead head = new SCMHead("master");
-                    Map<SCMHead, SCMRevision> map = new HashMap<>();
-                    map.put(head,new SCMRevision(head) {
-                        @Override
-                        public boolean equals(Object obj) {
-                            return true;
-                        }
-
-                        @Override
-                        public int hashCode() {
-                            return 0;
-                        }
-                    });
-                    return map;
-                }
-            }
-            return Collections.emptyMap();
-        }
-
-        @Override
-        public boolean isMatch(@NonNull SCM scm) {
-            return scm instanceof GitSCM;
+            this.project=project;
+            this.navigator = navigator;
         }
 
         @Override
         public boolean isMatch(@NonNull SCMNavigator navigator) {
-            return navigator instanceof GitHubSCMNavigator && ((GitHubSCMNavigator) navigator).getRepoOwner().equals(owner);
+            return this.navigator == navigator;
+        }
+
+        @Override
+        public boolean isMatch(@NonNull SCMSource source) {
+            return ((GitHubSCMSource)source).getRepository().equals(getSourceName()) &&
+                    source.getOwner().getFullName().equals(project.getFullName());
         }
 
         @NonNull
@@ -243,6 +211,5 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         public String getSourceName() {
             return repoName;
         }
-
     }
 }
