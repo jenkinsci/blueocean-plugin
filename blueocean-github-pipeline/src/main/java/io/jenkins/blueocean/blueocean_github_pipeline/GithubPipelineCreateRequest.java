@@ -8,6 +8,7 @@ import hudson.model.Cause;
 import hudson.model.Item;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
+import hudson.plugins.git.GitSCM;
 import hudson.scm.SCM;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -229,7 +230,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
 
         @Override
         public boolean isMatch(@NonNull SCM scm) {
-            return true;
+            return scm instanceof GitSCM;
         }
 
         @Override
