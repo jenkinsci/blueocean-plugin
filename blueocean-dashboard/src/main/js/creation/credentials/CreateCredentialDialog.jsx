@@ -121,9 +121,9 @@ export class CreateCredentialDialog extends React.Component {
         let promise = null;
 
         if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SSH_KEY) {
-            promise = manager.saveSSHKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
+            promise = manager.saveSSHKeyCredential(this.state.sshKeyValue);
         } else if (this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS) {
-            promise = manager.saveUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);
+            promise = manager.saveUsernamePasswordCredential(this.state.usernameValue, this.state.passwordValue);
         }
 
         if (promise) {
