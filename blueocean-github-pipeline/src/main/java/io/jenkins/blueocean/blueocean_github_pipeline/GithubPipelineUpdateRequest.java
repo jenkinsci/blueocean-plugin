@@ -11,12 +11,14 @@ import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMNavigator;
+import jenkins.scm.api.SCMSourceEvent;
 import org.acegisecurity.Authentication;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +26,7 @@ import java.util.List;
  */
 public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
     private final BlueScmConfig scmConfig;
+    private final List<String> repos = new ArrayList<>();
 
     @DataBoundConstructor
     public GithubPipelineUpdateRequest(BlueScmConfig scmConfig) {
@@ -50,9 +53,13 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
 
             GitHubSCMNavigator gitHubSCMNavigator = getNavigator(folder);
 
-            if(gitHubSCMNavigator != null){
+            if(gitHubSCMNavigator != null) {
                 folder.getNavigators().replace(gitHubSCMNavigator);
-                folder.scheduleBuild(new Cause.UserIdCause());
+                if (repos.size() == 1) {
+                    SCMSourceEvent.fireNow(new GithubPipelineCreateRequest.SCMSourceEventImpl(repos.get(0), item, gitHubSCMNavigator.getApiUri(), gitHubSCMNavigator));
+                } else {
+                    folder.scheduleBuild(new Cause.UserIdCause());
+                }
             }
         }
         return pipeline;
@@ -91,6 +98,7 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
                 if (scmConfig != null && scmConfig.getConfig().get("repos") instanceof List) {
                     for (String r : (List<String>) scmConfig.getConfig().get("repos")) {
                         sb.append(String.format("(%s\\b)?", r));
+                        repos.add(r);
                     }
                 }
 

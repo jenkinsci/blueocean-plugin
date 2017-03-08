@@ -183,7 +183,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         }
     }
 
-    private class SCMSourceEventImpl extends SCMSourceEvent<Object>{
+    static class SCMSourceEventImpl extends SCMSourceEvent<Object>{
         private final String repoName;
         private final Item project;
         private final GitHubSCMNavigator navigator;
