@@ -14,8 +14,15 @@ export class Step extends Component {
     constructor(props) {
         super(props);
         const { augmenter, step } = props;
-        augmenter.step = step;
-        this.pager = KaraokeService.logPager(augmenter);
+        this.pager = KaraokeService.logPager(augmenter, step);
+        logger.log('isFocused', step.isFocused);
+        this.state = {
+            expanded: step.isFocused !== undefined && step.isFocused,
+        };
+    }
+
+    componentWillReceiveProps(nextProps) {
+logger.warn('neinen')
     }
 
     componentWillMount() {
@@ -34,33 +41,31 @@ export class Step extends Component {
         if (step === undefined || !step) {
             return null;
         }
-        const logConsoleClass = `logConsole step-${step.id}`;
         const { durationMillis } = this.durationHarmonize(step);
-        const isInputStep = step.input && step.input !== null;
-        const { data: log, hasMore } = this.pager.log || {};
-        logger.warn('arghhhhh');
+        const { data: logArray, hasMore } = this.pager.log || {};
         let children = null;
-        if (log && !isInputStep) {
-            logger.warn('Updating children')
+        if (logArray && !step.isInputStep) {
+            logger.warn('Updating children');
             children = (<LogConsole {...{
                 t,
                 router,
                 location,
                 hasMore,
                 scrollToBottom,
-                log,
+                logArray,
                 key: step.logUrl,
             }}
             />);
-        } else if (isInputStep) {
-            children = <InputStep {...{ step }} />;
-        } else if (!log && step.hasLogs) {
-            children = <span>&nbsp;</span>;
+        } else if (step.isInputStep) {
+            children = <InputStep {...{ step, key: 'step' }} />;
+        } else if (!logArray && step.hasLogs) {
+            children = <span key={'span'}>&nbsp;</span>;
         }
         const getLogForNode = () => {
-            logger.debug('FIXME implement getLogForNode');
-            if (!this.pager.log) {
-                this.pager.fetchLog(augmenter.karaoke);
+            logger.warn('FIXME implement getLogForNode');
+            if (!this.pager.logArray) {
+                this.pager.fetchLog({followAlong: augmenter.karaoke, url: step.logUrl});
+                this.setState({expanded: true});
             }
         };
         const removeFocus = () => {
@@ -70,21 +75,26 @@ export class Step extends Component {
                 router.push(location);
             }
         };
+        const logConsoleClass = `logConsole step-${step.id}`;
         const time = (<TimeDuration
-            millis={augmenter.run.isRunning() ? this.durationMillis : durationMillis }
-            liveUpdate={augmenter.run.isRunning()}
+            millis={step.isRunning ? this.durationMillis : durationMillis }
+            liveUpdate={step.isRunning}
             updatePeriod={1000}
             locale={locale}
             displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
             liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
             hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
         />);
-        return (<div className={logConsoleClass} key={step.id} >
+        if (this.pager.pending) {
+            logger.debug('nulllllllllllll');
+            return null;
+        }
+        return (<div className={logConsoleClass} key={this.pager.currentLogUrl}>
             <ResultItem {...{
                 extraInfo: time,
-                key: step.id,
-                result: augmenter.run.getComputedResult().toLowerCase(),
-                expanded: step.isFocused || false,
+                key: step.key,
+                result: step.computedResult.toLowerCase(),
+                expanded: this.state.expanded,
                 label: step.title,
                 onCollapse: removeFocus,
                 onExpand: getLogForNode,

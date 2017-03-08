@@ -17,9 +17,16 @@ export default class Steps extends Component {
                 { defaultValue: 'There are no logs' })}
             />);
         }
-        // const stepRenderer = model.map((item, index) => <div>{index}</div>);
-        const stepRenderer = model.map((item, index) => <Step key={index} { ...{ ...this.props, step: item } } />);
-        return (<div>{ stepRenderer }</div>);
+        return (<div>
+            { model.map((item, index) => <Step
+                { ...
+                    { ...this.props,
+                        key: item.key,
+                        step: item,
+                    }
+                }
+            />) }
+        </div>);
     }
 }
 

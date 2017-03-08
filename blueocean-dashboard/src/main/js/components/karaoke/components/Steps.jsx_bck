@@ -85,7 +85,7 @@ export class Stepsss extends Component {
         return (<div className={logConsoleClass}>
             <ResultItem {...{
                 extraInfo: time,
-                key: id,
+                key: i:qd,
                 result: augmenter.run.getComputedResult().toLowerCase(),
                 expanded: isFocused,
                 label: title,

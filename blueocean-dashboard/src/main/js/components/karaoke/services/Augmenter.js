@@ -30,6 +30,8 @@ export class Augmenter {
     @computed get nodesUrl() {
         if (this.run._links.nodes) {
             return prefixIfNeeded(this.run._links.nodes.href);
+        } else if (this.run._links.self.href) {
+            return `${prefixIfNeeded(this.run._links.self.href)}nodes/`;
         }
         return null;
     }
@@ -40,6 +42,8 @@ export class Augmenter {
     @computed get stepsUrl() {
         if (this.run._links.steps) {
             return prefixIfNeeded(this.run._links.steps.href);
+        } else if (this.run._links.self.href) {
+            return `${prefixIfNeeded(this.run._links.self.href)}steps/`;
         }
         return null;
     }

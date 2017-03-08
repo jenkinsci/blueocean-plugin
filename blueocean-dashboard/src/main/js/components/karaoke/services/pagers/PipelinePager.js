@@ -106,7 +106,7 @@ export class PipelinePager {
                 }
                 this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
                 logger.warn('saved data', logData);
-                return this.fetchCurrentStepUrl();
+                return this.fetchCurrentStepUrl(followAlong);
             })).catch(err => {
                 logger.error('Error fetching page', err);
                 action('set error', () => { this.error = err; });
@@ -129,11 +129,14 @@ export class PipelinePager {
         // get api data and further process it
         return KaraokeApi.getSteps(this.currentStepsUrl)
             .then(action('Process steps data', result => {
-                logData.data = getNodesInformation(result);
+                const nodesInformation = getNodesInformation(result);
+                logger.warn('Steps ', nodesInformation);
+                logData.data = nodesInformation;
                 this.bunker.setItem(logData);
-                logger.debug('saved data');
+                logger.debug('saved data', followAlong);
                 // we need to get more input from the log stream
                 if (followAlong) {
+                    logger.debug('follow along');
                     this.timeout = setTimeout(() => {
                         const props = { followAlong };
                         logger.warn(props);
@@ -163,11 +166,14 @@ export class PipelinePager {
         return KaraokeApi.getSteps(this.augmenter.stepsUrl)
             .then(action('Process steps data', result => {
                 this.currentStepsUrl = this.augmenter.stepsUrl;
-                logData.data = getNodesInformation(result);
+                const nodesInformation = getNodesInformation(result);
+                logger.warn('Steps nodesInformation', nodesInformation);
+                logData.data = nodesInformation;
                 this.bunker.setItem(logData);
-                logger.debug('saved data');
+                logger.debug('saved data', followAlong);
                 // we need to get more input from the log stream
                 if (followAlong) {
+                    logger.debug('follow along');
                     this.timeout = setTimeout(() => {
                         const props = { followAlong };
                         logger.warn(props);

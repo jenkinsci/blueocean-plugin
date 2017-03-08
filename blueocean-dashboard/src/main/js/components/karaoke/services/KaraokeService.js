@@ -57,14 +57,14 @@ export class KaraokeService extends BunkerService {
      * @param { object } augmenter
      * @returns {Pager} Pager for this pipelne.
      */
-    logPager(augmenter) {
-        const { pipeline, branch, run, step } = augmenter;
+    logPager(augmenter, step) {
+        const { pipeline, branch, run } = augmenter;
         return this.pagerService.getPager({
             key: this.logPagerKey(pipeline, branch, run.id, step.id),
             /**
              * Lazily generate the pager in case its needed.
              */
-            lazyPager: () => new LogPager(this, augmenter),
+            lazyPager: () => new LogPager(this, augmenter, step),
         });
     }
     /**

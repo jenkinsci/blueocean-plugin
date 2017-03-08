@@ -12,19 +12,26 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pipeline')
 export default class Pipeline extends Component {
     componentWillMount() {
         if (this.props.augmenter) {
-            this.fetchData(this.props);
+            const { augmenter, params: { node } } = props;
+            this.pager = KaraokeService.pipelinePager(augmenter, { node });
         }
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.augmenter.karaoke) {
+            logger.debug('stopping karaoke mode.');
             this.stopKaraoke();
         }
-        if (nextProps.run.isCompleted() && !nextProps.augmenter.run.isCompleted()) {
-            logger.debug('re-fetching since result changed and we want to display the full log');
+        if ((nextProps.run.isCompleted() && !nextProps.augmenter.run.isCompleted()) || (nextProps.run !== this.props.run)) {
+            logger.debug('re-fetching since result changed and we want to display the full log and correct result states');
+            if (nextProps.run !== this.props.run) {
+                logger.debug('Need to set new Run. Happens when e.g. re-run.');
+                nextProps.augmenter.setRun(nextProps.run);
+            }
             this.pager.fetchNodes({});
         }
         if (nextProps.params.node !== this.props.params.node) {
+            logger.debug('Need to fetch new nodes.');
             this.pager.fetchNodes({ node: nextProps.params.node });
         }
     }
@@ -36,11 +43,6 @@ export default class Pipeline extends Component {
     stopKaraoke() {
         logger.debug('stopping karaoke mode, by removing the timeouts on the pager.');
         this.pager.clear();
-    }
-
-    fetchData(props) {
-        const { augmenter, params: { node } } = props;
-        this.pager = KaraokeService.pipelinePager(augmenter, { node });
     }
 
     render() {
@@ -85,7 +87,11 @@ export default class Pipeline extends Component {
             }
             router.push(location);
         };
-        //
+        const title = this.pager.nodes !== undefined ? t('rundetail.pipeline.steps', {
+            defaultValue: 'Steps ',
+                0: this.pager.currentNode.displayName,
+            }) : '';
+        logger.debug('displayName', this.pager.currentNode.displayName);
         return (<div>
             { this.pager.nodes !== undefined &&
                 <Extensions.Renderer
@@ -103,15 +109,14 @@ export default class Pipeline extends Component {
             <LogToolbar
                 fileName={augmenter.generalLogFileName}
                 url={augmenter.generalLogUrl}
-                title={t('rundetail.pipeline.logsF', { defaultValue: 'Logs FIXME' })}
+                title={title}
             />
             { this.pager.steps &&
                 <Steps
                     {...{
-                        augmenter,
-                        url: augmenter.generalLogUrl,
                         nodeInformation: this.pager.steps.data,
                         followAlong: augmenter.karaoke,
+                        augmenter,
                         t,
                         scrollToBottom,
                         router,

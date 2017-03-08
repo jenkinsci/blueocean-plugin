@@ -21,11 +21,13 @@ export class LogPager {
      * @type {boolean}
      */
     @observable pending = false;
+    @observable used = false;
     /**
      * Will be set in an error occurs.
      * @type {object|null}
      */
     @observable error = null;
+    @observable currentLogUrl;
 
     /**
      * Mobx computed value that creates an object. If either the  bunker changes,
@@ -37,7 +39,7 @@ export class LogPager {
      */
     @computed
     get log() {
-        return this.bunker.getItem(this.augmenter.step.logUrl);
+        return this.bunker.getItem(this.currentLogUrl);
     }
     /**
      * Creates an instance of Pager and fetches the first page.
@@ -47,9 +49,16 @@ export class LogPager {
      * @param {string} branch the name of the branch we are requesting
      * @param {string} run Run that this pager belongs to.
      */
-    constructor(bunker, augmenter) {
+    constructor(bunker, augmenter, step) {
         this.bunker = bunker;
         this.augmenter = augmenter;
+        this.step = step;
+        if (step.isFocused) {
+            this.fetchLog({
+                followAlong: augmenter.karaoke,
+                url: step.logUrl,
+            });
+        }
     }
 
     /**
@@ -58,7 +67,7 @@ export class LogPager {
      * @returns {Promise}
      */
     @action
-    fetchLog({ start, followAlong }) {
+    fetchLog({ start, followAlong, url }) {
         clearTimeout(this.timeout);
         // while fetching we are pending
         this.pending = true;
@@ -66,12 +75,12 @@ export class LogPager {
         const logData = {
             _links: {
                 self: {
-                    href: this.augmenter.step.logUrl,
+                    href: url,
                 },
             },
         };
         // get api data and further process it
-        return KaraokeApi.getGeneralLog(this.augmenter.step.logUrl, { start })
+        return KaraokeApi.getGeneralLog(url, { start })
             .then(response => {
                 const { newStart, hasMore } = response;
                 logger.warn({ newStart, hasMore });
@@ -83,10 +92,12 @@ export class LogPager {
                 if (text && text.trim) {
                     logData.data = text.trim().split('\n');
                 }
+                this.currentLogUrl = url;
                 // Store item in bunker.
                 this.bunker.setItem(logData);
-                logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart, followAlong);
+                logger.debug('saved data', url, logData.newStart, followAlong);
                 this.pending = false;
+                this.used = true;
                 if (Number(logData.newStart) > 0 && followAlong) {
                     // kill current  timeout if any
                     clearTimeout(this.timeout);
@@ -117,7 +128,7 @@ export class LogPager {
         // while fetching we are pending
         this.pending = true;
         logger.warn('changed ref', logData._links.self.href);
-        return KaraokeApi.getGeneralLog(this.augmenter.step.logUrl, { start: logData.newStart })
+        return KaraokeApi.getGeneralLog(logData._links.self.href, { start: logData.newStart })
             .then(action('Process pager data following 1', response => {
                 const { newStart, hasMore } = response;
                 logger.warn({ newStart, hasMore });
@@ -130,7 +141,7 @@ export class LogPager {
                 }
                 // Store item in bunker.
                 this.bunker.setItem(logData);
-                logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart);
+                logger.debug('saved data', logData._links.self.href, logData.newStart);
                 this.pending = false;
                 if (logData.newStart !== null) {
                     // kill current  timeout if any

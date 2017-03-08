@@ -9,15 +9,14 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetails
 
 @observer
 export class RunDetailsPipeline extends Component {
-
     constructor(props) {
         super(props);
         this._handleKeys = this._handleKeys.bind(this);
         this._onScrollHandler = this._onScrollHandler.bind(this);
     }
-
     componentWillMount() {
         if (this.props.params) {
+            logger.debug('Augmenting this.properties');
             this.augment(this.props);
         }
     }
@@ -40,6 +39,10 @@ export class RunDetailsPipeline extends Component {
         }
         document.removeEventListener('keydown', this._handleKeys);
     }
+    componentWillReceiveProps(nextProps) {
+        logger.debug('Augmenting next properties');
+        this.augment(nextProps);
+    }
  // we bail out on arrow_up key
     _handleKeys(event) {
         if (event.keyCode === 38 && this.augmenter.karaoke) {
@@ -61,7 +64,6 @@ export class RunDetailsPipeline extends Component {
         const followAlong = props && props.result && props.result.state !== 'FINISHED' || false;
         this.augmenter = new Augmenter(pipeline, branch, run, followAlong);
     }
-
     render() {
         const { result: run, pipeline, params: { branch }, t } = this.props;
         const { router, location } = this.context;
@@ -101,17 +103,14 @@ export class RunDetailsPipeline extends Component {
         </div>);
     }
 }
-
 RunDetailsPipeline.propTypes = {
     pipeline: PropTypes.object,
     result: PropTypes.object,
     params: PropTypes.object,
     t: PropTypes.func,
 };
-
 RunDetailsPipeline.contextTypes = {
     router: PropTypes.object.isRequired, // From react-router
     location: PropTypes.object.isRequired, // From react-router
 };
-
 export default RunDetailsPipeline;

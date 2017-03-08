@@ -43,7 +43,6 @@ export const getNodesInformation = (nodes) => {
             .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
         const isFailingNode = errorNodes.indexOf(item.id) > -1;
         const isRunning = runningNodes.indexOf(item.id) > -1;
-
         /*
          * are we in a node that indicates that we have parallel nodes?
          */
@@ -60,9 +59,12 @@ export const getNodesInformation = (nodes) => {
         const logActions = item.actions ? item.actions
             .filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
         const hasLogs = logActions.length > 0;
+        const isCompleted = item.result !== 'UNKNOWN';
+        const computedResult = isCompleted ? item.result : item.state;
+        const isInputStep =  item.input && item.input !== null;
         const modelItem = {
             _links: item._links,
-            key: index,
+            key: index + isRunning + computedResult,
             id: item.id,
             edges: item.edges,
             displayName: item.displayName,
@@ -76,6 +78,9 @@ export const getNodesInformation = (nodes) => {
             isParallel,
             parent,
             isRunning,
+            isCompleted,
+            computedResult,
+            isInputStep,
         };
         // do not set the parent node in parallel, since we already have this information
         if (!isParallel) {
@@ -89,7 +94,7 @@ export const getNodesInformation = (nodes) => {
             wasFocused = true;
             modelItem.isFocused = true;
         }
-        if (item.input) {
+        if (isInputStep) {
             modelItem.input = item.input;
         }
         return modelItem;
