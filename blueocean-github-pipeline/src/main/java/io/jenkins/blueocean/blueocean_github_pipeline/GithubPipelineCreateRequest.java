@@ -3,9 +3,12 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Cause;
+import hudson.model.Item;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
+import hudson.scm.SCM;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -18,15 +21,25 @@ import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreateRequestI
 import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHeadEvent;
+import jenkins.scm.api.SCMNavigator;
+import jenkins.scm.api.SCMRevision;
+import jenkins.scm.api.SCMSource;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
+import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -52,6 +65,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         String orgName = getName(); //default
         String credentialId = null;
         StringBuilder sb = new StringBuilder();
+        List<String> repos = new ArrayList<>();
 
         if (scmConfig != null) {
             apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GithubScm.DEFAULT_API_URI);
@@ -62,6 +76,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
             if (scmConfig != null && scmConfig.getConfig().get("repos") instanceof List) {
                 for (String r : (List<String>) scmConfig.getConfig().get("repos")) {
                     sb.append(String.format("(%s\\b)?", r));
+                    repos.add(r);
                 }
             }
         }
@@ -107,7 +122,12 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 // cick of github scan build
                 OrganizationFolder organizationFolder = (OrganizationFolder) item;
                 organizationFolder.getNavigators().replace(gitHubSCMNavigator);
-                organizationFolder.scheduleBuild(new Cause.UserIdCause());
+
+                if(repos.size() == 1){
+                    SCMHeadEvent.fireNow(new SCMHeadEventImpl(repos.get(0), orgName, item));
+                }else {
+                    organizationFolder.scheduleBuild(new Cause.UserIdCause());
+                }
                 return new GithubOrganizationFolder(organizationFolder, parent.getLink());
             }
         } catch (Exception e){
@@ -167,5 +187,61 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
             }
             throw new ServiceException.UnexpectedErrorException("Failure validating github access token: "+e.getMessage(), e);
         }
+    }
+
+    private static class SCMHeadEventImpl extends SCMHeadEvent<Object> {
+        private final String repoName;
+        private final String owner;
+        private final Item project;
+
+        public SCMHeadEventImpl(String repoName, String owner, Item project) {
+            super(Type.CREATED, new Object());
+            this.repoName = repoName;
+            this.owner = owner;
+            this.project = project;
+        }
+
+
+        @NonNull
+        @Override
+        public Map<SCMHead, SCMRevision> heads(@NonNull SCMSource source) {
+            if(source instanceof GitHubSCMSource){
+                if(((GitHubSCMSource)source).getRepository().equals(getSourceName()) &&
+                        source.getOwner() instanceof OrganizationFolder && source.getOwner().getFullName().equals(project.getFullName())){
+                    SCMHead head = new SCMHead("master");
+                    Map<SCMHead, SCMRevision> map = new HashMap<>();
+                    map.put(head,new SCMRevision(head) {
+                        @Override
+                        public boolean equals(Object obj) {
+                            return true;
+                        }
+
+                        @Override
+                        public int hashCode() {
+                            return 0;
+                        }
+                    });
+                    return map;
+                }
+            }
+            return Collections.emptyMap();
+        }
+
+        @Override
+        public boolean isMatch(@NonNull SCM scm) {
+            return true;
+        }
+
+        @Override
+        public boolean isMatch(@NonNull SCMNavigator navigator) {
+            return navigator instanceof GitHubSCMNavigator && ((GitHubSCMNavigator) navigator).getRepoOwner().equals(owner);
+        }
+
+        @NonNull
+        @Override
+        public String getSourceName() {
+            return repoName;
+        }
+
     }
 }
