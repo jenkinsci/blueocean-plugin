@@ -4,7 +4,6 @@ import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 import Markdown from 'react-remarkable';
 import { actions as selectorActions, testResults as testResultsSelector,
     connect, createSelector } from '../redux';
-import PageLoading from './PageLoading';
 
 /**
  * Displays a list of tests from the supplied build run property.
@@ -24,7 +23,7 @@ export class RunDetailsTests extends Component {
         const { testResults, t, locale } = this.props;
 
         if (!testResults || testResults.$pending) {
-            return <PageLoading />;
+            return null;
         }
 
         if (testResults.$failed) {
@@ -67,6 +66,7 @@ export class RunDetailsTests extends Component {
               testResults={testResults}
               locale={locale}
               t={t}
+              run={this.props.result}
             />
         </div>);
     }

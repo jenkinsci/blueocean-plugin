@@ -7,7 +7,7 @@ node {
 
   deleteDir()
   checkout scm
-  sh 'docker build -t blueocean_build_env - < Dockerfile.build'
+  sh 'docker build -t blueocean_build_env --build-arg GID=$(id -g ${USER}) --build-arg UID=$(id -u ${USER}) - < Dockerfile.build'
 
   configFileProvider([configFile(fileId: 'blueocean-maven-settings', targetLocation: 'settings.xml')]) {
 

@@ -1,10 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { TabLink } from '@jenkins-cd/design-language';
 import { i18nTranslator, ReplayButton, RunButton, logging } from '@jenkins-cd/blueocean-core-js';
+import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/react-material-icons';
 
 import {
+    rootPath,
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
@@ -14,7 +16,6 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import { FullScreen } from './FullScreen';
-import PageLoading from './PageLoading';
 import { Paths, capable, locationService, Security } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
@@ -22,6 +23,9 @@ const { func, object, any, string } = PropTypes;
 
 const { rest: RestPaths } = Paths;
 const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetails');
+
+const translate = i18nTranslator('blueocean-dashboard');
+const webTranslate = i18nTranslator('blueocean-web');
 
 const classicConfigLink = (pipeline) => {
     let link = null;
@@ -36,7 +40,19 @@ const classicConfigLink = (pipeline) => {
     return link;
 };
 
-const translate = i18nTranslator('blueocean-dashboard');
+const classicJobRunLink = (pipeline, branch, runId) => {
+    let runUrl;
+    if (pipeline.branchNames) {
+        runUrl = `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
+    } else {
+        runUrl = `${rootPath(pipeline.fullName)}${encodeURIComponent(runId)}`;
+    }
+    return (
+        <a className="rundetails_exit_to_app" href={ runUrl } style={ { height: '24px' } } title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
+            <Icon size={ 24 } icon="exit_to_app" style={ { fill: '#fff' } } />
+        </a>
+    );
+};
 
 @observer
 class RunDetails extends Component {
@@ -47,7 +63,8 @@ class RunDetails extends Component {
     }
 
     componentWillMount() {
-        this._fetchRun(this.props, true);
+        this._fetchRun(this.props);
+        this.opener = locationService.previous;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -56,11 +73,10 @@ class RunDetails extends Component {
         }
 
         // in some cases the route params might have actually changed (such as 'runId' during a Re-run) so re-fetch
-        // also don't update the 'previous route' otherwise closing the modal will try to navigate back to last run
-        this._fetchRun(nextProps, false);
+        this._fetchRun(nextProps);
     }
 
-    _fetchRun(props, storePreviousRoute) {
+    _fetchRun(props) {
         this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE);
 
         if (this.context.config && this.context.params) {
@@ -72,9 +88,6 @@ class RunDetails extends Component {
             });
 
             this.context.activityService.fetchActivity(this.href, { useCache: true });
-            if (storePreviousRoute) {
-                this.opener = locationService.previous;
-            }
         }
     }
 
@@ -122,18 +135,13 @@ class RunDetails extends Component {
     };
 
     afterClose = () => {
-        const { router, location, params } = this.context;
-        const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
-
-        location.pathname = this.opener || fallbackUrl;
-
-        // reset query
-        /*
-         FIXME: reset query when you go back, we may want to store the whole location object in previous so we have a perfect prev.
-         this.opener would then be location and we the above location = this.opener || { pathname: fallbackUrl]
-         */
-        location.query = null;
-        router.push(location);
+        const { router, params } = this.context;
+        if (this.opener) {
+            router.goBack();
+        } else {
+            const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
+            router.push(fallbackUrl);
+        }
     };
 
     render() {
@@ -150,7 +158,7 @@ class RunDetails extends Component {
 
         if (!run || !pipeline) {
             this.props.setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
-            return <PageLoading />;
+            return null;
         }
 
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
@@ -182,19 +190,26 @@ class RunDetails extends Component {
             }) }</TabLink>,
         ];
 
-        const runButton = [
-            <ReplayButton className="dark"
+        const iconButtons = [
+            <ReplayButton className="icon-button dark"
                           runnable={ this.props.pipeline }
                           latestRun={ currentRun }
                           onNavigation={ switchRunDetails }
                           autoNavigate
             />,
-            <RunButton className="dark"
+            <RunButton className="icon-button dark"
                        runnable={ this.props.pipeline }
                        latestRun={ currentRun }
                        buttonType="stop-only"
             />,
+            <Extensions.Renderer extensionPoint="jenkins.blueocean.rundetails.top.widgets"
+                filter={dataType(currentRun)}
+                pipeline={pipeline}
+                run={currentRun}
+                back={() => this.navigateToPipeline()}
+            />,
             classicConfigLink(pipeline),
+            classicJobRunLink(pipeline, params.branch, params.runId),
         ];
 
         return (
@@ -205,12 +220,13 @@ class RunDetails extends Component {
                     locale={ locale }
                     pipeline={ pipeline }
                     data={ currentRun }
-                    runButton={ runButton }
+                    runButton={ iconButtons }
                     topNavLinks={ tabs }
                     onOrganizationClick={ this.navigateToOrganization }
                     onNameClick={ this.navigateToPipeline }
                     onAuthorsClick={ this.navigateToChanges }
                     onCloseClick={ this.closeButtonClicked }
+                    isMultiBranch={ this.isMultiBranch }
                 />
 
                 <div className="RunDetails-content">
@@ -252,4 +268,3 @@ RunDetails.propTypes = {
 };
 
 export default RunDetails;
-

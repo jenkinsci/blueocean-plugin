@@ -1,0 +1,142 @@
+.ColumnFilter {
+    position: relative;
+    margin: 0 16px 0 0;
+
+    &.empty {
+        input.autocomplete {
+            padding-left: 8px;
+            border-color: #e3ebee;
+        }
+        .Icon-filter {
+            left: auto;
+            right: 10px;
+            fill: #bbcdd5;
+        }
+        .Icon-clear {
+            display: none;
+        }
+    }
+
+    &.focused {
+        border-color: #4a90e2;
+        box-shadow: 0 0 10px rgba(0,0,0,.25);
+
+        .Icon-filter, .Icon-clear {
+            svg {
+                fill: #4a90e2;
+            }
+        }
+        .Icon-filter {
+            left: 8px;
+            right: auto;
+        }
+
+        input.autocomplete {
+            border-color: #4a90e2;
+            padding-left: 28px;
+            border-radius: 3px 3px 0 0;
+        }
+
+        &:before {
+            content: '';
+            display: block;
+            background: #fff;
+            position: absolute;
+            bottom: 1px;
+            left: 1px;
+            right: 1px;
+            height: 4px;
+            z-index: 1001;
+        }
+    }
+
+    .placeholder(@rules) {
+        &::-webkit-input-placeholder { @rules(); }
+        &:-moz-placeholder { @rules(); }
+        &::-moz-placeholder { @rules(); }
+        &:-ms-input-placeholder { @rules(); }
+    }
+
+    .selection(@rules) {
+        &::selection { @rules(); }
+        &::-moz-selection { @rules(); }
+    }
+
+    input.autocomplete {
+        line-height: 28px;
+        padding: 0 22px 0 28px;
+        height: 28px;
+        margin: 0;
+        border: 1px solid #4a90e2;
+        border-radius: 3px;
+        color: #4a4a4a;
+        outline: none;
+        width: 100%;
+
+        .selection({
+            background: rgba(73, 143, 226, 0.25);
+        });
+
+        .placeholder({
+            opacity: 1;
+            color: #4a4a4a;
+        });
+    }
+
+    .Icon-filter {
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        margin-top: -7px;
+        fill: #4a90e2;
+    }
+
+    .Icon-clear {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        margin-top: -7px;
+        fill: #4a90e2;
+        cursor: pointer;
+    }
+
+    .item {
+        height: 30px;
+        vertical-align: middle;
+        background: #fff;
+        line-height: 30px;
+        padding: 0 10px;
+        cursor: pointer;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .selected {
+        background-color: #e3ebee;
+    }
+
+    .absolute() { // override the local styles for the drop-down container
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 100%;
+        max-width: 200%;
+        max-height: 20em;
+        padding: 0;
+    }
+
+    > div > div { // drop-down container
+        background: #fff;
+        margin-top: -1px;
+        border: 1px solid #4a90e2;
+        border-radius: 0 0 3px 3px;
+        z-index: 1000;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+
+        .absolute() !important; // ick
+    }
+}
+
+th.branch {
+    overflow: visible !important;
+}

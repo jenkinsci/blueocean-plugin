@@ -46,8 +46,16 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.BlueRun.DATE_FORMAT_STRING;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
-import static org.junit.Assert.*;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -91,7 +99,9 @@ public class MultiBranchTest extends PipelineBaseTest {
     public void testGetURL() {
         Job job = mock(Job.class);
         BranchImpl branch = new BranchImpl(job, new Link("foo"));
-        assertNull(branch.getBranch());
+        assertNotNull(branch.getBranch());
+        assertNull(branch.getBranch().getUrl());
+        assertFalse(branch.getBranch().isPrimary());
         ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
         when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
         assertEquals("https://path/to/branch", branch.getBranch().getUrl());
@@ -101,7 +111,9 @@ public class MultiBranchTest extends PipelineBaseTest {
     public void testBranchInfo() {
         Job job = mock(Job.class);
         BranchImpl branch = new BranchImpl(job, new Link("foo"));
-        assertNull(branch.getBranch());
+        assertNotNull(branch.getBranch());
+        assertNull(branch.getBranch().getUrl());
+        assertFalse(branch.getBranch().isPrimary());
         ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
         when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
         assertEquals("https://path/to/branch", branch.getBranch().getUrl());

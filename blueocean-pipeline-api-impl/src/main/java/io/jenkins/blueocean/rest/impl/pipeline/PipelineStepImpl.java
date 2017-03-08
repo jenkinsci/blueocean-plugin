@@ -34,7 +34,6 @@ import org.kohsuke.stapler.framework.io.ByteBuffer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -96,14 +95,13 @@ public class PipelineStepImpl extends BluePipelineStep {
     @Override
     public Object getLog() {
         if(PipelineNodeUtil.isLoggable.apply(node.getNode())){
-            if(node.getBlockErrorAction() != null
-                    && node.getBlockErrorAction().getError() != null &&
-                    node.getBlockErrorAction().getError().getMessage() != null){
+            final String errorLog = node.blockError();
+            if(errorLog != null){
                 return new LogResource(node.getNode().getAction(LogAction.class).getLogText(), new LogAppender() {
                     @Nonnull
                     @Override
                     public Reader getLog() {
-                        return new StringReader(node.getBlockErrorAction().getError().getMessage());
+                        return new StringReader(errorLog+"\n");
                     }
                 });
             }
@@ -113,17 +111,20 @@ public class PipelineStepImpl extends BluePipelineStep {
         }
     }
 
+    FlowNodeWrapper getFlowNodeWrapper(){
+        return node;
+    }
+
     @SuppressWarnings("unchecked")
     private static LogResource getLogResource(FlowNodeWrapper  node){
-        String msg=null;
-        if(node.getNode().getError() != null && node.getNode().getError().getError() != null){
-            msg = node.getNode().getError().getError().getMessage()+"\n";
-        } else if((node.getBlockErrorAction() != null && node.getBlockErrorAction().getError() != null)){
-            msg = node.getBlockErrorAction().getError().getMessage()+"\n";
+        String msg=node.nodeError();
+        if(msg == null){
+            msg = node.blockError();
         }
         if(msg == null){
             return null;
         }
+        msg = msg + "\n";
         ByteBuffer byteBuffer = new ByteBuffer();
         try {
             byteBuffer.write(msg.getBytes("UTF-8"));

@@ -22,8 +22,11 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
 import org.junit.Before;
@@ -353,6 +356,15 @@ public abstract class PipelineBaseTest{
         }
 
         return nodes;
+    }
+    protected List<FlowNode> getAllSteps(WorkflowRun run){
+        PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
+        ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
+        List<FlowNode> steps = new ArrayList<>();
+        for(FlowNodeWrapper node: visitor.getSteps()){
+            steps.add(node.getNode());
+        }
+        return steps;
     }
     protected List<FlowNode> getStagesAndParallels(NodeGraphBuilder builder){
         List<FlowNode> nodes = new ArrayList<>();

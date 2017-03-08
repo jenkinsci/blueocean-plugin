@@ -4,11 +4,20 @@ import { logging, TimeManager, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { ResultPageHeader } from '@jenkins-cd/blueocean-core-js';
+import { Link } from 'react-router';
+import { buildPipelineUrl } from '../util/UrlUtils';
 
 class RunDetailsHeader extends Component {
 
     componentWillMount() {
-        const { data: run } = this.props;
+        this._setDuration(this.props);
+    }
+    componentWillReceiveProps(nextProps) {
+        this._setDuration(nextProps);
+    }
+
+    _setDuration(props) {
+        const { data: run } = props;
         const isRunning = () => run.isRunning() || run.isPaused() || run.isQueued();
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
@@ -19,7 +28,7 @@ class RunDetailsHeader extends Component {
         }, skewMillis);
         this.durationMillis = durationMillis;
     }
-
+    
     render() {
         const {
             data: run,
@@ -32,6 +41,7 @@ class RunDetailsHeader extends Component {
             onNameClick,
             topNavLinks,
             runButton,
+            isMultiBranch,
         } = this.props;
 
         const { fullDisplayName } = pipeline;
@@ -78,14 +88,20 @@ class RunDetailsHeader extends Component {
             </h1>
         );
 
+        const branchUrl = `${buildPipelineUrl(run.organization, pipeline.fullName)}/activity/${run.pipeline}`;
+
         const branchSourceDetails = (
             <div className="u-label-value" title={branchLabel + ': ' + displayName}>
                 <label>{ branchLabel }:</label>
-                <span>{ displayName }</span>
+                {isMultiBranch ? (
+                    <span><Link to={ branchUrl }>{ displayName }</Link></span>
+                  ) : (
+                    <span>&mdash;</span>
+                  )}
             </div>
         );
 
-        const commitIdString = run.commitId || 'N/A';
+        const commitIdString = run.commitId || '—';
         const commitSourceDetails = (
             <div className="u-label-value" title={commitLabel + ': ' + commitIdString}>
                 <label>{ commitLabel }:</label>
@@ -164,6 +180,7 @@ RunDetailsHeader.propTypes = {
     locale: PropTypes.string,
     topNavLinks: PropTypes.node,
     runButton: PropTypes.node,
+    isMultiBranch: PropTypes.bool,
 };
 
 RunDetailsHeader.contextTypes = {

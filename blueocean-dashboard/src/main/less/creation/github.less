@@ -14,6 +14,12 @@
 }
 
 
+button.u-selection-style {
+    border-color: @brand-primary;
+    background-color: lighten(@brand-primary, 37.5%);
+}
+
+
 // github styles
 
 .github-org-list-step, .github-repo-list-step {
@@ -30,6 +36,9 @@
 }
 
 .github-credentials-step {
+    .text-token {
+        width: 100%;
+    }
     .button-connect {
         margin-left: 10px;
     }
@@ -39,8 +48,7 @@
     .List.org-list {
         padding: 0;
         background-color: transparent;
-        max-height: 260px;
-
+        
         .org-list-item {
             display: flex;
             align-items: center;
@@ -64,16 +72,20 @@
         align-items: flex-start;
     }
 
-    .List.repo-list {
+    .loading-msg {
+        margin-bottom: 10px;
+    }
+
+    .repo-list {
         width: 100%;
-        max-height: 210px;
 
-        .List-ItemContainer {
-            width: 100%
-        }
+        .List {
+            width: 100%;
+            max-height: 210px;
 
-        .List-Item.List-Item-selected {
-            .u-selection-style;
+            .List-Item.List-Item-selected {
+                .u-selection-style;
+            }
         }
     }
 
