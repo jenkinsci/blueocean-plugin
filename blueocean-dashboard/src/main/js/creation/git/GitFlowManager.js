@@ -94,7 +94,7 @@ export default class GitFlowManager extends FlowManager {
 
     _showPlaceholder() {
         this.setPlaceholders([
-            this.translate('creation.git.step3.title_default'),
+            this.translate('creation.git.step3.title_completed'),
         ]);
     }
 

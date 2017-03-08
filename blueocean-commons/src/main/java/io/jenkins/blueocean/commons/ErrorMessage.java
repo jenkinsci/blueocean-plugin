@@ -49,14 +49,6 @@ public class ErrorMessage {
         return this;
     }
 
-    @JsonIgnore
-    public ErrorMessage addAll(List<Error> errors){
-        this.errors.addAll(errors);
-        return this;
-    }
-
-
-
     @JsonProperty("errors")
     public List<Error> getErrors(){
         return errors;

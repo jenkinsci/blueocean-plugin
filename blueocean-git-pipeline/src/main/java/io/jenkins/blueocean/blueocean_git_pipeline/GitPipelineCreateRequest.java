@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import hudson.model.Cause;
 import hudson.model.Failure;
@@ -111,7 +111,7 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
         if (sourceUri == null) {
             errors.add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "uri is required"));
         }else {
-            StandardUsernameCredentials credentials = null;
+            StandardCredentials credentials = null;
             if(scmConfig.getCredentialId() != null){
                 credentials = GitUtils.getCredentials(Jenkins.getInstance(), sourceUri, scmConfig.getCredentialId());
                 if (credentials == null) {
@@ -120,13 +120,16 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
                                     String.format("credentialId: %s not found", scmConfig.getCredentialId())));
                 }
             }
-            errors.addAll(GitUtils.validateCredentials(sourceUri, credentials));
+            //validate credentials if no credential id (perhaps git repo doesn't need auth or credentials is present)
+            if(scmConfig.getCredentialId() == null || credentials != null) {
+                errors.addAll(GitUtils.validateCredentials(sourceUri, credentials));
+            }
         }
 
         try {
             Jenkins.getInstance().getProjectNamingStrategy().checkName(getName());
         }catch (Failure f){
-            errors.add(new ErrorMessage.Error("scmConfig.name", ErrorMessage.Error.ErrorCodes.INVALID.toString(), getName() + "in not a valid name"));
+            errors.add(new ErrorMessage.Error("scmConfig.name", ErrorMessage.Error.ErrorCodes.INVALID.toString(), name + "in not a valid name"));
         }
 
         if(Jenkins.getInstance().getItem(name)!=null) {
@@ -135,7 +138,7 @@ public class GitPipelineCreateRequest extends AbstractPipelineCreateRequestImpl 
         }
 
         if(!errors.isEmpty()){
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline:"+getName()).addAll(errors));
+            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline:"+name).addAll(errors));
         }
     }
 

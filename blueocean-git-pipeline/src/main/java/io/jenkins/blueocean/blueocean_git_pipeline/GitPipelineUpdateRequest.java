@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Item;
@@ -74,7 +74,7 @@ public class GitPipelineUpdateRequest extends BluePipelineUpdateRequest {
             sourceUri = scmConfig.getUri();
             List<ErrorMessage.Error> errors = new ArrayList<>();
 
-            StandardUsernameCredentials credentials = null;
+            StandardCredentials credentials = null;
             if(scmConfig.getCredentialId() != null){
                 credentials = GitUtils.getCredentials(Jenkins.getInstance(), sourceUri, scmConfig.getCredentialId());
                 if (credentials == null) {
