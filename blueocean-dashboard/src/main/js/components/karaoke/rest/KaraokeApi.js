@@ -1,5 +1,6 @@
 import { capabilityAugmenter, Fetch, FetchFunctions, logging } from '@jenkins-cd/blueocean-core-js';
 import { generateDetailUrl } from '../urls/detailUrl';
+import { getNodesInformation } from '../../../util/logDisplayHelper';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RestApi');
 
@@ -85,7 +86,8 @@ export class KaraokeApi {
         logger.debug('Fetching href', href);
         return Fetch.fetchJSON(href, { fetchOptions })
             .then(FetchFunctions.checkStatus)
-            .then(data => capabilityAugmenter.augmentCapabilities(data));
+            .then(data => capabilityAugmenter.augmentCapabilities(data))
+            .then(getNodesInformation);
     }
 
     getSteps(href) {

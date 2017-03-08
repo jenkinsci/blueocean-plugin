@@ -3,7 +3,6 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 
 import { prefixIfNeeded } from '../../urls/prefixIfNeeded';
 import { KaraokeApi } from '../../index';
-import { getNodesInformation } from '../../../../util/logDisplayHelper';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.PipelinePager');
 
@@ -87,7 +86,7 @@ export class PipelinePager {
                     return this.fetchSteps(followAlong);
                 }
                 // get information about the result
-                logData.data = getNodesInformation(result);
+                logData.data = result;
                 // calculate which node we need to focus
                 this.bunker.setItem(logData);
                 const focused = logData.data.model.filter((item) => {
@@ -129,9 +128,7 @@ export class PipelinePager {
         // get api data and further process it
         return KaraokeApi.getSteps(this.currentStepsUrl)
             .then(action('Process steps data', result => {
-                const nodesInformation = getNodesInformation(result);
-                logger.warn('Steps ', nodesInformation);
-                logData.data = nodesInformation;
+                logData.data = result;
                 this.bunker.setItem(logData);
                 logger.debug('saved data', followAlong);
                 // we need to get more input from the log stream
@@ -166,9 +163,7 @@ export class PipelinePager {
         return KaraokeApi.getSteps(this.augmenter.stepsUrl)
             .then(action('Process steps data', result => {
                 this.currentStepsUrl = this.augmenter.stepsUrl;
-                const nodesInformation = getNodesInformation(result);
-                logger.warn('Steps nodesInformation', nodesInformation);
-                logData.data = nodesInformation;
+                logData.data = result;
                 this.bunker.setItem(logData);
                 logger.debug('saved data', followAlong);
                 // we need to get more input from the log stream
