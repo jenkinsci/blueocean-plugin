@@ -2,6 +2,9 @@ FROM ubuntu:16.04
 
 ENV MAVEN_VERSION 3.3.3
 ENV NODE_VERSION 6.4.0
+ENV PHANTOMJS_VERSION 2.1.1
+ARG UID=1000
+ARG GID=1000
 
 USER root
 
@@ -39,6 +42,8 @@ ENV MAVEN_HOME /usr/share/maven
 RUN wget --no-verbose https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz -O /opt/nodejs.tar.xz
 RUN tar -C /usr/local --strip-components 1 -xJf /opt/nodejs.tar.xz
 RUN mkdir /.npm && chmod 777 /.npm
+# Update to latest version so optional dependancies + shrinkwrap work
+RUN npm install -g npm@4.3.0
 
 #=============================================
 # Misc packages needed by the ATH
@@ -49,10 +54,17 @@ RUN apt-get update -qqy \
     libssl-dev \
   && rm -rf /var/lib/apt/lists/*
 
+#=============================================
+# Phantom JS
+#=============================================
+RUN wget --no-verbose -O - -L https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 \
+        | tar -xj --strip-components=1 -C /usr/local
+
 #========================================
 # Add normal user with passwordless sudo
 #========================================
-RUN sudo useradd bouser --shell /bin/bash --create-home \
+RUN sudo groupadd -r -g $GID bouser \
+  && sudo useradd bouser -g $GID -u $UID --shell /bin/bash --create-home \
   && sudo usermod -a -G sudo bouser \
   && echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && echo 'bouser:secret' | chpasswd
