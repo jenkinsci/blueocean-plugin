@@ -23,8 +23,8 @@ import runningFailing from './data/steps/failingRunningSteps';
 import { poststagefail } from './data/runs/nodes/poststagefail';
 
 
-import Step from '../../main/js/components/Step';
-import Steps from '../../main/js/components/Steps';
+import Step from '../../main/js/components/karaoke/components/Step';
+import Steps from '../../main/js/components/karaoke/components/Steps';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -78,18 +78,13 @@ describe("React component test of different runs", () => {
         const wrapper = shallow(
             <Steps nodeInformation={getNodesInformation(runNodesSuccess)}/>);
         assert.isNotNull(wrapper);
-        assert.equal(wrapper.find('Node').length, runNodesSuccess.length)
+        assert.equal(wrapper.find('Step').length, runNodesSuccess.length)
     });
     it("handles error", () => {
         const wrapper = shallow(
             <Steps nodeInformation={getNodesInformation(runNodesFail)}/>);
         assert.isNotNull(wrapper);
-        assert.equal(wrapper.find('Node').length, runNodesFail.length)
-    });
-    it("handles error node", () => {
-        const wrapper = shallow(
-            <Step location={{}} node={getNodesInformation(runNodesFail).model[2]}/>);
-        assert.isNotNull(wrapper);
+        assert.equal(wrapper.find('Step').length, runNodesFail.length)
     });
 });
 /*
