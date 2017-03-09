@@ -63,6 +63,9 @@ class GitUtils {
                                     ErrorMessage.Error.ErrorCodes.INVALID.toString(),
                                     "Invalid credentialId: " + credentials.getId()));
                 }
+            }else if (e.getMessage().contains("Authentication is required")) {
+                errors.add(new ErrorMessage.Error("scmConfig.credentialId", ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                        e.getMessage()));
             }else{
                 errors.add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.INVALID.toString(),
                         e.getMessage()));
