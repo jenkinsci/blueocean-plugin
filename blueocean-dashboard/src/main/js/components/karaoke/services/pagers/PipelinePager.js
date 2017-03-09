@@ -80,15 +80,21 @@ export class PipelinePager {
         // get api data and further process it
         return KaraokeApi.getNodes(this.augmenter.nodesUrl)
             .then(action('Process node data', result => {
-                if (result.length === 0) {
+                if (result.model.length === 0) {
+                    this.pending = false;
                     logger.debug('Seems we do not have any nodes for this run.');
                     // we need now to fetch the steps
                     return this.fetchSteps(followAlong);
                 }
                 // get information about the result
                 logData.data = result;
-                // calculate which node we need to focus
-                this.bunker.setItem(logData);
+                // compare whether we really need to
+                // update the bunker
+                const cached = this.bunker.getItem(logData._links.self.href);
+                if (cached !== logData) { // calculate which node we need to focus
+                    logger.debug('objects are different - updating store');
+                    this.bunker.setItem(logData);
+                }
                 const focused = logData.data.model.filter((item) => {
                     if (node) {
                         return item.id === node;
@@ -105,6 +111,7 @@ export class PipelinePager {
                 }
                 this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
                 logger.warn('saved data', logData);
+                this.pending = false;
                 return this.fetchCurrentStepUrl(followAlong);
             })).catch(err => {
                 logger.error('Error fetching page', err);
@@ -115,8 +122,9 @@ export class PipelinePager {
     @action
     fetchCurrentStepUrl(followAlong) {
         clearTimeout(this.timeout);
-        // while fetching we are pending
-        this.pending = true;
+        if (!followAlong) { // while fetching we are pending
+            this.pending = true;
+        }
         // log is text and not json, further it does not has _link in the response
         const logData = {
             _links: {
@@ -129,10 +137,15 @@ export class PipelinePager {
         return KaraokeApi.getSteps(this.currentStepsUrl)
             .then(action('Process steps data', result => {
                 logData.data = result;
-                this.bunker.setItem(logData);
-                logger.debug('saved data', followAlong);
+                const cached = this.bunker.getItem(logData._links.self.href);
+                if (cached !== logData) { // calculate which node we need to focus
+                    logger.debug('objects are different - updating store');
+                    this.bunker.setItem(logData);
+                    logger.debug('saved data', followAlong);
+                }
                 // we need to get more input from the log stream
-                if (followAlong) {
+                if (false) {
+                // if (followAlong) {
                     logger.debug('follow along');
                     this.timeout = setTimeout(() => {
                         const props = { followAlong };
@@ -140,7 +153,9 @@ export class PipelinePager {
                         this.fetchCurrentStepUrl(followAlong);
                     }, 1000);
                 }
-                this.pending = false;
+                if (!followAlong) {
+                    this.pending = false;
+                }
             })).catch(err => {
                 logger.error('Error fetching page', err);
                 action('set error', () => { this.error = err; });
@@ -149,8 +164,9 @@ export class PipelinePager {
     @action
     fetchSteps(followAlong = false) {
         clearTimeout(this.timeout);
-        // while fetching we are pending
-        this.pending = true;
+        if (!followAlong) { // while fetching we are pending
+            this.pending = true;
+        }
         // log is text and not json, further it does not has _link in the response
         const logData = {
             _links: {
@@ -164,10 +180,15 @@ export class PipelinePager {
             .then(action('Process steps data', result => {
                 this.currentStepsUrl = this.augmenter.stepsUrl;
                 logData.data = result;
-                this.bunker.setItem(logData);
-                logger.debug('saved data', followAlong);
+                const cached = this.bunker.getItem(logData._links.self.href);
+                if (cached !== logData) { // calculate which node we need to focus
+                    logger.debug('objects are different - updating store');
+                    this.bunker.setItem(logData);
+                    logger.debug('saved data', followAlong);
+                }
                 // we need to get more input from the log stream
-                if (followAlong) {
+                if (false) {
+                // if (followAlong) {
                     logger.debug('follow along');
                     this.timeout = setTimeout(() => {
                         const props = { followAlong };
@@ -175,7 +196,9 @@ export class PipelinePager {
                         this.fetchSteps(followAlong);
                     }, 1000);
                 }
-                this.pending = false;
+                if (!followAlong) {
+                    this.pending = false;
+                }
             })).catch(err => {
                 logger.error('Error fetching page', err);
                 action('set error', () => { this.error = err; });
