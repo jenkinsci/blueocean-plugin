@@ -4,7 +4,7 @@ import { KaraokeApi } from './rest/KaraokeApi';
 const karaokeApi = new KaraokeApi();
 export { karaokeApi as KaraokeApi };
 
-import { KaraokeService } from './services/KaraokeService';
-const karaokeService = new KaraokeService(pagerService);
+import { KaraokePagerService } from './services/KaraokeService';
+const karaokeService = new KaraokePagerService(pagerService);
 export { karaokeService as KaraokeService };
 
