@@ -83,7 +83,7 @@ export class LogPager {
         return KaraokeApi.getGeneralLog(url, { start })
             .then(response => {
                 const { newStart, hasMore } = response;
-                logger.warn({ newStart, hasMore });
+                logger.debug({ newStart, hasMore });
                 logData.hasMore = start === '0' ? false : hasMore;
                 logData.newStart = newStart;
                 return response.text();
@@ -91,11 +91,11 @@ export class LogPager {
             .then(action('Process pager data', text => {
                 if (text && text.trim) {
                     logData.data = text.trim().split('\n');
+                    // Store item in bunker.
+                    this.bunker.setItem(logData);
+                    logger.debug('saved data', url, logData.newStart, followAlong);
                 }
                 this.currentLogUrl = url;
-                // Store item in bunker.
-                this.bunker.setItem(logData);
-                logger.debug('saved data', url, logData.newStart, followAlong);
                 this.pending = false;
                 this.used = true;
                 if (Number(logData.newStart) > 0 && followAlong) {
@@ -103,8 +103,6 @@ export class LogPager {
                     clearTimeout(this.timeout);
                     // we need to get more input from the log stream
                     this.timeout = setTimeout(() => {
-                        const props = { start: logData.newStart, followAlong };
-                        logger.warn(props);
                         this.followLog(logData);
                     }, 1000);
                 }
@@ -123,11 +121,6 @@ export class LogPager {
     followLog(logDataOrg) {
         clearTimeout(this.timeout);
         const logData = { ...logDataOrg };
-        // update link to trigger adding a new part of the log to the partial object
-        // logData._links.self.href = `${this.generalLogUrl}?start=${logData.newStart}`;
-        // while fetching we are pending
-        this.pending = true;
-        logger.warn('changed ref', logData._links.self.href);
         return KaraokeApi.getGeneralLog(logData._links.self.href, { start: logData.newStart })
             .then(action('Process pager data following 1', response => {
                 const { newStart, hasMore } = response;
@@ -137,12 +130,13 @@ export class LogPager {
             }))
             .then(action('Process pager data following 2', text => {
                 if (text && text.trim) {
-                    logData.data = logData.data.concat(text.trim().split('\n'));
+                    const items = text.trim().split('\n');
+                    logger.warn('yala', items.length, logData.data.length)
+                    logData.data = logData.data.concat(items);
+                    // Store item in bunker.
+                    this.bunker.setItem(logData);
+                    logger.debug('saved data', logData._links.self.href, logData.newStart);
                 }
-                // Store item in bunker.
-                this.bunker.setItem(logData);
-                logger.debug('saved data', logData._links.self.href, logData.newStart);
-                this.pending = false;
                 if (logData.newStart !== null) {
                     // kill current  timeout if any
                     // we need to get mpre input from the log stream

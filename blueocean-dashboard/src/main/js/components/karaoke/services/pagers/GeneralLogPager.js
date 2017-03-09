@@ -83,18 +83,16 @@ export class GeneralLogPager {
             .then(action('Process pager data', text => {
                 if (text && text.trim) {
                     logData.data = text.trim().split('\n');
+                    // Store item in bunker.
+                    this.bunker.setItem(logData);
+                    logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart, followAlong);
                 }
-                // Store item in bunker.
-                this.bunker.setItem(logData);
-                logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart, followAlong);
                 this.pending = false;
                 if (Number(logData.newStart) > 0 && followAlong) {
                     // kill current  timeout if any
                     clearTimeout(this.timeout);
                     // we need to get more input from the log stream
                     this.timeout = setTimeout(() => {
-                        const props = { start: logData.newStart, followAlong };
-                        logger.warn(props);
                         this.followGeneralLog(logData);
                     }, 1000);
                 }
@@ -113,11 +111,6 @@ export class GeneralLogPager {
     followGeneralLog(logDataOrg) {
         clearTimeout(this.timeout);
         const logData = { ...logDataOrg };
-        // update link to trigger adding a new part of the log to the partial object
-        // logData._links.self.href = `${this.generalLogUrl}?start=${logData.newStart}`;
-        // while fetching we are pending
-        this.pending = true;
-        logger.warn('changed ref', logData._links.self.href);
         return KaraokeApi.getGeneralLog(this.augmenter.generalLogUrl, { start: logData.newStart })
             .then(action('Process pager data following 1', response => {
                 const { newStart, hasMore } = response;
@@ -127,12 +120,12 @@ export class GeneralLogPager {
             }))
             .then(action('Process pager data following 2', text => {
                 if (text && text.trim) {
-                    logData.data = logData.data.concat(text.trim().split('\n'));
+                    const items = text.trim().split('\n');
+                    logData.data = logData.data.concat(items);
+                    // Store item in bunker.
+                    this.bunker.setItem(logData);
+                    logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart);
                 }
-                // Store item in bunker.
-                this.bunker.setItem(logData);
-                logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart);
-                this.pending = false;
                 if (logData.newStart !== null) {
                     // kill current  timeout if any
                     // we need to get mpre input from the log stream
