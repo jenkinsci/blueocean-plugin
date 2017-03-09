@@ -20,10 +20,6 @@ export class Step extends Component {
             expanded: step.isFocused !== undefined && step.isFocused,
         };
     }
-//
-//     componentWillReceiveProps(nextProps) {
-// logger.warn('neinen')
-//     }
 
     componentWillMount() {
         // needed for running steps as reference

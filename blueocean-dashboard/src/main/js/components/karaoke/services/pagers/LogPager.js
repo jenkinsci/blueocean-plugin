@@ -53,7 +53,7 @@ export class LogPager {
         this.bunker = bunker;
         this.augmenter = augmenter;
         this.step = step;
-        if (step.isFocused) {
+        if (step.isFocused && !step.isInputStep) { // we do not want to fetch when we have an input step
             this.fetchLog({
                 followAlong: augmenter.karaoke,
                 url: step.logUrl,
