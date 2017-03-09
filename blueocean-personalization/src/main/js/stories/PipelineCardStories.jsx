@@ -74,6 +74,7 @@ const statuses = [
 
 storiesOf('PipelineCard', module)
     .addDecorator(story => <Context>{story()}</Context>)
+    .add('something', () => <div>something</div>)
     .add('all states', () => {
         // const statuses = 'SUCCESS,QUEUED,RUNNING,FAILURE,ABORTED,UNSTABLE,NOT_BUILT,UNKNOWN'.split(',');
 

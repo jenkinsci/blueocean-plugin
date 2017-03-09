@@ -163,58 +163,21 @@ export class PipelineCard extends Component {
         }
 
         return (
-            <div className={`pipeline-card ${bgClass}`} onClick={() => this._navigateToRunDetails()}>
-                <LiveStatusIndicator
-                  result={status} startTime={startTime} estimatedDuration={estimatedDuration}
-                  width={'20px'} height={'20px'} noBackground
-                />
-
-                <span className="name">
-                    <Link to={activityUrl} onClick={(event) => stopProp(event)}>
-                        <ExpandablePath path={displayPath} className="dark-theme" />
-                    </Link>
-                </span>
-
-                { isBranch ?
-                <span className="branch">
-                    <span className="octicon octicon-git-branch"></span>
-                    <span className="branchText">{decodeURIComponent(names.branchName)}</span>
-                </span>
-                :
-                <span className="branch"></span>
-                }
-
-                { commitId ?
-                <span className="commit">
-                    <span className="octicon octicon-git-commit"></span>
-                    <pre className="commitId">&#35;{commitText}</pre>
-                </span>
-                :
-                <span className="commit"></span>
-                }
-
-                <span className="actions" onClick={(event) => stopProp(event)}>
-
-                    <Favorite checked={this.state.favorite} className="dark-white"
-                      onToggle={() => this._onFavoriteToggle()}
-                    />
-
-                    <RunButton
-                      className="icon-button dark"
-                      runnable={runnableItem}
-                      latestRun={latestRun}
-                      onNavigation={url => this._onRunDetails(url)}
-                    />
-
-                    <ReplayButton
-                      className="icon-button dark"
-                      runnable={runnableItem}
-                      latestRun={latestRun}
-                      onNavigation={url => this._onRunDetails(url)}
-                    />
-                </span>
-            </div>
-        );
+            <PipelineCardRenderer bgClass={bgClass}
+                                  onClickMain={() => this._navigateToRunDetails()}
+                                  status={status}
+                                  startTime={startTime}
+                                  estimatedDuration={estimatedDuration}
+                                  activityUrl={activityUrl}
+                                  displayPath={displayPath}
+                                  branchText={isBranch && decodeURIComponent(names.branchName)}
+                                  commitText={commitId && commitText}
+                                  favoriteChecked={this.state.favorite}
+                                  onFavoriteToggle={() => this._onFavoriteToggle()}
+                                  runnableItem={runnableItem}
+                                  latestRun={latestRun}
+                                  onRunDetails={url => this._onRunDetails(url)} />
+            );
     }
 }
 
@@ -227,4 +190,75 @@ PipelineCard.propTypes = {
 
 PipelineCard.defaultProps = {
     favorite: false,
+};
+
+export const PipelineCardRenderer = (props) => {
+
+    const {
+        bgClass,
+        onClickMain,
+        status,
+        startTime,
+        estimatedDuration,
+        activityUrl,
+        displayPath,
+        branchText,
+        commitText,
+        favoriteChecked,
+        onFavoriteToggle,
+        runnableItem,
+        latestRun,
+        onRunDetails,
+    } = props;
+
+    return (
+        <div className={`pipeline-card ${bgClass}`} onClick={onClickMain}>
+            <LiveStatusIndicator result={status}
+                                 startTime={startTime}
+                                 estimatedDuration={estimatedDuration}
+                                 width={'20px'}
+                                 height={'20px'}
+                                 noBackground />
+
+            <span className="name">
+                <Link to={activityUrl} onClick={stopProp}>
+                    <ExpandablePath path={displayPath} className="dark-theme" />
+                </Link>
+            </span>
+
+            { branchText ?
+                <span className="branch">
+                    <span className="octicon octicon-git-branch"></span>
+                    <span className="branchText">{branchText}</span>
+                </span>
+                :
+                <span className="branch"></span>
+            }
+
+            { commitText ?
+                <span className="commit">
+                    <span className="octicon octicon-git-commit"></span>
+                    <pre className="commitId">&#35;{commitText}</pre>
+                </span>
+                :
+                <span className="commit"></span>
+            }
+
+            <span className="actions" onClick={stopProp}>
+                <Favorite checked={favoriteChecked}
+                          className="dark-white"
+                          onToggle={onFavoriteToggle} />
+
+                <RunButton className="icon-button dark"
+                           runnable={runnableItem}
+                           latestRun={latestRun}
+                           onNavigation={onRunDetails} />
+
+                <ReplayButton className="icon-button dark"
+                              runnable={runnableItem}
+                              latestRun={latestRun}
+                              onNavigation={onRunDetails} />
+            </span>
+        </div>
+    );
 };
