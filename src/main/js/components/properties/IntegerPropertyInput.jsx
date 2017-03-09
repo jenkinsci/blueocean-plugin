@@ -7,7 +7,7 @@ export default class IntegerPropertyInput extends React.Component {
                 <label className="form-label">{this.props.type.capitalizedName + (this.props.type.isRequired ? '*' : '')}</label>
                 <div className="TextInput">
                     <input type="number" className="TextInput-control" defaultValue={this.props.step.data[this.props.propName]}
-                        onChange={e => { this.props.step.data[this.props.propName] = e.target.value; this.props.onChange(this.props.step); }}/>
+                        onChange={e => { this.props.step.data[this.props.propName] = parseInt(e.target.value); this.props.onChange(this.props.step); }}/>
                 </div>
             </div>
         );
