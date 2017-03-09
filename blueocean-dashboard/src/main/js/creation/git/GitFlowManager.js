@@ -1,12 +1,12 @@
 import React from 'react';
-import { action, computed } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { Promise } from 'es6-promise';
-import waitAtLeast from '../flow2/waitAtLeast';
 
 import { i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
 const translate = i18nTranslator('blueocean-dashboard');
 
 import FlowManager from '../flow2/FlowManager';
+import waitAtLeast from '../flow2/waitAtLeast';
 import { CreatePipelineOutcome } from './GitCreationApi';
 import { CredentialsManager } from '../credentials/CredentialsManager';
 import { UnknownErrorStep } from './steps/UnknownErrorStep';
@@ -33,6 +33,9 @@ export default class GitFlowManager extends FlowManager {
     get credentials() {
         return this.credentialsManager.displayedCredentials || [];
     }
+
+    @observable
+    outcome = null;
 
     pipelineName = null;
 
@@ -107,14 +110,6 @@ export default class GitFlowManager extends FlowManager {
         this._showPlaceholder();
     }
 
-    _showCreateCredsStep() {
-        this.renderStep({
-            stateId: STATE.CREATE_CREDS,
-            stepElement: <GitCompletedStep />,
-            afterStateId: STATE.STEP_CONNECT,
-        });
-    }
-
     _initiateCreatePipeline() {
         const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ?
             STATE.STEP_RENAME : STATE.STEP_CONNECT;
@@ -136,6 +131,8 @@ export default class GitFlowManager extends FlowManager {
 
     @action
     _createPipelineComplete(result) {
+        this.outcome = result.outcome;
+
         if (result.outcome === CreatePipelineOutcome.SUCCESS) {
             this.changeState(STATE.COMPLETE);
             this.pipeline = result.pipeline;
@@ -145,10 +142,10 @@ export default class GitFlowManager extends FlowManager {
                 stepElement: <GitRenameStep pipelineName={this.pipelineName} />,
                 afterStateId: STATE.STEP_CONNECT,
             });
-
-            this.setPlaceholders([
-                this.translate('creation.git.step3.title_completed'),
-            ]);
+            this._showPlaceholder();
+        } else if (result.outcome === CreatePipelineOutcome.INVALID_URI || result.outcome === CreatePipelineOutcome.INVALID_CREDENTIAL) {
+            this.removeSteps({ afterStateId: STATE.STEP_CONNECT });
+            this._showPlaceholder();
         } else if (result.outcome === CreatePipelineOutcome.ERROR) {
             this.renderStep({
                 stateId: STATE.ERROR,
@@ -156,8 +153,6 @@ export default class GitFlowManager extends FlowManager {
                 afterStateId: STATE.STEP_CONNECT,
             });
         }
-
-        // TODO: handle other outcomes for specific errors
     }
 
     _createNameFromRepoUrl(repositoryUrl) {

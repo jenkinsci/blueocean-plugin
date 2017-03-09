@@ -9,12 +9,7 @@ const CODE_VALIDATION_FAILED = 400;
 const ERROR_FIELD_CODE_CONFLICT = 'ALREADY_EXISTS';
 
 const ERROR_FIELD_SCM_URI = 'scmConfig.uri';
-// received with completely bogus URI
-const ERROR_MESSAGE_INVALID_URI = 'org.eclipse.jgit.api.errors.TransportException';
-// received when pointing at non-existent repo, or repo with insufficient creds
-const ERROR_MESSAGE_INVALID_CREDENTIAL = 'Cannot open session, connection is not authenticated.';
-// TODO: what kind of UI error do we transform this to?
-const ERROR_MESSAGE_WHAT_DOES_THIS_MEAN = 'Authentication is required but no CredentialsProvider has been registered';
+const ERROR_FIELD_SCM_CREDENTIAL = 'scmConfig.credentialId';
 
 export const CreatePipelineOutcome = new Enum({
     SUCCESS: 'success',
@@ -93,15 +88,15 @@ export default class GitCreationApi {
                 };
             }
 
-            // TODO: handle other error types
-
-            /*
-            if (this._hasError(errors, ERROR_FIELD_SCM_URI)) {
+            if (hasErrorFieldName(errors, ERROR_FIELD_SCM_URI)) {
                 return {
                     outcome: CreatePipelineOutcome.INVALID_URI,
                 };
+            } else if (hasErrorFieldName(errors, ERROR_FIELD_SCM_CREDENTIAL)) {
+                return {
+                    outcome: CreatePipelineOutcome.INVALID_CREDENTIAL,
+                };
             }
-            */
         }
 
         return {

@@ -7,8 +7,8 @@ import { Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
 import FlowStep from '../flow2/FlowStep';
 
 import { CreateCredentialDialog } from '../credentials/CreateCredentialDialog';
+import { CreatePipelineOutcome } from './GitCreationApi';
 import STATE from './GitCreationState';
-import ValidationUtils from '../../util/ValidationUtils';
 
 
 let t = null;
@@ -21,6 +21,10 @@ Dropdown.prototype.selectOption = function selectOption(option) {
         selectedOption: option,
     });
 };
+
+function validateUrl(url) {
+    return !!url && !!url.trim();
+}
 
 
 /**
@@ -36,11 +40,9 @@ export default class GitConnectStep extends React.Component {
         this.state = {
             repositoryUrl: null,
             repositoryErrorMsg: null,
-            credentialsErrorMsg: null,
+            credentialErrorMsg: null,
             selectedCredential: null,
             showCreateCredentialDialog: false,
-            createButtonDisabled: false,
-            createInProgress: false,
         };
 
         t = this.props.flowManager.translate;
@@ -58,8 +60,18 @@ export default class GitConnectStep extends React.Component {
         this._updateRepositoryErrorMsg();
     }
 
+    _getRepositoryErrorMsg(outcome) {
+        if (this.state.repositoryErrorMsg) {
+            return this.state.repositoryErrorMsg;
+        } else if (outcome === CreatePipelineOutcome.INVALID_URI) {
+            return t('creation.git.step1.repo_error_invalid');
+        }
+
+        return null;
+    }
+
     _updateRepositoryErrorMsg = debounce(() => {
-        if (this.state.repositoryErrorMsg && ValidationUtils.validateUrl(this.state.repositoryUrl)) {
+        if (validateUrl(this.state.repositoryUrl)) {
             this.setState({
                 repositoryErrorMsg: null,
             });
@@ -70,6 +82,16 @@ export default class GitConnectStep extends React.Component {
         this.setState({
             selectedCredential: credential,
         });
+    }
+
+    _getCredentialErrorMsg(outcome) {
+        if (this.state.credentialErrorMsg) {
+            return this.state.credentialErrorMsg;
+        } else if (outcome === CreatePipelineOutcome.INVALID_CREDENTIAL) {
+            return t('creation.git.step1.credentials_error_invalid');
+        }
+
+        return null;
     }
 
     _onCreateCredentialClick() {
@@ -93,9 +115,9 @@ export default class GitConnectStep extends React.Component {
     }
 
     _performValidation() {
-        if (!ValidationUtils.validateUrl(this.state.repositoryUrl)) {
+        if (!validateUrl(this.state.repositoryUrl)) {
             this.setState({
-                repositoryErrorMsg: t('creation.git.step1.repo_error'),
+                repositoryErrorMsg: t('creation.git.step1.repo_error_required'),
             });
 
             return false;
@@ -111,18 +133,18 @@ export default class GitConnectStep extends React.Component {
             return;
         }
 
-        this.setState({
-            createInProgress: true,
-            createButtonDisabled: true,
-        });
-
         this.props.flowManager.createPipeline(this.state.repositoryUrl, this.state.selectedCredential);
     }
 
     render() {
         const { flowManager } = this.props;
+        const repositoryErrorMsg = this._getRepositoryErrorMsg(flowManager.outcome);
+        const credentialErrorMsg = this._getCredentialErrorMsg(flowManager.outcome);
 
         const disabled = flowManager.stateId !== STATE.STEP_CONNECT && flowManager.stateId !== STATE.COMPLETE;
+        const createButtonLabel = !disabled ?
+            t('creation.git.step1.create_button') :
+            t('creation.git.step1.create_button_progress');
 
         return (
             <FlowStep {...this.props} className="git-step-connect" title={t('creation.git.step1.title')} disabled={disabled}>
@@ -131,11 +153,11 @@ export default class GitConnectStep extends React.Component {
                     <a href="https://jenkins.io/doc/book/pipeline/jenkinsfile/" target="_blank">{t('creation.git.step1.instructions_link')}</a>
                 </p>
 
-                <FormElement title={t('creation.git.step1.repo_title')} errorMessage={this.state.repositoryErrorMsg}>
+                <FormElement title={t('creation.git.step1.repo_title')} errorMessage={repositoryErrorMsg}>
                     <TextInput className="text-repository-url" onChange={val => this._repositoryUrlChange(val)} />
                 </FormElement>
 
-                <FormElement title={t('creation.git.step1.credentials')}>
+                <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
                     <Dropdown
                       ref={dropdown => this._bindDropdown(dropdown)}
                       className="dropdown-credentials"
@@ -163,11 +185,8 @@ export default class GitConnectStep extends React.Component {
                 <button
                   className="button-create-pipeline"
                   onClick={() => this._beginCreation()}
-                  disabled={this.state.createButtonDisabled}
                 >
-                    {this.state.createInProgress ?
-                        t('creation.git.step1.create_button_progress') :
-                        t('creation.git.step1.create_button')}
+                    {createButtonLabel}
                 </button>
 
             </FlowStep>
