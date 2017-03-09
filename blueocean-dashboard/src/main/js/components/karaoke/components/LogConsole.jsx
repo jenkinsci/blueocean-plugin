@@ -15,8 +15,6 @@ export class LogConsole extends Component {
 
     constructor(props) {
         super(props);
-        logger.warn('LogConsole');
-
         this.queuedLines = [];
         this.state = {
             lines: [],
@@ -27,19 +25,20 @@ export class LogConsole extends Component {
     }
 
     componentWillMount() {
+        // We need a shallow copy of the ObservableArray to "cast" it down to normal array
         this._processLines(this.props.logArray);
+        logger.warn('isArray', Array.isArray(this.props.logArray));
     }
-
 
     // componentWillReceiveProps does not return anything and return null is an early out, so disable lint complaining
     componentWillReceiveProps(nextProps) { // eslint-disable-line
-        const newArray = nextProps.logArray;
-        // we only want to update if we have an array and if it is new
-        if (!newArray || (newArray && newArray === this.props.logArray)) {
-            return null;
-        }
+        logger.warn('newProps isArray', Array.isArray(nextProps.logArray));
+        // We need a shallow copy of the ObservableArray to "cast" it down to normal array
+        const newArray = !Array.isArray(nextProps.logArray) ? nextProps.logArray.slice() : nextProps.logArray;
+        const oldArray = !Array.isArray(this.props.logArray) ? this.props.logArray.slice() : this.props.logArray;
+        // const newLines = newArray.filter((item) => !oldArray.has(item));
         // if have a new logArray, simply add it to the queue and wait for next tick
-        this.queuedLines = this.queuedLines.concat(newArray);
+        this.queuedLines = this.queuedLines.concat(newArray.slice(oldArray.length));
         clearTimeout(this.timeouts.render);
         this.timeouts.render = setTimeout(() => {
             this._processNextLines();
