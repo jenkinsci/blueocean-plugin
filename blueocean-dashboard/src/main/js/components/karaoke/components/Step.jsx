@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
-import { logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { KaraokeService } from '../index';
 import LogConsole from './LogConsole';
@@ -27,11 +27,12 @@ export class Step extends Component {
 
     componentWillMount() {
         // needed for running steps as reference
-        this.durationMillis = this.durationHarmonize(this.props.step);
+        this.durationMillis = (this.durationHarmonize(this.props.step)).durationMillis;
+        logger.debug('durationMillis mounting', this.durationMillis);
     }
 
     durationHarmonize(step) {
-        const skewMillis = this.context.config ? this.context.config.getServerBrowserTimeSkewMillis() : 0;
+        const skewMillis = AppConfig.getServerBrowserTimeSkewMillis();
         // the time when we started the run harmonized with offset
         return timeManager.harmonizeTimes({ ...step }, skewMillis);
     }
@@ -76,8 +77,10 @@ export class Step extends Component {
             }
         };
         const logConsoleClass = `logConsole step-${step.id}`;
+        const duration = step.isRunning ? this.durationMillis : durationMillis;
+        logger.warn('duration', duration, step.isRunning);
         const time = (<TimeDuration
-            millis={step.isRunning ? this.durationMillis : durationMillis }
+            millis={duration }
             liveUpdate={step.isRunning}
             updatePeriod={1000}
             locale={locale}
@@ -105,10 +108,6 @@ export class Step extends Component {
         </div>);
     }
 }
-
-Step.contextTypes = {
-    config: PropTypes.object.isRequired,
-};
 
 Step.propTypes = {
     augmenter: PropTypes.object,
