@@ -27,17 +27,17 @@ export default class GitCompletedStep extends React.Component {
     }
 
     render() {
+        const { stateId } = this.props.flowManager;
+
         let status;
         let percentage = -1;
         let title = t('creation.git.step3.title_completed');
         let content = null;
 
-        switch (this.props.flowManager.stateId) {
-        case STATE.CREATE_PIPELINE:
+        if (stateId === STATE.CREATE_PIPELINE) {
             percentage = 50;
             title = t('creation.git.step3.title_pipeline_create');
-            break;
-        case STATE.COMPLETE:
+        } else if (stateId === STATE.COMPLETE) {
             percentage = 100;
             content = (
                 <button
@@ -48,7 +48,6 @@ export default class GitCompletedStep extends React.Component {
                 </button>
             );
             status = StepStatus.COMPLETE;
-            break;
         }
 
         return (
