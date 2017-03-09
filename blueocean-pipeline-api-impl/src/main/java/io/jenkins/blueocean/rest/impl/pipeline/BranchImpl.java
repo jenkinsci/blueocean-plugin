@@ -43,7 +43,7 @@ public class BranchImpl extends PipelineImpl {
         this.parent = parent;
     }
 
-    @Exported(name = PullRequest.PULL_REQUEST, inline = true)
+    @Exported(name = PullRequest.PULL_REQUEST, inline = true, skipNull =  true)
     public PullRequest getPullRequest() {
         return PullRequest.get(job);
     }
