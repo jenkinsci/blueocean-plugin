@@ -1,5 +1,9 @@
 import { action, asFlat, computed, observable } from 'mobx';
-import { Utils } from '@jenkins-cd/blueocean-core-js';
+import { logging, Utils } from '@jenkins-cd/blueocean-core-js';
+
+
+const LOGGER = logging.logger('io.jenkins.blueocean.create-pipeline');
+
 
 /**
  * Base class for managing the flow of multiple steps.
@@ -90,7 +94,26 @@ export default class FlowManager {
             }
         }
 
-        this.stateId = stateId;
+        this.changeState(stateId);
+    }
+
+    /**
+     * Removes any steps after the specified state id.
+     * @param afterStateId
+     */
+    @action
+    removeSteps({ afterStateId }) {
+        if (!afterStateId) {
+            this._throwError('afterStateId is required');
+        }
+
+        // lose any steps after the current step
+        const stepsCopy = this._sliceSteps(afterStateId);
+        this.steps.replace(stepsCopy);
+
+        // update the current stateId to match the last step's stateId
+        const lastStep = this.steps[this.steps.length - 1];
+        this.changeState(lastStep.stateId);
     }
 
     _createStep(stateId, stepElement) {
@@ -99,7 +122,7 @@ export default class FlowManager {
             stepElement,
         };
 
-        // each time a new step instance is created we want fresh state
+        // each time a new step instance is created we want fresh React state
         // assign a unique ID to the React element's key to force a remount
         newStep.stepElement.key = Utils.randomId();
         return newStep;
@@ -107,15 +130,15 @@ export default class FlowManager {
 
     @action
     _addStepAfter(newStep, afterStateId) {
-        const targetIndex = this._findStepIndex(afterStateId);
-        const addIndex = targetIndex + 1;
-        const stepsCopy = this.steps.slice(0, addIndex);
+        const stepsCopy = this._sliceSteps(afterStateId);
         stepsCopy.push(newStep);
         this.steps.replace(stepsCopy);
     }
 
     @action
     _replaceStep(newStep, targetStateId) {
+        // grab all steps up to but not including the target
+        // then add the new step and commit
         const targetIndex = this._findStepIndex(targetStateId);
         const stepsCopy = this.steps.slice(0, targetIndex);
         stepsCopy.push(newStep);
@@ -130,12 +153,14 @@ export default class FlowManager {
 
         const currentStep = this.steps[this.steps.length - 1];
 
-        if (currentStep.stateId === stateId) {
+        if (this.stateId === stateId && currentStep.stateId === stateId) {
             console.warn(`stateId already set to ${stateId}`);
         }
 
         currentStep.stateId = stateId;
         this.stateId = stateId;
+
+        LOGGER.debug(`changed stateId to ${stateId}`);
     }
 
     _findStep(stateId) {
@@ -153,6 +178,16 @@ export default class FlowManager {
         return this.steps.indexOf(step);
     }
 
+    /**
+     * Return all steps up to and including the step with specified stateId.
+     * @param stateId
+     * @returns {Array}
+     * @private
+     */
+    _sliceSteps(stateId) {
+        const targetIndex = this._findStepIndex(stateId);
+        return this.steps.slice(0, targetIndex + 1);
+    }
 
     isStateAdded(stateId) {
         return this._findStep(stateId) !== null;
