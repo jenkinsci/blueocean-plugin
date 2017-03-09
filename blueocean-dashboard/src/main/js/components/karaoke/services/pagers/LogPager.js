@@ -131,7 +131,6 @@ export class LogPager {
             .then(action('Process pager data following 2', text => {
                 if (text && text.trim) {
                     const items = text.trim().split('\n');
-                    logger.warn('yala', items.length, logData.data.length)
                     logData.data = logData.data.concat(items);
                     // Store item in bunker.
                     this.bunker.setItem(logData);
