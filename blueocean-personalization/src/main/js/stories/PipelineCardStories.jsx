@@ -9,8 +9,14 @@ DEBUG.enableMocksForI18n();
 
 import { PipelineCard } from '../components/PipelineCard';
 
-const style = { padding: '10px' };
-const style2 = { paddingBottom: '10px' };
+const style = {
+    padding: '15px',
+    maxWidth: '1200px'
+};
+
+const style2 = {
+    paddingBottom: '10px'
+};
 
 const pipeline = {
     _links: {
@@ -28,6 +34,7 @@ const pipeline = {
     favorite: true,
     latestRun: {
         result: 'UNKNOWN',
+        commitId: '447d8e1',
     },
 };
 
@@ -53,11 +60,22 @@ Context.childContextTypes = {
     config: PropTypes.object,
 };
 
+const statuses = [
+    'SUCCESS',
+    // 'QUEUED',
+    // 'RUNNING',
+    'FAILURE',
+    'ABORTED',
+    'UNSTABLE',
+    'NOT_BUILT',
+    'UNKNOWN'
+];
+
 
 storiesOf('PipelineCard', module)
     .addDecorator(story => <Context>{story()}</Context>)
     .add('all states', () => {
-        const statuses = 'SUCCESS,QUEUED,RUNNING,FAILURE,ABORTED,UNSTABLE,NOT_BUILT,UNKNOWN'.split(',');
+        // const statuses = 'SUCCESS,QUEUED,RUNNING,FAILURE,ABORTED,UNSTABLE,NOT_BUILT,UNKNOWN'.split(',');
 
         const startTime = moment().subtract(60, 'seconds').toISOString();
         const estimatedDuration = 1000 * 60 * 5; // 5 mins
@@ -83,11 +101,11 @@ storiesOf('PipelineCard', module)
                     </div>
                 );
             }) }
-                <PipelineCard
-                  runnable={running}
-                  onRunClick={action('run')}
-                  onFavoriteToggle={action('toggle')}
-                />
+                {/*<PipelineCard*/}
+                  {/*runnable={running}*/}
+                  {/*onRunClick={action('run')}*/}
+                  {/*onFavoriteToggle={action('toggle')}*/}
+                {/*/>*/}
             </div>
         );
     });
