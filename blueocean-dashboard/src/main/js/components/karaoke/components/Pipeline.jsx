@@ -12,7 +12,7 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pipeline')
 export default class Pipeline extends Component {
     componentWillMount() {
         if (this.props.augmenter) {
-            const { augmenter, params: { node } } = props;
+            const { augmenter, params: { node } } = this.props;
             this.pager = KaraokeService.pipelinePager(augmenter, { node });
         }
     }
@@ -89,8 +89,8 @@ export default class Pipeline extends Component {
         };
         const title = this.pager.nodes !== undefined ? t('rundetail.pipeline.steps', {
             defaultValue: 'Steps ',
-                0: this.pager.currentNode.displayName,
-            }) : '';
+            0: this.pager.currentNode.displayName,
+        }) : '';
         logger.debug('displayName', this.pager.currentNode.displayName);
         return (<div>
             { this.pager.nodes !== undefined &&

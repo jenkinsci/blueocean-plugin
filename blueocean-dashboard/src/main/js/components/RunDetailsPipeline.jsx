@@ -32,16 +32,16 @@ export class RunDetailsPipeline extends Component {
             document.addEventListener('keydown', this._handleKeys, false);
         }
     }
+    componentWillReceiveProps(nextProps) {
+        logger.debug('Augmenting next properties');
+        this.augment(nextProps);
+    }
     componentWillUnmount() {
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
         if (domNode) {
             domNode.removeEventListener('wheel', this._onScrollHandler);
         }
         document.removeEventListener('keydown', this._handleKeys);
-    }
-    componentWillReceiveProps(nextProps) {
-        logger.debug('Augmenting next properties');
-        this.augment(nextProps);
     }
  // we bail out on arrow_up key
     _handleKeys(event) {

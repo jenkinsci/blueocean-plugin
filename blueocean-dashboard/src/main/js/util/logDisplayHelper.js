@@ -61,7 +61,7 @@ export const getNodesInformation = (nodes) => {
         const hasLogs = logActions.length > 0;
         const isCompleted = item.result !== 'UNKNOWN';
         const computedResult = isCompleted ? item.result : item.state;
-        const isInputStep =  item.input && item.input !== null;
+        const isInputStep = item.input && item.input !== null;
         const modelItem = {
             _links: item._links,
             key: index + isRunning + computedResult,

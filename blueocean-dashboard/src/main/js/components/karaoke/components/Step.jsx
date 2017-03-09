@@ -20,10 +20,10 @@ export class Step extends Component {
             expanded: step.isFocused !== undefined && step.isFocused,
         };
     }
-
-    componentWillReceiveProps(nextProps) {
-logger.warn('neinen')
-    }
+//
+//     componentWillReceiveProps(nextProps) {
+// logger.warn('neinen')
+//     }
 
     componentWillMount() {
         // needed for running steps as reference
@@ -64,8 +64,8 @@ logger.warn('neinen')
         const getLogForNode = () => {
             logger.warn('FIXME implement getLogForNode');
             if (!this.pager.logArray) {
-                this.pager.fetchLog({followAlong: augmenter.karaoke, url: step.logUrl});
-                this.setState({expanded: true});
+                this.pager.fetchLog({ followAlong: augmenter.karaoke, url: step.logUrl });
+                this.setState({ expanded: true });
             }
         };
         const removeFocus = () => {

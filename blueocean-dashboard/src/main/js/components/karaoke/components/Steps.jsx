@@ -18,7 +18,7 @@ export default class Steps extends Component {
             />);
         }
         return (<div>
-            { model.map((item, index) => <Step
+            { model.map((item) => <Step
                 { ...
                     { ...this.props,
                         key: item.key,
