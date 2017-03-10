@@ -66,8 +66,6 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
         assertFalse((Boolean) r.get("scanAllRepos"));
     }
 
-
-
     @Test
     public void createGithubOrgTest() throws IOException, UnirestException {
         Assume.assumeTrue("Need github accesstoken. Run test with -DGITHUB_ACCESS_TOKEN=... , ignoring test", System.getProperty("GITHUB_ACCESS_TOKEN") != null);
@@ -95,7 +93,6 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
         Assert.assertEquals("vivek", resp.get("name"));
         Assert.assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
     }
-
 
     @Test
     public void orgUpdateTest() throws IOException, UnirestException {
