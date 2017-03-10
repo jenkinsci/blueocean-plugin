@@ -52,7 +52,7 @@ class FieldProperty extends Property {
         return parent.getJavadoc().getProperty(field.getName());
     }
 
-    protected Object getValue(Object object) throws IllegalAccessException {
+    public Object getValue(Object object) throws IllegalAccessException {
         return field.get(object);
     }
 }

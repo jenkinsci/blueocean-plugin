@@ -23,6 +23,7 @@
 
 package io.jenkins.blueocean.commons.stapler.export;
 
+import org.kohsuke.stapler.StaplerResponse;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -43,6 +44,7 @@ public enum Flavor {
             return new JSONDataWriter(w,config);
         }
     };
+
     /**
      * Content-type of this flavor, including charset "UTF-8".
      */
@@ -52,6 +54,9 @@ public enum Flavor {
         this.contentType = contentType;
     }
 
+    public DataWriter createDataWriter(Object bean, StaplerResponse rsp) throws IOException {
+        return createDataWriter(bean,rsp.getWriter());
+    }
     public DataWriter createDataWriter(Object bean, Writer w) throws IOException {
         return createDataWriter(bean,w,new ExportConfig());
     }

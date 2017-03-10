@@ -56,7 +56,7 @@ public class Model<T> {
     public final Class<T> type;
 
     /**
-     * {@link org.kohsuke.stapler.export.Model} for the super class.
+     * {@link Model} for the super class.
      */
     public final Model<? super T> superModel;
 
@@ -105,7 +105,7 @@ public class Model<T> {
                 if (m.getParameterTypes().length > 0) {
                     LOGGER.log(Level.WARNING, "Method " + m.getName() + " of " + type.getName() + " is annotated @Exported but requires arguments");
                 } else {
-                    properties.add(new MethodProperty(this,m, exported));
+                    properties.add(new MethodProperty(this, m, exported));
                 }
             }
         }
@@ -140,7 +140,7 @@ public class Model<T> {
     /*package*/ final Predicate<String> HAS_PROPERTY_NAME_IN_ANCESTORY = new Predicate<String>() {
         @Override
         public boolean apply(@Nullable String name) {
-            for (Model m = Model.this; m!=null; m=m.superModel)
+            for (Model m=Model.this; m!=null; m=m.superModel)
                 if (m.propertyNames.contains(name))
                     return true;
             return false;
@@ -229,5 +229,5 @@ public class Model<T> {
         }
     }
 
-    private static final Logger LOGGER = Logger.getLogger(org.kohsuke.stapler.export.Model.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Model.class.getName());
 }
