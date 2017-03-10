@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Page } from '@jenkins-cd/design-language';
-import { ContentPageHeader, i18nTranslator, loadingIndicator, Security, User } from '@jenkins-cd/blueocean-core-js';
+import { ContentPageHeader, i18nTranslator, loadingIndicator } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { ClassicCreationLink } from './ClassicCreationLink';
@@ -8,6 +8,7 @@ import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
 import VerticalStep from './flow2/VerticalStep';
 import StepStatus from './flow2/FlowStepStatus';
+import securityUtils from '../util/security-utils';
 
 
 const Sandbox = Extensions.SandboxedComponent;
@@ -32,11 +33,6 @@ export default class CreatePipeline extends React.Component {
         if (this.state.selectedProvider) {
             this.state.selectedProvider.destroyFlowManager();
         }
-    }
-
-    _isCreationDisabled() {
-        const user = User.current();
-        return Security.isSecurityEnabled() && user && !user.permissions.pipeline.create();
     }
 
     _onSelection(selectedProvider) {
@@ -69,7 +65,7 @@ export default class CreatePipeline extends React.Component {
 
     render() {
         const firstStepStatus = this.state.selectedProvider ? StepStatus.COMPLETE : StepStatus.ACTIVE;
-        const creationEnabled = !this._isCreationDisabled();
+        const creationEnabled = securityUtils.isCreationEnabled();
 
         return (
             <Page>
