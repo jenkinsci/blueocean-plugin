@@ -14,37 +14,58 @@
         cursor: pointer;
     }
 
-    .svgResultStatus {
-        min-width: 20px;
-    }
+    //.svgResultStatus {
+    //    min-width: 20px;
+    //}
 
-    .name, .branch, .commit {
+    .name, .branch, .commit, .time {
         margin-left: 10px;
     }
 
-    .branch, .commit {
+    .branch, .commit, .time {
         display: flex;
         align-items: center;
+        flex-shrink: 0;
+        flex-grow: 0;
+    }
+
+    .commit, .time {
+        flex-basis: 150px;
+        width: 150px;
     }
 
     .name {
-        width: 55%;
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 40%;
+
+        overflow: hidden;
+        white-space: nowrap;
+
+        * {
+            //max-width:100%;
+            flex-wrap: nowrap;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
     }
 
     .branch {
-        width: 45%;
+        flex-basis: 200px;
+        width: 200px;
     }
 
     .commit {
         min-width: 100px;
     }
 
-    .name, .branchText, .commitId {
-        min-height: 18px;
-    }
-
-    .commitId {
+    .branchText, .commitId, .timeText {
         margin: 0 0 0 5px;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .actions {
@@ -53,6 +74,7 @@
         text-align: right;
         display: flex;
         flex-direction: row-reverse;
+        align-items: center;
     }
 
     .action-item {
@@ -62,6 +84,7 @@
 
     .svg-icon {
         fill: white;
+        flex-shrink: 0;
     }
 
     // remove empty space to attain centered vertical alignment

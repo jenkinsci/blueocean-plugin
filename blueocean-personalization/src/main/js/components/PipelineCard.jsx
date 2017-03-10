@@ -5,6 +5,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, Favorite } from '@jenkins-cd/design-language';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -149,7 +150,6 @@ export class PipelineCard extends Component {
             status = 'NOT_BUILT';
         }
 
-        const bgClass = PipelineCard._getBackgroundClass(status);
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
         const activityUrl = `/organizations/${encodeURIComponent(organization)}/` +
@@ -162,9 +162,14 @@ export class PipelineCard extends Component {
             displayPath = fullDisplayName;
         }
 
+        console.log('-------------------------------------------'); // TODO: RM
+        console.log('runnableItem'); // TODO: RM
+        console.log(JSON.stringify(runnableItem, null, 4)); // TODO: RM
+        console.log('latestRun'); // TODO: RM
+        console.log(JSON.stringify(latestRun, null, 4)); // TODO: RM
+
         return (
-            <PipelineCardRenderer bgClass={bgClass}
-                                  onClickMain={() => this._navigateToRunDetails()}
+            <PipelineCardRenderer onClickMain={() => this._navigateToRunDetails()}
                                   status={status}
                                   startTime={startTime}
                                   estimatedDuration={estimatedDuration}
@@ -195,7 +200,6 @@ PipelineCard.defaultProps = {
 export const PipelineCardRenderer = (props) => {
 
     const {
-        bgClass,
         onClickMain,
         status,
         startTime,
@@ -209,7 +213,10 @@ export const PipelineCardRenderer = (props) => {
         runnableItem,
         latestRun,
         onRunDetails,
+        timeText,
     } = props;
+
+    const bgClass = PipelineCard._getBackgroundClass(status);
 
     return (
         <div className={`pipeline-card ${bgClass}`} onClick={onClickMain}>
@@ -242,6 +249,15 @@ export const PipelineCardRenderer = (props) => {
                 </span>
                 :
                 <span className="commit"></span>
+            }
+
+            { timeText ?
+                <span className="time">
+                    <Icon size={ 16 } icon="access_time" style={ { fill: '#fff' } } />
+                    <span className="timeText">{timeText}</span>
+                </span>
+                :
+                <span className="time"></span>
             }
 
             <span className="actions" onClick={stopProp}>
