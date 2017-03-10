@@ -16,7 +16,7 @@
     
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-pipeline-editor</artifactId>
-    <version>0.1-preview-5-SNAPSHOT</version>
+    <version>0.1-preview-4-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <properties>

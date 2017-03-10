@@ -49,7 +49,7 @@ type Props = {
 
 type State = {
     selectedStep?: () => any,
-    steps: Array<any>,
+    stepMetadata: Array<any>,
     searchFilter: Function,
 };
 
@@ -65,8 +65,8 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
     }
 
     componentWillMount() {
-        pipelineMetadataService.getStepListing(data => {
-            this.setState({steps: data});
+        pipelineMetadataService.getStepListing(stepMetadata => {
+            this.setState({stepMetadata: stepMetadata});
         });
     }
 
@@ -96,7 +96,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
     }
 
     render() {
-        const { steps, selectedStep } = this.state;
+        const { stepMetadata, selectedStep } = this.state;
         
         return (
             <div className="editor-step-selection-dialog">
@@ -106,7 +106,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
                         placeholder="Find steps by name" />
                 </div>
                 <div className="editor-step-selector">
-                {steps && steps.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).sort(stepSorter).map(step =>
+                {stepMetadata && stepMetadata.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).sort(stepSorter).map(step =>
                     <div tabIndex="0" onKeyPress={e => this.selectItemByKeyPress(e, step)}
                         onClick={() => this.addStep(step)}>
                         {step.displayName}

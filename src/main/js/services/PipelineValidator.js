@@ -4,7 +4,6 @@ import fetch from './fetchClassic';
 import pipelineStore from './PipelineStore';
 import type { PipelineInfo, StageInfo, StepInfo } from './PipelineStore';
 import { convertInternalModelToJson } from './PipelineSyntaxConverter';
-import pipelineMetadataService from './PipelineMetadataService';
 import idgen from './IdGenerator';
 import debounce from 'lodash.debounce';
 
@@ -34,7 +33,7 @@ export class PipelineValidator {
         fetch('/pipeline-model-converter/validateJson',
         'json=' + encodeURIComponent(JSON.stringify(json)), data => {
             if (!data.result && data.errors) {
-                console.error(data);
+                if (window.isDevelopmentMode) console.error(data);
             }
             handler(data);
         });
@@ -118,7 +117,9 @@ export class PipelineValidator {
                 }
                 case 'stages': {
                     const idx = parseInt(path[++i]);
-                    node = node.children[idx];
+                    if (parseInt(idx) === idx) {
+                        node = node.children[idx];
+                    }
                     break;
                 }
                 case 'branches': {
@@ -155,7 +156,7 @@ export class PipelineValidator {
             }
         }
         if (!node) {
-            console.error('unable to find node for', path, 'in', pipeline);
+            if (window.isDevelopmentMode) console.error('unable to find node for', path, 'in', pipeline);
         }
         return node;
     }
@@ -214,13 +215,14 @@ export class PipelineValidator {
         return false;
     }
 
-    validateNow() {
+    validateNow(onComplete) {
         const pipeline = pipelineStore.pipeline;
         const json = JSON.stringify(convertInternalModelToJson(pipeline));
         this.lastPipelineValidated = json + (this.hasPristineEdits(pipeline) ? '.' : '');
         this.validatePipeline(pipeline, validationResult => {
             this.applyValidationMarkers(pipeline, validationResult);
             pipelineStore.setPipeline(pipeline); // notify listeners to re-render
+            if (onComplete) onComplete();
         });
     }
 
@@ -228,13 +230,14 @@ export class PipelineValidator {
         this.validateNow();
     }, validationTimeout);
 
-    validate() {
+    validate(onComplete) {
         const json = JSON.stringify(convertInternalModelToJson(pipelineStore.pipeline));
         if (this.lastPipelineValidated === json) {
+        	if (onComplete) onComplete();
             return;
         }
         if (!this.lastPipelineValidate) {
-            this.validateNow();
+            this.validateNow(onComplete);
         } else {
             this.delayedValidate();
         }

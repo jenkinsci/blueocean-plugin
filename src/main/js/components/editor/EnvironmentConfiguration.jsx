@@ -1,7 +1,6 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import pipelineMetadataService from '../../services/PipelineMetadataService';
 import type { PipelineInfo, StageInfo } from '../../services/PipelineStore';
 import idgen from '../../services/IdGenerator';
 import { Dropdown } from '@jenkins-cd/design-language';

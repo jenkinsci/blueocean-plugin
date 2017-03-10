@@ -42,6 +42,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
 
     constructor(props:Props) {
         super(props);
+        this.state = {};
     }
 
     componentWillMount() {
@@ -153,7 +154,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
 
     render() {
         if (!this.state.stepMetadata) {
-            return;
+            return null;
         }
         const { steps, parent } = this.props;
         return (<div className="editor-steps">

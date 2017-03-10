@@ -1,9 +1,13 @@
 // @flow
 
-import { Route, Redirect, IndexRoute, IndexRedirect } from 'react-router';
 import React from 'react';
-import { EditorPreview } from './components/EditorPreview';
+import { Route } from 'react-router';
+import { EditorPage } from './EditorPage';
+import { EditorPage as FullScreenEditor } from './components/editor/EditorPage';
 
-export default (
-    <Route path="/pipelines/pipeline-editor-preview" component={EditorPreview}/>
-);
+export default 
+    <Route>
+        <Route path="/pipeline-editor" component={FullScreenEditor} />
+        <Route path="/organizations/:organization/pipeline-editor/:pipeline/(:branch)(/)" component={EditorPage} />
+    </Route>
+;

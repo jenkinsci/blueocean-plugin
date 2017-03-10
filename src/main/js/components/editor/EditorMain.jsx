@@ -10,6 +10,7 @@ import { EmptyStateView } from '@jenkins-cd/design-language';
 import { AddStepSelectionSheet } from './AddStepSelectionSheet';
 import pipelineStore from '../../services/PipelineStore';
 import type { StageInfo, StepInfo } from '../../services/PipelineStore';
+import pipelineMetadataService from '../../services/PipelineMetadataService';
 import { Sheets } from '../Sheets';
 import { MoreMenu } from '../MoreMenu';
 import { Icon } from "@jenkins-cd/react-material-icons";
@@ -25,6 +26,7 @@ type State = {
     selectedSteps: StepInfo[],
     showSelectStep: ?boolean,
     parentStep: ?StepInfo,
+    stepMetadata: ?Object,
 };
 
 type DefaultProps = typeof EditorMain.defaultProps;
@@ -69,6 +71,9 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
     componentWillMount() {
         pipelineStore.addListener(this.pipelineUpdated = p => this.doUpdate());
+        pipelineMetadataService.getStepListing(stepMetadata => {
+            this.setState({stepMetadata: stepMetadata});
+        });
     }
 
     componentWillUnmount() {
@@ -166,7 +171,12 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
     }
 
     render() {
-        const {selectedStage, selectedSteps} = this.state;
+        const {selectedStage, selectedSteps, stepMetadata} = this.state;
+        
+        if (!stepMetadata) {
+            return null;
+        }
+        
         const sheets = [];
         const steps = selectedStage ? selectedStage.steps : [];
 

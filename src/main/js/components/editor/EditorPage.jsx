@@ -123,7 +123,7 @@ export class EditorPage extends Component<DefaultProps, Props, State> {
     }
 
     newPipeline() {
-        const newTemplate = require('./NewPipelineTemplate.json');
+        const newTemplate = require('../../NewPipelineTemplate.json');
         if (newTemplate) {
             pipelineStore.setPipeline(convertJsonToInternalModel(newTemplate));
         } else {
