@@ -23,11 +23,14 @@
  */
 package io.jenkins.blueocean.commons.stapler.export;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -35,8 +38,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class ModelTest {
-    private ExportConfig config = new ExportConfig()
-            .withClassAttribute(ClassAttributeBehaviour.ALWAYS.simple());
+    private ExportConfig config = new ExportConfig().withFlavor(Flavor.JSON).withClassAttribute(ClassAttributeBehaviour.ALWAYS.simple());
     ModelBuilder builder = new ModelBuilder();
 
     @Test // JENKINS-26775
@@ -95,10 +97,8 @@ public class ModelTest {
 
     @ExportedBean
     public static class C {
-        @Exported
-        public int x = 10;
-        @Exported
-        public int y = 20;
+        @Exported public int x = 10;
+        @Exported public int y = 20;
     }
 
     //===========================================
@@ -124,5 +124,101 @@ public class ModelTest {
 
         @Exported(skipNull=false)
         public String ddd = "ddd";
+    }
+
+    /**
+     * Test ExportInterceptor
+     */
+
+    public static class ExportInterceptor1 extends ExportInterceptor{
+
+        @Override
+        public Object getValue(Property property, Object model, ExportConfig config) throws IOException {
+            try {
+                return property.getValue(model);
+            } catch (IllegalAccessException | InvocationTargetException | NotExportableException e) {
+                if(property.name.equals("shouldBeSkipped")){
+                    return SKIP;
+                }
+                throw new IOException(e);
+            }
+        }
+    }
+
+    public static class ExportInterceptor2 extends ExportInterceptor{
+
+        @Override
+        public Object getValue(Property property, Object model, ExportConfig config) throws IOException {
+            try {
+                return property.getValue(model);
+            } catch (IllegalAccessException | InvocationTargetException | NotExportableException e) {
+                if(!property.getType().isAssignableFrom(NotExportedBean.class)){
+                    throw new IOException("Failed to write "+property.name);
+                }
+                return SKIP; //skip failing property
+            }
+        }
+    }
+
+    @Test
+    public void testNotExportedBean() throws IOException {
+        ExportConfig config = new ExportConfig().withFlavor(Flavor.JSON).withExportInterceptor(new ExportInterceptor1()).withSkipIfFail(true);
+        StringWriter writer = new StringWriter();
+        ExportableBean b = new ExportableBean();
+        builder.get(ExportableBean.class).writeTo(b,Flavor.JSON.createDataWriter(b, writer, config));
+        Assert.assertEquals("{\"_class\":\""+ExportableBean.class.getName()+"\",\"name\":\"property1\",\"notExportedBean\":{},\"shouldBeNull\":null}",
+                writer.toString());
+    }
+
+    // should fail when serializing getShouldBeSkippedAsNull()
+    @Test(expected = IOException.class)
+    public void testNotExportedBeanFailing() throws IOException {
+        ExportConfig config = new ExportConfig().withFlavor(Flavor.JSON).withExportInterceptor(new ExportInterceptor2()).withSkipIfFail(true);
+        StringWriter writer = new StringWriter();
+        ExportableBean b = new ExportableBean();
+        builder.get(ExportableBean.class).writeTo(b,Flavor.JSON.createDataWriter(b, writer, config));
+    }
+
+    @ExportedBean
+    public static class ExportableBean{
+        @Exported
+        public String getName(){
+            return "property1";
+        }
+
+        // should be serialized as null
+        @Exported
+        public String getShouldBeNull(){
+            return null;
+        }
+
+        // should be skipped
+        @Exported
+        public String getShouldBeSkipped(){
+            throw new NullPointerException();
+        }
+
+        // null should be skipped
+        @Exported(skipNull = true)
+        public String getShouldBeSkippedAsNull(){
+            return null;
+        }
+        // should not get serialized in to JSON as empty map due to skipIfNull is true
+        @Exported
+        public NotExportedBean getNotExportedBean(){
+            return new NotExportedBean();
+        }
+
+        // should not get serialized in to JSON
+        @Exported(merge = true)
+        public NotExportedBean getNotExportedBeanMerged(){
+            return new NotExportedBean();
+        }
+    }
+
+    public static class NotExportedBean{
+        public String getName(){
+            return "property1";
+        }
     }
 }

@@ -67,7 +67,7 @@ final class MethodProperty extends Property {
         return parent.getJavadoc().getProperty(method.getName()+"()");
     }
 
-    protected Object getValue(Object object) throws IllegalAccessException, InvocationTargetException {
+    public Object getValue(Object object) throws IllegalAccessException, InvocationTargetException {
         try {
             return handle.invoke(object);
         } catch (Throwable throwable) {
