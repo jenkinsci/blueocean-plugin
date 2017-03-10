@@ -59,7 +59,6 @@ export class PipelinePager {
         this.augmenter = augmenter;
         this.fetchNodes({ ...props, followAlong: augmenter.karaoke });
     }
-
     /**
      * Fetches the detail from the backend and set the data
      *
@@ -83,8 +82,9 @@ export class PipelinePager {
                 if (result.model.length === 0) {
                     this.pending = false;
                     logger.debug('Seems we do not have any nodes for this run.');
+                    this.currentStepsUrl = this.augmenter.stepsUrl;
                     // we need now to fetch the steps
-                    return this.fetchSteps(followAlong);
+                    return this.fetchCurrentStepUrl(followAlong);
                 }
                 // get information about the result
                 logData.data = result;
@@ -118,7 +118,6 @@ export class PipelinePager {
                 action('set error', () => { this.error = err; });
             });
     }
-
     @action
     fetchCurrentStepUrl(followAlong) {
         clearTimeout(this.timeout);
@@ -161,50 +160,6 @@ export class PipelinePager {
                 action('set error', () => { this.error = err; });
             });
     }
-    @action
-    fetchSteps(followAlong = false) {
-        clearTimeout(this.timeout);
-        if (!followAlong) { // while fetching we are pending
-            this.pending = true;
-        }
-        // log is text and not json, further it does not has _link in the response
-        const logData = {
-            _links: {
-                self: {
-                    href: this.augmenter.stepsUrl,
-                },
-            },
-        };
-        // get api data and further process it
-        return KaraokeApi.getSteps(this.augmenter.stepsUrl)
-            .then(action('Process steps data', result => {
-                this.currentStepsUrl = this.augmenter.stepsUrl;
-                logData.data = result;
-                const cached = this.bunker.getItem(logData._links.self.href);
-                if (cached !== logData) { // calculate which node we need to focus
-                    logger.debug('objects are different - updating store');
-                    this.bunker.setItem(logData);
-                    logger.debug('saved data', followAlong);
-                }
-                // we need to get more input from the log stream
-                if (false) {
-                // if (followAlong) {
-                    logger.debug('follow along');
-                    this.timeout = setTimeout(() => {
-                        const props = { followAlong };
-                        logger.warn(props);
-                        this.fetchSteps(followAlong);
-                    }, 1000);
-                }
-                if (!followAlong) {
-                    this.pending = false;
-                }
-            })).catch(err => {
-                logger.error('Error fetching page', err);
-                action('set error', () => { this.error = err; });
-            });
-    }
-
     clear() {
         clearTimeout(this.timeout);
     }
