@@ -300,7 +300,7 @@ public abstract class BaseTest {
     }
 
 
-    private String getBaseUrl(String path){
+    protected String getBaseUrl(String path){
         return baseUrl + path;
     }
 

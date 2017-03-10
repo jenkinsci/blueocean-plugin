@@ -1,15 +1,13 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
-import { logging } from '@jenkins-cd/blueocean-core-js';
 import { buildPipelineUrl } from '../../../util/UrlUtils';
 
 import FlowStep from '../../flow2/FlowStep';
 import FlowStepStatus from '../../flow2/FlowStepStatus';
 import STATE from '../GithubCreationState';
 
-const LOGGER = logging.logger('io.jenkins.blueocean.github-pipeline');
-
+import Extensions from '@jenkins-cd/js-extensions';
 
 @observer
 export default class GithubCompleteStep extends React.Component {
@@ -23,10 +21,6 @@ export default class GithubCompleteStep extends React.Component {
         const { organization, fullName } = savedPipeline;
         const url = buildPipelineUrl(organization, fullName, 'activity');
         this.props.flowManager.completeFlow({ url });
-    }
-
-    createPipeline() {
-        LOGGER.info('TODO: link into editor');
     }
 
     _getStatus(state, status) {
@@ -68,6 +62,8 @@ export default class GithubCompleteStep extends React.Component {
     }
 
     _getContent(state, autoDiscover, repo, count) {
+        const { selectedOrganization, selectedRepository } = this.props.flowManager;
+
         let copy = '';
         let showDashboardLink = false;
         let showPipelineLink = false;
@@ -120,7 +116,9 @@ export default class GithubCompleteStep extends React.Component {
 
                 { showCreateLink &&
                 <div>
-                    <button onClick={() => this.createPipeline()}>Create Pipeline</button>
+                    <Extensions.Renderer extensionPoint="jenkins.pipeline.create.missing.jenkinsfile"
+                        organization={'jenkins'} fullName={selectedOrganization.name + '/' + selectedRepository.name}
+                    />
                 </div>
                 }
             </div>

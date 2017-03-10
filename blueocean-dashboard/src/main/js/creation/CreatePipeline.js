@@ -1,13 +1,12 @@
 import React, { PropTypes } from 'react';
 import { Page } from '@jenkins-cd/design-language';
-import { ContentPageHeader, i18nTranslator, Security, User } from '@jenkins-cd/blueocean-core-js';
+import { ContentPageHeader, i18nTranslator, loadingIndicator, Security, User } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { ClassicCreationLink } from './ClassicCreationLink';
 import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
 import VerticalStep from './flow2/VerticalStep';
-import loadingIndicator from '../LoadingIndicator';
 import StepStatus from './flow2/FlowStepStatus';
 
 
