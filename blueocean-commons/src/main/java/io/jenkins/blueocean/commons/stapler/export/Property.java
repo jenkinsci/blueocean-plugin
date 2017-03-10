@@ -24,6 +24,7 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
 import org.jvnet.tiger_types.Types;
+import org.kohsuke.stapler.export.CustomExportedBean;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
