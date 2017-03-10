@@ -3,7 +3,6 @@ package io.jenkins.blueocean.blueocean_git_pipeline;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
-import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import hudson.EnvVars;
 import hudson.model.ItemGroup;
@@ -72,7 +71,7 @@ class GitUtils {
     }
 
     static StandardCredentials getCredentials(ItemGroup owner, String uri, String credentialId){
-        StandardCredentials standardCredentials =  CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        StandardCredentials standardCredentials =  CredentialsUtils.findCredential(credentialId, StandardCredentials.class, new BlueOceanDomainRequirement());
         if(standardCredentials == null){
             standardCredentials = CredentialsMatchers
                     .firstOrNull(
