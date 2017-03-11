@@ -177,7 +177,7 @@ public class PipelineNodeUtil {
         return null;
     }
 
-    public static Predicate<FlowNode> isLoggable = new Predicate<FlowNode>() {
+    public static final Predicate<FlowNode> isLoggable = new Predicate<FlowNode>() {
         @Override
         public boolean apply(@Nullable FlowNode input) {
             if(input == null)

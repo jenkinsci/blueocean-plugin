@@ -28,7 +28,7 @@ import java.util.Random;
 @Extension
 public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy {
     private static final String URL_BASE="blue";
-    private static final Long randomBits = new Random().nextLong();
+    private static final Random randomBits = new Random();
 
     private final boolean enableJWT = BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION;
 
@@ -72,7 +72,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
                 HashCode hashCode = Hashing.sha1()
                     .newHasher()
                     .putString(Jenkins.getAuthentication().getName(), StandardCharsets.UTF_8)
-                    .putLong(randomBits)
+                    .putLong(randomBits.nextLong())
                     .hash();
 
                 // Base64 encode to ensure no non-ASCII characters get into the header
