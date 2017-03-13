@@ -29,9 +29,13 @@ export default class GitFlowManager extends FlowManager {
 
     credentialsManager = null;
 
+    @observable
+    noCredentialsOption = null;
+
     @computed
     get credentials() {
-        return this.credentialsManager.displayedCredentials || [];
+        const credentials = this.credentialsManager.displayedCredentials || [];
+        return [].concat(this.noCredentialsOption, credentials);
     }
 
     @observable
@@ -48,6 +52,14 @@ export default class GitFlowManager extends FlowManager {
 
         this._createApi = createApi;
         this.credentialsManager = new CredentialsManager(credentialsApi);
+        this._initalize();
+    }
+
+    @action
+    _initalize() {
+        this.noCredentialsOption = {
+            displayName: translate('creation.git.step1.credentials_placeholder'),
+        };
     }
 
     translate(key, opts) {
@@ -85,7 +97,7 @@ export default class GitFlowManager extends FlowManager {
 
     createPipeline(repositoryUrl, credential) {
         this.repositoryUrl = repositoryUrl;
-        this.credentialId = credential ? credential.id : null;
+        this.credentialId = credential && credential !== this.noCredentialsOption ? credential.id : null;
         this.pipelineName = this._createNameFromRepoUrl(repositoryUrl);
         return this._initiateCreatePipeline();
     }

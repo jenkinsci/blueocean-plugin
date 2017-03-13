@@ -39,6 +39,11 @@ export default class GitConnectStep extends React.Component {
         t = this.props.flowManager.translate;
     }
 
+    componentWillMount() {
+        const { noCredentialsOption } = this.props.flowManager;
+        this._selectedCredentialChange(noCredentialsOption);
+    }
+
     _bindDropdown(dropdown) {
         this.dropdown = dropdown;
     }
@@ -128,6 +133,7 @@ export default class GitConnectStep extends React.Component {
     }
 
     render() {
+        const { noCredentialsOption } = this.props.flowManager;
         const { flowManager } = this.props;
         const repositoryErrorMsg = this._getRepositoryErrorMsg(flowManager.outcome);
         const credentialErrorMsg = this._getCredentialErrorMsg(flowManager.outcome);
@@ -152,8 +158,8 @@ export default class GitConnectStep extends React.Component {
                     <Dropdown
                       ref={dropdown => this._bindDropdown(dropdown)}
                       className="dropdown-credentials"
-                      placeholder={t('creation.git.step1.credentials_placeholder')}
                       options={flowManager.credentials}
+                      defaultOption={noCredentialsOption}
                       labelField="displayName"
                       onChange={opt => this._selectedCredentialChange(opt)}
                     />
