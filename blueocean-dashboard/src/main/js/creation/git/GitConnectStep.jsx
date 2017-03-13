@@ -13,15 +13,6 @@ import STATE from './GitCreationState';
 
 let t = null;
 
-// TODO: HACK! adding a method to allow for programmatic change of Dropdown's selectedOption.
-// TODO: needs to be added in the JDL, or handled a little differently via props
-
-Dropdown.prototype.selectOption = function selectOption(option) {
-    this.setState({
-        selectedOption: option,
-    });
-};
-
 function validateUrl(url) {
     return !!url && !!url.trim();
 }
