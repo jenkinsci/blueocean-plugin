@@ -4,8 +4,9 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
-import { ExpandablePath, Favorite } from '@jenkins-cd/design-language';
+import { ExpandablePath, Favorite, ReadableDate } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
+import moment from 'moment';
 
 const stopProp = (event) => {
     event.stopPropagation();
@@ -162,11 +163,46 @@ export class PipelineCard extends Component {
             displayPath = fullDisplayName;
         }
 
-        console.log('-------------------------------------------'); // TODO: RM
-        console.log('runnableItem'); // TODO: RM
-        console.log(JSON.stringify(runnableItem, null, 4)); // TODO: RM
-        console.log('latestRun'); // TODO: RM
-        console.log(JSON.stringify(latestRun, null, 4)); // TODO: RM
+        // Calculate datetime of last run
+
+        const skewMillis = 0; // TODO: Get from somewhere
+        let locale = "EN"; // TODO: get from somewhere
+        const dateFormatShort = 'MMM DD h:mma Z'; //TODO: t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' });
+        const dateFormatLong = 'MMM DD YYYY h:mma Z'; //TODO: t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' });
+
+        let runDateTime = null;
+
+        if (latestRun) {
+            // We'll pick the latest time we have. Completion, start, or enque in that order
+            let serverTimeISO = latestRun.endTime || latestRun.startTime || latestRun.enQueueTime;
+
+            if (serverTimeISO) {
+                // Trim off server TZ skew
+                let serverTimeMoment = moment(serverTimeISO);
+                if (skewMillis < 0) {
+                    serverTimeMoment.add({ milliseconds: Math.abs(skewMillis) });
+                } else if (skewMillis > 0) {
+                    serverTimeMoment.subtract({ milliseconds: skewMillis });
+                }
+                runDateTime = serverTimeMoment.toJSON();
+            }
+        }
+
+        let timeText = runDateTime && (
+            <ReadableDate
+                date={ runDateTime }
+                liveUpdate
+                locale={ locale }
+                shortFormat={ dateFormatShort }
+                longFormat={ dateFormatLong }
+            />
+        );
+
+        // console.log('-------------------------------------------'); // TODO: RM
+        // console.log('runnableItem'); // TODO: RM
+        // console.log(JSON.stringify(runnableItem, null, 4)); // TODO: RM
+        // console.log('latestRun'); // TODO: RM
+        // console.log(JSON.stringify(latestRun, null, 4)); // TODO: RM
 
         return (
             <PipelineCardRenderer onClickMain={() => this._navigateToRunDetails()}
@@ -177,6 +213,7 @@ export class PipelineCard extends Component {
                                   displayPath={displayPath}
                                   branchText={isBranch && decodeURIComponent(names.branchName)}
                                   commitText={commitId && commitText}
+                                  timeText={timeText}
                                   favoriteChecked={this.state.favorite}
                                   onFavoriteToggle={() => this._onFavoriteToggle()}
                                   runnableItem={runnableItem}

@@ -72,45 +72,54 @@ const statuses = [
     'UNKNOWN'
 ];
 
-const startTime = moment().subtract(60, 'seconds').toISOString();
+const startTime = moment().subtract(180, 'seconds').toISOString();
+const endTime = moment().subtract(45, 'seconds').toISOString();
 const estimatedDuration = 1000 * 60 * 5; // 5 mins
 
 storiesOf('PipelineCard', module)
     .addDecorator(story => <Context>{story()}</Context>)
     .add('Placeholder', () => <div>TODO: Remove me</div>)
-    .add('PipelineCardRenderer', rendererExamples)
-    .add('PipelineCard', () => {
-        const running = JSON.parse(JSON.stringify(pipeline));
-        running.latestRun.estimatedDuration = estimatedDuration;
-        running.latestRun.startTime = startTime;
-        running.latestRun.state = 'RUNNING';
+    .add('PipelineCardRenderer', pipelineCardRendererExamples)
+    .add('PipelineCard', pipelineCardExamples)
+;
 
-        return (
-            <div style={outerStyle}>
+function makePipelineData(state) {
+    const newPipeline = JSON.parse(JSON.stringify(pipeline));
+    newPipeline.latestRun.state = state;
+
+    if (['SUCCESS', 'RUNNING', 'FAILURE', 'ABORTED', 'UNSTABLE'].indexOf(state) !== -1) {
+        newPipeline.latestRun.startTime = startTime;
+        newPipeline.latestRun.estimatedDuration = estimatedDuration;
+    }
+
+    if (['SUCCESS', 'FAILURE', 'ABORTED', 'UNSTABLE'].indexOf(state) !== -1) {
+        newPipeline.latestRun.endTime = endTime;
+    }
+
+    return newPipeline;
+}
+
+function pipelineCardExamples() {
+    return (
+        <div style={outerStyle}>
             { statuses.map(state => {
-                const clone = JSON.parse(JSON.stringify(pipeline));
-                clone.latestRun.state = state;
+                const clone = makePipelineData(state);
 
                 return (
                     <div key={state} style={cardWrapStyle}>
                         <PipelineCard
-                          runnable={clone}
-                          onRunClick={action('run')}
-                          onFavoriteToggle={action('toggle')}
+                            runnable={clone}
+                            onRunClick={action('run')}
+                            onFavoriteToggle={action('toggle')}
                         />
                     </div>
                 );
             }) }
-                {/*<PipelineCard*/}
-                  {/*runnable={running}*/}
-                  {/*onRunClick={action('run')}*/}
-                  {/*onFavoriteToggle={action('toggle')}*/}
-                {/*/>*/}
-            </div>
-        );
-    });
+        </div>
+    );
+}
 
-function rendererExamples() {
+function pipelineCardRendererExamples() {
 
     document.body.style.backgroundColor = '#ccc'; // To see the white contents when things go wrong :D
 
@@ -135,15 +144,6 @@ function showRenderer(status, displayPath, branchText, commitText, timeText) {
     const clone = JSON.parse(JSON.stringify(pipeline));
     clone.latestRun.state = status;
 
-    // const status = clone.latestRun.state;
-    // const displayPath = 'Build name';
-    // const branchText = 'Branch name';
-    // const commitText = 'C0MM17H45H';
-    // const timeText = 'Some time ago';
-    // const displayPath = 'Build name asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd end';
-    // const branchText = 'Branch name asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd end';
-    // const commitText = 'C0MM17H45H asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd end';
-    // const timeText = 'Some time ago asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd asdasd end';
     const favoriteChecked = !!Math.round(Math.random());
     const runnableItem = clone;
     const latestRun = JSON.parse(JSON.stringify(clone.latestRun));
