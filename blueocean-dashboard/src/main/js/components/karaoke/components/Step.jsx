@@ -34,6 +34,11 @@ export class Step extends Component {
     }
 
     render() {
+        // early out
+        if (this.pager.pending) {
+            logger.debug('pending returning null');
+            return null;
+        }
         const { step, augmenter, locale, router, location, t, scrollToBottom } = this.props;
         if (step === undefined || !step) {
             return null;
@@ -42,7 +47,7 @@ export class Step extends Component {
         const { data: logArray, hasMore } = this.pager.log || {};
         let children = null;
         if (logArray && !step.isInputStep) {
-            logger.warn('Updating children');
+            logger.debug('Updating children');
             children = (<LogConsole {...{
                 t,
                 router,
@@ -59,9 +64,11 @@ export class Step extends Component {
             children = <span key={'span'}>&nbsp;</span>;
         }
         const getLogForNode = () => {
-            logger.warn('FIXME implement getLogForNode');
             if (!this.pager.logArray) {
-                this.pager.fetchLog({ followAlong: augmenter.karaoke, url: step.logUrl });
+                const cfg = { followAlong: augmenter.karaoke, url: step.logUrl };
+                logger.debug('getLogForNode called will fetch now with cfg.', cfg);
+                this.pager.fetchLog(cfg);
+                // we are now want to expand the result item
                 this.setState({ expanded: true });
             }
         };
@@ -72,9 +79,11 @@ export class Step extends Component {
                 router.push(location);
             }
         };
+        // some ATH hook enhancements
         const logConsoleClass = `logConsole step-${step.id}`;
+        // duration calaculations
         const duration = step.isRunning ? this.durationMillis : durationMillis;
-        logger.warn('duration', duration, step.isRunning);
+        logger.debug('duration', duration, step.isRunning);
         const time = (<TimeDuration
             millis={duration }
             liveUpdate={step.isRunning}
@@ -84,10 +93,6 @@ export class Step extends Component {
             liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
             hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
         />);
-        if (this.pager.pending) {
-            logger.debug('nulllllllllllll');
-            return null;
-        }
         return (<div className={logConsoleClass} key={this.pager.currentLogUrl}>
             <ResultItem {...{
                 extraInfo: time,
