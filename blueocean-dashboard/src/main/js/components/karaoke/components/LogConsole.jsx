@@ -27,12 +27,12 @@ export class LogConsole extends Component {
     componentWillMount() {
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
         this._processLines(this.props.logArray);
-        logger.warn('isArray', Array.isArray(this.props.logArray));
+        logger.debug('isArray', Array.isArray(this.props.logArray));
     }
 
     // componentWillReceiveProps does not return anything and return null is an early out, so disable lint complaining
     componentWillReceiveProps(nextProps) { // eslint-disable-line
-        logger.warn('newProps isArray', Array.isArray(nextProps.logArray));
+        logger.debug('newProps isArray', Array.isArray(nextProps.logArray));
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
         const newArray = !Array.isArray(nextProps.logArray) ? nextProps.logArray.slice() : nextProps.logArray;
         const oldArray = !Array.isArray(this.props.logArray) ? this.props.logArray.slice() : this.props.logArray;
@@ -121,7 +121,7 @@ export class LogConsole extends Component {
             logger.debug('no lines passed');
             return null;
         }
-        logger.warn('render lines length', lines.length);
+        logger.debug('render lines length', lines.length);
         // JENKINS-37925 - show more button should open log in new window
         // const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
         // JENKINS-41717 reverts above again
