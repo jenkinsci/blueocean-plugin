@@ -124,7 +124,7 @@ export class LogPager {
         return KaraokeApi.getGeneralLog(logData._links.self.href, { start: logData.newStart })
             .then(action('Process pager data following 1', response => {
                 const { newStart, hasMore } = response;
-                logger.warn({ newStart, hasMore });
+                logger.debug('newstart and hasmore', { newStart, hasMore });
                 logData.newStart = response.newStart;
                 return response.text();
             }))
