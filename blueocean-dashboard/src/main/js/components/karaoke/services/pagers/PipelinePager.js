@@ -77,6 +77,7 @@ export class PipelinePager {
                 },
             },
         };
+        logger.warn('Fetching now nodes url and further process it');
         // get api data and further process it
         return KaraokeApi.getNodes(this.augmenter.nodesUrl)
             .then(action('Process node data', result => {
@@ -131,6 +132,7 @@ export class PipelinePager {
             },
         };
         // get api data and further process it
+        logger.warn('Fetching now current step url and further process it');
         return KaraokeApi.getSteps(this.currentStepsUrl)
             .then(action('Process steps data', result => {
                 logData.data = result;
@@ -138,15 +140,13 @@ export class PipelinePager {
                 if (cached !== logData) { // calculate which node we need to focus
                     logger.debug('objects are different - updating store');
                     this.bunker.setItem(logData);
-                    logger.debug('saved data', followAlong);
+                    logger.debug('saved data');
                 }
                 // we need to get more input from the log stream
                 if (this.polling) {
-                    logger.debug('follow along');
+                    logger.debug('follow along polling mode');
                     this.timeout = setTimeout(() => {
-                        const props = { followAlong };
-                        logger.warn(props);
-                        this.fetchCurrentStepUrl(followAlong);
+                        this.fetchCurrentStepUrl();
                     }, 1000);
                 }
             })).catch(err => {

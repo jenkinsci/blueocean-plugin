@@ -81,15 +81,15 @@ export default class Pipeline extends Component {
             switch (jenkinsEvent) {
             case 'pipeline_step': {
                 logger.warn('sse event step fetchCurrentSteps', jenkinsEvent);
-                debounce(() => setTimeout(() => this.pager.fetchCurrentStepUrl(), 200),200); // after .5 seconds to give time for rest
+                debounce(() => setTimeout(() => this.pager.fetchCurrentStepUrl(), 200), 200); // after .5 seconds to give time for rest
                 break;
             }
             case 'pipeline_end':
             case 'job_run_ended':
             case 'pipeline_block_end':
             case 'pipeline_stage': {
-                logger.warn('sse event block starts refetch nodes', jenkinsEvent);
-                debounce(() => setTimeout(() => this.pager.fetchNodes({}), 200),200); // after .5 seconds to give time for rest
+                logger.warn('sse event block starts refetchNodes', jenkinsEvent);
+                debounce(() => setTimeout(() => this.pager.fetchNodes({}), 200), 200); // after .5 seconds to give time for rest
                 break;
             }
             default: {
