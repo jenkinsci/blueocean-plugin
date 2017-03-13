@@ -12,7 +12,7 @@ import { CellRow, CellLink } from './CellLink';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 function sortByOrdinal(extensions, done) {
-    const sorted = extensions.sort((a, b) =>{
+    const sorted = extensions.sort((a, b) => {
         if (a.ordinal || b.ordinal) {
             if (!a.ordinal) return 1;
             if (!b.ordinal) return -1;
