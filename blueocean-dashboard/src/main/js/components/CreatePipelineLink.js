@@ -1,14 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-import { i18nTranslator, User, Security } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import securityUtils from '../util/security-utils';
 
 const t = i18nTranslator('blueocean-dashboard');
 
 export default function CreatePipelineLink() {
-    const user = User.current();
-
-    if (Security.isSecurityEnabled() && user && !user.permissions.pipeline.create()) {
+    if (!securityUtils.isCreationEnabled()) {
         return null;
     }
 
