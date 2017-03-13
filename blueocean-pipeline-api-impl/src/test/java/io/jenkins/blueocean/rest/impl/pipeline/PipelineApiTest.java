@@ -4,6 +4,7 @@ import com.mashape.unirest.http.HttpResponse;
 import hudson.matrix.Axis;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
+import hudson.model.Action;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
@@ -15,6 +16,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kohsuke.stapler.AcceptHeader;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 import java.io.IOException;
 import java.util.List;
@@ -282,5 +285,141 @@ public class PipelineApiTest extends PipelineBaseTest {
         Assert.assertEquals("/job/mp1/", href);
     }
 
+    @ExportedBean
+    public static class TestAction implements Action {
+        @Override
+        public String getIconFileName() {
+            return null;
+        }
 
+        @Override
+        public String getDisplayName() {
+            return "Test action";
+        }
+
+        @Override
+        public String getUrlName() {
+            return "bo-test";
+        }
+
+        @Exported
+        public String getTest(){
+            return "bo test works";
+        }
+
+        @Exported(name = "notExportableBean")
+        public NotExportableBean getNotExportableBean(){
+            return new NotExportableBean();
+        }
+
+        public static class NotExportableBean{
+
+            @Exported
+            public String getDisplayName() {
+                return "Exploding action without ExportedBean";
+            }
+
+            @Exported
+            public String getUrlName() {
+                return "bo-test-without-exportedbean";
+            }
+
+            @Exported
+            public String getTest(){
+                throw new RuntimeException("failing");
+            }
+        }
+    }
+
+    @ExportedBean
+    public static class ExplodingAction implements Action {
+        @Override
+        public String getIconFileName() {
+            return null;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return "Exploding action";
+        }
+
+        @Override
+        public String getUrlName() {
+            return "exploding-action";
+        }
+
+        @Exported
+        public String getTest(){
+            throw new RuntimeException("failing action");
+        }
+
+    }
+
+    @Test
+    public void getPipelineFailingActionTest() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        WorkflowJob job2 = j.jenkins.createProject(WorkflowJob.class, "pipeline2");
+        String script = "\n" +
+                "node {\n" +
+                "   stage ('Build'){ \n" +
+                "     echo ('Building'); \n" +
+                "   } \n" +
+                "   stage ('Test') { \n" +
+                "     echo ('Testing'); \n" +
+                "   } \n" +
+                "}";
+        job1.setDefinition(new CpsFlowDefinition(script));
+
+        job1.addAction(new ExplodingAction());
+        job1.addAction(new TestAction());
+
+        job2.setDefinition(new CpsFlowDefinition(script));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        b1.addAction(new ExplodingAction());
+        b1.addAction(new TestAction());
+
+
+        WorkflowRun b2 = job2.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b2);
+
+        List<Map> pipelines = get("/organizations/jenkins/pipelines/", List.class);
+        Assert.assertEquals(2, pipelines.size());
+
+        validateBrokenAction((List<Map>) pipelines.get(0).get("actions"));
+
+        Map pipeline = get("/organizations/jenkins/pipelines/pipeline1/");
+        validatePipeline(job1, pipeline);
+        validateBrokenAction((List<Map>) pipeline.get("actions"));
+
+        List<Map> runs = get("/organizations/jenkins/pipelines/pipeline1/runs/", List.class);
+        Assert.assertEquals(1, runs.size());
+        validateBrokenAction((List<Map>) pipelines.get(0).get("actions"));
+
+        Map resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1");
+        validateBrokenAction((List<Map>) resp.get("actions"));
+        validateRun(b1, resp);
+    }
+
+    private void validateBrokenAction(List<Map> actions){
+        boolean testActionFound = false;
+        boolean explodingActionFound = false;
+        for(Map a:actions){
+            if(a.get("urlName") != null && a.get("urlName").equals("bo-test")){
+                Assert.assertTrue(((Map)a.get("notExportableBean")).isEmpty());
+                testActionFound = true;
+                continue;
+            }
+
+            if(a.get("urlName") != null && a.get("urlName").equals("exploding-action")){
+                Assert.assertTrue(a.get("urlName") != null && a.get("urlName").equals("exploding-action"));
+                Assert.assertNull(a.get("test"));
+                explodingActionFound = true;
+            }
+        }
+        Assert.assertTrue(testActionFound);
+        Assert.assertTrue(explodingActionFound);
+    }
 }

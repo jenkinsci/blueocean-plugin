@@ -28,7 +28,6 @@ const MIN_DELAY = 500;
 const FIRST_PAGE = 1;
 const PAGE_SIZE = 100;
 const SSE_TIMEOUT_DELAY = 1000 * 60;
-const PIPELINE_CHECK_DELAY = 1000 * 5;
 
 
 export default class GithubFlowManager extends FlowManager {
@@ -457,10 +456,16 @@ export default class GithubFlowManager extends FlowManager {
             this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
         }
 
-        if (!this.selectedAutoDiscover && event.job_orgfolder_indexing_result === 'SUCCESS') {
+        if (!this.selectedAutoDiscover) {
             const pipelineFullName = `${this.selectedOrganization.name}/${this.selectedRepository.name}`;
-            this._checkForSingleRepoCreation(pipelineFullName);
-            this._cleanupListeners();
+            const orgIndexingComplete = event.job_orgfolder_indexing_result === 'SUCCESS';
+            const multiBranchIndexingComplete = event.job_multibranch_indexing_result === 'SUCCESS' &&
+                    event.blueocean_job_pipeline_name === pipelineFullName;
+
+            if (orgIndexingComplete || multiBranchIndexingComplete) {
+                this._checkForSingleRepoCreation(pipelineFullName, multiBranchIndexingComplete);
+                this._cleanupListeners();
+            }
         }
     }
 
@@ -479,17 +484,28 @@ export default class GithubFlowManager extends FlowManager {
 
     /**
      * Check for creation of a single pipeline within an org folder
-     * @param pipelineName
+     * @param {string} pipelineName
+     * @param {boolean} multiBranchIndexingComplete
      * @private
      */
-    _checkForSingleRepoCreation(pipelineName) {
-        LOGGER.debug('org folder indexing completed but no pipeline has been created (yet?)');
-        LOGGER.debug(`will check for single repo creation of ${pipelineName} in ${PIPELINE_CHECK_DELAY}ms`);
+    _checkForSingleRepoCreation(pipelineName, multiBranchIndexingComplete) {
+        // if the multibranch pipeline has finished indexing,
+        // we can aggressively check for the pipeline's existence to complete creation
+        // if org indexing finished, be more conservative in the delay
+        const delay = multiBranchIndexingComplete ? 100 : 5000;
+
+        if (multiBranchIndexingComplete) {
+            LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
+        } else {
+            LOGGER.debug('org folder indexing completed but no pipeline has been created (yet?)');
+        }
+
+        LOGGER.debug(`will check for single repo creation of ${pipelineName} in ${delay}ms`);
 
         setTimeout(() => {
             this._creationApi.findExistingOrgFolderPipeline(pipelineName)
                 .then(data => this._checkForSingleRepoCreationComplete(data));
-        }, PIPELINE_CHECK_DELAY);
+        }, delay);
     }
 
     _checkForSingleRepoCreationComplete({ isFound, pipeline }) {
