@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Created by cmeyers on 6/28/16.
  */
@@ -81,7 +82,6 @@ const estimatedDuration = 1000 * 60 * 5; // 5 mins
 
 storiesOf('PipelineCard', module)
     .addDecorator(story => <Context>{story()}</Context>)
-    .add('Placeholder', () => <div>TODO: Remove me</div>)
     .add('PipelineCardRenderer', pipelineCardRendererExamples)
     .add('PipelineCard', pipelineCardExamples)
 ;

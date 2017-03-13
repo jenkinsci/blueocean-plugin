@@ -131,7 +131,7 @@ export class PipelineCard extends Component {
         const {
             t,
             locale,
-            runnable
+            runnable,
         } = this.props;
 
         // Required props
@@ -187,11 +187,11 @@ export class PipelineCard extends Component {
 
         if (latestRun) {
             // We'll pick the latest time we have. Completion, start, or enque in that order
-            let serverTimeISO = latestRun.endTime || latestRun.startTime || latestRun.enQueueTime;
+            const serverTimeISO = latestRun.endTime || latestRun.startTime || latestRun.enQueueTime;
 
             if (serverTimeISO) {
                 // Trim off server TZ skew
-                let serverTimeMoment = moment(serverTimeISO);
+                const serverTimeMoment = moment(serverTimeISO);
                 if (skewMillis < 0) {
                     serverTimeMoment.add({ milliseconds: Math.abs(skewMillis) });
                 } else if (skewMillis > 0) {
@@ -225,8 +225,9 @@ export class PipelineCard extends Component {
                                   onFavoriteToggle={this._onFavoriteToggle}
                                   runnableItem={runnable}
                                   latestRun={latestRun}
-                                  onRunDetails={this._onRunDetails} />
-            );
+                                  onRunDetails={this._onRunDetails}
+            />
+        );
     }
 }
 
@@ -250,7 +251,6 @@ PipelineCard.contextTypes = {
 PipelineCard.logger = logging.logger('io.jenkins.blueocean.personalization.PipelineCard');
 
 export const PipelineCardRenderer = (props) => {
-
     const {
         onClickMain,
         status,
@@ -277,7 +277,8 @@ export const PipelineCardRenderer = (props) => {
                                  estimatedDuration={estimatedDuration}
                                  width={'20px'}
                                  height={'20px'}
-                                 noBackground />
+                                 noBackground
+            />
 
             <span className="name">
                 <Link to={activityUrl} onClick={stopProp}>
@@ -315,18 +316,38 @@ export const PipelineCardRenderer = (props) => {
             <span className="actions" onClick={stopProp}>
                 <Favorite checked={favoriteChecked}
                           className="dark-white"
-                          onToggle={onFavoriteToggle} />
+                          onToggle={onFavoriteToggle}
+                />
 
                 <RunButton className="icon-button dark"
                            runnable={runnableItem}
                            latestRun={latestRun}
-                           onNavigation={onRunDetails} />
+                           onNavigation={onRunDetails}
+                />
 
                 <ReplayButton className="icon-button dark"
                               runnable={runnableItem}
                               latestRun={latestRun}
-                              onNavigation={onRunDetails} />
+                              onNavigation={onRunDetails}
+                />
             </span>
         </div>
     );
+};
+
+PipelineCardRenderer.propTypes = {
+    onClickMain: PropTypes.func,
+    status: PropTypes.string,
+    startTime: PropTypes.string,
+    estimatedDuration: PropTypes.number,
+    activityUrl: PropTypes.string,
+    displayPath: PropTypes.string,
+    branchText: PropTypes.node,
+    commitText: PropTypes.node,
+    favoriteChecked: PropTypes.bool,
+    onFavoriteToggle: PropTypes.func,
+    runnableItem: PropTypes.object,
+    latestRun: PropTypes.object,
+    onRunDetails: PropTypes.func,
+    timeText: PropTypes.node,
 };
