@@ -1,22 +1,31 @@
 import React, { Component, PropTypes } from 'react';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
+import debounce from 'lodash.debounce';
 import { QueuedState } from './QueuedState';
 import { KaraokeService } from '../index';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
+
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pipeline');
 
 @observer
 export default class Pipeline extends Component {
+    constructor(props) {
+        super(props);
+        this.listener = {};
+        this.sseEventHandler = this.sseEventHandler.bind(this);
+        this.showPending = true; // Configure flag to show pending or not
+    }
     componentWillMount() {
         if (this.props.augmenter) {
             const { augmenter, params: { node } } = this.props;
             this.pager = KaraokeService.pipelinePager(augmenter, { node });
         }
+        this.listener.ssePipeline = sseConnection.subscribe('pipeline', this.sseEventHandler);
+        this.listener.sseJob = sseConnection.subscribe('job', this.sseEventHandler);
     }
-
     componentWillReceiveProps(nextProps) {
         if (!nextProps.augmenter.karaoke) {
             logger.debug('stopping karaoke mode.');
@@ -35,14 +44,64 @@ export default class Pipeline extends Component {
             this.pager.fetchNodes({ node: nextProps.params.node });
         }
     }
-
     componentWillUnmount() {
         this.stopKaraoke();
+        if (this.listener.ssePipeline) {
+            sseConnection.unsubscribe(this.listener.ssePipeline);
+            delete this.listener.ssePipeline;
+        }
+        if (this.listener.sseJob) {
+            sseConnection.unsubscribe(this.listener.sseJob);
+            delete this.listener.sseJob;
+        }
     }
 
     stopKaraoke() {
         logger.debug('stopping karaoke mode, by removing the timeouts on the pager.');
         this.pager.clear();
+    }
+
+    /**
+     * Listen for pipeline flow node events. We need to re-fetch in case of some events.
+     * @param event sse event coming from the backende
+     */
+    sseEventHandler(event) {
+         // we are using try/catch to throw an early out error
+        try {
+            logger.warn('incoming event', event);
+            const jenkinsEvent = event.jenkins_event;
+            const { run } = this.props;
+            const runId = run.id;
+             // we get events from the pipeline and the job channel, they have different naming for the id
+            //  && event.jenkins_object_id !== runId -> job
+            if (event.pipeline_run_id !== runId) {
+                logger.warn('early out');
+                throw new Error('exit');
+            }
+            switch (jenkinsEvent) {
+            case 'pipeline_step': {
+                logger.warn('sse event step fetchCurrentSteps', jenkinsEvent);
+                debounce(() => setTimeout(() => this.pager.fetchCurrentStepUrl(), 200),200); // after .5 seconds to give time for rest
+                break;
+            }
+            case 'pipeline_end':
+            case 'job_run_ended':
+            case 'pipeline_block_end':
+            case 'pipeline_stage': {
+                logger.warn('sse event block starts refetch nodes', jenkinsEvent);
+                debounce(() => setTimeout(() => this.pager.fetchNodes({}), 200),200); // after .5 seconds to give time for rest
+                break;
+            }
+            default: {
+                logger.warn('ignoring event', jenkinsEvent);
+            }
+            }
+        } catch (e) {
+            // we only ignore the exit error
+            if (e.message !== 'exit') {
+                logger.error('sse Event has produced an error, will not work as expected.', e);
+            }
+        }
     }
 
     render() {
@@ -51,15 +110,15 @@ export default class Pipeline extends Component {
             const queuedMessage = t('rundetail.pipeline.queued.message', { defaultValue: 'Waiting for run to start' });
             return <QueuedState message={queuedMessage} />;
         }
-        if (this.pager.pending) {
+        if (this.pager.pending && this.showPending) {
             logger.debug('abort due to pager pending');
             const queuedMessage = t('rundetail.pipeline.pending.message', { defaultValue: 'Waiting for backend to response' });
             return <QueuedState message={queuedMessage} />;
         }
-        logger.warn('props', this.pager.nodes === undefined);
         // here we decide what to do next if somebody clicks on a flowNode
         const afterClick = (id) => {
-            logger.debug('clicked on node with id:', id);
+            logger.warn('clicked on node with id:', id);
+            this.showPending = false; // Configure flag to not show pending anymore
             const nextNode = this.pager.nodes.data.model.filter((item) => item.id === id)[0];
             // remove trailing /
             const pathname = location.pathname.replace(/\/$/, '');
@@ -114,6 +173,7 @@ export default class Pipeline extends Component {
             { this.pager.steps &&
                 <Steps
                     {...{
+                        key: this.pager.currentStepsUrl,
                         nodeInformation: this.pager.steps.data,
                         followAlong: augmenter.karaoke,
                         augmenter,

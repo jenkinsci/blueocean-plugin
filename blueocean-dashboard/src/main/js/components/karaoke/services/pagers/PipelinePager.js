@@ -25,6 +25,7 @@ export class PipelinePager {
 
     @observable currentNode = {};
     @observable currentStepsUrl;
+    polling = false;
     /**
      * Will be set in an error occurs.
      * @type {object|null}
@@ -57,7 +58,7 @@ export class PipelinePager {
     constructor(bunker, augmenter, props) {
         this.bunker = bunker;
         this.augmenter = augmenter;
-        this.fetchNodes({ ...props, followAlong: augmenter.karaoke });
+        this.fetchNodes({ ...props });
     }
     /**
      * Fetches the detail from the backend and set the data
@@ -65,7 +66,7 @@ export class PipelinePager {
      * @returns {Promise}
      */
     @action
-    fetchNodes({ followAlong = false, node }) {
+    fetchNodes({ node }) {
         // while fetching we are pending
         this.pending = true;
         // log is text and not json, further it does not has _link in the response
@@ -81,10 +82,10 @@ export class PipelinePager {
             .then(action('Process node data', result => {
                 if (result.model.length === 0) {
                     this.pending = false;
-                    logger.debug('Seems we do not have any nodes for this run.');
+                    logger.warn('Seems we do not have any nodes for this run.');
                     this.currentStepsUrl = this.augmenter.stepsUrl;
                     // we need now to fetch the steps
-                    return this.fetchCurrentStepUrl(followAlong);
+                    return this.fetchCurrentStepUrl();
                 }
                 // get information about the result
                 logData.data = result;
@@ -92,7 +93,7 @@ export class PipelinePager {
                 // update the bunker
                 const cached = this.bunker.getItem(logData._links.self.href);
                 if (cached !== logData) { // calculate which node we need to focus
-                    logger.debug('objects are different - updating store');
+                    logger.warn('objects are different - updating store');
                     this.bunker.setItem(logData);
                 }
                 const focused = logData.data.model.filter((item) => {
@@ -112,18 +113,15 @@ export class PipelinePager {
                 this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
                 logger.warn('saved data', logData);
                 this.pending = false;
-                return this.fetchCurrentStepUrl(followAlong);
+                return this.fetchCurrentStepUrl();
             })).catch(err => {
                 logger.error('Error fetching page', err);
                 action('set error', () => { this.error = err; });
             });
     }
     @action
-    fetchCurrentStepUrl(followAlong) {
+    fetchCurrentStepUrl() {
         clearTimeout(this.timeout);
-        if (!followAlong) { // while fetching we are pending
-            this.pending = true;
-        }
         // log is text and not json, further it does not has _link in the response
         const logData = {
             _links: {
@@ -143,17 +141,13 @@ export class PipelinePager {
                     logger.debug('saved data', followAlong);
                 }
                 // we need to get more input from the log stream
-                if (false) {
-                // if (followAlong) {
+                if (this.polling) {
                     logger.debug('follow along');
                     this.timeout = setTimeout(() => {
                         const props = { followAlong };
                         logger.warn(props);
                         this.fetchCurrentStepUrl(followAlong);
                     }, 1000);
-                }
-                if (!followAlong) {
-                    this.pending = false;
                 }
             })).catch(err => {
                 logger.error('Error fetching page', err);
