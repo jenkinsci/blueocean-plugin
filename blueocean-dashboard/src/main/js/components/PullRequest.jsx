@@ -3,8 +3,10 @@ import { ReadableDate } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { CellRow, CellLink } from './CellLink';
-
 import { buildRunDetailsUrl } from '../util/UrlUtils';
+import { buildPipelineUrl } from '../util/UrlUtils';
+import { Link } from 'react-router';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 function noRun(pr, openRunDetails, t) {
     return (<tr id={`${name}`}>
@@ -47,7 +49,7 @@ export default class PullRequest extends Component {
         const result = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
         const { fullName, organization } = contextPipeline;
         const runDetailsUrl = buildRunDetailsUrl(organization, fullName, decodeURIComponent(latestRun.pipeline), latestRun.id, 'pipeline');
-
+        const historyButtonUrl = `${buildPipelineUrl(organization, contextPipeline.name)}/activity/${pr.name}`;
 
         return (
             <CellRow linkUrl={runDetailsUrl} id={`${name}-${latestRun.id}`}>
@@ -72,12 +74,20 @@ export default class PullRequest extends Component {
                     />
                 </CellLink>
                 <td className="actions">
+
                     <RunButton
                       className="icon-button"
                       runnable={pr}
                       latestRun={pr.latestRun}
                       onNavigation={openRunDetails}
                     />
+
+                    <div className="history-button-component">
+                        <Link to={historyButtonUrl} className="materials-icons">
+                            <Icon size={24} icon="history" />
+                        </Link>
+                    </div>
+
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />
                 </td>
             </CellRow>
