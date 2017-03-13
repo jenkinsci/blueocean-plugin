@@ -3,7 +3,7 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
+import { logging, capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, Favorite, ReadableDate } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import moment from 'moment';
@@ -93,14 +93,6 @@ export class PipelineCard extends Component {
         this._updateState(nextProps);
     }
 
-    _navigateToRunDetails() {
-        const runUrl = UrlBuilder.buildRunDetailsUrl(this.props.runnable.latestRun);
-
-        this.props.router.push({
-            pathname: runUrl,
-        });
-    }
-
     _updateState(props) {
         this.setState({
             favorite: props.favorite,
@@ -108,11 +100,19 @@ export class PipelineCard extends Component {
         });
     }
 
-    _onRunDetails(url) {
-        this.props.router.push(url);
-    }
+    _navigateToRunDetails = () => {
+        const runUrl = UrlBuilder.buildRunDetailsUrl(this.props.runnable.latestRun);
 
-    _onFavoriteToggle() {
+        this.props.router.push({
+            pathname: runUrl,
+        });
+    };
+
+    _onRunDetails = url => {
+        this.props.router.push(url);
+    };
+
+    _onFavoriteToggle = () => {
         const value = !this.state.favorite;
         this.setState({
             favorite: value,
@@ -121,21 +121,33 @@ export class PipelineCard extends Component {
         if (this.props.onFavoriteToggle) {
             this.props.onFavoriteToggle(value);
         }
-    }
+    };
 
     render() {
         if (!this.props.runnable) {
             return null;
         }
-        const runnableItem = this.props.runnable;
-        const latestRun = this.props.runnable.latestRun;
 
-        const isBranch = capable(runnableItem, BRANCH_CAPABILITY);
-        const names = extractNames(runnableItem, isBranch);
-        const organization = runnableItem.organization;
+        const {
+            t,
+            locale,
+            runnable
+        } = this.props;
+
+        // Required props
+        if (!t) {
+            PipelineCard.logger.error('PipelineCard requires translate function as "t" prop.');
+            return null;
+        }
+
+        const latestRun = runnable.latestRun;
+
+        const isBranch = capable(runnable, BRANCH_CAPABILITY);
+        const names = extractNames(runnable, isBranch);
+        const organization = runnable.organization;
         const fullDisplayName = isBranch ?
-            runnableItem.fullDisplayName.split('/').slice(0, -1).join('/') :
-            runnableItem.fullDisplayName;
+            runnable.fullDisplayName.split('/').slice(0, -1).join('/') :
+            runnable.fullDisplayName;
 
         let status;
         let startTime = null;
@@ -165,10 +177,11 @@ export class PipelineCard extends Component {
 
         // Calculate datetime of last run
 
-        const skewMillis = 0; // TODO: Get from somewhere
-        let locale = "EN"; // TODO: get from somewhere
-        const dateFormatShort = 'MMM DD h:mma Z'; //TODO: t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' });
-        const dateFormatLong = 'MMM DD YYYY h:mma Z'; //TODO: t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' });
+        // we need to make sure that we calculate with the correct time offset
+        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
+
+        const dateFormatShort = t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' });
+        const dateFormatLong = t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' });
 
         let runDateTime = null;
 
@@ -198,14 +211,8 @@ export class PipelineCard extends Component {
             />
         );
 
-        // console.log('-------------------------------------------'); // TODO: RM
-        // console.log('runnableItem'); // TODO: RM
-        // console.log(JSON.stringify(runnableItem, null, 4)); // TODO: RM
-        // console.log('latestRun'); // TODO: RM
-        // console.log(JSON.stringify(latestRun, null, 4)); // TODO: RM
-
         return (
-            <PipelineCardRenderer onClickMain={() => this._navigateToRunDetails()}
+            <PipelineCardRenderer onClickMain={this._navigateToRunDetails}
                                   status={status}
                                   startTime={startTime}
                                   estimatedDuration={estimatedDuration}
@@ -215,10 +222,10 @@ export class PipelineCard extends Component {
                                   commitText={commitId && commitText}
                                   timeText={timeText}
                                   favoriteChecked={this.state.favorite}
-                                  onFavoriteToggle={() => this._onFavoriteToggle()}
-                                  runnableItem={runnableItem}
+                                  onFavoriteToggle={this._onFavoriteToggle}
+                                  runnableItem={runnable}
                                   latestRun={latestRun}
-                                  onRunDetails={url => this._onRunDetails(url)} />
+                                  onRunDetails={this._onRunDetails} />
             );
     }
 }
@@ -228,11 +235,19 @@ PipelineCard.propTypes = {
     runnable: PropTypes.object,
     favorite: PropTypes.bool,
     onFavoriteToggle: PropTypes.func,
+    locale: PropTypes.string.isRequired,
+    t: PropTypes.func.isRequired,
 };
 
 PipelineCard.defaultProps = {
     favorite: false,
 };
+
+PipelineCard.contextTypes = {
+    config: PropTypes.object.isRequired,
+};
+
+PipelineCard.logger = logging.logger('io.jenkins.blueocean.personalization.PipelineCard');
 
 export const PipelineCardRenderer = (props) => {
 

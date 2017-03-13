@@ -4,8 +4,6 @@
 import React, { PropTypes } from 'react';
 import { action, storiesOf } from '@kadira/storybook';
 import moment from 'moment';
-import { DEBUG } from '@jenkins-cd/blueocean-core-js';
-DEBUG.enableMocksForI18n();
 
 import { PipelineCard, PipelineCardRenderer } from '../components/PipelineCard';
 
@@ -72,6 +70,11 @@ const statuses = [
     'UNKNOWN'
 ];
 
+// Dummy translation
+const t = (key, options) => options && options.defaultValue || key;
+t.lng = 'EN';
+
+// Some times to show
 const startTime = moment().subtract(180, 'seconds').toISOString();
 const endTime = moment().subtract(45, 'seconds').toISOString();
 const estimatedDuration = 1000 * 60 * 5; // 5 mins
@@ -100,21 +103,22 @@ function makePipelineData(state) {
 }
 
 function pipelineCardExamples() {
+    let key = 111;
     return (
         <div style={outerStyle}>
-            { statuses.map(state => {
-                const clone = makePipelineData(state);
-
-                return (
-                    <div key={state} style={cardWrapStyle}>
+            {
+                statuses.map(makePipelineData).map(pipeline => (
+                    <div key={key++} style={cardWrapStyle}>
                         <PipelineCard
-                            runnable={clone}
+                            favorite
+                            runnable={pipeline}
                             onRunClick={action('run')}
                             onFavoriteToggle={action('toggle')}
+                            t={t}
                         />
                     </div>
-                );
-            }) }
+                ))
+            }
         </div>
     );
 }
@@ -160,7 +164,7 @@ function showRenderer(status, displayPath, branchText, commitText, timeText) {
                                   timeText={timeText}
                                   favoriteChecked={favoriteChecked}
                                   runnableItem={runnableItem}
-                                  latestRun={latestRun}/>
+                                  latestRun={latestRun} />
         </div>
     );
 }
