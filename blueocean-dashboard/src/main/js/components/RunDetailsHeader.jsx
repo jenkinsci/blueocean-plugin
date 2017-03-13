@@ -99,17 +99,20 @@ class RunDetailsHeader extends Component {
             <div className="u-label-value" title={branchLabel + ': ' + displayName}>
                 <label className={labelClassName}>{ branchLabel }:</label>
                 {isMultiBranch ? (
-                    <span>
+                    <span className={labelClassName}>
                         <Link to={ branchUrl }>{ displayName }</Link>
-                        { run.pullRequest && run.pullRequest.url &&
-                        <a title="Display the log in new window" target="_blank" href={run.pullRequest.url}>
-                            <Icon size={14} icon="launch" />
-                        </a>
-                        }
                     </span>
                   ) : (
                     <span>&mdash;</span>
                   )}
+
+                { run.pullRequest && run.pullRequest.url &&
+                    <span>
+                        <a title="Opens pull request in a new window" target="_blank" href={run.pullRequest.url}>
+                            <Icon size={14} icon="launch" />
+                        </a>
+                    </span>
+                }
             </div>
         );
 
