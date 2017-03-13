@@ -36,7 +36,7 @@ export class PipelineValidator {
                 if (window.isDevelopmentMode) console.error(data);
             }
             handler(data);
-        });
+        }, { disableLoadingIndicator: true });
     }
 
     /**
