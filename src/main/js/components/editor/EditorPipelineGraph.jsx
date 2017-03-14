@@ -542,50 +542,44 @@ needsLayout = true;
         const classNames = ["editor-graph-nodegroup"];
         if (nodeHasErrors(node)) {
             classNames.push("errors");
-            groupChildren.push(
-                <line 
-                transform="rotate(45)"
-                x1={0}
-                y1={-6}
-                x2={0}
-                y2={6}
-                strokeWidth={nodeStrokeWidth*.75} />
-            );
-            groupChildren.push(
-                <line 
-                transform="rotate(-45)"
-                x1={0}
-                y1={-6}
-                x2={0}
-                y2={6}
-                strokeWidth={nodeStrokeWidth*.75} />
-            );
-            /*
-            groupChildren.push(
-                <line 
-                //transform="rotate(45)"
-                transform="rotate(90)"
-                x1={0}
-                y1={-12}
-                x2={0}
-                y2={12}
-                strokeWidth={nodeStrokeWidth*.75} />
-            );
-            */
-            /*
-            groupChildren.push(
-                <text x="-7px" y="7px">!</text>
-            );
-            */
+            const alertIcon =
+                `<svg class="alerticon" width="20px" height="20px" viewBox="13 9 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+                    <desc>Created with Sketch.</desc>
+                    <defs>
+                        <path d="M8.0197096,1.74273849 C8.56110904,0.780250597 9.44018119,0.782544345 9.9802904,1.74273849 L17.0197096,14.2572615 C17.561109,15.2197494 17.1073772,16 16.0049107,16 L1.99508929,16 C0.893231902,16 0.440181194,15.2174557 0.980290398,14.2572615 L8.0197096,1.74273849 Z" id="path-1"></path>
+                        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="20" height="20">
+                            <rect x="0" y="0" width="20" height="20" fill="white"></rect>
+                            <use xlink:href="#path-1" fill="black"></use>
+                        </mask>
+                        <rect id="path-3" x="8" y="6" width="2" height="4"></rect>
+                        <mask id="mask-4" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="2" height="4" fill="white">
+                            <use xlink:href="#path-3"></use>
+                        </mask>
+                        <rect id="path-5" x="8" y="12" width="2" height="2"></rect>
+                        <mask id="mask-6" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="2" height="2" fill="white">
+                            <use xlink:href="#path-5"></use>
+                        </mask>
+                    </defs>
+                    <g id="Group-10" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(15, 9)">
+                        <g id="Triangle-2">
+                            <use fill="#CE373A" fill-rule="evenodd" xlink:href="#path-1"></use>
+                            <use stroke="#FFFFFF" mask="url(#mask-2)" stroke-width="2" xlink:href="#path-1"></use>
+                        </g>
+                        <use id="Rectangle-17" stroke="#FFFFFF" mask="url(#mask-4)" stroke-width="2" fill="#D8D8D8" xlink:href="#path-3"></use>
+                        <use id="Rectangle-17-Copy" stroke="#FFFFFF" mask="url(#mask-6)" stroke-width="2" fill="#D8D8D8" xlink:href="#path-5"></use>
+                    </g>
+                </svg>`;
+            groupChildren.push(<g transform="translate(1,-1)" dangerouslySetInnerHTML={{ __html: alertIcon }} />);
         }
 
         if (nodeIsSelected) {
             classNames.push("selected");
 
             // add a middle dot
-            groupChildren.push(
-                <circle className="pipeline-selection-highlight" r={dotRadius} strokeWidth={nodeStrokeWidth} />
-            );
+//            groupChildren.push(
+//                <circle className="pipeline-selection-highlight" r={dotRadius} strokeWidth={nodeStrokeWidth} />
+//            );
         }
 
         // Add an invisible click/touch target, coz the nodes are small and (more importantly)

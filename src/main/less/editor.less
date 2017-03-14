@@ -190,26 +190,19 @@
     .editor-graph-nodegroup.selected .editor-graph-node {
         stroke: @brand-color;
     }
+    
+    .editor-graph-nodegroup circle {
+        transition: all 0.1s ease-in;
+    }
+
+    .editor-graph-nodegroup.selected circle {
+        stroke-width: 12px;
+        r: 6px;
+    }
 
     .pipeline-selection-highlight {
         fill: @brand-color;
         stroke: @brand-color;
-    }
-
-    .editor-graph-nodegroup.errors .editor-graph-node {
-        stroke: @error-highlight;
-    }
-
-    .editor-graph-nodegroup.selected.errors .editor-graph-node {
-        stroke: @error-highlight;
-    }
-
-    .editor-graph-nodegroup.errors line {
-        stroke: @error-highlight;
-    }
-
-    .editor-graph-nodegroup.selected.errors line {
-        stroke: #fff;
     }
 
     .editor-graph-nodegroup.errors text {
