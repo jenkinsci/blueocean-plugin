@@ -5,6 +5,8 @@
 import React, { PropTypes } from 'react';
 import { action, storiesOf } from '@kadira/storybook';
 import moment from 'moment';
+import { DEBUG } from '@jenkins-cd/blueocean-core-js';
+DEBUG.enableMocksForI18n();
 
 import { PipelineCard, PipelineCardRenderer } from '../components/PipelineCard';
 
@@ -88,7 +90,11 @@ storiesOf('PipelineCard', module)
 
 function makePipelineData(state) {
     const newPipeline = JSON.parse(JSON.stringify(pipeline));
-    newPipeline.latestRun.state = state;
+    newPipeline.latestRun.result = state;
+
+    newPipeline.permissions = {};
+    newPipeline.permissions.stop = true;
+    newPipeline.permissions.start = true;
 
     if (['SUCCESS', 'RUNNING', 'FAILURE', 'ABORTED', 'UNSTABLE'].indexOf(state) !== -1) {
         newPipeline.latestRun.startTime = startTime;
@@ -97,6 +103,7 @@ function makePipelineData(state) {
 
     if (['SUCCESS', 'FAILURE', 'ABORTED', 'UNSTABLE'].indexOf(state) !== -1) {
         newPipeline.latestRun.endTime = endTime;
+        newPipeline.latestRun.state = 'FINISHED';
     }
 
     return newPipeline;
@@ -115,6 +122,7 @@ function pipelineCardExamples() {
                             onRunClick={action('run')}
                             onFavoriteToggle={action('toggle')}
                             t={t}
+                            locale="EN"
                         />
                     </div>
                 ))
