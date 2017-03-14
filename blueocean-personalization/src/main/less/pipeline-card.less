@@ -69,11 +69,11 @@
     }
 
     .actions {
+        display: flex;
         min-width: 95px;
         margin-left: 10px;
-        text-align: right;
-        display: flex;
-        flex-direction: row-reverse;
+        justify-content: flex-end;
+        flex-direction: row;
         align-items: center;
     }
 
@@ -86,13 +86,6 @@
         fill: white;
         flex-shrink: 0;
     }
-
-    //// remove empty space to attain centered vertical alignment
-    //.run, .actions {
-    //    > * {
-    //        vertical-align: bottom;
-    //    }
-    //}
 
     .action-item.stop-button {
         width: 20px;
@@ -140,7 +133,7 @@
     }
 
     .actions > *+* {
-        margin-right:8px;
+        margin-left:8px;
     }
 
     /*

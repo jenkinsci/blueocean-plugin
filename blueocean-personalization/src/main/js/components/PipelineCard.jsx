@@ -314,9 +314,10 @@ export const PipelineCardRenderer = (props) => {
             }
 
             <span className="actions" onClick={stopProp}>
-                <Favorite checked={favoriteChecked}
-                          className="dark-white"
-                          onToggle={onFavoriteToggle}
+                <ReplayButton className="icon-button dark"
+                              runnable={runnableItem}
+                              latestRun={latestRun}
+                              onNavigation={onRunDetails}
                 />
 
                 <RunButton className="icon-button dark"
@@ -325,10 +326,9 @@ export const PipelineCardRenderer = (props) => {
                            onNavigation={onRunDetails}
                 />
 
-                <ReplayButton className="icon-button dark"
-                              runnable={runnableItem}
-                              latestRun={latestRun}
-                              onNavigation={onRunDetails}
+                <Favorite checked={favoriteChecked}
+                          className="dark-white"
+                          onToggle={onFavoriteToggle}
                 />
             </span>
         </div>
