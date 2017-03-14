@@ -3,8 +3,7 @@ import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import PullRequest from './PullRequest';
 import Markdown from 'react-remarkable';
 import { RunsRecord } from './records';
-import PageLoading from './PageLoading';
-import { capable } from '@jenkins-cd/blueocean-core-js';
+import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { observer } from 'mobx-react';
 const { object, string, func } = PropTypes;
@@ -62,7 +61,7 @@ export class PullRequests extends Component {
         const pullRequests = this.pager.data;
 
         if (this.pager.pending) {
-            return <PageLoading />;
+            return null;
         }
 
         if (!this.pager.pending && !this.pager.data.length) {
@@ -88,7 +87,6 @@ export class PullRequests extends Component {
         return (
             <main>
                 <article>
-                    {this.pager.pending && <PageLoading />}
                     <Table className="pr-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
                         {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
@@ -101,11 +99,7 @@ export class PullRequests extends Component {
                             />);
                         })}
                     </Table>
-                    {this.pager &&
-                        <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
-                            {this.pager.pending ? 'Loading...' : 'Show More'}
-                        </button>
-                    }
+                    <ShowMoreButton pager={this.pager} />
                 </article>
             </main>
         );

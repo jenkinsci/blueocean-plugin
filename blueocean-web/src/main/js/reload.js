@@ -19,4 +19,6 @@ function check() {
         }
     }, CHECK_FREQUENCY);
 }
-check();
+if (!window.isDevelopmentMode) {
+    check();
+}

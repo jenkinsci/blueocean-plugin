@@ -15,6 +15,7 @@ import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BlueIcon;
 import io.jenkins.blueocean.rest.model.BlueOrganizationFolder;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -240,6 +241,11 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
     @Override
     public Map<String, Boolean> getPermissions() {
         return null;
+    }
+
+    @Override
+    public BluePipelineScm getScm() {
+        return new ScmResourceImpl(folder, this);
     }
 
     protected OrganizationFolder getFolder() {

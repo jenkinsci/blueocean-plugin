@@ -7,6 +7,8 @@ import FlowStep from '../../flow2/FlowStep';
 import FlowStepStatus from '../../flow2/FlowStepStatus';
 import STATE from '../GithubCreationState';
 
+import Extensions from '@jenkins-cd/js-extensions';
+
 @observer
 export default class GithubCompleteStep extends React.Component {
 
@@ -40,6 +42,8 @@ export default class GithubCompleteStep extends React.Component {
             return autoDiscover ? 'Error Creating Pipelines' : 'Error Creating Pipeline';
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
             return 'Pipeline Creation Pending...';
+        } else if (state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {
+            return 'Create a pipeline';
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
             return 'Creation Successful!';
         }
@@ -57,10 +61,13 @@ export default class GithubCompleteStep extends React.Component {
                 state === STATE.STEP_COMPLETE_EVENT_ERROR;
     }
 
-    _getContent(state, autoDiscover, count) {
+    _getContent(state, autoDiscover, repo, count) {
+        const { selectedOrganization, selectedRepository } = this.props.flowManager;
+
         let copy = '';
         let showDashboardLink = false;
         let showPipelineLink = false;
+        let showCreateLink = false;
 
         if (state === STATE.PENDING_CREATION_SAVING) {
             copy = 'Please wait while your settings are saved.';
@@ -74,6 +81,9 @@ export default class GithubCompleteStep extends React.Component {
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
             copy = 'Pipelines are still waiting to be created.';
             showDashboardLink = true;
+        } else if (state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {
+            copy = `There are no Jenkinsfiles in the repository ${repo.name}.`;
+            showCreateLink = true;
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
             copy = `Success! ${count} pipelines have been created.`;
 
@@ -103,6 +113,14 @@ export default class GithubCompleteStep extends React.Component {
                     <button onClick={() => this.navigatePipeline()}>View Pipeline</button>
                 </div>
                 }
+
+                { showCreateLink &&
+                <div>
+                    <Extensions.Renderer extensionPoint="jenkins.pipeline.create.missing.jenkinsfile"
+                        organization={'jenkins'} fullName={selectedOrganization.name + '/' + selectedRepository.name}
+                    />
+                </div>
+                }
             </div>
         );
     }
@@ -113,7 +131,7 @@ export default class GithubCompleteStep extends React.Component {
         const loading = this._getLoading(flowManager.stateId);
         const error = this._getError(flowManager.stateId);
         const title = this._getTitle(flowManager.stateId, flowManager.selectedAutoDiscover);
-        const content = this._getContent(flowManager.stateId, flowManager.selectedAutoDiscover, flowManager.pipelineCount);
+        const content = this._getContent(flowManager.stateId, flowManager.selectedAutoDiscover, flowManager.selectedRepository, flowManager.pipelineCount);
 
         return (
             <FlowStep {...this.props} className="github-complete-step" title={title} status={status} loading={loading} error={error}>

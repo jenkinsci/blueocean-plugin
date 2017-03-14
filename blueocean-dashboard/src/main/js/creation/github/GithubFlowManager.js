@@ -6,7 +6,12 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 import waitAtLeast from '../flow2/waitAtLeast';
 
 import FlowManager from '../flow2/FlowManager';
+
 import STATE from './GithubCreationState';
+
+import { GithubAccessTokenManager } from './GithubAccessTokenManager';
+import { ListOrganizationsOutcome } from './api/GithubCreationApi';
+
 import GithubAlreadyDiscoverStep from './steps/GithubAlreadyDiscoverStep';
 import GithubLoadingStep from './steps/GithubLoadingStep';
 import GithubCredentialsStep from './steps/GithubCredentialStep';
@@ -16,20 +21,31 @@ import GithubChooseDiscoverStep from './steps/GithubChooseDiscoverStep';
 import GithubConfirmDiscoverStep from './steps/GithubConfirmDiscoverStep';
 import GithubRepositoryStep from './steps/GithubRepositoryStep';
 import GithubCompleteStep from './steps/GithubCompleteStep';
+import GithubUnknownErrorStep from './steps/GithubUnknownErrorStep';
 
-const LOGGER = logging.logger('io.jenkins.blueocean.github-pipeline.GithubFlowManager');
+const LOGGER = logging.logger('io.jenkins.blueocean.github-pipeline');
 const MIN_DELAY = 500;
 const FIRST_PAGE = 1;
 const PAGE_SIZE = 100;
 const SSE_TIMEOUT_DELAY = 1000 * 60;
 
+
 export default class GithubFlowManager extends FlowManager {
+
+    accessTokenManager = null;
+
+    get credentialId() {
+        return this.accessTokenManager && this.accessTokenManager.credentialId;
+    }
 
     @observable
     organizations = [];
 
     @observable
     repositories = [];
+
+    @observable
+    repositoriesLoading = false;
 
     @computed get selectableRepositories() {
         if (!this.repositories) {
@@ -75,6 +91,7 @@ export default class GithubFlowManager extends FlowManager {
             this.stateId === STATE.PENDING_CREATION_EVENTS ||
             this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
             this.stateId === STATE.STEP_COMPLETE_EVENT_TIMEOUT ||
+            this.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE ||
             this.stateId === STATE.STEP_COMPLETE_SUCCESS;
     }
 
@@ -84,11 +101,7 @@ export default class GithubFlowManager extends FlowManager {
 
     _repositoryCache = {};
 
-    _credentialId = null;
-
     _creationApi = null;
-
-    _credentialsApi = null;
 
     _sseSubscribeId = null;
 
@@ -98,7 +111,7 @@ export default class GithubFlowManager extends FlowManager {
         super();
 
         this._creationApi = creationApi;
-        this._credentialsApi = credentialsApi;
+        this.accessTokenManager = new GithubAccessTokenManager(credentialsApi);
     }
 
     getStates() {
@@ -122,14 +135,13 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     findExistingCredential() {
-        return this._credentialsApi.findExistingCredential()
+        return this.accessTokenManager.findExistingCredential()
             .then(waitAtLeast(MIN_DELAY))
-            .then(credential => this._afterInitialStep(credential));
+            .then(success => this._findExistingCredentialComplete(success));
     }
 
-    _afterInitialStep(credential) {
-        if (credential && credential.credentialId) {
-            this._credentialId = credential.credentialId;
+    _findExistingCredentialComplete(success) {
+        if (success) {
             this.changeState(STATE.PENDING_LOADING_ORGANIZATIONS);
             this.listOrganizations();
         } else {
@@ -141,56 +153,62 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     createAccessToken(token) {
-        return this._credentialsApi.createAccessToken(token)
-            .then(waitAtLeast(MIN_DELAY))
-            .then(
-                cred => this._createTokenSuccess(cred),
-                error => this._createTokenFailure(error),
-            );
+        return this.accessTokenManager.createAccessToken(token)
+            .then(success => this._createTokenComplete(success));
     }
 
-    _createTokenSuccess(cred) {
-        this._credentialId = cred.credentialId;
+    _createTokenComplete(response) {
+        if (response.success) {
+            this.renderStep({
+                stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
+                stepElement: <GithubLoadingStep />,
+                afterStateId: STATE.STEP_ACCESS_TOKEN,
+            });
 
-        this.renderStep({
-            stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
-            stepElement: <GithubLoadingStep />,
-            afterStateId: STATE.STEP_ACCESS_TOKEN,
-        });
-
-        this.listOrganizations();
-
-        return {
-            success: true,
-        };
-    }
-
-    _createTokenFailure(error) {
-        return {
-            success: false,
-            detail: error.responseBody,
-        };
+            this.listOrganizations();
+        }
     }
 
     @action
     listOrganizations() {
-        return this._creationApi.listOrganizations(this._credentialId)
+        this._creationApi.listOrganizations(this.credentialId)
             .then(waitAtLeast(MIN_DELAY))
-            .then(orgs => { this._updateOrganizations(orgs); });
+            .then(orgs => this._listOrganizationsSuccess(orgs));
     }
 
     @action
-    _updateOrganizations(organizations) {
-        this.organizations = organizations;
-
+    _listOrganizationsSuccess(response) {
         const afterStateId = this.isStateAdded(STATE.STEP_ACCESS_TOKEN) ?
             STATE.STEP_ACCESS_TOKEN : null;
 
-        this.renderStep({
-            stateId: STATE.STEP_CHOOSE_ORGANIZATION,
-            stepElement: <GithubOrgListStep />,
-            afterStateId,
-        });
+        if (response.outcome === ListOrganizationsOutcome.SUCCESS) {
+            this.organizations = response.organizations;
+
+            this.renderStep({
+                stateId: STATE.STEP_CHOOSE_ORGANIZATION,
+                stepElement: <GithubOrgListStep />,
+                afterStateId,
+            });
+        } else if (response.outcome === ListOrganizationsOutcome.INVALID_TOKEN_REVOKED) {
+            this.accessTokenManager.markTokenRevoked();
+
+            this.renderStep({
+                stateId: STATE.STEP_ACCESS_TOKEN,
+                stepElement: <GithubCredentialsStep />,
+            });
+        } else if (response.outcome === ListOrganizationsOutcome.INVALID_TOKEN_SCOPES) {
+            this.accessTokenManager.markTokenInvalidScopes();
+
+            this.renderStep({
+                stateId: STATE.STEP_ACCESS_TOKEN,
+                stepElement: <GithubCredentialsStep />,
+            });
+        } else {
+            this.renderStep({
+                stateId: STATE.ERROR_UNKOWN,
+                stepElement: <GithubUnknownErrorStep message={response.error} />,
+            });
+        }
     }
 
     @action
@@ -214,6 +232,7 @@ export default class GithubFlowManager extends FlowManager {
         const { isFound, isOrgFolder, orgFolder } = result;
 
         if (isFound && isOrgFolder) {
+            LOGGER.debug(`selected existing org folder: ${orgFolder.name}`);
             this.existingOrgFolder = orgFolder;
 
             this.renderStep({
@@ -222,6 +241,8 @@ export default class GithubFlowManager extends FlowManager {
                 afterStateId: STATE.STEP_CHOOSE_ORGANIZATION,
             });
         } else if (!result.isFound) {
+            LOGGER.debug('selected new organization');
+
             this.renderStep({
                 stateId: STATE.STEP_CHOOSE_DISCOVER,
                 stepElement: <GithubChooseDiscoverStep />,
@@ -269,6 +290,7 @@ export default class GithubFlowManager extends FlowManager {
     @action
     _loadAllRepositories(organization) {
         this.repositories.replace([]);
+        this.repositoriesLoading = true;
 
         let promise = null;
         const cachedRepos = this._repositoryCache[organization.name];
@@ -281,40 +303,47 @@ export default class GithubFlowManager extends FlowManager {
 
         promise
             .then(waitAtLeast(MIN_DELAY))
-            .then(repos => this._updateRepositories(organization.name, repos, FIRST_PAGE))
+            .then(repos => this._updateRepositories(organization.name, repos))
             .catch(error => console.log(error));
     }
 
     _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
-        return this._creationApi.listRepositories(this._credentialId, organizationName, pageNumber, pageSize);
+        return this._creationApi.listRepositories(this.credentialId, organizationName, pageNumber, pageSize);
     }
 
     @action
     _updateRepositories(organizationName, repoData) {
         const { items, nextPage } = repoData.repositories;
+        const firstPage = this.repositories.length === 0;
+        const morePages = !isNaN(parseInt(nextPage, 10));
 
         this.repositories.push(...items);
         this._repositoryCache[organizationName] = this.repositories.slice();
-
-        const morePages = !isNaN(parseInt(nextPage, 10));
 
         if (morePages) {
             this._loadPagedRepository(organizationName, nextPage)
                 .then(repos2 => this._updateRepositories(organizationName, repos2, nextPage));
         } else {
-            if (this.selectedAutoDiscover) {
-                this.renderStep({
-                    stateId: STATE.STEP_CONFIRM_DISCOVER,
-                    stepElement: <GithubConfirmDiscoverStep />,
-                    afterStateId: STATE.STEP_CHOOSE_DISCOVER,
-                });
-            } else {
-                this.renderStep({
-                    stateId: STATE.STEP_CHOOSE_REPOSITORY,
-                    stepElement: <GithubRepositoryStep />,
-                    afterStateId: STATE.STEP_CHOOSE_DISCOVER,
-                });
-            }
+            this.repositoriesLoading = false;
+        }
+
+        if (this.selectedAutoDiscover && !morePages) {
+            // wait until all the repos are loaded since we might
+            // need the full list to display some data in confirm messages
+            // TODO: might be able to optimize this to render after first page
+            this.renderStep({
+                stateId: STATE.STEP_CONFIRM_DISCOVER,
+                stepElement: <GithubConfirmDiscoverStep />,
+                afterStateId: STATE.STEP_CHOOSE_DISCOVER,
+            });
+        } else if (!this.selectedAutoDiscover && firstPage) {
+            // render the repo list only once, after the first page comes back
+            // otherwise we'll lose step's internal state
+            this.renderStep({
+                stateId: STATE.STEP_CHOOSE_REPOSITORY,
+                stepElement: <GithubRepositoryStep />,
+                afterStateId: STATE.STEP_CHOOSE_DISCOVER,
+            });
         }
     }
 
@@ -357,8 +386,8 @@ export default class GithubFlowManager extends FlowManager {
         this._initListeners();
 
         const promise = !this.existingOrgFolder ?
-            this._creationApi.createOrgFolder(this._credentialId, this.selectedOrganization, repoNames) :
-            this._creationApi.updateOrgFolder(this._credentialId, this.existingOrgFolder, repoNames);
+            this._creationApi.createOrgFolder(this.credentialId, this.selectedOrganization, repoNames) :
+            this._creationApi.updateOrgFolder(this.credentialId, this.existingOrgFolder, repoNames);
 
         promise
             .then(waitAtLeast(MIN_DELAY * 2))
@@ -367,16 +396,20 @@ export default class GithubFlowManager extends FlowManager {
 
     @action
     _saveOrgFolderSuccess(orgFolder) {
+        LOGGER.debug(`org folder saved successfully: ${orgFolder.name}`);
         this.changeState(STATE.PENDING_CREATION_EVENTS);
         this.savedOrgFolder = orgFolder;
     }
 
     _saveOrgFolderFailure() {
+        LOGGER.error('org folder save failed!');
         this.changeState(STATE.STEP_COMPLETE_SAVING_ERROR);
     }
 
     _initListeners() {
         this._cleanupListeners();
+
+        LOGGER.debug('listening for org folder and multibranch indexing events...');
 
         this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
         this._sseTimeoutId = setTimeout(() => {
@@ -385,6 +418,10 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _cleanupListeners() {
+        if (this._sseSubscribeId || this._sseTimeoutId) {
+            LOGGER.debug('cleaning up existing SSE listeners');
+        }
+
         if (this._sseSubscribeId) {
             sseService.removeHandler(this._sseSubscribeId);
             this._sseSubscribeId = null;
@@ -403,6 +440,10 @@ export default class GithubFlowManager extends FlowManager {
             return;
         }
 
+        if (LOGGER.isDebugEnabled()) {
+            this._logEvent(event);
+        }
+
         if (event.job_orgfolder_indexing_result === 'FAILURE') {
             this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
         }
@@ -415,19 +456,65 @@ export default class GithubFlowManager extends FlowManager {
             this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
         }
 
-        const repoName = event.blueocean_job_pipeline_name.split('/').pop();
+        if (!this.selectedAutoDiscover) {
+            const pipelineFullName = `${this.selectedOrganization.name}/${this.selectedRepository.name}`;
+            const orgIndexingComplete = event.job_orgfolder_indexing_result === 'SUCCESS';
+            const multiBranchIndexingComplete = event.job_multibranch_indexing_result === 'SUCCESS' &&
+                    event.blueocean_job_pipeline_name === pipelineFullName;
 
-        if (!this.selectedAutoDiscover && event.job_multibranch_indexing_result === 'SUCCESS' && this.selectedRepository.name === repoName) {
-            this.savedPipeline = {
-                organization: event.jenkins_org,
-                fullName: event.job_name,
-            };
-            this._incrementPipelineCount();
-            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+            if (orgIndexingComplete || multiBranchIndexingComplete) {
+                this._checkForSingleRepoCreation(pipelineFullName, multiBranchIndexingComplete);
+                this._cleanupListeners();
+            }
+        }
+    }
+
+    /**
+     * Complete creation process after an individual pipeline was created.
+     * @param pipeline
+     * @private
+     */
+    _completeSingleRepo(pipeline) {
+        this.savedPipeline = pipeline;
+        LOGGER.info(`creation succeeeded for ${pipeline.fullName}`);
+
+        this._incrementPipelineCount();
+        this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+    }
+
+    /**
+     * Check for creation of a single pipeline within an org folder
+     * @param {string} pipelineName
+     * @param {boolean} multiBranchIndexingComplete
+     * @private
+     */
+    _checkForSingleRepoCreation(pipelineName, multiBranchIndexingComplete) {
+        // if the multibranch pipeline has finished indexing,
+        // we can aggressively check for the pipeline's existence to complete creation
+        // if org indexing finished, be more conservative in the delay
+        const delay = multiBranchIndexingComplete ? 100 : 5000;
+
+        if (multiBranchIndexingComplete) {
+            LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
+        } else {
+            LOGGER.debug('org folder indexing completed but no pipeline has been created (yet?)');
         }
 
-        if (LOGGER.isDebugEnabled()) {
-            this._logEvent(event);
+        LOGGER.debug(`will check for single repo creation of ${pipelineName} in ${delay}ms`);
+
+        setTimeout(() => {
+            this._creationApi.findExistingOrgFolderPipeline(pipelineName)
+                .then(data => this._checkForSingleRepoCreationComplete(data));
+        }, delay);
+    }
+
+    _checkForSingleRepoCreationComplete({ isFound, pipeline }) {
+        LOGGER.debug(`check for pipeline complete. created? ${isFound}`);
+
+        if (isFound) {
+            this._completeSingleRepo(pipeline);
+        } else {
+            this._finishListening(STATE.STEP_COMPLETE_MISSING_JENKINSFILE);
         }
     }
 
@@ -444,6 +531,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _onSseTimeout() {
+        LOGGER.debug(`wait for events timed out after ${SSE_TIMEOUT_DELAY}ms`);
         this.changeState(STATE.STEP_COMPLETE_EVENT_TIMEOUT);
         this._cleanupListeners();
     }

@@ -23,7 +23,7 @@ export default class GithubAlreadyDiscoverStep extends React.Component {
 
                 <p>You may make a different selection above or exit.</p>
 
-                <button onClick={() => this._exit()}>Exit</button>
+                <button onClick={() => this._exit()}>Back to Pipelines</button>
             </FlowStep>
         );
     }

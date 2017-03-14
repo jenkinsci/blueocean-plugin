@@ -46,8 +46,16 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.BlueRun.DATE_FORMAT_STRING;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
-import static org.junit.Assert.*;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,10 +73,11 @@ public class MultiBranchTest extends PipelineBaseTest {
     @Rule
     public GitSampleRepoRule sampleRepo1 = new GitSampleRepoRule();
 
-
     @Rule
     public GitSampleRepoRule sampleRepo2 = new GitSampleRepoRule();
 
+    @Rule
+    public GitSampleRepoRule sampleRepo3 = new GitSampleRepoRule();
 
     private final String[] branches={"master", "feature%2Fux-1", "feature2"};
 
@@ -91,7 +100,9 @@ public class MultiBranchTest extends PipelineBaseTest {
     public void testGetURL() {
         Job job = mock(Job.class);
         BranchImpl branch = new BranchImpl(job, new Link("foo"));
-        assertNull(branch.getBranch());
+        assertNotNull(branch.getBranch());
+        assertNull(branch.getBranch().getUrl());
+        assertFalse(branch.getBranch().isPrimary());
         ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
         when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
         assertEquals("https://path/to/branch", branch.getBranch().getUrl());
@@ -101,7 +112,9 @@ public class MultiBranchTest extends PipelineBaseTest {
     public void testBranchInfo() {
         Job job = mock(Job.class);
         BranchImpl branch = new BranchImpl(job, new Link("foo"));
-        assertNull(branch.getBranch());
+        assertNotNull(branch.getBranch());
+        assertNull(branch.getBranch().getUrl());
+        assertFalse(branch.getBranch().isPrimary());
         ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
         when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
         assertEquals("https://path/to/branch", branch.getBranch().getUrl());
@@ -487,9 +500,11 @@ public class MultiBranchTest extends PipelineBaseTest {
 
     @Test
     public void getMultiBranchPipelineRunChangeSets() throws Exception {
+        setupScmWithChangeSet();
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
-        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
-            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        mp.getSourcesList().add(
+                new BranchSource(
+                        new GitSCMSource(null, sampleRepo3.toString(), "", "*", "", false)));
         for (SCMSource source : mp.getSCMSources()) {
             assertEquals(mp, source.getOwner());
         }
@@ -498,34 +513,32 @@ public class MultiBranchTest extends PipelineBaseTest {
         j.waitUntilNoActivity();
         WorkflowRun b1 = p.getLastBuild();
         assertEquals(1, b1.getNumber());
-        assertEquals(3, mp.getItems().size());
-
+        assertEquals(1, mp.getItems().size());
 
         String[] messages = {"tweaked11","tweaked12","tweaked13","tweaked14"};
 
-        sampleRepo.git("checkout","master");
-        sampleRepo.write("file", "subsequent content11");
-        sampleRepo.git("commit", "--all", "--message="+messages[0]);
+        sampleRepo3.git("checkout","master");
+        sampleRepo3.write("file", "subsequent content11");
+        sampleRepo3.git("commit", "--all", "--message="+messages[0]);
 
-        sampleRepo.git("checkout","master");
-        sampleRepo.write("file", "subsequent content12");
-        sampleRepo.git("commit", "--all", "--message="+messages[1]);
+        sampleRepo3.git("checkout","master");
+        sampleRepo3.write("file", "subsequent content12");
+        sampleRepo3.git("commit", "--all", "--message="+messages[1]);
 
-        sampleRepo.git("checkout","master");
-        sampleRepo.write("file", "subsequent content13");
-        sampleRepo.git("commit", "--all", "--message="+messages[2]);
-
-
-        sampleRepo.git("checkout","master");
-        sampleRepo.write("file", "subsequent content14");
-        sampleRepo.git("commit", "--all", "--message="+messages[3]);
+        sampleRepo3.git("checkout","master");
+        sampleRepo3.write("file", "subsequent content13");
+        sampleRepo3.git("commit", "--all", "--message="+messages[2]);
 
 
-        p = scheduleAndFindBranchProject(mp, "master");
+        sampleRepo3.git("checkout","master");
+        sampleRepo3.write("file", "subsequent content14");
+        sampleRepo3.git("commit", "--all", "--message="+messages[3]);
+
+        WorkflowRun b4 = p.scheduleBuild2(0).get();
         j.waitUntilNoActivity();
-        WorkflowRun b4 = p.getLastBuild();
-        assertEquals(2, b4.getNumber());
+        assertEquals(b4.getNumber(),2);
 
+        Assert.assertEquals(1, b4.getChangeSets().size());
         ChangeLogSet.Entry changeLog = b4.getChangeSets().get(0).iterator().next();
 
         int i=0;
@@ -550,6 +563,8 @@ public class MultiBranchTest extends PipelineBaseTest {
             Assert.assertEquals(cs.getCommitId(),changetSet.get(j).get("commitId"));
             j++;
         }
+
+        Assert.assertEquals(i,j);
     }
 
     @Test
@@ -927,6 +942,17 @@ public class MultiBranchTest extends PipelineBaseTest {
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content2");
         sampleRepo.git("commit", "--all", "--message=tweaked2");
+    }
+    private void setupScmWithChangeSet() throws Exception {
+        // create git repo
+        sampleRepo3.init();
+        sampleRepo3.write("Jenkinsfile", "node {\n" +
+                "  checkout scm\n" +
+                "  echo 'hi!'\n" +
+                "}");
+        sampleRepo3.write("file", "initial content");
+        sampleRepo3.git("add", "Jenkinsfile");
+        sampleRepo3.git("commit", "--all", "--message=flow");
     }
 
 

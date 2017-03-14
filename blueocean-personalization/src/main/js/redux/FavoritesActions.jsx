@@ -2,11 +2,12 @@
  * Created by cmeyers on 7/6/16.
  */
 import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
-import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter as augmenter, ToastService, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import { ACTION_TYPES } from './FavoritesStore';
 import { cleanSlashes } from '../util/UrlUtils';
 
+const translator = i18nTranslator('blueocean-personalization');
 const fetchFlags = {
     [ACTION_TYPES.SET_FAVORITES]: false,
 };
@@ -86,6 +87,15 @@ export const actions = {
                 });
             })
             .catch((error) => {
+                const responseBody = error.responseBody;
+                if (responseBody && responseBody.code && responseBody.message) {
+                    ToastService.newToast({
+                        style: 'error',
+                        caption: translator('Favoriting Error'),
+                        text: translator(responseBody.message),
+                    });
+                }
+
                 fetchFlags[actionType] = false;
                 console.error(error); // eslint-disable-line no-console
                 // call again with no payload so actions handle missing data

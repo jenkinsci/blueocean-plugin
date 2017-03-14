@@ -15,9 +15,11 @@ export default function GitDefaultOption(props) {
         }
     }
 
+    const className = `git-creation monochrome ${props.isSelected ? 'active' : ''}`;
+    
     return (
         <div>
-            <IconButton className="git-creation monochrome" label="Git" onClick={onSelect}>
+            <IconButton className={className} label="Git" onClick={onSelect}>
                 <GitIcon />
             </IconButton>
         </div>
@@ -26,4 +28,5 @@ export default function GitDefaultOption(props) {
 
 GitDefaultOption.propTypes = {
     onSelect: PropTypes.func,
+    isSelected: PropTypes.bool,
 };

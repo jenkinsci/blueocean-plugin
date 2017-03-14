@@ -8,7 +8,7 @@ export default class GithubLoadingStep extends React.Component {
 
     render() {
         return (
-            <FlowStep {...this.props} title="Loading..." loading />
+            <FlowStep {...this.props} title="Loading..." loading scrollOnActive={false} />
         );
     }
 

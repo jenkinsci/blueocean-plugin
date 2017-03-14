@@ -14,6 +14,7 @@ import { ToastService } from './ToastService';
 export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
 
 export logging from './logging';
+export loadingIndicator from './LoadingIndicator';
 
 export { Fetch, FetchFunctions } from './fetch';
 export UrlBuilder from './UrlBuilder';
@@ -36,6 +37,7 @@ export { stringUtil as StringUtil };
 export Fullscreen from './Fullscreen';
 export NotFound from './NotFound';
 
+export { ShowMoreButton } from './components/ShowMoreButton';
 export { ReplayButton } from './components/ReplayButton';
 export { RunButton as RunButtonBase } from './components/RunButton';
 export {
@@ -122,4 +124,5 @@ export {
     getRestUrl,
     buildUrl,
     relativeUrl,
+    toClassicJobPage,
 } from './utils/UrlUtils';

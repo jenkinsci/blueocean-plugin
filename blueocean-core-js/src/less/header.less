@@ -9,12 +9,11 @@
     position:relative;
     top:-1px;  // To shift apparent text baseline up
 
-    .BlueOceanLogo-icon {
-        margin-right: 5px;
+    svg {
+        height: 20px;
         fill: white;
-
+        top: 1px;
         position:relative;
-        top:1px;  // To shift apparent text baseline up
     }
 }
 
@@ -29,6 +28,8 @@
 
 .ContentPageHeader-user {
 
+    display: flex;
+    height: 100%;
     padding-left: 1em;
 
     * {
@@ -49,6 +50,24 @@
         background: none;
         min-width: 0;
         border-color: white;
+    }
+
+    .user-component {
+        display: inline-block;
+        align-items: center;
+        height: 100%;
+
+        &.icon {
+            padding-top: 13px;
+            svg {
+                fill: white;
+                width: 24px;
+                height: 24px;
+            }
+        }
+        &.button-bar {
+            padding-top: 11px;
+        }
     }
 }
 

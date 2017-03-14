@@ -1,5 +1,21 @@
 import { capabilityAugmenter, capable, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import { Enum } from '../../flow2/Enum';
 
+const INVALID_ACCESS_TOKEN_CODE = 428;
+const INVALID_ACCESS_TOKEN_MSG = 'Invalid Github accessToken';
+const INVALID_SCOPES_MSG = 'Github accessToken does not have required scopes';
+
+export const ListOrganizationsOutcome = new Enum({
+    SUCCESS: 'success',
+    INVALID_TOKEN_REVOKED: 'revoked_token',
+    INVALID_TOKEN_SCOPES: 'invalid_token_scopes',
+    ERROR: 'error',
+});
+
+
+/**
+ * Handles lookup of Github orgs and repos, and saving of the Github org folder.
+ */
 export class GithubCreationApi {
 
     constructor(fetch) {
@@ -11,7 +27,41 @@ export class GithubCreationApi {
         const orgsUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github/organizations/?credentialId=${credentialId}`, false);
 
         return this._fetch(orgsUrl)
-            .then(orgs => capabilityAugmenter.augmentCapabilities(orgs));
+            .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
+            .then(
+                orgs => this._listOrganizationsSuccess(orgs),
+                error => this._listOrganizationsFailure(error),
+            );
+    }
+
+    _listOrganizationsSuccess(organizations) {
+        return {
+            outcome: ListOrganizationsOutcome.SUCCESS,
+            organizations,
+        };
+    }
+
+    _listOrganizationsFailure(error) {
+        const { code, message } = error.responseBody;
+
+        if (code === INVALID_ACCESS_TOKEN_CODE) {
+            if (message.indexOf(INVALID_ACCESS_TOKEN_MSG) !== -1) {
+                return {
+                    outcome: ListOrganizationsOutcome.INVALID_TOKEN_REVOKED,
+                };
+            }
+
+            if (message.indexOf(INVALID_SCOPES_MSG) !== -1) {
+                return {
+                    outcome: ListOrganizationsOutcome.INVALID_TOKEN_SCOPES,
+                };
+            }
+        }
+
+        return {
+            outcome: ListOrganizationsOutcome.ERROR,
+            error: message,
+        };
     }
 
     listRepositories(credentialId, organizationName, pageNumber = 1, pageSize = 100) {
@@ -36,9 +86,7 @@ export class GithubCreationApi {
     }
 
     _findExistingOrgFolderSuccess(orgFolder) {
-        // TODO: remove second class after JENKINS-41403 is implemented
-        const isOrgFolder = capable(orgFolder, 'jenkins.branch.OrganizationFolder') ||
-                capable(orgFolder, 'io.jenkins.blueocean.rest.impl.pipeline.OrganizationFolderPipelineImpl');
+        const isOrgFolder = capable(orgFolder, 'jenkins.branch.OrganizationFolder');
 
         return {
             isFound: true,
@@ -51,6 +99,30 @@ export class GithubCreationApi {
         return {
             isFound: false,
             isOrgFolder: false,
+        };
+    }
+
+    findExistingOrgFolderPipeline(pipelineName) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const pipelineUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/${pipelineName}`);
+        return this._fetch(pipelineUrl)
+            .then(response => capabilityAugmenter.augmentCapabilities(response))
+            .then(
+                pipeline => this._findExistingOrgFolderPipelineSuccess(pipeline),
+                () => this._findExistingOrgFolderPipelineFailure(),
+            );
+    }
+
+    _findExistingOrgFolderPipelineSuccess(pipeline) {
+        return {
+            isFound: true,
+            pipeline,
+        };
+    }
+
+    _findExistingOrgFolderPipelineFailure() {
+        return {
+            isFound: false,
         };
     }
 
