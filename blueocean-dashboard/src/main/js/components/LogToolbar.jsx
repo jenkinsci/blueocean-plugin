@@ -8,7 +8,7 @@ const { string } = PropTypes;
 
 export default class LogToolbar extends Component {
     render() {
-        const { url, title } = this.props;
+        const { url, title, fileName } = this.props;
         // early out
         if (!url) {
             return null;
@@ -30,7 +30,8 @@ export default class LogToolbar extends Component {
                 </a>
                 <a {...{
                     title: 'Download the log file',
-                    href: `${logUrl}&download=true`,
+                    download: `${fileName}`,
+                    href: `${logUrl}`,
                 }}
                 >
                     <Icon size={24} {...{ style, icon: 'file_download' }} />

@@ -89,14 +89,6 @@ export default class RunDetailsArtifacts extends Component {
         const { artifactsZipFile: zipFile } = result;
         const artifacts = this.artifacts.value;
 
-        if (!artifacts || !artifacts.length) {
-            return (<EmptyStateView tightSpacing>
-                <Markdown>
-                    {t('EmptyState.artifacts', { defaultValue: 'There are no artifacts for this pipeline run.\n\n' })}
-                </Markdown>
-            </EmptyStateView>);
-        }
-
         const headers = [
             { label: t('rundetail.artifacts.header.name', { defaultValue: 'Name' }), className: 'name' },
             { label: t('rundetail.artifacts.header.size', { defaultValue: 'Size' }), className: 'size' },
@@ -132,6 +124,26 @@ export default class RunDetailsArtifacts extends Component {
             <div>
                 <ArtifactListingLimited artifacts={artifacts} t={t} />
                 <Table headers={headers} className="artifacts-table">
+                    <tr>
+                        <td>
+                            <a target="_blank"
+                                title={t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' })}
+                                href={`${UrlConfig.getJenkinsRootURL()}${result._links.self.href}log`}
+                            >
+                                pipeline.log
+                            </a>
+                        </td>
+                        <td>-</td>
+                        <td className="download">
+                            <a target="_blank"
+                                download="pipeline.log"
+                                title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })}
+                                href={`${UrlConfig.getJenkinsRootURL()}${result._links.self.href}log`}
+                            >
+                                <Icon style={style} icon="file_download" />
+                            </a>
+                        </td>
+                    </tr>
                     { artifactsRendered }
                     <td colSpan="3"></td>
                 </Table>
