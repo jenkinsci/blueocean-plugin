@@ -423,7 +423,7 @@
         <dependency>
           <groupId>io.jenkins.blueocean</groupId>
           <artifactId>blueocean-pipeline-editor</artifactId>        
-          <version>0.1-preview-4</version>
+          <version>0.2-rc1</version>
         </dependency>
         
 
