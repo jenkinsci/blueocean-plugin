@@ -87,12 +87,12 @@
         flex-shrink: 0;
     }
 
-    // remove empty space to attain centered vertical alignment
-    .run, .actions {
-        > * {
-            vertical-align: bottom;
-        }
-    }
+    //// remove empty space to attain centered vertical alignment
+    //.run, .actions {
+    //    > * {
+    //        vertical-align: bottom;
+    //    }
+    //}
 
     .action-item.stop-button {
         width: 20px;
@@ -137,5 +137,27 @@
     * > .Dialog {
         color: black;
         text-align: left;
+    }
+
+    .actions > *+* {
+        margin-right:8px;
+    }
+
+    /*
+        FIXME: The following are hacks around wrapper components in core-js that are screwing up sizing. See:
+         - blueocean-core-js/src/js/components/LiveStatusIndicator.jsx
+         - blueocean-core-js/src/js/parameter/ParametersRunButton.jsx
+    */
+
+    >*:first-child {
+        height: 20px;
+        width: 20px;
+        overflow: hidden;
+    }
+
+    .actions > * {
+        height: 24px;
+        width: 24px;
+        overflow: hidden;
     }
 }
