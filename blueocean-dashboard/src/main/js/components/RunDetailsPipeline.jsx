@@ -395,7 +395,7 @@ export class RunDetailsPipeline extends Component {
         const classicInputUrl = buildClassicInputUrl(pipe, run.id);
         logger.debug('classic Input url', classicInputUrl, pipe);
 
-        const logUrl = shouldShowCV ? logGeneral.url : `${nodeKey}${this.mergedConfig.node}/log`;
+        const logUrl = shouldShowCV ? logGeneral.url : `${nodeKey}${this.mergedConfig.node}/log/`;
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
