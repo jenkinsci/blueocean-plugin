@@ -68,7 +68,7 @@ export default class Pipeline extends Component {
     sseEventHandler(event) {
          // we are using try/catch to throw an early out error
         try {
-            logger.warn('incoming event', event);
+            logger.debug('incoming event', event);
             const jenkinsEvent = event.jenkins_event;
             const { run } = this.props;
             const runId = run.id;
@@ -81,7 +81,7 @@ export default class Pipeline extends Component {
             switch (jenkinsEvent) {
             case 'pipeline_step': {
                 logger.warn('sse event step fetchCurrentSteps', jenkinsEvent);
-                debounce(() => setTimeout(() => this.pager.fetchCurrentStepUrl(), 200), 200); // after .5 seconds to give time for rest
+                this.pager.fetchCurrentStepUrl();
                 break;
             }
             case 'pipeline_end':
@@ -89,7 +89,7 @@ export default class Pipeline extends Component {
             case 'pipeline_block_end':
             case 'pipeline_stage': {
                 logger.warn('sse event block starts refetchNodes', jenkinsEvent);
-                debounce(() => setTimeout(() => this.pager.fetchNodes({}), 200), 200); // after .5 seconds to give time for rest
+                this.pager.fetchNodes({});
                 break;
             }
             default: {

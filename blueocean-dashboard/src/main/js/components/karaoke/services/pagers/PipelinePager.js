@@ -67,6 +67,7 @@ export class PipelinePager {
      */
     @action
     fetchNodes({ node }) {
+        logger.warn('Fetching now nodes url and further process it');
         // while fetching we are pending
         this.pending = true;
         // log is text and not json, further it does not has _link in the response
@@ -77,13 +78,13 @@ export class PipelinePager {
                 },
             },
         };
-        logger.warn('Fetching now nodes url and further process it');
         // get api data and further process it
         return KaraokeApi.getNodes(this.augmenter.nodesUrl)
             .then(action('Process node data', result => {
+                logger.warn('data dumb', result);
                 if (result.model.length === 0) {
                     this.pending = false;
-                    logger.warn('Seems we do not have any nodes for this run.');
+                    logger.debug('Seems we do not have any nodes for this run.');
                     this.currentStepsUrl = this.augmenter.stepsUrl;
                     // we need now to fetch the steps
                     return this.fetchCurrentStepUrl();
@@ -94,7 +95,7 @@ export class PipelinePager {
                 // update the bunker
                 const cached = this.bunker.getItem(logData._links.self.href);
                 if (cached !== logData) { // calculate which node we need to focus
-                    logger.warn('objects are different - updating store');
+                    logger.debug('objects are different - updating store');
                     this.bunker.setItem(logData);
                 }
                 const focused = logData.data.model.filter((item) => {
@@ -112,7 +113,7 @@ export class PipelinePager {
                     this.currentNode = lastNode;
                 }
                 this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
-                logger.warn('saved data', logData);
+                logger.debug('saved data', logData);
                 this.pending = false;
                 return this.fetchCurrentStepUrl();
             })).catch(err => {
@@ -122,6 +123,7 @@ export class PipelinePager {
     }
     @action
     fetchCurrentStepUrl() {
+        logger.debug('Fetching now current step url and further process it');
         clearTimeout(this.timeout);
         // log is text and not json, further it does not has _link in the response
         const logData = {
@@ -132,7 +134,6 @@ export class PipelinePager {
             },
         };
         // get api data and further process it
-        logger.warn('Fetching now current step url and further process it');
         return KaraokeApi.getSteps(this.currentStepsUrl)
             .then(action('Process steps data', result => {
                 logData.data = result;
