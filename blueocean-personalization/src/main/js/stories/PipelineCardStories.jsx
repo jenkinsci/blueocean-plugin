@@ -64,8 +64,8 @@ Context.childContextTypes = {
 
 const statuses = [
     'SUCCESS',
-    // 'QUEUED',
-    // 'RUNNING',
+    'QUEUED',
+    'RUNNING',
     'FAILURE',
     'ABORTED',
     'UNSTABLE',
