@@ -66,8 +66,13 @@ public class GithubScmSaveFileRequest{
         }
 
         try {
-            createBranchIfNotPresent(apiUrl,owner,repoName,accessToken);
-            String sha = content.getSha();
+            String sha = createBranchIfNotPresent(apiUrl,owner,repoName,accessToken);
+
+            //sha in request overrides the one we computed
+            if(!StringUtils.isBlank(content.getSha())){
+                sha = content.getSha();
+            }
+
             Map<String,Object> body = new HashMap<>();
             body.put("message", content.getMessage());
             body.put("content", content.getBase64Data());
@@ -117,17 +122,19 @@ public class GithubScmSaveFileRequest{
      *  <li>sha is not provided</li>
      *  <li>autoCreateBranch is false or null</li>
      *  <li>if its not empty repo</li>
+     *
+     *  @return If new branch is created, sha of content.path on the new branch otherwise null
      */
-    private void createBranchIfNotPresent(String apiUrl, String owner, String repoName, String accessToken) throws IOException {
+    private String createBranchIfNotPresent(String apiUrl, String owner, String repoName, String accessToken) throws IOException {
         //If no branch or sha is provided or auto branchc reate flag is false then skip creation of branch
         if(StringUtils.isBlank(content.getBranch()) || !StringUtils.isBlank(content.getSha())
                 || (content.isAutoCreateBranch() != null && !content.isAutoCreateBranch())){
-            return;
+            return null;
         }
 
         //If its empty repo, we can't create the branch on it. It gets created doing content creation
         if(isEmptyRepo(apiUrl,owner,repoName,accessToken)){
-            return;
+            return null;
         }
         //check if branch exists
         try {
@@ -177,11 +184,12 @@ public class GithubScmSaveFileRequest{
                     throw new ServiceException.BadRequestExpception(String.format("sha in request: %s is different from sha of file %s in branch %s",
                             sha, content.getPath(), content.getBranch()));
                 }
-                sha = ghContent.getSha();
+                return ghContent.getSha();
             } catch (ServiceException.NotFoundException e1) {
                 //not found, ignore it, we are good
             }
         }
+        return null;
     }
 
     private boolean isEmptyRepo(String apiUrl, String owner, String repoName, String accessToken) throws IOException {
