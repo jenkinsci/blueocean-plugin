@@ -34,7 +34,7 @@ export default class GitFlowManager extends FlowManager {
 
     @computed
     get credentials() {
-        const credentials = this.credentialsManager.displayedCredentials || [];
+        const credentials = this.credentialsManager.credentials.slice();
         return [].concat(this.noCredentialsOption, credentials);
     }
 
@@ -43,7 +43,7 @@ export default class GitFlowManager extends FlowManager {
 
     pipelineName = null;
 
-    credentialId = null;
+    selectedCredential = null;
 
     pipeline = null;
 
@@ -97,7 +97,7 @@ export default class GitFlowManager extends FlowManager {
 
     createPipeline(repositoryUrl, credential) {
         this.repositoryUrl = repositoryUrl;
-        this.credentialId = credential && credential !== this.noCredentialsOption ? credential.id : null;
+        this.selectedCredential = credential;
         this.pipelineName = this._createNameFromRepoUrl(repositoryUrl);
         return this._initiateCreatePipeline();
     }
@@ -134,9 +134,24 @@ export default class GitFlowManager extends FlowManager {
 
         this.setPlaceholders();
 
-        LOGGER.debug('creating pipeline with parameters', this.repositoryUrl, this.credentialId, this.pipelineName);
+        let credentialId = null;
 
-        return this._createApi.createPipeline(this.repositoryUrl, this.credentialId, this.pipelineName)
+        if (this.selectedCredential === this.noCredentialsOption) {
+            if (!this._isHttpRepositoryUrl(this.repositoryUrl)) {
+                if (this.credentialsManager.systemSSHCredential) {
+                    LOGGER.debug('using default system SSH key credential for creation');
+                    credentialId = this.credentialsManager.systemSSHCredential.id;
+                } else {
+                    LOGGER.warn('attempting to create from Git repo w/ SSH URL but no default SSH credential exists');
+                }
+            }
+        } else if (this.selectedCredential !== this.noCredentialsOption) {
+            credentialId = this.selectedCredential.id;
+        }
+
+        LOGGER.debug('creating pipeline with parameters', this.repositoryUrl, credentialId, this.pipelineName);
+
+        return this._createApi.createPipeline(this.repositoryUrl, credentialId, this.pipelineName)
             .then(waitAtLeast(SAVE_DELAY))
             .then(result => this._createPipelineComplete(result));
     }
@@ -165,6 +180,11 @@ export default class GitFlowManager extends FlowManager {
                 afterStateId: STATE.STEP_CONNECT,
             });
         }
+    }
+
+    _isHttpRepositoryUrl(repositoryUrl) {
+        const url = repositoryUrl && repositoryUrl.toLowerCase() || '';
+        return url.indexOf('http') === 0 || url.indexOf('https') === 0;
     }
 
     _createNameFromRepoUrl(repositoryUrl) {
