@@ -126,8 +126,8 @@ public class GithubScmSaveFileRequest{
      *  @return If new branch is created, sha of content.path on the new branch otherwise null
      */
     private String createBranchIfNotPresent(String apiUrl, String owner, String repoName, String accessToken) throws IOException {
-        //If no branch or sha is provided or auto branchc reate flag is false then skip creation of branch
-        if(StringUtils.isBlank(content.getBranch()) || !StringUtils.isBlank(content.getSha())
+        //If no branch is provided or auto branch create flag is false then skip creation of branch
+        if(StringUtils.isBlank(content.getBranch())
                 || (content.isAutoCreateBranch() != null && !content.isAutoCreateBranch())){
             return null;
         }
@@ -170,23 +170,26 @@ public class GithubScmSaveFileRequest{
                             "sha", branch.getSHA1()))
                     .to(Map.class);
 
-            //5. Check and see if this path exists on this new branch, if it does,
-            //   get its sha so that we can update this file
-            try {
-                GHContent ghContent = HttpRequest.get(String.format("%s/repos/%s/%s/contents/%s",
-                        apiUrl,
-                        owner,
-                        repoName,
-                        content.getPath()))
-                        .withAuthorization("token " + accessToken)
-                        .to(GHContent.class);
-                if (!StringUtils.isBlank(sha) && !sha.equals(ghContent.getSha())) {
-                    throw new ServiceException.BadRequestExpception(String.format("sha in request: %s is different from sha of file %s in branch %s",
-                            sha, content.getPath(), content.getBranch()));
+            //5. If request doesn't have sha get one from github
+            //     Check and see if this path exists on this new branch, if it does,
+            //     get its sha so that we can update this file
+            if(StringUtils.isBlank(content.getSha())) {
+                try {
+                    GHContent ghContent = HttpRequest.get(String.format("%s/repos/%s/%s/contents/%s",
+                            apiUrl,
+                            owner,
+                            repoName,
+                            content.getPath()))
+                            .withAuthorization("token " + accessToken)
+                            .to(GHContent.class);
+                    if (!StringUtils.isBlank(sha) && !sha.equals(ghContent.getSha())) {
+                        throw new ServiceException.BadRequestExpception(String.format("sha in request: %s is different from sha of file %s in branch %s",
+                                sha, content.getPath(), content.getBranch()));
+                    }
+                    return ghContent.getSha();
+                } catch (ServiceException.NotFoundException e1) {
+                    //not found, ignore it, we are good
                 }
-                return ghContent.getSha();
-            } catch (ServiceException.NotFoundException e1) {
-                //not found, ignore it, we are good
             }
         }
         return null;
