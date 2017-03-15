@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import hudson.model.Item;
 import hudson.plugins.favorite.Favorites;
 import io.jenkins.blueocean.rest.Reachable;
@@ -41,6 +42,9 @@ public class FavoriteContainerImpl extends BlueFavoriteContainer {
         Jenkins j = Jenkins.getInstance();
 
         for(final Item favorite: Favorites.getFavorites(user.user)){
+            if(favorite instanceof AbstractFolder) {
+                continue;
+            }
             BlueFavorite blueFavorite = FavoriteUtil.getFavorite(favorite);
             if(blueFavorite != null){
                 favorites.add(blueFavorite);
