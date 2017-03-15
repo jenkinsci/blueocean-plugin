@@ -128,7 +128,7 @@ export default class RunDetailsArtifacts extends Component {
                         <td>
                             <a target="_blank"
                                 title={t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' })}
-                                href={`${UrlConfig.getJenkinsRootURL()}${result._links.self.href}log`}
+                                href={`${UrlConfig.getJenkinsRootURL()}${result._links.self.href}log/?start=0`}
                             >
                                 pipeline.log
                             </a>
@@ -136,9 +136,8 @@ export default class RunDetailsArtifacts extends Component {
                         <td>-</td>
                         <td className="download">
                             <a target="_blank"
-                                download="pipeline.log"
                                 title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })}
-                                href={`${UrlConfig.getJenkinsRootURL()}${result._links.self.href}log`}
+                                href={`${UrlConfig.getJenkinsRootURL()}${result._links.self.href}log/?start=0&download=true`}
                             >
                                 <Icon style={style} icon="file_download" />
                             </a>
