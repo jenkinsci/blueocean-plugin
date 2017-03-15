@@ -21,7 +21,7 @@ node {
         sh "node ./bin/checkshrinkwrap.js"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
         step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
-        step([$class: 'FindBugsPublisher', pattern: '**/target/findbugsXml.xml', unstableTotalAll:'0'])
+
         triggerATH();
       } catch(err) {
         currentBuild.result = "FAILURE"
