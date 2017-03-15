@@ -107,7 +107,10 @@ export default class GitConnectStep extends React.Component {
 
         this.setState(newState);
 
-        this.dropdown.selectOption(credential);
+        // TODO: control this more cleanly via a future 'selectedOption' prop on Dropdown
+        this.dropdown.setState({
+            selectedOption: credential,
+        });
     }
 
     _performValidation() {
