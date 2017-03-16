@@ -103,7 +103,7 @@ export class PipelineRowItem extends Component {
                 <TableCell><WeatherIcon score={weatherScore} /></TableCell>
                 <TableCell>{multiBranchLink}</TableCell>
                 <TableCell>{pullRequestsLink}</TableCell>
-                <TableCell>
+                <TableCell className="TableCell--actions">
                     <Extensions.Renderer
                       extensionPoint="jenkins.pipeline.list.action"
                       store={this.context.store}

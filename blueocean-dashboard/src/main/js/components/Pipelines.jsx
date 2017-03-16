@@ -68,6 +68,12 @@ export class Pipelines extends Component {
 
         this.props.setTitle('Jenkins Blue Ocean');
 
+        // TODO: REMOVE FROM HERE -------------------------------------------
+        console.log('Extensions is', Extensions);
+        Extensions.store.getExtensions('jenkins.pipeline.list.action',
+            extensions => console.log('jenkins.pipeline.list.action extensions ==', extensions));
+        // TODO: REMOVE TO HERE -------------------------------------------
+
         return (
             <Page>
                 <ContentPageHeader>
@@ -86,14 +92,14 @@ export class Pipelines extends Component {
                 </ContentPageHeader>
                 <main>
                     <article>
-                        { /* TODO: need to adjust Extensions to make store available */ }
+                        { /* FIXME: need to adjust Extensions to make store available */ }
                         <Extensions.Renderer
                             extensionPoint="jenkins.pipeline.list.top"
                             store={ this.context.store }
                             router={ this.context.router }
                         />
 
-                        <JTable columns={columns}>
+                        <JTable columns={columns} className="pipelines-table">
                             <TableHeaderRow />
                             { pipelineRows }
                         </JTable>
