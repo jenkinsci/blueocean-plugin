@@ -12,11 +12,8 @@ storiesOf('Dropdown', module)
 ;
 
 const style = {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    alignItems: 'center',
     padding: 10,
+    width: 200,
 };
 
 const a2z = 'ABCDEFGHIJKLM NOPQRSTUVWXYZ';
@@ -57,10 +54,6 @@ function General() {
         '.Dropdown-Default .Dropdown-placeholder',
         'font-style: italic', 'text-transform: uppercase'
     );
-
-    const style = {
-        padding: 10,
-    };
 
     return (
         <div>
@@ -111,14 +104,9 @@ function General() {
 }
 
 function LabelOptions() {
-    const style = {
-        display: 'flex',
-        justifyContent: 'space-around',
-    };
-
     return (
-        <div style={style}>
-            <div>
+        <div>
+            <div style={style}>
                 <p>Using labelField=label</p>
 
                 <Dropdown
@@ -126,7 +114,7 @@ function LabelOptions() {
                     options={createOptions('Option', true)}
                 />
             </div>
-            <div>
+            <div style={style}>
                 <p>Using labeFunction</p>
 
                 <Dropdown
@@ -139,11 +127,21 @@ function LabelOptions() {
 }
 
 function KeyboardFocus() {
+    const style = {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        padding: 10,
+        width: 300,
+        height: 400,
+    };
+
     const options = createOptions();
     options.unshift(a2z);
 
     return (
-        <div style={{...style, height: 400}}>
+        <div style={style}>
             <p>This Layout is useful for demonstrating keyboard accessibility and focus behavior,
             especially as compared to a standard select box.</p>
 
@@ -168,12 +166,34 @@ function KeyboardFocus() {
 }
 
 function Callbacks() {
+    const options = createOptions();
+
+    const style = {
+        padding: 10,
+    };
+
+    const refs = {
+        dropdown: null,
+    };
+
+    function changeHandler(val, index) {
+        console.log(`onChange val=${val}, index=${index}`);
+    }
+
+    function selectedHandler() {
+        console.log('selectedOption=', refs.dropdown.selectedOption);
+    }
+
     return (
-        <div style={{...style, height: 100}}>
+        <div style={style}>
             <Dropdown
-                options={createOptions()}
-                onChange={(val, index) => console.log(`onChange val=${val}, index=${index}`)}
+                ref={dropdown => refs.dropdown = dropdown}
+                style={{ width: 200, marginRight: 10}}
+                options={options}
+                onChange={changeHandler}
             />
+
+            <button onClick={selectedHandler}>Log Selected</button>
         </div>
     );
 }
