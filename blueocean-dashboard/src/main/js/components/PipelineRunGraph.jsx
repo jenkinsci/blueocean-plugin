@@ -15,7 +15,6 @@ function badNode(jenkinsNode) {
 
 function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     if (!jenkinsNode
-        || !jenkinsNode.displayName
         || !jenkinsNode.id) {
         throw badNode(jenkinsNode);
     }
