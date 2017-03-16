@@ -77,7 +77,7 @@ describe('ExtensionRenderer', function () {
         assert.isTrue(result.is('ExtensionRenderer'), 'should be ExtensionRenderer');
         assert.equal(result.length, 1, 'length');
         assert.equal(result.children().length, 0, 'children.length');
-        assert.equal(result.html(), '<div></div>', 'html');
+        assert.equal(result.html(), '<div class="ExtensionPoint foo-bar-baz"></div>', 'html');
         // Fixme: ^^^^ figure out how to test the rendered element name other than html() string comparison
     });
 
@@ -85,22 +85,27 @@ describe('ExtensionRenderer', function () {
         const result = mount(React.createElement(ExtensionRenderer, {extensionPoint: 'foo.bar.baz'}, 'Default text node'));
         assert.isTrue(result.is('ExtensionRenderer'), 'should be ExtensionRenderer');
         assert.equal(result.length, 1, 'length');
-        assert.equal(result.html(), '<div>Default text node</div>', 'html output');
+        assert.equal(result.html(), '<div class="ExtensionPoint foo-bar-baz">Default text node</div>', 'html output');
     });
 
     it('should change the wrapping element', function () {
         const result = mount(React.createElement(ExtensionRenderer, {extensionPoint: 'ep1', wrappingElement: 'section'}));
-        assert.equal(result.html(), '<section><div><h1>Extension is a H1</h1></div></section>', 'html output');
+        assert.equal(result.html(), '<section class="ExtensionPoint ep1"><div><h1>Extension is a H1</h1></div></section>', 'html output');
     });
 
     it('should render the extension', function () {
         const result = mount(React.createElement(ExtensionRenderer, {extensionPoint: 'ep1'}));
-        assert.equal(result.html(), '<div><div><h1>Extension is a H1</h1></div></div>', 'html output');
+        assert.equal(result.html(), '<div class="ExtensionPoint ep1"><div><h1>Extension is a H1</h1></div></div>', 'html output');
+    });
+
+    it('should render a custom class name', function () {
+        const result = mount(React.createElement(ExtensionRenderer, {extensionPoint: 'ep1', className: 'super-dooper'}));
+        assert.equal(result.html(), '<div class="ExtensionPoint ep1 super-dooper"><div><h1>Extension is a H1</h1></div></div>', 'html output');
     });
 
     it('should should not show default children when extension is present', function () {
         const result = mount(React.createElement(ExtensionRenderer, {extensionPoint: 'ep1'}, 'Default text node'));
-        assert.equal(result.html(), '<div><div><h1>Extension is a H1</h1></div></div>', 'html output');
+        assert.equal(result.html(), '<div class="ExtensionPoint ep1"><div><h1>Extension is a H1</h1></div></div>', 'html output');
     });
 
 
