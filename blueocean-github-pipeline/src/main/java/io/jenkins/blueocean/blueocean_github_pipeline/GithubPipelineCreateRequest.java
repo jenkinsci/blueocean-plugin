@@ -117,11 +117,16 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 OrganizationFolder organizationFolder = (OrganizationFolder) item;
                 organizationFolder.getNavigators().replace(gitHubSCMNavigator);
 
+                // for single repo scenario, aggressively scan just that repo to trigger 'job_multibranch_indexing_result' sooner
+                // note this will only occur if that repo actually contains a Jenkinsfile
                 if(repos.size() == 1){
                     SCMSourceEvent.fireNow(new SCMSourceEventImpl(repos.get(0), item, apiUrl, gitHubSCMNavigator));
-                }else {
-                    organizationFolder.scheduleBuild(new Cause.UserIdCause());
                 }
+
+                // perform full org scan to trigger 'job_orgfolder_indexing_result' event in all cases
+                // including single repo scenario that is empty or has no Jenkinsfile (JENKINS-42784)
+                organizationFolder.scheduleBuild(new Cause.UserIdCause());
+
                 return new GithubOrganizationFolder(organizationFolder, parent.getLink());
             }
         } catch (Exception e){
