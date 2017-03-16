@@ -1,41 +1,49 @@
 import React from 'react';
-import { action, computed } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { Promise } from 'es6-promise';
 
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
 const translate = i18nTranslator('blueocean-dashboard');
 
 import FlowManager from '../flow2/FlowManager';
+import waitAtLeast from '../flow2/waitAtLeast';
+import { CreatePipelineOutcome } from './GitCreationApi';
+import { CredentialsManager } from '../credentials/CredentialsManager';
+import { UnknownErrorStep } from './steps/UnknownErrorStep';
+import { LoadingStep } from './steps/LoadingStep';
 import GitConnectStep from './GitConnectStep';
 import GitCompletedStep from './GitCompletedStep';
 import GitRenameStep from './steps/GitRenameStep';
 import STATE from './GitCreationState';
 
-// constants used to defined the special 'system ssh' key to ensure it's only created once, then reused.
-const SYSTEM_SSH_ID = 'git-ssh-key-master';
-const SYSTEM_SSH_DESCRIPTION = 'Master SSH Key for Git Creation';
+
+const LOGGER = logging.logger('io.jenkins.blueocean.git-pipeline');
+const MIN_DELAY = 500;
+const SAVE_DELAY = 1000;
+
 
 /**
  * Impl of FlowManager for git creation flow.
  */
 export default class GitFlowManager extends FlowManager {
 
-    @computed
-    get isConnectEnabled() {
-        return this.stateId !== STATE.STEP_RENAME &&
-                this.stateId !== STATE.COMPLETE;
-    }
+    credentialsManager = null;
+
+    @observable
+    noCredentialsOption = null;
 
     @computed
-    get isRenameEnabled() {
-        return this.stateId === STATE.STEP_RENAME;
+    get credentials() {
+        const credentials = this.credentialsManager.credentials.slice();
+        return [].concat(this.noCredentialsOption, credentials);
     }
 
-    systemSSHCredential = null;
+    @observable
+    outcome = null;
 
     pipelineName = null;
 
-    credentialId = null;
+    selectedCredential = null;
 
     pipeline = null;
 
@@ -43,7 +51,15 @@ export default class GitFlowManager extends FlowManager {
         super();
 
         this._createApi = createApi;
-        this._credentialsApi = credentialsApi;
+        this.credentialsManager = new CredentialsManager(credentialsApi);
+        this._initalize();
+    }
+
+    @action
+    _initalize() {
+        this.noCredentialsOption = {
+            displayName: translate('creation.git.step1.credentials_placeholder'),
+        };
     }
 
     translate(key, opts) {
@@ -56,56 +72,19 @@ export default class GitFlowManager extends FlowManager {
 
     getInitialStep() {
         return {
-            stateId: STATE.STEP_CONNECT,
-            stepElement: <GitConnectStep />,
+            stateId: STATE.LOADING_CREDENTIALS,
+            stepElement: <LoadingStep />,
         };
     }
 
     onInitialized() {
-        this.setPlaceholders([
-            this.translate('creation.git.step3.title_default'),
-        ]);
+        this.listAllCredentials();
     }
 
     listAllCredentials() {
-        return this._credentialsApi.listAllCredentials()
-            .then(creds => this._prepareCredentialsList(creds));
-    }
-
-    createWithSSHKeyCredential(repositoryUrl, sshKey) {
-        this._showCreateCredsStep();
-
-        return this._credentialsApi.saveSSHKeyCredential(sshKey)
-            .then(({ credentialId }) => (
-                    this.createPipeline(repositoryUrl, credentialId)
-                )
-            );
-    }
-
-    createWithUsernamePasswordCredential(repositoryUrl, username, password) {
-        this._showCreateCredsStep();
-
-        return this._credentialsApi.saveUsernamePasswordCredential(username, password)
-            .then(({ credentialId }) => (
-                    this.createPipeline(repositoryUrl, credentialId)
-                )
-            );
-    }
-
-    createWithSystemSSHCredential(repositoryUrl) {
-        // if the system ssh credential was created previously, we can proceed to creation immediately
-        if (this.systemSSHCredential) {
-            return this.createPipeline(repositoryUrl, this.systemSSHCredential.id);
-        }
-
-        // if it wasn't, then we need to create the cred, then use it in the creation
-        this._showCreateCredsStep();
-
-        return this._credentialsApi.saveSystemSSHCredential(SYSTEM_SSH_ID, SYSTEM_SSH_DESCRIPTION)
-            .then(({ credentialId }) => (
-                    this.createPipeline(repositoryUrl, credentialId)
-                )
-            );
+        return this.credentialsManager.listAllCredentials()
+            .then(waitAtLeast(MIN_DELAY))
+            .then(() => this._showConnectStep());
     }
 
     checkPipelineNameAvailable(name) {
@@ -116,9 +95,9 @@ export default class GitFlowManager extends FlowManager {
         return this._createApi.checkPipelineNameAvailable(name);
     }
 
-    createPipeline(repositoryUrl, credentialId) {
+    createPipeline(repositoryUrl, credential) {
         this.repositoryUrl = repositoryUrl;
-        this.credentialId = credentialId;
+        this.selectedCredential = credential;
         this.pipelineName = this._createNameFromRepoUrl(repositoryUrl);
         return this._initiateCreatePipeline();
     }
@@ -128,27 +107,19 @@ export default class GitFlowManager extends FlowManager {
         return this._initiateCreatePipeline();
     }
 
-    _prepareCredentialsList(credentialList) {
-        // find the special 'system ssh' credential if it was already created
-        const systemSSH = credentialList
-            .filter(item => item.id === SYSTEM_SSH_ID)
-            .pop();
-
-        if (systemSSH) {
-            this.systemSSHCredential = systemSSH;
-        }
-
-        // remove 'system ssh' from the main list
-        return credentialList
-            .filter(item => item.id !== SYSTEM_SSH_ID);
+    _showPlaceholder() {
+        this.setPlaceholders([
+            this.translate('creation.git.step3.title_completed'),
+        ]);
     }
 
-    _showCreateCredsStep() {
+    _showConnectStep() {
         this.renderStep({
-            stateId: STATE.CREATE_CREDS,
-            stepElement: <GitCompletedStep />,
-            afterStateId: STATE.STEP_CONNECT,
+            stateId: STATE.STEP_CONNECT,
+            stepElement: <GitConnectStep />,
         });
+
+        this._showPlaceholder();
     }
 
     _initiateCreatePipeline() {
@@ -160,28 +131,60 @@ export default class GitFlowManager extends FlowManager {
             stepElement: <GitCompletedStep />,
             afterStateId,
         });
+
         this.setPlaceholders();
 
-        return this._createApi.createPipeline(this.repositoryUrl, this.credentialId, this.pipelineName)
-            .then(pipeline => this._createPipelineSuccess(pipeline), error => this._createPipelineError(error));
+        let credentialId = null;
+
+        if (this.selectedCredential === this.noCredentialsOption) {
+            if (!this._isHttpRepositoryUrl(this.repositoryUrl)) {
+                if (this.credentialsManager.systemSSHCredential) {
+                    LOGGER.debug('using default system SSH key credential for creation');
+                    credentialId = this.credentialsManager.systemSSHCredential.id;
+                } else {
+                    LOGGER.warn('attempting to create from Git repo w/ SSH URL but no default SSH credential exists');
+                }
+            }
+        } else if (this.selectedCredential !== this.noCredentialsOption) {
+            credentialId = this.selectedCredential.id;
+        }
+
+        LOGGER.debug('creating pipeline with parameters', this.repositoryUrl, credentialId, this.pipelineName);
+
+        return this._createApi.createPipeline(this.repositoryUrl, credentialId, this.pipelineName)
+            .then(waitAtLeast(SAVE_DELAY))
+            .then(result => this._createPipelineComplete(result));
     }
 
     @action
-    _createPipelineSuccess(pipeline) {
-        this.changeState(STATE.COMPLETE);
-        this.pipeline = pipeline;
+    _createPipelineComplete(result) {
+        this.outcome = result.outcome;
+
+        if (result.outcome === CreatePipelineOutcome.SUCCESS) {
+            this.changeState(STATE.COMPLETE);
+            this.pipeline = result.pipeline;
+        } else if (result.outcome === CreatePipelineOutcome.INVALID_NAME) {
+            this.renderStep({
+                stateId: STATE.STEP_RENAME,
+                stepElement: <GitRenameStep pipelineName={this.pipelineName} />,
+                afterStateId: STATE.STEP_CONNECT,
+            });
+            this._showPlaceholder();
+        } else if (result.outcome === CreatePipelineOutcome.INVALID_URI || result.outcome === CreatePipelineOutcome.INVALID_CREDENTIAL) {
+            this.removeSteps({ afterStateId: STATE.STEP_CONNECT });
+            this._showPlaceholder();
+        } else if (result.outcome === CreatePipelineOutcome.ERROR) {
+            this.renderStep({
+                stateId: STATE.ERROR,
+                stepElement: <UnknownErrorStep error={result.error} />,
+                afterStateId: STATE.STEP_CONNECT,
+            });
+        }
     }
 
-    @action
-    _createPipelineError() {
-        this.renderStep({
-            stateId: STATE.STEP_RENAME,
-            stepElement: <GitRenameStep pipelineName={this.pipelineName} />,
-            afterStateId: STATE.STEP_CONNECT,
-        });
-        this.setPlaceholders([
-            this.translate('creation.git.step3.title_default'),
-        ]);
+    _isHttpRepositoryUrl(repositoryUrl) {
+        const url = repositoryUrl && repositoryUrl.toLowerCase() || '';
+        return url.indexOf('http') === 0 || url.indexOf('https') === 0;
     }
 
     _createNameFromRepoUrl(repositoryUrl) {

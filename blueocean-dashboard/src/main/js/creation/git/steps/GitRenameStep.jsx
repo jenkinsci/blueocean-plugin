@@ -5,6 +5,8 @@ import debounce from 'lodash.debounce';
 import { FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
+import STATE from '../GitCreationState';
+
 
 let t = null;
 
@@ -47,7 +49,9 @@ export default class GitRenameStep extends React.Component {
     }
 
     render() {
-        const disabled = !this.props.flowManager.isRenameEnabled;
+        const { flowManager } = this.props;
+
+        const disabled = flowManager.stateId !== STATE.STEP_RENAME;
         let headingText = '';
 
         if (this.state.isNameValid === null) {
