@@ -3,9 +3,9 @@
   "version": "0.0.88",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.124-SNAPSHOTparallel4",
-      "from": "@jenkins-cd/design-language@0.0.124-SNAPSHOTparallel4",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.124-SNAPSHOTparallel4.tgz"
+      "version": "0.0.125-SNAPSHOT-parallel",
+      "from": "@jenkins-cd/design-language@0.0.125-SNAPSHOT-parallel",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.125-SNAPSHOT-parallel.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
