@@ -6,7 +6,6 @@ import Extensions from '@jenkins-cd/js-extensions';
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
-import PageLoading from './PageLoading';
 import { observer } from 'mobx-react';
 
 const translate = i18nTranslator('blueocean-dashboard');
@@ -67,9 +66,6 @@ export class Pipelines extends Component {
                         <CreatePipelineLink />
                     </Extensions.Renderer>
                 </ContentPageHeader>
-
-                { !pipelines || this.pager.pending && <PageLoading /> }
-
                 <main>
                     <article>
                         { /* TODO: need to adjust Extensions to make store available */ }

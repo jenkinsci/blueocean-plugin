@@ -3,7 +3,6 @@ import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import Markdown from 'react-remarkable';
 import Branches from './Branches';
 
-import PageLoading from './PageLoading';
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
@@ -87,8 +86,6 @@ export class MultiBranch extends Component {
         return (
             <main>
                 <article>
-                    {this.pager.pending && <PageLoading />}
-
                     <Table className="multibranch-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
                         {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} t={t} locale={locale} />)}
                     </Table>

@@ -23,6 +23,7 @@
 
 package io.jenkins.blueocean.commons.stapler.export;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
@@ -44,6 +45,11 @@ class JSONDataWriter implements DataWriter {
         this.out = out;
         this.config = config;
         indent = config.isPrettyPrint() ? 0 : -1;
+    }
+
+    @Override
+    public @Nonnull ExportConfig getExportConfig() {
+        return config;
     }
 
     public void name(String name) throws IOException {
@@ -100,12 +106,12 @@ class JSONDataWriter implements DataWriter {
         for( int i=0; i<v.length(); i++ ) {
             char c = v.charAt(i);
             switch(c) {
-            case '"':   buf.append("\\\"");break;
-            case '\\':  buf.append("\\\\");break;
-            case '\n':  buf.append("\\n");break;
-            case '\r':  buf.append("\\r");break;
-            case '\t':  buf.append("\\t");break;
-            default:    buf.append(c);break;
+                case '"':   buf.append("\\\"");break;
+                case '\\':  buf.append("\\\\");break;
+                case '\n':  buf.append("\\n");break;
+                case '\r':  buf.append("\\r");break;
+                case '\t':  buf.append("\\t");break;
+                default:    buf.append(c);break;
             }
         }
         buf.append('\"');
