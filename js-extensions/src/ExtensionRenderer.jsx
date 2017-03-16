@@ -84,7 +84,8 @@ export default class ExtensionRenderer extends React.Component {
 
         const {
             className,
-            extensionPoint
+            extensionPoint,
+            wrappingElement
         } = this.props;
 
         const classNames = ['ExtensionPoint', extensionPoint.replace(/\.+/g,'-')];
@@ -97,7 +98,7 @@ export default class ExtensionRenderer extends React.Component {
             className: classNames.join(' ')
         };
 
-        return React.createElement(this.props.wrappingElement, newProps, newChildren);
+        return React.createElement(wrappingElement, newProps, newChildren);
     }
 
     /**
