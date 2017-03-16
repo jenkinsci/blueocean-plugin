@@ -5,6 +5,7 @@ import com.google.common.hash.Hashing;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
 import hudson.remoting.Base64;
@@ -28,7 +29,12 @@ import java.util.Random;
 @Extension
 public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy {
     private static final String URL_BASE="blue";
-    private static final Random randomBits = new Random();
+
+    // Used to indicate UI should send refresh
+    @SuppressFBWarnings(
+            value="DMI_RANDOM_USED_ONLY_ONCE",
+            justification="random long value is used as salt, generated once in Jenkins instance")
+    private static final long randomBits = new Random().nextLong();
 
     private final boolean enableJWT = BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION;
 
@@ -72,7 +78,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
                 HashCode hashCode = Hashing.sha1()
                     .newHasher()
                     .putString(Jenkins.getAuthentication().getName(), StandardCharsets.UTF_8)
-                    .putLong(randomBits.nextLong())
+                    .putLong(randomBits)
                     .hash();
 
                 // Base64 encode to ensure no non-ASCII characters get into the header
