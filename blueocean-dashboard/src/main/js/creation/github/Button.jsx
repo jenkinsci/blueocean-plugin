@@ -2,11 +2,27 @@ import React, { PropTypes } from 'react';
 import { StatusIndicator } from '@jenkins-cd/design-language';
 
 
-// must equal .Button-svg: transition + transition-delay
+// must equal .Button-icon: transition + transition-delay
 const ANIMATION_DURATION = 2250;
 
 
 // TODO: migrate to JDL and merge w/ IconButton
+
+/**
+ * Button control that supports a "status" icon for pending operations and result.
+ * Driven by 'status' prop. Examples:
+ *
+ * to display "pending" state (until subsequent 'status' update)
+ * {
+ *     result: 'running',
+ * }
+ *
+ * to display success feedback which resets to button text after 2s
+ * {
+ *     result: 'success',
+ *     reset: true,
+ * }
+ */
 export class Button extends React.Component {
 
     constructor(props) {
