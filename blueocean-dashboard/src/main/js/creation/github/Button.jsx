@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
-import { SvgStatus, SvgSpinner } from '@jenkins-cd/design-language';
+import { StatusIndicator } from '@jenkins-cd/design-language';
 
 
 // must equal .Button-svg: transition + transition-delay
-const SUCCESS_DURATION = 2250;
+const ANIMATION_DURATION = 2250;
 
 
 // TODO: migrate to JDL and merge w/ IconButton
@@ -13,21 +13,33 @@ export class Button extends React.Component {
         super(props);
 
         this.state = {
-            success: false,
+            result: null,
+            transition: false,
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.progress && !nextProps.progress) {
-            this.setState({
-                success: true,
-            });
+        // TODO: probably need to check against state's result instead of props?
+        const statusChanged = !this.props.status || !nextProps.status ||
+            this.props.status.result !== nextProps.status.result;
+        const resetAfterDelay = nextProps.status && nextProps.status.reset;
 
+        console.log(`statusChanged: ${statusChanged}, resetAfterDelay ${resetAfterDelay}`);
+
+        if (statusChanged) {
+            this.setState({
+                result: nextProps.status.result,
+                transition: resetAfterDelay,
+            });
+        }
+
+        if (statusChanged && resetAfterDelay) {
             this.timeoutId = setTimeout(() => {
                 this.setState({
-                    success: false,
+                    result: null,
+                    transition: false,
                 });
-            }, SUCCESS_DURATION);
+            }, ANIMATION_DURATION);
         }
     }
 
@@ -51,50 +63,33 @@ export class Button extends React.Component {
             className = '',
             style = {},
             children,
-            progress,
         } = this.props;
 
-        const radius = 12;
-        const transforms = [`translate(${radius} ${radius})`];
-
-        let status = '';
-
-        if (progress) {
-            status = 'running';
-        } else if (this.state.success) {
-            status = 'success';
-            transforms.push('scale(2)');
-        }
-
-        const progressClass = status ? 'Button-progress' : '';
-        const successClass = this.state.success ? 'Button-success' : '';
-        const disabled = !!status;
+        const { result } = this.state;
+        const disabled = result === 'running';
+        const statusClass = result ? 'Button-status' : '';
+        const transitionClass = this.state.transition ? 'Button-transitioning' : '';
 
         return (
             <button
-                className={`Button ${className} ${progressClass} ${successClass}`}
+                className={`Button ${className} ${statusClass} ${transitionClass}`}
                 style={style}
                 disabled={disabled}
                 onClick={() => this._onClick()}
             >
                 <span className="Button-text">{ children }</span>
 
-                { status &&
-                    <svg className="Button-svg" xmlns="http://www.w3.org/2000/svg"
-                         viewBox={`0 0 ${radius * 2} ${radius * 2}`} width={16} height={16}
-                    >
-                        <title>{status}</title>
-
-                        <g transform={transforms.join(' ')}>
-                            { status === 'running' &&
-                                <SvgSpinner radius={radius} result={status} percentage={999} />
-                            }
-                            { status === 'success' &&
-                                <SvgStatus radius={radius} result={status} />
-                            }
-                        </g>
-                    </svg>
+                <div className="Button-icon">
+                { result &&
+                    <StatusIndicator
+                        result={result}
+                        percentage={999}
+                        width={16}
+                        height={16}
+                        noBackground
+                    />
                 }
+                </div>
             </button>
         );
     }
@@ -104,6 +99,9 @@ Button.propTypes = {
     className: PropTypes.string,
     style: PropTypes.object,
     children: PropTypes.string,
-    progress: PropTypes.bool,
+    status: PropTypes.shape({
+        result: PropTypes.string,
+        reset: PropTypes.bool,
+    }),
     onClick: PropTypes.func,
 };
