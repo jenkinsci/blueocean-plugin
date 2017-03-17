@@ -39,7 +39,8 @@ import static org.junit.Assert.*;
 public class GithubOrgFolderTest extends PipelineBaseTest {
     @Test
     public void simpleOrgTest() throws IOException, UnirestException {
-        login();
+        User user = login();
+        String credentialId = createGithubCredential(user);
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
@@ -47,7 +48,7 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 .data(ImmutableMap.of("name", "jenkinsci",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
-                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")))
+                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")), "credentialId", credentialId)
                 ))
                 .build(Map.class);
 
@@ -68,17 +69,8 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
 
     @Test
     public void createGithubOrgTest() throws IOException, UnirestException {
-        Assume.assumeTrue("Need github accesstoken. Run test with -DGITHUB_ACCESS_TOKEN=... , ignoring test", System.getProperty("GITHUB_ACCESS_TOKEN") != null);
         User user = login();
-        String accessToken = System.getProperty("GITHUB_ACCESS_TOKEN");
-        Map r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", accessToken))
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/")
-                .build(Map.class);
-
-        assertEquals("github", r.get("credentialId"));
+        String credentialId = createGithubCredential(user);
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
@@ -86,7 +78,7 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 .data(ImmutableMap.of("name", "vivek",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
-                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")), "credentialId", "github")
+                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")), "credentialId", credentialId)
                 ))
                 .build(Map.class);
 
@@ -96,8 +88,8 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
 
     @Test
     public void orgUpdateTest() throws IOException, UnirestException {
-        login();
-
+        User user = login();
+        String credentialId = createGithubCredential(user);
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
@@ -105,7 +97,7 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 .data(ImmutableMap.of("name", "jenkinsci",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
-                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")))
+                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")), "credentialId", credentialId)
                 ))
                 .build(Map.class);
 
@@ -119,7 +111,7 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 .data(ImmutableMap.of("name", "jenkinsci",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineUpdateRequest",
                         "scmConfig", ImmutableMap.of("config",
-                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")))
+                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")), "credentialId", credentialId)
                 ))
                 .build(Map.class);
     }
@@ -182,5 +174,19 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
         //it must resolve to system credential
         c = Connector.lookupScanCredentials(organizationFolder, null, credential.getId());
         assertEquals("System Github Access Token", c.getDescription());
+    }
+
+    String createGithubCredential(User user) throws UnirestException {
+        Assume.assumeTrue("Need github accesstoken. Run test with -DGITHUB_ACCESS_TOKEN=... , ignoring test", System.getProperty("GITHUB_ACCESS_TOKEN") != null);
+        String accessToken = System.getProperty("GITHUB_ACCESS_TOKEN");
+        Map r = new RequestBuilder(baseUrl)
+                .data(ImmutableMap.of("accessToken", accessToken))
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .put("/organizations/jenkins/scm/github/validate/")
+                .build(Map.class);
+
+        assertEquals("github", r.get("credentialId"));
+        return "github";
     }
 }

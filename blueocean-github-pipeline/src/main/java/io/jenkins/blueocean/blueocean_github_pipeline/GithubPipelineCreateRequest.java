@@ -128,7 +128,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 GithubOrganizationFolder githubOrganizationFolder = new GithubOrganizationFolder(organizationFolder, parent.getLink());
                 if(repos.size() == 1){
 
-                    final boolean hasJenkinsfile = repoHasJenkinsFile(apiUrl,credentialId, orgName, repos.get(0));
+                    final boolean hasJenkinsfile = repoHasJenkinsFile(apiUrl,credentialId, orgName, repos.get(0), organizationFolder);
                     if(hasJenkinsfile){
                         SCMSourceEvent.fireNow(new SCMSourceEventImpl(repos.get(0), item, apiUrl, gitHubSCMNavigator));
                     }
@@ -162,8 +162,11 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         return null;
     }
 
-    static boolean repoHasJenkinsFile(String apiUrl, String credentialId, String owner, String repo) throws IOException, InterruptedException {
+    static boolean repoHasJenkinsFile(String apiUrl, String credentialId, String owner, String repo, OrganizationFolder sourceOwner) throws IOException, InterruptedException {
         GitHubSCMSource gitHubSCMSource = new GitHubSCMSource(null, apiUrl, credentialId, credentialId, owner, repo);
+
+        // set OrganizationFolder as owner so that credentials attached to this org folder can be used during github api calls.
+        gitHubSCMSource.setOwner(sourceOwner);
 
         final JenkinsfileCriteria criteria = new JenkinsfileCriteria();
         gitHubSCMSource.fetch(criteria, new SCMHeadObserver() {
