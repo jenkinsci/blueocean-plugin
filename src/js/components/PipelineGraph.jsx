@@ -177,7 +177,18 @@ export class PipelineGraph extends Component {
             const columnNodes: Array<NodeInfo> = [];
 
             for (const nodeStage of nodeStages) {
-                const node = {
+
+                // needed for dummmy data to prevent that render fails when not all nodes are in the context
+                const unknown = 'unknown';
+                const dummyStage = {
+                    children: [],
+                    completePercent: 100,
+                    id: -1,
+                    name: 'Unable to display more',
+                    state: unknown,
+                    title: 'dummyTitle',
+                };
+                const node = nodeStage ? {
                     x: xp,
                     y: yp,
                     name: nodeStage.name,
@@ -185,17 +196,30 @@ export class PipelineGraph extends Component {
                     completePercent: nodeStage.completePercent,
                     id: nodeStage.id,
                     stage: nodeStage
-                };
+                } : {
+                        x: xp,
+                        y: yp,
+                        name: 'Unable to display more',
+                        state: unknown,
+                        completePercent: 100,
+                        id: -1,
+                        stage: dummyStage
+                    };
 
                 columnNodes.push(node);
 
                 // Only separate child nodes need a smallLabel, as topStage already has a bigLabel
                 if (nodeStage != topStage) {
-                    smallLabels.push({
+                    smallLabels.push(nodeStage ? {
                         x: xp,
                         y: yp,
                         text: nodeStage.name,
-                        stage: nodeStage
+                        stage: nodeStage,
+                    } :  {
+                        x: xp,
+                        y: yp,
+                        text: "Unable to display more",
+                        stage: dummyStage,
                     });
                 }
 
