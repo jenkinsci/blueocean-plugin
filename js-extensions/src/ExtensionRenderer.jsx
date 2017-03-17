@@ -82,7 +82,23 @@ export default class ExtensionRenderer extends React.Component {
             newChildren = this.props.children;
         }
 
-        return React.createElement(this.props.wrappingElement, null, newChildren);
+        const {
+            className,
+            extensionPoint,
+            wrappingElement
+        } = this.props;
+
+        const classNames = ['ExtensionPoint', extensionPoint.replace(/\.+/g,'-')];
+        
+        if (className) {
+            classNames.push(className);
+        }
+
+        const newProps = {
+            className: classNames.join(' ')
+        };
+
+        return React.createElement(wrappingElement, newProps, newChildren);
     }
 
     /**

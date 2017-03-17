@@ -5,13 +5,13 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0.0-b26-SNAPSHOT</version>
+        <version>1.0.0-rc2-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
     <packaging>hpi</packaging>
 
-    <name>Blue Ocean beta</name>
+    <name>Blue Ocean</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
     <description>Blue Ocean is a new project that rethinks the user experience of Jenkins. Designed from the ground up for Jenkins Pipeline and compatible with Freestyle jobs, Blue Ocean reduces clutter and increases clarity for every member of your team.</description>
 
