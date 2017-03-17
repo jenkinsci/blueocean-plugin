@@ -1,4 +1,5 @@
 import { assert } from 'chai';
+import { Promise } from 'es6-promise';
 
 import GitFlowManager from '../../../../main/js/creation/git/GitFlowManager';
 
@@ -6,7 +7,11 @@ describe('GitFlowManager', () => {
     let manager;
 
     beforeEach(() => {
-        manager = new GitFlowManager();
+        manager = new GitFlowManager(
+            // mock out the required api objects & methods
+            {},
+            { listAllCredentials: () => new Promise(() => {}) },
+        );
         manager.initialize();
     });
 
