@@ -6,6 +6,7 @@ import com.cloudbees.plugins.credentials.domains.Domain;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Cause;
 import hudson.model.Item;
+import hudson.model.TaskListener;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -20,8 +21,14 @@ import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreateRequestI
 import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMFile;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.SCMNavigator;
+import jenkins.scm.api.SCMProbeStat;
+import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
+import jenkins.scm.api.SCMSourceCriteria;
 import jenkins.scm.api.SCMSourceEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
@@ -34,6 +41,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Vivek Pandey
@@ -117,12 +125,23 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 OrganizationFolder organizationFolder = (OrganizationFolder) item;
                 organizationFolder.getNavigators().replace(gitHubSCMNavigator);
 
+                GithubOrganizationFolder githubOrganizationFolder = new GithubOrganizationFolder(organizationFolder, parent.getLink());
                 if(repos.size() == 1){
-                    SCMSourceEvent.fireNow(new SCMSourceEventImpl(repos.get(0), item, apiUrl, gitHubSCMNavigator));
+
+                    final boolean hasJenkinsfile = repoHasJenkinsFile(apiUrl,credentialId, orgName, repos.get(0));
+                    if(hasJenkinsfile){
+                        SCMSourceEvent.fireNow(new SCMSourceEventImpl(repos.get(0), item, apiUrl, gitHubSCMNavigator));
+                    }
+                    githubOrganizationFolder.addRepo(repos.get(0), new GithubOrganizationFolder.BlueRepositoryProperty(){
+                        @Override
+                        public boolean meetsIndexingCriteria() {
+                            return hasJenkinsfile;
+                        }
+                    });
                 }else {
                     organizationFolder.scheduleBuild(new Cause.UserIdCause());
                 }
-                return new GithubOrganizationFolder(organizationFolder, parent.getLink());
+                return githubOrganizationFolder;
             }
         } catch (Exception e){
             String msg = String.format("Error creating pipeline %s: %s",getName(),e.getMessage());
@@ -133,17 +152,36 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 } catch (InterruptedException e1) {
                     logger.error(String.format("Error creating pipeline %s: %s",getName(),e1.getMessage()), e1);
                     throw new ServiceException.UnexpectedErrorException("Error cleaning up pipeline " + getName() + " due to error: " + e.getMessage(), e);
-
                 }
             }
             if(e instanceof ServiceException){
-                throw e;
+                throw (ServiceException)e;
             }
             throw new ServiceException.UnexpectedErrorException(msg, e);
         }
         return null;
     }
 
+    static boolean repoHasJenkinsFile(String apiUrl, String credentialId, String owner, String repo) throws IOException, InterruptedException {
+        GitHubSCMSource gitHubSCMSource = new GitHubSCMSource(null, apiUrl, credentialId, credentialId, owner, repo);
+
+        final JenkinsfileCriteria criteria = new JenkinsfileCriteria();
+        gitHubSCMSource.fetch(criteria, new SCMHeadObserver() {
+            @Override
+            public void observe(@NonNull SCMHead head, @NonNull SCMRevision revision) throws IOException, InterruptedException {
+                //do nothing
+            }
+
+            @Override
+            public boolean isObserving() {
+                //if jenkinsfile is found stop observing
+                return !criteria.isJekinsfileFound();
+
+            }
+        }, TaskListener.NULL);
+
+        return criteria.isJekinsfileFound();
+    }
 
     static void validateCredentialId(String credentialId,  String apiUrl) throws IOException {
         if (credentialId != null && !credentialId.trim().isEmpty()) {
@@ -211,4 +249,22 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
             return repoName;
         }
     }
+
+    private static class JenkinsfileCriteria implements SCMSourceCriteria{
+        private AtomicBoolean jenkinsFileFound = new AtomicBoolean();
+
+            @Override
+            public boolean isHead(@NonNull Probe probe, @NonNull TaskListener listener) throws IOException {
+                    SCMProbeStat stat = probe.stat("Jenkinsfile");
+                    boolean foundJekinsFile =  stat.getType() != SCMFile.Type.NONEXISTENT && stat.getType() != SCMFile.Type.DIRECTORY;
+                    if(foundJekinsFile && !jenkinsFileFound.get()) {
+                        jenkinsFileFound.set(true);
+                    }
+                    return foundJekinsFile;
+            }
+
+            private boolean isJekinsfileFound() {
+                return jenkinsFileFound.get();
+            }
+        }
 }
