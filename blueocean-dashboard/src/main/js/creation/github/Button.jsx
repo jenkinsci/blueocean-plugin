@@ -49,7 +49,7 @@ export class Button extends React.Component {
             });
         }
 
-        // schedule a reset of internal "state.result"
+        // schedule a reset of internal "state.result" to restore button text
         if (statusChanged && shouldReset) {
             this.timeoutId = setTimeout(() => {
                 this.setState({
