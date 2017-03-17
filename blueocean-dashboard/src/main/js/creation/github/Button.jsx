@@ -67,7 +67,7 @@ export class Button extends React.Component {
         } = this.props;
 
         const { result } = this.state;
-        const disabled = result === 'running';
+        const disabled = result === 'running' || this.props.disabled;
         const statusClass = result ? 'Button-status' : '';
         const transitionClass = this.state.transition ? 'Button-transitioning' : '';
 
@@ -100,6 +100,7 @@ Button.propTypes = {
     className: PropTypes.string,
     style: PropTypes.object,
     children: PropTypes.string,
+    disabled: PropTypes.bool,
     status: PropTypes.shape({
         result: PropTypes.string,
         reset: PropTypes.bool,
