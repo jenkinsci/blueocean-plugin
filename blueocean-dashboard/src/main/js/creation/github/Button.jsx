@@ -14,44 +14,49 @@ export class Button extends React.Component {
 
         this.state = {
             result: null,
-            transition: false,
+            pendingReset: false,
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        // TODO: probably need to check against state's result instead of props?
         const statusChanged = !this.props.status || !nextProps.status ||
-            this.props.status.result !== nextProps.status.result;
-        const resetAfterDelay = nextProps.status && nextProps.status.reset;
+            this.props.status.result !== nextProps.status.result ||
+            this.state.result !== nextProps.status.result;
 
-        console.log(`statusChanged: ${statusChanged}, resetAfterDelay ${resetAfterDelay}`);
+        const shouldReset = nextProps.status && nextProps.status.reset;
 
         if (statusChanged) {
             const result = nextProps.status && nextProps.status.result;
             this.setState({
                 result,
-                transition: resetAfterDelay,
+                pendingReset: shouldReset,
             });
         }
 
-        if (statusChanged && resetAfterDelay) {
+        // schedule a reset of internal "state.result"
+        if (statusChanged && shouldReset) {
             this.timeoutId = setTimeout(() => {
                 this.setState({
                     result: null,
-                    transition: false,
+                    pendingReset: false,
                 });
             }, ANIMATION_DURATION);
         }
     }
 
     componentWillUnmount() {
+        this._cancelTimeout();
+    }
+
+    timeoutId = 0;
+
+    _cancelTimeout() {
         if (this.timeoutId) {
             clearTimeout(this.timeoutId);
             this.timeoutId = 0;
         }
     }
 
-    timeoutId = 0;
 
     _onClick() {
         if (this.props.onClick) {
@@ -69,7 +74,7 @@ export class Button extends React.Component {
         const { result } = this.state;
         const disabled = result === 'running' || this.props.disabled;
         const statusClass = result ? 'Button-status' : '';
-        const transitionClass = this.state.transition ? 'Button-transitioning' : '';
+        const transitionClass = this.state.pendingReset ? 'Button-transitioning' : '';
 
         return (
             <button
