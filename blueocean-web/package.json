@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.89",
-    "@jenkins-cd/design-language": "0.0.125-SNAPSHOT-parallel",
+    "@jenkins-cd/design-language": "0.0.125",
     "@jenkins-cd/js-extensions": "0.0.33",
     "@jenkins-cd/js-modules": "0.0.8",
     "history": "2.0.2",
