@@ -27,8 +27,9 @@ export class Button extends React.Component {
         console.log(`statusChanged: ${statusChanged}, resetAfterDelay ${resetAfterDelay}`);
 
         if (statusChanged) {
+            const result = nextProps.status && nextProps.status.result;
             this.setState({
-                result: nextProps.status.result,
+                result,
                 transition: resetAfterDelay,
             });
         }
