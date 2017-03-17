@@ -47,6 +47,48 @@
     }
 }
 
+
+.Button {
+    min-width: 90px;
+    position: relative;
+
+
+    &.Button-progress {
+        .Button-text {
+            visibility: hidden;
+        }
+
+        .Button-svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -8px;
+            margin-left: -8px;
+            vertical-align: text-bottom;
+
+            .progress-spinner.running.spin .running {
+                stroke: #fff;
+            }
+
+            .success {
+                fill: none;
+            }
+        }
+    }
+
+    .Button-svg {
+        transition: opacity linear 0.25s;
+        transition-delay: 2s;
+        opacity: 1;
+    }
+
+    &.Button-success .Button-svg {
+        opacity: 0;
+    }
+}
+
+
+
 // from the JDL
 @brand-primary:         #4A90E2;
 
