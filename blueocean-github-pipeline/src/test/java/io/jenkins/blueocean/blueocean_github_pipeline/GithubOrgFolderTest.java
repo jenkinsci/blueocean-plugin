@@ -47,7 +47,7 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 .data(ImmutableMap.of("name", "jenkinsci",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
-                                ImmutableMap.of("repos", ImmutableList.of("stapler")))
+                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")))
                 ))
                 .build(Map.class);
 
@@ -105,7 +105,7 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 .data(ImmutableMap.of("name", "jenkinsci",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
-                                ImmutableMap.of("repos", ImmutableList.of("stapler")))
+                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")))
                 ))
                 .build(Map.class);
 
@@ -119,7 +119,7 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 .data(ImmutableMap.of("name", "jenkinsci",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineUpdateRequest",
                         "scmConfig", ImmutableMap.of("config",
-                                ImmutableMap.of("repos", ImmutableList.of("stapler")))
+                                ImmutableMap.of("repos", ImmutableList.of("capability-annotation")))
                 ))
                 .build(Map.class);
     }
