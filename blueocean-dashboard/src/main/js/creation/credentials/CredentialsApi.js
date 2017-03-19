@@ -20,7 +20,24 @@ export class CredentialsApi {
         const searchUrl = Utils.cleanSlashes(`${path}/search?q=type:credential`, false);
 
         return this._fetch(searchUrl)
-            .then(data => capabilityAugmenter.augmentCapabilities(data));
+            .then(data => capabilityAugmenter.augmentCapabilities(data))
+            .then(
+                creds => this._listAllCredentialsSuccess(creds),
+                error => this._listAllCredentialsFailure(error),
+            );
+    }
+
+    _listAllCredentialsSuccess(credentials) {
+        return {
+            success: true,
+            credentials,
+        };
+    }
+
+    _listAllCredentialsFailure() {
+        return {
+            success: false,
+        };
     }
 
     saveUsernamePasswordCredential(username, password) {

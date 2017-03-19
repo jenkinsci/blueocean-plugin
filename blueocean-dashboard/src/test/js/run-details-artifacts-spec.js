@@ -33,26 +33,24 @@ describe('RunDetailsArtifacts', () => {
         });
     });
 
-    describe('empty artifacts', () => {
-        it('renders EmptyStateView', () => {
-            const wrapper = shallow(<RunDetailsArtifacts t={t} result={{ _links: { self: { href: 'aa' } }, state: 'FINISHED' }} />, { context: contextNoData });
-            assert.equal(wrapper.find('EmptyStateView').length, 1);
-        });
-    });
-
+ 
     describe('valid artifacts', () => {     
         it('renders a Table with expected data', () => {
             const wrapper = shallow(<RunDetailsArtifacts t={t} result={runs[0]} />, { context: contextWithArtifacts });
             
             assert.equal(wrapper.find('Table').length, 1);
-            assert.equal(wrapper.find('Table tr').length, 1);
+            assert.equal(wrapper.find('Table tr').length, 2);
 
             const cols = wrapper.find('td');
-            assert.equal(cols.length, 4);
+            assert.equal(cols.length, 7);
 
-            assert.equal(cols.at(0).text(), 'hey');
-            assert.equal(cols.at(1).text(), '<FileSize />');
+            assert.equal(cols.at(0).text(), 'pipeline.log');
+            assert.equal(cols.at(1).text(), '-');
             assert.equal(cols.at(2).text(), '<Icon />');
+     
+            assert.equal(cols.at(3).text(), 'hey');
+            assert.equal(cols.at(4).text(), '<FileSize />');
+            assert.equal(cols.at(5).text(), '<Icon />');
         });
     });
 });

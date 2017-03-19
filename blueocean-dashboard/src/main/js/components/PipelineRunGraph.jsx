@@ -15,7 +15,6 @@ function badNode(jenkinsNode) {
 
 function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     if (!jenkinsNode
-        || !jenkinsNode.displayName
         || !jenkinsNode.id) {
         throw badNode(jenkinsNode);
     }
@@ -191,13 +190,13 @@ export default class PipelineRunGraph extends Component {
         let selectedStage = graphNodes.filter((item) => {
             let matches = item.id === id;
             if (!matches && item.children.length > 0) {
-                const childMatches = item.children.filter(child => child.id === id);
+                const childMatches = item.children.filter(child => child ? child.id === id : false);
                 matches = childMatches.length === 1;
             }
             return matches;
         });
         if (selectedStage[0] && selectedStage[0].id !== id && selectedStage[0].children.length > 0) {
-            selectedStage = selectedStage[0].children.filter(item => item.id === id);
+            selectedStage = selectedStage[0].children.filter(item => item ? item.id === id : false);
         }
         return (
             <div style={outerDivStyle}>

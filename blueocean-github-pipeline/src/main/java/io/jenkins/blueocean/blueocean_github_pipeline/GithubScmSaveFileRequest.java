@@ -66,60 +66,11 @@ public class GithubScmSaveFileRequest{
         }
 
         try {
-            String sha = content.getSha();
-            //Lets check if this branch exists, if not then create it
-            if(!StringUtils.isBlank(content.getBranch()) && (content.isAutoCreateBranch() == null || content.isAutoCreateBranch())){
-                try {
-                    HttpRequest.head(String.format("%s/repos/%s/%s/branches/%s",
-                            apiUrl,
-                            owner,
-                            repoName,
-                            content.getBranch())).withAuthorization("token "+accessToken).to(String.class);
-                } catch (ServiceException.NotFoundException e) {
-                    //branch doesn't exist, lets create new one
+            String sha = createBranchIfNotPresent(apiUrl,owner,repoName,accessToken);
 
-                    //1. Find commit sha off which this branch will be created
-                    //2. We need to find default branch first
-                    GHRepoEx repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl,
-                            owner, repoName))
-                            .withAuthorization("token "+accessToken).to(GHRepoEx.class);
-
-                    //3. Get default branch's commit sha
-                    GHBranch branch = HttpRequest.get(String.format("%s/repos/%s/%s/branches/%s",
-                            apiUrl,
-                            owner,
-                            repoName,
-                            repo.getDefaultBranch())).withAuthorization("token " + accessToken).to(GHBranch.class);
-
-                    //4. create this missing branch. We ignore the response, if no error branch was created
-                    HttpRequest.post(String.format("%s/repos/%s/%s/git/refs",
-                            apiUrl,
-                            owner,
-                            repoName))
-                            .withAuthorization("token " + accessToken)
-                            .withBody(ImmutableMap.of("ref", "refs/heads/" + content.getBranch(),
-                                    "sha", branch.getSHA1()))
-                            .to(Map.class);
-
-                    //5. Check and see if this path exists on this new branch, if it does,
-                    //   get its sha so that we can update this file
-                    try {
-                        GHContent ghContent = HttpRequest.get(String.format("%s/repos/%s/%s/contents/%s",
-                                apiUrl,
-                                owner,
-                                repoName,
-                                content.getPath()))
-                                .withAuthorization("token " + accessToken)
-                                .to(GHContent.class);
-                        if(!StringUtils.isBlank(sha) && !sha.equals(ghContent.getSha())){
-                            throw new ServiceException.BadRequestExpception(String.format("sha in request: %s is different from sha of file %s in branch %s",
-                                    sha, content.getPath(), content.getBranch()));
-                        }
-                        sha = ghContent.getSha();
-                    }catch (ServiceException.NotFoundException e1){
-                        //not found, ignore it, we are good
-                    }
-                }
+            //sha in request overrides the one we computed
+            if(!StringUtils.isBlank(content.getSha())){
+                sha = content.getSha();
             }
 
             Map<String,Object> body = new HashMap<>();
@@ -161,5 +112,99 @@ public class GithubScmSaveFileRequest{
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException("Failed to save file: "+e.getMessage(), e);
         }
+    }
+
+
+    /**
+     * Auto creates branch if:
+     * <br>
+     *  <li>content.branch is provided</li>
+     *  <li>sha is not provided</li>
+     *  <li>autoCreateBranch is false or null</li>
+     *  <li>if its not empty repo</li>
+     *
+     *  @return If new branch is created, sha of content.path on the new branch otherwise null
+     */
+    private String createBranchIfNotPresent(String apiUrl, String owner, String repoName, String accessToken) throws IOException {
+        //If no branch is provided or auto branch create flag is false then skip creation of branch
+        if(StringUtils.isBlank(content.getBranch())
+                || (content.isAutoCreateBranch() != null && !content.isAutoCreateBranch())){
+            return null;
+        }
+
+        //If its empty repo, we can't create the branch on it. It gets created doing content creation
+        if(isEmptyRepo(apiUrl,owner,repoName,accessToken)){
+            return null;
+        }
+        //check if branch exists
+        try {
+            HttpRequest.head(String.format("%s/repos/%s/%s/branches/%s",
+                    apiUrl,
+                    owner,
+                    repoName,
+                    content.getBranch())).withAuthorization("token " + accessToken).to(String.class);
+        } catch (ServiceException.NotFoundException e) {
+
+            String sha = content.getSha();
+            //branch doesn't exist, lets create new one
+            //1. Find commit sha off which this branch will be created
+            //2. We need to find default branch first
+            GHRepoEx repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl,
+                    owner, repoName))
+                    .withAuthorization("token " + accessToken).to(GHRepoEx.class);
+
+            //3. Get default branch's commit sha
+            GHBranch branch = HttpRequest.get(String.format("%s/repos/%s/%s/branches/%s",
+                    apiUrl,
+                    owner,
+                    repoName,
+                    repo.getDefaultBranch())).withAuthorization("token " + accessToken).to(GHBranch.class);
+
+            //4. create this missing branch. We ignore the response, if no error branch was created
+            HttpRequest.post(String.format("%s/repos/%s/%s/git/refs",
+                    apiUrl,
+                    owner,
+                    repoName))
+                    .withAuthorization("token " + accessToken)
+                    .withBody(ImmutableMap.of("ref", "refs/heads/" + content.getBranch(),
+                            "sha", branch.getSHA1()))
+                    .to(Map.class);
+
+            //5. If request doesn't have sha get one from github
+            //     Check and see if this path exists on this new branch, if it does,
+            //     get its sha so that we can update this file
+            if(StringUtils.isBlank(content.getSha())) {
+                try {
+                    GHContent ghContent = HttpRequest.get(String.format("%s/repos/%s/%s/contents/%s",
+                            apiUrl,
+                            owner,
+                            repoName,
+                            content.getPath()))
+                            .withAuthorization("token " + accessToken)
+                            .to(GHContent.class);
+                    if (!StringUtils.isBlank(sha) && !sha.equals(ghContent.getSha())) {
+                        throw new ServiceException.BadRequestExpception(String.format("sha in request: %s is different from sha of file %s in branch %s",
+                                sha, content.getPath(), content.getBranch()));
+                    }
+                    return ghContent.getSha();
+                } catch (ServiceException.NotFoundException e1) {
+                    //not found, ignore it, we are good
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isEmptyRepo(String apiUrl, String owner, String repoName, String accessToken) throws IOException {
+        try {
+            HttpRequest.head(String.format("%s/repos/%s/%s/contents",
+                    apiUrl,
+                    owner,
+                    repoName)).withAuthorization("token " + accessToken).to(String.class);
+        }catch (ServiceException.NotFoundException e){
+            //its empty, return true
+            return true;
+        }
+        return false;
     }
 }

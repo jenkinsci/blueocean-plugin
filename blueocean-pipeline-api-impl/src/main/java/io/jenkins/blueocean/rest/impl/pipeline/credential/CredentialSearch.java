@@ -9,7 +9,6 @@ import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -17,7 +16,8 @@ import java.util.List;
  * @author Vivek Pandey
  */
 @Extension
-public class CredentialSearch extends OmniSearch<CredentialApi.Credential> {
+public class
+CredentialSearch extends OmniSearch<CredentialApi.Credential> {
     @Override
     public String getType() {
         return "credential";
@@ -27,24 +27,24 @@ public class CredentialSearch extends OmniSearch<CredentialApi.Credential> {
     public Pageable<CredentialApi.Credential> search(Query q) {
         List<CredentialApi.Credential> credentials = new ArrayList<>();
         String domain = q.param("domain");
-
+        String store = q.param("store");
         ExtensionList<CredentialContainer> extensionList = ExtensionList.lookup(CredentialContainer.class);
         if(!extensionList.isEmpty()) {
             CredentialContainer credentialContainer = extensionList.get(0);
 
-            Iterator<CredentialApi> it = credentialContainer.iterator();
-
-            if (it.hasNext()) {
-                CredentialApi api = it.next();
-                if(domain != null){
+            for (CredentialApi api : credentialContainer) {
+                if(store != null && !store.equals(api.getStore())){
+                    continue;
+                }
+                if (domain != null) {
                     CredentialApi.CredentialDomain d = api.getDomains().get(domain);
-                    if(d == null){
-                        throw new ServiceException.BadRequestExpception("Credential domain "+ domain +" not found");
+                    if (d == null) {
+                        throw new ServiceException.BadRequestExpception("Credential domain " + domain + " not found");
                     }
                     for (CredentialApi.Credential c : d.getCredentials()) {
                         credentials.add(c);
                     }
-                }else {
+                } else {
                     for (CredentialApi.CredentialDomain d : api.getDomains()) {
                         for (CredentialApi.Credential c : d.getCredentials()) {
                             credentials.add(c);
