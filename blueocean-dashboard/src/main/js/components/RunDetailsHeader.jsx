@@ -70,7 +70,9 @@ class RunDetailsHeader extends Component {
         const displayName = decodeURIComponent(run.pipeline);
 
         // Messages
-        const branchLabel = t('rundetail.header.branch', { defaultValue: 'Branch' });
+        const branchLabel = run.pullRequest ?
+            t('rundetail.header.pullRequest', { defaultValue: 'Pull Request' }) :
+            t('rundetail.header.branch', { defaultValue: 'Branch' });
         const commitLabel = t('rundetail.header.commit', { defaultValue: 'Commit' });
         const durationDisplayFormat = t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' });
         const durationFormat = t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' });
@@ -91,22 +93,33 @@ class RunDetailsHeader extends Component {
         );
 
         const branchUrl = `${buildPipelineUrl(run.organization, pipeline.fullName)}/activity/${run.pipeline}`;
+        const labelClassName = run.pullRequest ? 'pullRequest' : '';
 
         const branchSourceDetails = (
             <div className="u-label-value" title={branchLabel + ': ' + displayName}>
-                <label>{ branchLabel }:</label>
+                <label className={labelClassName}>{ branchLabel }:</label>
                 {isMultiBranch ? (
-                    <span><Link to={ branchUrl }>{ displayName }</Link></span>
+                    <span className={labelClassName}>
+                        <Link to={ branchUrl }>{ displayName }</Link>
+                    </span>
                   ) : (
                     <span>&mdash;</span>
                   )}
+
+                { run.pullRequest && run.pullRequest.url &&
+                    <span>
+                        <a title="Opens pull request in a new window" target="_blank" href={run.pullRequest.url}>
+                            <Icon size={14} icon="launch" />
+                        </a>
+                    </span>
+                }
             </div>
         );
 
         const commitIdString = run.commitId || '—';
         const commitSourceDetails = (
             <div className="u-label-value" title={commitLabel + ': ' + commitIdString}>
-                <label>{ commitLabel }:</label>
+                <label className={labelClassName}>{ commitLabel }:</label>
                 <span className="commit">
                      { commitIdString.substring(0, 7) }
                 </span>
