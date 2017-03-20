@@ -46,6 +46,15 @@ export const ChangeSetRecord = Record({
     timestamp: null,
 });
 
+export const PullRequestRecord = Record({
+    pullRequest: {
+        author: null,
+        id: null,
+        title: null,
+        url: null,
+    },
+});
+
 export class RunRecord extends Record({
     _class: null,
     _capabilities: [],
@@ -67,6 +76,7 @@ export class RunRecord extends Record({
     commitId: null,
     parameters: null,
     artifactsZipFile: null,
+    pullRequest: PullRequestRecord,
 }) {
     isQueued() {
         return this.state === 'QUEUED';
@@ -92,15 +102,6 @@ export class RunRecord extends Record({
         return this.state;
     }
 }
-
-export const PullRequestRecord = Record({
-    pullRequest: {
-        author: null,
-        id: null,
-        title: null,
-        url: null,
-    },
-});
 
 export const RunsRecord = Record({
     _class: null,
