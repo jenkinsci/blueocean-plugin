@@ -53,20 +53,15 @@ export default class GithubCredentialsStep extends React.Component {
         const disabled = manager.stateId === GithubAccessTokenState.SAVE_SUCCESS;
 
         let result = null;
-        let reset = null;
 
         if (manager.pendingValidation) {
             result = 'running';
         } else if (manager.stateId === GithubAccessTokenState.SAVE_SUCCESS) {
             result = 'success';
-        } else if (manager.stateId === GithubAccessTokenState.VALIDATION_FAILED_SCOPES || manager.stateId === GithubAccessTokenState.VALIDATION_FAILED_TOKEN) {
-            result = 'failure';
-            reset = true;
         }
 
         const status = {
             result,
-            reset,
         };
 
         return (
