@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
+import debounce from 'lodash.debounce';
 import { QueuedState } from './QueuedState';
 import { KaraokeService } from '../index';
 import LogToolbar from './LogToolbar';
@@ -71,6 +72,12 @@ export default class Pipeline extends Component {
             const jenkinsEvent = event.jenkins_event;
             const { run } = this.props;
             const runId = run.id;
+            const bounceNodes = debounce(() => {
+                this.pager.fetchNodes({});
+            }, 100);
+            const bounceSteps = debounce(() => {
+                this.pager.fetchCurrentStepUrl();
+            }, 100);
              // we get events from the pipeline and the job channel, they have different naming for the id
             //  && event.jenkins_object_id !== runId -> job
             if (event.pipeline_run_id !== runId) {
@@ -80,7 +87,7 @@ export default class Pipeline extends Component {
             switch (jenkinsEvent) {
             case 'pipeline_step': {
                 logger.warn('sse event step fetchCurrentSteps', jenkinsEvent);
-                this.pager.fetchCurrentStepUrl();
+                bounceSteps();
                 break;
             }
             case 'pipeline_end':
@@ -88,7 +95,7 @@ export default class Pipeline extends Component {
             case 'pipeline_block_end':
             case 'pipeline_stage': {
                 logger.warn('sse event block starts refetchNodes', jenkinsEvent);
-                this.pager.fetchNodes({});
+                bounceNodes({});
                 break;
             }
             default: {
